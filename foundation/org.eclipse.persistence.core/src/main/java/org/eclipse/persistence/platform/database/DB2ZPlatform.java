@@ -27,12 +27,19 @@ import java.security.PrivilegedActionException;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Hashtable;
 
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.BindCallCustomParameter;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
+import org.eclipse.persistence.internal.expressions.CollectionExpression;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -136,6 +143,7 @@ public class DB2ZPlatform extends DB2Platform {
 
         addOperator(betweenOperator());
         addOperator(notBetweenOperator());
+        addOperator(inOperator());
     }
 
     /**
@@ -476,6 +484,110 @@ public class DB2ZPlatform extends DB2Platform {
         ExpressionOperator operatorS = super.rtrim2Operator();
         ExpressionOperator operator = disableAllBindingExpression();
         operatorS.copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator—for example: ? &gt; ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator inOperator() {
+        ExpressionOperator operator = new ExpressionOperator() {
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printDuo(first, second, printer);
+                    return;
+                }
+
+                // If the first argument isn't a Constant/Parameter, this will suffice
+                if(!first.isValueExpression() || (first.isConstantExpression() && !printer.getPlatform().shouldBindLiterals())) {
+                    super.printDuo(first, second, printer);
+                    return;
+                }
+
+                // Otherwise, we need to inspect the right, collection side of the IN expression
+                boolean firstBound = true;
+                if(second instanceof CollectionExpression) {
+                    Object val = ((CollectionExpression) second).getValue();
+                    if (val instanceof Collection) {
+                        firstBound = false;
+                        Collection values = (Collection)val;
+                        for(Object value : values) {
+                            // If the value isn't a Constant/Parameter, this will suffice and the first should bind
+                            if(value instanceof Expression && !((Expression)value).isValueExpression()) {
+                                firstBound = true;
+                                break;
+                            }
+
+                            // If the value is a Constant and literal binding is disabled, this will suffice and the first should bind
+                            if(value instanceof Expression && ((Expression)value).isConstantExpression() && !printer.getPlatform().shouldBindLiterals()) {
+                                firstBound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(first.isParameterExpression()) {
+                    ((ParameterExpression) first).setCanBind(firstBound);
+                } else if(first.isConstantExpression()) {
+                    ((ConstantExpression) first).setCanBind(firstBound);
+                }
+
+                super.printDuo(first, second, printer);
+            }
+
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaDuo(first, second, printer);
+                    return;
+                }
+
+                // If the first argument isn't a Constant/Parameter, this will suffice
+                if(!first.isValueExpression() || (first.isConstantExpression() && !printer.getPlatform().shouldBindLiterals())) {
+                    super.printJavaDuo(first, second, printer);
+                    return;
+                }
+
+                // Otherwise, we need to inspect the right, collection side of the IN expression
+                boolean firstBound = true;
+                if(second instanceof CollectionExpression) {
+                    Object val = ((CollectionExpression) second).getValue();
+                    if (val instanceof Collection) {
+                        firstBound = false;
+                        Collection values = (Collection)val;
+                        for(Object value : values) {
+                            // If the value isn't a Constant/Parameter, this will suffice and the first should bind
+                            if(value instanceof Expression && !((Expression)value).isValueExpression()) {
+                                firstBound = true;
+                                break;
+                            }
+
+                            // If the value is a Constant and literal binding is disabled, this will suffice and the first should bind
+                            if(value instanceof Expression && ((Expression)value).isConstantExpression() && !printer.getPlatform().shouldBindLiterals()) {
+                                firstBound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(first.isParameterExpression()) {
+                    ((ParameterExpression) first).setCanBind(firstBound);
+                } else if(first.isConstantExpression()) {
+                    ((ConstantExpression) first).setCanBind(firstBound);
+                }
+
+                super.printJavaDuo(first, second, printer);
+            }
+        };
+        ExpressionOperator.in().copyTo(operator);
         return operator;
     }
 

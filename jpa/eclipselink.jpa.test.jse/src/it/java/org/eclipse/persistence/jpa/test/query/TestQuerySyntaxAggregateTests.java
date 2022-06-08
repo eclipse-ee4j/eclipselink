@@ -109,7 +109,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.avg(intParam1));
 
@@ -125,7 +125,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.avg(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -178,7 +178,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.avg(intParam1));
 
@@ -194,7 +194,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.avg(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -247,7 +247,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.avg(intParam1));
 
@@ -263,7 +263,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.avg(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -329,7 +329,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Double> intParam2 = cb.parameter(Double.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -350,7 +350,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.avg(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0d), cb2.avg(cb2.literal(1))));
 
@@ -365,7 +365,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.avg(cb3.literal(1)));
             ParameterExpression<Double> intParam4 = cb3.parameter(Double.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -416,7 +416,7 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0 < AVG(1))", _sql2.remove(0));
+                Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (? < AVG(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql2.remove(0));
             }
@@ -428,8 +428,6 @@ public class TestQuerySyntaxAggregateTests {
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (? < AVG(1))", _sql2.remove(0));
-            } else if(platform.isDB2()) {
-                Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql2.remove(0));
             }
@@ -438,7 +436,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Double> intParam2 = cb.parameter(Double.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -459,22 +457,22 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.avg(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0d), cb2.avg(cb2.literal(1))));
 
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0.0 < AVG(1))", _sql2.remove(0));
+            if(platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (? < AVG(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql2.remove(0));
             }
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.avg(cb3.literal(1)));
             ParameterExpression<Double> intParam4 = cb3.parameter(Double.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -487,8 +485,6 @@ public class TestQuerySyntaxAggregateTests {
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (? < AVG(1))", _sql2.remove(0));
-            } else if(platform.isDB2()) {
-                Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql2.remove(0));
             }
@@ -547,7 +543,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Double> intParam2 = cb.parameter(Double.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -568,7 +564,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.avg(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0d), cb2.avg(cb2.literal(1))));
 
@@ -583,7 +579,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.avg(cb3.literal(1)));
             ParameterExpression<Double> intParam4 = cb3.parameter(Double.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -969,8 +965,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT AVG(1) FROM QuerySyntaxEntity s HAVING 0 < AVG(DISTINCT 1)");
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0 < AVG(DISTINCT(1)))", _sql2.remove(0));
+            if(platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(1)))", _sql2.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(1)))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(?)))", _sql2.remove(0));
             }
@@ -980,8 +978,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(1)))", _sql2.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(1)))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(?)))", _sql2.remove(0));
             }
@@ -1207,7 +1207,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.count(intParam1));
 
@@ -1223,7 +1223,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.count(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -1276,7 +1276,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.count(intParam1));
 
@@ -1292,7 +1292,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.count(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -1345,7 +1345,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.count(intParam1));
 
@@ -1361,7 +1361,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.count(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -1427,7 +1427,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Long> intParam2 = cb.parameter(Long.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -1448,7 +1448,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.count(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0L), cb2.count(cb2.literal(1))));
 
@@ -1463,7 +1463,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.count(cb3.literal(1)));
             ParameterExpression<Long> intParam4 = cb3.parameter(Long.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -1514,7 +1514,7 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(1))", _sql2.remove(0));
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(?))", _sql2.remove(0));
             }
@@ -1534,7 +1534,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Long> intParam2 = cb.parameter(Long.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -1555,7 +1555,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.count(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0L), cb2.count(cb2.literal(1))));
 
@@ -1563,14 +1563,14 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(1))", _sql2.remove(0));
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(?))", _sql2.remove(0));
             }
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.count(cb3.literal(1)));
             ParameterExpression<Long> intParam4 = cb3.parameter(Long.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -1641,7 +1641,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Long> intParam2 = cb.parameter(Long.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -1662,7 +1662,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.count(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0L), cb2.count(cb2.literal(1))));
 
@@ -1677,7 +1677,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.count(cb3.literal(1)));
             ParameterExpression<Long> intParam4 = cb3.parameter(Long.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -1735,7 +1735,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.countDistinct(intParam1));
 
@@ -1751,7 +1751,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.countDistinct(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -1804,7 +1804,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.countDistinct(intParam1));
 
@@ -1820,7 +1820,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.countDistinct(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -1873,7 +1873,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.countDistinct(intParam1));
 
@@ -1889,7 +1889,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.countDistinct(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -1955,7 +1955,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Long> intParam2 = cb.parameter(Long.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -1976,7 +1976,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.count(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0L), cb2.countDistinct(cb2.literal(1))));
 
@@ -1991,7 +1991,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.count(cb3.literal(1)));
             ParameterExpression<Long> intParam4 = cb3.parameter(Long.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -2042,7 +2042,7 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(DISTINCT(1)))", _sql2.remove(0));
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(1)))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(?)))", _sql2.remove(0));
             }
@@ -2062,7 +2062,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Long> intParam2 = cb.parameter(Long.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -2083,7 +2083,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.count(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0L), cb2.countDistinct(cb2.literal(1))));
 
@@ -2091,14 +2091,14 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(DISTINCT(1)))", _sql2.remove(0));
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(1)))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(?)))", _sql2.remove(0));
             }
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.count(cb3.literal(1)));
             ParameterExpression<Long> intParam4 = cb3.parameter(Long.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -2169,7 +2169,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Long> intParam2 = cb.parameter(Long.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -2190,7 +2190,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.count(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0L), cb2.countDistinct(cb2.literal(1))));
 
@@ -2205,7 +2205,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.count(cb3.literal(1)));
             ParameterExpression<Long> intParam4 = cb3.parameter(Long.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -2263,7 +2263,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.sum(intParam1));
 
@@ -2279,7 +2279,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.sum(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -2332,7 +2332,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.sum(intParam1));
 
@@ -2348,7 +2348,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.sum(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -2401,7 +2401,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             cquery.multiselect(cb.sum(intParam1));
 
@@ -2417,7 +2417,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.sum(cb2.literal(1)));
 
             query = em.createQuery(cquery2);
@@ -2483,7 +2483,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -2504,7 +2504,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.sum(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0), cb2.sum(cb2.literal(1))));
 
@@ -2519,7 +2519,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.sum(cb3.literal(1)));
             ParameterExpression<Integer> intParam4 = cb3.parameter(Integer.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -2570,7 +2570,7 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (0 < SUM(1))", _sql2.remove(0));
+                Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (? < SUM(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql2.remove(0));
             }
@@ -2582,8 +2582,6 @@ public class TestQuerySyntaxAggregateTests {
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (? < SUM(1))", _sql2.remove(0));
-            } else if(platform.isDB2()) {
-                Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql2.remove(0));
             }
@@ -2592,7 +2590,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -2613,7 +2611,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.sum(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0), cb2.sum(cb2.literal(1))));
 
@@ -2621,14 +2619,14 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (0 < SUM(1))", _sql2.remove(0));
+                Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (? < SUM(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql2.remove(0));
             }
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.sum(cb3.literal(1)));
             ParameterExpression<Integer> intParam4 = cb3.parameter(Integer.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -2641,8 +2639,6 @@ public class TestQuerySyntaxAggregateTests {
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (? < SUM(1))", _sql2.remove(0));
-            } else if(platform.isDB2()) {
-                Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql2.remove(0));
             }
@@ -2701,7 +2697,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -2722,7 +2718,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.sum(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0), cb2.sum(cb2.literal(1))));
 
@@ -2737,7 +2733,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.sum(cb3.literal(1)));
             ParameterExpression<Integer> intParam4 = cb3.parameter(Integer.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -2808,7 +2804,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -2829,7 +2825,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.max(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0), cb2.max(cb2.literal(1))));
 
@@ -2844,7 +2840,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.max(cb3.literal(1)));
             ParameterExpression<Integer> intParam4 = cb3.parameter(Integer.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -2895,7 +2891,7 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (0 < MAX(1))", _sql2.remove(0));
+                Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (? < MAX(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT MAX(?) FROM QUERYSYNTAXENTITY HAVING (? < MAX(?))", _sql2.remove(0));
             }
@@ -2915,7 +2911,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -2936,7 +2932,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.max(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0), cb2.max(cb2.literal(1))));
 
@@ -2944,14 +2940,14 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (0 < MAX(1))", _sql2.remove(0));
+                Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (? < MAX(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT MAX(?) FROM QUERYSYNTAXENTITY HAVING (? < MAX(?))", _sql2.remove(0));
             }
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.max(cb3.literal(1)));
             ParameterExpression<Integer> intParam4 = cb3.parameter(Integer.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -3022,7 +3018,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -3043,7 +3039,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.max(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0), cb2.max(cb2.literal(1))));
 
@@ -3058,7 +3054,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.max(cb3.literal(1)));
             ParameterExpression<Integer> intParam4 = cb3.parameter(Integer.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -3090,7 +3086,6 @@ public class TestQuerySyntaxAggregateTests {
             return;
 
         EntityManager em = emf.createEntityManager();
-        DatabasePlatform platform = getPlatform(emf);
 
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s GROUP BY s.intVal1 HAVING MAX(s.intVal1) > ?2");
@@ -3102,11 +3097,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s GROUP BY s.intVal1 HAVING MAX(s.intVal1) > 8");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > 8)", _sql.remove(0));
-            } else {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > ?)", _sql.remove(0));
-            }
+            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > ?)", _sql.remove(0));
 
             // -----------------------
 
@@ -3134,11 +3125,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > 8)", _sql.remove(0));
-            } else {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > ?)", _sql.remove(0));
-            }
+            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > ?)", _sql.remove(0));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -3155,7 +3142,6 @@ public class TestQuerySyntaxAggregateTests {
             return;
 
         EntityManager em = emf2.createEntityManager();
-        DatabasePlatform platform = getPlatform(emf);
 
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s GROUP BY s.intVal1 HAVING MAX(s.intVal1) > ?2");
@@ -3167,11 +3153,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s GROUP BY s.intVal1 HAVING MAX(s.intVal1) > 8");
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > 8)", _sql2.remove(0));
-            } else {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > ?)", _sql2.remove(0));
-            }
+            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > ?)", _sql2.remove(0));
 
             // -----------------------
 
@@ -3199,11 +3181,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > 8)", _sql2.remove(0));
-            } else {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > ?)", _sql2.remove(0));
-            }
+            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MAX(INTVAL1) > ?)", _sql2.remove(0));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -3315,7 +3293,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -3336,7 +3314,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.min(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0), cb2.min(cb2.literal(1))));
 
@@ -3351,7 +3329,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.min(cb3.literal(1)));
             ParameterExpression<Integer> intParam4 = cb3.parameter(Integer.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -3402,7 +3380,7 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (0 < MIN(1))", _sql2.remove(0));
+                Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (? < MIN(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT MIN(?) FROM QUERYSYNTAXENTITY HAVING (? < MIN(?))", _sql2.remove(0));
             }
@@ -3422,7 +3400,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -3443,7 +3421,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.min(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0), cb2.min(cb2.literal(1))));
 
@@ -3451,14 +3429,14 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (0 < MIN(1))", _sql2.remove(0));
+                Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (? < MIN(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT MIN(?) FROM QUERYSYNTAXENTITY HAVING (? < MIN(?))", _sql2.remove(0));
             }
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.min(cb3.literal(1)));
             ParameterExpression<Integer> intParam4 = cb3.parameter(Integer.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -3529,7 +3507,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            cquery.from(QuerySyntaxEntity.class);
             ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
             ParameterExpression<Integer> intParam3 = cb.parameter(Integer.class);
@@ -3550,7 +3528,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.from(QuerySyntaxEntity.class);
             cquery2.multiselect(cb2.min(cb2.literal(1)));
             cquery2.having(cb2.lessThan(cb2.literal(0), cb2.min(cb2.literal(1))));
 
@@ -3565,7 +3543,7 @@ public class TestQuerySyntaxAggregateTests {
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
-            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.from(QuerySyntaxEntity.class);
             cquery3.multiselect(cb3.min(cb3.literal(1)));
             ParameterExpression<Integer> intParam4 = cb3.parameter(Integer.class);
             ParameterExpression<Integer> intParam5 = cb3.parameter(Integer.class);
@@ -3597,7 +3575,6 @@ public class TestQuerySyntaxAggregateTests {
             return;
 
         EntityManager em = emf.createEntityManager();
-        DatabasePlatform platform = getPlatform(emf);
 
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s GROUP BY s.intVal1 HAVING MIN(s.intVal1) > ?2");
@@ -3609,11 +3586,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s GROUP BY s.intVal1 HAVING MIN(s.intVal1) > 8");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > 8)", _sql.remove(0));
-            } else {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > ?)", _sql.remove(0));
-            }
+            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > ?)", _sql.remove(0));
 
             // -----------------------
 
@@ -3641,11 +3614,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > 8)", _sql.remove(0));
-            } else {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > ?)", _sql.remove(0));
-            }
+            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > ?)", _sql.remove(0));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -3662,7 +3631,6 @@ public class TestQuerySyntaxAggregateTests {
             return;
 
         EntityManager em = emf2.createEntityManager();
-        DatabasePlatform platform = getPlatform(emf2);
 
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s GROUP BY s.intVal1 HAVING MIN(s.intVal1) > ?2");
@@ -3674,11 +3642,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s GROUP BY s.intVal1 HAVING MIN(s.intVal1) > 8");
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > 8)", _sql2.remove(0));
-            } else {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > ?)", _sql2.remove(0));
-            }
+            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > ?)", _sql2.remove(0));
 
             // -----------------------
 
@@ -3706,11 +3670,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > 8)", _sql2.remove(0));
-            } else {
-                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > ?)", _sql2.remove(0));
-            }
+            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY GROUP BY INTVAL1 HAVING (MIN(INTVAL1) > ?)", _sql2.remove(0));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -3875,7 +3835,7 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = 'WORLD')", _sql2.remove(0));
+                Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT DISTINCT ? FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql2.remove(0));
             }
@@ -3911,7 +3871,7 @@ public class TestQuerySyntaxAggregateTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = 'WORLD')", _sql2.remove(0));
+                Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT DISTINCT ? FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql2.remove(0));
             }

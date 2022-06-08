@@ -456,7 +456,7 @@ public class TestQueryOrderBy {
             assertEquals(3, dto01.size());
             assertEquals(1, _sql.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1", _sql.remove(0));
+                assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ?", _sql.remove(0));
             }
