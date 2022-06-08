@@ -776,6 +776,11 @@ public class SQLSelectStatement extends SQLStatement {
                     } else if(expression.isConstantExpression() && printer.getPlatform().shouldBindLiterals()) {
                         ((ConstantExpression) expression).setCanBind(false);
                     }
+                } else if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
+                    if(expression.isParameterExpression() 
+                            || (expression.isConstantExpression() && printer.getPlatform().shouldBindLiterals())) {
+                        printer.getCall().setUsesBinding(false);
+                    }
                 }
             }
 

@@ -220,7 +220,7 @@ public class TestQuerySyntaxUpdateTests {
             em.getTransaction().commit();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = 9 WHERE (STRVAL2 = LCASE('HELLO'))", _sql2.remove(0));
+                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE(?))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LOWER(?))", _sql2.remove(0));
             }
@@ -232,7 +232,7 @@ public class TestQuerySyntaxUpdateTests {
             em.getTransaction().commit();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE('HELLO'))", _sql2.remove(0));
+                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE(?))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LOWER(?))", _sql2.remove(0));
             }
@@ -273,7 +273,7 @@ public class TestQuerySyntaxUpdateTests {
             em.getTransaction().commit();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = 9 WHERE (STRVAL2 = LCASE('HELLO'))", _sql2.remove(0));
+                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE(?))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LOWER(?))", _sql2.remove(0));
             }
@@ -293,7 +293,7 @@ public class TestQuerySyntaxUpdateTests {
             em.getTransaction().commit();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = 9 WHERE (STRVAL2 = LCASE(?))", _sql2.remove(0));
+                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE(?))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LOWER(?))", _sql2.remove(0));
             }

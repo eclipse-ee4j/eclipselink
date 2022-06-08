@@ -37,11 +37,15 @@ import java.util.Vector;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.expressions.ListExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.CollectionExpression;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.LiteralExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -363,6 +367,7 @@ public class DerbyPlatform extends DB2Platform {
 
         addOperator(betweenOperator());
         addOperator(notBetweenOperator());
+        addOperator(inOperator());
 
         addOperator(addOperator());
         addOperator(subtractOperator());
@@ -829,6 +834,108 @@ public class DerbyPlatform extends DB2Platform {
     }
 
     /**
+     * Derby requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, Derby will throw an error:
+     * <pre>ERROR 42X35: It is not allowed for both operands of 'IN' to be ? parameters.</pre>
+     */
+    protected ExpressionOperator inOperator() {
+        ExpressionOperator operator = new ExpressionOperator() {
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printDuo(first, second, printer);
+                    return;
+                }
+
+                // If the first argument isn't a Constant/Parameter, this will suffice
+                if(!first.isValueExpression() || (first.isConstantExpression() && !printer.getPlatform().shouldBindLiterals())) {
+                    super.printDuo(first, second, printer);
+                    return;
+                }
+
+                // Otherwise, we need to inspect the right, collection side of the IN expression
+                boolean firstBound = true;
+                if(second instanceof CollectionExpression) {
+                    Object val = ((CollectionExpression) second).getValue();
+                    if (val instanceof Collection) {
+                        firstBound = false;
+                        Collection values = (Collection)val;
+                        for(Object value : values) {
+                            // If the value isn't a Constant/Parameter, this will suffice and the first should bind
+                            if(value instanceof Expression && !((Expression)value).isValueExpression()) {
+                                firstBound = true;
+                                break;
+                            }
+
+                            // If the value is a Constant and literal binding is disabled, this will suffice and the first should bind
+                            if(value instanceof Expression && ((Expression)value).isConstantExpression() && !printer.getPlatform().shouldBindLiterals()) {
+                                firstBound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(first.isParameterExpression()) {
+                    ((ParameterExpression) first).setCanBind(firstBound);
+                } else if(first.isConstantExpression()) {
+                    ((ConstantExpression) first).setCanBind(firstBound);
+                }
+
+                super.printDuo(first, second, printer);
+            }
+
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaDuo(first, second, printer);
+                    return;
+                }
+
+                // If the first argument isn't a Constant/Parameter, this will suffice
+                if(!first.isValueExpression() || (first.isConstantExpression() && !printer.getPlatform().shouldBindLiterals())) {
+                    super.printJavaDuo(first, second, printer);
+                    return;
+                }
+
+                // Otherwise, we need to inspect the right, collection side of the IN expression
+                boolean firstBound = true;
+                if(second instanceof CollectionExpression) {
+                    Object val = ((CollectionExpression) second).getValue();
+                    if (val instanceof Collection) {
+                        firstBound = false;
+                        Collection values = (Collection)val;
+                        for(Object value : values) {
+                            // If the value isn't a Constant/Parameter, this will suffice and the first should bind
+                            if(value instanceof Expression && !((Expression)value).isValueExpression()) {
+                                firstBound = true;
+                                break;
+                            }
+
+                            // If the value is a Constant and literal binding is disabled, this will suffice and the first should bind
+                            if(value instanceof Expression && ((Expression)value).isConstantExpression() && !printer.getPlatform().shouldBindLiterals()) {
+                                firstBound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(first.isParameterExpression()) {
+                    ((ParameterExpression) first).setCanBind(firstBound);
+                } else if(first.isConstantExpression()) {
+                    ((ConstantExpression) first).setCanBind(firstBound);
+                }
+
+                super.printJavaDuo(first, second, printer);
+            }
+        };
+        ExpressionOperator.in().copyTo(operator);
+        return operator;
+    }
+
+    /**
      * INTERNAL
      * Derby has some issues with using parameters on certain functions and relations.
      * This allows statements to disable binding, for queries, only in these cases.
@@ -836,6 +943,9 @@ public class DerbyPlatform extends DB2Platform {
      */
     @Override
     public boolean isDynamicSQLRequiredForFunctions() {
+        if(shouldForceBindAllParameters()) {
+            return false;
+        }
         return !isCastRequired();
     }
 
