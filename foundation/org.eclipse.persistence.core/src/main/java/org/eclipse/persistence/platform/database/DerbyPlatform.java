@@ -473,143 +473,38 @@ public class DerbyPlatform extends DB2Platform {
 
     // Emulate POWER(:a,:b) as EXP((:b)*LN(:a))
     private static ExpressionOperator derbyPowerOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator() {
-            @Override
-            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-                printer.printString(getDatabaseStrings()[0]);
-                if (second != null) {
-                    second.printSQL(printer);
-                } else {
-                    printer.printString("0");
-                }
-                printer.printString(getDatabaseStrings()[1]);
-                first.printSQL(printer);
-                printer.printString(getDatabaseStrings()[2]);
-            }
-            @Override
-            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
-                if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
-                    printer.getCall().setUsesBinding(false);
-                }
-                if (items.size() > 0) {
-                    Expression firstItem = items.get(0);
-                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
-                    printDuo(firstItem, secondItem, printer);
-                } else {
-                    throw new IllegalArgumentException("List of items shall contain at least one item");
-                }
-            }
-            @Override
-            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
-                printer.printString(getDatabaseStrings()[0]);
-                if (second != null) {
-                    second.printJava(printer);
-                } else {
-                    printer.printString("0");
-                }
-                printer.printString(getDatabaseStrings()[1]);
-                first.printJava(printer);
-                printer.printString(getDatabaseStrings()[2]);
-            }
-            @Override
-            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
-                if (items.size() > 0) {
-                    Expression firstItem = items.get(0);
-                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
-                    printJavaDuo(firstItem, secondItem, printer);
-                } else {
-                    throw new IllegalArgumentException("List of items shall contain at least one item");
-                }
-            }
-        };
-        exOperator.setType(ExpressionOperator.FunctionOperator);
-        exOperator.setSelector(ExpressionOperator.Power);
-        exOperator.setName("POWER");
+        ExpressionOperator operator = ExpressionOperator.power();
+
         List<String> v = new ArrayList<>(4);
         v.add("EXP((");
         v.add(")*LN(");
         v.add("))");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
+        operator.printsAs(v);
+        int[] argumentIndices = new int[2];
+        argumentIndices[0] = 1;
+        argumentIndices[1] = 0;
+        operator.setArgumentIndices(argumentIndices);
+        return operator;
     }
 
     // Emulate ROUND as FLOOR((:x)*1e:n+0.5)/1e:n
     private static ExpressionOperator derbyRoundOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator() {
-            @Override
-            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-                printer.printString(getDatabaseStrings()[0]);
-                first.printSQL(printer);
-                printer.printString(getDatabaseStrings()[1]);
-                if (second != null) {
-                    second.printSQL(printer);
-                } else {
-                    printer.printString("0");
-                }
-                printer.printString(getDatabaseStrings()[2]);
-                if (second != null) {
-                    second.printSQL(printer);
-                } else {
-                    printer.printString("0");
-                }
-                printer.printString(getDatabaseStrings()[3]);
-            }
-            @Override
-            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
-                if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
-                    printer.getCall().setUsesBinding(false);
-                }
-                if (items.size() > 0) {
-                    Expression firstItem = items.get(0);
-                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
-                    printDuo(firstItem, secondItem, printer);
-                } else {
-                    throw new IllegalArgumentException("List of items shall contain at least one item");
-                }
-            }
-            @Override
-            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
-                printer.printString(getDatabaseStrings()[0]);
-                first.printJava(printer);
-                printer.printString(getDatabaseStrings()[1]);
-                if (second != null) {
-                    second.printJava(printer);
-                } else {
-                    printer.printString("0");
-                }
-                printer.printString(getDatabaseStrings()[2]);
-                if (second != null) {
-                    second.printJava(printer);
-                } else {
-                    printer.printString("0");
-                }
-                printer.printString(getDatabaseStrings()[3]);
-            }
-            @Override
-            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
-                if (items.size() > 0) {
-                    Expression firstItem = items.get(0);
-                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
-                    printJavaDuo(firstItem, secondItem, printer);
-                } else {
-                    throw new IllegalArgumentException("List of items shall contain at least one item");
-                }
-            }
-        };
-        exOperator.setType(ExpressionOperator.FunctionOperator);
-        exOperator.setSelector(ExpressionOperator.Round);
-        exOperator.setName("ROUND");
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.round().copyTo(operator);
+
         List<String> v = new ArrayList<>(4);
         v.add("FLOOR((");
         v.add(")*1e");
         v.add("+0.5)/1e");
         v.add("");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
+        operator.printsAs(v);
+        int[] argumentIndices = new int[3];
+        argumentIndices[0] = 0;
+        argumentIndices[1] = 1;
+        argumentIndices[2] = 1;
+        operator.setArgumentIndices(argumentIndices);
+        operator.setIsBindingSupported(false);
+        return operator;
     }
 
     /**
