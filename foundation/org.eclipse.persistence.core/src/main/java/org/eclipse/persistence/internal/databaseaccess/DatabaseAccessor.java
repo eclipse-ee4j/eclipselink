@@ -1399,6 +1399,34 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
             value = resultSet.getShort(columnNumber);
             isPrimitive = (Short) value == 0;
+        // Sometimes field type is just Number and it's child type is stored as field.typeName
+        } else if (fieldType == ClassConstants.NUMBER) {
+            switch(field.typeName) {
+                case "java.lang.Byte":
+                    value = resultSet.getByte(columnNumber);
+                    isPrimitive = (Byte) value == 0;
+                    break;
+                case "java.lang.Short":
+                    value = resultSet.getShort(columnNumber);
+                    isPrimitive = (Short) value == 0;
+                    break;
+                case "java.lang.Integer":
+                    value = resultSet.getInt(columnNumber);
+                    isPrimitive = (Integer) value == 0;
+                    break;
+                case "java.lang.Long":
+                    value = resultSet.getLong(columnNumber);
+                    isPrimitive = (Long) value == 0L;
+                    break;
+                case "java.lang.Float":
+                    value = resultSet.getFloat(columnNumber);
+                    isPrimitive = (Float) value == 0f;
+                    break;
+                case "java.lang.Double":
+                    value = resultSet.getDouble(columnNumber);
+                    isPrimitive = (Double) value == 0f;
+                    break;
+            }
         } else if ((fieldType == ClassConstants.BOOLEAN) || (fieldType == ClassConstants.PBOOLEAN))  {
             value = resultSet.getBoolean(columnNumber);
             isPrimitive = !((Boolean) value);

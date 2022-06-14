@@ -56,12 +56,12 @@ public class TestSimpleCase {
     private EntityManagerFactory emf;
 
     private final NumberEntity[] NUMBER = {
-            new NumberEntity(1, 0L, 0D),
-            new NumberEntity(2, 3L, 10D),
-            new NumberEntity(3, 3L, 100D),
-            new NumberEntity(4, 5L, 10D),
-            new NumberEntity(5, 5L, 100D),
-            new NumberEntity(6, 5L, 1000D)
+            new NumberEntity(1, 0L, 0F, 0D),
+            new NumberEntity(2, 3L, 10F, 10D),
+            new NumberEntity(3, 3L, 100F, 100D),
+            new NumberEntity(4, 5L, 10F, 10D),
+            new NumberEntity(5, 5L, 100F, 100D),
+            new NumberEntity(6, 5L, 1000F, 1000D)
     };
 
     @Before

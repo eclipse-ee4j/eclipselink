@@ -29,14 +29,17 @@ public class NumberEntity {
 
     private Long longValue;
 
+    private Float floatValue;
+
     private Double doubleValue;
 
     public NumberEntity() {
     }
 
-    public NumberEntity(final Integer id, final Long longValue, final Double doubleValue) {
+    public NumberEntity(final Integer id, final Long longValue, final Float floatValue, final Double doubleValue) {
         this.setId(id);
         this.setLongValue(longValue);
+        this.setFloatValue(floatValue);
         this.setDoubleValue(doubleValue);
     }
 
@@ -54,6 +57,14 @@ public class NumberEntity {
 
     public void setLongValue(final Long longValue) {
         this.longValue = longValue;
+    }
+
+    public Float getFloatValue() {
+        return floatValue;
+    }
+
+    public void setFloatValue(final Float floatValue) {
+        this.floatValue = floatValue;
     }
 
     public Double getDoubleValue() {
