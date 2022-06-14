@@ -556,7 +556,7 @@ public class TestMathFunctions {
     // Call SELECT ROUND(n.doubleValue, d) FROM NumberEntity n WHERE n.id = id
     // using CriteriaQuery
     // Matches Expression<Double> power(Expression<? extends Number> x, Number y) prototype
-    private static Double callRound(final EntityManager em, final int d, final int id) {
+    private static Double callDoubleRound(final EntityManager em, final int d, final int id) {
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Double> cq = cb.createQuery(Double.class);
@@ -570,21 +570,56 @@ public class TestMathFunctions {
         }
     }
 
-    // Call ROUND(n) on n>0.
+    // Call SELECT ROUND(n.floatValue, d) FROM NumberEntity n WHERE n.id = id
+    // using CriteriaQuery
+    // Matches Expression<Float> power(Expression<? extends Number> x, Number y) prototype
+    private static Float callFloatRound(final EntityManager em, final int d, final int id) {
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Float> cq = cb.createQuery(Float.class);
+            Root<NumberEntity> number = cq.from(NumberEntity.class);
+            cq.select(cb.round(number.get("floatValue"), d));
+            cq.where(cb.equal(number.get("id"), id));
+            return em.createQuery(cq).getSingleResult();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
+    // Call ROUND(n) on Double n>0.
     @Test
-    public void testRoundMethodWithPositive() {
+    public void testRoundDoubleMethodWithPositive() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callRound(em, 6,8);
+            Double result = callDoubleRound(em, 6,8);
             Assert.assertEquals(Double.valueOf(44.754238D), result);
         }
     }
 
-    // Call ROUND(n) on n<0.
+    // Call ROUND(n) on Float n>0.
     @Test
-    public void testRoundMethodWithNegative() {
+    public void testRoundFloatMethodWithPositive() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callRound(em, 6, 9);
+            Float result = callFloatRound(em, 6,8);
+            Assert.assertEquals(Float.valueOf(44.754238F), result);
+        }
+    }
+
+    // Call ROUND(n) on Double n<0.
+    @Test
+    public void testRoundDoubleMethodWithNegative() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            Double result = callDoubleRound(em, 6, 9);
             Assert.assertEquals(Double.valueOf(-214.245732D), result);
+        }
+    }
+
+    // Call ROUND(n) on Float n<0.
+    @Test
+    public void testRoundFloatMethodWithNegative() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            Float result = callFloatRound(em, 6, 9);
+            Assert.assertEquals(Float.valueOf(-214.245732F), result);
         }
     }
 

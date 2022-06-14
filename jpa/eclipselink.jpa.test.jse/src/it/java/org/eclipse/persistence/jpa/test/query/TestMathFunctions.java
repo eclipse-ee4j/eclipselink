@@ -527,7 +527,7 @@ public class TestMathFunctions {
 
     // Call SELECT ROUND(n.doubleValue, $round) FROM NumberEntity n WHERE n.id = :id using JPQL
     // Matches Expression<Double> round(Expression<? extends Number> x, Number y) prototype
-    private static Double callRound(final EntityManager em, final int d, final int id) {
+    private static Double callRoundDouble(final EntityManager em, final int d, final int id) {
         try {
             TypedQuery<Double> query = em.createQuery(
                     "SELECT ROUND(n.doubleValue," + d + ") FROM NumberEntity n WHERE n.id = :id", Double.class);
@@ -540,27 +540,60 @@ public class TestMathFunctions {
         }
     }
 
+    // Call SELECT ROUND(n.floatValue, $round) FROM NumberEntity n WHERE n.id = :id using JPQL
+    // Matches Expression<Float> round(Expression<? extends Number> x, Number y) prototype
+    private static Float callRoundFloat(final EntityManager em, final int d, final int id) {
+        try {
+            TypedQuery<Float> query = em.createQuery(
+                    "SELECT ROUND(n.floatValue," + d + ") FROM NumberEntity n WHERE n.id = :id", Float.class);
+            query.setParameter("id", id);
+            System.out.println("RESULT LIST: "+query.getSingleResult().toString());
+            return query.getSingleResult();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
     // Call ROUND(n.doubleValue, 6) on n>0.
     @Test
-    public void testRoundMethodWithPositive() {
+    public void testRoundDoubleMethodWithPositive() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callRound(em, 6,8);
+            Double result = callRoundDouble(em, 6,8);
             Assert.assertEquals(Double.valueOf(44.754238D), result);
+        }
+    }
+
+    // Call ROUND(n.floatValue, 6) on n>0.
+    @Test
+    public void testRoundFloatMethodWithPositive() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            Float result = callRoundFloat(em, 6,8);
+            Assert.assertEquals(Float.valueOf(44.754238F), result);
         }
     }
 
     // Call ROUND(n.doubleValue, 6) on n<0.
     @Test
-    public void testRoundMethodWithNegative() {
+    public void testRoundDoubleMethodWithNegative() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callRound(em, 6, 9);
+            Double result = callRoundDouble(em, 6, 9);
             Assert.assertEquals(Double.valueOf(-214.245732D), result);
+        }
+    }
+
+    // Call ROUND(n.floatValue, 6) on n<0.
+    @Test
+    public void testRoundFloatMethodWithNegative() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            Float result = callRoundFloat(em, 6, 9);
+            Assert.assertEquals(Float.valueOf(-214.245732F), result);
         }
     }
 
     // Call SELECT ROUND(n.doubleValue, :round) FROM NumberEntity n WHERE n.id = :id using JPQL
     // Matches Expression<Double> round(Expression<? extends Number> x, Number y) prototype
-    private static Double callRoundDigitsAsParam(final EntityManager em, final int d, final int id) {
+    private static Double callRoundDoubleDigitsAsParam(final EntityManager em, final int d, final int id) {
         try {
             TypedQuery<Double> query = em.createQuery(
                     "SELECT ROUND(n.doubleValue, :round) FROM NumberEntity n WHERE n.id = :id", Double.class);
@@ -573,26 +606,64 @@ public class TestMathFunctions {
         }
     }
 
+    // Call SELECT ROUND(n.floatValue, :round) FROM NumberEntity n WHERE n.id = :id using JPQL
+    // Matches Expression<Float> round(Expression<? extends Number> x, Number y) prototype
+    private static Float callRoundFloatDigitsAsParam(final EntityManager em, final int d, final int id) {
+        try {
+            TypedQuery<Float> query = em.createQuery(
+                    "SELECT ROUND(n.floatValue, :round) FROM NumberEntity n WHERE n.id = :id", Float.class);
+            query.setParameter("round", d);
+            query.setParameter("id", id);
+            return query.getSingleResult();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        }
+    }
+
     // Call ROUND(n.doubleValue, :round) with :round = 6 on n>0.
     // Derby emulation does not support 2nd ROUND argument as query parameter
     @Test
-    public void testRoundMethodWithPositiveDigitsAsParam() {
+    public void testRoundDoubleMethodWithPositiveDigitsAsParam() {
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callRoundDigitsAsParam(em, 6,8);
+            Double result = callRoundDoubleDigitsAsParam(em, 6,8);
             Assert.assertEquals(Double.valueOf(44.754238D), result);
+        }
+    }
+
+    // Call ROUND(n.floatValue, :round) with :round = 6 on n>0.
+    // Derby emulation does not support 2nd ROUND argument as query parameter
+    @Test
+    public void testRoundFloatMethodWithPositiveDigitsAsParam() {
+        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
+        try (final EntityManager em = emf.createEntityManager()) {
+            Float result = callRoundFloatDigitsAsParam(em, 6,8);
+            Assert.assertEquals(Float.valueOf(44.754238F), result);
         }
     }
 
     // Call ROUND(n.doubleValue, :round) with :round = 6 on n<0.
     // Derby emulation does not support 2nd ROUND argument as query parameter
     @Test
-    public void testRoundMethodWithNegativeDigitsAsParam() {
+    public void testRoundDoubleMethodWithNegativeDigitsAsParam() {
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callRoundDigitsAsParam(em, 6, 9);
+            Double result = callRoundDoubleDigitsAsParam(em, 6, 9);
             Assert.assertEquals(Double.valueOf(-214.245732D), result);
         }
     }
+
+    // Call ROUND(n.floatValue, :round) with :round = 6 on n<0.
+    // Derby emulation does not support 2nd ROUND argument as query parameter
+    @Test
+    public void testRoundFloatMethodWithNegativeDigitsAsParam() {
+        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
+        try (final EntityManager em = emf.createEntityManager()) {
+            Float result = callRoundFloatDigitsAsParam(em, 6, 9);
+            Assert.assertEquals(Float.valueOf(-214.245732F), result);
+        }
+    }
+
 
 }
