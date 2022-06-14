@@ -60,16 +60,16 @@ public class TestMathFunctions {
     private EntityManagerFactory emf;
 
     private final NumberEntity[] NUMBER = {
-            new NumberEntity(0, 0L, 0D),
-            new NumberEntity(1, 1L, 1D),
-            new NumberEntity(2, -1L, -1D),
-            new NumberEntity(3, 42L, 42.42D),
-            new NumberEntity(4, -342L, -342.42D),
-            new NumberEntity(5, 4L, 4D),
-            new NumberEntity(6, -4L, -4D),
-            new NumberEntity(7, 4L, 14.23D),
-            new NumberEntity(8, 6L, 44.7542383252D),
-            new NumberEntity(9, 8L, -214.2457321233D)
+            new NumberEntity(0, 0L, 0F, 0D),
+            new NumberEntity(1, 1L, 1F, 1D),
+            new NumberEntity(2, -1L, -1F, -1D),
+            new NumberEntity(3, 42L, 42.42F, 42.42D),
+            new NumberEntity(4, -342L, -342.42F, -342.42D),
+            new NumberEntity(5, 4L, 4F, 4D),
+            new NumberEntity(6, -4L, -4F, -4D),
+            new NumberEntity(7, 4L, 14.23F, 14.23D),
+            new NumberEntity(8, 6L, 44.7542383252F, 44.7542383252D),
+            new NumberEntity(9, 8L, -214.2457321233F, -214.2457321233D)
     };
 
     @Before
@@ -157,7 +157,7 @@ public class TestMathFunctions {
 
     // Call SELECT CEILING(n.doubleValue) FROM NumberEntity n WHERE n.id = id
     // using CriteriaQuery
-    private static Double callCeiling(final EntityManager em, final int id) {
+    private static Double callCeilingDouble(final EntityManager em, final int id) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Double> cq = cb.createQuery(Double.class);
         Root<NumberEntity> number = cq.from(NumberEntity.class);
@@ -166,38 +166,78 @@ public class TestMathFunctions {
         return em.createQuery(cq).getSingleResult();
     }
 
-    // Call CEILING(n) on n=0.
+    // Call SELECT CEILING(n.floatValue) FROM NumberEntity n WHERE n.id = id
+    // using CriteriaQuery
+    private static Float callCeilingFloat(final EntityManager em, final int id) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Float> cq = cb.createQuery(Float.class);
+        Root<NumberEntity> number = cq.from(NumberEntity.class);
+        cq.select(cb.ceiling(number.get("floatValue")));
+        cq.where(cb.equal(number.get("id"), id));
+        return em.createQuery(cq).getSingleResult();
+    }
+
+    // Call CEILING(n) on Double n=0.
     @Test
-    public void testCeilingMethodWithZero() {
+    public void testCeilingDoubleMethodWithZero() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callCeiling(em, 0);
+            Double result = callCeilingDouble(em, 0);
             Assert.assertEquals(Double.valueOf(0), result);
         }
     }
 
-    // Call CEILING(n) on n>0.
+    // Call CEILING(n) on Float n=0.
     @Test
-    public void testCeilingMethodWithPositive() {
+    public void testCeilingFloatMethodWithZero() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callCeiling(em, 3);
+            Float result = callCeilingFloat(em, 0);
+            Assert.assertEquals(Float.valueOf(0), result);
+        }
+    }
+
+    // Call CEILING(n) on Double n>0.
+    @Test
+    public void testCeilingDoubleMethodWithPositive() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            Double result = callCeilingDouble(em, 3);
             Assert.assertEquals(
                     Double.valueOf(NUMBER[3].getLongValue().intValue()+1), result);
         }
     }
 
-    // Call CEILING(n) on n<0.
+    // Call CEILING(n) on Float n>0.
     @Test
-    public void testCeilingMethodWithNegative() {
+    public void testCeilingFloatMethodWithPositive() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callCeiling(em, 4);
+            Float result = callCeilingFloat(em, 3);
+            Assert.assertEquals(
+                    Float.valueOf(NUMBER[3].getLongValue().intValue()+1), result);
+        }
+    }
+
+    // Call CEILING(n) on Double n<0.
+    @Test
+    public void testCeilingDoubleMethodWithNegative() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            Double result = callCeilingDouble(em, 4);
             Assert.assertEquals(
                     Double.valueOf(NUMBER[4].getLongValue().intValue()), result);
         }
     }
 
+    // Call CEILING(n) on Float n<0.
+    @Test
+    public void testCeilingFloatMethodWithNegative() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            Float result = callCeilingFloat(em, 4);
+            Assert.assertEquals(
+                    Float.valueOf(NUMBER[4].getLongValue().intValue()), result);
+        }
+    }
+
     // Call SELECT FLOOR(n.doubleValue) FROM NumberEntity n WHERE n.id = id
     // using CriteriaQuery
-    private static Double callFloor(final EntityManager em, final int id) {
+    private static Double callFloorDouble(final EntityManager em, final int id) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Double> cq = cb.createQuery(Double.class);
         Root<NumberEntity> number = cq.from(NumberEntity.class);
@@ -206,32 +246,72 @@ public class TestMathFunctions {
         return em.createQuery(cq).getSingleResult();
     }
 
-    // Call FLOOR(n) on n=0.
+    // Call SELECT FLOOR(n.floatValue) FROM NumberEntity n WHERE n.id = id
+    // using CriteriaQuery
+    private static Float callFloorFloat(final EntityManager em, final int id) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Float> cq = cb.createQuery(Float.class);
+        Root<NumberEntity> number = cq.from(NumberEntity.class);
+        cq.select(cb.floor(number.get("floatValue")));
+        cq.where(cb.equal(number.get("id"), id));
+        return em.createQuery(cq).getSingleResult();
+    }
+
+    // Call FLOOR(n) on Double n=0.
     @Test
-    public void testFloorMethodWithZero() {
+    public void testFloorDoubleMethodWithZero() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callFloor(em, 0);
+            Double result = callFloorDouble(em, 0);
             Assert.assertEquals(Double.valueOf(0), result);
         }
     }
 
-    // Call FLOOR(n) on n>0.
+    // Call FLOOR(n) on Float n=0.
     @Test
-    public void testFloorMethodWithPositive() {
+    public void testFloorFloatMethodWithZero() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callFloor(em, 3);
+            Float result = callFloorFloat(em, 0);
+            Assert.assertEquals(Float.valueOf(0), result);
+        }
+    }
+
+    // Call FLOOR(n) on Double n>0.
+    @Test
+    public void testFloorDoubleMethodWithPositive() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            Double result = callFloorDouble(em, 3);
             Assert.assertEquals(
                     Double.valueOf(NUMBER[3].getLongValue().intValue()), result);
         }
     }
 
-    // Call FLOOR(n) on n<0.
+    // Call FLOOR(n) on Float n>0.
     @Test
-    public void testFloorMethodWithNegative() {
+    public void testFloorFloatMethodWithPositive() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callFloor(em, 4);
+            Float result = callFloorFloat(em, 3);
+            Assert.assertEquals(
+                    Float.valueOf(NUMBER[3].getLongValue().intValue()), result);
+        }
+    }
+
+    // Call FLOOR(n) on Double n<0.
+    @Test
+    public void testFloorDoubleMethodWithNegative() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            Double result = callFloorDouble(em, 4);
             Assert.assertEquals(
                     Double.valueOf(NUMBER[4].getLongValue().intValue()-1), result);
+        }
+    }
+
+    // Call FLOOR(n) on Float n<0.
+    @Test
+    public void testFloorFloatMethodWithNegative() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            Float result = callFloorFloat(em, 4);
+            Assert.assertEquals(
+                    Float.valueOf(NUMBER[4].getLongValue().intValue()-1), result);
         }
     }
 
