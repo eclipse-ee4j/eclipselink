@@ -52,8 +52,10 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.LiteralExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -578,6 +580,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.Today, "SYSDATE"));
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "TO_DATE(CURRENT_DATE)"));
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentTime, "SYSDATE"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "SYSDATE"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalDateTime, "SYSDATE"));
         addOperator(ExpressionOperator.truncateDate());
         addOperator(ExpressionOperator.newTime());
         addOperator(ExpressionOperator.ifNull());
@@ -587,6 +591,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(operatorLocate2());
         addOperator(regexpOperator());
         addOperator(exceptOperator());
+        addOperator(oracleExtractOperator());
     }
 
     /**
@@ -708,6 +713,89 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         exOperator.bePrefix();
         int[] indices = { 1, 0 };
         exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * Oracle does not support EXTRACT QUARTER. Can be emulated using TO_NUMBER(TO_CHAR(", ", 'Q')).
+     */
+    private ExpressionOperator oracleExtractOperator() {
+
+        ExpressionOperator exOperator = new ExpressionOperator() {
+
+            // QUARTER emulation: ((MONTH(:first)+2)/3)
+            private final String[] QUARTER_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'Q'))"};
+
+            private void printQuarterSQL(final Expression first, final ExpressionSQLPrinter printer) {
+                printer.printString(QUARTER_STRINGS[0]);
+                first.printSQL(printer);
+                printer.printString(QUARTER_STRINGS[1]);
+            }
+
+            private void printQuarterJava(final Expression first, final ExpressionJavaPrinter printer) {
+                printer.printString(QUARTER_STRINGS[0]);
+                first.printJava(printer);
+                printer.printString(QUARTER_STRINGS[1]);
+            }
+
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                    printQuarterSQL(first, printer);
+                } else {
+                    super.printDuo(first, second, printer);
+                }
+            }
+
+            @Override
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+                if (items.size() == 2) {
+                    Expression first = items.get(0);
+                    Expression second = items.get(1);
+                    if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                        printQuarterSQL(first, printer);
+                        return;
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                    printQuarterJava(first, printer);
+                } else {
+                    super.printJavaDuo(first, second, printer);
+                }
+            }
+
+            @Override
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
+                if (items.size() == 2) {
+                    Expression first = items.get(0);
+                    Expression second = items.get(1);
+                    if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                        printQuarterJava(first, printer);
+                        return;
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+        List<String> v = new ArrayList<>(5);
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Extract);
+        exOperator.setName("EXTRACT");
+        v.add("EXTRACT(");
+        v.add(" FROM ");
+        v.add(")");
+        exOperator.printsAs(v);
+        int[] indices = new int[2];
+        indices[0] = 1;
+        indices[1] = 0;
+        exOperator.setArgumentIndices(indices);
+        exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }

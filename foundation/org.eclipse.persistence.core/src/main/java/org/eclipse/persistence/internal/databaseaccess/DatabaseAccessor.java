@@ -1352,10 +1352,19 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
-     * Handle the conversion into java optimally through calling the direct type API.
-     * If the type is not one that can be optimized return null.
+     * Handle the {@code ResultSet} conversion into java optimally through calling the direct type API.
+     *
+     * @param resultSet JDBC {@code ResultSet} with query result
+     * @param field database field mapping
+     * @param type database type from {@link java.sql.Types} or provider specific type
+     * @param columnNumber number of column to fetch
+     * @param platform current database platform
+     * @param session current database session
+     * @return new instance of converted type or {@code this} if no optimized conversion wasdone
      */
-    protected Object getObjectThroughOptimizedDataConversion(ResultSet resultSet, DatabaseField field, int type, int columnNumber, DatabasePlatform platform, AbstractSession session) throws SQLException {
+    protected Object getObjectThroughOptimizedDataConversion(
+            ResultSet resultSet, DatabaseField field, int type, int columnNumber,
+            DatabasePlatform platform, AbstractSession session) throws SQLException {
         Object value = this;// Means no optimization, need to distinguish from null.
         Class<?> fieldType = field.type;
 
@@ -1381,6 +1390,13 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if (fieldType == null) {
             return this;
         }
+
+        // Platform specific handler
+        value = platform.getObjectThroughOptimizedDataConversion(resultSet, field, type, columnNumber, session, value);
+        if (value != this) {
+            return value;
+        }
+
         boolean isPrimitive = false;
 
         // Optimize numeric values to avoid conversion into big-dec and back to primitives.

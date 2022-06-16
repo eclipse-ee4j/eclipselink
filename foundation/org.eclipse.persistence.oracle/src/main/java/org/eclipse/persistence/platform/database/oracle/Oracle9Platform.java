@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -196,6 +196,66 @@ public class Oracle9Platform extends Oracle8Platform {
 
     /**
      * INTERNAL:
+     * Handle the {@code ResultSet} conversion into java optimally through calling the direct type API.
+     * Oracle 9i specific types are handled here
+     *
+     * @param resultSet JDBC {@code ResultSet} with query result
+     * @param field database field mapping
+     * @param type database type from {@link java.sql.Types} or provider specific type
+     * @param columnNumber number of column to fetch
+     * @param session current database session
+     * @param unOptimized original unOptimized value to be returned if no optimized conversion is possible
+     * @return new ResultSet column value or original unOptimized value if no conversion was done.
+     */
+    @Override
+    public Object getObjectThroughOptimizedDataConversion(
+            ResultSet resultSet, DatabaseField field, int type, int columnNumber, AbstractSession session, Object unOptimized
+    ) throws SQLException {
+        switch(type) {
+            // Directly convert Oracle TIMESTAMPTZ to Java types
+            case OracleTypes.TIMESTAMPTZ: {
+                final TIMESTAMPTZ ts = (TIMESTAMPTZ) resultSet.getObject(columnNumber);
+                final Connection connection = getConnection(session, resultSet.getStatement().getConnection());
+                // PERF: Dispatcher over ClassConstants would help
+                if (field.type == ClassConstants.TIME_LTIME) {
+                    return ts != null ? ts.localDateTimeValue().toLocalTime() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LTIME);
+                } else if (field.type == ClassConstants.TIME_LDATE) {
+                    return ts != null ? ts.localDateTimeValue().toLocalDate() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATE);
+                } else if (field.type == ClassConstants.TIME_LDATETIME) {
+                    return ts != null ? ts.localDateTimeValue() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATETIME);
+                } else if (field.type == ClassConstants.TIME_OTIME) {
+                    return ts != null ? ts.toOffsetTime() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_OTIME);
+                } else if (field.type == ClassConstants.TIME_ODATETIME) {
+                    return ts != null ? ts.toOffsetDateTime(): getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
+                }
+            }
+            break;
+            // Directly convert Oracle TIMESTAMPLTZ to Java types
+            case OracleTypes.TIMESTAMPLTZ: {
+                final TIMESTAMPLTZ ts = (TIMESTAMPLTZ) resultSet.getObject(columnNumber);
+                final Connection connection = getConnection(session, resultSet.getStatement().getConnection());
+                // PERF: Dispatcher over ClassConstants would help
+                if (field.type == ClassConstants.TIME_LTIME) {
+                    return ts != null ? ts.localDateTimeValue(connection).toLocalTime() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LTIME);
+                } else if (field.type == ClassConstants.TIME_LDATE) {
+                    return ts != null ? ts.localDateTimeValue(connection).toLocalDate() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATE);
+                } else if (field.type == ClassConstants.TIME_LDATETIME) {
+                    return ts != null ? ts.localDateTimeValue(connection) : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATETIME);
+                } else if (field.type == ClassConstants.TIME_OTIME) {
+                    return ts != null ? ts.offsetDateTimeValue(connection).toOffsetTime() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_OTIME);
+                } else if (field.type == ClassConstants.TIME_ODATETIME) {
+                    return ts != null ? ts.offsetDateTimeValue(connection) : getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
+                }
+            }
+            break;
+            case OracleTypes.ROWID:
+                return resultSet.getString(columnNumber);
+        }
+        return unOptimized;
+    }
+
+    /**
+     * INTERNAL:
      * Get a timestamp value from a result set.
      * Overrides the default behavior to specifically return a timestamp.  Added
      * to overcome an issue with the oracle 9.0.1.4 JDBC driver.
@@ -209,8 +269,6 @@ public class Oracle9Platform extends Oracle8Platform {
             return getTIMESTAMPTZFromResultSet(resultSet, columnNumber, type, session);
         } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPLTZ) {
             return getTIMESTAMPLTZFromResultSet(resultSet, columnNumber, type, session);
-        } else if (type == OracleTypes.ROWID) {
-            return resultSet.getString(columnNumber);
         } else if (type == Types.SQLXML) {
             SQLXML sqlXml = resultSet.getSQLXML(columnNumber);
             String str = null;
@@ -310,6 +368,8 @@ public class Oracle9Platform extends Oracle8Platform {
         addOperator(SpatialExpressionOperators.relate());
         addOperator(SpatialExpressionOperators.filter());
         addOperator(SpatialExpressionOperators.nearestNeighbor());
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "CURRENT_TIMESTAMP"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalDateTime, "CURRENT_TIMESTAMP"));
     }
 
     /**
@@ -327,12 +387,13 @@ public class Oracle9Platform extends Oracle8Platform {
         fieldTypes.put(ORACLE_SQL_TIMESTAMP, new FieldTypeDefinition("TIMESTAMP", false));
         fieldTypes.put(ORACLE_SQL_TIMESTAMPTZ, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE", false));
         fieldTypes.put(ORACLE_SQL_TIMESTAMPLTZ, new FieldTypeDefinition("TIMESTAMP WITH LOCAL TIME ZONE", false));
-
+        // Local classes have no TZ information included
         fieldTypes.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
         fieldTypes.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypes.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypes.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP")); //TIMESTAMP WITH TIME ZONE ???
-        fieldTypes.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP")); //TIMESTAMP WITH TIME ZONE ???
+        // Offset classes contain an offset from UTC/Greenwich in the ISO-8601 calendar system so TZ should be included
+        fieldTypes.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE"));
+        fieldTypes.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE"));
         return fieldTypes;
     }
 

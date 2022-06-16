@@ -1451,6 +1451,25 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * INTERNAL:
+     * Handle the {@code ResultSet} conversion into java optimally through calling the direct type API.
+     * Platform specific types should be handled in child classes.
+     *
+     * @param resultSet JDBC {@code ResultSet} with query result
+     * @param field database field mapping
+     * @param type database type from {@link java.sql.Types} or provider specific type
+     * @param columnNumber number of column to fetch
+     * @param session current database session
+     * @param unOptimized original unOptimized value to be returned if no optimized conversion is possible
+     * @return new ResultSet column value or original unOptimized value if no conversion was done.
+     */
+    public Object getObjectThroughOptimizedDataConversion(
+            ResultSet resultSet, DatabaseField field, int type, int columnNumber, AbstractSession session, Object unOptimized
+    ) throws SQLException {
+        return unOptimized;
+    }
+
+    /**
      * Used for stored procedure creation: Prefix for INPUT parameters.
      * Not required on most platforms.
      */

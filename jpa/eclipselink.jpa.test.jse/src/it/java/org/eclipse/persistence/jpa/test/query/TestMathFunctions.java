@@ -445,6 +445,10 @@ public class TestMathFunctions {
             if (emf.unwrap(Session.class).getPlatform().isDerby()) {
                 MatcherAssert.assertThat(
                         Math.abs(Math.pow(NUMBER[3].getDoubleValue(), 2) - result), Matchers.lessThan(0.0000001d));
+            } else if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        Math.pow(NUMBER[3].getDoubleValue(), 2) - result,
+                        Matchers.lessThan(0.0001D));
             } else {
                 Assert.assertEquals(
                         Double.valueOf(Math.pow(NUMBER[3].getDoubleValue(), 2)), result);
@@ -471,8 +475,15 @@ public class TestMathFunctions {
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 2, 4, "doubleValue");
-            Assert.assertEquals(
-                    Double.valueOf(Math.pow(NUMBER[4].getDoubleValue(), 2)), result);
+            // Oracle DB result is less accurate
+            if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        (float) (Math.pow(NUMBER[4].getDoubleValue(), 2) - result),
+                        Matchers.lessThan(0.0001F));
+            } else {
+                Assert.assertEquals(
+                        Double.valueOf(Math.pow(NUMBER[4].getDoubleValue(), 2)), result);
+            }
         }
     }
 
@@ -495,8 +506,15 @@ public class TestMathFunctions {
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 3, 4, "doubleValue");
-            Assert.assertEquals(
-                    Double.valueOf(Math.pow(NUMBER[4].getDoubleValue(), 3)), result);
+            // Oracle DB result is less accurate
+            if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        Math.pow(NUMBER[4].getDoubleValue(), 3) - result,
+                        Matchers.lessThan(0.0000001d));
+            } else {
+                Assert.assertEquals(
+                        Double.valueOf(Math.pow(NUMBER[4].getDoubleValue(), 3)), result);
+            }
         }
     }
 
@@ -514,7 +532,7 @@ public class TestMathFunctions {
     public void testPowerMethodWithPositiveArgs() {
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callExprPower(em, 7);
-            if (emf.unwrap(Session.class).getPlatform().isDerby()) {
+            if (emf.unwrap(Session.class).getPlatform().isDerby() || emf.unwrap(Session.class).getPlatform().isOracle()) {
                 MatcherAssert.assertThat(
                         Math.abs(Math.pow(NUMBER[7].getDoubleValue(), NUMBER[7].getLongValue()) - result),
                         Matchers.lessThan(0.0000001d));
@@ -559,8 +577,14 @@ public class TestMathFunctions {
     @Test
     public void testRoundDoubleMethodWithPositive() {
         try (final EntityManager em = emf.createEntityManager()) {
-            Double result = callRoundDouble(em, 6,8);
-            Assert.assertEquals(Double.valueOf(44.754238D), result);
+            Double result = callRoundDouble(em, 6, 8);
+            // Oracle DB result is less accurate
+            if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        Double.valueOf(44.754238D) - result, Matchers.lessThan(0.0001D));
+            } else {
+                Assert.assertEquals(Double.valueOf(44.754238D), result);
+            }
         }
     }
 
@@ -569,7 +593,14 @@ public class TestMathFunctions {
     public void testRoundFloatMethodWithPositive() {
         try (final EntityManager em = emf.createEntityManager()) {
             Float result = callRoundFloat(em, 6,8);
-            Assert.assertEquals(Float.valueOf(44.754238F), result);
+            // Oracle DB result is less accurate
+            if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        Float.valueOf(44.754238F) - result,
+                        Matchers.lessThan(0.0001F));
+            } else {
+                Assert.assertEquals(Float.valueOf(44.754238F), result);
+            }
         }
     }
 
@@ -578,7 +609,14 @@ public class TestMathFunctions {
     public void testRoundDoubleMethodWithNegative() {
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callRoundDouble(em, 6, 9);
-            Assert.assertEquals(Double.valueOf(-214.245732D), result);
+            // Oracle DB result is less accurate
+            if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        Double.valueOf(-214.245732D) - result,
+                        Matchers.lessThan(0.0001D));
+            } else {
+                Assert.assertEquals(Double.valueOf(-214.245732D), result);
+            }
         }
     }
 
@@ -587,7 +625,14 @@ public class TestMathFunctions {
     public void testRoundFloatMethodWithNegative() {
         try (final EntityManager em = emf.createEntityManager()) {
             Float result = callRoundFloat(em, 6, 9);
-            Assert.assertEquals(Float.valueOf(-214.245732F), result);
+            // Oracle DB result is less accurate
+            if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        Float.valueOf(-214.245732F) - result,
+                        Matchers.lessThan(0.0001F));
+            } else {
+                Assert.assertEquals(Float.valueOf(-214.245732F), result);
+            }
         }
     }
 
@@ -628,7 +673,14 @@ public class TestMathFunctions {
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callRoundDoubleDigitsAsParam(em, 6,8);
-            Assert.assertEquals(Double.valueOf(44.754238D), result);
+            // Oracle DB result is less accurate
+            if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        Double.valueOf(44.754238D) - result,
+                        Matchers.lessThan(0.0001D));
+            } else {
+                Assert.assertEquals(Double.valueOf(44.754238D), result);
+            }
         }
     }
 
@@ -639,7 +691,14 @@ public class TestMathFunctions {
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Float result = callRoundFloatDigitsAsParam(em, 6,8);
-            Assert.assertEquals(Float.valueOf(44.754238F), result);
+            // Oracle DB result is less accurate
+            if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        Float.valueOf(44.754238F) - result,
+                        Matchers.lessThan(0.0001F));
+            } else {
+                Assert.assertEquals(Float.valueOf(44.754238F), result);
+            }
         }
     }
 
@@ -650,7 +709,14 @@ public class TestMathFunctions {
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callRoundDoubleDigitsAsParam(em, 6, 9);
-            Assert.assertEquals(Double.valueOf(-214.245732D), result);
+            // Oracle DB result is less accurate
+            if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        Double.valueOf(-214.245732D) - result,
+                        Matchers.lessThan(0.0001D));
+            } else {
+                Assert.assertEquals(Double.valueOf(-214.245732D), result);
+            }
         }
     }
 
@@ -661,7 +727,14 @@ public class TestMathFunctions {
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Float result = callRoundFloatDigitsAsParam(em, 6, 9);
-            Assert.assertEquals(Float.valueOf(-214.245732F), result);
+            // Oracle DB result is less accurate
+            if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+                MatcherAssert.assertThat(
+                        Float.valueOf(-214.245732F) - result,
+                        Matchers.lessThan(0.0001F));
+            } else {
+                Assert.assertEquals(Float.valueOf(-214.245732F), result);
+            }
         }
     }
 
