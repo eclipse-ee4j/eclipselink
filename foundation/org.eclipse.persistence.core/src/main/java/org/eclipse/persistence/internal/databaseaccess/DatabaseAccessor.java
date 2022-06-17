@@ -1317,9 +1317,11 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     }
                 } else {
                     value = platform.getObjectFromResultSet(resultSet, columnNumber, type, session);
+                    if (PlatformWrapper.isPlatformWrapper(value)) {
+                        value = platform.convertObject(value, field.getType());
                     // PERF: only perform blob check on non-optimized types.
                     // CR2943 - convert early if the type is a BLOB or a CLOB.
-                    if (isBlob(type)) {
+                    } else if (isBlob(type)) {
                         // EL Bug 294578 - Store previous value of BLOB so that temporary objects can be freed after conversion
                         Object originalValue = value;
                         value = platform.convertObject(value, ClassConstants.APBYTE);
@@ -1389,12 +1391,6 @@ public class DatabaseAccessor extends DatasourceAccessor {
             return value;
         } else if (fieldType == null) {
             return this;
-        }
-
-        // Platform specific handler
-        value = platform.getObjectThroughOptimizedDataConversion(resultSet, field, type, columnNumber, session, value);
-        if (value != this) {
-            return value;
         }
 
         boolean isPrimitive = false;

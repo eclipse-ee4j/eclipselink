@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.Vector;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -196,66 +195,6 @@ public class Oracle9Platform extends Oracle8Platform {
 
     /**
      * INTERNAL:
-     * Handle the {@code ResultSet} conversion into java optimally through calling the direct type API.
-     * Oracle 9i specific types are handled here
-     *
-     * @param resultSet JDBC {@code ResultSet} with query result
-     * @param field database field mapping
-     * @param type database type from {@link java.sql.Types} or provider specific type
-     * @param columnNumber number of column to fetch
-     * @param session current database session
-     * @param unOptimized original unOptimized value to be returned if no optimized conversion is possible
-     * @return new ResultSet column value or original unOptimized value if no conversion was done.
-     */
-    @Override
-    public Object getObjectThroughOptimizedDataConversion(
-            ResultSet resultSet, DatabaseField field, int type, int columnNumber, AbstractSession session, Object unOptimized
-    ) throws SQLException {
-        switch(type) {
-            // Directly convert Oracle TIMESTAMPTZ to Java types
-            case OracleTypes.TIMESTAMPTZ: {
-                final TIMESTAMPTZ ts = (TIMESTAMPTZ) resultSet.getObject(columnNumber);
-                final Connection connection = getConnection(session, resultSet.getStatement().getConnection());
-                // PERF: Dispatcher over ClassConstants would help
-                if (field.type == ClassConstants.TIME_LTIME) {
-                    return ts != null ? ts.localDateTimeValue().toLocalTime() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LTIME);
-                } else if (field.type == ClassConstants.TIME_LDATE) {
-                    return ts != null ? ts.localDateTimeValue().toLocalDate() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATE);
-                } else if (field.type == ClassConstants.TIME_LDATETIME) {
-                    return ts != null ? ts.localDateTimeValue() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATETIME);
-                } else if (field.type == ClassConstants.TIME_OTIME) {
-                    return ts != null ? ts.toOffsetTime() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_OTIME);
-                } else if (field.type == ClassConstants.TIME_ODATETIME) {
-                    return ts != null ? ts.toOffsetDateTime(): getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
-                }
-            }
-            break;
-            // Directly convert Oracle TIMESTAMPLTZ to Java types
-            case OracleTypes.TIMESTAMPLTZ: {
-                final TIMESTAMPLTZ ts = (TIMESTAMPLTZ) resultSet.getObject(columnNumber);
-                final Connection connection = getConnection(session, resultSet.getStatement().getConnection());
-                // PERF: Dispatcher over ClassConstants would help
-                if (field.type == ClassConstants.TIME_LTIME) {
-                    return ts != null ? ts.localDateTimeValue(connection).toLocalTime() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LTIME);
-                } else if (field.type == ClassConstants.TIME_LDATE) {
-                    return ts != null ? ts.localDateTimeValue(connection).toLocalDate() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATE);
-                } else if (field.type == ClassConstants.TIME_LDATETIME) {
-                    return ts != null ? ts.localDateTimeValue(connection) : getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATETIME);
-                } else if (field.type == ClassConstants.TIME_OTIME) {
-                    return ts != null ? ts.offsetDateTimeValue(connection).toOffsetTime() : getConversionManager().getDefaultNullValue(ClassConstants.TIME_OTIME);
-                } else if (field.type == ClassConstants.TIME_ODATETIME) {
-                    return ts != null ? ts.offsetDateTimeValue(connection) : getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
-                }
-            }
-            break;
-            case OracleTypes.ROWID:
-                return resultSet.getString(columnNumber);
-        }
-        return unOptimized;
-    }
-
-    /**
-     * INTERNAL:
      * Get a timestamp value from a result set.
      * Overrides the default behavior to specifically return a timestamp.  Added
      * to overcome an issue with the oracle 9.0.1.4 JDBC driver.
@@ -266,9 +205,11 @@ public class Oracle9Platform extends Oracle8Platform {
         if ((type == Types.TIMESTAMP) || (type == Types.DATE)) {
             return resultSet.getTimestamp(columnNumber);
         } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPTZ) {
-            return getTIMESTAMPTZFromResultSet(resultSet, columnNumber, type, session);
+            return getTIMESTAMPTZFromResultSet(resultSet, columnNumber, session);
         } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPLTZ) {
-            return getTIMESTAMPLTZFromResultSet(resultSet, columnNumber, type, session);
+            return getTIMESTAMPLTZFromResultSet(resultSet, columnNumber, session);
+        } else if (type == OracleTypes.ROWID) {
+            return resultSet.getString(columnNumber);
         } else if (type == Types.SQLXML) {
             SQLXML sqlXml = resultSet.getSQLXML(columnNumber);
             String str = null;
@@ -299,17 +240,14 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Get a TIMESTAMPTZ value from a result set.
      */
-    public Object getTIMESTAMPTZFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
+    public Object getTIMESTAMPTZFromResultSet(ResultSet resultSet, int columnNumber, AbstractSession session) throws java.sql.SQLException {
         TIMESTAMPTZ tsTZ = (TIMESTAMPTZ)resultSet.getObject(columnNumber);
         //Need to call timestampValue once here with the connection to avoid null point
         //exception later when timestampValue is called in converObject()
         if ((tsTZ != null) && (tsTZ.getLength() != 0)) {
-            Connection connection = getConnection(session, resultSet.getStatement().getConnection());
             //Bug#4364359  Add a wrapper to overcome TIMESTAMPTZ not serializable as of jdbc 9.2.0.5 and 10.1.0.2.
             //It has been fixed in the next version for both streams
-            Timestamp timestampToWrap = tsTZ.timestampValue(connection);
-            TimeZone timezoneToWrap = TIMESTAMPHelper.extractTimeZone(tsTZ.toBytes());
-            return new TIMESTAMPTZWrapper(timestampToWrap, timezoneToWrap, this.isTimestampInGmt);
+            return new TIMESTAMPTZWrapper(tsTZ.toZonedDateTime(), this.isTimestampInGmt);
         }
         return null;
     }
@@ -318,17 +256,16 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Get a TIMESTAMPLTZ value from a result set.
      */
-    public Object getTIMESTAMPLTZFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
+    public Object getTIMESTAMPLTZFromResultSet(ResultSet resultSet, int columnNumber, AbstractSession session) throws java.sql.SQLException {
         //TIMESTAMPLTZ needs to be converted to Timestamp here because it requires the connection.
         //However the java object is not know here.  The solution is to store Timestamp and the
         //session timezone in a wrapper class, which will be used later in converObject().
         TIMESTAMPLTZ tsLTZ = (TIMESTAMPLTZ)resultSet.getObject(columnNumber);
         if ((tsLTZ != null) && (tsLTZ.getLength() != 0)) {
-            Connection connection = getConnection(session, resultSet.getStatement().getConnection());
-            Timestamp timestampToWrap = TIMESTAMPLTZ.toTimestamp(connection, tsLTZ.toBytes());
-            String sessionTimeZone = ((OracleConnection)connection).getSessionTimeZone();
             //Bug#4364359  Add a separate wrapper for TIMESTAMPLTZ.
-            return new TIMESTAMPLTZWrapper(timestampToWrap, sessionTimeZone, this.isLtzTimestampInGmt);
+            return new TIMESTAMPLTZWrapper(
+                    tsLTZ.zonedDateTimeValue(getConnection(session, resultSet.getStatement().getConnection())),
+                    this.isLtzTimestampInGmt);
         }
         return null;
     }
@@ -477,14 +414,17 @@ public class Oracle9Platform extends Oracle8Platform {
             //in TIMESTAMPTZWrapper.  Separate Calendar from any other types.
             if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
                 try {
-                    return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPTZWrapper)sourceObject);
+                    return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPTZWrapper) sourceObject);
                 } catch (SQLException exception) {
                     throw DatabaseException.sqlException(exception);
                 }
             } else {
-                //If not using native sql, Calendar will be converted to Timestamp just as
-                //other date time types
-                valueToConvert = ((TIMESTAMPTZWrapper)sourceObject).getTimestamp();
+                try {
+                    valueToConvert = ((TIMESTAMPTZWrapper) sourceObject).unwrap(javaClass);
+                // Return timestamp as a fallback
+                } catch (IllegalArgumentException e) {
+                    valueToConvert = ((TIMESTAMPTZWrapper) sourceObject).getTimestamp();
+                }
             }
         } else if (sourceObject instanceof TIMESTAMPLTZWrapper) {
             //Bug#4364359 Used when database type is TIMESTAMPLTZ.  Timestamp and session timezone id are wrapped
@@ -496,9 +436,12 @@ public class Oracle9Platform extends Oracle8Platform {
                     throw DatabaseException.sqlException(exception);
                 }
             } else {
-                //If not using native sql, Calendar will be converted to Timestamp just as
-                //other date time types
-                valueToConvert = ((TIMESTAMPLTZWrapper)sourceObject).getTimestamp();
+                try {
+                    valueToConvert = ((TIMESTAMPLTZWrapper) sourceObject).unwrap(javaClass);
+                // Return timestamp as a fallback
+                } catch (IllegalArgumentException e) {
+                    valueToConvert = ((TIMESTAMPLTZWrapper) sourceObject).getTimestamp();
+                }
             }
         }
 
