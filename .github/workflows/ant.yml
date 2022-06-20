@@ -17,6 +17,8 @@ on:
     branches: [ '2.7' ]
   pull_request:
     branches: [ '2.7' ]
+  env:
+    maven_version: 3.8.6
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 jobs:
@@ -27,7 +29,6 @@ jobs:
     strategy:
       matrix:
         java_version: [ 11 ]
-        maven: [ '3.8.6' ]
 
     steps:
       - name: Cancel previous runs of this workflow
@@ -80,9 +81,9 @@ jobs:
           echo "eclipse.install.dir=$HOME/extension.lib.external/eclipse" >> $HOME/build.properties
       - name: Build
         run: |
-          export M2_HOME=/usr/share/apache-maven-${{ matrix.maven-version }}
+          export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
           ant -f antbuild.xml build
       - name: Verify
         run: |
-          export M2_HOME=/usr/share/apache-maven-${{ matrix.maven-version }}
+          export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
           ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true test-lrg
