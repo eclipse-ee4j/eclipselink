@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Contributors to the Eclipse Foundation
+# Copyright (c) 2021, 2022 Contributors to the Eclipse Foundation
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,8 @@ on:
     branches: [2.7]
   schedule:
     - cron: '0 19 * * 1'
+env:
+  maven_version: 3.8.6
 
 jobs:
   analyze:
@@ -90,7 +92,7 @@ jobs:
           echo 'db.pwd=root' >> $HOME/build.properties
           echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
           echo "eclipse.install.dir=$HOME/extension.lib.external/eclipse" >> $HOME/build.properties
-          export M2_HOME=/usr/share/apache-maven-3.8.5
+          export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
           ant -f antbuild.xml build
 
       - name: Perform CodeQL Analysis
