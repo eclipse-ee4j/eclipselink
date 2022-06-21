@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -504,15 +504,15 @@ public abstract class TransportManager {
      * @param rcm cache coordination manager
      * @return new instance of RMI transport manager implementation
      */
-    public static TransportManager newSunCORBATransportManager(final RemoteCommandManager rcm) {
+    public static TransportManager newTransportManager(final String transportManagerClassName, final RemoteCommandManager rcm) {
         try {
             return (TransportManager) PrivilegedAccessHelper.invokeConstructor(
                     PrivilegedAccessHelper.getConstructorFor(
-                            Class.forName("org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager"),
+                            Class.forName(transportManagerClassName),
                             new Class<?>[] { RemoteCommandManager.class }, false),
                     new Object[] { rcm });
         } catch (ReflectiveOperationException e) {
-            throw RemoteCommandManagerException.errorInitCorba("org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager", e);
+            throw RemoteCommandManagerException.errorInitCorba(transportManagerClassName, e);
         }
     }
 

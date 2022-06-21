@@ -111,11 +111,6 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.corba</groupId>
-            <artifactId>glassfish-corba-omgapi</artifactId>
-            <optional>true</optional>
-        </dependency>
         <!--Test dependencies-->
         <dependency>
             <groupId>junit</groupId>
@@ -190,15 +185,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <executions>
-                    <execution>
-                        <id>default-compile</id>
-                        <configuration>
-                            <compilerArgs>
-                                <arg>--add-reads</arg>
-                                <arg>org.eclipse.persistence.core=ALL-UNNAMED</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>default-testCompile</id>
                         <configuration>
@@ -297,13 +283,8 @@
                                 </Export-Package>
                                 <Import-Package>
                                     org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
-                                    javax.rmi;version=!;resolution:=optional,
-                                    javax.rmi.CORBA;version=!;resolution:=optional,
-                                    org.omg.CORBA;version=!;resolution:=optional,
-                                    org.omg.CORBA.portable;version=!;resolution:=optional,
-                                    org.omg.CORBA_2_3.portable;version=!;resolution:=optional,
                                     org.eclipse.persistence.eis.adapters.xmlfile;resolution:=optional,
-                                    org.eclipse.persistence.internal.sessions.coordination.rmi.iiop;resolution:=optional,
+                                    org.eclipse.persistence.sessions.coordination.rmi.iiop;resolution:=optional,
                                     org.eclipse.persistence.sessions.coordination.corba.sun;resolution:=optional,
                                     com.sun.xml.bind;version=!;resolution:=optional,
                                     org.glassfish.jaxb.runtime;version=!;resolution:=optional,
@@ -314,13 +295,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <additionalOptions>--add-reads org.eclipse.persistence.core=ALL-UNNAMED</additionalOptions>
-                </configuration>
             </plugin>
             <!--Pack test classes due dependency to other modules (Corba...)-->
             <plugin>

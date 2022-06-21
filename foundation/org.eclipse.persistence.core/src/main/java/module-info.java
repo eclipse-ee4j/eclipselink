@@ -37,7 +37,6 @@ module org.eclipse.persistence.core {
     requires static jakarta.interceptor;
     requires static jakarta.messaging;
     requires static jakarta.resource;
-//    requires glassfish.corba.omgapi;
 
     exports org.eclipse.persistence;
     exports org.eclipse.persistence.annotations;

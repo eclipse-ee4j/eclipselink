@@ -2264,7 +2264,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
                 } else if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMI) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
                     if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
-                        ((RMITransportManager) rcm.getTransportManager()).setIsRMIOverIIOP(true);
+                        rcm.setTransportManager(TransportManager.newTransportManager("org.eclipse.persistence.sessions.remote.rmi.iiop.RMIIIOPTransportManager", rcm));
                     }
                     // Default protocol.
                     String delay = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_ANNOUNCEMENT_DELAY, m, this.session);

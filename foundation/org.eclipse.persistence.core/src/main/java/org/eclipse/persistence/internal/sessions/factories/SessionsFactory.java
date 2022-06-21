@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -949,7 +949,9 @@ public class SessionsFactory {
      * INTERNAL:
      */
     protected void buildRMITransportManagerConfig(RMITransportManagerConfig tmConfig, RemoteCommandManager rcm) {
-        RMITransportManager tm = new RMITransportManager(rcm);
+        RMITransportManager tm = (tmConfig instanceof RMIIIOPTransportManagerConfig)
+                ? (RMITransportManager) TransportManager.newTransportManager("org.eclipse.persistence.sessions.remote.rmi.iiop.RMIIIOPTransportManager", rcm)
+                : new RMITransportManager(rcm);
 
         // Set the transport manager. This will initialize the DiscoveryManager
         // This needs to be done before we process the DiscoveryConfig.
@@ -970,8 +972,6 @@ public class SessionsFactory {
             tm.setNamingServiceType(TransportManager.REGISTRY_NAMING_SERVICE);
             processRMIRegistryNamingServiceConfig(tmConfig.getRMIRegistryNamingServiceConfig(), tm);
         }
-
-        tm.setIsRMIOverIIOP(tmConfig instanceof RMIIIOPTransportManagerConfig);
 
         // Send mode - Can only be Asynchronous (true) or Synchronous (false), validated by the schema
         // XML Schema default is Asynchronous
@@ -1321,7 +1321,7 @@ public class SessionsFactory {
      * Builds a Sun CORBA transport manager with the given remote command manager
      */
     protected void buildSunCORBATransportManagerConfig(SunCORBATransportManagerConfig tmConfig, RemoteCommandManager rcm) {
-        TransportManager tm = TransportManager.newSunCORBATransportManager(rcm);
+        TransportManager tm = TransportManager.newTransportManager("org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager", rcm);
 
         // Set the transport manager. This will initialize the DiscoveryManager
         rcm.setTransportManager(tm);
