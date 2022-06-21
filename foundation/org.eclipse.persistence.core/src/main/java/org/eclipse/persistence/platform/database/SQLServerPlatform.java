@@ -473,6 +473,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         addOperator(ExpressionOperator.right());
         addOperator(ExpressionOperator.cot());
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATN2"));
+        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Ln, "LOG"));
         addOperator(addMonthsOperator());
         addOperator(inStringOperator());
         // bug 3061144
