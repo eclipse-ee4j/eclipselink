@@ -245,7 +245,7 @@ public abstract class DatasourceCall implements Call {
      * <p>
      * Defaults behavior to the databasePlatform if this call does not have a preference; if 
      * {@link org.eclipse.persistence.internal.databaseaccess.DatasourceCall#usesBinding} is not set
-     * <p>
+     *
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform#shouldBindAllParameters()
      */
     public boolean usesBinding(DatabasePlatform databasePlatform) {
