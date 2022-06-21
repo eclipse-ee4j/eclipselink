@@ -55,12 +55,14 @@ public class TestDateTimeFunctions {
 
     private final LocalDateTime[] TS = {
             LocalDateTime.of(2022, 3, 9, 14, 30, 25, 0),
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            LocalDateTime.of(2022, 06, 07, 12, 0)
     };
 
     private final DateTimeQueryEntity[] ENTITY = {
             new DateTimeQueryEntity(1, TS[0].toLocalTime(), TS[0].toLocalDate(), TS[0]),
-            new DateTimeQueryEntity(2, TS[1].toLocalTime(), TS[1].toLocalDate(), TS[1])
+            new DateTimeQueryEntity(2, TS[1].toLocalTime(), TS[1].toLocalDate(), TS[1]),
+            new DateTimeQueryEntity(3, TS[2].toLocalTime(), TS[2].toLocalDate(), TS[2]),
     };
 
     @Before
@@ -469,6 +471,28 @@ public class TestDateTimeFunctions {
                 }
             }
             Assert.assertTrue("Record with ID = 1 containing year 2022 was not found", found);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test JPQL EXTRACT(WEEK FROM date) to check whether ISO_WEEK is used in MS SQL - issue 1550
+    @Test
+    public void testIssue1550ExtractIsoWeek() {
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(WEEK FROM qdte.dateValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = :id", Number.class);
+            q.setParameter("id", 3);
+            long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
+            MatcherAssert.assertThat(y, Matchers.equalTo(23L));
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;

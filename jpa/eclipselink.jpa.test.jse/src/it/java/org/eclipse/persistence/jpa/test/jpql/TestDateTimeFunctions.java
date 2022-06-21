@@ -188,7 +188,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL query from issue 1539
+    // Test JPQL query from issue 1539 and 1549
     @Test
     public void testIssue1539LocalDate() {
         final EntityManager em = emf.createEntityManager();
