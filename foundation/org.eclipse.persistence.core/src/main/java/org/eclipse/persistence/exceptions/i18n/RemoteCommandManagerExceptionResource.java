@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,6 @@ public final class RemoteCommandManagerExceptionResource extends ListResourceBun
                                            { "22110", "Failed to discover local host IP address." },
                                            { "22111", "Failed to get ServerPlatform. The ServerPlatform must be set either on Session or RemoteCommandManager." },
                                            { "22112", "Could not create local JMS connection with Topic {0} and Topic Factory {1}. Also, check your context properties are set correctly." },
-                                           { "22113", "Could not create Oc4jJGroupsRemoteConnection service ID {0}, topic {1}, using factory {2}. Also, check your context properties are set correctly." },
                                            { "22114", "{0}: failed to deserialize retrieved message {1}." },
                                            { "22115", "{0}: failed to process remote command retrieved from message {1}, from {2}, command type {3}" },
                                            { "22116", "Received JMS message is null. Treating it as a JMSException" },

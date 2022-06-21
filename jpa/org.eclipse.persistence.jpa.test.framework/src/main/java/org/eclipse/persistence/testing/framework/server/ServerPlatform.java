@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,11 +58,6 @@ public interface ServerPlatform {
      * Close the entity manager if required.
      */
     void closeEntityManager(EntityManager entityManager);
-
-    /**
-     * Is the platform Oracle?
-     */
-    boolean isOc4j();
 
     /**
      * Is the platform Weblogic?

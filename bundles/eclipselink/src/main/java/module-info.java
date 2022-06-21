@@ -134,7 +134,6 @@ module eclipselink {
     exports org.eclipse.persistence.transaction;
     exports org.eclipse.persistence.transaction.glassfish;
     exports org.eclipse.persistence.transaction.jboss;
-    exports org.eclipse.persistence.transaction.oc4j;
     exports org.eclipse.persistence.transaction.sap;
     exports org.eclipse.persistence.transaction.was;
     exports org.eclipse.persistence.transaction.wls;

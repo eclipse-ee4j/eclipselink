@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,7 +77,7 @@ public class TestExecutor {
     /** Hold JUnit TestResult but test.  Used to store the results for JUnit tests run by the executor. */
     protected static Map junitTestResults;
 
-    /** This is used to get rid pf tests running on server(OC4J) */
+    /** This is used to get rid pf tests running on server */
     public boolean isServer = false;
 
     /** Allow only errors to be logged. */

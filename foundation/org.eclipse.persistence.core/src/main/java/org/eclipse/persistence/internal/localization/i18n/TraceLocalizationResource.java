@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2017, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -407,7 +407,6 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "descriptor_xml_not_in_jar", "The descriptor file ({0}) is not found in jar({1}) file, no migration therefore will be performed for this jar." },
         { "pessimistic_locking_migrated", "The native CMP setting 'pessimistic-locking' on entity({0}) has been migrated and supported." },
         { "read_only_migrated", "The native CMP setting 'read-only' on entity({0}) has been migrated and supported." },
-        { "call_timeout_migrated", "Oc4j native CMP setting 'time-out' on entity({0}) has been migrated and supported." },
         { "verifiy_columns_version_locking_migrated", "Optimistic setting 'Version' on 'verifiy-columns' in entity ({0}) has been migrated." },
         { "verifiy_columns_timestamp_locking_migrated", "Optimistic setting 'Timestamp' on 'verifiy-columns' in entity ({0}) has been migrated." },
         { "verifiy_columns_changedField_locking_migrated", "Optimistic setting 'Modify' on 'verifiy-columns' in entity ({0}) has been migrated." },

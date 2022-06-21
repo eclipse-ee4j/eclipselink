@@ -602,7 +602,6 @@ public class PropertiesHandler {
             String pcg = "org.eclipse.persistence.platform.server.";
             valueArray = new Object[][] {
                 {TargetServer.None, pcg + "NoServerPlatform"},
-                {TargetServer.OC4J, pcg + "oc4j.Oc4jPlatform"},
                 {TargetServer.Glassfish, pcg + "glassfish.GlassfishPlatform"},
                 {TargetServer.WebSphere, pcg + "was.WebSpherePlatform"},
                 {TargetServer.WebSphere_6_1, pcg + "was.WebSphere_6_1_Platform"},

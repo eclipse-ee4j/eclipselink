@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2016 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,15 +23,14 @@ package org.eclipse.persistence.config;
  *
  * <p>JPA persistence property Usage:
  *
- * <p><code>properties.add(PersistenceUnitProperties.TargetServer, TargetServer.OC4J);</code><br>
+ * <p><code>properties.add(PersistenceUnitProperties.TargetServer, TargetServer.WebLogic);</code><br>
  * <p>JPA persistence unit persistence.xml  Usage:
- * <p><code>&lt;property name="eclipselink.target-server" value="OC4J"/&gt;</code></p>
+ * <p><code>&lt;property name="eclipselink.target-server" value="WebLogic"/&gt;</code></p>
  *
  * <p>Property values are case-insensitive
  */
 public class TargetServer {
     public static final String  None = "None";
-    public static final String  OC4J = "OC4J";
     public static final String  Glassfish = "Glassfish";
     public static final String  WebSphere = "WebSphere";
     public static final String  WebSphere_6_1 = "WebSphere_6_1";

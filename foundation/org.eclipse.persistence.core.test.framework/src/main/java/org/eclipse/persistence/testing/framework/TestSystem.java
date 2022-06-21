@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -272,7 +272,7 @@ public class TestSystem {
     }
 
     /**
-     * You must have the DataDirect drivers and oc4j.jar loaded.
+     * You must have the DataDirect drivers loaded.
      */
     public void useDB2DataDirect() {
         DatabaseLogin login = new DatabaseLogin();
@@ -441,7 +441,7 @@ public class TestSystem {
     }
 
     /**
-     * You must have the DataDirect drivers and oc4j.jar loaded..
+     * You must have the DataDirect drivers loaded..
      */
     public void useSQLServerDataDirect() {
         DatabaseLogin login = new DatabaseLogin();
@@ -472,7 +472,7 @@ public class TestSystem {
     }
 
     /**
-     * You must have the DataDirect drivers and oc4j.jar loaded.
+     * You must have the DataDirect drivers loaded.
      */
     public void useSybaseDataDirect() {
         DatabaseLogin login = new DatabaseLogin();

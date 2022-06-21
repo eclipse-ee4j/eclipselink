@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,8 +46,6 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
     public static final int ERROR_CREATING_LOCAL_JMS_CONNECTION = 22112;
 
     // Broadcast
-    public static final int ERROR_CREATING_OC4J_JGROUPS_CONNECTION = 22113;
-
     public static final int ERROR_DESERIALIZE_REMOTE_COMMAND = 22114;
     public static final int ERROR_PROCESSING_REMOTE_COMMAND = 22115;
 
@@ -205,16 +203,6 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
         Object[] args = { configFile };
         RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_CREATING_JGROUPS_CONNECTION, args));
         ex.setErrorCode(ERROR_CREATING_JGROUPS_CONNECTION);
-        if (internalEx != null) {
-            ex.setInternalException(internalEx);
-        }
-        return ex;
-    }
-
-    public static RemoteCommandManagerException errorCreatingOc4jJGroupsConnection(String serviceId, String topicName, String topicFactory, Throwable internalEx) {
-        Object[] args = { serviceId, topicName, topicFactory };
-        RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_CREATING_OC4J_JGROUPS_CONNECTION, args));
-        ex.setErrorCode(ERROR_CREATING_OC4J_JGROUPS_CONNECTION);
         if (internalEx != null) {
             ex.setInternalException(internalEx);
         }
