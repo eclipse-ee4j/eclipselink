@@ -74,7 +74,6 @@ import org.eclipse.persistence.internal.sessions.factories.model.session.Session
 import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSPublishingTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSTopicTransportManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.Oc4jJGroupsTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.RMIIIOPTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.RMITransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.SunCORBATransportManagerConfig;
@@ -936,8 +935,6 @@ public class SessionsFactory {
             buildJMSTopicTransportManagerConfig((JMSTopicTransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof JMSPublishingTransportManagerConfig) {
             buildJMSPublishingTransportManagerConfig((JMSPublishingTransportManagerConfig)tmConfig, rcm);
-        } else if (tmConfig instanceof Oc4jJGroupsTransportManagerConfig) {
-            buildOc4jJGroupsTransportManagerConfig((Oc4jJGroupsTransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof SunCORBATransportManagerConfig) {
             buildSunCORBATransportManagerConfig((SunCORBATransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof UserDefinedTransportManagerConfig) {
@@ -1075,32 +1072,6 @@ public class SessionsFactory {
 
         // Topic name - XML Schema default is jms/TopLinkTopic
         tm.setTopicName(tmConfig.getTopicName());
-
-        // Process the common elements in TransportManagerConfig
-        processTransportManagerConfig(tmConfig, tm);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    @SuppressWarnings({"unchecked"})
-    protected void buildOc4jJGroupsTransportManagerConfig(Oc4jJGroupsTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
-        TransportManager tm = null;
-        try {
-            Class<TransportManager> tmClass = (Class<TransportManager>) m_classLoader.loadClass(tmConfig.getTransportManagerClassName());
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                Constructor<TransportManager> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(tmClass, new Class<?>[] { RemoteCommandManager.class, boolean.class, String.class }, false));
-                tm = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, new Object[] { rcm, tmConfig.useSingleThreadedNotification(), tmConfig.getTopicName() }));
-            }else{
-                Constructor<TransportManager> constructor = PrivilegedAccessHelper.getConstructorFor(tmClass, new Class<?>[] { RemoteCommandManager.class, boolean.class, String.class }, false);
-                tm = PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { rcm, tmConfig.useSingleThreadedNotification(), tmConfig.getTopicName() });
-            }
-        } catch (Exception e) {
-            throw SessionLoaderException.failedToParseXML("Oc4jJGroupsTransportManager class is invalid: " + tmConfig.getTransportManagerClassName(), e);
-        }
-
-        // Set the transport manager. This will initialize the DiscoveryManager
-        rcm.setTransportManager(tm);
 
         // Process the common elements in TransportManagerConfig
         processTransportManagerConfig(tmConfig, tm);

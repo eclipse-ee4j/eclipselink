@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,6 @@ import org.eclipse.persistence.internal.sessions.factories.model.platform.Custom
 import org.eclipse.persistence.internal.sessions.factories.model.platform.GlassfishPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.JBossPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.NetWeaver_7_1_PlatformConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.ServerPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_6_1_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_7_0_PlatformConfig;
@@ -217,7 +216,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         // platforms
         addDescriptor(buildServerPlatformConfigDescriptor());
         addDescriptor(buildCustomServerPlatformConfigDescriptor());
-        addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4jPlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(GlassfishPlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_6_1_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_7_0_PlatformConfig.class));
@@ -1193,7 +1191,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
         descriptor.getInheritancePolicy().addClassIndicator(CustomServerPlatformConfig.class, "custom-platform");
-        descriptor.getInheritancePolicy().addClassIndicator(Oc4jPlatformConfig.class, "oc4j-platform");
         descriptor.getInheritancePolicy().addClassIndicator(GlassfishPlatformConfig.class, "glassfish-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_6_1_PlatformConfig.class, "weblogic-61-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_7_0_PlatformConfig.class, "weblogic-70-platform");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -121,7 +121,6 @@ public class SDOHelperContext implements HelperContext {
     private static final ConcurrentHashMap<String,Map<SDOWrapperTypeId,SDOWrapperType>> SDO_WRAPPER_TYPES = new ConcurrentHashMap<>();
 
     // Application server identifiers
-    private static String OC4J_CLASSLOADER_NAME = "oracle";
     private static String WLS_CLASSLOADER_NAME = "weblogic";
     private static String WAS_CLASSLOADER_NAME = "com.ibm.ws";
     private static String JBOSS_CLASSLOADER_NAME = "jboss";
@@ -670,32 +669,11 @@ public class SDOHelperContext implements HelperContext {
      * This method will return the MapKeyLookupResult instance to be used to
      * store/retrieve the global helper context for a given application.
      *
-     * OC4J classLoader levels:
-     *      0 - APP.web (servlet/jsp) or APP.wrapper (ejb)
-     *      1 - APP.root (parent for helperContext)
-     *      2 - default.root
-     *      3 - system.root
-     *      4 - oc4j.10.1.3 (remote EJB) or org.eclipse.persistence:11.1.1.0.0
-     *      5 - api:1.4.0
-     *      6 - jre.extension:0.0.0
-     *      7 - jre.bootstrap:1.5.0_07 (with various J2SE versions)
-     *
-     * @return MapKeyLookupResult wrapping the application classloader for OC4J,
-     *         the application name for WebLogic and WebSphere, the archive file
+     * @return MapKeyLookupResult wrapping the application name for WebLogic and WebSphere, the archive file
      *         name for JBoss - if available; otherwise a MapKeyLookupResult
      *         wrapping Thread.currentThread().getContextClassLoader()
      */
     private static MapKeyLookupResult getContextMapKey(ClassLoader classLoader, String classLoaderName) {
-        // Helper contexts in OC4J server will be keyed on classloader
-        if (classLoaderName.startsWith(OC4J_CLASSLOADER_NAME)) {
-            // Check to see if we are running in a Servlet container or a local EJB container
-            if ((classLoader.getParent() != null) //
-                    && ((classLoader.toString().indexOf(SDOConstants.CLASSLOADER_WEB_FRAGMENT) != -1) //
-                    ||  (classLoader.toString().indexOf(SDOConstants.CLASSLOADER_EJB_FRAGMENT) != -1))) {
-                classLoader = classLoader.getParent();
-            }
-            return new MapKeyLookupResult(classLoader);
-        }
         // Helper contexts in WebLogic server will be keyed on application name if available
         if (classLoaderName.contains(WLS_CLASSLOADER_NAME)) {
             if (null == applicationAccessWLS) {

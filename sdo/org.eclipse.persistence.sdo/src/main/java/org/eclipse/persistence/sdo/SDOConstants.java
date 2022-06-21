@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -329,10 +329,7 @@ public class SDOConstants {
     /** A classloader toString containing (.wrappers) means we are running from a local ejb container client */
     public static final String CLASSLOADER_EJB_FRAGMENT = ".wrappers";
 
-    /** A classloader toString containing (oc4j:) means we are running from an 4 levels up from an ejb container */
-    public static final String CLASSLOADER_OC4J_FRAGMENT = "oc4j:";
-
-    /** XPath related constants*/
+    /* XPath related constants*/
     /** XPath ns separator ":" */
     public static final String SDO_XPATH_NS_SEPARATOR_FRAGMENT = ":";
 
