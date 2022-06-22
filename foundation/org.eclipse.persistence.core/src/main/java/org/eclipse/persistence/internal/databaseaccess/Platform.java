@@ -17,7 +17,9 @@ package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -306,5 +308,14 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      */
     void removeIdentitySequences(
             final Session session, final String defaultIdentityGenerator, final Set<String> tableNames);
+
+    /**
+     * INTERNAL:
+     * Get platform specific connection properties.
+     * @return properties to be added to connection properties
+     */
+    default Map<Object, Object> connectionProperties() {
+        return Collections.emptyMap();
+    }
 
 }

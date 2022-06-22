@@ -28,7 +28,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
@@ -66,6 +70,15 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         this.pingSQL = "SELECT 1";
         this.storedProcedureTerminationToken = " go";
         this.supportsReturnGeneratedKeys = true;
+    }
+
+    @Override
+    public Map<Object, Object> connectionProperties() {
+        // All MS SQL Server properties must be of String type.
+        Map<String, String> connectionProperties = new HashMap<>();
+        // Send Time values as TIME type.
+        connectionProperties.put("sendTimeAsDatetime", Boolean.FALSE.toString());
+        return Collections.unmodifiableMap(connectionProperties);
     }
 
     @Override
@@ -239,7 +252,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("DATETIME2", false));
-        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME", false));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("DATETIME2", false));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("DATETIME2", false));
 
         return fieldTypeMapping;
@@ -1046,26 +1059,44 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
-    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index,
-            AbstractSession session) throws SQLException {
-        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
-            // avoid default logic, which loses offset when converting to java.sql.Timestamp
-            statement.setObject(index, parameter);
+    public void setParameterValueInDatabaseCall(
+            Object parameter, PreparedStatement statement, int index, AbstractSession session
+    ) throws SQLException {
+        // Pass date/time instance directly when JDBC driver supports it
+        if (driverSupportsOffsetDateTime) {
+            if (parameter instanceof OffsetDateTime || parameter instanceof OffsetTime
+                    || parameter instanceof LocalTime || parameter instanceof LocalDate || parameter instanceof LocalDateTime) {
+                statement.setObject(index, parameter);
+                return;
+            }
+        // Default platform is using statement.setTimestamp(index, ...) for LocalTime and it causes cast exceptions in SQL statements
+        } else if (parameter instanceof LocalTime) {
+            statement.setTime(
+                    index, java.sql.Time.valueOf((LocalTime) parameter));
             return;
         }
-
         super.setParameterValueInDatabaseCall(parameter, statement, index, session);
     }
 
     @Override
-    public void setParameterValueInDatabaseCall(Object parameter, CallableStatement statement, String name,
-            AbstractSession session) throws SQLException {
-        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
-            // avoid default logic, which loses offset when converting to java.sql.Timestamp
-            statement.setObject(name, parameter);
+    public void setParameterValueInDatabaseCall(
+            Object parameter, CallableStatement statement, String name, AbstractSession session
+    ) throws SQLException {
+        // Pass date/time instance directly when JDBC driver supports it
+        if (driverSupportsOffsetDateTime) {
+            if (parameter instanceof OffsetDateTime || parameter instanceof OffsetTime
+                    || parameter instanceof LocalTime || parameter instanceof LocalDate || parameter instanceof LocalDateTime) {
+                statement.setObject(name, parameter);
+                return;
+            }
+        // Default platform is using statement.setTimestamp(index, ...) for LocalTime and it causes cast exceptions in SQL statements
+        } else if (parameter instanceof LocalTime) {
+            statement.setTime(
+                    name, java.sql.Time.valueOf((LocalTime) parameter));
             return;
         }
 
         super.setParameterValueInDatabaseCall(parameter, statement, name, session);
     }
+
 }
