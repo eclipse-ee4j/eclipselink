@@ -19,6 +19,7 @@ module eclipselink {
     requires transitive java.rmi;
     requires transitive java.sql;
     requires transitive java.xml;
+    requires jdk.unsupported;
 
     //following cannot be optional because we provide
     //implementation of its spi/extension here
