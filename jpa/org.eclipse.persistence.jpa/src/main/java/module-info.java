@@ -13,6 +13,7 @@
 module org.eclipse.persistence.jpa {
     requires java.rmi;
     requires transitive java.instrument;
+    requires jdk.unsupported;
 
     requires transitive org.eclipse.persistence.asm;
     requires transitive org.eclipse.persistence.core;
