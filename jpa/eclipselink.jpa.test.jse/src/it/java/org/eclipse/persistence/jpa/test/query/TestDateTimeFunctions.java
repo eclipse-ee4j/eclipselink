@@ -27,10 +27,12 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.query.model.DateTimeQueryEntity;
+import org.eclipse.persistence.sessions.Session;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -485,6 +487,8 @@ public class TestDateTimeFunctions {
     // Test JPQL EXTRACT(WEEK FROM date) to check whether ISO_WEEK is used in MS SQL - issue 1550
     @Test
     public void testIssue1550ExtractIsoWeek() {
+        // Derby does not support WEEK
+        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
