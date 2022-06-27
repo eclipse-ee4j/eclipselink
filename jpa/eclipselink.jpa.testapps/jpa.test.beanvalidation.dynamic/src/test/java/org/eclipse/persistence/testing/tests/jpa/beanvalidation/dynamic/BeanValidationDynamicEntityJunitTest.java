@@ -18,6 +18,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ConstraintViolation;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -25,7 +26,6 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.internal.jpa.config.metadata.ReflectiveDynamicClassLoader;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
-import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.junit.Assert;
 
@@ -61,12 +61,17 @@ public class BeanValidationDynamicEntityJunitTest extends JUnitTestCase {
      * 4. Assert - The validation exception is due to invalid value given by us.
      */
     public void testPersistDynamicEntityWithInvalidData() {
-        // Create an entity manager factory with a dynamic class loader.
-        DynamicClassLoader dcl = new ReflectiveDynamicClassLoader(Thread.currentThread().getContextClassLoader());
-        Map<String,Object> properties = new HashMap<>(getPersistenceProperties());
-        properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
-//        properties.put(PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION, "true");
-        EntityManager em = createEntityManager("beanvalidation-dynamic", properties);
+        EntityManager em;
+        if (isOnServer()) {
+            em = createEntityManager();
+        } else {
+            // Create an entity manager factory with a dynamic class loader.
+            DynamicClassLoader dcl = new ReflectiveDynamicClassLoader(Thread.currentThread().getContextClassLoader());
+            Map<String, Object> properties = new HashMap<>(getPersistenceProperties());
+            properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
+//            properties.put(PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION, "true");
+            em = createEntityManager("beanvalidation-dynamic", properties);
+        }
         EntityManagerFactory entityManagerFactory = em.getEntityManagerFactory();
 
         // Create types

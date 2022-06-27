@@ -16,13 +16,9 @@
 
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.Map;
-
+import jakarta.validation.Configuration;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
@@ -30,6 +26,11 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.BeanValidationLis
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.Map;
 
 /**
  * Responsible for intialializing Bean Validation. The only expected instance of this interface is the inner class.
@@ -46,7 +47,7 @@ public interface BeanValidationInitializationHelper {
         @Override
         public void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader) {
 
-            ValidatorFactory validatorFactory = getValidatorFactory(puProperties);
+            ValidatorFactory validatorFactory = getValidatorFactory(puProperties, appClassLoader);
 
             //Check user/environment has specified the validator factory
             if (validatorFactory != null) {
@@ -75,13 +76,36 @@ public interface BeanValidationInitializationHelper {
         /**
          * INTERNAL:
          * @param puProperties merged properties for this persitence unit
+         * @param appClassLoader application class loader (can be ie DynamicClassLoader, or its subclass,
+         *                      with the knowledge about Virtual/Dynamic Entities)
          * @return ValidatorFactory instance to be used for this persistence unit.
          */
-        private ValidatorFactory getValidatorFactory(Map puProperties) {
+        private ValidatorFactory getValidatorFactory(Map puProperties, final ClassLoader appClassLoader) {
             ValidatorFactory validatorFactory = (ValidatorFactory)puProperties.get(PersistenceUnitProperties.VALIDATOR_FACTORY);
 
             if (validatorFactory == null) {
-                validatorFactory = Validation.buildDefaultValidatorFactory();
+                Configuration<?> conf = Validation.byDefaultProvider().configure();
+                if (appClassLoader != null) {
+                    try {
+                        Configuration<?> finalConf = conf;
+                        // set external classloader for hibernate-validator to let it find dynamic (virtual) entities
+                        // without having compile-time dependency on it; in the other words, we can't do:
+                        //      Validation.byProvider( HibernateValidator.class )
+                        //        .configure()
+                        //        .externalClassLoader( classLoader )
+                        //        .buildValidatorFactory()
+                        conf = PrivilegedAccessHelper.callDoPrivilegedWithThrowable(() -> {
+                                    Method m = PrivilegedAccessHelper.getMethod(finalConf.getClass(),
+                                            "externalClassLoader", new Class[]{ClassLoader.class},
+                                            false);
+                                    return (Configuration<?>) m.invoke(finalConf, appClassLoader);
+                                }
+                        );
+                    } catch (Throwable t) {
+                        // not hibernate-validator, so ignore
+                    }
+                }
+                validatorFactory = conf.buildValidatorFactory();
             }
             return validatorFactory;
         }
