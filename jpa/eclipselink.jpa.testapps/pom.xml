@@ -32,6 +32,11 @@
     <properties>
         <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
+
+        <persistence-unit.data-source-name>jdbc/EclipseLinkDS</persistence-unit.data-source-name>
+        <persistence-unit.data-source-type>jta-data-source</persistence-unit.data-source-type>
+        <persistence-unit.transaction-type>JTA</persistence-unit.transaction-type>
+        <persistence-unit.server-weaving>true</persistence-unit.server-weaving>
     </properties>
 
     <dependencies>
@@ -43,11 +48,16 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
         </dependency>
+        <dependency>
+            <groupId>jakarta.ejb</groupId>
+            <artifactId>jakarta.ejb-api</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>${db.driver.groupId}</groupId>
             <artifactId>${db.driver.artifactId}</artifactId>
             <version>${db.driver.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!--Test dependencies-->
@@ -71,7 +81,7 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -100,17 +110,91 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <useModulePath>true</useModulePath>
-                    <systemPropertyVariables>
-                        <db.driver>${db.driver}</db.driver>
-                        <db.xa.driver>${db.xa.driver}</db.xa.driver>
-                        <db.url>${db.url}</db.url>
-                        <db.root.pwd>${db.root.pwd}</db.root.pwd>
-                        <db.user>${db.user}</db.user>
-                        <db.pwd>${db.pwd}</db.pwd>
-                        <db.platform>${db.platform}</db.platform>
-                    </systemPropertyVariables>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <db.driver>${db.driver}</db.driver>
+                                <db.xa.driver>${db.xa.driver}</db.xa.driver>
+                                <db.url>${db.url}</db.url>
+                                <db.root.pwd>${db.root.pwd}</db.root.pwd>
+                                <db.user>${db.user}</db.user>
+                                <db.pwd>${db.pwd}</db.pwd>
+                                <db.platform>${db.platform}</db.platform>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+            <!-- XXX - under construction: builds EAR (or EJB-jar) for testing on the server -->
+<!--            <plugin>-->
+<!--                <groupId>org.eclipse.persistence</groupId>-->
+<!--                <artifactId>el-maven-plugin</artifactId>-->
+<!--                <version>0.0.1-SNAPSHOT</version>-->
+<!--&lt;!&ndash;                <extensions>true</extensions>&ndash;&gt;-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>ear</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--&lt;!&ndash;                            <ejbLibs>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <ejbLib>junit</ejbLib>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <earLib>org.eclipse.persistence.core.test.framework</earLib>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </ejbLibs>&ndash;&gt;-->
+<!--                            <earLibs>-->
+<!--                                <earLib>junit</earLib>-->
+<!--                                <earLib>org.eclipse.persistence.core.test.framework</earLib>-->
+<!--&lt;!&ndash;                                <earLib>org.eclipse.persistence.jpa</earLib>&ndash;&gt;-->
+<!--                            </earLibs>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <!-- XXX - under construction: run tests on the server
+                 requires manual JDBC DS creation and deployment
+                 for now hardcoded to WildFly -->
+            <id>xxx-server-test-run</id>
+            <properties>
+                <server.test.runner.context>${project.artifactId}-${project.version}/${project.artifactId}-${project.version}_ejb</server.test.runner.context>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>server-test</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalClasspathElements>
+                                        <additionalClasspathElement>/Users/lukas/java/wildfly-preview-27.0.0.Alpha1/bin/client/jboss-client.jar</additionalClasspathElement>
+                                    </additionalClasspathElements>
+                                    <reportNameSuffix>server</reportNameSuffix>
+                                    <systemPropertyVariables>
+                                        <java.naming.factory.initial>org.wildfly.naming.client.WildFlyInitialContextFactory</java.naming.factory.initial>
+                                        <server.run>TRUE</server.run>
+                                        <is.JTA>true</is.JTA>
+                                        <server.url>remote+http://localhost:8080</server.url>
+                                        <server.testrunner.context>${server.test.runner.context}</server.testrunner.context>
+                                    </systemPropertyVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
