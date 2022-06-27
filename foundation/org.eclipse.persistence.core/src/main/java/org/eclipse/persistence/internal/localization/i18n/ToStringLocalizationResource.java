@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,9 +95,9 @@ public class ToStringLocalizationResource extends ListResourceBundle {
                                            { "staticweave_commandline_help_message_14of19", "    The classpath must contain all the classes necessary to load the classes in the source." },
                                            { "staticweave_commandline_help_message_15of19", "    The weaving will be performed in place if source and target point to the same location.  Weaving in place is ONLY applicable for directory-based sources." },
                                            { "staticweave_commandline_help_message_16of19", "  Example:" },
-                                           { "staticweave_commandline_help_message_17of19", "    To weave all entites contained in C:\\\\foo-source.jar with its persistence.xml contained within the C:\\\\foo-containing-persistence-xml.jar," },
-                                           { "staticweave_commandline_help_message_18of19", "    and output to C:\\\\foo-target.jar:" },
-                                           { "staticweave_commandline_help_message_19of19", "    StaticWeave -persistenceinfo C:\\\\foo-containing-persistence-xml.jar -classpath C:\\\\classpath1;C:\\\\classpath2 C:\\\\foo-source.jar C:\\\\foo-target.jar"},
+                                           { "staticweave_commandline_help_message_17of19", "    To weave all entites contained in C:\\foo-source.jar with its persistence.xml contained within the C:\\foo-containing-persistence-xml.jar," },
+                                           { "staticweave_commandline_help_message_18of19", "    and output to C:\\foo-target.jar:" },
+                                           { "staticweave_commandline_help_message_19of19", "    StaticWeave -persistenceinfo C:\\foo-containing-persistence-xml.jar -classpath C:\\classpath1;C:\\classpath2 C:\\foo-source.jar C:\\foo-target.jar"},
 
                                            { "sdo_classgenerator_usage_help_1of8", "{0} Usage: org.eclipse.persistence.sdo.helper.{0} [-options]" },
                                            { "sdo_classgenerator_usage_help_2of8", "Options:" },
