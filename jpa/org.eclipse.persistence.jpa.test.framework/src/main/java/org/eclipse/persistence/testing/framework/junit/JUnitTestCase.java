@@ -21,6 +21,7 @@
 package org.eclipse.persistence.testing.framework.junit;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -29,12 +30,13 @@ import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.Persistence;
-import javax.rmi.PortableRemoteObject;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -54,12 +56,6 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.server.JEEPlatform;
 import org.eclipse.persistence.testing.framework.server.ServerPlatform;
 import org.eclipse.persistence.testing.framework.server.TestRunner;
-import org.eclipse.persistence.testing.framework.server.TestRunner1;
-import org.eclipse.persistence.testing.framework.server.TestRunner2;
-import org.eclipse.persistence.testing.framework.server.TestRunner3;
-import org.eclipse.persistence.testing.framework.server.TestRunner4;
-import org.eclipse.persistence.testing.framework.server.TestRunner5;
-import org.eclipse.persistence.testing.framework.server.TestRunner6;
 import org.eclipse.persistence.transaction.JTA11TransactionController;
 
 import junit.framework.TestCase;
@@ -734,56 +730,91 @@ public abstract class JUnitTestCase extends TestCase {
         }
         properties.put("java.naming.provider.url", url);
         Context context = new InitialContext(properties);
-        Throwable exception = null;
-        if (puName == null) {
-            String testrunner = System.getProperty("server.testrunner");
-            if (testrunner == null) {
-                fail("System property 'server.testrunner' must be set.");
-            }
-            TestRunner runner = (TestRunner) PortableRemoteObject.narrow(context.lookup(testrunner), TestRunner.class);
-            exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
-        }else{
-            int i = puName.charAt(8) - 48;
-            String testRunner[] = new String[7];
-            for (int j=1; j<=6; j++) {
-                String serverRunner = "server.testrunner" + j;
-                testRunner[j] = System.getProperty(serverRunner);
-                if (testRunner[j] == null && j < 6) {
-                    fail("System property 'server.testrunner'" + j + " must be set.");
+
+        String testrunnerCtx = System.getProperty("server.testrunner.context");
+        if (testrunnerCtx != null) {
+            //find all test runners in given JNDI context
+            final NamingEnumeration<NameClassPair> ctx = context.list(testrunnerCtx);
+            List<String> testRunners = new ArrayList<>();
+            while (ctx.hasMoreElements()) {
+                final NameClassPair pair = ctx.next();
+                final String name = pair.getClassName();
+                if (name.contains("framework") && name.contains("TestRunner")) {
+                    testRunners.add(pair.getName());
                 }
             }
-            switch (i)
-            {
-            case 1:
-                TestRunner1 runner1 = (TestRunner1) PortableRemoteObject.narrow(context.lookup(testRunner[1]), TestRunner1.class);
-                exception = runner1.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            case 2:
-                TestRunner2 runner2 = (TestRunner2) PortableRemoteObject.narrow(context.lookup(testRunner[2]), TestRunner2.class);
-                exception = runner2.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            case 3:
-                TestRunner3 runner3 = (TestRunner3) PortableRemoteObject.narrow(context.lookup(testRunner[3]), TestRunner3.class);
-                exception = runner3.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            case 4:
-                TestRunner4 runner4 = (TestRunner4) PortableRemoteObject.narrow(context.lookup(testRunner[4]), TestRunner4.class);
-                exception = runner4.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            case 5:
-                TestRunner5 runner5 = (TestRunner5) PortableRemoteObject.narrow(context.lookup(testRunner[5]), TestRunner5.class);
-                exception = runner5.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            case 6:
-                TestRunner6 runner6 = (TestRunner6) PortableRemoteObject.narrow(context.lookup(testRunner[6]), TestRunner6.class);
-                exception = runner6.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            default:
-                break;
+            if (testRunners.isEmpty()) {
+                throw new RuntimeException("No TestRunner found");
             }
-        }
-        if (exception != null) {
-            throw exception;
+            if (testRunners.size() > 1) {
+                Iterator<String> it = testRunners.iterator();
+                while (it.hasNext()) {
+                    String r = it.next();
+                    if (r.contains("GenericTestRunner")) {
+                        it.remove();
+                    }
+                }
+            }
+            Throwable t = null;
+            for (String runner : testRunners) {
+                TestRunner runnerBean = (TestRunner) context.lookup(testrunnerCtx + "/" + runner);
+                t = runnerBean.runTest(getClass().getName(), getName(), getServerProperties());
+            }
+            if (t != null) {
+                throw t;
+            }
+        } else {
+            //use defined set of pre-configured test runners
+            Throwable exception = null;
+            if (puName == null) {
+                String testrunner = System.getProperty("server.testrunner");
+                if (testrunner == null) {
+                    fail("System property 'server.testrunner' must be set.");
+                }
+                TestRunner runner = (TestRunner) context.lookup(testrunner);
+                exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
+            } else {
+                int i = puName.charAt(8) - 48;
+                String testRunner[] = new String[7];
+                for (int j = 1; j <= 6; j++) {
+                    String serverRunner = "server.testrunner" + j;
+                    testRunner[j] = System.getProperty(serverRunner);
+                    if (testRunner[j] == null && j < 6) {
+                        fail("System property 'server.testrunner'" + j + " must be set.");
+                    }
+                }
+                switch (i) {
+                    case 1:
+                        TestRunner runner1 = (TestRunner) context.lookup(testRunner[1]);
+                        exception = runner1.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    case 2:
+                        TestRunner runner2 = (TestRunner) context.lookup(testRunner[2]);
+                        exception = runner2.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    case 3:
+                        TestRunner runner3 = (TestRunner) context.lookup(testRunner[3]);
+                        exception = runner3.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    case 4:
+                        TestRunner runner4 = (TestRunner) context.lookup(testRunner[4]);
+                        exception = runner4.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    case 5:
+                        TestRunner runner5 = (TestRunner) context.lookup(testRunner[5]);
+                        exception = runner5.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    case 6:
+                        TestRunner runner6 = (TestRunner) context.lookup(testRunner[6]);
+                        exception = runner6.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (exception != null) {
+                throw exception;
+            }
         }
     }
 

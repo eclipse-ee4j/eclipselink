@@ -31,17 +31,17 @@ import org.eclipse.persistence.testing.framework.server.TestRunner;
  *
  * @author mschinca
  */
-@Stateless(name="TestRunner5")
+@Stateless(name="SingleUnitTestRunner")
 @Remote(TestRunner.class)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class TestRunner5Bean extends GenericTestRunner {
+public class SingleUnitTestRunnerBean extends GenericTestRunner {
 
     /** The entity manager for the test is injected and passed to the test server platform. */
-    @PersistenceContext(unitName="MulitPU-5")
+    @PersistenceContext
     private EntityManager entityManager;
 
     /** The entity manager factory for the test is injected and passed to the test server platform. */
-    @PersistenceUnit(unitName="MulitPU-5")
+    @PersistenceUnit
     private EntityManagerFactory entityManagerFactory;
 
     @Override
@@ -53,5 +53,4 @@ public class TestRunner5Bean extends GenericTestRunner {
     protected EntityManagerFactory getEntityManagerFactory() {
         return entityManagerFactory;
     }
-
 }
