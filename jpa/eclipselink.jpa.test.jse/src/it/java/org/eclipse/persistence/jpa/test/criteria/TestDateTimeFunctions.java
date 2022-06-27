@@ -158,14 +158,14 @@ public class TestDateTimeFunctions {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<DateTimeEntity> cu = cb.createCriteriaUpdate(DateTimeEntity.class);
             Root<DateTimeEntity> entity = cu.from(DateTimeEntity.class);
-            cu.set("time", cb.localTime());
+            cu.set("timeValue", cb.localTime());
             cu.where(cb.equal(entity.get("id"), 1));
             em.createQuery(cu).executeUpdate();
             em.flush();
             em.getTransaction().commit();
             // Verify updated entity
             DateTimeEntity data = em.find(DateTimeEntity.class, 1);
-            long diffMilis = Duration.between(data.getTime(), LocalTime.now().plusSeconds(dbOffset + 1)).toMillis();
+            long diffMilis = Duration.between(data.getTimeValue(), LocalTime.now().plusSeconds(dbOffset + 1)).toMillis();
             // Positive value means that test did not pass midnight.
             if (diffMilis > 0) {
                 MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
@@ -195,14 +195,14 @@ public class TestDateTimeFunctions {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<DateTimeEntity> cu = cb.createCriteriaUpdate(DateTimeEntity.class);
             Root<DateTimeEntity> entity = cu.from(DateTimeEntity.class);
-            cu.set("date", cb.localDate());
+            cu.set("dateValue", cb.localDate());
             cu.where(cb.equal(entity.get("id"), 2));
             em.createQuery(cu).executeUpdate();
             em.flush();
             em.getTransaction().commit();
             // Verify updated entity
             DateTimeEntity data = em.find(DateTimeEntity.class, 2);
-            Period diff = Period.between(data.getDate(), LocalDate.now());
+            Period diff = Period.between(data.getDateValue(), LocalDate.now());
             MatcherAssert.assertThat(diff.getYears(), Matchers.equalTo(0));
             MatcherAssert.assertThat(diff.getMonths(), Matchers.equalTo(0));
             MatcherAssert.assertThat(diff.getDays(), Matchers.lessThan(2));
@@ -227,14 +227,14 @@ public class TestDateTimeFunctions {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<DateTimeEntity> cu = cb.createCriteriaUpdate(DateTimeEntity.class);
             Root<DateTimeEntity> entity = cu.from(DateTimeEntity.class);
-            cu.set("datetime", cb.localDateTime());
+            cu.set("datetimeValue", cb.localDateTime());
             cu.where(cb.equal(entity.get("id"), 3));
             em.createQuery(cu).executeUpdate();
             em.flush();
             em.getTransaction().commit();
             // Verify updated entity
             DateTimeEntity data = em.find(DateTimeEntity.class, 3);
-            long diffMilis = Duration.between(data.getDatetime(), LocalDateTime.now().plusSeconds(dbOffset + 1)).toMillis();
+            long diffMilis = Duration.between(data.getDatetimeValue(), LocalDateTime.now().plusSeconds(dbOffset + 1)).toMillis();
             MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
         } finally {
             if (em.getTransaction().isActive()) {
@@ -256,7 +256,7 @@ public class TestDateTimeFunctions {
             CriteriaQuery<DateTimeEntity> cq = cb.createQuery(DateTimeEntity.class);
             Root<DateTimeEntity> entity = cq.from(DateTimeEntity.class);
             cq.select(entity);
-            cq.where(cb.and(cb.lessThan(entity.get("time"), cb.localTime()), cb.equal(entity.get("id"), 4)));
+            cq.where(cb.and(cb.lessThan(entity.get("timeValue"), cb.localTime()), cb.equal(entity.get("id"), 4)));
             em.createQuery(cq).getSingleResult();
             em.getTransaction().commit();
         } finally {
@@ -280,7 +280,7 @@ public class TestDateTimeFunctions {
             CriteriaQuery<DateTimeEntity> cq = cb.createQuery(DateTimeEntity.class);
             Root<DateTimeEntity> entity = cq.from(DateTimeEntity.class);
             cq.select(entity);
-            cq.where(cb.and(cb.greaterThan(entity.get("time"), cb.localTime()), cb.equal(entity.get("id"), 4)));
+            cq.where(cb.and(cb.greaterThan(entity.get("timeValue"), cb.localTime()), cb.equal(entity.get("id"), 4)));
             List<DateTimeEntity> data = em.createQuery(cq).getResultList();
             em.getTransaction().commit();
             MatcherAssert.assertThat(data.size(), Matchers.equalTo(0));
@@ -304,7 +304,7 @@ public class TestDateTimeFunctions {
             CriteriaQuery<DateTimeEntity> cq = cb.createQuery(DateTimeEntity.class);
             Root<DateTimeEntity> entity = cq.from(DateTimeEntity.class);
             cq.select(entity);
-            cq.where(cb.and(cb.lessThan(entity.get("date"), cb.localDate()), cb.equal(entity.get("id"), 4)));
+            cq.where(cb.and(cb.lessThan(entity.get("dateValue"), cb.localDate()), cb.equal(entity.get("id"), 4)));
             em.createQuery(cq).getSingleResult();
             em.getTransaction().commit();
         } finally {
@@ -328,7 +328,7 @@ public class TestDateTimeFunctions {
             CriteriaQuery<DateTimeEntity> cq = cb.createQuery(DateTimeEntity.class);
             Root<DateTimeEntity> entity = cq.from(DateTimeEntity.class);
             cq.select(entity);
-            cq.where(cb.and(cb.greaterThan(entity.get("date"), cb.localDate()), cb.equal(entity.get("id"), 4)));
+            cq.where(cb.and(cb.greaterThan(entity.get("dateValue"), cb.localDate()), cb.equal(entity.get("id"), 4)));
             List<DateTimeEntity> data = em.createQuery(cq).getResultList();
             em.getTransaction().commit();
             MatcherAssert.assertThat(data.size(), Matchers.equalTo(0));
@@ -352,7 +352,7 @@ public class TestDateTimeFunctions {
             CriteriaQuery<DateTimeEntity> cq = cb.createQuery(DateTimeEntity.class);
             Root<DateTimeEntity> entity = cq.from(DateTimeEntity.class);
             cq.select(entity);
-            cq.where(cb.and(cb.lessThan(entity.get("datetime"), cb.localDateTime()), cb.equal(entity.get("id"), 4)));
+            cq.where(cb.and(cb.lessThan(entity.get("datetimeValue"), cb.localDateTime()), cb.equal(entity.get("id"), 4)));
             em.createQuery(cq).getSingleResult();
             em.getTransaction().commit();
         } finally {
@@ -376,7 +376,7 @@ public class TestDateTimeFunctions {
             CriteriaQuery<DateTimeEntity> cq = cb.createQuery(DateTimeEntity.class);
             Root<DateTimeEntity> entity = cq.from(DateTimeEntity.class);
             cq.select(entity);
-            cq.where(cb.and(cb.greaterThan(entity.get("datetime"), cb.localDateTime()), cb.equal(entity.get("id"), 4)));
+            cq.where(cb.and(cb.greaterThan(entity.get("datetimeValue"), cb.localDateTime()), cb.equal(entity.get("id"), 4)));
             List<DateTimeEntity> data = em.createQuery(cq).getResultList();
             em.getTransaction().commit();
             MatcherAssert.assertThat(data.size(), Matchers.equalTo(0));
@@ -457,6 +457,9 @@ public class TestDateTimeFunctions {
             em.getTransaction().commit();
             long diffMilis = Duration.between(datetime, LocalDateTime.now().plusSeconds(dbOffset + 1)).toMillis();
             MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

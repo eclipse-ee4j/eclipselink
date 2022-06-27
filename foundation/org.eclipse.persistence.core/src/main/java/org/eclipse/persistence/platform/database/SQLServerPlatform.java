@@ -28,7 +28,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
@@ -66,6 +70,15 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         this.pingSQL = "SELECT 1";
         this.storedProcedureTerminationToken = " go";
         this.supportsReturnGeneratedKeys = true;
+    }
+
+    @Override
+    public Map<Object, Object> connectionProperties() {
+        // All MS SQL Server properties must be of String type.
+        Map<String, String> connectionProperties = new HashMap<>();
+        // Send Time values as TIME type.
+        connectionProperties.put("sendTimeAsDatetime", Boolean.FALSE.toString());
+        return Collections.unmodifiableMap(connectionProperties);
     }
 
     @Override
@@ -197,6 +210,13 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
+    protected Map<String, Class<?>> buildClassTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
+        classTypeMapping.put("DATETIME2", java.sql.Timestamp.class);
+        return classTypeMapping;
+    }
+
+    @Override
     protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
         Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT default 0", false));
@@ -226,9 +246,14 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("IMAGE", false));
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATETIME", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("DATETIME", false));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME2", false));
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE", false));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME", false));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("DATETIME2", false));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("DATETIME2", false));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("DATETIME2", false));
 
         return fieldTypeMapping;
     }
@@ -442,8 +467,10 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         // ExpressionOperator.currentDate and ExpressionOperator.currentTime
         // However, there is no known function on sql server that returns just
         // the date or just the time.
-        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.CurrentDate, "GETDATE"));
-        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.CurrentTime, "GETDATE"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "CONVERT(DATE, GETDATE())"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentTime, "CONVERT(TIME, GETDATE())"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalDate, "CONVERT(DATE, GETDATE())"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "CONVERT(TIME, GETDATE())"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "CHAR_LENGTH"));
         addOperator(ExpressionOperator.simpleThreeArgumentFunction(ExpressionOperator.Substring, "SUBSTRING"));
         addOperator(singleArgumentSubstringOperator());
@@ -459,6 +486,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         addOperator(ExpressionOperator.right());
         addOperator(ExpressionOperator.cot());
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATN2"));
+        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Ln, "LOG"));
         addOperator(addMonthsOperator());
         addOperator(inStringOperator());
         // bug 3061144
@@ -476,15 +504,77 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         addOperator(ExpressionOperator.simpleAggregate(ExpressionOperator.StandardDeviation, "STDEV", "standardDeviation"));
         addOperator(trimOperator());
         addOperator(trim2Operator());
-        addOperator(extractOperator());
+        addOperator(mssqlExtractOperator());
     }
 
     /**
      * INTERNAL:
-     * Derby does not support EXTRACT, but does have DATEPART.
+     * MS SQL does not support EXTRACT, but does have DATEPART.
+     * ISO_WEEK should be used instead of WEEK.
      */
-    protected static ExpressionOperator extractOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
+    protected static ExpressionOperator mssqlExtractOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator() {
+
+            // WEEK replacement: ISO_WEEK
+            private final String[] WEEK_STRINGS = new String[] {"DATEPART(ISO_WEEK,", ")"};
+
+            private void printWeekSQL(final Expression first, final ExpressionSQLPrinter printer) {
+                printer.printString(WEEK_STRINGS[0]);
+                first.printSQL(printer);
+                printer.printString(WEEK_STRINGS[1]);
+            }
+
+            private void printWeekJava(final Expression first, final ExpressionJavaPrinter printer) {
+                printer.printString(WEEK_STRINGS[0]);
+                first.printJava(printer);
+                printer.printString(WEEK_STRINGS[1]);
+            }
+
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                    printWeekSQL(first, printer);
+                } else {
+                    super.printDuo(first, second, printer);
+                }
+            }
+
+            @Override
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+                if (items.size() == 2) {
+                    Expression first = items.get(0);
+                    Expression second = items.get(1);
+                    if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                        printWeekSQL(first, printer);
+                        return;
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                    printWeekJava(first, printer);
+                } else {
+                    super.printJavaDuo(first, second, printer);
+                }
+            }
+
+            @Override
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
+                if (items.size() == 2) {
+                    Expression first = items.get(0);
+                    Expression second = items.get(1);
+                    if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                        printWeekJava(first, printer);
+                        return;
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Extract);
         exOperator.setName("EXTRACT");
@@ -969,26 +1059,44 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
-    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index,
-            AbstractSession session) throws SQLException {
-        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
-            // avoid default logic, which loses offset when converting to java.sql.Timestamp
-            statement.setObject(index, parameter);
+    public void setParameterValueInDatabaseCall(
+            Object parameter, PreparedStatement statement, int index, AbstractSession session
+    ) throws SQLException {
+        // Pass date/time instance directly when JDBC driver supports it
+        if (driverSupportsOffsetDateTime) {
+            if (parameter instanceof OffsetDateTime || parameter instanceof OffsetTime
+                    || parameter instanceof LocalTime || parameter instanceof LocalDate || parameter instanceof LocalDateTime) {
+                statement.setObject(index, parameter);
+                return;
+            }
+        // Default platform is using statement.setTimestamp(index, ...) for LocalTime and it causes cast exceptions in SQL statements
+        } else if (parameter instanceof LocalTime) {
+            statement.setTime(
+                    index, java.sql.Time.valueOf((LocalTime) parameter));
             return;
         }
-
         super.setParameterValueInDatabaseCall(parameter, statement, index, session);
     }
 
     @Override
-    public void setParameterValueInDatabaseCall(Object parameter, CallableStatement statement, String name,
-            AbstractSession session) throws SQLException {
-        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
-            // avoid default logic, which loses offset when converting to java.sql.Timestamp
-            statement.setObject(name, parameter);
+    public void setParameterValueInDatabaseCall(
+            Object parameter, CallableStatement statement, String name, AbstractSession session
+    ) throws SQLException {
+        // Pass date/time instance directly when JDBC driver supports it
+        if (driverSupportsOffsetDateTime) {
+            if (parameter instanceof OffsetDateTime || parameter instanceof OffsetTime
+                    || parameter instanceof LocalTime || parameter instanceof LocalDate || parameter instanceof LocalDateTime) {
+                statement.setObject(name, parameter);
+                return;
+            }
+        // Default platform is using statement.setTimestamp(index, ...) for LocalTime and it causes cast exceptions in SQL statements
+        } else if (parameter instanceof LocalTime) {
+            statement.setTime(
+                    name, java.sql.Time.valueOf((LocalTime) parameter));
             return;
         }
 
         super.setParameterValueInDatabaseCall(parameter, statement, name, session);
     }
+
 }

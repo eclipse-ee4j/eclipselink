@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -169,7 +170,8 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      */
     @Override
     public Object connectToDatasource(Accessor accessor, Session session) throws DatabaseException {
-        return getConnector().connect(prepareProperties(properties), session);
+
+        return getConnector().connect(prepareProperties(properties, session), session);
     }
 
     /**
@@ -307,8 +309,10 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * SECURE:
      * The password in the login properties is encrypted. Return a clone
      * of the properties with the password decrypted.
+     * @param properties connection properties
+     * @param session current session used for logging
      */
-    private Properties prepareProperties(Properties properties) {
+    private Properties prepareProperties(Properties properties, Session session) {
         Properties result = properties;
         Object passwordObject = result.get("password");
         if (passwordObject != null) {
@@ -341,6 +345,17 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             } else if ((passwordObject instanceof char[]) && (((char[])passwordObject).length == 0)) {
                 // Bug 236726 - deal with empty string for passwords
                 result.put("password", "");
+            }
+        }
+
+        // Add platform specific properties, but do not overwrite existing keys.
+        final Map<Object, Object> platformProperties = platform.connectionProperties();
+        for (final Object key : platformProperties.keySet()) {
+            if (result.containsKey(key)) {
+                session.getSessionLog().log(
+                        SessionLog.WARNING, "platform_specific_connection_property_exists", new Object[] {key, platformProperties.get(key)});
+            } else {
+                result.put(key, platformProperties.get(key));
             }
         }
 

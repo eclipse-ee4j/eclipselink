@@ -63,6 +63,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -2614,6 +2615,8 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (parameter instanceof java.time.LocalTime){
             java.time.LocalTime lt = (java.time.LocalTime) parameter;
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
+            // This may cause cast exceptions, statement.setTime(index, ...) should be here, but some platforms rely on full TIMESTAMP types
+            // overriden to statement.setTime(index, ...) in: SQLServerPlatform
             statement.setTimestamp(index, ts);
         } else if (parameter instanceof java.time.OffsetTime) {
             java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
@@ -3748,7 +3751,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public void freeTemporaryObject(Object value) throws SQLException {
     }
-
 
     /**
      * INTERNAL:

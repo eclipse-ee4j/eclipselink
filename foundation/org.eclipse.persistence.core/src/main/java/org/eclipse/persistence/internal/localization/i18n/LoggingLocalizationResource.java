@@ -349,6 +349,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "class_list_created_by", "Class list created by ({0}).({1})() method."},
         { "jar_file_url_exception", "Exception while parsing persistence.xml.  Jar file location could not be found: {0}"},
         { "cannot_unwrap_connection", "Cannot unwrap the oracle connection wrapped by the application server because of the following exception.  {0}"},
+        { "platform_specific_connection_property_exists", "Cannot add platform specific connection property {0}={1}. Property key {0} was already added to connection properties."},
         { "error_loading_xml_file", "Exception while loading ORM xml file: {0}: {1}"},
         // B5112171: XML AnyObject and AnyCollection throw NPE on null document root element
         { "exception_loading_entity_class", "An exception while trying to initialize persistence.  {1} occurred while trying to load entity class: {0}."},

@@ -27,9 +27,12 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.query.model.DateTimeQueryEntity;
+import org.eclipse.persistence.sessions.Session;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,12 +57,14 @@ public class TestDateTimeFunctions {
 
     private final LocalDateTime[] TS = {
             LocalDateTime.of(2022, 3, 9, 14, 30, 25, 0),
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            LocalDateTime.of(2022, 06, 07, 12, 0)
     };
 
     private final DateTimeQueryEntity[] ENTITY = {
             new DateTimeQueryEntity(1, TS[0].toLocalTime(), TS[0].toLocalDate(), TS[0]),
-            new DateTimeQueryEntity(2, TS[1].toLocalTime(), TS[1].toLocalDate(), TS[1])
+            new DateTimeQueryEntity(2, TS[1].toLocalTime(), TS[1].toLocalDate(), TS[1]),
+            new DateTimeQueryEntity(3, TS[2].toLocalTime(), TS[2].toLocalDate(), TS[2]),
     };
 
     @Before
@@ -102,9 +107,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(YEAR FROM e.date) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(YEAR FROM e.dateValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(2022L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -123,9 +129,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(QUARTER FROM e.date) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(QUARTER FROM e.dateValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(1L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -144,9 +151,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(MONTH FROM e.date) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(MONTH FROM e.dateValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(3L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -165,9 +173,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(DAY FROM e.date) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(DAY FROM e.dateValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(9L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -186,9 +195,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(HOUR FROM e.time) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(HOUR FROM e.timeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(14L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -207,9 +217,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(MINUTE FROM e.time) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(MINUTE FROM e.timeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(30L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -228,9 +239,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(SECOND FROM e.time) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(SECOND FROM e.timeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(25L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -243,17 +255,16 @@ public class TestDateTimeFunctions {
         }
     }
 
-    /////////////////////////////////////////////////////////
-
     // Test JPQL EXTRACT(YEAR FROM datetime)
     @Test
     public void testCriteriaExtractYearFromDateTime() {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(YEAR FROM e.datetime) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(YEAR FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(2022L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -272,9 +283,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(QUARTER FROM e.datetime) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(QUARTER FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(1L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -293,9 +305,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(MONTH FROM e.datetime) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(MONTH FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(3L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -314,9 +327,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(DAY FROM e.datetime) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(DAY FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(9L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -335,9 +349,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(HOUR FROM e.datetime) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(HOUR FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(14L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -356,9 +371,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(MINUTE FROM e.datetime) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(MINUTE FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(30L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -377,9 +393,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(SECOND FROM e.datetime) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(SECOND FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", Number.class);
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(25L));
         } catch (Throwable t) {
             t.printStackTrace();
@@ -400,9 +417,86 @@ public class TestDateTimeFunctions {
         try {
             em.getTransaction().begin();
             TypedQuery<DateTimeQueryEntity> query = em.createNamedQuery("DateTimeQueryEntity.findByLocalDateTime", DateTimeQueryEntity.class);
-            query.setParameter("dateTime", TS[1]);
+            query.setParameter("datetimeValue", TS[1]);
             List<DateTimeQueryEntity> result = query.getResultList();
+            em.getTransaction().commit();
             MatcherAssert.assertThat(result.size(), Matchers.equalTo(1));
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test JPQL query from issue 1540
+    @Test
+    public void testIssue1539LocalDate() {
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // Record with ID = 1 contains year 2022
+            TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(YEAR FROM qdte.dateValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1", Number.class);
+            Number year = query.getSingleResult();
+            em.getTransaction().commit();
+            // Check returned year value
+            MatcherAssert.assertThat(year.intValue(), Matchers.equalTo(2022));
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test JPQL query from issue 1540
+    @Test
+    public void testIssue1539LocalDateTime() {
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // Record with ID = 1 contains year 2022
+            TypedQuery<DateTimeQueryEntity> query = em.createQuery("SELECT qdte FROM DateTimeQueryEntity qdte WHERE EXTRACT(YEAR FROM qdte.dateValue) = 2022", DateTimeQueryEntity.class);
+            List<DateTimeQueryEntity> result = query.getResultList();
+            em.getTransaction().commit();
+            // Returned list of values must contain record with ID = 1.
+            boolean found = false;
+            for (DateTimeQueryEntity item : result) {
+                if (item.getId() == 1) {
+                    found = true;
+                }
+            }
+            Assert.assertTrue("Record with ID = 1 containing year 2022 was not found", found);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test JPQL EXTRACT(WEEK FROM date) to check whether ISO_WEEK is used in MS SQL - issue 1550
+    @Test
+    public void testIssue1550ExtractIsoWeek() {
+        // Derby does not support WEEK
+        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<Number> q = em.createQuery("SELECT EXTRACT(WEEK FROM qdte.dateValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = :id", Number.class);
+            q.setParameter("id", 3);
+            long y = q.getSingleResult().longValue();
+            em.getTransaction().commit();
+            MatcherAssert.assertThat(y, Matchers.equalTo(23L));
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;

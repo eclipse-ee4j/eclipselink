@@ -27,26 +27,26 @@ import jakarta.persistence.NamedQuery;
  * JPA Entity used in {@code LocalTime}/{@code LocalDate}/{@code LocalDateTime} tests.
  */
 @Entity
-@NamedQuery(name = "DateTimeQueryEntity.findByLocalDateTime", query = "SELECT e FROM DateTimeQueryEntity e WHERE e.datetime = :dateTime")
+@NamedQuery(name = "DateTimeQueryEntity.findByLocalDateTime", query = "SELECT e FROM DateTimeQueryEntity e WHERE e.datetimeValue = :datetimeValue")
 public class DateTimeQueryEntity {
 
     @Id
     private Integer id;
 
-    private LocalTime time;
+    private LocalTime timeValue;
 
-    private LocalDate date;
+    private LocalDate dateValue;
 
-    private LocalDateTime datetime;
+    private LocalDateTime datetimeValue;
 
     public DateTimeQueryEntity() {
     }
 
     public DateTimeQueryEntity(final Integer id, final LocalTime time, final LocalDate date, final LocalDateTime datetime) {
         this.setId(id);
-        this.setTime(time);
-        this.setDate(date);
-        this.setDatetime(datetime);
+        this.setTimeValue(time);
+        this.setDateValue(date);
+        this.setDatetimeValue(datetime);
     }
 
     public Integer getId() {
@@ -57,28 +57,28 @@ public class DateTimeQueryEntity {
         this.id = id;
     }
 
-    public LocalTime getTime() {
-        return time;
+    public LocalTime getTimeValue() {
+        return timeValue;
     }
 
-    public void setTime(LocalTime time) {
-        this.time = time;
+    public void setTimeValue(LocalTime timeValue) {
+        this.timeValue = timeValue;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getDateValue() {
+        return dateValue;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setDateValue(LocalDate dateValue) {
+        this.dateValue = dateValue;
     }
 
-    public LocalDateTime getDatetime() {
-        return datetime;
+    public LocalDateTime getDatetimeValue() {
+        return datetimeValue;
     }
 
-    public void setDatetime(LocalDateTime datetime) {
-        this.datetime = datetime;
+    public void setDatetimeValue(LocalDateTime datetimeValue) {
+        this.datetimeValue = datetimeValue;
     }
 
 }
