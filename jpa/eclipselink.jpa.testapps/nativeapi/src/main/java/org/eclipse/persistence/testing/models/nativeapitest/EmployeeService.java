@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,11 @@ import org.eclipse.persistence.testing.models.nativeapitest.Employee;
  * EmployeeService session bean interface.
  */
 public interface EmployeeService {
-    List findAll();
+    List<Employee> findAll();
 
     Employee findById(int id);
 
-    List findByFirstName(String fname);
+    List<Employee> findByFirstName(String fname);
     Employee fetchById(int id);
 
     void update(Employee employee);

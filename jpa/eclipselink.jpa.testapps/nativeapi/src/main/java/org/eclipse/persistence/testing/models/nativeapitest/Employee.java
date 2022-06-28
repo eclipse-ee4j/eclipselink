@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,9 +42,9 @@ public class Employee implements Serializable, Cloneable {
     private Collection<Employee> managedEmployees;
 
     public Employee () {
-        this.phoneNumbers = new Vector<PhoneNumber>();
-        this.managedEmployees = new Vector<Employee>();
-        this.responsibilities = new Vector<String>();
+        this.phoneNumbers = new Vector<>();
+        this.managedEmployees = new Vector<>();
+        this.responsibilities = new Vector<>();
     }
 
     public Employee(String firstName, String lastName){
@@ -127,7 +127,7 @@ public class Employee implements Serializable, Cloneable {
         return phoneNumbers;
     }
 
-    public Collection getResponsibilities() {
+    public Collection<String> getResponsibilities() {
         return responsibilities;
     }
 

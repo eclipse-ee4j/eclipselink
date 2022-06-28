@@ -33,6 +33,7 @@
         <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
 
+        <eclipselink.logging.level>INFO</eclipselink.logging.level>
         <persistence-unit.data-source-name>jdbc/EclipseLinkDS</persistence-unit.data-source-name>
         <persistence-unit.data-source-type>jta-data-source</persistence-unit.data-source-type>
         <persistence-unit.transaction-type>JTA</persistence-unit.transaction-type>
@@ -88,9 +89,33 @@
     <modules>
         <module>jpa.test.beanvalidation</module>
         <module>jpa.test.beanvalidation.dynamic</module>
+        <module>nativeapi</module>
     </modules>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.carlspring.maven</groupId>
+                    <artifactId>derby-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>start-derby</id>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>stop-derby</id>
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -159,14 +184,33 @@
     <profiles>
         <profile>
             <!-- XXX - under construction: run tests on the server
-                 requires manual JDBC DS creation and deployment
+                 requires manual JDBC DS creation
                  for now hardcoded to WildFly -->
             <id>xxx-server-test-run</id>
             <properties>
-                <server.test.runner.context>${project.artifactId}-${project.version}/${project.artifactId}-${project.version}_ejb</server.test.runner.context>
+                <server.test.runner.context>${project.build.finalName}/${project.build.finalName}_ejb</server.test.runner.context>
             </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <version>2.1.0.Beta1</version>
+                        <executions>
+                            <execution>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>deploy-only</goal>
+                                </goals>
+                                <configuration>
+                                    <force>true</force>
+                                    <filename>${project.build.finalName}.ear</filename>
+                                    <username>${wildfly.username}</username>
+                                    <password>${wildfly.password}</password>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
