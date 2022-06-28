@@ -428,217 +428,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Appends a Boolean value as a number
-     */
-    protected void appendBoolean(Boolean bool, Writer writer) throws IOException {
-        if (bool) {
-            writer.write("1");
-        } else {
-            writer.write("0");
-        }
-    }
-
-    /**
-     * Append the ByteArray in ODBC literal format ({b hexString}).
-     * This limits the amount of Binary data by the length of the SQL. Binding should increase this limit.
-     */
-    protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
-        writer.write("{b '");
-        Helper.writeHexString(bytes, writer);
-        writer.write("'}");
-    }
-
-    /**
-     * Answer a platform correct string representation of a Date, suitable for SQL generation.
-     * The date is printed in the ODBC platform independent format {d 'yyyy-mm-dd'}.
-     */
-    protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
-        writer.write("{d '");
-        writer.write(Helper.printDate(date));
-        writer.write("'}");
-    }
-
-    /**
-     * Write number to SQL string. This is provided so that database which do not support
-     * Exponential format can customize their printing.
-     */
-    protected void appendNumber(Number number, Writer writer) throws IOException {
-        writer.write(number.toString());
-    }
-
-    /**
-     * INTERNAL:
-     * In case shouldBindLiterals is true, instead of null value a DatabaseField
-     * value may be passed (so that it's type could be used for binding null).
-     * 
-     * @param canBind - allows higher up the stack (where more context exists) to tell if this literal can be bound
-     */
-    public void appendLiteralToCall(Call call, Writer writer, Object literal, Boolean canBind) {
-        if(!Boolean.FALSE.equals(canBind) && shouldBindLiterals()) {
-            appendLiteralToCallWithBinding(call, writer, literal);
-        } else {
-            int nParametersToAdd = appendParameterInternal(call, writer, literal);
-            for (int i = 0; i < nParametersToAdd; i++) {
-                ((DatabaseCall)call).getParameterTypes().add(ParameterType.LITERAL);
-            }
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Override this method in case the platform needs to do something special for binding literals.
-     * Note that instead of null value a DatabaseField
-     * value may be passed (so that it's type could be used for binding null).
-     */
-    protected void appendLiteralToCallWithBinding(Call call, Writer writer, Object literal) {
-        ((DatabaseCall)call).appendLiteral(writer, literal);
-    }
-
-    /**
-     * Write a database-friendly representation of the given parameter to the writer.
-     * Determine the class of the object to be written, and invoke the appropriate print method
-     * for that object. The default is "toString".
-     * The platform may decide to bind some types, such as byte arrays and large strings.
-     * Should only be called in case binding is not used.
-     */
-    @Override
-    public void appendParameter(Call call, Writer writer, Object parameter) {
-        appendParameterInternal(call, writer, parameter);
-    }
-
-    /**
-     * Returns the number of parameters that used binding.
-     * Should only be called in case binding is not used.
-     */
-    public int appendParameterInternal(Call call, Writer writer, Object parameter) {
-        int nBoundParameters = 0;
-        DatabaseCall databaseCall = (DatabaseCall)call;
-        try {
-            // PERF: Print Calendars directly avoiding timestamp conversion,
-            // Must be before conversion as you cannot bind calendars.
-            if (parameter instanceof Calendar) {
-                appendCalendar((Calendar)parameter, writer);
-                return nBoundParameters;
-            }
-            Object dbValue = convertToDatabaseType(parameter);
-
-            if (dbValue instanceof String) {// String and number first as they are most common.
-                if (usesStringBinding() && (((String)dbValue).length() >= getStringBindingSize())) {
-                    databaseCall.bindParameter(writer, dbValue);
-                    nBoundParameters = 1;
-                } else {
-                    appendString((String)dbValue, writer);
-                }
-            } else if (dbValue instanceof Number) {
-                appendNumber((Number)dbValue, writer);
-            } else if (dbValue instanceof java.sql.Time) {
-                appendTime((java.sql.Time)dbValue, writer);
-            } else if (dbValue instanceof java.sql.Timestamp) {
-                appendTimestamp((java.sql.Timestamp)dbValue, writer);
-            } else if (dbValue instanceof java.time.LocalDate){
-                appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
-            } else if (dbValue instanceof java.time.LocalDateTime){
-                appendTimestamp(java.sql.Timestamp.valueOf((java.time.LocalDateTime) dbValue), writer);
-            } else if (dbValue instanceof java.time.OffsetDateTime) {
-                appendTimestamp(java.sql.Timestamp.from(((java.time.OffsetDateTime) dbValue).toInstant()), writer);
-            } else if (dbValue instanceof java.time.LocalTime){
-                java.time.LocalTime lt = (java.time.LocalTime) dbValue;
-                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
-                appendTimestamp(ts, writer);
-            } else if (dbValue instanceof java.time.OffsetTime) {
-                java.time.OffsetTime ot = (java.time.OffsetTime) dbValue;
-                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
-                appendTimestamp(ts, writer);
-            } else if (dbValue instanceof java.sql.Date) {
-                appendDate((java.sql.Date)dbValue, writer);
-            } else if (dbValue == null) {
-                writer.write("NULL");
-            } else if (dbValue instanceof Boolean) {
-                appendBoolean((Boolean)dbValue, writer);
-            } else if (dbValue instanceof byte[]) {
-                if (usesByteArrayBinding()) {
-                    databaseCall.bindParameter(writer, dbValue);
-                    nBoundParameters = 1;
-                } else {
-                    appendByteArray((byte[])dbValue, writer);
-                }
-            } else if (dbValue instanceof Collection) {
-                nBoundParameters = printValuelist((Collection<?>)dbValue, databaseCall, writer);
-            } else if (typeConverters != null && typeConverters.containsKey(dbValue.getClass())){
-                dbValue = new BindCallCustomParameter(dbValue);
-                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
-                databaseCall.bindParameter(writer, dbValue);
-            } else if ((parameter instanceof Struct) || (parameter instanceof Array) || (parameter instanceof Ref)) {
-                databaseCall.bindParameter(writer, parameter);
-                nBoundParameters = 1;
-            } else if (dbValue.getClass() == int[].class) {
-                nBoundParameters = printValuelist((int[])dbValue, databaseCall, writer);
-            } else if (dbValue instanceof AppendCallCustomParameter) {
-                // custom append is required (example BLOB, CLOB on Oracle8)
-                ((AppendCallCustomParameter)dbValue).append(writer);
-                nBoundParameters = 1;
-            } else if (dbValue instanceof BindCallCustomParameter) {
-                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
-                databaseCall.bindParameter(writer, dbValue);
-                nBoundParameters = 1;
-            } else {
-                // Assume database driver primitive that knows how to print itself, this is required for drivers
-                // such as Oracle JDBC, Informix JDBC and others, as well as client specific classes.
-                writer.write(dbValue.toString());
-            }
-        } catch (IOException exception) {
-            throw ValidationException.fileError(exception);
-        }
-
-        return nBoundParameters;
-    }
-
-    /**
-     * Write the string.  Quotes must be double quoted.
-     */
-    protected void appendString(String string, Writer writer) throws IOException {
-        writer.write('\'');
-        for (int position = 0; position < string.length(); position++) {
-            if (string.charAt(position) == '\'') {
-                writer.write("''");
-            } else {
-                writer.write(string.charAt(position));
-            }
-        }
-        writer.write('\'');
-    }
-
-    /**
-     * Answer a platform correct string representation of a Time, suitable for SQL generation.
-     * The time is printed in the ODBC platform independent format {t'hh:mm:ss'}.
-     */
-    protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
-        writer.write("{t '");
-        writer.write(Helper.printTime(time));
-        writer.write("'}");
-    }
-
-    /**
-     * Answer a platform correct string representation of a Timestamp, suitable for SQL generation.
-     * The timestamp is printed in the ODBC platform independent timestamp format {ts'YYYY-MM-DD HH:MM:SS.NNNNNNNNN'}.
-     */
-    protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
-        writer.write("{ts '");
-        writer.write(Helper.printTimestamp(timestamp));
-        writer.write("'}");
-    }
-
-    /**
-     * Answer a platform correct string representation of a Calendar as a Timestamp, suitable for SQL generation.
-     * The calendar is printed in the ODBC platform independent timestamp format {ts'YYYY-MM-DD HH:MM:SS.NNNNNNNNN'}.
-     */
-    protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
-        writer.write("{ts '");
-        writer.write(Helper.printCalendar(calendar));
-        writer.write("'}");
-    }
-
-    /**
      * Used by JDBC drivers that do not support autocommit so simulate an autocommit.
      */
     public void autoCommit(DatabaseAccessor accessor) throws SQLException {
@@ -2556,6 +2345,9 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.pingSQL = pingSQL;
     }
 
+    // Following methods add parameters into PreparedStatement. They are being called when
+    // eclipselink.jdbc.bind-parameters PU property is set to true.
+
     /**
      * INTERNAL
      * Set the parameter in the JDBC statement at the given index.
@@ -2765,6 +2557,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             StructConverter converter = typeConverters.get(parameter.getClass());
             parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             statement.setObject(name, parameter);
+        } else if (parameter instanceof UUID) {
+            statement.setString(name, convertObject(parameter, ClassConstants.STRING));
         } else {
             statement.setObject(name, parameter);
         }
@@ -2813,6 +2607,222 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public Object getParameterValueFromDatabaseCall(CallableStatement statement, String name, AbstractSession session) throws SQLException {
         return statement.getObject(name);
+    }
+
+    // Following method adds parameters values directly into Statement. This method is being called when
+    // eclipselink.jdbc.bind-parameters PU property is set to false.
+
+    /**
+     * Returns the number of parameters that used binding.
+     * Should only be called in case binding is not used.
+     */
+    public int appendParameterInternal(Call call, Writer writer, Object parameter) {
+        int nBoundParameters = 0;
+        DatabaseCall databaseCall = (DatabaseCall)call;
+        try {
+            // PERF: Print Calendars directly avoiding timestamp conversion,
+            // Must be before conversion as you cannot bind calendars.
+            if (parameter instanceof Calendar) {
+                appendCalendar((Calendar)parameter, writer);
+                return nBoundParameters;
+            }
+            Object dbValue = convertToDatabaseType(parameter);
+
+            if (dbValue instanceof String) {// String and number first as they are most common.
+                if (usesStringBinding() && (((String)dbValue).length() >= getStringBindingSize())) {
+                    databaseCall.bindParameter(writer, dbValue);
+                    nBoundParameters = 1;
+                } else {
+                    appendString((String)dbValue, writer);
+                }
+            } else if (dbValue instanceof Number) {
+                appendNumber((Number)dbValue, writer);
+            } else if (dbValue instanceof java.sql.Time) {
+                appendTime((java.sql.Time)dbValue, writer);
+            } else if (dbValue instanceof java.sql.Timestamp) {
+                appendTimestamp((java.sql.Timestamp)dbValue, writer);
+            } else if (dbValue instanceof java.time.LocalDate){
+                appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
+            } else if (dbValue instanceof java.time.LocalDateTime){
+                appendTimestamp(java.sql.Timestamp.valueOf((java.time.LocalDateTime) dbValue), writer);
+            } else if (dbValue instanceof java.time.OffsetDateTime) {
+                appendTimestamp(java.sql.Timestamp.from(((java.time.OffsetDateTime) dbValue).toInstant()), writer);
+            } else if (dbValue instanceof java.time.LocalTime){
+                java.time.LocalTime lt = (java.time.LocalTime) dbValue;
+                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
+                appendTimestamp(ts, writer);
+            } else if (dbValue instanceof java.time.OffsetTime) {
+                java.time.OffsetTime ot = (java.time.OffsetTime) dbValue;
+                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
+                appendTimestamp(ts, writer);
+            } else if (dbValue instanceof java.sql.Date) {
+                appendDate((java.sql.Date)dbValue, writer);
+            } else if (dbValue == null) {
+                writer.write("NULL");
+            } else if (dbValue instanceof Boolean) {
+                appendBoolean((Boolean)dbValue, writer);
+            } else if (dbValue instanceof byte[]) {
+                if (usesByteArrayBinding()) {
+                    databaseCall.bindParameter(writer, dbValue);
+                    nBoundParameters = 1;
+                } else {
+                    appendByteArray((byte[])dbValue, writer);
+                }
+            } else if (dbValue instanceof Collection) {
+                nBoundParameters = printValuelist((Collection<?>)dbValue, databaseCall, writer);
+            } else if (typeConverters != null && typeConverters.containsKey(dbValue.getClass())){
+                dbValue = new BindCallCustomParameter(dbValue);
+                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
+                databaseCall.bindParameter(writer, dbValue);
+            } else if ((parameter instanceof Struct) || (parameter instanceof Array) || (parameter instanceof Ref)) {
+                databaseCall.bindParameter(writer, parameter);
+                nBoundParameters = 1;
+            } else if (dbValue.getClass() == int[].class) {
+                nBoundParameters = printValuelist((int[])dbValue, databaseCall, writer);
+            } else if (dbValue instanceof AppendCallCustomParameter) {
+                // custom append is required (example BLOB, CLOB on Oracle8)
+                ((AppendCallCustomParameter)dbValue).append(writer);
+                nBoundParameters = 1;
+            } else if (dbValue instanceof BindCallCustomParameter) {
+                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
+                databaseCall.bindParameter(writer, dbValue);
+                nBoundParameters = 1;
+            } else if (parameter instanceof UUID) {
+                appendString(((UUID)dbValue).toString(), writer);
+            } else {
+                // Assume database driver primitive that knows how to print itself, this is required for drivers
+                // such as Oracle JDBC, Informix JDBC and others, as well as client specific classes.
+                writer.write(dbValue.toString());
+            }
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+
+        return nBoundParameters;
+    }
+
+    /**
+     * Appends a Boolean value as a number
+     */
+    protected void appendBoolean(Boolean bool, Writer writer) throws IOException {
+        if (bool) {
+            writer.write("1");
+        } else {
+            writer.write("0");
+        }
+    }
+
+    /**
+     * Append the ByteArray in ODBC literal format ({b hexString}).
+     * This limits the amount of Binary data by the length of the SQL. Binding should increase this limit.
+     */
+    protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
+        writer.write("{b '");
+        Helper.writeHexString(bytes, writer);
+        writer.write("'}");
+    }
+
+    /**
+     * Answer a platform correct string representation of a Date, suitable for SQL generation.
+     * The date is printed in the ODBC platform independent format {d 'yyyy-mm-dd'}.
+     */
+    protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
+        writer.write("{d '");
+        writer.write(Helper.printDate(date));
+        writer.write("'}");
+    }
+
+    /**
+     * Write number to SQL string. This is provided so that database which do not support
+     * Exponential format can customize their printing.
+     */
+    protected void appendNumber(Number number, Writer writer) throws IOException {
+        writer.write(number.toString());
+    }
+
+    /**
+     * INTERNAL:
+     * In case shouldBindLiterals is true, instead of null value a DatabaseField
+     * value may be passed (so that it's type could be used for binding null).
+     *
+     * @param canBind - allows higher up the stack (where more context exists) to tell if this literal can be bound
+     */
+    public void appendLiteralToCall(Call call, Writer writer, Object literal, Boolean canBind) {
+        if(!Boolean.FALSE.equals(canBind) && shouldBindLiterals()) {
+            appendLiteralToCallWithBinding(call, writer, literal);
+        } else {
+            int nParametersToAdd = appendParameterInternal(call, writer, literal);
+            for (int i = 0; i < nParametersToAdd; i++) {
+                ((DatabaseCall)call).getParameterTypes().add(ParameterType.LITERAL);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method in case the platform needs to do something special for binding literals.
+     * Note that instead of null value a DatabaseField
+     * value may be passed (so that it's type could be used for binding null).
+     */
+    protected void appendLiteralToCallWithBinding(Call call, Writer writer, Object literal) {
+        ((DatabaseCall)call).appendLiteral(writer, literal);
+    }
+
+    /**
+     * Write a database-friendly representation of the given parameter to the writer.
+     * Determine the class of the object to be written, and invoke the appropriate print method
+     * for that object. The default is "toString".
+     * The platform may decide to bind some types, such as byte arrays and large strings.
+     * Should only be called in case binding is not used.
+     */
+    @Override
+    public void appendParameter(Call call, Writer writer, Object parameter) {
+        appendParameterInternal(call, writer, parameter);
+    }
+
+    /**
+     * Write the string.  Quotes must be double quoted.
+     */
+    protected void appendString(String string, Writer writer) throws IOException {
+        writer.write('\'');
+        for (int position = 0; position < string.length(); position++) {
+            if (string.charAt(position) == '\'') {
+                writer.write("''");
+            } else {
+                writer.write(string.charAt(position));
+            }
+        }
+        writer.write('\'');
+    }
+
+    /**
+     * Answer a platform correct string representation of a Time, suitable for SQL generation.
+     * The time is printed in the ODBC platform independent format {t'hh:mm:ss'}.
+     */
+    protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
+        writer.write("{t '");
+        writer.write(Helper.printTime(time));
+        writer.write("'}");
+    }
+
+    /**
+     * Answer a platform correct string representation of a Timestamp, suitable for SQL generation.
+     * The timestamp is printed in the ODBC platform independent timestamp format {ts'YYYY-MM-DD HH:MM:SS.NNNNNNNNN'}.
+     */
+    protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
+        writer.write("{ts '");
+        writer.write(Helper.printTimestamp(timestamp));
+        writer.write("'}");
+    }
+
+    /**
+     * Answer a platform correct string representation of a Calendar as a Timestamp, suitable for SQL generation.
+     * The calendar is printed in the ODBC platform independent timestamp format {ts'YYYY-MM-DD HH:MM:SS.NNNNNNNNN'}.
+     */
+    protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
+        writer.write("{ts '");
+        writer.write(Helper.printCalendar(calendar));
+        writer.write("'}");
     }
 
     public boolean usesBatchWriting() {
