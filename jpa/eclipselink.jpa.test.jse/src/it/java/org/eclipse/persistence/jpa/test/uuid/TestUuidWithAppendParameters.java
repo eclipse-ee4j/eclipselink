@@ -28,11 +28,12 @@ import org.junit.runner.RunWith;
 public class TestUuidWithAppendParameters extends TestUuidCommon {
 
     @Emf(
-            name = "uuidUUIDEmf",
+            name = "TestUuidWithAppendParameters",
             createTables = DDLGen.DROP_CREATE,
             classes = { UUIDUUIDEntity.class },
             properties = {
-                    @Property(name = "eclipselink.logging.level.sql", value = "FINE"),
+            // Uncomment following line to log SQL statements
+            //        @Property(name = "eclipselink.logging.level.sql", value = "FINE"),
                     @Property(name = "eclipselink.jdbc.bind-parameters", value = "false")
             }
     )
