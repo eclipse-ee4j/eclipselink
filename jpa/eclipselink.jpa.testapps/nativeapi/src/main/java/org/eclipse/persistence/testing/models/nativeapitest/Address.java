@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class Address implements Serializable {
         postalCode = "";
         street = "";
         country = "";
-        this.employees = new Vector<Employee>();
+        this.employees = new Vector<>();
     }
 
     public Address(String street, String city, String province, String country, String postalCode) {
@@ -48,7 +48,7 @@ public class Address implements Serializable {
         this.province = province;
         this.country = country;
         this.postalCode = postalCode;
-        this.employees = new Vector<Employee>();
+        this.employees = new Vector<>();
     }
 
     public Address copy() {

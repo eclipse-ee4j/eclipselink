@@ -52,4 +52,23 @@
     <properties>
         <persistence-unit.name>beanvalidation-dynamic</persistence-unit.name>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.carlspring.maven</groupId>
+                <artifactId>derby-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-derby</id>
+                        <phase>process-test-classes</phase>
+                    </execution>
+                    <execution>
+                        <id>stop-derby</id>
+                        <phase>prepare-package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -789,12 +789,6 @@
                                     </properties>
                                 </itemWithProperty>
                                 <itemWithProperty>
-                                    <name>server-test-jpa-nativeapitest</name>
-                                    <properties>
-                                        <puName>nativeapitest</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
                                     <name>server-test-jpa-sessionbean</name>
                                     <properties>
                                         <puName>sessionbean</puName>
@@ -1910,20 +1904,6 @@
                 <extra-model>common-server-generic</extra-model>
                 <packageName>metamodel</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelMetamodelTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-nativeapitest</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>nativeapitest</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-nativeapitest-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>nativeapitest</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.nativeapitest.NativeAPITests</test-client-class>
             </properties>
         </profile>
         <profile>

@@ -22,7 +22,6 @@ import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.rmi.PortableRemoteObject;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -96,9 +95,10 @@ public class NativeAPITests extends JUnitTestCase {
     // WAS
     "org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
     // jboss
-    "eclipselink-nativeapitest-model/EmployeeServiceBean/remote-org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
+    "org.eclipse.persistence.jpa.testapps.nativeapi/EmployeeServiceBean/remote-org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
     // wildfly
-    "eclipselink-nativeapitest-model/eclipselink-nativeapitest-model_ejb/EmployeeServiceBean!org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
+    "org.eclipse.persistence.jpa.testapps.nativeapi/org.eclipse.persistence.jpa.testapps.nativeapi_ejb/EmployeeServiceBean!org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
+    "java:jboss/exported/org.eclipse.persistence.jpa.testapps.nativeapi/org.eclipse.persistence.jpa.testapps.nativeapi_ejb/EmployeeServiceBean!org.eclipse.persistence.testing.models.nativeapitest.EmployeeService",
     // NetWeaver
     "JavaEE/servertest/REMOTE/EmployeeServiceBean/org.eclipse.persistence.testing.models.nativeapitest.EmployeeService" };
 
@@ -116,7 +116,7 @@ public class NativeAPITests extends JUnitTestCase {
 
         for (String candidate : LOOKUP_STRINGS) {
             try {
-                service = (EmployeeService) PortableRemoteObject.narrow(context.lookup(candidate), EmployeeService.class);
+                service = (EmployeeService) context.lookup(candidate);
                 return service;
             } catch (NamingException namingException) {
                 // OK, try next
@@ -127,9 +127,9 @@ public class NativeAPITests extends JUnitTestCase {
     }
 
     public void testFindAll() throws Exception {
-        List result = getEmployeeService().findAll();
-        for (Iterator iterator = result.iterator(); iterator.hasNext();) {
-            Employee employee = (Employee) iterator.next();
+        List<Employee> result = getEmployeeService().findAll();
+        for (Iterator<Employee> iterator = result.iterator(); iterator.hasNext();) {
+            Employee employee = iterator.next();
             employee.getFirstName();
             employee.getLastName();
             boolean caughtError = false;

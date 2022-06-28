@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,8 +28,6 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 
-import org.eclipse.persistence.testing.models.nativeapitest.Employee;
-
 /**
  * EmployeeService session bean.
  */
@@ -38,9 +36,10 @@ import org.eclipse.persistence.testing.models.nativeapitest.Employee;
 public class EmployeeServiceBean implements EmployeeService {
 
     @Override
-    public List findAll() {
+    public List<Employee> findAll() {
         ClientSession clientSession = getSession().acquireClientSession();
-        List collection = clientSession.readAllObjects(Employee.class);
+        @SuppressWarnings("unchecked")
+        List<Employee> collection = (List<Employee>) clientSession.readAllObjects(Employee.class);
         return collection;
     }
 
@@ -66,12 +65,13 @@ public class EmployeeServiceBean implements EmployeeService {
     }
 
     @Override
-    public List findByFirstName(String fname) {
+    public List<Employee> findByFirstName(String fname) {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         ExpressionBuilder builder = query.getExpressionBuilder();
         Expression expression = builder.get("firstName").equal(fname);
         query.setSelectionCriteria(expression);
-        List result = (List)getSession().executeQuery(query);
+        @SuppressWarnings("unchecked")
+        List<Employee> result = (List<Employee>)getSession().executeQuery(query);
         return result;
     }
 

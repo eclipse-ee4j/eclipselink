@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class PhoneNumber implements Serializable {
         this.areaCode = theAreaCode;
         this.number = theNumber;
         this.owner = null;
-        this.status = new Vector<PhoneStatus>();
+        this.status = new Vector<>();
     }
 
     public void addStatus(PhoneStatus status) {
@@ -96,8 +96,8 @@ public class PhoneNumber implements Serializable {
     /**
      * Uses a Vector as its primary key.
      */
-    public List buildPK(){
-        List pk = new Vector();
+    public List<Object> buildPK(){
+        List<Object> pk = new Vector<>();
         pk.add(getOwner().getId());
         pk.add(getType());
         return pk;
