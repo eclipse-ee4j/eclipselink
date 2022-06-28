@@ -137,4 +137,44 @@ public class TestUUIDUUID {
             em.close();
         }
     }
+
+    @Test
+    public void testIssue1554() {
+        final String uuidName = "Issue testIssue1554 UUID";
+        EntityManager em = uuidEmf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            UUIDUUIDEntity entity = new UUIDUUIDEntity();
+            entity.setName(uuidName);
+            em.persist(entity);
+            em.flush();
+            em.getTransaction().commit();
+            UUID id = entity.getId();
+            em.getTransaction().begin();
+            var cb = em.getCriteriaBuilder();
+            var query = cb.createTupleQuery();
+            var root = query.from(UUIDUUIDEntity.class);
+            query.multiselect(root.get("name"),
+                    cb.localTime(),
+                    cb.localDateTime(),
+                    cb.localDate()
+            );
+            query.where(cb.equal(root.get("id"), id));
+            List<?> result = em.createQuery(query).getResultList();
+            em.getTransaction().commit();
+            assertEquals(result.size(), 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+        finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+
+
 }
