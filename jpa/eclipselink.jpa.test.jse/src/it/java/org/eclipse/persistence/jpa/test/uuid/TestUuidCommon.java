@@ -14,30 +14,27 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.jpa.test.uuid;
 
+import java.util.List;
+import java.util.UUID;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
-import org.eclipse.persistence.jpa.test.framework.DDLGen;
-import org.eclipse.persistence.jpa.test.framework.Emf;
-import org.eclipse.persistence.jpa.test.framework.EmfRunner;
-import org.eclipse.persistence.jpa.test.uuid.model.UUIDUUIDEntity;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import java.util.List;
-import java.util.UUID;
+import org.eclipse.persistence.jpa.test.uuid.model.UUIDUUIDEntity;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(EmfRunner.class)
-public class TestUUIDUUID {
+@Ignore
+public abstract class TestUuidCommon {
 
     private static final String NAME_UUID = "Persist UUID UUID 1";
 
-    @Emf(name = "uuidUUIDEmf", createTables = DDLGen.DROP_CREATE, classes = { UUIDUUIDEntity.class })
-    private EntityManagerFactory uuidEmf;
+    abstract EntityManagerFactory getEmf();
 
     /**
      * Tests GenerationType.UUID with field based on java.util.UUID type.
@@ -51,7 +48,7 @@ public class TestUUIDUUID {
     }
 
     private UUID persistUUIDUUIDEntity() {
-        EntityManager em = uuidEmf.createEntityManager();
+        EntityManager em = getEmf().createEntityManager();
         UUID uuidResult = null;
         try {
             em.getTransaction().begin();
@@ -75,7 +72,7 @@ public class TestUUIDUUID {
     }
 
     public void queryAllUUIDUUIDEntity() {
-        EntityManager em = uuidEmf.createEntityManager();
+        EntityManager em = getEmf().createEntityManager();
         try {
             List<UUIDUUIDEntity> testEntities = em.createQuery("SELECT e FROM UUIDUUIDEntity AS e").getResultList();
             assertTrue(testEntities.size() > 0);
@@ -95,7 +92,7 @@ public class TestUUIDUUID {
     }
 
     public void queryWithParameterUUIDUUIDEntity(UUID id) {
-        EntityManager em = uuidEmf.createEntityManager();
+        EntityManager em = getEmf().createEntityManager();
         try {
             Query query = em.createQuery("SELECT e FROM UUIDUUIDEntity AS e WHERE e.id = :id");
             query.setParameter("id", id);
@@ -120,7 +117,7 @@ public class TestUUIDUUID {
     }
 
     public void findUUIDUUIDEntityTest(UUID id) {
-        EntityManager em = uuidEmf.createEntityManager();
+        EntityManager em = getEmf().createEntityManager();
         try {
             UUIDUUIDEntity entity = em.find(UUIDUUIDEntity.class, id);
             assertNotNull(entity);
@@ -141,11 +138,12 @@ public class TestUUIDUUID {
     @Test
     public void testIssue1554() {
         final String uuidName = "Issue testIssue1554 UUID";
-        EntityManager em = uuidEmf.createEntityManager();
+        EntityManager em = getEmf().createEntityManager();
         try {
             em.getTransaction().begin();
             UUIDUUIDEntity entity = new UUIDUUIDEntity();
             entity.setName(uuidName);
+            entity.setId(UUID.fromString("d04a98a2-4408-4cf3-b232-5cfaab58afc9"));
             em.persist(entity);
             em.flush();
             em.getTransaction().commit();
@@ -174,7 +172,5 @@ public class TestUUIDUUID {
             em.close();
         }
     }
-
-
 
 }
