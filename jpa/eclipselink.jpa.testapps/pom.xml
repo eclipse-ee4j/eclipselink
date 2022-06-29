@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
-            <scope>test</scope>
+<!--            <scope>test</scope>-->
         </dependency>
         <!--EclipseLink JPA test framework-->
         <dependency>
@@ -89,6 +89,7 @@
     <modules>
         <module>jpa.test.beanvalidation</module>
         <module>jpa.test.beanvalidation.dynamic</module>
+        <module>jpa.test.sessionbean</module>
         <module>nativeapi</module>
     </modules>
 
@@ -96,6 +97,20 @@
         <finalName>${project.artifactId}</finalName>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <executions>
+                        <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
+                        <execution>
+                            <id>get-test-classpath-to-properties</id>
+                            <goals>
+                                <goal>properties</goal>
+                            </goals>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.carlspring.maven</groupId>
                     <artifactId>derby-maven-plugin</artifactId>
@@ -117,19 +132,6 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
-                    <execution>
-                        <id>get-test-classpath-to-properties</id>
-                        <goals>
-                            <goal>properties</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -224,7 +226,7 @@
                                 <configuration>
                                     <additionalClasspathElements>
                                         <!--TODO It should be replaced by https://search.maven.org/artifact/org.wildfly/wildfly-client-all/27.0.0.Alpha1/jar resolved by dependency plugin-->
-                                        <additionalClasspathElement>/Users/lukas/java/wildfly-preview-27.0.0.Alpha1/bin/client/jboss-client.jar</additionalClasspathElement>
+                                        <additionalClasspathElement>${wildfly.home}/bin/client/jboss-client.jar</additionalClasspathElement>
                                     </additionalClasspathElements>
                                     <reportNameSuffix>server</reportNameSuffix>
                                     <systemPropertyVariables>
@@ -234,6 +236,7 @@
                                         <server.url>remote+http://localhost:8080</server.url>
                                         <server.testrunner.context>${server.test.runner.context}</server.testrunner.context>
                                     </systemPropertyVariables>
+                                    <testFailureIgnore>true</testFailureIgnore>
                                 </configuration>
                             </execution>
                         </executions>
