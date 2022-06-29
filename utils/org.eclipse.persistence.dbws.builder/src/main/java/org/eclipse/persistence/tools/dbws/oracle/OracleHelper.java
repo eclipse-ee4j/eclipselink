@@ -1308,24 +1308,24 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     DatabaseType dataType = returnArg.getEnclosedType();
                     if (dataType.isVArrayType() || dataType.isObjectTableType()) {
                         call = new StoredFunctionCall(Types.ARRAY, returnArg.getTypeName(), javaTypeName, buildFieldForNestedType(dataType));
-					} else if (dataType.isTYPEType()) {
-						String javaType = dataType.getTypeName();
-						int resultType = Util.getJDBCTypeFromTypeName(javaType);
-						call = new StoredFunctionCall();
-						// need special handling for Date types
-						if (resultType == Types.DATE || resultType == Types.TIME || resultType == Types.TIMESTAMP) {
-							((StoredFunctionCall) call).setResult(null, ClassConstants.TIMESTAMP);
-						} else if (returnArg.getEnclosedType() == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
-							// special handling for XMLType types
-							((StoredFunctionCall) call).setResult(getJDBCTypeForTypeName(XMLTYPE_STR), XMLTYPE_STR,
-									ClassConstants.OBJECT);
-						} else if (resultType == Types.OTHER || resultType == Types.CLOB) {
-							// default to OBJECT for OTHER, CLOB and LONG types
-							((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
-						} else {
-							((StoredFunctionCall) call).setResult(null, resultType);
-						}
-					} else {
+                    } else if (dataType.isTYPEType()) {
+                        String javaType = dataType.getTypeName();
+                        int resultType = Util.getJDBCTypeFromTypeName(javaType);
+                        call = new StoredFunctionCall();
+                        // need special handling for Date types
+                        if (resultType == Types.DATE || resultType == Types.TIME || resultType == Types.TIMESTAMP) {
+                            ((StoredFunctionCall) call).setResult(null, ClassConstants.TIMESTAMP);
+                        } else if (returnArg.getEnclosedType() == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
+                            // special handling for XMLType types
+                            ((StoredFunctionCall) call).setResult(getJDBCTypeForTypeName(XMLTYPE_STR), XMLTYPE_STR,
+                                    ClassConstants.OBJECT);
+                        } else if (resultType == Types.OTHER || resultType == Types.CLOB) {
+                            // default to OBJECT for OTHER, CLOB and LONG types
+                            ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
+                        } else {
+                            ((StoredFunctionCall) call).setResult(null, resultType);
+                        }
+                    } else {
                         // assumes ObjectType
                         call = new StoredFunctionCall(Types.STRUCT, returnArg.getTypeName(), javaTypeName);
                     }
