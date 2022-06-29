@@ -789,12 +789,6 @@
                                     </properties>
                                 </itemWithProperty>
                                 <itemWithProperty>
-                                    <name>server-test-jpa-sessionbean</name>
-                                    <properties>
-                                        <puName>sessionbean</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
                                     <name>server-test-jpa-xml-mergeinherited</name>
                                     <properties>
                                         <puName>ddlGeneration</puName>
@@ -1971,48 +1965,6 @@
                 <extra-model>common-server-generic</extra-model>
                 <packageName>sessionbean</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanHATests</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa21-sessionbean</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>jpa21-sessionbean</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-jpa21-sessionbean-model</modelname>
-                <extra-model>eclipselink-jpa21-sessionbean-model</extra-model>
-                <packageName>jpa21/sessionbean</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa21.sessionbean.EntityListenerInjectionTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa22-sessionbean-entity-listener</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>jpa22-sessionbean</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-jpa22-sessionbean-model</modelname>
-                <extra-model>eclipselink-jpa22-sessionbean-model</extra-model>
-                <packageName>jpa22/sessionbean</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa22.sessionbean.EntityListenerInjectionTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa22-sessionbean-attribute-converter</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>jpa22-sessionbean</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-jpa22-sessionbean-model</modelname>
-                <extra-model>eclipselink-jpa22-sessionbean-model</extra-model>
-                <packageName>jpa22/sessionbean</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa22.sessionbean.AttributeConverterInjectionTest</test-client-class>
             </properties>
         </profile>
         <profile>
