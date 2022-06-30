@@ -755,13 +755,13 @@ public abstract class JUnitTestCase extends TestCase {
                     }
                 }
             }
-            Throwable t = null;
             for (String runner : testRunners) {
+                Throwable t = null;
                 TestRunner runnerBean = (TestRunner) context.lookup(testrunnerCtx + "/" + runner);
                 t = runnerBean.runTest(getClass().getName(), getName(), getServerProperties());
-            }
-            if (t != null) {
-                throw t;
+                if (t != null) {
+                    throw t;
+                }
             }
         } else {
             //use defined set of pre-configured test runners

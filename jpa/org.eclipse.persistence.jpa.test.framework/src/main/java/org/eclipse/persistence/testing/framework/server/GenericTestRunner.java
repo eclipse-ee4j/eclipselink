@@ -30,6 +30,9 @@ import java.util.Properties;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class GenericTestRunner implements TestRunner {
 
+    public GenericTestRunner() {
+    }
+
     /**
      * Execute a test case method. The test class is loaded dynamically and
      * must therefore be visible to the TestRunnerBean classloader.
