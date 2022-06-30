@@ -223,6 +223,7 @@
                                 </goals>
                                 <configuration>
                                     <additionalClasspathElements>
+                                        <!--TODO It should be replaced by https://search.maven.org/artifact/org.wildfly/wildfly-client-all/27.0.0.Alpha1/jar resolved by dependency plugin-->
                                         <additionalClasspathElement>/Users/lukas/java/wildfly-preview-27.0.0.Alpha1/bin/client/jboss-client.jar</additionalClasspathElement>
                                     </additionalClasspathElements>
                                     <reportNameSuffix>server</reportNameSuffix>

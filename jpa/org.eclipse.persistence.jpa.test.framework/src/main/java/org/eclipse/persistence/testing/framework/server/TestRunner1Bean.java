@@ -35,6 +35,9 @@ import org.eclipse.persistence.testing.framework.server.TestRunner;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class TestRunner1Bean extends GenericTestRunner {
 
+    public TestRunner1Bean() {
+    }
+
     /** The entity manager for the test is injected and passed to the test server platform. */
     @PersistenceContext(unitName="MulitPU-1")
     private EntityManager entityManager;
