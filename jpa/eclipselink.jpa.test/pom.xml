@@ -342,10 +342,6 @@
                                 <item>eclipselink-ddl-generation-model</item>
                                 <item>eclipselink-delimited-model</item>
                                 <item>eclipselink-extensibility-model</item>
-                                <item>eclipselink-composite-advanced-model</item>
-                                <item>eclipselink-composite-advanced-model-member_1</item>
-                                <item>eclipselink-composite-advanced-model-member_2</item>
-                                <item>eclipselink-composite-advanced-model-member_3</item>
                                 <item>eclipselink-jpa21-model</item>
                                 <item>eclipselink-metamodel-model</item>
                                 <item>eclipselink-partitioned-model</item>
@@ -534,10 +530,6 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
@@ -578,24 +570,6 @@
                                     <name>eclipselink-xml-merge-model</name>
                                     <properties>
                                         <item.persistenceinfo>${project.build.directory}/eclipselink-annotation-model.jar</item.persistenceinfo>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>eclipselink-composite-advanced-model-member_1</name>
-                                    <properties>
-                                        <item.persistenceinfo>${project.build.directory}/eclipselink-composite-advanced-model.jar</item.persistenceinfo>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>eclipselink-composite-advanced-model-member_2</name>
-                                    <properties>
-                                        <item.persistenceinfo>${project.build.directory}/eclipselink-composite-advanced-model.jar</item.persistenceinfo>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>eclipselink-composite-advanced-model-member_3</name>
-                                    <properties>
-                                        <item.persistenceinfo>${project.build.directory}/eclipselink-composite-advanced-model.jar</item.persistenceinfo>
                                     </properties>
                                 </itemWithProperty>
                                 <itemWithProperty>
@@ -646,10 +620,6 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
@@ -969,10 +939,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-plsql-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_3.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -1199,10 +1165,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-jpa22-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
@@ -1258,10 +1220,6 @@
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-metamodel-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-delimited-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-extensibility-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-composite-advanced-model-member_1.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-composite-advanced-model-member_2.jar</additionalClasspathElement>
