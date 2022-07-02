@@ -30,7 +30,6 @@
     <name>Persistence TestApps</name>
 
     <properties>
-        <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
 
         <eclipselink.logging.level>INFO</eclipselink.logging.level>
@@ -38,6 +37,8 @@
         <persistence-unit.data-source-type>jta-data-source</persistence-unit.data-source-type>
         <persistence-unit.transaction-type>JTA</persistence-unit.transaction-type>
         <persistence-unit.server-weaving>true</persistence-unit.server-weaving>
+        <persistence-unit.data-source2-name>jdbc/EclipseLinkDS2</persistence-unit.data-source2-name>
+        <persistence-unit.data-source3-name>jdbc/EclipseLinkDS3</persistence-unit.data-source3-name>
     </properties>
 
     <dependencies>
@@ -52,6 +53,12 @@
         <dependency>
             <groupId>jakarta.ejb</groupId>
             <artifactId>jakarta.ejb-api</artifactId>
+        </dependency>
+        <!--EclipseLink Core test framework-->
+        <!-- some models use classes defined here -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
         </dependency>
 
         <dependency>
@@ -71,12 +78,6 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-core</artifactId>
             <scope>test</scope>
-        </dependency>
-        <!--EclipseLink Core test framework-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
-<!--            <scope>test</scope>-->
         </dependency>
         <!--EclipseLink JPA test framework-->
         <dependency>
@@ -143,13 +144,7 @@
                         <id>default-test</id>
                         <configuration>
                             <systemPropertyVariables>
-                                <db.driver>${db.driver}</db.driver>
-                                <db.xa.driver>${db.xa.driver}</db.xa.driver>
-                                <db.url>${db.url}</db.url>
-                                <db.root.pwd>${db.root.pwd}</db.root.pwd>
-                                <db.user>${db.user}</db.user>
-                                <db.pwd>${db.pwd}</db.pwd>
-                                <db.platform>${db.platform}</db.platform>
+                                <test.properties>${test.properties.file}</test.properties>
                             </systemPropertyVariables>
                         </configuration>
                     </execution>
@@ -163,19 +158,18 @@
 <!--&lt;!&ndash;                <extensions>true</extensions>&ndash;&gt;-->
 <!--                <executions>-->
 <!--                    <execution>-->
+<!--                        <id>package-server-tests</id>-->
 <!--                        <goals>-->
 <!--                            <goal>ear</goal>-->
 <!--                        </goals>-->
+<!--                        <phase>package</phase>-->
 <!--                        <configuration>-->
-<!--&lt;!&ndash;                            <ejbLibs>&ndash;&gt;-->
-<!--&lt;!&ndash;                                <ejbLib>junit</ejbLib>&ndash;&gt;-->
-<!--&lt;!&ndash;                                <earLib>org.eclipse.persistence.core.test.framework</earLib>&ndash;&gt;-->
-<!--&lt;!&ndash;                            </ejbLibs>&ndash;&gt;-->
-<!--                            <earLibs>-->
-<!--                                <earLib>junit</earLib>-->
-<!--                                <earLib>org.eclipse.persistence.core.test.framework</earLib>-->
-<!--&lt;!&ndash;                                <earLib>org.eclipse.persistence.jpa</earLib>&ndash;&gt;-->
-<!--                            </earLibs>-->
+<!--                            <mode>EAR</mode>-->
+<!--                            <libs>-->
+<!--                                <lib>junit</lib>-->
+<!--                                <lib>org.eclipse.persistence.core.test.framework</lib>-->
+<!--&lt;!&ndash;                                <lib>org.eclipse.persistence.jpa</lib>&ndash;&gt;-->
+<!--                            </libs>-->
 <!--                        </configuration>-->
 <!--                    </execution>-->
 <!--                </executions>-->
@@ -187,11 +181,45 @@
         <profile>
             <!-- XXX - under construction: run tests on the server
                  requires manual JDBC DS creation
-                 for now hardcoded to WildFly -->
+                 for now hardcoded to WildFly
+                 and EAR/EJB-jars built by custom plugin -->
             <id>xxx-server-test-run</id>
             <properties>
                 <server.test.runner.context>${project.build.finalName}/${project.build.finalName}_ejb</server.test.runner.context>
+                <wildfly.deploy.skip>false</wildfly.deploy.skip>
             </properties>
+            <modules>
+                <module>jpa.test.composite.advanced</module>
+                <module>jpa.test.composite.advanced/common</module>
+                <module>jpa.test.composite.advanced/member_1</module>
+                <module>jpa.test.composite.advanced/member_2</module>
+                <module>jpa.test.composite.advanced/member_3</module>
+            </modules>
+            <dependencyManagement>
+                <!-- what test apps do produce and depend on -->
+                <dependencies>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.composite.advanced.common</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.composite.advanced.member_1</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.composite.advanced.member_2</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.composite.advanced.member_3</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
             <build>
                 <plugins>
                     <plugin>
@@ -205,6 +233,7 @@
                                     <goal>deploy-only</goal>
                                 </goals>
                                 <configuration>
+                                    <skip>${wildfly.deploy.skip}</skip>
                                     <force>true</force>
                                     <filename>${project.build.finalName}.ear</filename>
                                     <username>${wildfly.username}</username>

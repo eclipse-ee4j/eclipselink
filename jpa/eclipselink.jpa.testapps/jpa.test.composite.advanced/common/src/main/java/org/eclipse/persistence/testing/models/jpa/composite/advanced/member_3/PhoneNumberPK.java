@@ -14,12 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 
 
-package org.eclipse.persistence.testing.models.jpa.advanced;
+package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class PhoneNumberPK implements Serializable {
+public class PhoneNumberPK  {
     public Integer id;
     public String type;
 
@@ -46,14 +45,16 @@ public class PhoneNumberPK implements Serializable {
         return Objects.hash(id, type);
     }
 
+    /**
+     * equals: Answer true if the ids are equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PhoneNumberPK that = (PhoneNumberPK) o;
-        return Objects.equals(id, that.id) && Objects.equals(type, that.type);
+        return Objects.equals(id, that.id);
     }
-
 
     @Override
     public String toString() {
