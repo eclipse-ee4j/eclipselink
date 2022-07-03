@@ -184,6 +184,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.RemoteProtocol;
 import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
@@ -4392,6 +4393,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             memberProperties.put(PersistenceUnitProperties.VALIDATION_ONLY_PROPERTY, isValidationOnly);
         } else {
             memberProperties.remove(PersistenceUnitProperties.VALIDATION_ONLY_PROPERTY);
+        }
+        String archiveFactory =  (String)compositeProperties.get(SystemProperties.ARCHIVE_FACTORY);
+        if (archiveFactory != null) {
+            memberProperties.put(SystemProperties.ARCHIVE_FACTORY, archiveFactory);
+        } else {
+            memberProperties.remove(SystemProperties.ARCHIVE_FACTORY);
         }
     }
 
