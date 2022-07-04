@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<jboss-deployment-structure>
+    <sub-deployment name="${project.build.finalName}_ejb.jar">
+        <dependencies>
+            <!-- Adds a dependency on composite members. This could also be done with a Class-Path entry -->
+            <module name="deployment.xml.extended.composite.members" />
+        </dependencies>
+    </sub-deployment>
+    <module name="deployment.xml.extended.composite.members" >
+        <resources>
+            <resource-root path="org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_1_ejb.jar" />
+            <resource-root path="org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_2_ejb.jar" />
+            <resource-root path="org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_3_ejb.jar" />
+            <resource-root path="lib/org.eclipse.persistence.jpa.testapps.xml.composite.advanced_tests.jar" />
+        </resources>
+    </module>
+</jboss-deployment-structure>
