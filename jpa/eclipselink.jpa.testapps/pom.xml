@@ -130,6 +130,19 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>package-se-tests</id>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -194,6 +207,15 @@
                 <module>jpa.test.composite.advanced/member_1</module>
                 <module>jpa.test.composite.advanced/member_2</module>
                 <module>jpa.test.composite.advanced/member_3</module>
+                <module>jpa.test.xml.composite.advanced</module>
+                <module>jpa.test.xml.composite.advanced/common</module>
+                <module>jpa.test.xml.composite.advanced/member_1</module>
+                <module>jpa.test.xml.composite.advanced/member_2</module>
+                <module>jpa.test.xml.composite.advanced/member_3</module>
+                <module>jpa.test.xml.extended.composite.advanced</module>
+                <module>jpa.test.xml.extended.composite.advanced/member_1</module>
+                <module>jpa.test.xml.extended.composite.advanced/member_2</module>
+                <module>jpa.test.xml.extended.composite.advanced/member_3</module>
             </modules>
             <dependencyManagement>
                 <!-- what test apps do produce and depend on -->
@@ -216,6 +238,41 @@
                     <dependency>
                         <groupId>org.eclipse.persistence</groupId>
                         <artifactId>org.eclipse.persistence.jpa.testapps.composite.advanced.member_3</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.common</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.member_1</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.member_2</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.member_3</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_1</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_2</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_3</artifactId>
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
