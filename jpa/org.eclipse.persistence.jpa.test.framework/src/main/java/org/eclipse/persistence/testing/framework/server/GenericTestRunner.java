@@ -62,6 +62,7 @@ public class GenericTestRunner implements TestRunner {
                 JUnitTestCase jpaTest = (JUnitTestCase) testInstance;
                 JEEPlatform.entityManager = getEntityManager();
                 JEEPlatform.entityManagerFactory = getEntityManagerFactory();
+                JEEPlatform.ejbLookup = getEjbLookup();
                 jpaTest.runBareServer();
             } else {
                 testInstance.runBare();
@@ -78,5 +79,9 @@ public class GenericTestRunner implements TestRunner {
 
     protected EntityManagerFactory getEntityManagerFactory() {
         return null;
+    }
+
+    protected boolean getEjbLookup() {
+        return false;
     }
 }

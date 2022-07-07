@@ -38,6 +38,8 @@ public class JEEPlatform implements ServerPlatform {
     /** The variable for getting entity manager by jndi lookup, set the system property "ejb.lookup" to be true if you want jndi lookup */
     public static final String EJB_LOOKUP = "ejb.lookup";
 
+    public static boolean ejbLookup = false;
+
     /**
      * Nothing required in JEE.
      */
@@ -170,14 +172,26 @@ public class JEEPlatform implements ServerPlatform {
      */
     @Override
     public EntityManager getEntityManager(String persistenceUnit) {
-        String property = System.getProperty(EJB_LOOKUP);
-        if (property == null || !property.toUpperCase().equals("TRUE")){
+        boolean useLookup = ejbLookup || Boolean.getBoolean(EJB_LOOKUP);
+        if (!useLookup) {
             return entityManager;
         } else {
             String contextName = "java:comp/env/persistence/" + persistenceUnit + "/entity-manager";
             try {
                 return (EntityManager)new InitialContext().lookup(contextName);
             } catch (NamingException exception) {
+                //most tests do not need the fallback lookup as the java:comp/env
+                //is the only namespace they should worry about
+                if (persistenceUnit.contains("member")) {
+                    //retry within application space:
+                    String appContextName = "java:app/persistence/" + persistenceUnit + "/entity-manager";
+                    try {
+                        return (EntityManager)new InitialContext().lookup(appContextName);
+                    } catch (NamingException e) {
+                        e.addSuppressed(exception);
+                        throw new RuntimeException(e);
+                    }
+                }
                 throw new RuntimeException(exception);
             }
         }
@@ -188,14 +202,26 @@ public class JEEPlatform implements ServerPlatform {
      */
     @Override
     public EntityManagerFactory getEntityManagerFactory(String persistenceUnit) {
-        String property = System.getProperty(EJB_LOOKUP);
-        if (property == null || !property.toUpperCase().equals("TRUE")){
+        boolean useLookup = ejbLookup || Boolean.getBoolean(EJB_LOOKUP);
+        if (!useLookup) {
             return entityManagerFactory;
         } else{
             String contextName = "java:comp/env/persistence/" + persistenceUnit + "/factory";
             try {
                 return (EntityManagerFactory)new InitialContext().lookup(contextName);
             } catch (NamingException exception) {
+                //most tests do not need the fallback lookup as the java:comp/env
+                //is the only namespace they should worry about
+                if (persistenceUnit.contains("member")) {
+                    //retry within application space:
+                    String appContextName = "java:app/persistence/" + persistenceUnit + "/factory";
+                    try {
+                        return (EntityManagerFactory)new InitialContext().lookup(appContextName);
+                    } catch (NamingException e) {
+                        e.addSuppressed(exception);
+                        throw new RuntimeException(e);
+                    }
+                }
                 throw new RuntimeException(exception);
             }
         }
