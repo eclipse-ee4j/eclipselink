@@ -10736,7 +10736,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         for(int i=1; i<=3; i++) {
             String puName = "composite-advanced-member_" + i;
             try {
-                EntityManager em = createEntityManager(puName);
+                //creation of the factory is allowed
+                EntityManagerFactory emf = getEntityManagerFactory(puName);
+                //creation of the manager itself is expected to fail
+                EntityManager em = emf.createEntityManager();
                 fail("createEM should not be allowed for composite members");
             } catch (IllegalStateException ex){
                 // expected exception

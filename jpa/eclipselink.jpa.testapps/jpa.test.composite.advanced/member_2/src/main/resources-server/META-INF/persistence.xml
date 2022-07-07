@@ -21,6 +21,9 @@
             <property name="eclipselink.target-database" value="@database2-platform@"/>
             <property name="eclipselink.composite-unit.member" value="true"/>
             <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.MemberEventListener"/>
+            <!-- expose the factory/manager through the app namespace so the test in composite-unit can access them -->
+            <property name="jboss.entity.manager.factory.jndi.name" value="java:app/persistence/composite-advanced-member_2/factory" />
+            <property name="jboss.entity.manager.jndi.name" value="java:app/persistence/composite-advanced-member_2/entity-manager"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -20,6 +20,9 @@
         <properties>
             <property name="eclipselink.target-database" value="@database2-platform@"/>
             <property name="eclipselink.composite-unit.member" value="true"/>
+            <!-- expose the factory/manager through the app namespace so the test in composite-unit can access them -->
+            <property name="jboss.entity.manager.factory.jndi.name" value="java:app/persistence/xml-composite-advanced-member_2/factory" />
+            <property name="jboss.entity.manager.jndi.name" value="java:app/persistence/xml-composite-advanced-member_2/entity-manager"/>
         </properties>
     </persistence-unit>
 </persistence>

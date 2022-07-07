@@ -35,6 +35,10 @@
             <classifier>member_1</classifier>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>
