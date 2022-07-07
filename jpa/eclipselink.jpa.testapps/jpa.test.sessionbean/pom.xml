@@ -25,7 +25,7 @@
 
     <artifactId>org.eclipse.persistence.jpa.testapps.sessionbean</artifactId>
 
-    <name>Test - Persistence sessionbean</name>
+    <name>Test - sessionbean</name>
 
     <dependencies>
         <dependency>

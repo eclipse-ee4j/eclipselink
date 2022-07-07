@@ -25,7 +25,7 @@
 
     <artifactId>org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced</artifactId>
 
-    <name>Test - Persistence xml.extended.composite.advanced</name>
+    <name>Test - xml.extended.composite.advanced</name>
 
     <dependencies>
         <dependency>
@@ -133,6 +133,10 @@
                         <id>default-test</id>
                         <configuration>
                             <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
+                            <!-- TODO: remove me once in master -->
+                            <systemPropertyVariables combine.children="append">
+                                <el.skip.prefix-check>true</el.skip.prefix-check>
+                            </systemPropertyVariables>
                         </configuration>
                     </execution>
                 </executions>
@@ -146,17 +150,29 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>el-maven-plugin</artifactId>
-                <configuration>
-                    <libs combine.children="append">
-                        <lib>org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_1</lib>
-                        <lib>org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_2</lib>
-                        <lib>org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_3</lib>
-                    </libs>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>xxx-server-test-run</id>
+            <!-- skip for now -->
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>server-test</id>
+                                <configuration>
+                                    <skip>true</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

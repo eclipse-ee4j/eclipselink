@@ -25,7 +25,7 @@
 
     <artifactId>org.eclipse.persistence.jpa.testapps.xml.composite.advanced</artifactId>
 
-    <name>Test - Persistence xml.composite.advanced</name>
+    <name>Test - xml.composite.advanced</name>
 
     <dependencies>
         <dependency>
@@ -148,17 +148,6 @@
                             <phase>package</phase>
                         </execution>
                     </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>el-maven-plugin</artifactId>
-                <configuration>
-                    <libs combine.children="append">
-                        <lib>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.member_1</lib>
-                        <lib>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.member_2</lib>
-                        <lib>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.member_3</lib>
-                    </libs>
-                </configuration>
             </plugin>
         </plugins>
     </build>

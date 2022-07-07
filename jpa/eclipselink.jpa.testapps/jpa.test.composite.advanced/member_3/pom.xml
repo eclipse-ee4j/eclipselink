@@ -25,7 +25,7 @@
 
     <artifactId>org.eclipse.persistence.jpa.testapps.composite.advanced.member_3</artifactId>
 
-    <name>Test - Persistence composite.advanced.member_3</name>
+    <name>Test - composite.advanced.member_3</name>
 
     <dependencies>
         <dependency>
@@ -45,6 +45,7 @@
         <persistence-unit.name>composite-advanced-member_3</persistence-unit.name>
         <persistence-unit.data-source3-name>jdbc/EclipseLinkXADS3</persistence-unit.data-source3-name>
         <wildfly.deploy.skip>true</wildfly.deploy.skip>
+        <el.packager.mode>EJB</el.packager.mode>
     </properties>
 
     <build>
@@ -64,19 +65,6 @@
                             <classifier>member_3</classifier>
                             <excludeTransitive>true</excludeTransitive>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>el-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>package-server-tests</id>
-                        <phase>test</phase>
-                        <configuration>
-                            <mode>EJB</mode>
                         </configuration>
                     </execution>
                 </executions>
