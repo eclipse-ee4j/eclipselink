@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
  package org.eclipse.persistence.testing.framework.server;
 
+import jakarta.annotation.Resource;
 import jakarta.ejb.Remote;
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionManagement;
@@ -22,9 +23,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceUnit;
-
-import org.eclipse.persistence.testing.framework.server.GenericTestRunner;
-import org.eclipse.persistence.testing.framework.server.TestRunner;
 
 /**
  * Server side JUnit test invocation implemented as a stateless session bean.
@@ -47,6 +45,9 @@ public class SingleUnitTestRunnerBean extends GenericTestRunner {
     @PersistenceUnit
     private EntityManagerFactory entityManagerFactory;
 
+    @Resource(name="ejbLookup")
+    private Boolean ejbLookup = false;
+
     @Override
     protected EntityManager getEntityManager() {
         return entityManager;
@@ -55,5 +56,10 @@ public class SingleUnitTestRunnerBean extends GenericTestRunner {
     @Override
     protected EntityManagerFactory getEntityManagerFactory() {
         return entityManagerFactory;
+    }
+
+    @Override
+    protected boolean getEjbLookup() {
+        return ejbLookup;
     }
 }
