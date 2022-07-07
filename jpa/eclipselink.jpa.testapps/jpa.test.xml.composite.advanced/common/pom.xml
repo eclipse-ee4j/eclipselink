@@ -25,7 +25,7 @@
 
     <artifactId>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.common</artifactId>
 
-    <name>Test - Persistence xml.composite.advanced.common</name>
+    <name>Test - xml.composite.advanced.common</name>
 
     <properties>
         <wildfly.deploy.skip>true</wildfly.deploy.skip>
@@ -149,7 +149,7 @@
             </plugin>
             <plugin>
                 <groupId>org.eclipse.persistence</groupId>
-                <artifactId>el-maven-plugin</artifactId>
+                <artifactId>eclipselink-testbuild-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
                 </configuration>

@@ -25,10 +25,10 @@
 
     <artifactId>org.eclipse.persistence.jpa.testapps.nativeapi</artifactId>
 
-    <name>Test - Persistence nativeapi</name>
+    <name>Test - nativeapi</name>
 
     <properties>
-        <el.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.fwk.exclusionFilter>
+        <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>
     </properties>
 
     <build>

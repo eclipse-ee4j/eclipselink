@@ -25,7 +25,7 @@
 
     <artifactId>org.eclipse.persistence.jpa.testapps.beanvalidation.dynamic</artifactId>
 
-    <name>Test - Persistence beanvalidation.dynamic</name>
+    <name>Test - beanvalidation.dynamic</name>
 
     <dependencies>
         <dependency>
