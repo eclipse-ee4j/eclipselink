@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 //     04/29/2011 - 2.3 Andrei Ilitchev
 //       - Bug 328404 - JPA Persistence Unit Composition
-//         Adapted org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsAdvancedJUnitTestCase
+//         Adapted org.eclipse.persistence.testing.tests.jpa.xml.advanced.XmlCompositeAdvancedJUnitTest
 //         for composite persistence unit.
 //         Try to keep one-to-one correspondence between the two in the future, too.
 //         The tests that could not (or not yet) adapted for composite persistence unit
@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -91,7 +92,7 @@ import org.eclipse.persistence.tools.schemaframework.TableCreator;
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
  */
-public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
+public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
     private static Integer employeeId, extendedEmployeeId;
     private static long visa = 1234567890;
     private static long amex = 1987654321;
@@ -103,23 +104,18 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     private static long cibc = 948274;
     private String m_persistenceUnit;
 
-    public EntityMappingsAdvancedJUnitTestCase() {
+    public XmlCompositeAdvancedJUnitTest() {
         super();
     }
 
-    public EntityMappingsAdvancedJUnitTestCase(String name) {
+    public XmlCompositeAdvancedJUnitTest(String name) {
         super(name);
-    }
-
-    public EntityMappingsAdvancedJUnitTestCase(String name, String persistenceUnit) {
-        super(name);
-
-        m_persistenceUnit = persistenceUnit;
+        m_persistenceUnit = getPersistenceUnitName();
     }
 
     @Override
     public String getPersistenceUnitName() {
-        return m_persistenceUnit;
+        return "xml-composite-advanced";
     }
 
     /*
@@ -130,65 +126,23 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     }
 
     public static Test suite() {
-        return suite("xml-composite-advanced");
-    }
-
-    protected static Test suite(String persistenceUnit) {
-
         TestSuite suite = new TestSuite();
-        suite.setName("Advanced Model - " + persistenceUnit);
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testSetup", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testCreateEmployee", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testReadEmployee", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedNativeQueryOnAddress", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedQueryOnEmployee", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUpdateEmployee", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testRefreshNotManagedEmployee", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testRefreshRemovedEmployee", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testDeleteEmployee", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalPersist", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalUpdate", persistenceUnit));
-// Can't join different data bases        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalFetchJoin", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalTargetLocking_AddRemoveTarget", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalTargetLocking_DeleteSource", persistenceUnit));
-        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testMustBeCompositeMember"));
-
-        if (persistenceUnit.equals("xml-extended-composite-advanced")) {
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testSexObjectTypeConverterDefaultValue", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExistenceCheckingSetting", persistenceUnit));
-//            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testReadOnlyClassSetting", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeChangeTrackingPolicy", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAddressChangeTrackingPolicy", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testPhoneNumberChangeTrackingPolicy", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProjectChangeTrackingPolicy", persistenceUnit));
-// Can't join different data bases            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testJoinFetchSetting", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeOptimisticLockingSettings", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeCacheSettings", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProjectOptimisticLockingSettings", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExtendedEmployee", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testGiveExtendedEmployeeASexChange", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedStoredProcedureQuery", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedStoredProcedureQueryInOut", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testMethodBasedTransformationMapping", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testClassBasedTransformationMapping", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testClassInstanceConverter", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProperty", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAccessorMethods", persistenceUnit));
-            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testIfMultipleBasicCollectionMappingsExistForEmployeeResponsibilites", persistenceUnit));
-
-            // These are dynamic persistence tests.
-    //            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAttributeTypeSpecifications", persistenceUnit));
-    //            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testMockDynamicClassCRUD", persistenceUnit));
-
-    //            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEnumeratedPrimaryKeys", persistenceUnit));
-
-    //            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaModelPopulate", persistenceUnit));
-    //            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteria", persistenceUnit));
-    //            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEM1", persistenceUnit));
-    //            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEM2", persistenceUnit));
-    //            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAdditionalCriteriaWithParameterFromEMF", persistenceUnit));
-    //            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testComplexAdditionalCriteria", persistenceUnit));
-        }
+        suite.setName("Advanced Model - xml-composite-advanced");
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testSetup"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testCreateEmployee"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testReadEmployee"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testNamedNativeQueryOnAddress"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testNamedQueryOnEmployee"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testUpdateEmployee"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testRefreshNotManagedEmployee"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testRefreshRemovedEmployee"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testDeleteEmployee"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testUnidirectionalPersist"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testUnidirectionalUpdate"));
+// Can't join different data bases        suite.addTest(new XmlCompositeAdvancedJUnitTest("testUnidirectionalFetchJoin"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testUnidirectionalTargetLocking_AddRemoveTarget"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testUnidirectionalTargetLocking_DeleteSource"));
+        suite.addTest(new XmlCompositeAdvancedJUnitTest("testMustBeCompositeMember"));
 
         return suite;
     }
@@ -1806,25 +1760,32 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     }
 
     public void testMustBeCompositeMember() {
-        String errorMsg = "";
         for(int i=1; i<=3; i++) {
             String puName = getComponentMemberPuName(i);
             try {
-                EntityManager em = createEntityManager(puName);
-                closeEntityManager(em);
-                if (i == 1) {
+                //creation of the factory is allowed
+                EntityManagerFactory emf = getEntityManagerFactory(puName);
+                //creation of the manager itself is expected to fail
+                EntityManager em = null;
+                try {
+                    em = emf.createEntityManager();
+                } finally {
+                    if (em != null) {
+                        closeEntityManager(em);
+                    }
+                }
+                if (i != 1) {
                     // "xml-composite-advanced-member_1" is not marked as mustBeCompositeMember - should work standalone, too.
-                } else {
-                    errorMsg += "createEntityManager(" + puName +") succeeded - should have failed\n";
+                    fail("createEntityManager(" + puName +") succeeded - should have failed");
                 }
             } catch (IllegalStateException ex){
                 if (i == 1) {
-                    errorMsg += "createEntityManager(" + puName +") failed - should have succeeded\n";
+                    fail("createEntityManager(" + puName +") failed - should have succeeded");
                 } else {
                     // expected exception
                 }
             } catch (Exception exWrong) {
-                errorMsg += "createEntityManager(" + puName +") threw wrong exception: " + exWrong +"\n";
+                throw exWrong;
             } finally {
                 closeEntityManagerFactory(puName);
             }
