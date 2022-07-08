@@ -25,7 +25,6 @@
             <resource-root path="org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_1_ejb.jar" />
             <resource-root path="org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_2_ejb.jar" />
             <resource-root path="org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_3_ejb.jar" />
-            <resource-root path="lib/org.eclipse.persistence.jpa.testapps.xml.composite.advanced_tests.jar" />
         </resources>
     </module>
 </jboss-deployment-structure>

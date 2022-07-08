@@ -23,6 +23,9 @@
             <property name="eclipselink.composite-unit" value="true"/>
             <property name="eclipselink.logging.parameters" value="true"/>
             <property name="eclipselink.logging.logger" value="DefaultLogger"/>
+            <!-- expose the factory/manager through the app namespace so the test in composite-unit can access them -->
+            <property name="jboss.entity.manager.factory.jndi.name" value="java:comp/persistence/xml-extended-composite-advanced/factory" />
+            <property name="jboss.entity.manager.jndi.name" value="java:comp/persistence/xml-extended-composite-advanced/entity-manager"/>
         </properties>
     </persistence-unit>
 </persistence>
