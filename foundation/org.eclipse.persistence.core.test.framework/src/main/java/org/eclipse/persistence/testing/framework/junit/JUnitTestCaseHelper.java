@@ -102,10 +102,6 @@ public class JUnitTestCaseHelper {
             if (puProperties == null) {
                 if (puName.equals("composite-advanced") || puName.equals("xml-composite-advanced") || puName.equals("xml-extended-composite-advanced")) {
                     String prefix = puName;
-                    //temporary during the rename of the xml-extended-composite-advanced members
-                    if (!Boolean.getBoolean("el.skip.prefix-check") && puName.equals("xml-extended-composite-advanced")) {
-                        prefix = "xml-composite-advanced";
-                    }
                     String[] sessions = {"member_1", "member_2", "member_3"};
                     for(int i=0; i < sessions.length; i++) {
                         sessions[i] = prefix + "-" + sessions[i];

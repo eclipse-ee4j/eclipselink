@@ -133,10 +133,6 @@
                         <id>default-test</id>
                         <configuration>
                             <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
-                            <!-- TODO: remove me once in master -->
-                            <systemPropertyVariables combine.children="append">
-                                <el.skip.prefix-check>true</el.skip.prefix-check>
-                            </systemPropertyVariables>
                         </configuration>
                     </execution>
                 </executions>
