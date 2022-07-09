@@ -27,8 +27,14 @@
             <property name="eclipselink.validate-existence" value="true"/>
             <property name="eclipselink.logging.parameters" value="true"/>
             <property name="eclipselink.logging.logger" value="DefaultLogger"/>
+            <!-- expose the factory/manager through the app namespace so the test in composite-unit can access them -->
             <property name="jboss.entity.manager.factory.jndi.name" value="java:comp/env/persistence/xml-composite-advanced/factory" />
             <property name="jboss.entity.manager.jndi.name" value="java:comp/env/persistence/xml-composite-advanced/entity-manager"/>
+            <!-- testIdentityOutsideTransaction checks for object identity being maintained outside of the transaction
+                 in this case wildfly by default always closes EM during which the persistence context is closed,
+                 caches cleared and in the end the test fails; this property avoids the server to close the EM
+                 (and clean its caches) during the em.find call -->
+            <property name="wildfly.jpa.skipquerydetach" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>
