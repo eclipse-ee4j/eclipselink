@@ -1223,7 +1223,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         // clean up
         beginTransaction(em);
         try {
-            em.remove(employee);
+            em.remove(em.merge(employee));
             commitTransaction(em);
         } finally {
             if (isTransactionActive(em)){
@@ -1250,13 +1250,20 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         em.clear();
         getDatabaseSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        add = em.find(Address.class, assignedSequenceNumber);
+        try {
+            add = em.find(Address.class, assignedSequenceNumber);
 
-        assertTrue("Did not correctly persist a mapping using a class-instance converter", (add.getType() instanceof Bungalow));
+            assertTrue("Did not correctly persist a mapping using a class-instance converter", (add.getType() instanceof Bungalow));
 
-        beginTransaction(em);
-        em.remove(add);
-        commitTransaction(em);
+            beginTransaction(em);
+            em.remove(em.merge(add));
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
 
 
@@ -1264,11 +1271,9 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
      * Tests Property and Properties annotations
      */
     public void testProperty() {
-        EntityManager em = createEntityManager();
         DatabaseSessionImpl session = getDatabaseSession();
         ClassDescriptor descriptor = session.getDescriptorForAlias("XMLEmployee");
         ClassDescriptor aggregateDescriptor = session.getDescriptor(EmploymentPeriod.class);
-        em.close();
 
         String errorMsg = "";
 
