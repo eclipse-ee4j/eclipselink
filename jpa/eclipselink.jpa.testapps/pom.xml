@@ -195,6 +195,7 @@
             <properties>
                 <server.test.runner.context>${project.build.finalName}/${project.build.finalName}_ejb</server.test.runner.context>
                 <wildfly.deploy.skip>false</wildfly.deploy.skip>
+                <ignore.server.failures>false</ignore.server.failures>
             </properties>
             <modules>
                 <module>jpa.test.composite.advanced</module>
@@ -306,7 +307,7 @@
                                 </goals>
                                 <configuration>
                                     <additionalClasspathElements>
-                                        <!--TODO It should be replaced by https://search.maven.org/artifact/org.wildfly/wildfly-client-all/27.0.0.Alpha1/jar resolved by dependency plugin-->
+                                        <!--TODO It should be replaced by https://search.maven.org/artifact/org.wildfly/wildfly-client-all/27.0.0.Alpha2/jar resolved by dependency plugin-->
                                         <additionalClasspathElement>${wildfly.home}/bin/client/jboss-client.jar</additionalClasspathElement>
                                     </additionalClasspathElements>
                                     <reportNameSuffix>server</reportNameSuffix>
@@ -317,7 +318,7 @@
                                         <server.url>remote+http://localhost:8080</server.url>
                                         <server.testrunner.context>${server.test.runner.context}</server.testrunner.context>
                                     </systemPropertyVariables>
-                                    <testFailureIgnore>true</testFailureIgnore>
+                                    <testFailureIgnore>${ignore.server.failures}</testFailureIgnore>
                                 </configuration>
                             </execution>
                         </executions>

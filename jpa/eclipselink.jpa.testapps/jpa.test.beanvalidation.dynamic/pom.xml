@@ -51,6 +51,7 @@
 
     <properties>
         <persistence-unit.name>beanvalidation-dynamic</persistence-unit.name>
+        <ignore.server.failures>true</ignore.server.failures>
     </properties>
 
     <build>
