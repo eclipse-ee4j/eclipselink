@@ -80,6 +80,7 @@
     <properties>
         <argLine/>
         <persistence-unit.name>xml-composite-advanced</persistence-unit.name>
+        <ignore.server.failures>true</ignore.server.failures>
     </properties>
 
     <build>
@@ -148,27 +149,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>xxx-server-test-run</id>
-            <!-- skip for now -->
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>server-test</id>
-                                <configuration>
-                                    <skip>true</skip>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
