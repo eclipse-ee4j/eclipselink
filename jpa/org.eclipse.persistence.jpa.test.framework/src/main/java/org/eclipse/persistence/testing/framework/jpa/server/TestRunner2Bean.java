@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
- package org.eclipse.persistence.testing.framework.server;
+ package org.eclipse.persistence.testing.framework.jpa.server;
 
 import jakarta.ejb.Remote;
 import jakarta.ejb.Stateless;
@@ -23,28 +23,25 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceUnit;
 
-import org.eclipse.persistence.testing.framework.server.GenericTestRunner;
-import org.eclipse.persistence.testing.framework.server.TestRunner;
-
 /**
  * Server side JUnit test invocation implemented as a stateless session bean.
  *
  * @author mschinca
  */
-@Stateless(name="TestRunner4")
+@Stateless(name="TestRunner2")
 @Remote(TestRunner.class)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class TestRunner4Bean extends GenericTestRunner {
+public class TestRunner2Bean extends GenericTestRunner {
 
-    public TestRunner4Bean() {
+    public TestRunner2Bean() {
     }
 
     /** The entity manager for the test is injected and passed to the test server platform. */
-    @PersistenceContext(unitName="MulitPU-4")
+    @PersistenceContext(unitName="MulitPU-2")
     private EntityManager entityManager;
 
     /** The entity manager factory for the test is injected and passed to the test server platform. */
-    @PersistenceUnit(unitName="MulitPU-4")
+    @PersistenceUnit(unitName="MulitPU-2")
     private EntityManagerFactory entityManagerFactory;
 
     @Override

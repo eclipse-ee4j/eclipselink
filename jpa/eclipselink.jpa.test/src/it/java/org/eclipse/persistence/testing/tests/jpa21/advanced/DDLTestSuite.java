@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.Proxy;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,15 +48,11 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.PersistenceProvider;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.Organizer;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.PUInfoInvocationHandler;
@@ -66,7 +61,6 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.Responsibil
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.Runner;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.RunnerInfo;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.RunnerStatus;
-import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.Sprinter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Health;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Level;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.RunningStatus;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.spi.PersistenceProvider;
 
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.performance2.*;
 import org.eclipse.persistence.testing.tests.jpa.performance.misc.JPA2BootstrapPerformanceTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.reading.JPA2ReadAllEmployeeCompletelyPerformanceComparisonTest;
@@ -189,7 +190,7 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
      */
     @Override
     public void setupProvider() {
-        if (org.eclipse.persistence.testing.framework.junit.JUnitTestCase.isOnServer()) {
+        if (JUnitTestCase.isOnServer()) {
             return;
         }
         // Configure provider to be EclipseLink.

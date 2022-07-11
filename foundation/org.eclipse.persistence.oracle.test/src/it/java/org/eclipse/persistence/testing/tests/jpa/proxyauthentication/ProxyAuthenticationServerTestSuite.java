@@ -39,7 +39,7 @@ import org.eclipse.persistence.platform.server.wls.WebLogicPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.proxyauthentication.Employee;
 import org.eclipse.persistence.testing.models.jpa.proxyauthentication.PhoneNumber;

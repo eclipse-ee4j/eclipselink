@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.framework.server;
+package org.eclipse.persistence.testing.framework.jpa.server;
 
 import javax.naming.InitialContext;
 

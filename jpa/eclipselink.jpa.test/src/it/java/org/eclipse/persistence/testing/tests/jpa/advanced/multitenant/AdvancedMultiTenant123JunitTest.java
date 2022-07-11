@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@
 //       - 337323: Multi-tenant with shared schema support (part 5)
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -28,20 +27,13 @@ import jakarta.persistence.TypedQuery;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedMultiTenantTableCreator;
 
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address;
-import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss;
-import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo;
-import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily;
-import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso;
-import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo;
-import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss;
 
 public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitTest {
 

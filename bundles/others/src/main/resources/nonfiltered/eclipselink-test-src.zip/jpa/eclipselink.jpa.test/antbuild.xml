@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -950,8 +950,8 @@
                 <property name="gen.srv.cls.dir" value="${jpatest.server.build.dir}/@{testname}/ejb-classes"/>
                 <mkdir dir="${gen.srv.src.dir}"/>
                 <copy overwrite="true"
-                      tofile="${gen.srv.src.dir}/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java"
-                      file="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/server/${bean.src}">
+                      tofile="${gen.srv.src.dir}/org/eclipse/persistence/testing/framework/jpa/server/TestRunnerBean.java"
+                      file="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/jpa/server/${bean.src}">
                     <filterset>
                         <filter token="puName" value="@{puname}"/>
                     </filterset>
@@ -991,7 +991,7 @@
                                   org/eclipse/persistence/testing/tests/TestRunModel*"/>
                     <zipfileset  src="${jpatest.basedir}/${jpatest.framework}.jar"
                                  includes="org/eclipse/persistence/testing/framework/junit/*.class,
-                                  org/eclipse/persistence/testing/framework/server/*.class"
+                                  org/eclipse/persistence/testing/framework/jpa/server/*.class"
                                  excludes="${impl.excluded.runners}"/>
                     <fileset dir="${jpatest.server.build.dir}/@{testname}/ejb-classes" erroronmissingdir="false"/>
                     <fileset dir="${stage.build.dir.ejb}" includes="@{ejbjarincludes}" excludes="@{ejbjarexcludes}"/>
@@ -1213,7 +1213,7 @@
                target="${javac.version}"
                deprecation="${javac.deprecation}"
                failonerror="true">
-            <include name="org/eclipse/persistence/testing/framework/server/**"/>
+            <include name="org/eclipse/persistence/testing/framework/jpa/server/**"/>
             <classpath>
                 <path refid="compile.path"/>
                 <path refid="spring.path"/>
@@ -2319,7 +2319,7 @@
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
         <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
-            <sysproperty key="TEST_SERVER_PLATFORM" value="org.eclipse.persistence.testing.framework.server.SpringPlatform"/>
+            <sysproperty key="TEST_SERVER_PLATFORM" value="org.eclipse.persistence.testing.framework.jpa.server.SpringPlatform"/>
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
             <jvmarg line="${additional.jvmargs}"/>

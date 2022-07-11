@@ -23,7 +23,7 @@ import jakarta.persistence.TemporalType;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimePopulator;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator;
 

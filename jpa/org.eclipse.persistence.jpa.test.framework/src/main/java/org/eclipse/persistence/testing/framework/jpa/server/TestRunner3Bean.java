@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
- package org.eclipse.persistence.testing.framework.server;
+ package org.eclipse.persistence.testing.framework.jpa.server;
 
 import jakarta.ejb.Remote;
 import jakarta.ejb.Stateless;
@@ -22,9 +22,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceUnit;
-
-import org.eclipse.persistence.testing.framework.server.GenericTestRunner;
-import org.eclipse.persistence.testing.framework.server.TestRunner;
 
 /**
  * Server side JUnit test invocation implemented as a stateless session bean.

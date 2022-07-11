@@ -86,7 +86,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteri
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.School;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Student;*/
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 
 /**

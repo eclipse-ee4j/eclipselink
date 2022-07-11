@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.dcn.Employee;
 import org.eclipse.persistence.testing.models.jpa.dcn.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.dcn.Project;

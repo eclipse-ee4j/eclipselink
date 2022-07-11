@@ -12,7 +12,7 @@
 
 // Contributors:
 //     James Sutherland - initial API and implementation
-package org.eclipse.persistence.testing.framework.server;
+package org.eclipse.persistence.testing.framework.jpa.server;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +20,7 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
+import org.eclipse.persistence.testing.framework.jpa.server.ServerPlatform;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;

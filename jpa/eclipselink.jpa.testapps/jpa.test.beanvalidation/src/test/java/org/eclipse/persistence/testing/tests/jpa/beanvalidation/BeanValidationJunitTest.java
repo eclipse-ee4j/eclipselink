@@ -29,7 +29,7 @@ import jakarta.validation.ConstraintViolationException;
 
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.Address;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.BeanValidationTableCreator;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.Employee;
