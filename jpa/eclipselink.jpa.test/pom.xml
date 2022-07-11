@@ -333,8 +333,6 @@
                                 <item>eclipselink-annotation-model</item>
                                 <item>eclipselink-xml-only-model</item>
                                 <item>eclipselink-advanced-properties</item>
-                                <item>eclipselink-pu with spaces</item>
-                                <item>eclipselink-validation-failed-model</item>
                                 <item>eclipselink-xml-merge-model</item>
                                 <item>eclipselink-advanced-field-access-model</item>
                                 <item>eclipselink-cascade-deletes-model</item>
@@ -473,10 +471,8 @@
                             <items>
                                 <item>eclipselink-annotation-model</item>
                                 <item>eclipselink-ddl-generation-model</item>
-                                <item>eclipselink-validation-failed-model</item>
                                 <item>eclipselink-cacheable-model</item>
                                 <item>eclipselink-advanced-properties</item>
-                                <item>eclipselink-pu with spaces</item>
                                 <item>eclipselink-partitioned-model</item>
                                 <item>eclipselink-plsql-model</item>
                                 <item>eclipselink-cascade-deletes-model</item>
@@ -511,8 +507,6 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-field-access-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
@@ -573,8 +567,6 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-field-access-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
@@ -833,8 +825,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -860,8 +850,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <!-- Special model jars for LRG 22_1 test.-->
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
@@ -887,9 +875,7 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <!-- Special model jars for LRG 22_2 test.-->
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-plsql-model.jar</additionalClasspathElement>
@@ -1099,8 +1085,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-field-access-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
@@ -1142,10 +1126,8 @@
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-validation-failed-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-advanced-field-access-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-pu with spaces.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-partitioned-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-plsql-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-cascade-deletes-model.jar</additionalClasspathElement>

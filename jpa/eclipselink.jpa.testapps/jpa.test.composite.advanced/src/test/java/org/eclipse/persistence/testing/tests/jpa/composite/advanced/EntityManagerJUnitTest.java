@@ -334,7 +334,6 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         tests.add("testForceSQLExceptionFor219097");
         tests.add("testRefreshInvalidateDeletedObject");
         tests.add("testClearWithFlush2");
-// TODO - remove?        tests.add("testEMFWrapValidationException");
 // TODO - remove?        tests.add("testEMDefaultTxType");
         tests.add("testMergeNewObject");
         tests.add("testMergeNewObject2");
@@ -352,9 +351,6 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         tests.add("testGetReferenceUsedInUpdate");
         tests.add("testBadGetReference");
         tests.add("testClassInstanceConverter");
-// TODO - remove?        tests.add("test210280EntityManagerFromPUwithSpaceInNameButNotInPath");
-// TODO - remove?        tests.add("test210280EntityManagerFromPUwithSpaceInPathButNotInName");
-// TODO - remove?        tests.add("test210280EntityManagerFromPUwithSpaceInNameAndPath");
 // Golfer WorldRunk tests.add("testNewObjectNotCascadePersist");
         tests.add("testConnectionPolicy");
         tests.add("testConverterIn");
@@ -4622,33 +4618,6 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         }
     }
 
-    /*This test case uses the "broken-PU" PU defined in the persistence.xml
-    located at eclipselink.jpa.test/resource/eclipselink-validation-failed-model/
-    and included in eclipselink-validation-failed-model.jar */
-
-    public void testEMFWrapValidationException()
-    {
-        // Comment out because it's not relevant for getDatabaseProperties() when running in server
-        if (isOnServer()) {
-            return;
-        }
-        try (JpaEntityManagerFactory factory = (JpaEntityManagerFactory) Persistence.createEntityManagerFactory("broken-PU", JUnitTestCaseHelper.getDatabaseProperties());
-             JpaEntityManager em = (JpaEntityManager) factory.createEntityManager()) {
-        } catch (jakarta.persistence.PersistenceException e)  {
-            ArrayList expectedExceptions = new ArrayList();
-            expectedExceptions.add(48);
-            expectedExceptions.add(48);
-            IntegrityException integrityException = (IntegrityException)e.getCause().getCause();
-            Iterator i = integrityException.getIntegrityChecker().getCaughtExceptions().iterator();
-            while (i.hasNext()){
-                expectedExceptions.remove((Object)((EclipseLinkException)i.next()).getErrorCode());
-            }
-            if (expectedExceptions.size() > 0){
-                fail("Not all expected exceptions were caught");
-            }
-        }
-    }
-
     /**
      * At the time this test case was added, the problem it was designed to test for would cause a failure during deployement
      * and therefore this tests case would likely always pass if there is a successful deployment.
@@ -8170,57 +8139,6 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         add = em.find(Address.class, assignedSequenceNumber);
         em.remove(add);
         commitTransaction(em);
-    }
-
-    /**
-     * See bug# 210280: verify that the URL encoding for spaces and multibyte chars is handled properly in the EMSetup map lookup
-     * UC1 - EM has no spaces or multi-byte chars in name or path
-     * UC2 - EM has spaces hex(20) in EM name but not in path
-     * UC3/4 are fixed by 210280 - the other UC tests are for regression
-     * UC3 - EM has spaces in path but not in the EM name
-     * UC4 - EM has spaces in path and EM name
-     * UC5 - EM has multi-byte hex(C3A1) chars in EM name but not in path
-     * Keep resource with spaces and multibyte chars separate
-     * UC6 - EM has multi-byte chars in path but not EM name
-     * UC7 - EM has multi-byte chars in path and EM name
-     * UC8 - EM has spaces and multi-byte chars in EM name but not in path
-     * UC9 - EM has spaces and multi-byte chars in path and EM name
-     */
-    // UC2 - EM has spaces in EM name but not in path
-    public void test210280EntityManagerFromPUwithSpaceInNameButNotInPath() {
-        // This EM is defined in a persistence.xml that is off eclipselink-advanced-properties (no URL encoded chars in path)
-        privateTest210280EntityManagerWithPossibleSpacesInPathOrName(//
-                "A JPAADVProperties pu with spaces in the name", //
-                "with a name containing spaces was not found.");
-    }
-
-    // UC3 - EM has spaces in path but not in the EM name
-    public void test210280EntityManagerFromPUwithSpaceInPathButNotInName() {
-        // This EM is defined in a persistence.xml that is off [eclipselink-pu with spaces] (with URL encoded chars in path)
-        privateTest210280EntityManagerWithPossibleSpacesInPathOrName(//
-                "eclipselink-pu-with-spaces-in-the-path-but-not-the-name", //
-                "with a path containing spaces was not found.");
-    }
-
-    // UC4 - EM has spaces in the path and name
-    public void test210280EntityManagerFromPUwithSpaceInNameAndPath() {
-        // This EM is defined in a persistence.xml that is off [eclipselink-pu with spaces] (with URL encoded chars in path)
-        privateTest210280EntityManagerWithPossibleSpacesInPathOrName(//
-                "eclipselink-pu with spaces in the path and name", //
-                "with a path and name both containing spaces was not found.");
-    }
-
-    private void privateTest210280EntityManagerWithPossibleSpacesInPathOrName(String puName, String failureMessagePostScript) {
-        EntityManager em = null;
-        try {
-            em = createEntityManager(puName);
-        } catch (Exception exception) {
-            throw new RuntimeException("A Persistence Unit [" + puName + "] " + failureMessagePostScript, exception);
-        } finally {
-            if (null != em) {
-                closeEntityManager(em);
-            }
-        }
     }
 
     public void testConnectionPolicy() {

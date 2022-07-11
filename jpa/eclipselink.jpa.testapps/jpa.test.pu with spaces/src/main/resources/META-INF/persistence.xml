@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,14 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
              <property name="eclipselink.profiler" value="NoProfiler"/>
+        </properties>
+    </persistence-unit>
+    <!-- Bug 210280 testing for URL encoded char hex(20)-space and hex(C3A1)-multibyte handling in the PU name -->
+    <persistence-unit name="A JPAADVProperties pu with spaces in the name" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.profiler" value="NoProfiler"/>
         </properties>
     </persistence-unit>
 </persistence>
