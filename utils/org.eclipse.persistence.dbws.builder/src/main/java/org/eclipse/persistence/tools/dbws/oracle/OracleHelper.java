@@ -459,7 +459,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     rargJdbcType = STRUCT;
                 } else if (rargDataType.isVArrayType() || rargDataType.isObjectTableType()) {
                     rargJdbcType = ARRAY;
-                } else if (rargDataType.isTYPEType() {
+                } else if (rargDataType.isTYPEType()) {
                     rargJdbcType = Util.getJDBCTypeFromTypeName(returnArgument.getTypeName());
                 }
             } else {
