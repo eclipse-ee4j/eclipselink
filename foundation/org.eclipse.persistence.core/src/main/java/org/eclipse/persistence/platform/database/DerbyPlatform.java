@@ -24,9 +24,11 @@ package org.eclipse.persistence.platform.database;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -52,6 +54,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
@@ -322,7 +325,7 @@ public class DerbyPlatform extends DB2Platform {
 
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
         fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
 
@@ -348,8 +351,6 @@ public class DerbyPlatform extends DB2Platform {
         super.initializePlatformOperators();
         // Derby does not support DECIMAL, but does have a DOUBLE function.
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DOUBLE"));
-        // LocalTime should be processed as TIMESTAMP
-        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "CAST(CURRENT_TIME AS TIMESTAMP)"));
         addOperator(derbyExtractOperator());
         addOperator(derbyPowerOperator());
         addOperator(derbyRoundOperator());
@@ -965,4 +966,56 @@ public class DerbyPlatform extends DB2Platform {
 
         isConnectionDataInitialized = true;
     }
+
+    /**
+     * INTERNAL
+     * Set the parameter in the JDBC statement at the given index.
+     * This support a wide range of different parameter types,
+     * and is heavily optimized for common types.
+     */
+    public void setParameterValueInDatabaseCall(Object parameter,
+                                                PreparedStatement statement, int index, AbstractSession session)
+            throws SQLException {
+        if (parameter instanceof LocalTime) {
+            statement.setTime(
+                    index, java.sql.Time.valueOf((LocalTime) parameter));
+            return;
+        }
+        super.setParameterValueInDatabaseCall(parameter, statement, index, session);
+    }
+
+    /**
+     * INTERNAL
+     * Set the parameter in the JDBC statement with the given name.
+     * This support a wide range of different parameter types,
+     * and is heavily optimized for common types.
+     */
+    public void setParameterValueInDatabaseCall(Object parameter,
+                                                CallableStatement statement, String name, AbstractSession session)
+            throws SQLException {
+        if (parameter instanceof LocalTime) {
+            statement.setTime(
+                    name, java.sql.Time.valueOf((LocalTime) parameter));
+            return;
+        }
+        super.setParameterValueInDatabaseCall(parameter, statement, name, session);
+    }
+
+    /**
+     * Returns the number of parameters that used binding.
+     * Should only be called in case binding is not used.
+     */
+    public int appendParameterInternal(Call call, Writer writer, Object parameter) {
+        try {
+            int nBoundParameters = 0;
+            if (parameter instanceof LocalTime) {
+                appendTime(java.sql.Time.valueOf((LocalTime) parameter), writer);
+                return nBoundParameters;
+            }
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+        return super.appendParameterInternal(call, writer, parameter);
+    }
+
 }
