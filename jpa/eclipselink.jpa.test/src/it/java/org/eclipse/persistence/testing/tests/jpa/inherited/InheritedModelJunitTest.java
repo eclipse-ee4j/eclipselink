@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -59,7 +58,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.sessions.CopyGroup;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;

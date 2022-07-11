@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,38 +41,25 @@
 //       - 394524: Invalid query key [...] in expression
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.queries.SQLCall;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedMultiTenantTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss;
@@ -85,7 +72,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Party;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumber;
-import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Riding;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo;
@@ -96,7 +82,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Task;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss;
-import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Card;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Envelope;
 
 public class AdvancedMultiTenantJunitTest extends JUnitTestCase {

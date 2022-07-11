@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,11 +40,10 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreato
 import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 /**
  * @author DaraniY

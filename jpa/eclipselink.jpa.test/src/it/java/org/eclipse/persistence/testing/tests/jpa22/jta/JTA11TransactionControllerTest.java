@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,25 +15,14 @@
 //       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
 package org.eclipse.persistence.testing.tests.jpa22.jta;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.PersistenceContext;
-
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa22.jta.Animal;
 import org.eclipse.persistence.testing.models.jpa22.jta.AnimalCheck;
 import org.eclipse.persistence.testing.models.jpa22.jta.AnimalDAO;
 import org.eclipse.persistence.testing.models.jpa22.jta.AnimalDAOUpdate;
 import org.eclipse.persistence.testing.models.jpa22.jta.AnimalEvent;
-import org.eclipse.persistence.transaction.JTA11TransactionController;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

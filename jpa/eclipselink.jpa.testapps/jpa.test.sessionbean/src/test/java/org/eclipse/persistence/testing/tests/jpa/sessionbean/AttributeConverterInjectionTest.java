@@ -22,7 +22,7 @@ import javax.naming.NamingException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.attributeconverter.AttributeConverterTableCreator;
 import org.eclipse.persistence.testing.models.jpa.sessionbean.InjectionTest;
 

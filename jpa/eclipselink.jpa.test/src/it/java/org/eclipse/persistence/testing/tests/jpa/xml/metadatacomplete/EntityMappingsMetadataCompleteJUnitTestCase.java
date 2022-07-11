@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,12 @@
 //       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
 package org.eclipse.persistence.testing.tests.jpa.xml.metadatacomplete;
 
-import jakarta.persistence.EntityManager;
-
 import junit.framework.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa.xml.metadatacomplete.Drywall;
 import org.eclipse.persistence.testing.models.jpa.xml.metadatacomplete.Hammer;

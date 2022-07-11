@@ -25,8 +25,8 @@
             <unpack>true</unpack>
             <unpackOptions>
                 <includes>
-                    <include>org/eclipse/persistence/testing/framework/server/TestRunner1Bean.class</include>
-                    <include>org/eclipse/persistence/testing/framework/server/TestRunner2Bean.class</include>
+                    <include>org/eclipse/persistence/testing/framework/jpa/server/TestRunner1Bean.class</include>
+                    <include>org/eclipse/persistence/testing/framework/jpa/server/TestRunner2Bean.class</include>
                 </includes>
             </unpackOptions>
         </dependencySet>

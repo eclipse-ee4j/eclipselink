@@ -23,7 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.entitylistener.EntityListenerTableCreator;
 import org.eclipse.persistence.testing.models.jpa.sessionbean.InjectionTest;
 

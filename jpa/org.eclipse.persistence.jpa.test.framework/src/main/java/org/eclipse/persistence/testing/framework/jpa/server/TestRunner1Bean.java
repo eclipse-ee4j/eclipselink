@@ -12,9 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
- package org.eclipse.persistence.testing.framework.server;
+ package org.eclipse.persistence.testing.framework.jpa.server;
 
-import jakarta.annotation.Resource;
 import jakarta.ejb.Remote;
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionManagement;
@@ -29,24 +28,21 @@ import jakarta.persistence.PersistenceUnit;
  *
  * @author mschinca
  */
-@Stateless(name="SingleUnitTestRunner")
+@Stateless(name="TestRunner1")
 @Remote(TestRunner.class)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class SingleUnitTestRunnerBean extends GenericTestRunner {
+public class TestRunner1Bean extends GenericTestRunner {
 
-    public SingleUnitTestRunnerBean() {
+    public TestRunner1Bean() {
     }
 
     /** The entity manager for the test is injected and passed to the test server platform. */
-    @PersistenceContext
+    @PersistenceContext(unitName="MulitPU-1")
     private EntityManager entityManager;
 
     /** The entity manager factory for the test is injected and passed to the test server platform. */
-    @PersistenceUnit
+    @PersistenceUnit(unitName="MulitPU-1")
     private EntityManagerFactory entityManagerFactory;
-
-    @Resource(name="ejbLookup")
-    private Boolean ejbLookup = false;
 
     @Override
     protected EntityManager getEntityManager() {
@@ -58,8 +54,4 @@ public class SingleUnitTestRunnerBean extends GenericTestRunner {
         return entityManagerFactory;
     }
 
-    @Override
-    protected boolean getEjbLookup() {
-        return ejbLookup;
-    }
 }

@@ -25,10 +25,10 @@
             <unpack>true</unpack>
             <unpackOptions>
                 <includes>
-                    <include>org/eclipse/persistence/testing/framework/server/TestRunner?Bean.class</include>
+                    <include>org/eclipse/persistence/testing/framework/jpa/server/TestRunner?Bean.class</include>
                 </includes>
                 <excludes>
-                    <exclude>org/eclipse/persistence/testing/framework/server/TestRunner6Bean.class</exclude>
+                    <exclude>org/eclipse/persistence/testing/framework/jpa/server/TestRunner6Bean.class</exclude>
                 </excludes>
             </unpackOptions>
         </dependencySet>

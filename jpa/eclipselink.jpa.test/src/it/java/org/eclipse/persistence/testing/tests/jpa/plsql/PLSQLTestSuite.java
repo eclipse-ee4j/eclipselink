@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.plsql.Address;
 import org.eclipse.persistence.testing.models.jpa.plsql.Employee;
 import org.eclipse.persistence.testing.models.jpa.plsql.InnerObjBlob;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010 Frank Schwarz. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -37,14 +37,13 @@
 //       - 277079: EmbeddedId's fields are null when using LOB with fetchtype LAZY
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 import jakarta.persistence.EntityManager;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
 import java.util.List;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 
 import org.eclipse.persistence.testing.models.jpa.inheritance.MacBook;
@@ -30,13 +30,10 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.TireRatingComment;
 
 import org.eclipse.persistence.testing.models.jpa.inheritance.SuperclassEntityJoined;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SubclassEntityJoined;
-import org.eclipse.persistence.testing.models.jpa.inheritance.MappedSuperclassJoined;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SuperclassEntitySingleTable;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SubclassEntitySingleTable;
-import org.eclipse.persistence.testing.models.jpa.inheritance.MappedSuperclassSingleTable;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SuperclassEntityTablePerClass;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SubclassEntityTablePerClass;
-import org.eclipse.persistence.testing.models.jpa.inheritance.MappedSuperclassTablePerClass;
 
 import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.TireInfoListener;
 

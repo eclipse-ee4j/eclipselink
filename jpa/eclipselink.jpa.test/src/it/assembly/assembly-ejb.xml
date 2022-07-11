@@ -65,7 +65,7 @@
             <unpackOptions>
                 <includes>
                     <include>org/eclipse/persistence/testing/framework/junit/*.class</include>
-                    <include>org/eclipse/persistence/testing/framework/server/*.class</include>
+                    <include>org/eclipse/persistence/testing/framework/jpa/server/*.class</include>
                 </includes>
                 <excludes>
                     <exclude>**/TestRunner?Bean.class</exclude>
@@ -80,7 +80,7 @@
             <directory>${project.build.testOutputDirectory}</directory>
             <outputDirectory>.</outputDirectory>
             <includes>
-                <include>org/eclipse/persistence/testing/framework/server/TestRunnerBean.class</include>
+                <include>org/eclipse/persistence/testing/framework/jpa/server/TestRunnerBean.class</include>
                 <include>org/eclipse/persistence/testing/tests/jpa/${packageName}/**/*.class</include>
             </includes>
         </fileSet>

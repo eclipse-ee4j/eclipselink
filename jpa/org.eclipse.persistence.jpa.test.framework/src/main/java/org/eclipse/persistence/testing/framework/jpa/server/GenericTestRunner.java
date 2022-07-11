@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,13 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-// Contributors:
-//     Oracle - initial API and implementation from Oracle TopLink
- package org.eclipse.persistence.testing.framework.server;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Properties;
+package org.eclipse.persistence.testing.framework.jpa.server;
 
 import jakarta.ejb.EJBException;
 import jakarta.ejb.Remote;
@@ -25,30 +19,19 @@ import jakarta.ejb.TransactionManagement;
 import jakarta.ejb.TransactionManagementType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.PersistenceUnit;
-
 import junit.framework.TestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import java.lang.reflect.Constructor;
+import java.util.Properties;
 
-/**
- * Server side JUnit test invocation implemented as a stateless session bean.
- *
- * @author mschinca
- */
-@Stateless(name="TestRunner", mappedName="TestRunner")
+@Stateless(name="GenericTestRunner")
 @Remote(TestRunner.class)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class TestRunnerBean implements TestRunner {
+public class GenericTestRunner implements TestRunner {
 
-    /** The entity manager for nonJTA Datasource on server shouldn't be injected. */
-    //@PersistenceContext(unitName="@puName@")
-    private EntityManager entityManager;
-
-    /** The entity manager factory for the test is injected and passed to the test server platform. */
-    @PersistenceUnit(unitName="@puName@")
-    private EntityManagerFactory entityManagerFactory;
+    public GenericTestRunner() {
+    }
 
     /**
      * Execute a test case method. The test class is loaded dynamically and
@@ -57,7 +40,7 @@ public class TestRunnerBean implements TestRunner {
     public Throwable runTest(String className, String test, Properties props) {
         // load the test class and create an instance
         TestCase testInstance = null;
-       try {
+        try {
             @SuppressWarnings({"unchecked"})
             Class<? extends TestCase> testClass = (Class<? extends TestCase>) getClass().getClassLoader().loadClass(className);
             Constructor<? extends TestCase> c = testClass.getConstructor(String.class);
@@ -76,9 +59,10 @@ public class TestRunnerBean implements TestRunner {
         Throwable result = null;
         try {
             if (testInstance instanceof JUnitTestCase) {
-                JUnitTestCase jpaTest = (JUnitTestCase)testInstance;
-                JEEPlatform.entityManager = this.entityManager;
-                JEEPlatform.entityManagerFactory = this.entityManagerFactory;
+                JUnitTestCase jpaTest = (JUnitTestCase) testInstance;
+                JEEPlatform.entityManager = getEntityManager();
+                JEEPlatform.entityManagerFactory = getEntityManagerFactory();
+                JEEPlatform.ejbLookup = getEjbLookup();
                 jpaTest.runBareServer();
             } else {
                 testInstance.runBare();
@@ -89,4 +73,15 @@ public class TestRunnerBean implements TestRunner {
         return result;
     }
 
+    protected EntityManager getEntityManager() {
+        return null;
+    }
+
+    protected EntityManagerFactory getEntityManagerFactory() {
+        return null;
+    }
+
+    protected boolean getEjbLookup() {
+        return false;
+    }
 }

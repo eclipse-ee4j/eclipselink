@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +22,7 @@ import jakarta.persistence.PersistenceException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 public class InvalidNamedQueryTest extends JUnitTestCase {
 

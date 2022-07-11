@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,43 +16,50 @@
 //       - 329008: Support dynamic context creation without persistence.xml
 //     01/23/2013-2.5 Guy Pelletier
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     09/11/2017-2.1 Will Dazey
+//       - 520387: multiple owning descriptors for an embeddable are not set
+package org.eclipse.persistence.testing.framework.jpa.junit;
 
-package org.eclipse.persistence.testing.framework.junit;
-
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Hashtable;
 import java.util.Properties;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.rmi.PortableRemoteObject;
-
-import jakarta.persistence.*;
-
-import junit.framework.*;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.Persistence;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.DefaultConnector;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.server.JEEPlatform;
-import org.eclipse.persistence.testing.framework.server.ServerPlatform;
-import org.eclipse.persistence.testing.framework.server.TestRunner;
-import org.eclipse.persistence.testing.framework.server.TestRunner1;
-import org.eclipse.persistence.testing.framework.server.TestRunner2;
-import org.eclipse.persistence.testing.framework.server.TestRunner3;
-import org.eclipse.persistence.testing.framework.server.TestRunner4;
-import org.eclipse.persistence.testing.framework.server.TestRunner5;
+import org.eclipse.persistence.testing.framework.jpa.server.ServerPlatform;
+import org.eclipse.persistence.testing.framework.jpa.server.TestRunner;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
+import org.eclipse.persistence.testing.framework.jpa.server.JEEPlatform;
+import org.eclipse.persistence.transaction.JTA11TransactionController;
+
+import junit.framework.TestCase;
 
 /**
  * This is the superclass for all EclipseLink JUnit tests
@@ -76,11 +83,17 @@ public abstract class JUnitTestCase extends TestCase {
 
     private static Map<String, EntityManagerFactory> emfNamedPersistenceUnits = null;
 
+    /** Default persistence unit name. */
+    private static String DEFAULT_PU_NAME = "default";
+
     /** Determine if the test is running on a JEE server, or in JSE. */
     protected static Boolean isOnServer;
 
     /** Determine if the data-source is JTA, or non-JTA. */
     public static Boolean isJTA =true;
+
+    /** Holds an information whether JTA 1.1 API is present. */
+    protected final boolean isJTA11;
 
     /** Allow a JEE server platform to be set. */
     protected static ServerPlatform serverPlatform;
@@ -126,13 +139,66 @@ public abstract class JUnitTestCase extends TestCase {
         isInitialzied = true;
     }
 
+    /**
+     * Check that JTA 1.1 API is present.
+     *
+     * @return value of {@code true} if {@code java:comp/TransactionSynchronizationRegistry}
+     *         JNDI name is present or {@code false}  otherwise.
+     */
+    public static final boolean isJTA11() {
+        Context context = null;
+        try {
+            context = new InitialContext();
+            return (context.lookup(JTA11TransactionController.JNDI_TRANSACTION_SYNCHRONIZATION_REGISTRY) != null);
+        } catch (NamingException ex) {
+            AbstractSessionLog.getLog().log(SessionLog.FINER, "JTA 1.1 API was not found", null, false);
+            return false;
+        } finally {
+            if (context != null) {
+                try {
+                    context.close();
+                } catch (NamingException ex) {
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING, "NamingException when closing initial context: {0}", new String[] { ex.getMessage() }, false);
+                }
+            }
+        }
+    }
+
+    /**
+     * Lookup EJB by JNDI name.
+     *
+     * @param c EJB class.
+     * @param jndi EJB JNDI name
+     * @return EJB instance
+     */
+    public static <C> C lookupEJB(final Class<C> c, final String jndi) {
+        Context context = null;
+        try {
+            context = new InitialContext();
+            return c.cast(context.lookup(jndi));
+        } catch (NamingException ex) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "NamingException when looking up {0} {1}", new String[] { jndi, ex.getMessage() }, false);
+            return null;
+        } finally {
+            if (context != null) {
+                try {
+                    context.close();
+                } catch (NamingException ex) {
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING, "NamingException when closing initial context: {0}", new String[] { ex.getMessage() }, false);
+                }
+            }
+        }
+    }
+
     public JUnitTestCase() {
         super();
+        isJTA11 = isJTA11();
         initializePlatform();
     }
 
     public JUnitTestCase(String name) {
         super(name);
+        isJTA11 = isJTA11();
         initializePlatform();
     }
 
@@ -141,7 +207,7 @@ public abstract class JUnitTestCase extends TestCase {
      * This allow a subclass test to set this only in one place.
      */
     public String getPersistenceUnitName() {
-        return "default";
+        return DEFAULT_PU_NAME;
     }
 
     /**
@@ -167,8 +233,7 @@ public abstract class JUnitTestCase extends TestCase {
         if (property != null && property.toUpperCase().equals("FALSE")) {
             isJTA = false;
         } else {
-            //isJTA = true;
-            isJTA = false;
+            isJTA = true;
         }
         return isJTA;
     }
@@ -295,7 +360,7 @@ public abstract class JUnitTestCase extends TestCase {
                 serverPlatform = new JEEPlatform();
             } else {
                 try {
-                    serverPlatform = (ServerPlatform)Class.forName(platformClass).newInstance();
+                    serverPlatform = (ServerPlatform)Class.forName(platformClass).getConstructor().newInstance();
                 } catch (Exception notFound) {
                     throw new RuntimeException(notFound);
                 }
@@ -313,18 +378,34 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public void clearCache() {
-         try {
+        try {
             getDatabaseSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-         } catch (Exception ex) {
-            throw new  RuntimeException("An exception occurred trying clear the cache.", ex);
+        } catch (Exception ex) {
+            throw new RuntimeException("An exception occurred trying clear the database session cache.", ex);
+        }
+    }
+
+    public void clearServerSessionCache() {
+        try {
+            getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        } catch (Exception ex) {
+            throw new RuntimeException("An exception occurred trying clear the server session cache.", ex);
         }
     }
 
     public static void clearCache(String persistenceUnitName) {
-         try {
+        try {
             getDatabaseSession(persistenceUnitName).getIdentityMapAccessor().initializeAllIdentityMaps();
-         } catch (Exception ex) {
-            throw new  RuntimeException("An exception occurred trying clear the cache.", ex);
+        } catch (Exception ex) {
+            throw new RuntimeException("An exception occurred trying clear the database session cache.", ex);
+        }
+    }
+
+    public static void clearServerSessionCache(String persistenceUnitName) {
+        try {
+            getServerSession(persistenceUnitName).getIdentityMapAccessor().initializeAllIdentityMaps();
+        } catch (Exception ex) {
+            throw new RuntimeException("An exception occurred trying clear the server session cache.", ex);
         }
     }
 
@@ -518,6 +599,7 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, Map properties, List<ClassDescriptor> descriptors) {
+        //properties.put("eclipselink.tuning", "ExaLogic");
         if (isOnServer()) {
             return getServerPlatform().getEntityManagerFactory(persistenceUnitName);
         } else {
@@ -536,7 +618,7 @@ public abstract class JUnitTestCase extends TestCase {
 
                 // force closing of other persistence units to avoid Sybase running out of connections.
                 if (!persistenceUnitName.equals("default")) {
-                    if (emfNamedPersistenceUnits.containsKey("default") && getServerSession().getPlatform().isSybase()) {
+                    if (emfNamedPersistenceUnits.containsKey("default") && (getServerSession().getPlatform().isSybase() || getServerSession().getPlatform().isMySQL())) {
                         Iterator<Map.Entry<String, EntityManagerFactory>> factories = emfNamedPersistenceUnits.entrySet().iterator();
                         while (factories.hasNext()) {
                             Map.Entry<String, EntityManagerFactory> entry = factories.next();
@@ -611,9 +693,11 @@ public abstract class JUnitTestCase extends TestCase {
         return getDatabaseSession(puName).getPlatform(cls);
     }
 
+    @Override
     public void setUp() {
     }
 
+    @Override
     public void tearDown() {
     }
 
@@ -627,6 +711,7 @@ public abstract class JUnitTestCase extends TestCase {
     /**
      * Intercept test case invocation and delegate it to a remote server.
      */
+    @Override
     public void runBare() throws Throwable {
         if (shouldRunTestOnServer()) {
             runBareClient();
@@ -646,54 +731,91 @@ public abstract class JUnitTestCase extends TestCase {
         }
         properties.put("java.naming.provider.url", url);
         Context context = new InitialContext(properties);
-        Throwable exception = null;
-        if (puName == null)
-        {
-            String testrunner = System.getProperty("server.testrunner");
-            if (testrunner == null) {
-                fail("System property 'server.testrunner' must be set.");
-            }
-            TestRunner runner = (TestRunner) PortableRemoteObject.narrow(context.lookup(testrunner), TestRunner.class);
-            exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
-        }else{
-            int i = puName.charAt(8) - 48;
-            String testRunner[] = new String[6];
-            for (int j=1; j<=5; j++)
-            {
-                String serverRunner = "server.testrunner" + j;
-                testRunner[j] = System.getProperty(serverRunner);
-                if (testRunner[j] == null) {
-                    fail("System property 'server.testrunner'" + j + " must be set.");
+
+        String testrunnerCtx = System.getProperty("server.testrunner.context");
+        if (testrunnerCtx != null) {
+            //find all test runners in given JNDI context
+            final NamingEnumeration<NameClassPair> ctx = context.list(testrunnerCtx);
+            List<String> testRunners = new ArrayList<>();
+            while (ctx.hasMoreElements()) {
+                final NameClassPair pair = ctx.next();
+                final String name = pair.getClassName();
+                if (name.contains("framework") && name.contains("TestRunner")) {
+                    testRunners.add(pair.getName());
                 }
             }
-            switch (i)
-            {
-            case 1:
-                TestRunner1 runner1 = (TestRunner1) PortableRemoteObject.narrow(context.lookup(testRunner[1]), TestRunner1.class);
-                exception = runner1.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            case 2:
-                TestRunner2 runner2 = (TestRunner2) PortableRemoteObject.narrow(context.lookup(testRunner[2]), TestRunner2.class);
-                exception = runner2.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            case 3:
-                TestRunner3 runner3 = (TestRunner3) PortableRemoteObject.narrow(context.lookup(testRunner[3]), TestRunner3.class);
-                exception = runner3.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            case 4:
-                TestRunner4 runner4 = (TestRunner4) PortableRemoteObject.narrow(context.lookup(testRunner[4]), TestRunner4.class);
-                exception = runner4.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            case 5:
-                TestRunner5 runner5 = (TestRunner5) PortableRemoteObject.narrow(context.lookup(testRunner[5]), TestRunner5.class);
-                exception = runner5.runTest(getClass().getName(), getName(), getServerProperties());
-                break;
-            default:
-                break;
+            if (testRunners.isEmpty()) {
+                throw new RuntimeException("No TestRunner found");
             }
-        }
-        if (exception != null) {
-            throw exception;
+            if (testRunners.size() > 1) {
+                Iterator<String> it = testRunners.iterator();
+                while (it.hasNext()) {
+                    String r = it.next();
+                    if (r.contains("GenericTestRunner")) {
+                        it.remove();
+                    }
+                }
+            }
+            for (String runner : testRunners) {
+                Throwable t = null;
+                TestRunner runnerBean = (TestRunner) context.lookup(testrunnerCtx + "/" + runner);
+                t = runnerBean.runTest(getClass().getName(), getName(), getServerProperties());
+                if (t != null) {
+                    throw t;
+                }
+            }
+        } else {
+            //use defined set of pre-configured test runners
+            Throwable exception = null;
+            if (puName == null) {
+                String testrunner = System.getProperty("server.testrunner");
+                if (testrunner == null) {
+                    fail("System property 'server.testrunner' must be set.");
+                }
+                TestRunner runner = (TestRunner) context.lookup(testrunner);
+                exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
+            } else {
+                int i = puName.charAt(8) - 48;
+                String testRunner[] = new String[7];
+                for (int j = 1; j <= 6; j++) {
+                    String serverRunner = "server.testrunner" + j;
+                    testRunner[j] = System.getProperty(serverRunner);
+                    if (testRunner[j] == null && j < 6) {
+                        fail("System property 'server.testrunner'" + j + " must be set.");
+                    }
+                }
+                switch (i) {
+                    case 1:
+                        TestRunner runner1 = (TestRunner) context.lookup(testRunner[1]);
+                        exception = runner1.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    case 2:
+                        TestRunner runner2 = (TestRunner) context.lookup(testRunner[2]);
+                        exception = runner2.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    case 3:
+                        TestRunner runner3 = (TestRunner) context.lookup(testRunner[3]);
+                        exception = runner3.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    case 4:
+                        TestRunner runner4 = (TestRunner) context.lookup(testRunner[4]);
+                        exception = runner4.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    case 5:
+                        TestRunner runner5 = (TestRunner) context.lookup(testRunner[5]);
+                        exception = runner5.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    case 6:
+                        TestRunner runner6 = (TestRunner) context.lookup(testRunner[6]);
+                        exception = runner6.runTest(getClass().getName(), getName(), getServerProperties());
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (exception != null) {
+                throw exception;
+            }
         }
     }
 
@@ -763,12 +885,26 @@ public abstract class JUnitTestCase extends TestCase {
         AbstractSession dbs = getDatabaseSession(persistenceUnit);
         Object readObject = dbs.readObject(writtenObject);
         if (!dbs.compareObjects(readObject, writtenObject)) {
-            fail("Object from cache: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
+            SessionLog oldLog = dbs.getSessionLog();
+            dbs.setSessionLog(new DefaultSessionLog());
+            dbs.setLogLevel(SessionLog.FINEST);
+            StringWriter newLog = new StringWriter();
+            dbs.setLog(newLog);
+            dbs.compareObjects(readObject, writtenObject);
+            dbs.setSessionLog(oldLog);
+            fail("Object from cache: " + readObject + " does not match object that was written: " + writtenObject + ". " + newLog);
         }
         dbs.getIdentityMapAccessor().initializeAllIdentityMaps();
         readObject = dbs.readObject(writtenObject);
         if (!dbs.compareObjects(readObject, writtenObject)) {
-            fail("Object from database: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
+            SessionLog oldLog = dbs.getSessionLog();
+            dbs.setSessionLog(new DefaultSessionLog());
+            dbs.setLogLevel(SessionLog.FINEST);
+            StringWriter newLog = new StringWriter();
+            dbs.setLog(newLog);
+            dbs.compareObjects(readObject, writtenObject);
+            dbs.setSessionLog(oldLog);
+            fail("Object from database: " + readObject + " does not match object that was written: " + writtenObject + ". " + newLog);
         }
     }
 
@@ -947,7 +1083,7 @@ public abstract class JUnitTestCase extends TestCase {
         AbstractSession dbSession = getDatabaseSession(puName);
         if (dbSession.isBroker()) {
             for (AbstractSession memberSession : ((SessionBroker)dbSession).getSessionsByName().values()) {
-                if (!isSelectForUpateSupported(memberSession.getPlatform())) {
+                if (!isSelectForUpateNoWaitSupported(memberSession.getPlatform())) {
                     return false;
                 }
             }
@@ -961,11 +1097,21 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public static boolean isSelectForUpateNoWaitSupported(Platform platform) {
-        if (platform.isOracle() || platform.isSQLServer()) {
+        if (platform.isOracle() || platform.isSQLServer() || platform.isMariaDB()) {
             return true;
         }
         warning("This database does not support NOWAIT.");
         return false;
+    }
+
+    public static boolean supportsSequenceObjects(String puName) {
+        DatabasePlatform platform = getDatabaseSession(puName).getPlatform();
+        return platform.supportsSequenceObjects();
+    }
+
+    public boolean supportsSequenceObjects() {
+        DatabasePlatform platform = getDatabaseSession(getPersistenceUnitName()).getPlatform();
+        return platform.supportsSequenceObjects();
     }
 
     /**

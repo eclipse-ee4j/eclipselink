@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,7 @@
  package org.eclipse.persistence.testing.tests.jpa.sessionbean;
 
 import java.sql.Date;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -34,7 +31,7 @@ import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
 import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
 

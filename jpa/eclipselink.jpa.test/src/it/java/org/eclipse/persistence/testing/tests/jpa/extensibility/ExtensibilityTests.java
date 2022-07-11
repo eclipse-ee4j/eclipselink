@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceException;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.queries.FetchGroup;
@@ -41,7 +40,6 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
@@ -50,7 +48,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.extensibility.ExtensibilityTableCreator;
 
 public class ExtensibilityTests extends JUnitTestCase {

@@ -31,7 +31,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;

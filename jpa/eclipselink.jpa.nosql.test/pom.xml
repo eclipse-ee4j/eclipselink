@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -234,7 +234,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--Required due filtering applied to org.eclipse.persistence.testing.framework.server.TestRunnerBean java class.-->
+            <!--Required due filtering applied to org.eclipse.persistence.testing.framework.jpa.server.TestRunnerBean java class.-->
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
                 <artifactId>replacer</artifactId>
@@ -246,8 +246,8 @@
                             <goal>replace</goal>
                         </goals>
                         <configuration>
-                            <file>${project.basedir}/${integration.test.directory}/java-templates/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java_nonjtaDS</file>
-                            <outputFile>${project.build.directory}/generated-test-sources/jpa-runner-src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java</outputFile>
+                            <file>${project.basedir}/${integration.test.directory}/java-templates/org/eclipse/persistence/testing/framework/jpa/server/TestRunnerBean.java_nonjtaDS</file>
+                            <outputFile>${project.build.directory}/generated-test-sources/jpa-runner-src/org/eclipse/persistence/testing/framework/jpa/server/TestRunnerBean.java</outputFile>
                             <replacements>
                                 <replacement>
                                     <token>@puName@</token>
