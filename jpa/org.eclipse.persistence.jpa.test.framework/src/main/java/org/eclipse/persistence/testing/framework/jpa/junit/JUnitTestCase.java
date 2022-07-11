@@ -739,9 +739,10 @@ public abstract class JUnitTestCase extends TestCase {
             List<String> testRunners = new ArrayList<>();
             while (ctx.hasMoreElements()) {
                 final NameClassPair pair = ctx.next();
-                final String name = pair.getClassName();
-                if (name.contains("framework") && name.contains("TestRunner")) {
-                    testRunners.add(pair.getName());
+                final String clsName = pair.getClassName();
+                final String name = pair.getName();
+                if (name.contains("framework") && name.contains("TestRunner") || (clsName.contains("framework") && clsName.contains("TestRunner"))) {
+                    testRunners.add(name);
                 }
             }
             if (testRunners.isEmpty()) {
