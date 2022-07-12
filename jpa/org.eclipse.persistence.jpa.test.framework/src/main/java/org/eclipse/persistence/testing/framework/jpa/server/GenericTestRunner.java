@@ -12,8 +12,10 @@
 
 package org.eclipse.persistence.testing.framework.jpa.server;
 
+import jakarta.annotation.Resource;
 import jakarta.ejb.EJBException;
 import jakarta.ejb.Remote;
+import jakarta.ejb.SessionContext;
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionManagement;
 import jakarta.ejb.TransactionManagementType;
@@ -29,6 +31,9 @@ import java.util.Properties;
 @Remote(TestRunner.class)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class GenericTestRunner implements TestRunner {
+
+    @Resource
+    private SessionContext ctx;
 
     public GenericTestRunner() {
     }
@@ -60,8 +65,14 @@ public class GenericTestRunner implements TestRunner {
         try {
             if (testInstance instanceof JUnitTestCase) {
                 JUnitTestCase jpaTest = (JUnitTestCase) testInstance;
-                JEEPlatform.entityManager = getEntityManager();
-                JEEPlatform.entityManagerFactory = getEntityManagerFactory();
+                String puName = jpaTest.getPuName();
+                if (puName != null && !"default".equals(puName)) {
+                    JEEPlatform.entityManager = lookup("persistence/" + puName + "/entity-manager");
+                    JEEPlatform.entityManagerFactory = lookup("persistence/" + puName + "/factory");
+                } else {
+                    JEEPlatform.entityManager = getEntityManager();
+                    JEEPlatform.entityManagerFactory = getEntityManagerFactory();
+                }
                 JEEPlatform.ejbLookup = getEjbLookup();
                 jpaTest.runBareServer();
             } else {
@@ -83,5 +94,10 @@ public class GenericTestRunner implements TestRunner {
 
     protected boolean getEjbLookup() {
         return false;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private <T> T lookup(String jndiName) {
+        return (T) ctx.lookup(jndiName);
     }
 }

@@ -46,7 +46,7 @@ import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
-import org.eclipse.persistence.testing.tests.feature.TestDataSource;
+import org.eclipse.persistence.testing.framework.TestDataSource;
 
 /**
  * Test for {@link SchemaPerMultitenantPolicy}. Uses two distinct DB schemas

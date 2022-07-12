@@ -220,7 +220,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.MaterialHist;
 import org.eclipse.persistence.testing.models.jpa.advanced.PlanArbeitsgang;
 import org.eclipse.persistence.testing.models.jpa.advanced.MaterialEreignis;
 import org.eclipse.persistence.testing.models.jpa.advanced.PlanArbeitsgangHist;
-import org.eclipse.persistence.testing.tests.feature.TestDataSource;
+import org.eclipse.persistence.testing.framework.TestDataSource;
 import org.eclipse.persistence.testing.tests.jpa.unit.EMFProviderTest;
 import org.eclipse.persistence.testing.tests.weaving.SimpleSessionLogWrapper;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;

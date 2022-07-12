@@ -1156,6 +1156,10 @@ public abstract class JUnitTestCase extends TestCase {
         puName = name;
     }
 
+    public String getPuName() {
+        return puName;
+    }
+
     /**
      * Indicates whether two sessions are connected to the same db
      */
