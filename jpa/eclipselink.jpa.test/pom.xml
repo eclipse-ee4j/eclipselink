@@ -606,7 +606,6 @@
                             <skip>${skip-server-test-jpa-lrg1}</skip>
                             <items>
                                 <item>server-test-jpa-advanced</item>
-                                <item>server-test-jpa-advanced-multitenant</item>
                                 <item>server-test-jpa-cacheable</item>
                                 <item>server-test-jpa-criteria</item>
                                 <item>server-test-jpa-datatypes</item>
@@ -1448,19 +1447,6 @@
             </properties>
         </profile>
         <profile>
-            <id>server-test-jpa-advanced-multitenant</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-advanced-model</modelname>
-                <extra-model>eclipselink-advanced-multitenant-model-extra</extra-model>
-                <packageName>advanced</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
             <id>server-test-jpa-jpa21-advanced</id>
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
@@ -1484,32 +1470,6 @@
                 <extra-model>eclipselink-jpa22-model-server</extra-model>
                 <packageName>jpa22</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa22.advanced.JPA22TestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-advanced-multitenantEMF</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-advanced-model</modelname>
-                <extra-model>eclipselink-advanced-multitenant-projectcache-model-extra</extra-model>
-                <packageName>advanced</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantSharedEMFJunitTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-advanced-multitenant123</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-advanced-model</modelname>
-                <extra-model>eclipselink-advanced-multitenant-projectcache-model-extra</extra-model>
-                <packageName>advanced</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenant123JunitTest</test-client-class>
             </properties>
         </profile>
         <profile>

@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -122,60 +122,6 @@
             <property name="eclipselink.create-ddl-jdbc-file-name" value="extended-xml-dynamic-model-create.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="extended-xml-dynamic-model-drop.jdbc"/>
             <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
-            <property name="eclipselink.orm.validate.schema" value="true"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="extended-multi-tenant-shared-emf">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/advanced-multitenant-entity-mappings.xml</mapping-file>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
-            <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
-            <!-- Since we don't exclude unlisted classes here, we will       -->
-            <!-- eventually hit the multitenant entities which turn native   -->
-            <!-- sql queries off by default, so we need to be explicit here  -->
-            <!--  and turn them on                                           -->
-            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
-            <property name="eclipselink.orm.validate.schema" value="true"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="extended-multi-tenant-123">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/advanced-multitenant-entity-mappings.xml</mapping-file>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
-            <property name="tenant.id" value="123"/>
-            <property name="eclipselink.tenant-id" value="123"/>
-            <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
-            <property name="eclipselink.session-name" value="extended-multi-tenant-123"/>
-            <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
-            <property name="eclipselink.orm.validate.schema" value="true"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="extended-multi-tenant-table-per-tenant">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/advanced-tpt-multitenant-entity-mappings.xml</mapping-file>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
-            <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
-            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
-            <property name="eclipselink.orm.validate.schema" value="true"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="extended-multi-tenant-table-per-tenant-C">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/advanced-tpt-multitenant-entity-mappings.xml</mapping-file>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <!-- tenant properties will be set in code (from test suite) -->
-            <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
