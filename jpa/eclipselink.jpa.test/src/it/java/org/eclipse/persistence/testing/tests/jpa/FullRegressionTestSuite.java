@@ -58,8 +58,6 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCo
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.ConcurrencyTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantSchemaJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTestEnableSelective;
 import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite;
@@ -150,8 +148,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(JPARCMLocalChangeSetTestSuite.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedFetchGroupJunitTest.suite());
-        suite.addTest(AdvancedMultiTenantJunitTest.suite());
-        suite.addTest(AdvancedMultiTenantSchemaJunitTest.suite());
         suite.addTest(PessimisticLockingExtendedScopeTestSuite.suite());
         suite.addTest(PessimisticLockEntityRefreshTestSuite.suite());
         suite.addTest(UpdateAllQueryAdvancedJunitTest.suite());

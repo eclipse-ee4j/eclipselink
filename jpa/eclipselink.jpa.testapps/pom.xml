@@ -88,9 +88,12 @@
     </dependencies>
 
     <modules>
+        <module>jpa.test.advanced.multitenant</module>
         <module>jpa.test.beanvalidation</module>
         <module>jpa.test.beanvalidation.dynamic</module>
+        <module>jpa.test.pu with spaces</module>
         <module>jpa.test.sessionbean</module>
+        <module>jpa.test.xml.advanced.multitenant</module>
         <module>nativeapi</module>
     </modules>
 
@@ -159,6 +162,7 @@
                             <systemPropertyVariables>
                                 <test.properties>${test.properties.file}</test.properties>
                             </systemPropertyVariables>
+                            <workingDirectory>${project.build.directory}/test-out</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -281,6 +285,7 @@
                         <version>2.1.0.Beta1</version>
                         <executions>
                             <execution>
+                                <id>server-deploy</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>deploy-only</goal>
@@ -319,6 +324,7 @@
                                         <server.testrunner.context>${server.test.runner.context}</server.testrunner.context>
                                     </systemPropertyVariables>
                                     <testFailureIgnore>${ignore.server.failures}</testFailureIgnore>
+                                    <workingDirectory>${project.build.directory}/test-out/server</workingDirectory>
                                 </configuration>
                             </execution>
                         </executions>
