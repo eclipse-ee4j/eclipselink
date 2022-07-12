@@ -98,13 +98,13 @@ public class BeanValidationDynamicEntityJunitTest extends JUnitTestCase {
         Integer employeeId = employee.<Integer>get("id");
         assertTrue("Employee id not set!", employeeId > 0);
 
-        DynamicEntity emp = em.find(empType.getJavaClass(), employeeId);
-
-        emp.set("name", null);
-        emp.set("surname", null);
-
         try {
             beginTransaction(em);
+            DynamicEntity emp = em.find(empType.getJavaClass(), employeeId);
+
+            emp.set("name", null);
+            emp.set("surname", null);
+
             em.flush();
         } catch (ConstraintViolationException e) {
             System.out.println("ConstraintException: " + e.getMessage());
