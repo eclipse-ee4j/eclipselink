@@ -28,8 +28,8 @@ public class MafiaFamily implements Serializable {
     private Double revenue;
 
     public MafiaFamily() {
-        this.tags = new Vector<String>();
-        this.mafiosos = new Vector<Mafioso>();
+        this.tags = new Vector<>();
+        this.mafiosos = new Vector<>();
     }
 
     public void addMafioso(Mafioso mafioso) {

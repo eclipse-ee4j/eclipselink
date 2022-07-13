@@ -76,7 +76,7 @@ public class AdvancedTableCreator_3 extends TogglingFastTableCreator {
         addTableDefinition(buildSCHOOLTable());
         addTableDefinition(buildBOLTTable());
         addTableDefinition(buildNUTTable());
-        addTableDefinition(buildLOOTTable())*/;
+        addTableDefinition(buildLOOTTable())*/
     }
 
      public TableDefinition buildDEALERTable() {

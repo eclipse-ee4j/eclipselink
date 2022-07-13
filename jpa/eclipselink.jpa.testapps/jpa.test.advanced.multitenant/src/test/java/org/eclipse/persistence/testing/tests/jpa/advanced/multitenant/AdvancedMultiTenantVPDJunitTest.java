@@ -82,8 +82,8 @@ public class AdvancedMultiTenantVPDJunitTest extends AdvancedMultiTenantJunitBas
             testInsertTask(em1, "blah", false);
             testInsertTask(em2, "halb", false);
 
-            assertTrue("Found more than one result", em1.createQuery("Select t from Task t").getResultList().size() == 1);
-            assertTrue("Found more than one result", em2.createQuery("Select t from Task t").getResultList().size() == 1);
+            assertEquals("Found more than one result", 1, em1.createQuery("Select t from Task t").getResultList().size());
+            assertEquals("Found more than one result", 1, em2.createQuery("Select t from Task t").getResultList().size());
 
             Task task1 = testInsertTaskWithOneSubtask(em1, "Rock that Propsal", false, "Write Proposal", false);
             assertNotNull(em1.find(Task.class, task1.getId()));

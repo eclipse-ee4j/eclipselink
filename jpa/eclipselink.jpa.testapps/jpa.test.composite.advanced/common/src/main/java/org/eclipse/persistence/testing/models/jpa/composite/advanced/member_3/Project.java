@@ -18,8 +18,6 @@ import java.util.*;
 import java.io.Serializable;
 import jakarta.persistence.*;
 import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
-import static jakarta.persistence.CascadeType.MERGE;
-import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.GenerationType.*;
 import static jakarta.persistence.InheritanceType.*;
 
@@ -164,7 +162,7 @@ public class Project implements Serializable {
     }
 
     public String displayString() {
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         sbuff.append("Project ").append(getId()).append(": ").append(getName()).append(", ").append(getDescription());
 
         return sbuff.toString();

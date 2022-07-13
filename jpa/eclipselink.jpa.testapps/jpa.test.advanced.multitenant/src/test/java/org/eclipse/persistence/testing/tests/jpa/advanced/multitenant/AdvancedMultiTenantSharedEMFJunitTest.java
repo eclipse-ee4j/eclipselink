@@ -21,7 +21,8 @@ package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss;
@@ -34,6 +35,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss;
+import org.junit.Assert;
 
 import java.util.List;
 
@@ -420,7 +422,7 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends AdvancedMultiTenantJu
 
         MafiaFamily family =  em.find(MafiaFamily.class, family007);
         assertNotNull("The Mafia Family with id: " + family007 + ", was not found", family);
-        assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [5]", family.getTags().size() == 5);
+        assertEquals("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [5]", 5, family.getTags().size());
         assertNull("The Mafia Family with id: " + family707 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family707));
         assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
         assertFalse("No mafiosos part of 007 family", family.getMafiosos().isEmpty());
@@ -440,20 +442,20 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends AdvancedMultiTenantJu
         }
 
         // Read and validate our contracts
-        List<Contract> contracts = em.createNamedQuery("FindAllContracts").getResultList();
-        assertTrue("Incorrect number of contracts were returned [" + contracts.size() + "], expected[3]", contracts.size() == 3);
+        List<Contract> contracts = em.createNamedQuery("FindAllContracts", Contract.class).getResultList();
+        assertEquals("Incorrect number of contracts were returned [" + contracts.size() + "], expected[3]", 3, contracts.size());
 
         for (Contract contract : contracts) {
-            assertFalse("Contract description was voided.", contract.getDescription().equals("voided"));
+            Assert.assertNotEquals("Contract description was voided.", "voided", contract.getDescription());
         }
 
         // Try a select named query
-        List families = em.createNamedQuery("findAllMafiaFamilies").getResultList();
-        assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1);
+        List<MafiaFamily> families = em.createNamedQuery("findAllMafiaFamilies", MafiaFamily.class).getResultList();
+        assertEquals("Incorrect number of families were returned [" + families.size() + "], expected [1]", 1, families.size());
 
         // Find our boss and make sure his name has not been compromised from the 707 family.
         Boss boss = em.find(Boss.class, family007Mafiosos.get(0));
-        assertFalse("The Boss name has been compromised", boss.getFirstName().equals("Compromised"));
+        Assert.assertNotEquals("The Boss name has been compromised", "Compromised", boss.getFirstName());
         commitTransaction(em);
     }
 
@@ -467,7 +469,7 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends AdvancedMultiTenantJu
         em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
         MafiaFamily family = em.find(MafiaFamily.class, family707);
         assertNotNull("The Mafia Family with id: " + family707 + ", was not found", family);
-        assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [3]", family.getTags().size() == 3);
+        assertEquals("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [3]", 3, family.getTags().size());
         assertNull("The Mafia Family with id: " + family007 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family007));
         assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
         assertFalse("No mafiosos part of 707 family", family.getMafiosos().isEmpty());
@@ -490,26 +492,26 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends AdvancedMultiTenantJu
         Query deleteQuery = em.createNamedQuery("DeleteContractByPrimaryKey");
         deleteQuery.setParameter("id", family007Contracts.get(0));
         int result = deleteQuery.executeUpdate();
-        assertTrue("Was able to delete a contract from the 007 family", result == 0);
+        assertEquals("Was able to delete a contract from the 007 family", 0, result);
 
         // Update all our contract descriptions to be 'voided'
         Query updateAllQuery = em.createNamedQuery("UpdateAllContractDescriptions");
         updateAllQuery.executeUpdate();
         // Need to check that tenant id column is present
-        assertTrue("Tenant discriminator column not found in update all query", ((EJBQueryImpl) updateAllQuery).getDatabaseQuery().getCall().getSQLString().contains("TENANT_ID"));
+        assertTrue("Tenant discriminator column not found in update all query", ((EJBQueryImpl<?>) updateAllQuery).getDatabaseQuery().getCall().getSQLString().contains("TENANT_ID"));
 
         // Read and validate the contracts
-        List<Contract> contracts = em.createNamedQuery("FindAllContracts").getResultList();
+        List<Contract> contracts = em.createNamedQuery("FindAllContracts", Contract.class).getResultList();
         int contractNumber = contracts.size();
-        assertTrue("Incorrect number of contracts were returned [" + contracts.size() + "], expected [3]", contracts.size() == 3);
+        assertEquals("Incorrect number of contracts were returned [" + contracts.size() + "], expected [3]", 3, contracts.size());
 
         for (Contract contract : contracts) {
-            assertTrue("Contract description was not voided.", contract.getDescription().equals("voided"));
+            assertEquals("Contract description was not voided.", "voided", contract.getDescription());
         }
 
         // See how many soldiers are returned from a jpql query
-        List soldiers = em.createQuery("SELECT s from Soldier s").getResultList();
-        assertTrue("Incorrect number of soldiers were returned [" + soldiers.size() + "], expected [5]",  soldiers.size() == 5);
+        List<Soldier> soldiers = em.createQuery("SELECT s from Soldier s", Soldier.class).getResultList();
+        assertEquals("Incorrect number of soldiers were returned [" + soldiers.size() + "], expected [5]", 5, soldiers.size());
 
         if(getServerSession(getPersistenceUnitName()).getPlatform().isSymfoware()) {
             getServerSession(getPersistenceUnitName()).logMessage("Test AdvancedMultiTenantSharedEMFJunitTest partially skipped for this platform, "
@@ -584,7 +586,7 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends AdvancedMultiTenantJu
     public void testMultitenantPrimaryKeyWithIdClass() {
         EntityManager em = createSharedEMFEntityManager();
 
-        PhoneNumber number = new PhoneNumber();;
+        PhoneNumber number = new PhoneNumber();
         number.setAreaCode("613");
         number.setNumber("123-4567");
         number.setType("Home");

@@ -193,12 +193,12 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
     }
 
     public void testPolicyConfigurationDefault() {
-        if (!getPlatform().isMySQL()) {
-            warning("this test is supported on MySQL only");
-            return;
-        }
         if (skipTest) {
             warning("this test requires DB schema created in testSetup to be available.");
+            return;
+        }
+        if (!getPlatform().isMySQL()) {
+            warning("this test is supported on MySQL only");
             return;
         }
         // default configuration: shared EMF = true, shared cache = false
@@ -217,12 +217,12 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
     }
 
     public void testPolicyConfigurationCustom() {
-        if (!getPlatform().isMySQL()) {
-            warning("this test is supported on MySQL only");
-            return;
-        }
         if (skipTest) {
             warning("this test requires DB schema created in testSetup to be available.");
+            return;
+        }
+        if (!getPlatform().isMySQL()) {
+            warning("this test is supported on MySQL only");
             return;
         }
         // custom configuration: shared EMF = false, shared cache = true
@@ -254,12 +254,12 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
      * not from some state in the 1st schema; both should grow by 1
      */
     public void testSequencing() {
-        if (!getPlatform().isMySQL()) {
-            warning("this test is supported on MySQL only");
-            return;
-        }
         if (skipTest) {
             warning("this test requires DB schema created in testSetup to be available.");
+            return;
+        }
+        if (!getPlatform().isMySQL()) {
+            warning("this test is supported on MySQL only");
             return;
         }
         emf = Persistence.createEntityManagerFactory(getPersistenceUnitName(), emfProperties);
@@ -329,6 +329,10 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
     }
 
     public void testCleanup() {
+        if (skipTest) {
+            warning("this test requires DB schema created in testSetup to be available.");
+            return;
+        }
         try {
             getDatabaseSession(getPersistenceUnitName()).executeNonSelectingSQL("drop schema " + schema2 + ";");
         } catch (Throwable t) {

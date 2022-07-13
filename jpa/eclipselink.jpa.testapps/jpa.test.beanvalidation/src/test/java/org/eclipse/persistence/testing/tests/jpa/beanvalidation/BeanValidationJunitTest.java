@@ -86,7 +86,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             em.persist(p1);
             em.persist(p2);
 
-            Collection<Project> projects = new ArrayList<Project>();
+            Collection<Project> projects = new ArrayList<>();
             projects.add(p1);
             projects.add(p2);
             e1.setProjects(projects);
@@ -132,7 +132,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
             ConstraintViolation<?> constraintViolation = constraintViolations.iterator().next();
             Object invalidValue = constraintViolation.getInvalidValue();
-            assertTrue("Invalid value should be " + invalidName, invalidName.equals(invalidValue));
+            assertEquals("Invalid value should be " + invalidName, invalidName, invalidValue);
             gotConstraintViolations = true;
         } finally {
             if (isTransactionActive(em)) {
@@ -166,7 +166,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
             ConstraintViolation<?> constraintViolation = constraintViolations.iterator().next();
             Object invalidValue = constraintViolation.getInvalidValue();
-            assertTrue("Invalid value should be " + invalidName, invalidName.equals(invalidValue));
+            assertEquals("Invalid value should be " + invalidName, invalidName, invalidValue);
             gotConstraintViolations = true;
         } finally {
             if (isTransactionActive(em)) {
@@ -204,7 +204,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
             ConstraintViolation<?> constraintViolation = constraintViolations.iterator().next();
             Object invalidValue = constraintViolation.getInvalidValue();
-            assertTrue("Invalid value should be " + low_salary, invalidName.equals(invalidValue));
+            assertEquals("Invalid value should be " + low_salary, invalidName, invalidValue);
             gotConstraintViolations = true;
         } finally {
             if (isTransactionActive(em)) {
@@ -266,14 +266,14 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             e.setName(invalidName);
             commitTransaction(em);
           } catch (RuntimeException e) {
-            assertFalse("Transaction not marked for roll back when ConstraintViolation is thrown", isTransactionActive(em));;
+            assertFalse("Transaction not marked for roll back when ConstraintViolation is thrown", isTransactionActive(em));
             Throwable cause = e.getCause();
             while(cause != null) {
                 if (cause instanceof ConstraintViolationException){
                     ConstraintViolationException cve = (ConstraintViolationException)cause;
                     Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
                     ConstraintViolation<?> constraintViolation = constraintViolations.iterator().next();
-                    assertTrue("Invalid value should be " + invalidName, invalidName.equals(constraintViolation.getInvalidValue() ) );
+                    assertEquals("Invalid value should be " + invalidName, invalidName, constraintViolation.getInvalidValue());
                     gotConstraintViolations = true;
                     break;
                 }else
@@ -351,8 +351,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         }
 
         org.eclipse.persistence.sessions.Project project = getDatabaseSession().getProject();
-        assertTrue( "Lazy field should not be instantiated because of validation", !isInstantiated(employee, "projects", project) );
-        assertTrue( "Lazy field should not be instantiated because of validation", !isInstantiated(employee, "managedProject", project) );
+        assertFalse("Lazy field should not be instantiated because of validation", isInstantiated(employee, "projects", project));
+        assertFalse("Lazy field should not be instantiated because of validation", isInstantiated(employee, "managedProject", project));
     }
 
     /**

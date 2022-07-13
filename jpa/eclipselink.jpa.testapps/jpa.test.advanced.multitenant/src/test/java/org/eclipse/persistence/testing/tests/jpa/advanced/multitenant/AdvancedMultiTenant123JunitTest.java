@@ -77,11 +77,10 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
     }
 
     public EntityManager createTenant123EntityManager(){
-        Map<String, String> properties = new HashMap<>();
         EntityManager em = null;
         //properties passed in createEntityManager() won't work on server since server side entity manager is injected, so we have "eclipselink.tenant-id" in server persistence.xml
         if (! isOnServer()) {
-            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
+            Map<String, String> properties = new HashMap<>(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
             properties.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "123");
             em = createEntityManager(getPersistenceUnitName(), properties);
         }else{
@@ -221,7 +220,7 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
 
             MafiaFamily family =  em.find(MafiaFamily.class, family123);
             assertNotNull("The Mafia Family with id: " + family123 + ", was not found", family);
-            assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [1]", family.getTags().size() == 1);
+            assertEquals("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [1]", 1, family.getTags().size());
             assertFalse("No mafiosos part of 123 family", family.getMafiosos().isEmpty());
 
             if (!isOnServer()) {
@@ -238,9 +237,9 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
             // eclipselink.jdbc.allow-native-sql-queries property is set to
             // false for this PU.
             boolean exceptionCaught = false;
-            List mafiaFamilies = null;
+            List<MafiaFamily> mafiaFamilies = null;
             try {
-                mafiaFamilies = em.createNativeQuery("select * from JPA_MAFIA_FAMILY").getResultList();
+                mafiaFamilies = em.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
             } catch (Exception e) {
                 exceptionCaught = true;
             }
@@ -249,7 +248,7 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
 
             exceptionCaught = false;
             try {
-                mafiaFamilies = em.createNamedQuery("findSQLMafiaFamilies").getResultList();
+                mafiaFamilies = em.createNamedQuery("findSQLMafiaFamilies", MafiaFamily.class).getResultList();
             } catch (Exception e) {
                 exceptionCaught = true;
             }
@@ -268,8 +267,8 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
 //            }
 
             // Try a select named query
-            List families = em.createNamedQuery("findAllMafiaFamilies").getResultList();
-            assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1);
+            List<MafiaFamily> families = em.createNamedQuery("findAllMafiaFamilies", MafiaFamily.class).getResultList();
+            assertEquals("Incorrect number of families were returned [" + families.size() + "], expected [1]", 1, families.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -291,14 +290,14 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
             try {
                 beginTransaction(em);
             try {
-                Query q = em.createQuery("SELECT s FROM Soldier s WHERE s.capo=?1");
+                TypedQuery<Soldier> q = em.createQuery("SELECT s FROM Soldier s WHERE s.capo=?1", Soldier.class);
                 SubCapo subCapo = new SubCapo();
                 subCapo.setId(capo123Id);
                 q.setParameter(1, subCapo);
                 List<Soldier> soldiers = q.getResultList();
-                assertTrue("Incorrect number of soldiers returned [" + soldiers.size() +"], expected [1]", soldiers.size() == 1);
+                assertEquals("Incorrect number of soldiers returned [" + soldiers.size() + "], expected [1]", 1, soldiers.size());
                 assertTrue("Mafioso returned was not a soldier", soldiers.get(0).isSoldier());
-                assertTrue("Soldier returned was not the expected soldier", soldiers.get(0).getId() == soldier123Id);
+                assertEquals("Soldier returned was not the expected soldier", soldiers.get(0).getId(), soldier123Id);
             } catch (Exception e) {
                 fail("Exception encountered on named parameter query (with tenant discriminator columns) : " + e);
             }
@@ -328,10 +327,10 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
                 List<MafiaFamily> families = query.getResultList();
 
                 // Should only be one family
-                assertTrue("Incorrect number of families returned [" + families.size() +"], expected [1]", families.size() == 1);
+                assertEquals("Incorrect number of families returned [" + families.size() + "], expected [1]", 1, families.size());
 
                 int size = families.get(0).getMafiosos().size();
-                assertTrue("Incorrect number of mafiosos returned [" + size + "], expected [6]", size == 6);
+                assertEquals("Incorrect number of mafiosos returned [" + size + "], expected [6]", 6, size);
 
             } catch (Exception e) {
                 fail("Exception encountered on batch fetch query (with tenant discriminator columns): " + e);
@@ -339,10 +338,10 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
 
             // Try a multiple select
             try {
-                Query query = em.createQuery("SELECT m.address, m.family FROM Mafioso m WHERE m.address.city = 'Ottawa' AND m.family.name LIKE 'Galore'", MafiaFamily.class);
-                List results = query.getResultList();
+                TypedQuery<MafiaFamily> query = em.createQuery("SELECT m.address, m.family FROM Mafioso m WHERE m.address.city = 'Ottawa' AND m.family.name LIKE 'Galore'", MafiaFamily.class);
+                List<MafiaFamily> results = query.getResultList();
                 int size = results.size();
-                assertTrue("Incorrect number of results returned [" + size + "], expected [6]", size == 6);
+                assertEquals("Incorrect number of results returned [" + size + "], expected [6]", 6, size);
             } catch (Exception e) {
                 fail("Exception encountered on mulitple select statement (with tenant discriminator columns): " + e);
             }
@@ -362,7 +361,7 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
                 beginTransaction(em);
                 int contracts = em.createNamedQuery("FindAllContracts").getResultList().size();
                 int deletes = em.createNamedQuery("DeleteAllContracts").executeUpdate();
-                assertTrue("Incorrect number of contracts deleted [" + deletes + "], expected [" + contracts + "]", deletes == 2);
+                assertEquals("Incorrect number of contracts deleted [" + deletes + "], expected [" + contracts + "]", 2, deletes);
                 commitTransaction(em);
             } catch (Exception e) {
                 fail("Exception encountered on delete all query with single table (with tenant discriminator columns): " + e);
@@ -375,13 +374,13 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
                 // Try a delete all on multiple table (MafiaFamily)
                 try {
                     beginTransaction(em);
-                    List<MafiaFamily> allFamilies = em.createNamedQuery("findAllMafiaFamilies").getResultList();
+                    List<MafiaFamily> allFamilies = em.createNamedQuery("findAllMafiaFamilies", MafiaFamily.class).getResultList();
                     int families = allFamilies.size();
-                    assertTrue("More than one family was found [" + families + "]", families == 1);
+                    assertEquals("More than one family was found [" + families + "]", 1, families);
                     Query deleteQuery = em.createNamedQuery("DeleteAllMafiaFamilies");
                     deleteQuery.setHint(QueryHints.ALLOW_NATIVE_SQL_QUERY, true);
                     int deletes = deleteQuery.executeUpdate();
-                    assertTrue("Incorrect number of families deleted [" + deletes + "], expected [" + families + "]", deletes == 1);
+                    assertEquals("Incorrect number of families deleted [" + deletes + "], expected [" + families + "]", 1, deletes);
                     commitTransaction(em);
                 } catch (Exception e) {
                     fail("Exception encountered on delete all query with multiple table (with tenant discriminator columns): " + e);

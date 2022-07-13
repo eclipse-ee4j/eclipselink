@@ -139,11 +139,11 @@ public class AdvancedMultiTenantTableCJunitTest extends AdvancedMultiTenantJunit
         try {
             beginTransaction(em);
 
-            List resultsFromNamedQuery = em.createNamedQuery("Supporter.findAll").getResultList();
-            List resultsFromDynamicQuery = em.createQuery("SELECT s FROM Supporter s ORDER BY s.id DESC").getResultList();
+            List<Supporter> resultsFromNamedQuery = em.createNamedQuery("Supporter.findAll", Supporter.class).getResultList();
+            List<Supporter> resultsFromDynamicQuery = em.createQuery("SELECT s FROM Supporter s ORDER BY s.id DESC", Supporter.class).getResultList();
 
-            assertTrue("Incorrect number of supporters returned from named query.", resultsFromNamedQuery.size() == 2);
-            assertTrue("Incorrect number of supporters returned from dynamic query.", resultsFromDynamicQuery.size() == 2);
+            assertEquals("Incorrect number of supporters returned from named query.", 2, resultsFromNamedQuery.size());
+            assertEquals("Incorrect number of supporters returned from dynamic query.", 2, resultsFromDynamicQuery.size());
 
             commitTransaction(em);
         } catch (RuntimeException e) {

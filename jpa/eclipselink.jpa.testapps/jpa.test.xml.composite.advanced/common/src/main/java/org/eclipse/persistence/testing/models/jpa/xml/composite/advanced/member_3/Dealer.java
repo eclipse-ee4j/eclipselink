@@ -33,7 +33,7 @@ public class Dealer {
 
     public Dealer() {
         super();
-        customers = new ArrayList<Customer>();
+        customers = new ArrayList<>();
     }
     public Dealer(String firstName, String lastName) {
         this();

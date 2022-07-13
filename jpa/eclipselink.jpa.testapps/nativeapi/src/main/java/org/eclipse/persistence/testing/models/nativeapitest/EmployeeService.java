@@ -16,8 +16,6 @@
 
 import java.util.List;
 
-import org.eclipse.persistence.testing.models.nativeapitest.Employee;
-
 /**
  * EmployeeService session bean interface.
  */

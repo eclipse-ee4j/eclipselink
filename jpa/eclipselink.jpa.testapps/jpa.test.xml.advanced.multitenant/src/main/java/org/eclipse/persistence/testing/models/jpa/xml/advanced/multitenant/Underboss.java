@@ -23,7 +23,7 @@ public class Underboss extends Mafioso {
     private Collection<Capo> capos;
 
     public Underboss() {
-        this.capos = new Vector<Capo>();
+        this.capos = new Vector<>();
     }
 
     public void addCapo(Capo capo) {

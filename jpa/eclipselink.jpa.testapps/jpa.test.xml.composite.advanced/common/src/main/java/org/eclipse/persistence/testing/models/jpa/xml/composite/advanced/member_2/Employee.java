@@ -109,13 +109,13 @@ public class Employee implements Serializable {
     private int sinChangeCounter = 0;
 
     public Employee () {
-        phoneNumbers = new Vector<PhoneNumber>();
-        projects = new Vector<Project>();
-        managedEmployees = new Vector<Employee>();
-        responsibilities = new Vector<String>();
-        dealers = new ArrayList<Dealer>();
-        creditCards = new HashMap<String, Long>();
-        creditLines = new HashMap<String, Long>();
+        phoneNumbers = new Vector<>();
+        projects = new Vector<>();
+        managedEmployees = new Vector<>();
+        responsibilities = new Vector<>();
+        dealers = new ArrayList<>();
+        creditCards = new HashMap<>();
+        creditLines = new HashMap<>();
         normalHours = new Time[2];
         overtimeHours = new Time[2];
     }
@@ -195,7 +195,7 @@ public class Employee implements Serializable {
     }
 
     public String displayString() {
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         sbuff.append("Employee ").append(getId()).append(": ").append(getLastName()).append(", ").append(getFirstName()).append(getSalary());
 
         return sbuff.toString();

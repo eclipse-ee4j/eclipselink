@@ -48,7 +48,7 @@ public class Project implements Serializable {
     private Collection<Employee> teamMembers;
 
     public Project () {
-        this.teamMembers = new Vector<Employee>();
+        this.teamMembers = new Vector<>();
     }
 
     public Integer getId() {
@@ -100,7 +100,7 @@ public class Project implements Serializable {
     }
 
     public String displayString() {
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         sbuff.append("Project ").append(getId()).append(": ").append(getName()).append(", ").append(getDescription());
 
         return sbuff.toString();

@@ -23,8 +23,9 @@ package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import junit.framework.*;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Boss;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Capo;
@@ -33,6 +34,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mafia
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mafioso;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Soldier;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Underboss;
+import org.junit.Assert;
 
 import java.util.List;
 
@@ -414,7 +416,7 @@ public class EntityMappingsMultitenantSharedEMFTest extends EntityMappingsMultit
 
         MafiaFamily family =  em.find(MafiaFamily.class, family007);
         assertNotNull("The Mafia Family with id: " + family007 + ", was not found", family);
-        assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [5]", family.getTags().size() == 5);
+        assertEquals("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [5]", 5, family.getTags().size());
         assertNull("The Mafia Family with id: " + family707 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family707));
         assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
         assertFalse("No mafiosos part of 007 family", family.getMafiosos().isEmpty());
@@ -434,26 +436,27 @@ public class EntityMappingsMultitenantSharedEMFTest extends EntityMappingsMultit
         }
 
         // Read and validate our contracts
-        List<Contract> contracts = em.createNamedQuery("FindAllXmlContracts").getResultList();
-        assertTrue("Incorrect number of contracts were returned [" + contracts.size() + "], expected[3]", contracts.size() == 3);
+        List<Contract> contracts = em.createNamedQuery("FindAllXmlContracts", Contract.class).getResultList();
+        assertEquals("Incorrect number of contracts were returned [" + contracts.size() + "], expected[3]", 3, contracts.size());
 
         for (Contract contract : contracts) {
-            assertFalse("Contract description was voided.", contract.getDescription().equals("voided"));
+            Assert.assertNotEquals("Contract description was voided.", "voided", contract.getDescription());
         }
 
         // Try a select named query
-        List families = em.createNamedQuery("findJPQLXMLMafiaFamilies").getResultList();
-        assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1);
+        List<MafiaFamily> families = em.createNamedQuery("findJPQLXMLMafiaFamilies", MafiaFamily.class).getResultList();
+        assertEquals("Incorrect number of families were returned [" + families.size() + "], expected [1]", 1, families.size());
 
         // Find our boss and make sure his name has not been compromised from the 707 family.
         Boss boss = em.find(Boss.class, family007Mafiosos.get(0));
-        assertFalse("The Boss name has been compromised", boss.getFirstName().equals("Compromised"));
+        Assert.assertNotEquals("The Boss name has been compromised", "Compromised", boss.getFirstName());
 
         // Check if the conversion of the Gender enum values works
-        List result = em.createNativeQuery("SELECT GENDER FROM XML_MAFIOSO WHERE ID = " + boss.getId()).getResultList();
-        assertTrue("Boss with id = " + boss.getId() + " not found", result.size() == 1);
+        @SuppressWarnings({"unchecked"})
+        List<Mafioso.Gender> result = em.createNativeQuery("SELECT GENDER FROM XML_MAFIOSO WHERE ID = " + boss.getId()).getResultList();
+        assertEquals("Boss with id = " + boss.getId() + " not found", 1, result.size());
         String genderFieldExpected = (boss.getGender() == Female) ? "F" : "M";
-        assertTrue("Gender value conversion failed, expected [" + genderFieldExpected + "] but got [" + result.get(0) + "]", genderFieldExpected.equals(result.get(0)) );
+        assertEquals("Gender value conversion failed, expected [" + genderFieldExpected + "] but got [" + result.get(0) + "]", genderFieldExpected, result.get(0));
         commitTransaction(em);
     }
 
@@ -467,7 +470,7 @@ public class EntityMappingsMultitenantSharedEMFTest extends EntityMappingsMultit
         em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
         MafiaFamily family = em.find(MafiaFamily.class, family707);
         assertNotNull("The Mafia Family with id: " + family707 + ", was not found", family);
-        assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [3]", family.getTags().size() == 3);
+        assertEquals("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [3]", 3, family.getTags().size());
         assertNull("The Mafia Family with id: " + family007 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family007));
         assertNull("The Mafia Family with id: " + family123 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family123));
         assertFalse("No mafiosos part of 707 family", family.getMafiosos().isEmpty());
@@ -490,12 +493,12 @@ public class EntityMappingsMultitenantSharedEMFTest extends EntityMappingsMultit
         em.createNamedQuery("UpdateAllXmlContractDescriptions").executeUpdate();
 
         // Read and validate the contracts
-        List<Contract> contracts = em.createNamedQuery("FindAllXmlContracts").getResultList();
-        assertTrue("Incorrect number of contracts were returned [" + contracts.size() + "], expected[3]", contracts.size() == 3);
+        List<Contract> contracts = em.createNamedQuery("FindAllXmlContracts", Contract.class).getResultList();
+        assertEquals("Incorrect number of contracts were returned [" + contracts.size() + "], expected[3]", 3, contracts.size());
 
         // See how many soldiers are returned from a jpql query
-        List soldiers = em.createQuery("SELECT s from XMLSoldier s").getResultList();
-        assertTrue("Incorrect number of soldiers were returned [" + soldiers.size() + "], expected [5]",  soldiers.size() == 5);
+        List<Soldier> soldiers = em.createQuery("SELECT s from XMLSoldier s", Soldier.class).getResultList();
+        assertEquals("Incorrect number of soldiers were returned [" + soldiers.size() + "], expected [5]", 5, soldiers.size());
 
         if(getServerSession(getPersistenceUnitName()).getPlatform().isSymfoware()) {
             getServerSession(getPersistenceUnitName()).logMessage("Test EntityMappingsMultiTenantJUnitTestCase partially skipped for this platform, "

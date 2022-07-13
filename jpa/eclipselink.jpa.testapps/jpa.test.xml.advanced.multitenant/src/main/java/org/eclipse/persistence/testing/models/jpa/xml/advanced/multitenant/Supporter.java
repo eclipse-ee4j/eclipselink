@@ -24,7 +24,7 @@ public class Supporter {
     public List<Candidate> supportedCandidates;
 
     public Supporter() {
-        supportedCandidates = new ArrayList<Candidate>();
+        supportedCandidates = new ArrayList<>();
     }
 
     protected void addSupportedCandidate(Candidate candidate) {
