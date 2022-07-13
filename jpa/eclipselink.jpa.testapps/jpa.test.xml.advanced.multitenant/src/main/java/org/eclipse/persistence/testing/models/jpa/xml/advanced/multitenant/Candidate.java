@@ -28,8 +28,8 @@ public class Candidate {
     public List<String> honors;
 
     public Candidate() {
-        honors = new ArrayList<String>();
-        supporters = new ArrayList<Supporter>();
+        honors = new ArrayList<>();
+        supporters = new ArrayList<>();
     }
 
     public void addHonor(String honor) {

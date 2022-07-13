@@ -26,7 +26,7 @@ public class Mason {
     public Map<Date, String> awards;
 
     public Mason() {
-        awards = new HashMap<Date, String>();
+        awards = new HashMap<>();
     }
 
     public void addAward(Date awardDate, String award) {

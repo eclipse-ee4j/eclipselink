@@ -157,7 +157,7 @@ public class EntityMappingsMultitenant123Test extends EntityMappingsMultitenantJ
 
             MafiaFamily family =  em.find(MafiaFamily.class, family123);
             assertNotNull("The Mafia Family with id: " + family123 + ", was not found", family);
-            assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [1]", family.getTags().size() == 1);
+            assertEquals("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [1]", 1, family.getTags().size());
             assertNull("The Mafia Family with id: " + family707 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family707));
             assertNull("The Mafia Family with id: " + family007 + ", was found (when it should not have been)", em.find(MafiaFamily.class, family007));
             assertFalse("No mafiosos part of 123 family", family.getMafiosos().isEmpty());
@@ -171,9 +171,9 @@ public class EntityMappingsMultitenant123Test extends EntityMappingsMultitenantJ
             // eclipselink.jdbc.allow-native-sql-queries property is set to
             // false for this PU.
             boolean exceptionCaught = false;
-            List mafiaFamilies = null;
             try {
-                mafiaFamilies = em.createNativeQuery("select * from XML_MAFIA_FAMILY").getResultList();
+                @SuppressWarnings({"unchecked"})
+                List<MafiaFamily> mafiaFamilies = em.createNativeQuery("select * from XML_MAFIA_FAMILY").getResultList();
             } catch (Exception e) {
                 exceptionCaught = true;
             }
@@ -190,8 +190,8 @@ public class EntityMappingsMultitenant123Test extends EntityMappingsMultitenantJ
 //            }
 
             // Try a select named query
-            List families = em.createNamedQuery("findJPQLXMLMafiaFamilies").getResultList();
-            assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1);
+            List<MafiaFamily> families = em.createNamedQuery("findJPQLXMLMafiaFamilies", MafiaFamily.class).getResultList();
+            assertEquals("Incorrect number of families were returned [" + families.size() + "], expected [1]", 1, families.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

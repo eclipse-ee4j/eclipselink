@@ -179,7 +179,7 @@ public class EntityMappingsMultitenantTableTest extends EntityMappingsMultitenan
             assertNull("Candidate B has a Riding when he shouldn't have.", candidateBRefreshed.getRiding());
             assertTrue("Candidate B had supporters when he shouldn't have.", candidateBRefreshed.getSupporters().isEmpty());
             assertTrue("Candidate B had honors when he shouldn't have.", candidateBRefreshed.getHonors().isEmpty());
-            assertTrue("Candidate B had the incorrect salary.", candidateBRefreshed.getSalary() == 100);
+            assertEquals("Candidate B had the incorrect salary.", 100, candidateBRefreshed.getSalary());
 
             commitTransaction(em);
 

@@ -23,7 +23,7 @@ public class Soldier extends Mafioso {
     private Collection<Contract> contracts;
 
     public Soldier() {
-        this.contracts = new Vector<Contract>();
+        this.contracts = new Vector<>();
     }
 
     public void addContract(Contract contract) {

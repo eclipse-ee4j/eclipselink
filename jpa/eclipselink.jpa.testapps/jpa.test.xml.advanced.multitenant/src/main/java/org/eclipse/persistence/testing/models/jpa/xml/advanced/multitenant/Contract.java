@@ -28,7 +28,7 @@ public class Contract {
     private Collection<Soldier> soldiers;
 
     public Contract() {
-        this.soldiers = new Vector<Soldier>();
+        this.soldiers = new Vector<>();
     }
 
     public void addSoldier(Soldier soldier) {

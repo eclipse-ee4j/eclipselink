@@ -30,12 +30,12 @@ public class EntityMappingsMultitenantJunitBase extends JUnitTestCase {
     public static int family707;
     public static int family007;
     public static int family123;
-    public static List<Integer> family707Mafiosos = new ArrayList<Integer>();
-    public static List<Integer> family707Contracts = new ArrayList<Integer>();
-    public static List<Integer> family007Mafiosos = new ArrayList<Integer>();
-    public static List<Integer> family007Contracts = new ArrayList<Integer>();
-    public static List<Integer> family123Mafiosos = new ArrayList<Integer>();
-    public static List<Integer> family123Contracts = new ArrayList<Integer>();
+    public static List<Integer> family707Mafiosos = new ArrayList<>();
+    public static List<Integer> family707Contracts = new ArrayList<>();
+    public static List<Integer> family007Mafiosos = new ArrayList<>();
+    public static List<Integer> family007Contracts = new ArrayList<>();
+    public static List<Integer> family123Mafiosos = new ArrayList<>();
+    public static List<Integer> family123Contracts = new ArrayList<>();
 
     public EntityMappingsMultitenantJunitBase() {
         super();

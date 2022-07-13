@@ -321,7 +321,7 @@ public class Employee implements Serializable, Cloneable {
     }
 
     public String displayString() {
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         sbuff.append("Employee ").append(getId()).append(": ").append(getLastName()).append(", ").append(getFirstName()).append(getSalary());
 
         return sbuff.toString();

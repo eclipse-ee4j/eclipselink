@@ -23,7 +23,7 @@ public class Capo extends Mafioso {
     private Collection<Soldier> soldiers;
 
     public Capo() {
-        this.soldiers = new Vector<Soldier>();
+        this.soldiers = new Vector<>();
     }
 
     public void addSoldier(Soldier soldier) {

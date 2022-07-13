@@ -212,8 +212,8 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             // Re-read the employee and verify the data.
             Employee emp = em.find(Employee.class, employeeId);
 
-            assertTrue("The SIN value was not persisted.", testSin.equals( emp.returnSIN() ) );
-            assertTrue("The enterSIN accessor on Employee was not used to set the value", emp.returnSinChangeCounter()==1 );
+            assertEquals("The SIN value was not persisted.", testSin, emp.returnSIN());
+            assertEquals("The enterSIN accessor on Employee was not used to set the value", 1, emp.returnSinChangeCounter());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -348,7 +348,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         try {
             List schools = em.createNamedQuery("findJPQLXMLSchools").getResultList();
-            assertTrue("Incorrect number of schools were returned [" + schools.size() + "], expected [2]",  schools.size() == 2);
+            assertEquals("Incorrect number of schools were returned [" + schools.size() + "], expected [2]", 2, schools.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -376,7 +376,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             // and the property above, we should only return Ottawa students.
 
             List students = em.createQuery("SELECT s from XMLStudent s").getResultList();
-            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [8]",  students.size() == 8);
+            assertEquals("Incorrect number of students were returned [" + students.size() + "], expected [8]", 8, students.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -405,7 +405,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             // However, they should not have any schools loaded.
 
             List students = em.createQuery("SELECT s from XMLStudent s").getResultList();
-            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [18]",  students.size() == 18);
+            assertEquals("Incorrect number of students were returned [" + students.size() + "], expected [18]", 18, students.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -428,7 +428,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         try {
             // This should use the EMF NAME property of Montreal%
             List students = em.createQuery("SELECT s from XMLStudent s").getResultList();
-            assertTrue("Incorrect number of students were returned [" + students.size() + "], expected [5]",  students.size() == 5);
+            assertEquals("Incorrect number of students were returned [" + students.size() + "], expected [5]", 5, students.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -453,7 +453,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             em.setProperty("NUT_COLOR", "Grey");
 
             List bolts = em.createQuery("SELECT b from XMLBolt b").getResultList();
-            assertTrue("Incorrect number of bolts were returned [" + bolts.size() + "], expected [2]",  bolts.size() == 2);
+            assertEquals("Incorrect number of bolts were returned [" + bolts.size() + "], expected [2]", 2, bolts.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -477,7 +477,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         DirectToFieldMapping mapping = (DirectToFieldMapping) employeeDescriptor.getMappingForAttributeName("gender");
         assertNotNull("Gender mapping from Employee not found.", mapping);
         assertTrue("No object type converter found on the gender mapping.", ObjectTypeConverter.class.isAssignableFrom(mapping.getConverter().getClass()));
-        assertTrue("Default object value on the object type converter for gender was not set to Male.", ((ObjectTypeConverter) mapping.getConverter()).getDefaultAttributeValue().equals(Employee.Gender.Male.name()));
+        assertEquals("Default object value on the object type converter for gender was not set to Male.", ((ObjectTypeConverter) mapping.getConverter()).getDefaultAttributeValue(), Employee.Gender.Male.name());
     }
 
     /**
@@ -487,16 +487,16 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         DatabaseSessionImpl session = getDatabaseSession();
 
         ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
-        assertTrue("Employee existence checking was incorrect", employeeDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckDatabase);
+        assertEquals("Employee existence checking was incorrect", DoesExistQuery.CheckDatabase, employeeDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy());
 
         ClassDescriptor projectDescriptor = session.getDescriptor(Project.class);
-        assertTrue("Project existence checking was incorrect", projectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckCache);
+        assertEquals("Project existence checking was incorrect", DoesExistQuery.CheckCache, projectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy());
 
         ClassDescriptor smallProjectDescriptor = session.getDescriptor(SmallProject.class);
-        assertTrue("SmallProject existence checking was incorrect", smallProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.AssumeExistence);
+        assertEquals("SmallProject existence checking was incorrect", DoesExistQuery.AssumeExistence, smallProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy());
 
         ClassDescriptor largeProjectDescriptor = session.getDescriptor(LargeProject.class);
-        assertTrue("LargeProject existence checking was incorrect", largeProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.AssumeNonExistence);
+        assertEquals("LargeProject existence checking was incorrect", DoesExistQuery.AssumeNonExistence, largeProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy());
     }
 
     /**
@@ -540,7 +540,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         DatabaseSessionImpl session = getDatabaseSession();
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
 
-        assertFalse("Employee descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
+        assertNotNull("Employee descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor);
         assertFalse("Employee descriptor has incorrect object change policy", descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
     }
 
@@ -551,7 +551,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         DatabaseSessionImpl session = getDatabaseSession();
         ClassDescriptor descriptor = session.getDescriptor(Address.class);
 
-        assertFalse("Address descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
+        assertNotNull("Address descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor);
         assertTrue("Address descriptor has incorrect object change policy", descriptor.getObjectChangePolicyInternal().isDeferredChangeDetectionPolicy());
     }
 
@@ -566,7 +566,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         DatabaseSessionImpl session = getDatabaseSession();
         ClassDescriptor descriptor = session.getDescriptor(PhoneNumber.class);
 
-        assertFalse("PhoneNumber descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
+        assertNotNull("PhoneNumber descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor);
         assertTrue("PhoneNumber descriptor has incorrect object change policy", descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
     }
 
@@ -581,7 +581,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         DatabaseSessionImpl session = getDatabaseSession();
         ClassDescriptor descriptor = session.getDescriptor(Project.class);
 
-        assertFalse("Project descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
+        assertNotNull("Project descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor);
         assertTrue("Project descriptor has incorrect object change policy", descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy());
     }
 
@@ -626,15 +626,15 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         if (descriptor == null) {
             fail("A descriptor for the Employee alias was not found in the PU [" + m_persistenceUnit + "]");
         } else {
-            assertTrue("Incorrect cache type() setting.", descriptor.getIdentityMapClass().equals(ClassConstants.SoftCacheWeakIdentityMap_Class));
-            assertTrue("Incorrect cache size() setting.", descriptor.getIdentityMapSize() == 730);
+            assertEquals("Incorrect cache type() setting.", descriptor.getIdentityMapClass(), ClassConstants.SoftCacheWeakIdentityMap_Class);
+            assertEquals("Incorrect cache size() setting.", 730, descriptor.getIdentityMapSize());
             assertFalse("Incorrect cache isolated() setting.", descriptor.isIsolated());
             assertFalse("Incorrect cache alwaysRefresh() setting.", descriptor.shouldAlwaysRefreshCache());
             assertFalse("Incorrect disable hits setting.", descriptor.shouldDisableCacheHits());
             CacheInvalidationPolicy policy = descriptor.getCacheInvalidationPolicy();
             assertTrue("Incorrect cache expiry() policy setting.", policy instanceof TimeToLiveCacheInvalidationPolicy);
-            assertTrue("Incorrect cache expiry() setting.", ((TimeToLiveCacheInvalidationPolicy) policy).getTimeToLive() == 1000);
-            assertTrue("Incorrect cache coordinationType() settting.", descriptor.getCacheSynchronizationType() == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
+            assertEquals("Incorrect cache expiry() setting.", 1000, ((TimeToLiveCacheInvalidationPolicy) policy).getTimeToLive());
+            assertEquals("Incorrect cache coordinationType() settting.", ClassDescriptor.INVALIDATE_CHANGED_OBJECTS, descriptor.getCacheSynchronizationType());
         }
     }
 
@@ -657,7 +657,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
                     fail("Invalid amount of lock fields were set on Project's selected fields locking policy.");
                 } else {
                     DatabaseField lockField = lockFields.get(0);
-                    assertTrue("Incorrect lock field was set on Project's selected fields locking policy.", lockField.getName().equals("VERSION"));
+                    assertEquals("Incorrect lock field was set on Project's selected fields locking policy.", "VERSION", lockField.getName());
                 }
             } else {
             fail("A SelectedFieldsLockingPolicy was not set on the Project descriptor.");
@@ -670,7 +670,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         beginTransaction(em);
         try {
             Employee employee = ModelExamples.employeeExample1();
-            ArrayList projects = new ArrayList();
+            List<Project> projects = new ArrayList<>();
             projects.add(ModelExamples.projectExample1());
             projects.add(ModelExamples.projectExample2());
             employee.setProjects(projects);
@@ -737,7 +737,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             // Re-read the employee and verify the data.
             Employee emp = em.find(Employee.class, extendedEmployeeId);
             assertNotNull("The employee was not found", emp);
-            assertTrue("The address province value was not converted", emp.getAddress().getProvince().equals("Ontario"));
+            assertEquals("The address province value was not converted", "Ontario", emp.getAddress().getProvince());
             assertTrue("Gender was not persisted correctly.", emp.isMale());
             assertTrue("Visa card did not persist correctly.", emp.hasVisa(visa));
             assertTrue("Amex card did not persist correctly.", emp.hasAmex(amex));
@@ -814,7 +814,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        assertTrue("Error deleting Employee", em.find(Employee.class, employeeId) == null);
+        assertNull("Error deleting Employee", em.find(Employee.class, employeeId));
     }
 
     public void testNamedNativeQueryOnAddress() {
@@ -835,19 +835,19 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         }
         Query query = em.createNamedQuery("findAllXMLAddresses");
         List addresses = query.getResultList();
-        assertTrue("Error executing named native query 'findAllXMLAddresses'", addresses != null);
+        assertNotNull("Error executing named native query 'findAllXMLAddresses'", addresses);
     }
 
     public void testNamedQueryOnEmployee() {
         Query query = createEntityManager().createNamedQuery("findAllXMLEmployeesByFirstName");
         query.setParameter("firstname", "Brady");
         Employee employee = (Employee) query.getSingleResult();
-        assertTrue("Error executing named query 'findAllXMLEmployeesByFirstName'", employee != null);
+        assertNotNull("Error executing named query 'findAllXMLEmployeesByFirstName'", employee);
     }
 
     public void testReadEmployee() {
         Employee employee = createEntityManager().find(Employee.class, employeeId);
-        assertTrue("Error reading Employee", employee.getId() == employeeId.intValue());
+        assertEquals("Error reading Employee", (int) employee.getId(), employeeId.intValue());
     }
 
     public void testUpdateEmployee() {
@@ -868,8 +868,8 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             em.clear();
 
             Employee emp = em.find(Employee.class, employeeId);
-            assertTrue("Error updating Employee", emp.getSalary() == 50000);
-            assertTrue("Version field not updated", emp.getVersion() == version + 1);
+            assertEquals("Error updating Employee", 50000, emp.getSalary());
+            assertEquals("Version field not updated", emp.getVersion(), version + 1);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -940,7 +940,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             //      (SELECT t0.EMP_ID FROM XML_BR2_EMPLOYEE t0, XML_BR2_SALARY t1
             //           WHERE ((t0.F_NAME = ?) AND (t1.E_ID = t0.EMP_ID)) AND t0.EMP_ID = XML_BR3_PROJ_EMP.EMP_ID)
             // In the sql above tables prefixed with XML_BR2_ and XML_BR3_ are in different data bases.
-            List<Employee> employeesToBeDeleted = em.createQuery("SELECT e FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'").getResultList();
+            List<Employee> employeesToBeDeleted = em.createQuery("SELECT e FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'", Employee.class).getResultList();
             for(Employee empToBeDeleted : employeesToBeDeleted) {
                 int id = empToBeDeleted.getId();
                 // Note that for native query the user need to specify targetPU using COMPOSITE_MEMBER query hint.
@@ -1083,10 +1083,10 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             Address address2 = (Address) aQuery.getSingleResult();
 
             assertNotNull("Address returned from stored procedure is null", address2);
-            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new
+            assertNotSame("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1, address2); // new
             // Integer address handled differently than int
-            assertTrue("Address not found using stored procedure", address1.getId().intValue() == address2.getId().intValue());
-            assertTrue("Address.street data returned doesn't match persisted address.street", address1.getStreet().equals(address2.getStreet()));
+            assertEquals("Address not found using stored procedure", address1.getId().intValue(), address2.getId().intValue());
+            assertEquals("Address.street data returned doesn't match persisted address.street", address1.getStreet(), address2.getStreet());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1129,10 +1129,10 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             Address address2 = (Address) aQuery.getSingleResult();
 
             assertNotNull("Address returned from stored procedure is null", address2);
-            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new
+            assertNotSame("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1, address2); // new
             // Integer address handled differently than int
-            assertTrue("Address not found using stored procedure", address1.getId().intValue() == address2.getId().intValue());
-            assertTrue("Address.street data returned doesn't match persisted address.street", address1.getStreet().equals(address2.getStreet()));
+            assertEquals("Address not found using stored procedure", address1.getId().intValue(), address2.getId().intValue());
+            assertEquals("Address.street data returned doesn't match persisted address.street", address1.getStreet(), address2.getStreet());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1275,54 +1275,54 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         ClassDescriptor descriptor = session.getDescriptorForAlias("XMLEmployee");
         ClassDescriptor aggregateDescriptor = session.getDescriptor(EmploymentPeriod.class);
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
 
         if (descriptor == null) {
-            errorMsg += " Descriptor for XMLEmployee alias was not found;";
+            errorMsg.append(" Descriptor for XMLEmployee alias was not found;");
         }
         if (aggregateDescriptor == null) {
-            errorMsg += " Descriptor for EmploymentPeriod.class was not found;";
+            errorMsg.append(" Descriptor for EmploymentPeriod.class was not found;");
         }
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
 
         // verify properties set on Employee instance
-        errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "XMLEmployee");
-        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, 1);
-        errorMsg += verifyPropertyValue(descriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(descriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE);
+        errorMsg.append(verifyPropertyValue(descriptor, "entityName", String.class, "XMLEmployee"));
+        errorMsg.append(verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, 1));
+        errorMsg.append(verifyPropertyValue(descriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE));
+        errorMsg.append(verifyPropertyValue(descriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE));
 
         // each attribute of Employee was assigned a property attributeName with the value attribute name.
         for(DatabaseMapping mapping : descriptor.getMappings()) {
-            errorMsg += verifyPropertyValue(mapping, "attributeName", String.class, mapping.getAttributeName());
+            errorMsg.append(verifyPropertyValue(mapping, "attributeName", String.class, mapping.getAttributeName()));
         }
 
         // attribute m_lastName has many properties of different types
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
-        errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, (byte) 1);
-        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, 'A');
-        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, 1.0);
-        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, 1F);
-        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, 1);
-        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, 1L);
-        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, (short) 1);
-        errorMsg += verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE);
-        errorMsg += verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE);
-        errorMsg += verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59"));
-        errorMsg += verifyPropertyValue(mapping, "TimeStampProperty", java.sql.Timestamp.class, Helper.timestampFromString("2008-04-10 13:59:59"));
-        errorMsg += verifyPropertyValue(mapping, "DateProperty", java.sql.Date.class, Helper.dateFromString("2008-04-10"));
+        errorMsg.append(verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE));
+        errorMsg.append(verifyPropertyValue(mapping, "ByteProperty", Byte.class, (byte) 1));
+        errorMsg.append(verifyPropertyValue(mapping, "CharacterProperty", Character.class, 'A'));
+        errorMsg.append(verifyPropertyValue(mapping, "DoubleProperty", Double.class, 1.0));
+        errorMsg.append(verifyPropertyValue(mapping, "FloatProperty", Float.class, 1F));
+        errorMsg.append(verifyPropertyValue(mapping, "IntegerProperty", Integer.class, 1));
+        errorMsg.append(verifyPropertyValue(mapping, "LongProperty", Long.class, 1L));
+        errorMsg.append(verifyPropertyValue(mapping, "ShortProperty", Short.class, (short) 1));
+        errorMsg.append(verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE));
+        errorMsg.append(verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE));
+        errorMsg.append(verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59")));
+        errorMsg.append(verifyPropertyValue(mapping, "TimeStampProperty", java.sql.Timestamp.class, Helper.timestampFromString("2008-04-10 13:59:59")));
+        errorMsg.append(verifyPropertyValue(mapping, "DateProperty", Date.class, Helper.dateFromString("2008-04-10")));
 
-        errorMsg += verifyPropertyValue(mapping, "ToBeIgnored", null, null);
+        errorMsg.append(verifyPropertyValue(mapping, "ToBeIgnored", null, null));
 
         // verify property set on EmploymentPeriod embeddable
-        errorMsg += verifyPropertyValue(aggregateDescriptor, "embeddableClassName", String.class, "EmploymentPeriod");
-        errorMsg += verifyPropertyValue(aggregateDescriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(aggregateDescriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE);
+        errorMsg.append(verifyPropertyValue(aggregateDescriptor, "embeddableClassName", String.class, "EmploymentPeriod"));
+        errorMsg.append(verifyPropertyValue(aggregateDescriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE));
+        errorMsg.append(verifyPropertyValue(aggregateDescriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE));
 
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
     protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
@@ -1336,7 +1336,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         String errorPrefix = " property " + propertyName + " for " + masterName;
         if(expectedPropertyValueType == null) {
             if(propertyValue != null) {
-                errorMsg = errorPrefix + " value is " + propertyValue.toString() + " , was expected to be null.";
+                errorMsg = errorPrefix + " value is " + propertyValue + " , was expected to be null.";
             }
             return errorMsg;
         }
@@ -1356,7 +1356,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
                     }
                 }
             } else if (!propertyValue.equals(expectedPropertyValue)) {
-                errorMsg = errorPrefix + " has value " + propertyValue.toString() + ", " + expectedPropertyValue.toString() + " was expected;";
+                errorMsg = errorPrefix + " has value " + propertyValue + ", " + expectedPropertyValue.toString() + " was expected;";
             }
         }
         return errorMsg;
@@ -1373,7 +1373,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         // read the persisted employees back
         EntityManager em = createEntityManager();
-        List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'", Employee.class).getResultList();
         // while em is open, cache ServerSession that will be used later for verification
         DatabaseSessionImpl session = getDatabaseSession();
         closeEntityManager(em);
@@ -1386,12 +1386,12 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         }
 
         // verify that the persisted and read objects are equal
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         for(int i=0; i<employeesPersisted.size(); i++) {
             for(int j=0; j<employeesRead.size(); j++) {
                 if(employeesPersisted.get(i).getFirstName().equals(employeesRead.get(j).getFirstName())) {
                     if(!session.compareObjects(employeesPersisted.get(i), employeesRead.get(j))) {
-                        errorMsg += "Employee " + employeesPersisted.get(i).getFirstName() +"  was not persisted correctly.";
+                        errorMsg.append("Employee ").append(employeesPersisted.get(i).getFirstName()).append("  was not persisted correctly.");
                     }
                 }
             }
@@ -1402,7 +1402,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -1434,7 +1434,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         em = createEntityManager();
         // read the updated employees back
-        List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'", Employee.class).getResultList();
         // while em is open, cache ServerSession that will be used later for verification
         DatabaseSessionImpl session = getDatabaseSession();
 
@@ -1447,7 +1447,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         // verify that the persisted and read objects are equal
         beginTransaction(em);
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         try{
             for(int i=0; i<employeesPersisted.size(); i++) {
                 for(int j=0; j<employeesRead.size(); j++) {
@@ -1455,7 +1455,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
                     Employee emp2 = em.find(Employee.class, employeesRead.get(j).getId());
                     if(emp1.getFirstName().equals(emp2.getFirstName())) {
                         if(!session.compareObjects(emp1, emp2)) {
-                            errorMsg += "Employee " + emp1.getFirstName() +"  was not updated correctly.";
+                            errorMsg.append("Employee ").append(emp1.getFirstName()).append("  was not updated correctly.");
                         }
                     }
                 }
@@ -1472,7 +1472,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -1487,7 +1487,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         EntityManager em = createEntityManager();
         // read the persisted employees back - without fetch join
-        List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        List<Employee> employeesRead = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'", Employee.class).getResultList();
         closeEntityManager(em);
 
         // clear cache
@@ -1495,7 +1495,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         // read the persisted employees back - with fetch join.
         em = createEntityManager();
-        List<Employee> employeesReadWithFetchJoin = em.createQuery("SELECT e FROM XMLEmployee e JOIN FETCH e.dealers WHERE e.lastName = '"+lastName+"'").getResultList();
+        List<Employee> employeesReadWithFetchJoin = em.createQuery("SELECT e FROM XMLEmployee e JOIN FETCH e.dealers WHERE e.lastName = '"+lastName+"'", Employee.class).getResultList();
         // while em is open, cache ServerSession that will be used later for verification
         DatabaseSessionImpl session = getDatabaseSession();
 
@@ -1506,7 +1506,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         // it fails in case an object has triggered indirection for particular attribute and compared object's indirection for this attribute is not triggered.
         // The expected result of join fetch query is Employee.dealers being triggered - so need to trigger it on the control collection (getDealers.size() does that);
         // also the expected result should have an object for each row returned - therefore number of inclusions of each Employee equals its dealers.size()
-        List<Employee> employeesControl = new ArrayList<Employee>();
+        List<Employee> employeesControl = new ArrayList<>();
         for(int i=0; i<employeesRead.size(); i++) {
             int nDialers = employeesRead.get(i).getDealers().size();
             for(int j=0; j<nDialers; j++) {
@@ -1618,7 +1618,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         // persist employees (there should be two of them)
         List<Employee> persistedEmployees = persistEmployeesWithUnidirectionalMappings(lastName);
         // cache their dealers' ids
-        ArrayList<Integer> dealersIds = new ArrayList<Integer>();
+        ArrayList<Integer> dealersIds = new ArrayList<>();
         for(int i=0; i<persistedEmployees.size(); i++) {
             Employee emp = persistedEmployees.get(i);
             for(int j=0; j<emp.getDealers().size(); j++) {
@@ -1632,7 +1632,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         // read the persisted employees
-        List<Employee> readEmployees = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'").getResultList();
+        List<Employee> readEmployees = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.lastName = '"+lastName+"'", Employee.class).getResultList();
 
         // trigger indirection on the second employee's dealers
         readEmployees.get(1).getDealers().size();
@@ -1653,7 +1653,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         // find employees' dealers and verify their versions - all should be 2.
         beginTransaction(em);
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         try{
             for(int i=0; i<dealersIds.size(); i++) {
                 Dealer dealer = em.find(Dealer.class, dealersIds.get(i));
@@ -1661,13 +1661,13 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
                 // verify the version both in the cache and in the db
                 int version2 = getVersion(em, dealer);
                 if(version2 != 2) {
-                    errorMsg += "In the cache dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                    errorMsg.append("In the cache dealer ").append(dealer.getFirstName()).append("'s version is ").append(version2).append(" (2 was expected); ");
                 }
                 em.refresh(dealer);
 
                 version2 = getVersion(em, dealer);
                 if(version2 != 2) {
-                    errorMsg += "In the db dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                    errorMsg.append("In the db dealer ").append(dealer.getFirstName()).append("'s version is ").append(version2).append(" (2 was expected); ");
                 }
             }
         } finally {
@@ -1683,12 +1683,12 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
     protected int getVersion(EntityManager em, Dealer dealer) {
-        Vector pk = new Vector(1);
+        List<Integer> pk = new Vector<>(1);
         pk.add(dealer.getId());
 
         DatabaseSessionImpl session = getDatabaseSession();
@@ -1697,7 +1697,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
     protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {
         int n = 2;
-        List<Employee> employees = new ArrayList<Employee>(n);
+        List<Employee> employees = new ArrayList<>(n);
         for(int i=0; i<n; i++) {
             Employee emp = new Employee();
             emp.setGivenName(Integer.toString(i+1));

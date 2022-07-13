@@ -31,32 +31,33 @@ public class ProvinceConverter implements Converter {
         } else {
             String province = (String) dataValue;
 
-            if (province.equals("AB")) {
-                return "Alberta";
-            } else if (province.equals("BC")) {
-                return "British Columnbia";
-            } else if (province.equals("MB")) {
-                return "Manitoba";
-            } else if (province.equals("NB")) {
-                return "New Brunswick";
-            } else if (province.equals("NT")) {
-                return "Northwest Territories";
-            } else if (province.equals("NS")) {
-                return "Nova Scotia";
-            } else if (province.equals("NU")) {
-                return "Nunavut";
-            } else if (province.equals("ON")) {
-                return "Ontario";
-            } else if (province.equals("PE")) {
-                return "Prince Edward Island";
-            } else if (province.equals("QC")) {
-                return "Quebec";
-            } else if (province.equals("SK")) {
-                return "Saskatchewan";
-            } else if (province.equals("YT")) {
-                return "Yukon";
-            } else {
-                return province;
+            switch (province) {
+                case "AB":
+                    return "Alberta";
+                case "BC":
+                    return "British Columnbia";
+                case "MB":
+                    return "Manitoba";
+                case "NB":
+                    return "New Brunswick";
+                case "NT":
+                    return "Northwest Territories";
+                case "NS":
+                    return "Nova Scotia";
+                case "NU":
+                    return "Nunavut";
+                case "ON":
+                    return "Ontario";
+                case "PE":
+                    return "Prince Edward Island";
+                case "QC":
+                    return "Quebec";
+                case "SK":
+                    return "Saskatchewan";
+                case "YT":
+                    return "Yukon";
+                default:
+                    return province;
             }
         }
     }

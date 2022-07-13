@@ -21,7 +21,6 @@ import java.util.*;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Address;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Department;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.EquipmentCode;
@@ -667,7 +666,6 @@ public class EmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -1078,7 +1076,7 @@ public class EmployeePopulator {
         Employee employee = basicEmployeeExample10();
         try {
             employee.addManagedEmployee(employeeExample12());
-        } catch (Exception exception) {
+        } catch (Exception ignored) {
         }
         registerObject(Employee.class, employee, "0010");
 
@@ -1093,7 +1091,7 @@ public class EmployeePopulator {
         Employee employee = basicEmployeeExample11();
         try {
             employee.addManagedEmployee(employeeExample7());
-        } catch (Exception exception) {
+        } catch (Exception ignored) {
         }
         registerObject(Employee.class, employee, "0011");
 

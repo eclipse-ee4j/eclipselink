@@ -67,6 +67,7 @@ public class BeanValidationDynamicEntityJunitTest extends JUnitTestCase {
         } else {
             // Create an entity manager factory with a dynamic class loader.
             DynamicClassLoader dcl = new ReflectiveDynamicClassLoader(Thread.currentThread().getContextClassLoader());
+            @SuppressWarnings({"unchecked"})
             Map<String, Object> properties = new HashMap<>(getPersistenceProperties());
             properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
 //            properties.put(PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION, "true");

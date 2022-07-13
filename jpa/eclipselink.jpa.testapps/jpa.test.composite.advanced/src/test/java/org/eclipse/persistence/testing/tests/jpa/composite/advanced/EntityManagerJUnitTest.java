@@ -86,8 +86,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
@@ -207,7 +205,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerJUnitTest - composite");
         suite.addTest(new EntityManagerJUnitTest("testSetup"));
-        List<String> tests = new ArrayList<String>();
+        List<String> tests = new ArrayList<>();
         tests.add("testClearEntityManagerWithoutPersistenceContext");
         tests.add("testDeadConnectionFailover");
         tests.add("testDeadPoolFailover");
@@ -518,12 +516,12 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
      * for CompositeListener and MemberListeners - and haven't logged any other event handlings.
      */
     protected void verifyPrePostLoginEvents(SessionBroker broker, ServerSession[] sessions) {
-        String errorMsg = "SETUP HAS SUCCEDDED, but some preLogin or/and postLogin events were wrong: ";
+        StringBuilder errorMsg = new StringBuilder("SETUP HAS SUCCEDDED, but some preLogin or/and postLogin events were wrong: ");
         if (!SessionEventTracker.getErrors().isEmpty()) {
             for (SessionEventTracker.Handling handling : SessionEventTracker.getErrors()) {
-                errorMsg += "\n" + handling.toString();
+                errorMsg.append("\n").append(handling.toString());
             }
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
         // now verify the order in which the events were handled
         Set<ServerSession> setSessions = new HashSet(sessions.length);
@@ -534,7 +532,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             sessionListeners.put(sessions[i], (SessionEventTracker)sessions[i].getEventManager().getListeners().get(0));
         }
 
-        assertTrue(errorMsg+"unexpected number of events' handlings = " + SessionEventTracker.getHandlings().size() +"; " +(sessions.length * 4 + 2)+" was expected",  SessionEventTracker.getHandlings().size() == sessions.length * 4 + 2);
+        assertEquals(errorMsg + "unexpected number of events' handlings = " + SessionEventTracker.getHandlings().size() + "; " + (sessions.length * 4 + 2) + " was expected", SessionEventTracker.getHandlings().size(), sessions.length * 4 + 2);
 
         int nHandling = 0;
         for (SessionEventTracker.Handling handling : SessionEventTracker.getHandlings()) {
@@ -614,7 +612,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
          * 2 - This test will throw an UnsupportedOperationException if the map on AbstractSession is not cloned when immutable - bug fix
          * 3 - This test will throw an SQLException when operating normally due to the field length exception
          */
-        StringBuffer firstName = new StringBuffer("firstName_maxfieldLength_");
+        StringBuilder firstName = new StringBuilder("firstName_maxfieldLength_");
         for(int i=0; i<MAX_FIRST_NAME_FIELD_LENGTH + 100; i++) {
             firstName.append("0");
         }
@@ -756,7 +754,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 throw ex;
             }
 
-            assertFalse("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException == null);
+            assertNotNull("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException);
         }
     }
 
@@ -818,7 +816,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 closeEntityManager(em);
             }
 
-            assertFalse("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException == null);
+            assertNotNull("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException);
         }
     }
 
@@ -880,7 +878,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 closeEntityManager(em);
             }
 
-            assertFalse("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException == null);
+            assertNotNull("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException);
         }
     }
 
@@ -1017,7 +1015,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         List result = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
         commitTransaction(em);
         Object obj = getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(result.get(0));
-        assertTrue("Failed to load the object into the shared cache when there were no changes in the UOW", obj != null);
+        assertNotNull("Failed to load the object into the shared cache when there were no changes in the UOW", obj);
         try{
             beginTransaction(em);
             emp = em.find(Employee.class, emp.getId());
@@ -1200,7 +1198,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 fail("Failed to flush to database");
             }
             em.refresh(emp);
-            assertTrue("Failed to flush to Database", emp.getSalary() == 100);
+            assertEquals("Failed to flush to Database", 100, emp.getSalary());
             em.remove(emp);
             commitTransaction(em);
         }catch(RuntimeException ex){
@@ -1287,14 +1285,14 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 em.clear(); // prevent the flush again
                 try {
                     String eName = (String) em.createQuery("SELECT e.firstName FROM Employee e where e.id = " + emp2.getId()).getSingleResult();
-                    assertTrue("Failed to keep txn open for set RollbackOnly", eName.equals(newName));
+                    assertEquals("Failed to keep txn open for set RollbackOnly", eName, newName);
                 } catch (Exception ignore) {
                 }
             }
         }
         try {
             if (isOnServer()) {
-                assertTrue("Failed to mark txn rollback only", !isTransactionActive(em));
+                assertFalse("Failed to mark txn rollback only", isTransactionActive(em));
             } else {
                 assertTrue("Failed to mark txn rollback only", em.getTransaction().getRollbackOnly());
             }
@@ -1709,7 +1707,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 closeEntityManager(em);
             }
 
-            assertFalse("Proper exception not thrown when EntityManager.lock(object, WRITE) is used.", optimisticLockException == null);
+            assertNotNull("Proper exception not thrown when EntityManager.lock(object, WRITE) is used.", optimisticLockException);
         }
     }
 
@@ -1792,7 +1790,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 throw ex;
             }
 
-            assertFalse("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException == null);
+            assertNotNull("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException);
         }
     }
 
@@ -1857,7 +1855,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 closeEntityManager(em);
             }
 
-            assertFalse("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException == null);
+            assertNotNull("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException);
         }
     }
 
@@ -1921,7 +1919,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 closeEntityManager(em);
             }
 
-            assertFalse("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException == null);
+            assertNotNull("Proper exception not thrown when EntityManager.lock(object, PESSIMISTIC) is used.", pessimisticLockException);
         }
     }
 
@@ -2009,7 +2007,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ);
                 commitTransaction(em);
 
-                assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
+                assertEquals("The version was updated on the pessimistic lock.", version1.intValue(), employee.getVersion().intValue());
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
@@ -2058,7 +2056,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE);
                 commitTransaction(em);
 
-                assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
+                assertEquals("The version was updated on the pessimistic lock.", version1.intValue(), employee.getVersion().intValue());
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
@@ -2091,7 +2089,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 try {
                     beginTransaction(em2);
 
-                    HashMap<String, Object> properties = new HashMap<String, Object>();
+                    HashMap<String, Object> properties = new HashMap<>();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5000);
                     Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
@@ -2120,7 +2118,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 closeEntityManager(em);
             }
 
-            assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
+            assertNotNull("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException);
         }
     }
 
@@ -2145,7 +2143,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 try {
                     beginTransaction(em2);
 
-                    HashMap<String, Object> properties = new HashMap<String, Object>();
+                    HashMap<String, Object> properties = new HashMap<>();
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5000);
                     Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setFirstName("Invalid Lock Employee");
@@ -2174,7 +2172,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 closeEntityManager(em);
             }
 
-            assertFalse("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException == null);
+            assertNotNull("Proper exception not thrown when Query with LockModeType.PESSIMISTIC is used.", lockTimeOutException);
         }
     }
 
@@ -2352,7 +2350,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         // completes the locking transaction (em1) and therefore clears the way to em2 go ahead.
         long timeToWait = 1000;
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
 
         // create Employee with Projects and Responsibilities
@@ -2476,42 +2474,52 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                                 transactionKiller.start();
                             }
 
-                            if(testMode2.equals("query")) {
-                                Query query2 = em2.createQuery("SELECT emp FROM Employee emp WHERE emp.id = "+id).setLockMode(lockMode).
-                                setHint(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-                                if(isSelectForUpateNoWaitSupported()) {
-                                    query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
-                                }
-                                emp2 = (Employee)query2.getSingleResult();
-                            } else if(testMode2.equals("find")) {
-                                emp2 = em2.find(Employee.class, id, lockMode, properties);
-                            } else if(testMode2.equals("update_name")) {
-                                em2.createNativeQuery("SELECT L_NAME FROM MBR2_EMPLOYEE" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(2)).getSingleResult();
+                            switch (testMode2) {
+                                case "query":
+                                    Query query2 = em2.createQuery("SELECT emp FROM Employee emp WHERE emp.id = " + id).setLockMode(lockMode).
+                                            setHint(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
+                                    if (isSelectForUpateNoWaitSupported()) {
+                                        query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                                    }
+                                    emp2 = (Employee) query2.getSingleResult();
+                                    break;
+                                case "find":
+                                    emp2 = em2.find(Employee.class, id, lockMode, properties);
+                                    break;
+                                case "update_name":
+                                    em2.createNativeQuery("SELECT L_NAME FROM MBR2_EMPLOYEE" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(2)).getSingleResult();
 //                                em2.createNativeQuery("UPDATE CMP3_EMPLOYEE SET L_NAME = 'NEW' WHERE EMP_ID = "+id).executeUpdate();
-                            } else if(testMode2.equals("update_salary")) {
-                                em2.createNativeQuery("SELECT SALARY FROM MBR2_SALARY" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(2)).getSingleResult();
+                                    break;
+                                case "update_salary":
+                                    em2.createNativeQuery("SELECT SALARY FROM MBR2_SALARY" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(2)).getSingleResult();
 //                                em2.createNativeQuery("UPDATE CMP3_SALARY SET SALARY = 1000 WHERE EMP_ID = "+id).executeUpdate();
-                            } else if(testMode2.equals("remove_project")) {
-                                em2.createNativeQuery("SELECT PROJECTS_PROJ_ID FROM MBR3_EMP_PROJ" + lockingClauseBeforeWhereClause + " WHERE EMPLOYEES_EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(3)).getResultList();
+                                    break;
+                                case "remove_project":
+                                    em2.createNativeQuery("SELECT PROJECTS_PROJ_ID FROM MBR3_EMP_PROJ" + lockingClauseBeforeWhereClause + " WHERE EMPLOYEES_EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(3)).getResultList();
 //                                em2.createNativeQuery("DELETE FROM CMP3_EMP_PROJ WHERE EMPLOYEES_EMP_ID = "+id).executeUpdate();
-                            } else if(testMode2.equals("remove_respons")) {
-                                em2.createNativeQuery("SELECT EMP_ID FROM MBR1_RESPONS" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(1)).getResultList();
+                                    break;
+                                case "remove_respons":
+                                    em2.createNativeQuery("SELECT EMP_ID FROM MBR1_RESPONS" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(1)).getResultList();
 //                                em2.createNativeQuery("DELETE FROM CMP3_RESPONS WHERE EMP_ID = "+id).executeUpdate();
-                            } else if(testMode2.equals("update_project")) {
-                                em2.createNativeQuery("SELECT PROJ_NAME FROM MBR3_PROJECT" + lockingClauseBeforeWhereClause + " WHERE PROJ_ID = " + smallProjId + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(3)).getSingleResult();
+                                    break;
+                                case "update_project":
+                                    em2.createNativeQuery("SELECT PROJ_NAME FROM MBR3_PROJECT" + lockingClauseBeforeWhereClause + " WHERE PROJ_ID = " + smallProjId + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(3)).getSingleResult();
 //                                em2.createNativeQuery("UPDATE CMP3_PROJECT SET PROJ_NAME = 'NEW' WHERE PROJ_ID = "+smallProjId).executeUpdate();
-                            } else if(testMode2.equals("update_respons")) {
-                                em2.createNativeQuery("SELECT DESCRIPTION FROM MBR1_RESPONS" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(1)).getResultList();
+                                    break;
+                                case "update_respons":
+                                    em2.createNativeQuery("SELECT DESCRIPTION FROM MBR1_RESPONS" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(1)).getResultList();
 //                                em2.createNativeQuery("UPDATE CMP3_RESPONS SET DESCRIPTION = 'NEW' WHERE EMP_ID = "+id).executeUpdate();
-                            } else {
-                                emp2 = em2.find(Employee.class, id);
-                                if(testMode2.equals("lock")) {
-                                    em2.lock(emp2, lockMode, properties);
-                                } else if(testMode2.equals("refresh")) {
-                                    em2.refresh(emp2, lockMode, properties);
-                                } else {
-                                    fail("Unknown testMode2 = " + testMode2);
-                                }
+                                    break;
+                                default:
+                                    emp2 = em2.find(Employee.class, id);
+                                    if (testMode2.equals("lock")) {
+                                        em2.lock(emp2, lockMode, properties);
+                                    } else if (testMode2.equals("refresh")) {
+                                        em2.refresh(emp2, lockMode, properties);
+                                    } else {
+                                        fail("Unknown testMode2 = " + testMode2);
+                                    }
+                                    break;
                             }
 
             //                commitTransaction(em2);
@@ -2529,7 +2537,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                             if(isExceptionExpected && !hasKilledTransaction) {
                                 String localErrorMsg = testMode1 + (isObjCached ? " cached " : " ") + testMode2 + ": Exception was expected.";
                                 broker.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, null, null, false);
-                                errorMsg += '\n' + localErrorMsg;
+                                errorMsg.append('\n').append(localErrorMsg);
                             }
                         } catch (Exception ex) {
                             if(transactionKiller != null) {
@@ -2543,7 +2551,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                             if(!isExceptionExpected) {
                                 String localErrorMsg = testMode1 + (isObjCached ? " cached " : " ") + testMode2 + ": Unexpected exception: " + ex.getMessage();
                                 broker.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, null, null, false);
-                                errorMsg += '\n' + localErrorMsg;
+                                errorMsg.append('\n').append(localErrorMsg);
                             }
                         } finally {
                             if (isTransactionActive(em2)) {
@@ -2585,7 +2593,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         }
 
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -2621,7 +2629,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             throw ex;
         }
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         for (int i=0; i < 32; i++) {
             int j = i;
             boolean doRollback = j % 2 == 0;
@@ -2750,11 +2758,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             }
 
             if(!msg.equals(localErrorMsg)) {
-                errorMsg = errorMsg + "i="+ i +": "+ localErrorMsg + " ";
+                errorMsg.append("i=").append(i).append(": ").append(localErrorMsg).append(" ");
             }
         }
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -3012,7 +3020,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         employee.addResponsibility("work hard");
         employee.addResponsibility("write code");
         employee.addProject(new Project());
-        employee.setWorkWeek(new HashSet<Employee.Weekdays>());
+        employee.setWorkWeek(new HashSet<>());
         employee.getWorkWeek().add(Employee.Weekdays.MONDAY);
         employee.getWorkWeek().add(Employee.Weekdays.TUESDAY);
         QuerySQLTracker counter = new QuerySQLTracker(getDatabaseSession());
@@ -3068,7 +3076,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         employee.addResponsibility("work hard");
         employee.addResponsibility("write code");
         employee.addProject(new Project());
-        employee.setWorkWeek(new HashSet<Employee.Weekdays>());
+        employee.setWorkWeek(new HashSet<>());
         employee.getWorkWeek().add(Employee.Weekdays.MONDAY);
         employee.getWorkWeek().add(Employee.Weekdays.TUESDAY);
         // set enums
@@ -3188,7 +3196,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
     public void testFindWithProperties(){
         Employee employee = new Employee();
         employee.setFirstName("Marc");
-        HashMap<String, Object> queryhints=new  HashMap<String, Object>();
+        HashMap<String, Object> queryhints= new HashMap<>();
         EntityManager em = createEntityManager();
         try {
           beginTransaction(em);
@@ -3200,13 +3208,13 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
           e1.setFirstName("testfind");
           queryhints.put(QueryHints.REFRESH, "TRUE");
           Employee e2= em.find(Employee.class,empId ,queryhints);
-          assertFalse(e2.getFirstName().equals("testfind"));
+          Assert.assertNotEquals("testfind", e2.getFirstName());
           commitTransaction(em);
         } catch (IllegalArgumentException iae) {
             return;
         } catch (Exception e) {
             fail("Wrong exception type thrown: " + e.getClass());
-        }finally{
+        } finally{
             closeEntityManager(em);
         }
       }
@@ -3806,86 +3814,86 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         }
 
         // verify
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         em = createEntityManager();
 
         // find and verify all objects created during setup and test
 
         Employee manager_NotInCache = em.find(Employee.class, manager_NotInCache_id);
         if(!manager_NotInCache.getLastName().endsWith("_Updated")) {
-            errorMsg = errorMsg + "manager_NotInCache lastName NOT updated; ";
+            errorMsg.append("manager_NotInCache lastName NOT updated; ");
         }
         Iterator<Employee> it = manager_NotInCache.getManagedEmployees().iterator();
         while(it.hasNext()) {
             Employee emp = it.next();
             if(emp.getId() == employee_1_NotInCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
-                    errorMsg = errorMsg + "employee_1_NotInCache lastName NOT updated; ";
+                    errorMsg.append("employee_1_NotInCache lastName NOT updated; ");
                 }
             } else if(emp.getId() == employee_1_New_id) {
                 if(!emp.getLastName().endsWith("_New")) {
-                    errorMsg = errorMsg + "employee_1_New lastName wrong; ";
+                    errorMsg.append("employee_1_New lastName wrong; ");
                 }
             } else {
-                errorMsg = errorMsg + "manager_NotInCache has unexpected employee: lastName = " + emp.getLastName();
+                errorMsg.append("manager_NotInCache has unexpected employee: lastName = ").append(emp.getLastName());
             }
         }
         if(manager_NotInCache.getManagedEmployees().size() != 2) {
-            errorMsg = errorMsg + "manager_NotInCache.getManagedEmployees().size() != 2; size = " + manager_NotInCache.getManagedEmployees().size();
+            errorMsg.append("manager_NotInCache.getManagedEmployees().size() != 2; size = ").append(manager_NotInCache.getManagedEmployees().size());
         }
 
         Employee manager_InCache = em.find(Employee.class, manager_InCache_id);
         if(!manager_InCache.getLastName().endsWith("_Updated")) {
-            errorMsg = errorMsg + "manager_InCache lastName NOT updated; ";
+            errorMsg.append("manager_InCache lastName NOT updated; ");
         }
         it = manager_InCache.getManagedEmployees().iterator();
         while(it.hasNext()) {
             Employee emp = it.next();
             if(emp.getId() == employee_1_InCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
-                    errorMsg = errorMsg + "employee_1_InCache lastName NOT updated; ";
+                    errorMsg.append("employee_1_InCache lastName NOT updated; ");
                 }
             } else if(emp.getId() == employee_2_New_id) {
                 if(!emp.getLastName().endsWith("_New")) {
-                    errorMsg = errorMsg + "employee_2_New lastName wrong; ";
+                    errorMsg.append("employee_2_New lastName wrong; ");
                 }
             } else {
-                errorMsg = errorMsg + "manager_InCache has unexpected employee: lastName = " + emp.getLastName();
+                errorMsg.append("manager_InCache has unexpected employee: lastName = ").append(emp.getLastName());
             }
         }
         if(manager_InCache.getManagedEmployees().size() != 2) {
-            errorMsg = errorMsg + "manager_InCache.getManagedEmployees().size() != 2; size = " + manager_InCache.getManagedEmployees().size();
+            errorMsg.append("manager_InCache.getManagedEmployees().size() != 2; size = ").append(manager_InCache.getManagedEmployees().size());
         }
 
         Employee manager_New = em.find(Employee.class, manager_New_id);
         if(!manager_New.getLastName().endsWith("_New")) {
-            errorMsg = errorMsg + "manager_New lastName wrong; ";
+            errorMsg.append("manager_New lastName wrong; ");
         }
         it = manager_New.getManagedEmployees().iterator();
         while(it.hasNext()) {
             Employee emp = it.next();
             if(emp.getId() == employee_2_NotInCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
-                    errorMsg = errorMsg + "employee_2_NotInCache_id lastName NOT updated; ";
+                    errorMsg.append("employee_2_NotInCache_id lastName NOT updated; ");
                 }
             } else if(emp.getId() == employee_2_InCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
-                    errorMsg = errorMsg + "employee_2_InCache_id lastName NOT updated; ";
+                    errorMsg.append("employee_2_InCache_id lastName NOT updated; ");
                 }
             } else if(emp.getId() == employee_3_New_id) {
                 if(!emp.getLastName().endsWith("_New")) {
-                    errorMsg = errorMsg + "employee_3_New lastName wrong; ";
+                    errorMsg.append("employee_3_New lastName wrong; ");
                 }
             } else {
-                errorMsg = errorMsg + "manager_New has unexpected employee: lastName = " + emp.getLastName();
+                errorMsg.append("manager_New has unexpected employee: lastName = ").append(emp.getLastName());
             }
         }
         if(manager_New.getManagedEmployees().size() != 3) {
-            errorMsg = errorMsg + "manager_InCache.getManagedEmployees().size() != 3; size = " + manager_InCache.getManagedEmployees().size();
+            errorMsg.append("manager_InCache.getManagedEmployees().size() != 3; size = ").append(manager_InCache.getManagedEmployees().size());
         }
         Employee employee_4_New = em.find(Employee.class, employee_4_New_id);
         if(!employee_4_New.getLastName().endsWith("_New")) {
-            errorMsg = errorMsg + "employee_4_New lastName wrong; ";
+            errorMsg.append("employee_4_New lastName wrong; ");
         }
         closeEntityManager(em);
 
@@ -3917,7 +3925,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         clearCache();
 
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -3960,7 +3968,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         emp = em.find(Employee.class, emp.getId());
         closeEntityManager(em);
         assertTrue("EntityManager not properly cleared", cleared);
-        assertTrue("Employee was updated although EM was cleared", emp.getFirstName().equals(originalName));
+        assertEquals("Employee was updated although EM was cleared", emp.getFirstName(), originalName);
     }
 
     public void testExtendedPersistenceContext() {
@@ -4367,7 +4375,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             } else {
                 nUpdated = em.createNativeQuery( "UPDATE MBR2_EMPLOYEE SET L_NAME = '" + lastNameNew + "', VERSION = VERSION + 1 WHERE F_NAME LIKE '" + firstName + "'").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, getCompositeMemberPuName(2)).setFlushMode(FlushModeType.AUTO).executeUpdate();
             }
-            assertTrue("nUpdated=="+ nUpdated +"; 1 was expected", nUpdated == 1);
+            assertEquals("nUpdated==" + nUpdated + "; 1 was expected", 1, nUpdated);
 
             if(shouldFlush) {
                 selectQuery.setFlushMode(FlushModeType.AUTO);
@@ -4382,12 +4390,12 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             } else {
                 employeeUOW = (Employee)selectQuery.getSingleResult();
             }
-            assertTrue("employeeUOW.getLastName()=="+ employeeUOW.getLastName() +"; " + lastNameNew + " was expected", employeeUOW.getLastName().equals(lastNameNew));
+            assertEquals("employeeUOW.getLastName()==" + employeeUOW.getLastName() + "; " + lastNameNew + " was expected", employeeUOW.getLastName(), lastNameNew);
 
             employeeUOW.setSalary(salaryNew);
 
             employeeUOW = (Employee)selectQuery.getSingleResult();
-            assertTrue("employeeUOW.getSalary()=="+ employeeUOW.getSalary() +"; " + salaryNew + " was expected", employeeUOW.getSalary() == salaryNew);
+            assertEquals("employeeUOW.getSalary()==" + employeeUOW.getSalary() + "; " + salaryNew + " was expected", employeeUOW.getSalary(), salaryNew);
 
             commitTransaction(em);
         }catch (Throwable ex){
@@ -4403,14 +4411,14 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         }
 
         Employee employeeFoundAfterTransaction = em.find(Employee.class, employeeUOW.getId());
-        assertTrue("employeeFoundAfterTransaction().getLastName()=="+ employeeFoundAfterTransaction.getLastName() +"; " + lastNameNew + " was expected", employeeFoundAfterTransaction.getLastName().equals(lastNameNew));
-        assertTrue("employeeFoundAfterTransaction().getSalary()=="+ employeeFoundAfterTransaction.getSalary() +"; " + salaryNew + " was expected", employeeFoundAfterTransaction.getSalary() == salaryNew);
+        assertEquals("employeeFoundAfterTransaction().getLastName()==" + employeeFoundAfterTransaction.getLastName() + "; " + lastNameNew + " was expected", employeeFoundAfterTransaction.getLastName(), lastNameNew);
+        assertEquals("employeeFoundAfterTransaction().getSalary()==" + employeeFoundAfterTransaction.getSalary() + "; " + salaryNew + " was expected", employeeFoundAfterTransaction.getSalary(), salaryNew);
 
         // The cache should be invalidated because the commit should detect a jump in the version number and invalidate the object.
         EntityManager em2 = createEntityManager();
         employeeFoundAfterTransaction = em2.find(Employee.class, employeeUOW.getId());
-        assertTrue("employeeFoundAfterTransaction().getLastName()=="+ employeeFoundAfterTransaction.getLastName() +"; " + lastNameNew + " was expected", employeeFoundAfterTransaction.getLastName().equals(lastNameNew));
-        assertTrue("employeeFoundAfterTransaction().getSalary()=="+ employeeFoundAfterTransaction.getSalary() +"; " + salaryNew + " was expected", employeeFoundAfterTransaction.getSalary() == salaryNew);
+        assertEquals("employeeFoundAfterTransaction().getLastName()==" + employeeFoundAfterTransaction.getLastName() + "; " + lastNameNew + " was expected", employeeFoundAfterTransaction.getLastName(), lastNameNew);
+        assertEquals("employeeFoundAfterTransaction().getSalary()==" + employeeFoundAfterTransaction.getSalary() + "; " + salaryNew + " was expected", employeeFoundAfterTransaction.getSalary(), salaryNew);
         closeEntityManager(em2);
 
         // clean up
@@ -4629,15 +4637,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         if (isOnServer()) {
             return;
         }
-        EntityManagerFactory factory = null;
-        try {
-            factory = Persistence.createEntityManagerFactory("default1", JUnitTestCaseHelper.getDatabaseProperties());
+        try (EntityManagerFactory factory = Persistence.createEntityManagerFactory("default1", JUnitTestCaseHelper.getDatabaseProperties())) {
             EntityManager em = factory.createEntityManager();
             em.close();
-        } catch (Exception e)  {
+        } catch (Exception e) {
             fail("Exception caught while creating EM with no \"transaction-type\" specified in persistence.xml");
-        } finally {
-            factory.close();
         }
         Assert.assertTrue(true);
     }
@@ -5014,14 +5018,14 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         // cache usage
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
-        assertTrue("Cache usage not set.", olrQuery.getCacheUsage()==ObjectLevelReadQuery.DoNotCheckCache);
+        assertEquals("Cache usage not set.", ObjectLevelReadQuery.DoNotCheckCache, olrQuery.getCacheUsage());
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
         assertTrue("Cache usage not set.", olrQuery.shouldCheckCacheOnly());
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.ConformResultsInUnitOfWork);
         assertTrue("Cache usage not set.", olrQuery.shouldConformResultsInUnitOfWork());
 
         query.setHint(QueryHints.INDIRECTION_POLICY, CacheUsageIndirectionPolicy.Trigger);
-        assertTrue("INDIRECTION_POLICY not set.", olrQuery.getInMemoryQueryIndirectionPolicyState() == InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION);
+        assertEquals("INDIRECTION_POLICY not set.", InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION, olrQuery.getInMemoryQueryIndirectionPolicyState());
 
         // reset to the original state
         query.setHint(QueryHints.CACHE_USAGE, "");
@@ -5029,14 +5033,14 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         // pessimistic lock
         query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.LOCK);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.LOCK, olrQuery.getLockMode());
         query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.NoLock);
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.NO_LOCK);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.NO_LOCK, olrQuery.getLockMode());
         query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.LockNoWait);
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.LOCK_NOWAIT);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.LOCK_NOWAIT, olrQuery.getLockMode());
         // default state
         query.setHint(QueryHints.PESSIMISTIC_LOCK, "");
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.NO_LOCK);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.NO_LOCK, olrQuery.getLockMode());
 
         //refresh
         // set to original state - don't refresh.
@@ -5135,7 +5139,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         // Hint
         query.setHint(QueryHints.HINT, "/* use the index man */");
-        assertTrue("HINT not set.", olrQuery.getHintString().equals("/* use the index man */"));
+        assertEquals("HINT not set.", "/* use the index man */", olrQuery.getHintString());
 
         // Cursor
         query.setHint(QueryHints.CURSOR, Boolean.TRUE);
@@ -5146,24 +5150,24 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         query.setHint(QueryHints.CURSOR_INITIAL_SIZE, "100");
         assertTrue("CURSOR not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().isCursoredStreamPolicy());
-        assertTrue("CURSOR_INITIAL_SIZE not set.", ((CursoredStreamPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getInitialReadSize() == 100);
+        assertEquals("CURSOR_INITIAL_SIZE not set.", 100, ((CursoredStreamPolicy) ((ReadAllQuery) olrQuery).getContainerPolicy()).getInitialReadSize());
 
         query.setHint(QueryHints.CURSOR_INITIAL_SIZE, 200);
-        assertTrue("CURSOR_INITIAL_SIZE not set.", ((CursoredStreamPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getInitialReadSize() == 200);
+        assertEquals("CURSOR_INITIAL_SIZE not set.", 200, ((CursoredStreamPolicy) ((ReadAllQuery) olrQuery).getContainerPolicy()).getInitialReadSize());
 
         query.setHint(QueryHints.CURSOR, Boolean.FALSE);
 
         query.setHint(QueryHints.CURSOR_PAGE_SIZE, "100");
         assertTrue("CURSOR not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().isCursoredStreamPolicy());
-        assertTrue("CURSOR_PAGE_SIZE not set.", ((CursoredStreamPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getPageSize() == 100);
+        assertEquals("CURSOR_PAGE_SIZE not set.", 100, ((CursoredStreamPolicy) ((ReadAllQuery) olrQuery).getContainerPolicy()).getPageSize());
 
         query.setHint(QueryHints.CURSOR_PAGE_SIZE, 200);
-        assertTrue("CURSOR_PAGE_SIZE not set.", ((CursoredStreamPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getPageSize() == 200);
+        assertEquals("CURSOR_PAGE_SIZE not set.", 200, ((CursoredStreamPolicy) ((ReadAllQuery) olrQuery).getContainerPolicy()).getPageSize());
 
         query.setHint(QueryHints.CURSOR, Boolean.FALSE);
 
         query.setHint(QueryHints.CURSOR_SIZE, "Select Count(*) from Employee");
-        assertTrue("CURSOR_SIZE not set.", ((CursoredStreamPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getSizeQuery().getSQLString().equals("Select Count(*) from Employee"));
+        assertEquals("CURSOR_SIZE not set.", "Select Count(*) from Employee", ((CursoredStreamPolicy) ((ReadAllQuery) olrQuery).getContainerPolicy()).getSizeQuery().getSQLString());
 
         // Scrollable cursor
         query.setHint(QueryHints.SCROLLABLE_CURSOR, Boolean.TRUE);
@@ -5173,10 +5177,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         assertFalse("SCROLLABLE_CURSOR set.", ((ReadAllQuery)olrQuery).getContainerPolicy().isScrollableCursorPolicy());
 
         query.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.Reverse);
-        assertTrue("RESULT_SET_TYPE not set.", ((ScrollableCursorPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getResultSetType() == ScrollableCursorPolicy.FETCH_REVERSE);
+        assertEquals("RESULT_SET_TYPE not set.", ScrollableCursorPolicy.FETCH_REVERSE, ((ScrollableCursorPolicy) ((ReadAllQuery) olrQuery).getContainerPolicy()).getResultSetType());
 
         query.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.Updatable);
-        assertTrue("RESULT_SET_CONCURRENCY not set.", ((ScrollableCursorPolicy)((ReadAllQuery)olrQuery).getContainerPolicy()).getResultSetConcurrency() == ScrollableCursorPolicy.CONCUR_UPDATABLE);
+        assertEquals("RESULT_SET_CONCURRENCY not set.", ScrollableCursorPolicy.CONCUR_UPDATABLE, ((ScrollableCursorPolicy) ((ReadAllQuery) olrQuery).getContainerPolicy()).getResultSetConcurrency());
 
         // Exclusive connection
         query.setHint(QueryHints.EXCLUSIVE_CONNECTION, Boolean.TRUE);
@@ -5188,17 +5192,17 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         // History
         query.setHint(QueryHints.AS_OF, "1973/10/11 12:00:00");
-        assertTrue("AS_OF not set.", olrQuery.getAsOfClause() != null);
+        assertNotNull("AS_OF not set.", olrQuery.getAsOfClause());
 
         query.setHint(QueryHints.AS_OF_SCN, "12345");
-        assertTrue("AS_OF_SCN not set.", ((Number)olrQuery.getAsOfClause().getValue()).intValue() == 12345);
+        assertEquals("AS_OF_SCN not set.", 12345, ((Number) olrQuery.getAsOfClause().getValue()).intValue());
 
         // Fetch groups
         query.setHint(QueryHints.FETCH_GROUP_DEFAULT, Boolean.FALSE);
         assertFalse("FETCH_GROUP_DEFAULT not set.", olrQuery.shouldUseDefaultFetchGroup());
 
         query.setHint(QueryHints.FETCH_GROUP_NAME, "nameAndCity");
-        assertTrue("FETCH_GROUP_NAME not set.", olrQuery.getFetchGroupName().equals("nameAndCity"));
+        assertEquals("FETCH_GROUP_NAME not set.", "nameAndCity", olrQuery.getFetchGroupName());
 
         query.setHint(QueryHints.FETCH_GROUP_ATTRIBUTE, "firstName");
         query.setHint(QueryHints.FETCH_GROUP_ATTRIBUTE, "lastName");
@@ -5208,71 +5212,71 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         FetchGroup fetchGroup = new FetchGroup();
         fetchGroup.addAttribute("id");
         query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
-        assertTrue("FETCH_GROUP not set.", olrQuery.getFetchGroup() == fetchGroup);
+        assertSame("FETCH_GROUP not set.", olrQuery.getFetchGroup(), fetchGroup);
 
         // Timeout
         query.setHint(QueryHints.JDBC_TIMEOUT, 100);
-        assertTrue("Timeout not set.", olrQuery.getQueryTimeout() == 100);
+        assertEquals("Timeout not set.", 100, olrQuery.getQueryTimeout());
 
         // JDBC
         query.setHint(QueryHints.JDBC_FETCH_SIZE, 101);
-        assertTrue("Fetch-size not set.", olrQuery.getFetchSize() == 101);
+        assertEquals("Fetch-size not set.", 101, olrQuery.getFetchSize());
 
         query.setHint(QueryHints.JDBC_MAX_ROWS, 103);
-        assertTrue("Max-rows not set.", olrQuery.getMaxRows() == 103);
+        assertEquals("Max-rows not set.", 103, olrQuery.getMaxRows());
 
         query.setHint(QueryHints.JDBC_FIRST_RESULT, 123);
-        assertTrue("JDBC_FIRST_RESULT not set.", olrQuery.getFirstResult() == 123);
+        assertEquals("JDBC_FIRST_RESULT not set.", 123, olrQuery.getFirstResult());
 
         // Refresh
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.NoCascading);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.NoCascading);
+        assertEquals(DatabaseQuery.NoCascading, olrQuery.getCascadePolicy());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
+        assertEquals(DatabaseQuery.CascadeByMapping, olrQuery.getCascadePolicy());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeAllParts);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeAllParts);
+        assertEquals(DatabaseQuery.CascadeAllParts, olrQuery.getCascadePolicy());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadePrivateParts);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadePrivateParts);
+        assertEquals(DatabaseQuery.CascadePrivateParts, olrQuery.getCascadePolicy());
         // reset to the original state
         query.setHint(QueryHints.REFRESH_CASCADE, "");
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
+        assertEquals(DatabaseQuery.CascadeByMapping, olrQuery.getCascadePolicy());
 
         // Result collection
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, java.util.ArrayList.class);
-        assertTrue("ArrayList not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClass().equals(java.util.ArrayList.class));
+        assertEquals("ArrayList not set.", ((ReadAllQuery) olrQuery).getContainerPolicy().getContainerClass(), ArrayList.class);
 
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "java.util.Vector");
-        assertTrue("Vector not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClass().equals(java.util.Vector.class));
+        assertEquals("Vector not set.", ((ReadAllQuery) olrQuery).getContainerPolicy().getContainerClass(), Vector.class);
 
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTest$CustomerCollection");
-        assertTrue("CustomerCollection not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClass().equals(CustomerCollection.class));
+        assertEquals("CustomerCollection not set.", ((ReadAllQuery) olrQuery).getContainerPolicy().getContainerClass(), CustomerCollection.class);
 
         // Query type
         query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
-        assertTrue("QUERY_TYPE not set.", ((JpaQuery)query).getDatabaseQuery().getClass().equals(ReadObjectQuery.class));
+        assertEquals("QUERY_TYPE not set.", ((JpaQuery) query).getDatabaseQuery().getClass(), ReadObjectQuery.class);
 
         query.setHint(QueryHints.QUERY_TYPE, QueryType.Report);
-        assertTrue("QUERY_TYPE not set.", ((JpaQuery)query).getDatabaseQuery().getClass().equals(ReportQuery.class));
+        assertEquals("QUERY_TYPE not set.", ((JpaQuery) query).getDatabaseQuery().getClass(), ReportQuery.class);
 
         query.setHint(QueryHints.QUERY_TYPE, QueryType.DataModify);
-        assertTrue("QUERY_TYPE not set.", ((JpaQuery)query).getDatabaseQuery().getClass().equals(DataModifyQuery.class));
+        assertEquals("QUERY_TYPE not set.", ((JpaQuery) query).getDatabaseQuery().getClass(), DataModifyQuery.class);
 
         query.setHint(QueryHints.QUERY_TYPE, "org.eclipse.persistence.queries.ValueReadQuery");
-        assertTrue("QUERY_TYPE not set.", ((JpaQuery)query).getDatabaseQuery().getClass().equals(ValueReadQuery.class));
+        assertEquals("QUERY_TYPE not set.", ((JpaQuery) query).getDatabaseQuery().getClass(), ValueReadQuery.class);
 
         query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadAll);
-        assertTrue("QUERY_TYPE not set.", ((JpaQuery)query).getDatabaseQuery().getClass().equals(ReadAllQuery.class));
+        assertEquals("QUERY_TYPE not set.", ((JpaQuery) query).getDatabaseQuery().getClass(), ReadAllQuery.class);
 
         // Result type
         query.setHint(QueryHints.QUERY_TYPE, QueryType.Report);
         query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
-        assertTrue("RESULT_TYPE not set.", ((ReportQuery)((JpaQuery)query).getDatabaseQuery()).getReturnType() == ReportQuery.ShouldReturnReportResult);
+        assertEquals("RESULT_TYPE not set.", ReportQuery.ShouldReturnReportResult, ((ReportQuery) ((JpaQuery) query).getDatabaseQuery()).getReturnType());
 
         query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
-        assertTrue("RESULT_TYPE not set.", ((ReportQuery)((JpaQuery)query).getDatabaseQuery()).getReturnType() == ReportQuery.ShouldReturnArray);
+        assertEquals("RESULT_TYPE not set.", ReportQuery.ShouldReturnArray, ((ReportQuery) ((JpaQuery) query).getDatabaseQuery()).getReturnType());
 
         query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
-        assertTrue("RESULT_TYPE not set.", ((ReportQuery)((JpaQuery)query).getDatabaseQuery()).getReturnType() == ReportQuery.ShouldReturnSingleValue);
+        assertEquals("RESULT_TYPE not set.", ReportQuery.ShouldReturnSingleValue, ((ReportQuery) ((JpaQuery) query).getDatabaseQuery()).getReturnType());
 
         query.setHint(QueryHints.QUERY_TYPE, QueryType.DataRead);
         query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
@@ -5341,13 +5345,13 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List<Expression> expressions = raq.getBatchReadAttributeExpressions();
-        assertTrue(expressions.size() == 2);
+        assertEquals(2, expressions.size());
         Expression exp = expressions.get(0);
         assertTrue(exp.isQueryKeyExpression());
-        assertTrue(exp.getName().equals("phoneNumbers"));
+        assertEquals("phoneNumbers", exp.getName());
         exp = expressions.get(1);
         assertTrue(exp.isQueryKeyExpression());
-        assertTrue(exp.getName().equals("phoneNumbers"));
+        assertEquals("phoneNumbers", exp.getName());
 
         List resultList = query.getResultList();
         emp = (Employee)resultList.get(0);
@@ -5443,11 +5447,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         query.setHint(QueryHints.LEFT_FETCH, "e.manager");
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getJoinedAttributeExpressions();
-        assertTrue(expressions.size() == 1);
+        assertEquals(1, expressions.size());
         Expression exp = (Expression)expressions.get(0);
-        assertTrue(exp.getName().equals("manager"));
+        assertEquals("manager", exp.getName());
         query.setHint(QueryHints.FETCH, "e.manager.phoneNumbers");
-        assertTrue(expressions.size() == 2);
+        assertEquals(2, expressions.size());
 
         List resultList = query.getResultList();
         emp = (Employee)resultList.get(0);
@@ -5480,7 +5484,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect BATCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS, exception.getErrorCode());
         exception = null;
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
@@ -5490,7 +5494,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect BATCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP, exception.getErrorCode());
 
         exception = null;
         try{
@@ -5501,7 +5505,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown when an incorrect relationship was navigated in a BATCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP, exception.getErrorCode());
 
         exception = null;
         try{
@@ -5512,7 +5516,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect FETCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS, exception.getErrorCode());
 
         exception = null;
         try{
@@ -5523,7 +5527,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect FETCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP, exception.getErrorCode());
 
         exception = null;
         try{
@@ -5534,7 +5538,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown when an incorrect relationship was navigated in a FETCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP, exception.getErrorCode());
 
     }
 
@@ -5618,7 +5622,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                         int managerVersionBefore = managerBefore.getVersion();
                         Employee managerAfter = em.find(Employee.class, managerBefore.getId());
                         int managerVersionAfter = managerAfter.getVersion();
-                        assertTrue("The manager version was not updated on the locking query.", (managerVersionAfter - managerVersionBefore) == 1);
+                        assertEquals("The manager version was not updated on the locking query.", 1, (managerVersionAfter - managerVersionBefore));
                     }
 
                     Employee employeeBefore = (Employee) result[1];
@@ -5626,7 +5630,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                         int employeeVersionBefore = employeeBefore.getVersion();
                         Employee employeeAfter = em.find(Employee.class, employeeBefore.getId());
                         int employeeVersionAfter = employeeAfter.getVersion();
-                        assertTrue("The manager version was not updated on the locking query.", (employeeVersionAfter - employeeVersionBefore) == 1);
+                        assertEquals("The manager version was not updated on the locking query.", 1, (employeeVersionAfter - employeeVersionBefore));
                     }
                 }
             } finally {
@@ -5662,7 +5666,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                         int versionBefore = address.getVersion();
                         Address addressAfter = em.find(Address.class, address.getID());
                         int versionAfter = addressAfter.getVersion();
-                        assertTrue("The version on an address was not updated on the locking query.", (versionAfter - versionBefore) == 1);
+                        assertEquals("The version on an address was not updated on the locking query.", 1, (versionAfter - versionBefore));
                     }
                 }
             } finally {
@@ -5763,7 +5767,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             stream.writeObject(emp);
             stream.flush();
-            byte arr[] = byteStream.toByteArray();
+            byte[] arr = byteStream.toByteArray();
             ByteArrayInputStream inByteStream = new ByteArrayInputStream(arr);
             ObjectInputStream inObjStream = new ObjectInputStream(inByteStream);
 
@@ -5773,10 +5777,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             if (e.getErrorCode() == ValidationException.INSTANTIATING_VALUEHOLDER_WITH_NULL_SESSION){
                 exception = e;
             } else {
-                fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e.toString());
+                fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e);
             }
         } catch (Exception e){
-            fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e.toString());
+            fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e);
         }
 
         // Only throw error if weaving was used.
@@ -5896,7 +5900,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         try {
             em.createNamedQuery("findAllSQLDepartments").getResultList();
         } catch (NullPointerException e) {
-            assertTrue("The detached department caused a null pointer on the query execution.", false);
+            fail("The detached department caused a null pointer on the query execution.");
         }
 
         closeEntityManager(em);
@@ -6403,19 +6407,19 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         try {
             Project mp1 = em.merge(p1); // cascade merge
             assertTrue(em.contains(mp1));
-            assertTrue("Managed instance and detached instance must not be same", mp1 != p1);
+            assertNotSame("Managed instance and detached instance must not be same", mp1, p1);
 
             Employee me1 = mp1.getTeamLeader();
             assertTrue("Cascade merge failed", em.contains(me1));
-            assertTrue("Managed instance and detached instance must not be same", me1 != e1);
+            assertNotSame("Managed instance and detached instance must not be same", me1, e1);
 
             Employee me2 = me1.getManagedEmployees().iterator().next();
             assertTrue("Cascade merge failed", em.contains(me2));
-            assertTrue("Managed instance and detached instance must not be same", me2 != e2);
+            assertNotSame("Managed instance and detached instance must not be same", me2, e2);
 
             Project mp2 = me2.getProjects().iterator().next();
             assertTrue("Cascade merge failed", em.contains(mp2));
-            assertTrue("Managed instance and detached instance must not be same", mp2 != p2);
+            assertNotSame("Managed instance and detached instance must not be same", mp2, p2);
 
             commitTransaction(em);
         } catch (RuntimeException re){
@@ -6464,7 +6468,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         try {
             Project mp1 = em.merge(p1);
             assertTrue(em.contains(mp1));
-            assertTrue("Managed instance and detached instance must not be same", mp1 != p1);
+            assertNotSame("Managed instance and detached instance must not be same", mp1, p1);
 
             //p1 -> e1 (one-to-one)
             mp1.setTeamLeader(e1);
@@ -6472,7 +6476,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             Employee me1 = mp1.getTeamLeader();
             assertTrue("Cascade merge failed", em.contains(me1));
-            assertTrue("Managed instance and detached instance must not be same", me1 != e1);
+            assertNotSame("Managed instance and detached instance must not be same", me1, e1);
 
             //e1 -> e2 (one-to-many)
             me1.addManagedEmployee(e2);
@@ -6480,7 +6484,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             Employee me2 = me1.getManagedEmployees().iterator().next();
             assertTrue("Cascade merge failed", em.contains(me2));
-            assertTrue("Managed instance and detached instance must not be same", me2 != e2);
+            assertNotSame("Managed instance and detached instance must not be same", me2, e2);
 
             //e2 -> p2 (many-to-many)
             me2.addProject(p2);
@@ -6489,7 +6493,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             Project mp2 = me2.getProjects().iterator().next();
             assertTrue("Cascade merge failed", em.contains(mp2));
-            assertTrue("Managed instance and detached instance must not be same", mp2 != p2);
+            assertNotSame("Managed instance and detached instance must not be same", mp2, p2);
 
             commitTransaction(em);
         } catch (RuntimeException re){
@@ -6570,8 +6574,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             employee = em.find(Employee.class, id);
             address = employee.getAddress();
 
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Shawshank"));
+            assertNotNull("The address was not persisted.", employee.getAddress());
+            assertEquals("The address was not correctly persisted.", "Shawshank", employee.getAddress().getCity());
         } finally {
             employee.setAddress((Address)null);
             em.remove(address);
@@ -6637,11 +6641,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         address = employee.getAddress();
         manager = employee.getManager();
 
-        assertTrue("The address was not persisted.", employee.getAddress() != null);
-        assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+        assertNotNull("The address was not persisted.", employee.getAddress());
+        assertEquals("The address was not correctly persisted.", "Metropolis", employee.getAddress().getCity());
 
-        assertTrue("The manager was not persisted.", employee.getManager() != null);
-        assertTrue("The manager was not correctly persisted.", employee.getManager().getFirstName().equals("Metro"));
+        assertNotNull("The manager was not persisted.", employee.getManager());
+        assertEquals("The manager was not correctly persisted.", "Metro", employee.getManager().getFirstName());
 
         Address initialAddress = em.find(Address.class, addressId);
         Employee initialManager = em.find(Employee.class, managerId);
@@ -6713,11 +6717,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         address = employee.getAddress();
         manager = employee.getManager();
 
-        assertTrue("The address was not persisted.", employee.getAddress() != null);
-        assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+        assertNotNull("The address was not persisted.", employee.getAddress());
+        assertEquals("The address was not correctly persisted.", "Metropolis", employee.getAddress().getCity());
 
-        assertTrue("The manager was not persisted.", employee.getManager() != null);
-        assertTrue("The manager was not correctly persisted.", employee.getManager().getFirstName().equals("Metro"));
+        assertNotNull("The manager was not persisted.", employee.getManager());
+        assertEquals("The manager was not correctly persisted.", "Metro", employee.getManager().getFirstName());
 
         Address initialAddress = em.find(Address.class, addressId);
         Employee initialManager = em.find(Employee.class, managerId);
@@ -6790,11 +6794,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         address = employee.getAddress();
         manager = employee.getManager();
 
-        assertTrue("The address was not persisted.", employee.getAddress() != null);
-        assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+        assertNotNull("The address was not persisted.", employee.getAddress());
+        assertEquals("The address was not correctly persisted.", "Metropolis", employee.getAddress().getCity());
 
-        assertTrue("The manager was not persisted.", employee.getManager() != null);
-        assertTrue("The manager was not correctly persisted.", employee.getManager().getFirstName().equals("Metro"));
+        assertNotNull("The manager was not persisted.", employee.getManager());
+        assertEquals("The manager was not correctly persisted.", "Metro", employee.getManager().getFirstName());
 
         Address initialAddress = em.find(Address.class, addressId);
         Employee initialManager = em.find(Employee.class, managerId);
@@ -6921,25 +6925,25 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             // verify
             em = createEntityManager();
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
             for(int i=0; i<projects.size(); i++) {
                 Project p = (Project)projects.get(i);
                 String readName = p.getName();
                 if(cls.isInstance(p)) {
                     if(!newName.equals(readName)) {
-                        errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                        errorMsg.append("haven't updated name: ").append(p).append("; ");
                     }
                 } else {
                     if(newName.equals(readName)) {
-                        errorMsg = errorMsg + "have updated name: " + p + "; ";
+                        errorMsg.append("have updated name: ").append(p).append("; ");
                     }
                 }
             }
             closeEntityManager(em);
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             } else {
                 ok = true;
             }
@@ -7022,25 +7026,25 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             // verify
             em = createEntityManager();
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
             for(int i=0; i<projects.size(); i++) {
                 Project p = (Project)projects.get(i);
                 String readName = p.getName();
                 if(cls.isInstance(p)) {
                     if(!readName.equals(newName)) {
-                        errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                        errorMsg.append("haven't updated name: ").append(p).append("; ");
                     }
                 } else {
                     if(readName.equals(newName)) {
-                        errorMsg = errorMsg + "have updated name: " + p + "; ";
+                        errorMsg.append("have updated name: ").append(p).append("; ");
                     }
                 }
             }
             closeEntityManager(em);
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             } else {
                 ok = true;
             }
@@ -7128,25 +7132,25 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             // verify
             em = createEntityManager();
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
             for(int i=0; i<projects.size(); i++) {
                 Project p = (Project)projects.get(i);
                 String readName = p.getName();
                 if(cls.isInstance(p) && p.getTeamLeader()==null) {
                     if(!readName.equals(newName)) {
-                        errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                        errorMsg.append("haven't updated name: ").append(p).append("; ");
                     }
                 } else {
                     if(readName.equals(newName)) {
-                        errorMsg = errorMsg + "have updated name: " + p + "; ";
+                        errorMsg.append("have updated name: ").append(p).append("; ");
                     }
                 }
             }
             closeEntityManager(em);
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             } else {
                 ok = true;
             }
@@ -7336,21 +7340,21 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         @Override
         public boolean isRolledBack_impl(Object status){return false;}
         @Override
-        protected void registerSynchronization_impl(org.eclipse.persistence.transaction.AbstractSynchronizationListener listener, Object txn) throws Exception{}
+        protected void registerSynchronization_impl(org.eclipse.persistence.transaction.AbstractSynchronizationListener listener, Object txn) {}
         @Override
-        protected Object getTransaction_impl() throws Exception {return null;}
+        protected Object getTransaction_impl() {return null;}
         @Override
-        protected Object getTransactionKey_impl(Object transaction) throws Exception {return null;}
+        protected Object getTransactionKey_impl(Object transaction) {return null;}
         @Override
-        protected Object getTransactionStatus_impl() throws Exception {return null;}
+        protected Object getTransactionStatus_impl() {return null;}
         @Override
-        protected void beginTransaction_impl() throws Exception{}
+        protected void beginTransaction_impl() {}
         @Override
-        protected void commitTransaction_impl() throws Exception{}
+        protected void commitTransaction_impl() {}
         @Override
-        protected void rollbackTransaction_impl() throws Exception{}
+        protected void rollbackTransaction_impl() {}
         @Override
-        protected void markTransactionForRollback_impl() throws Exception{}
+        protected void markTransactionForRollback_impl() {}
         @Override
         protected boolean canBeginTransaction_impl(Object status){return false;}
         @Override
@@ -7410,10 +7414,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             Query ejbQuery = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).createDescriptorNamedQuery("findByFNameLName", Employee.class);
             List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", "Malone").getResultList();
 
-            assertTrue(results.size() == 1);
+            assertEquals(1, results.size());
             emp = (Employee)results.get(0);
-            assertTrue(emp.getFirstName().equals("Melvin"));
-            assertTrue(emp.getLastName().equals("Malone"));
+            assertEquals("Melvin", emp.getFirstName());
+            assertEquals("Malone", emp.getLastName());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -7454,10 +7458,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             Query ejbQuery = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).createDescriptorNamedQuery("findEmployees", Employee.class, args);
             List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", "Malone").getResultList();
 
-            assertTrue(results.size() == 1);
+            assertEquals(1, results.size());
             emp = (Employee)results.get(0);
-            assertTrue(emp.getFirstName().equals("Melvin"));
-            assertTrue(emp.getLastName().equals("Malone"));
+            assertEquals("Melvin", emp.getFirstName());
+            assertEquals("Malone", emp.getLastName());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -7484,7 +7488,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             beginTransaction(em);
             result = em.merge(employee);
             result = em.merge(employee2);
-            assertTrue("The firstName was not merged properly", result.getFirstName().equals(employee2.getFirstName()));
+            assertEquals("The firstName was not merged properly", result.getFirstName(), employee2.getFirstName());
             em.flush();
         } catch (PersistenceException e){
             fail("A double merge of an object with the same key, caused two inserts instead of one.");
@@ -8151,7 +8155,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
     public void internalTestConnectionPolicy(boolean useSetProperty) {
         // setup
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
 
         // number of composite members
         int n = 3;
@@ -8203,36 +8207,36 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 }
                 ClientSession clientSession = (ClientSession)clientSessionBroker.getSessionForName(getCompositeMemberPuName(i));
                 if (!clientSession.isExclusiveIsolatedClientSession()) {
-                    errorMsg += "ExclusiveIsolatedClientSession was expected\n";
+                    errorMsg.append("ExclusiveIsolatedClientSession was expected\n");
                 }
                 ConnectionPolicy policy = clientSession.getConnectionPolicy();
                 if (policy.isPooled()) {
-                    errorMsg += "NOT pooled policy was expected\n";
+                    errorMsg.append("NOT pooled policy was expected\n");
                 }
                 String user = (String) policy.getLogin().getProperty("user");
                 String prefix = "em_" + i +"_";
                 if (!user.equals(prefix + "user")) {
-                    errorMsg += prefix + "user was expected\n";
+                    errorMsg.append(prefix).append("user was expected\n");
                 }
                 String password = (String) policy.getLogin().getProperty("password");
                 if (!password.equals(prefix + "password")) {
-                    errorMsg += prefix + "password was expected\n";
+                    errorMsg.append(prefix).append("password was expected\n");
                 }
                 if (!(((DatasourceLogin) policy.getLogin()).getConnector() instanceof JNDIConnector)) {
-                    errorMsg += "JNDIConnector was expected\n";
+                    errorMsg.append("JNDIConnector was expected\n");
                 } else {
                     JNDIConnector jndiConnector = (JNDIConnector) ((DatasourceLogin) policy.getLogin()).getConnector();
                     String dataSourceName = jndiConnector.getName();
                     if (dataSourceName == null) {
-                        errorMsg += "NON null dataSourceName was expected\n";
+                        errorMsg.append("NON null dataSourceName was expected\n");
                     } else {
                         if (clientSession.getParent().getLogin().shouldUseExternalTransactionController()) {
                             if (dataSourceName.equals(prefix + "nonjta_datasource")) {
-                                errorMsg += prefix + "jta_datasource was expected\n";
+                                errorMsg.append(prefix).append("jta_datasource was expected\n");
                             }
                         } else {
                             if (dataSourceName.equals(prefix + "jta_datasource")) {
-                                errorMsg += prefix + "jta_datasource was expected\n";
+                                errorMsg.append(prefix).append("jta_datasource was expected\n");
                             }
                         }
                     }
@@ -8249,7 +8253,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         }
 
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -8318,7 +8322,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         try {
             period.clone();
         } catch (Exception e){
-            fail("Exception thrown when trying to clone an Embeddable: " + e.toString());
+            fail("Exception thrown when trying to clone an Embeddable: " + e);
         }
     }
 
@@ -8481,7 +8485,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         }
         broker.login();
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         // test several configurations:
         // all exclusive connection modes
         String[] exclusiveConnectionModeArray = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
@@ -8540,7 +8544,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
                         // should never get here - all connections should be broken.
                         hasUnexpectedlyCommitted = true;
-                        errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": Commit has unexpectedly succeeded - should have failed because all connections broken. driver = " + ss.getLogin().getDriverClassName() + "; url = " + ss.getLogin().getConnectionString();
+                        errorMsg.append("useSequencing = ").append(useSequencing).append("; exclusiveConnectionMode = ").append(exclusiveConnectionMode).append(": Commit has unexpectedly succeeded - should have failed because all connections broken. driver = ").append(ss.getLogin().getDriverClassName()).append("; url = ").append(ss.getLogin().getConnectionString());
                     } catch (Exception e){
                         // expected exception - connection is invalid and cannot be reconnected.
                         if(em.getTransaction().isActive()) {
@@ -8559,7 +8563,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                     }
                     if(localErrorMsg.length() > 0) {
                         localErrorMsg = exclusiveConnectionMode + " useSequencing="+useSequencing + ": " + localErrorMsg;
-                        errorMsg += localErrorMsg;
+                        errorMsg.append(localErrorMsg);
                         listener.clear();
                     }
 
@@ -8633,7 +8637,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             broker.login();
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             }
         }
     }
@@ -8695,7 +8699,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             DriverWrapper.clear();
         }
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         //reconnect the session
         em = createEntityManager();
         //verify connections
@@ -8709,11 +8713,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 }
             }
             if (disconnected > 0) {
-                errorMsg += pool.getName() + " has " + disconnected + " connections; ";
+                errorMsg.append(pool.getName()).append(" has ").append(disconnected).append(" connections; ");
             }
         }
         if (errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -9365,7 +9369,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             emp = em.find(Employee.class, emp.getId());
             PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
             Object retrievedId = util.getIdentifier(emp);
-            assertTrue("Got an incorrect id from persistenceUtil.getIdentifier()", id.equals(retrievedId));
+            assertEquals("Got an incorrect id from persistenceUtil.getIdentifier()", id, retrievedId);
         } finally {
             rollbackTransaction(em);
         }
@@ -9404,14 +9408,14 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             emp.getPhoneNumbers().size();
 
             ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
-            assertTrue("ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address").equals(LoadState.LOADED));
-            assertTrue("ProviderUtil did not return LOADED for isLoaded for phoneNumbers when it should.", util.isLoadedWithReference(emp, "phoneNumbers").equals(LoadState.LOADED));
+            assertEquals("ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address"), LoadState.LOADED);
+            assertEquals("ProviderUtil did not return LOADED for isLoaded for phoneNumbers when it should.", util.isLoadedWithReference(emp, "phoneNumbers"), LoadState.LOADED);
             if (emp instanceof PersistenceWeaved){
-                assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.NOT_LOADED));
+                assertEquals("ProviderUtil did not return NOT_LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager"), LoadState.NOT_LOADED);
             } else {
-                assertTrue("(NonWeaved) ProviderUtil did not return LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.LOADED));
+                assertEquals("(NonWeaved) ProviderUtil did not return LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager"), LoadState.LOADED);
             }
-            assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for projects when it should.", util.isLoadedWithReference(emp, "projects").equals(LoadState.NOT_LOADED));
+            assertEquals("ProviderUtil did not return NOT_LOADED for isLoaded for projects when it should.", util.isLoadedWithReference(emp, "projects"), LoadState.NOT_LOADED);
         } finally {
             rollbackTransaction(em);
         }
@@ -9447,17 +9451,17 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
 
             if (emp instanceof PersistenceWeaved){
-                assertTrue("ProviderUtil did not return LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.LOADED));
+                assertEquals("ProviderUtil did not return LOADED for isLoaded when it should.", util.isLoaded(emp), LoadState.LOADED);
 
                 emp = em.getReference(Employee.class, emp.getId());
-                assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.NOT_LOADED));
+                assertEquals("ProviderUtil did not return NOT_LOADED for isLoaded when it should.", util.isLoaded(emp), LoadState.NOT_LOADED);
             } else {
-                assertTrue("(NonWeaved) ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.UNKNOWN));
+                assertEquals("(NonWeaved) ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(emp), LoadState.UNKNOWN);
 
                 emp = em.getReference(Employee.class, emp.getId());
-                assertTrue("(NonWeaved)  ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(emp).equals(LoadState.UNKNOWN));
+                assertEquals("(NonWeaved)  ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(emp), LoadState.UNKNOWN);
             }
-            assertTrue("ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(new NonEntity()).equals(LoadState.UNKNOWN));
+            assertEquals("ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(new NonEntity()), LoadState.UNKNOWN);
 
         } finally {
             rollbackTransaction(em);
@@ -9497,16 +9501,16 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
             if (emp instanceof PersistenceWeaved){
-                assertTrue("ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address").equals(LoadState.LOADED));
-                assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.NOT_LOADED));
+                assertEquals("ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address"), LoadState.LOADED);
+                assertEquals("ProviderUtil did not return NOT_LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager"), LoadState.NOT_LOADED);
             } else {
-                assertTrue("(Unweaved) ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address").equals(LoadState.LOADED));
-                assertTrue("(Unweaved) ProviderUtil did not return LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager").equals(LoadState.LOADED));
+                assertEquals("(Unweaved) ProviderUtil did not return LOADED for isLoaded for address when it should.", util.isLoadedWithReference(emp, "address"), LoadState.LOADED);
+                assertEquals("(Unweaved) ProviderUtil did not return LOADED for isLoaded for manager when it should.", util.isLoadedWithReference(emp, "manager"), LoadState.LOADED);
             }
-            assertTrue("ProviderUtil did not return LOADED for isLoaded for phoneNumbers when it should.", util.isLoadedWithReference(emp, "phoneNumbers").equals(LoadState.LOADED));
-            assertTrue("ProviderUtil did not return NOT_LOADED for isLoaded for projects when it should.", util.isLoadedWithReference(emp, "projects").equals(LoadState.NOT_LOADED));
+            assertEquals("ProviderUtil did not return LOADED for isLoaded for phoneNumbers when it should.", util.isLoadedWithReference(emp, "phoneNumbers"), LoadState.LOADED);
+            assertEquals("ProviderUtil did not return NOT_LOADED for isLoaded for projects when it should.", util.isLoadedWithReference(emp, "projects"), LoadState.NOT_LOADED);
 
-            assertTrue("ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(new NonEntity()).equals(LoadState.UNKNOWN));
+            assertEquals("ProviderUtil did not return UNKNOWN for isLoaded when it should.", util.isLoaded(new NonEntity()), LoadState.UNKNOWN);
         } finally {
             rollbackTransaction(em);
         }
@@ -9519,13 +9523,13 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.DoNotCheckCache);
         query.setHint(QueryHints.BIND_PARAMETERS, "");
         Map<String, Object> hints = query.getHints();
-        assertTrue("Incorrect number of hints.", hints.size() == 2);
-        assertTrue("CacheUsage hint missing.", hints.get(QueryHints.CACHE_USAGE).equals(CacheUsage.DoNotCheckCache));
-        assertTrue("Bind parameters hint missing.", hints.get(QueryHints.BIND_PARAMETERS) != null);
+        assertEquals("Incorrect number of hints.", 2, hints.size());
+        assertEquals("CacheUsage hint missing.", CacheUsage.DoNotCheckCache, hints.get(QueryHints.CACHE_USAGE));
+        assertNotNull("Bind parameters hint missing.", hints.get(QueryHints.BIND_PARAMETERS));
 
         query = em.createQuery("Select a from Address a");
         hints = query.getHints();
-        assertTrue("Hints is not null when it should be.", hints == null);
+        assertNull("Hints is not null when it should be.", hints);
     }
 
 
@@ -9572,7 +9576,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
     public void testTransientMapping(){
         DatabaseSessionImpl session = getDatabaseSession();
         ClassDescriptor descriptor = session.getClassDescriptor(Customer.class);
-        assertTrue("There should not be a mapping for transientField.", descriptor.getMappingForAttributeName("transientField") == null);
+        assertNull("There should not be a mapping for transientField.", descriptor.getMappingForAttributeName("transientField"));
     }
 
     public void testPreupdateEmbeddable(){
@@ -9602,7 +9606,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         clearCache();
         emp = em.find(Employee.class, emp.getId());
-        assertTrue("The endDate was not updated.", emp.getPeriod().getEndDate().equals(EmployeeListener.UPDATE_DATE));
+        assertEquals("The endDate was not updated.", emp.getPeriod().getEndDate(), EmployeeListener.UPDATE_DATE);
 
         em.remove(emp);
         commitTransaction(em);
@@ -9658,7 +9662,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         Vector params = new Vector(1);
         params.add(id);
         List res = (List) getDatabaseSession().executeQuery(query, params);
-        assertTrue(res.size() == 1);
+        assertEquals(1, res.size());
     }
 
 
@@ -9682,7 +9686,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         emp = em.find(Employee.class, emp.getId());
         commitTransaction(em);
         try{
-            assertTrue("Employees name was returned from server cache, when it should not have been", emp.getLastName().equals("Fabregas"));
+            assertEquals("Employees name was returned from server cache, when it should not have been", "Fabregas", emp.getLastName());
         } finally {
             beginTransaction(em);
             emp = em.find(Employee.class, emp.getId());
@@ -9709,7 +9713,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         emp = (Employee)em.createQuery("select e from Employee e where e.id = :id").setParameter("id", emp.getId()).getSingleResult();
         commitTransaction(em);
         try{
-            assertTrue("Employees name was returned from server cache, when it should not have been", emp.getLastName().equals("Fabregas"));
+            assertEquals("Employees name was returned from server cache, when it should not have been", "Fabregas", emp.getLastName());
         } finally {
             beginTransaction(em);
             emp = em.find(Employee.class, emp.getId());
@@ -9736,7 +9740,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         emp = (Employee)em.createQuery("select e from Employee e where e.firstName = :name").setParameter("name", emp.getFirstName()).getSingleResult();
         commitTransaction(em);
         try{
-            assertTrue("Employees name was returned from server cache, when it should not have been", emp.getLastName().equals("Fabregas"));
+            assertEquals("Employees name was returned from server cache, when it should not have been", "Fabregas", emp.getLastName());
         } finally {
             beginTransaction(em);
             emp = em.find(Employee.class, emp.getId());
@@ -9753,7 +9757,6 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         emp.setFirstName("Robin");
         emp.setLastName("Van Persie");
         EmploymentPeriod period = new EmploymentPeriod();
-        ;
 
         period.setStartDate(new Date((new GregorianCalendar(2009, 1, 1)).getTimeInMillis()));
         period.setEndDate(new Date((new GregorianCalendar(2010, 1, 1)).getTimeInMillis()));
@@ -9764,10 +9767,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         clearCache();
 
         EmployeeHolder results = (EmployeeHolder) em.createQuery("select new org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.EmployeeHolder(e.id, e.period, e.firstName) from Employee e where e.id = :id").setParameter("id", emp.getId()).getSingleResult();
-        assertTrue("Incorrect id", emp.getId().equals(results.getId()));
-        assertTrue("Incorrect period start date", emp.getPeriod().getStartDate().equals(results.getPeriod().getStartDate()));
-        assertTrue("Incorrect period end date", emp.getPeriod().getEndDate().equals(results.getPeriod().getEndDate()));
-        assertTrue("Incorrect name", emp.getFirstName().equals(results.getName()));
+        assertEquals("Incorrect id", emp.getId(), results.getId());
+        assertEquals("Incorrect period start date", emp.getPeriod().getStartDate(), results.getPeriod().getStartDate());
+        assertEquals("Incorrect period end date", emp.getPeriod().getEndDate(), results.getPeriod().getEndDate());
+        assertEquals("Incorrect name", emp.getFirstName(), results.getName());
 
         rollbackTransaction(em);
     }
@@ -9806,7 +9809,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             clearCache();
 
             List results = em.createQuery("select d from Department d").setHint(QueryHints.FETCH, "d.departmentHead").setHint(QueryHints.BATCH, "d.departmentHead.phoneNumbers").getResultList();
-            assertTrue("Wrong results returned.", results.size() == 1);
+            assertEquals("Wrong results returned.", 1, results.size());
 
             dept = (Department) results.get(0);
             dept.getDepartmentHead().getPhoneNumbers().hashCode();
@@ -9853,7 +9856,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             // native query triggers early begin transaction
             em.createNativeQuery("SELECT F_NAME FROM MBR2_EMPLOYEE").setHint(QueryHints.COMPOSITE_UNIT_MEMBER, memberPuName).getResultList();
             // verify that the connection is really not pooled.
-            assertTrue("Test problem: connection should be not pooled", em.unwrap(UnitOfWork.class).getParent().getAccessor().getPool() == null);
+            assertNull("Test problem: connection should be not pooled", em.unwrap(UnitOfWork.class).getParent().getAccessor().getPool());
         } finally {
             if(isSpring) {
                 em.getTransaction().rollback();
@@ -9946,7 +9949,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         em.refresh(emp);
         try {
-            assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
+            Assert.assertNotEquals("The first name was updated even though it was reverted.", "Joe", emp.getFirstName());
         } finally {
             rollbackTransaction(em);
         }
@@ -9974,7 +9977,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         try{
             emp = em.find(Employee.class, emp.getId());
             em.refresh(emp);
-            assertFalse("The first name was updated even though it was reverted.", emp.getFirstName().equals("Joe"));
+            Assert.assertNotEquals("The first name was updated even though it was reverted.", "Joe", emp.getFirstName());
         } finally {
             em.remove(emp);
             commitTransaction(em);
@@ -10007,7 +10010,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         beginTransaction(em);
         try{
             emp = em.find(Employee.class, emp.getId());
-            assertTrue("The first name was reverted even though it was written.", emp.getFirstName().equals("Joe"));
+            assertEquals("The first name was reverted even though it was written.", "Joe", emp.getFirstName());
         } finally {
             em.remove(emp);
             commitTransaction(em);
@@ -10279,7 +10282,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 }
             }
 
-            String errorMsgOldValues = "";
+            StringBuilder errorMsgOldValues = new StringBuilder();
             // now compare oldValue objects with corresponding backup objects
             itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
             while(itChangeSets.hasNext()) {
@@ -10295,7 +10298,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                             Object backupObject = backupMap.get(object);
                             // compare oldValue with backup object
                             if (!dbs.compareObjects(oldValueObject, backupObject)) {
-                                errorMsgOldValues += '\t' + object.toString() + '\n';
+                                errorMsgOldValues.append('\t').append(object.toString()).append('\n');
                             }
                         }
                     }
@@ -10312,7 +10315,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             }
 
             // verify that the objects were correctly written to the db
-            String errorMsgDb = "";
+            StringBuilder errorMsgDb = new StringBuilder();
             clearCache();
             Map updatedToReadBack = new HashMap();
             EntityManager em2 = createEntityManager();
@@ -10337,7 +10340,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
                 Object object = entry.getKey();
                 Object readBack = entry.getValue();
                 if (!dbs.compareObjects(object, readBack)) {
-                    errorMsgDb += '\t' + object.toString() + '\n';
+                    errorMsgDb.append('\t').append(object.toString()).append('\n');
                 }
             }
             rollbackTransaction(em2);
@@ -10369,11 +10372,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             String errorMsg = "";
             if(errorMsgOldValues.length() > 0) {
-                errorMsgOldValues = "Some old values and back up objects are not equal:\n" + errorMsgOldValues;
+                errorMsgOldValues.insert(0, "Some old values and back up objects are not equal:\n");
                 errorMsg += errorMsgOldValues;
             }
             if(errorMsgDb.length() > 0) {
-                errorMsgDb = "\nSome values were incorrectly written into the db:\n" + errorMsgDb;
+                errorMsgDb.insert(0, "\nSome values were incorrectly written into the db:\n");
                 errorMsg += errorMsgDb;
             }
             if(errorMsg.length() > 0) {
@@ -10420,7 +10423,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
 
-        assertTrue("Wrong emp.getPeriod() inserted into db", emp.getPeriod().equals(empRead.getPeriod()));
+        assertEquals("Wrong emp.getPeriod() inserted into db", emp.getPeriod(), empRead.getPeriod());
     }
 
     //  Bug 307433 - Regression in Auditing Support when using defaults.
@@ -10453,7 +10456,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
 
-        assertTrue("Wrong emp.getFormerEmployment().getPeriod() inserted into db", emp.getFormerEmployment().getPeriod().equals(empRead.getFormerEmployment().getPeriod()));
+        assertEquals("Wrong emp.getFormerEmployment().getPeriod() inserted into db", emp.getFormerEmployment().getPeriod(), empRead.getFormerEmployment().getPeriod());
     }
 
     //  Bug 307433 - Regression in Auditing Support when using defaults.
@@ -10486,7 +10489,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
 
-        assertTrue("inserted startTime: " + emp.getStartTime() + " != read back startTime: " + empRead.getStartTime(), emp.getStartTime().equals(empRead.getStartTime()));
+        assertEquals("inserted startTime: " + emp.getStartTime() + " != read back startTime: " + empRead.getStartTime(), emp.getStartTime(), empRead.getStartTime());
     }
 
     //  Bug 336280 - Same object referenced from both EM cache and shared cache
@@ -10519,7 +10522,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         // originalObjects should consist of just three objects: emp, emp1, emp2.
         // However if manager_vh is wrapped around manager instance from the shared cache (empShared),
         // the size will be 6: emp, emp1, emp2 and empShared, emp1Shared, emp2Shared.
-        assertTrue(originalObjects.size() == 3);
+        assertEquals(3, originalObjects.size());
     }
 
     //  Bug 336280 - Same object referenced from both EM cache and shared cache
@@ -10542,9 +10545,9 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
         // using query by example read empShared corresponding to emp in ghe share cache
         Employee empShared = (Employee) dbs.readObject(emp);
         // these are really to distinct objects
-        assertTrue(emp != empShared);
+        assertNotSame(emp, empShared);
         // they should not share the aggragate
-        assertTrue(emp.getPeriod() != empShared.getPeriod());
+        assertNotSame(emp.getPeriod(), empShared.getPeriod());
     }
 
     // Bug 340810 - merge problem: existing object referenced by new not cascade merged if not in cache
@@ -10614,11 +10617,11 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
             }
         }
         if(!errors.isEmpty()) {
-            String errorMsg = "The following AggregateObjectMappings have ReferenceDescriptors without any mappings:\n";
+            StringBuilder errorMsg = new StringBuilder("The following AggregateObjectMappings have ReferenceDescriptors without any mappings:\n");
             for(String errorStr : errors) {
-                errorMsg += errorStr + "\n";
+                errorMsg.append(errorStr).append("\n");
             }
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
     void verifyAggregateObjectMappingReferenceDescriptor(ClassDescriptor descriptor, String path, Set<String> errors) {

@@ -25,7 +25,7 @@
 
     <artifactId>org.eclipse.persistence.jpa.testapps.advanced.multitenant</artifactId>
 
-    <name>Test - multitenant</name>
+    <name>Test - advanced.multitenant</name>
 
     <properties>
         <argLine/>

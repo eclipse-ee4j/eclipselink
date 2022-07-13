@@ -17,8 +17,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectCollectionMapping;
 
 public class EmployeeCustomizer implements DescriptorCustomizer {
     public EmployeeCustomizer() {}

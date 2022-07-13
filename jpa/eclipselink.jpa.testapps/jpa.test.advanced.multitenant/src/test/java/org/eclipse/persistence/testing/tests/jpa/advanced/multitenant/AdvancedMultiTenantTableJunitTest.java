@@ -171,21 +171,21 @@ public class AdvancedMultiTenantTableJunitTest extends AdvancedMultiTenantJunitB
 
             em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "A");
 
-            List resultsFromNamedQuery = em.createNamedQuery("Supporter.findAll").getResultList();
-            List resultsFromDynamicQuery = em.createQuery("SELECT s FROM Supporter s ORDER BY s.id DESC").getResultList();
+            List<Supporter> resultsFromNamedQuery = em.createNamedQuery("Supporter.findAll", Supporter.class).getResultList();
+            List<Supporter> resultsFromDynamicQuery = em.createQuery("SELECT s FROM Supporter s ORDER BY s.id DESC", Supporter.class).getResultList();
 
-            assertTrue("Incorrect number of supporters returned from named query.", resultsFromNamedQuery.size() == 3);
-            assertTrue("Incorrect number of supporters returned from dynamic query.", resultsFromDynamicQuery.size() == 3);
+            assertEquals("Incorrect number of supporters returned from named query.", 3, resultsFromNamedQuery.size());
+            assertEquals("Incorrect number of supporters returned from dynamic query.", 3, resultsFromDynamicQuery.size());
 
             // Test some more complex joining queries.
-            List<Supporter> results = em.createNamedQuery("Supporter.findBySupporterInfo").setParameter("desc", "Supporter1aDesc").getResultList();
-            assertFalse("No results returned.", results == null);
-            assertTrue("Single result not returned.", results.size() == 1);
-            assertTrue("Didn't return supporter1a", results.get(0).getName().equals("Supporter1a"));
-            results = em.createNamedQuery("Supporter.findBySupporterInfoSub").setParameter("subDesc", "Supporter3aSubDesc").getResultList();
-            assertFalse("No results returned.", results == null);
-            assertTrue("Single result not returned.", results.size() == 1);
-            assertTrue("Didn't return supporter3a", results.get(0).getName().equals("Supporter3a"));
+            List<Supporter> results = em.createNamedQuery("Supporter.findBySupporterInfo", Supporter.class).setParameter("desc", "Supporter1aDesc").getResultList();
+            assertNotNull("No results returned.", results);
+            assertEquals("Single result not returned.", 1, results.size());
+            assertEquals("Didn't return supporter1a", "Supporter1a", results.get(0).getName());
+            results = em.createNamedQuery("Supporter.findBySupporterInfoSub", Supporter.class).setParameter("subDesc", "Supporter3aSubDesc").getResultList();
+            assertNotNull("No results returned.", results);
+            assertEquals("Single result not returned.", 1, results.size());
+            assertEquals("Didn't return supporter3a", "Supporter3a", results.get(0).getName());
 
             commitTransaction(em);
         } catch (RuntimeException e) {
@@ -243,7 +243,7 @@ public class AdvancedMultiTenantTableJunitTest extends AdvancedMultiTenantJunitB
             assertNull("Candidate B has a Riding when he shouldn't have.", candidateBRefreshed.getRiding());
             assertTrue("Candidate B had supporters when he shouldn't have.", candidateBRefreshed.getSupporters().isEmpty());
             assertTrue("Candidate B had honors when he shouldn't have.", candidateBRefreshed.getHonors().isEmpty());
-            assertTrue("Candidate B had the incorrect salary.", candidateBRefreshed.getSalary() == 100);
+            assertEquals("Candidate B had the incorrect salary.", 100, candidateBRefreshed.getSalary());
 
             commitTransaction(em);
 
@@ -267,8 +267,8 @@ public class AdvancedMultiTenantTableJunitTest extends AdvancedMultiTenantJunitB
 
             em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "B");
 
-            List resultsFromNamedQuery = em.createNamedQuery("Supporter.findAll").getResultList();
-            List resultsFromDynamicQuery = em.createQuery("SELECT s FROM Supporter s ORDER BY s.id DESC").getResultList();
+            List<Supporter> resultsFromNamedQuery = em.createNamedQuery("Supporter.findAll", Supporter.class).getResultList();
+            List<Supporter> resultsFromDynamicQuery = em.createQuery("SELECT s FROM Supporter s ORDER BY s.id DESC", Supporter.class).getResultList();
 
             assertTrue("Incorrect number of supporters returned from named query.", resultsFromNamedQuery.isEmpty());
             assertTrue("Incorrect number of supporters returned from dynamic query.", resultsFromDynamicQuery.isEmpty());
