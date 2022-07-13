@@ -68,7 +68,7 @@ jobs:
     #    uses a compiled language
 
     - run: |
-        mvn -B clean compile -Ddeploy=true -Dnotests=true
+        mvn -B clean compile -Ddeploy=true -Dnotests=true -Pstaging
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
