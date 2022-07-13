@@ -29,7 +29,7 @@
             <property name="eclipselink.target-database" value="@database-platform@"/>
             <property name="eclipselink.weaving" value="@server-weaving@"/>
             <property name="eclipselink.validate-existence" value="true"/>
-            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
             <property name="eclipselink.multitenant.strategy" value="external"/>
         </properties>
@@ -58,7 +58,7 @@
             <property name="eclipselink.target-database" value="@database-platform@"/>
             <property name="eclipselink.weaving" value="@server-weaving@"/>
             <property name="eclipselink.validate-existence" value="true"/>
-            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
             <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createMafia_ddlGeneration.jdbc"/>
@@ -89,7 +89,7 @@
             <property name="eclipselink.target-database" value="@database-platform@"/>
             <property name="eclipselink.weaving" value="@server-weaving@"/>
             <property name="eclipselink.validate-existence" value="true"/>
-            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
             <property name="tenant.id" value="123"/>
             <property name="eclipselink.tenant-id" value="123"/>
             <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
@@ -136,7 +136,7 @@
             <property name="eclipselink.target-database" value="@database-platform@"/>
             <property name="eclipselink.weaving" value="@server-weaving@"/>
             <property name="eclipselink.validate-existence" value="true"/>
-            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
         </properties>
     </persistence-unit>
 
@@ -158,7 +158,7 @@
             <property name="eclipselink.target-database" value="@database-platform@"/>
             <property name="eclipselink.weaving" value="@server-weaving@"/>
             <property name="eclipselink.validate-existence" value="true"/>
-            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
             <property name="eclipselink.tenant-id" value="C"/>
             <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
             <property name="eclipselink.session-name" value="multi-tenant-C"/>
