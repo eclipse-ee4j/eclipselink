@@ -653,7 +653,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             if (policy instanceof SelectedFieldsLockingPolicy) {
                 List<DatabaseField> lockFields = ((SelectedFieldsLockingPolicy) policy).getLockFields();
 
-                if (lockFields.isEmpty() || lockFields.size() > 1) {
+                if (lockFields.size() != 1) {
                     fail("Invalid amount of lock fields were set on Project's selected fields locking policy.");
                 } else {
                     DatabaseField lockField = lockFields.get(0);

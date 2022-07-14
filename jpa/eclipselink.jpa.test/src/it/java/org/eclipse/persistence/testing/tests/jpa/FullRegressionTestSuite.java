@@ -65,9 +65,7 @@ import org.eclipse.persistence.testing.tests.jpa.complexaggregate.ComplexAggrega
 import org.eclipse.persistence.testing.tests.jpa.config.ConfigPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationExtendTablesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
 //import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
-import org.eclipse.persistence.testing.tests.jpa.extensibility.ExtensibilityTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupAPITests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupMergeWithCacheTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupTrackerWeavingTests;
@@ -105,8 +103,6 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLSimpleTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitNativeQueryTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedXMLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.plsql.XMLPLSQLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.EMQueryJUnitTestSuite;
@@ -222,8 +218,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(AbstractEntityWithColumnDiscriminatorTest.suite());
         fullSuite.addTest(suite);
 
-        fullSuite.addTest(PartitionedTestSuite.suite());
-        fullSuite.addTest(PartitionedXMLTestSuite.suite());
         fullSuite.addTest(PLSQLTestSuite.suite());
         fullSuite.addTest(XMLPLSQLTestSuite.suite());
         // Has security manager issues on some JVMs.
@@ -235,7 +229,6 @@ public class FullRegressionTestSuite extends TestSuite {
         // Fetch Groups tests.
         suite = new TestSuite();
         suite.setName("Extensibility");
-        suite.addTest(ExtensibilityTests.suite());
         fullSuite.addTest(suite);
 
         return fullSuite;
@@ -318,15 +311,6 @@ public class FullRegressionTestSuite extends TestSuite {
         // DateTime model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datetime.NullBindingJUnitTestCase.suite());
 
-        // Lob model
-        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase.suite());
-
-        // Private owned model
-        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.privateowned.PrivateOwnedJUnitTestCase.suite());
-
-        // Orphan removal model
-        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.orphanremoval.OrphanRemovalJUnitTestCase.suite());
-
         // OSGi Deployment
         //try {
         //    fullSuite.addTestSuite(CompositeEnumerationTest.class);
@@ -350,9 +334,6 @@ public class FullRegressionTestSuite extends TestSuite {
         // JPA 2.0 Cacheable model
         fullSuite.addTest(CacheableModelJunitTest.suite());
         fullSuite.addTest(CacheableModelJunitTestEnableSelective.suite());
-
-        // JPA 2.0 Delimited Identifiers model
-        fullSuite.addTest(DelimitedPUTestSuite.suite());
 
         fullSuite.addTest(CascadeDeletesJUnitTestSuite.suite());
 

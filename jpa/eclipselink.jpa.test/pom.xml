@@ -338,11 +338,8 @@
                                 <item>eclipselink-cascade-deletes-model</item>
                                 <item>eclipselink-cacheable-model</item>
                                 <item>eclipselink-ddl-generation-model</item>
-                                <item>eclipselink-delimited-model</item>
-                                <item>eclipselink-extensibility-model</item>
                                 <item>eclipselink-jpa21-model</item>
                                 <item>eclipselink-metamodel-model</item>
-                                <item>eclipselink-partitioned-model</item>
                                 <item>eclipselink-xml-mapping-metadata-complete</item>
                                 <!--Additional for LRG-->
                                 <item>eclipselink-plsql-model</item>
@@ -473,13 +470,10 @@
                                 <item>eclipselink-ddl-generation-model</item>
                                 <item>eclipselink-cacheable-model</item>
                                 <item>eclipselink-advanced-properties</item>
-                                <item>eclipselink-partitioned-model</item>
                                 <item>eclipselink-plsql-model</item>
                                 <item>eclipselink-cascade-deletes-model</item>
                                 <item>jpa-performance</item>
                                 <item>eclipselink-metamodel-model</item>
-                                <item>eclipselink-delimited-model</item>
-                                <item>eclipselink-extensibility-model</item>
                                 <item>eclipselink-xml-mapping-metadata-complete</item>
                                 <item>eclipselink-xml-extended-model</item>
                             </items>
@@ -512,11 +506,8 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                                         </additionalClasspathElements>
                                         <arguments>
@@ -572,11 +563,8 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                                         </additionalClasspathElements>
                                         <arguments>
@@ -611,15 +599,11 @@
                                 <item>server-test-jpa-datatypes</item>
                                 <item>server-test-jpa-datetime</item>
                                 <item>server-test-jpa-ddlgeneration</item>
-                                <item>server-test-jpa-extensibility</item>
                                 <item>server-test-jpa-fetchgroups</item>
                                 <item>server-test-jpa-inheritance</item>
                                 <item>server-test-jpa-inherited</item>
                                 <item>server-test-jpa-jpql</item>
-                                <!--<item>server-test-jpa-lob</item>-->
                                 <item>server-test-jpa-metamodel</item>
-                                <item>server-test-jpa-orphanremoval</item>
-                                <item>server-test-jpa-privateowned</item>
                                 <item>server-test-jpa-relationships</item>
                             </items>
                             <baseDirectory>${project.basedir}</baseDirectory>
@@ -665,12 +649,6 @@
                                     <name>server-test-jpa-cascadedeletes</name>
                                     <properties>
                                         <puName>cascade-deletes</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-delimited</name>
-                                    <properties>
-                                        <puName>delimited</puName>
                                     </properties>
                                 </itemWithProperty>
                                 <itemWithProperty>
@@ -875,8 +853,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <!-- Special model jars for LRG 22_2 test.-->
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-plsql-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
@@ -929,7 +905,6 @@
                                 <!-- Special model jars for LRG 22_4 test.-->
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                             </additionalClasspathElements>
@@ -1088,11 +1063,8 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-jpa22-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-model.jar</additionalClasspathElement>
@@ -1127,14 +1099,11 @@
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-advanced-field-access-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-partitioned-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-plsql-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-cacheable-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}jpa-performance.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-delimited-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-extensibility-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-remote.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                             </additionalClasspathElements>
@@ -1552,33 +1521,6 @@
             </properties>
         </profile>
         <profile>
-            <id>server-test-jpa-delimited</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>delimited</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-delimited-model</modelname>
-                <extra-model>eclipselink-delimited-model-extra</extra-model>
-                <packageName>delimited</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-extensibility</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-extensibility-model</modelname>
-                <extra-model>eclipselink-extensibility-model</extra-model>
-                <packageName>extensibility</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.extensibility.ExtensibilityTests</test-client-class>
-            </properties>
-        </profile>
-        <profile>
             <id>server-test-jpa-fetchgroups</id>
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
@@ -1701,19 +1643,6 @@
             </properties>
         </profile>
         <profile>
-            <id>server-test-jpa-lob</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-lob-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>lob</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase</test-client-class>
-            </properties>
-        </profile>
-        <profile>
             <id>server-test-jpa-metamodel</id>
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
@@ -1724,32 +1653,6 @@
                 <extra-model>common-server-generic</extra-model>
                 <packageName>metamodel</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelMetamodelTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-orphanremoval</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-orphanremoval-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>orphanremoval</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.orphanremoval.OrphanRemovalJUnitTestCase</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-privateowned</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-privateowned-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>privateowned</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.privateowned.PrivateOwnedJUnitTestCase</test-client-class>
             </properties>
         </profile>
         <profile>
