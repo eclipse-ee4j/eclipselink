@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -13,4 +13,4 @@
 #  N/A
 
 echo '-[ EclipseLink Build ]-----------------------------------------------------------'
-mvn -V -B install -DskipTests -Poss-release
+mvn -V -B install -DskipTests -Pstaging,oss-release
