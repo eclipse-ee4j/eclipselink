@@ -63,7 +63,7 @@ public class FormerEmployment implements Serializable {
         writer.write("FormerEmployment: ");
 
         if (this.getFormerCompany() != null) {
-            writer.write(this.getFormerCompany().toString());
+            writer.write(this.getFormerCompany());
         }
 
         writer.write(",");

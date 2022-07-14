@@ -99,6 +99,11 @@
                 <artifactId>org.eclipse.persistence.jpa.testapps.xml.extended.composite.advanced.member_3</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.lob</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -157,6 +162,12 @@
         <module>jpa.test.composite.advanced/member_1</module>
         <module>jpa.test.composite.advanced/member_2</module>
         <module>jpa.test.composite.advanced/member_3</module>
+        <module>jpa.test.delimited</module>
+        <module>jpa.test.extensibility</module>
+        <module>jpa.test.lob</module>
+        <module>jpa.test.orphanremoval</module>
+        <module>jpa.test.partitioned</module>
+        <module>jpa.test.privateowned</module>
         <module>jpa.test.pu with spaces</module>
         <module>jpa.test.sessionbean</module>
         <module>jpa.test.xml.advanced.multitenant</module>
@@ -213,6 +224,20 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <executions>
                         <execution>
+                            <id>package-model</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                            <phase>none</phase>
+                            <configuration>
+                                <excludes>
+                                    <exclude>META-INF/*</exclude>
+                                    <exclude>META-INF/*.xml</exclude>
+                                </excludes>
+                                <classifier>model</classifier>
+                            </configuration>
+                        </execution>
+                        <execution>
                             <id>package-se-tests</id>
                             <goals>
                                 <goal>test-jar</goal>
@@ -246,7 +271,7 @@
                 <!-- see https://github.com/lukasj/eclipselink-build-support -->
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink-testbuild-plugin</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.2</version>
 <!--                <extensions>true</extensions>-->
                 <executions>
                     <execution>

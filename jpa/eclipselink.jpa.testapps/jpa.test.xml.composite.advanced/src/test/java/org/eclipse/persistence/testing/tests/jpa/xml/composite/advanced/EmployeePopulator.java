@@ -817,7 +817,7 @@ public class EmployeePopulator {
     }
 
     public void persistExample(Session session) {
-        Vector allObjects = new Vector();
+        Vector<Object> allObjects = new Vector<>();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
         PopulationManager.getDefaultManager().addAllObjectsForClass(Employee.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(SmallProject.class, allObjects);
