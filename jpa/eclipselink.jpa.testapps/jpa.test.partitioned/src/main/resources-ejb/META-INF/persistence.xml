@@ -33,6 +33,9 @@
             <property name="eclipselink.weaving" value="@server-weaving@"/>
             <property name="eclipselink.partitioning" value="default"/>
             <property name="eclipselink.partitioning.callback" value="org.eclipse.persistence.platform.database.oracle.ucp.GridLinkDataPartitioningCallback"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="partitioned-xml" transaction-type="@transaction-type@">
@@ -46,6 +49,9 @@
             <property name="eclipselink.partitioning" value="default"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.partitioning.callback" value="org.eclipse.persistence.platform.database.oracle.ucp.GridLinkDataPartitioningCallback"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
 </persistence>

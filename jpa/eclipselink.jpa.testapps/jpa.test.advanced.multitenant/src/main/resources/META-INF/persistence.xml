@@ -41,6 +41,9 @@
             <!-- sql queries off by default, so we need to be explicit here  -->
             <!--  and turn them on                                           -->
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
 
@@ -65,6 +68,9 @@
             <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
             <property name="eclipselink.session-name" value="multi-tenant-123"/>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
 
@@ -80,6 +86,9 @@
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createMultitenantVPD_ddlGeneration.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropMultitenantVPD_ddlGeneration.jdbc"/>
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
 
@@ -94,6 +103,11 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
     </persistence-unit>
 
     <persistence-unit name="multi-tenant-table-per-tenant-C">
@@ -111,6 +125,9 @@
             <property name="eclipselink.tenant-id" value="C"/>
             <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
             <property name="eclipselink.session-name" value="multi-tenant-C"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
 
@@ -121,6 +138,9 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
 

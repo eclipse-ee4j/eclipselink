@@ -40,7 +40,7 @@
     <properties>
         <persistence-unit.name>composite-advanced-member_1</persistence-unit.name>
         <persistence-unit.data-source-name>jdbc/EclipseLinkXADS</persistence-unit.data-source-name>
-        <wildfly.deploy.skip>true</wildfly.deploy.skip>
+        <server.skip>true</server.skip>
         <el.packager.mode>EJB</el.packager.mode>
     </properties>
 

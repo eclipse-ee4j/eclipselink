@@ -31,7 +31,7 @@
         <argLine/>
         <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>
         <!-- server tests require Oracle DB -->
-        <wildfly.deploy.skip>true</wildfly.deploy.skip>
+        <server.skip>true</server.skip>
     </properties>
 
     <build>

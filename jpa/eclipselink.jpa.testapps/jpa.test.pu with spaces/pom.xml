@@ -29,7 +29,7 @@
 
     <properties>
         <argLine/>
-        <wildfly.deploy.skip>true</wildfly.deploy.skip>
+        <server.skip>true</server.skip>
     </properties>
 
     <build>

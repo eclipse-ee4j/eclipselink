@@ -21,6 +21,9 @@
             <property name="eclipselink.metadata-source.xml.file" value="extension.xml"/>
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.cache.shared.default" value="false"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
 </persistence>

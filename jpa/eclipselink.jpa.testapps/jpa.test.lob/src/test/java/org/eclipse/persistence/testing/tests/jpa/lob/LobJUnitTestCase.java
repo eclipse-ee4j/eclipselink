@@ -61,7 +61,7 @@ public class LobJUnitTestCase extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new LobTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new LobTableCreator().replaceTables(getServerSession());
         clearCache();
     }
 

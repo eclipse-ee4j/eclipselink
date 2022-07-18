@@ -62,14 +62,6 @@ public class EntityMappingsMultitenant123Test extends EntityMappingsMultitenantJ
         return suite;
     }
 
-    /**
-     * The setup is done as a test, both to record its failure, and to allow execution in the server.
-     */
-    @Override
-    public void testSetup() {
-        new AdvancedMultiTenantTableCreator().replaceTables(JUnitTestCase.getServerSession(getPersistenceUnitName()));
-    }
-
     public void testCreateMafiaFamily123() {
         EntityManager em = createEntityManager(getPersistenceUnitName());
 

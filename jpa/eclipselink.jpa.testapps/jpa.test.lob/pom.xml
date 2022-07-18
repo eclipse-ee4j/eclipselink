@@ -47,7 +47,7 @@
     <properties>
         <argLine/>
         <!-- server tests require MOXy as the default XML Binding provider -->
-        <wildfly.deploy.skip>true</wildfly.deploy.skip>
+        <server.skip>true</server.skip>
     </properties>
 
     <build>

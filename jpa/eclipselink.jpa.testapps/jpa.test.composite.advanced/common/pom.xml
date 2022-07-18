@@ -28,7 +28,7 @@
     <name>Test - composite.advanced.common</name>
 
     <properties>
-        <wildfly.deploy.skip>true</wildfly.deploy.skip>
+        <server.skip>true</server.skip>
     </properties>
 
     <build>
