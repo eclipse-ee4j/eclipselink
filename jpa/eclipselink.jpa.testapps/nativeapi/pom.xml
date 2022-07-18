@@ -29,6 +29,7 @@
 
     <properties>
         <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>
+        <el.packager.descriptors>false</el.packager.descriptors>
     </properties>
 
     <build>

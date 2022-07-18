@@ -42,6 +42,7 @@
 
     <properties>
         <persistence-unit.name>jpa-sessionbean</persistence-unit.name>
+        <el.packager.descriptors>false</el.packager.descriptors>
     </properties>
 
     <build>

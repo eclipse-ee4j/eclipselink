@@ -15,6 +15,8 @@
 //       - 357474: Address primaryKey option from tenant discriminator column
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
+import java.util.Objects;
+
 public class PhoneNumberPK  {
     public Integer id;
     public String type;
@@ -40,6 +42,7 @@ public class PhoneNumberPK  {
     /**
      * equals: Answer true if the ids are equal
      */
+    @Override
     public boolean equals(Object anotherPhoneNumber) {
         if (anotherPhoneNumber.getClass() != PhoneNumberPK.class) {
             return false;
@@ -50,6 +53,11 @@ public class PhoneNumberPK  {
         }
 
         return (getId().equals(((PhoneNumberPK) anotherPhoneNumber).getId()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type);
     }
 }
 

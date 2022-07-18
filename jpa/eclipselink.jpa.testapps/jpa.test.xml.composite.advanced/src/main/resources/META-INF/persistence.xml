@@ -14,9 +14,7 @@
 
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
     <persistence-unit name="xml-composite-advanced" transaction-type="RESOURCE_LOCAL">
-        <provider>
-            org.eclipse.persistence.jpa.PersistenceProvider
-        </provider>
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
         <jar-file>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.member_1.jar</jar-file>
         <jar-file>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.member_2.jar</jar-file>
@@ -24,7 +22,9 @@
 
         <properties>
             <property name="eclipselink.composite-unit" value="true"/>
-            <property name="eclipselink.logging.parameters" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
 </persistence>

@@ -32,7 +32,17 @@
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
 
-        <eclipselink.logging.level>INFO</eclipselink.logging.level>
+        <server.test.runner.context>${project.build.finalName}/${project.build.finalName}_ejb</server.test.runner.context>
+        <server.jndi.factory></server.jndi.factory>
+        <server.remote.url></server.remote.url>
+        <server.skip>false</server.skip>
+        <ignore.server.failures>false</ignore.server.failures>
+
+        <!-- logging properties for persistence.xml -->
+        <eclipselink.logging.level>WARNING</eclipselink.logging.level>
+        <eclipselink.logging.parameters>true</eclipselink.logging.parameters>
+        <eclipselink.logging.sql.level>INFO</eclipselink.logging.sql.level>
+
         <persistence-unit.data-source-name>jdbc/EclipseLinkDS</persistence-unit.data-source-name>
         <persistence-unit.data-source-type>jta-data-source</persistence-unit.data-source-type>
         <persistence-unit.transaction-type>JTA</persistence-unit.transaction-type>
@@ -185,6 +195,12 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -246,24 +262,55 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <useModulePath>true</useModulePath>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>default-test</id>
+                            <phase>none</phase>
+                            <configuration>
+                                <systemPropertyVariables>
+                                    <test.properties>${test.properties.file}</test.properties>
+                                </systemPropertyVariables>
+                                <workingDirectory>${project.build.directory}/test-out</workingDirectory>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>server-test</id>
+                            <phase>none</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${server.skip}</skip>
+                                <reportNameSuffix>server</reportNameSuffix>
+                                <systemPropertyVariables>
+                                    <java.naming.factory.initial>${server.jndi.factory}</java.naming.factory.initial>
+                                    <server.run>TRUE</server.run>
+                                    <is.JTA>true</is.JTA>
+                                    <server.url>${server.remote.url}</server.url>
+                                    <server.testrunner.context>${server.test.runner.context}</server.testrunner.context>
+                                </systemPropertyVariables>
+                                <testFailureIgnore>${ignore.server.failures}</testFailureIgnore>
+                                <workingDirectory>${project.build.directory}/test-out/server</workingDirectory>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <useModulePath>true</useModulePath>
-                </configuration>
                 <executions>
                     <execution>
                         <id>default-test</id>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <test.properties>${test.properties.file}</test.properties>
-                            </systemPropertyVariables>
-                            <workingDirectory>${project.build.directory}/test-out</workingDirectory>
-                        </configuration>
+                        <phase>test</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -271,7 +318,7 @@
                 <!-- see https://github.com/lukasj/eclipselink-build-support -->
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink-testbuild-plugin</artifactId>
-                <version>0.0.2</version>
+                <version>0.0.3</version>
 <!--                <extensions>true</extensions>-->
                 <executions>
                     <execution>
@@ -291,22 +338,45 @@
 
     <profiles>
         <profile>
-            <!-- XXX - under construction: run tests on the server
+            <!-- run tests on the server
                  requires manual JDBC DS creation
-                 for now hardcoded to WildFly
-                 and EAR/EJB-jars built by custom plugin -->
-            <id>xxx-wildfly</id>
+                 EAR/EJB-jars are built by the eclipselink-testbuild-plugin plugin
+                 to add additional server profile, define deploy/undeploy,
+                 test execution and properties as is done here  -->
+            <id>wildfly</id>
             <properties>
-                <server.test.runner.context>${project.build.finalName}/${project.build.finalName}_ejb</server.test.runner.context>
-                <wildfly.deploy.skip>false</wildfly.deploy.skip>
-                <ignore.server.failures>false</ignore.server.failures>
+                <server.jndi.factory>org.wildfly.naming.client.WildFlyInitialContextFactory</server.jndi.factory>
+                <server.remote.url>remote+http://localhost:8080</server.remote.url>
+                <wildfly.deploy.skip>${server.skip}</wildfly.deploy.skip>
             </properties>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.wildfly</groupId>
+                        <artifactId>wildfly-client-all</artifactId>
+                        <version>27.0.0.Alpha2</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>org.wildfly</groupId>
+                    <artifactId>wildfly-client-all</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.wildfly.plugins</groupId>
                         <artifactId>wildfly-maven-plugin</artifactId>
                         <version>2.1.0.Beta1</version>
+                        <configuration>
+                            <skip>${wildfly.deploy.skip}</skip>
+                            <username>${wildfly.username}</username>
+                            <password>${wildfly.password}</password>
+                            <name>${project.build.finalName}.ear</name>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>server-deploy</id>
@@ -315,12 +385,16 @@
                                     <goal>deploy-only</goal>
                                 </goals>
                                 <configuration>
-                                    <skip>${wildfly.deploy.skip}</skip>
-                                    <force>true</force>
                                     <filename>${project.build.finalName}.ear</filename>
-                                    <username>${wildfly.username}</username>
-                                    <password>${wildfly.password}</password>
+                                    <force>true</force>
                                 </configuration>
+                            </execution>
+                            <execution>
+                                <id>server-undeploy</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>undeploy</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
@@ -331,25 +405,6 @@
                             <execution>
                                 <id>server-test</id>
                                 <phase>integration-test</phase>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <configuration>
-                                    <additionalClasspathElements>
-                                        <!--TODO It should be replaced by https://search.maven.org/artifact/org.wildfly/wildfly-client-all/27.0.0.Alpha2/jar resolved by dependency plugin-->
-                                        <additionalClasspathElement>${wildfly.home}/bin/client/jboss-client.jar</additionalClasspathElement>
-                                    </additionalClasspathElements>
-                                    <reportNameSuffix>server</reportNameSuffix>
-                                    <systemPropertyVariables>
-                                        <java.naming.factory.initial>org.wildfly.naming.client.WildFlyInitialContextFactory</java.naming.factory.initial>
-                                        <server.run>TRUE</server.run>
-                                        <is.JTA>true</is.JTA>
-                                        <server.url>remote+http://localhost:8080</server.url>
-                                        <server.testrunner.context>${server.test.runner.context}</server.testrunner.context>
-                                    </systemPropertyVariables>
-                                    <testFailureIgnore>${ignore.server.failures}</testFailureIgnore>
-                                    <workingDirectory>${project.build.directory}/test-out/server</workingDirectory>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
