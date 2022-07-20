@@ -89,7 +89,6 @@ import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedCallbacksJun
 import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListAttributeChangeTrackingJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.JPAAdvPropertiesJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexAggregateTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite;
@@ -105,15 +104,6 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSui
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitNativeQueryTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.plsql.XMLPLSQLTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.EMQueryJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.ExpressionJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.IsolatedCacheTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.RelationshipModelJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.TestKeyTypeToManyRelationship;
-import org.eclipse.persistence.testing.tests.jpa.relationships.UniAndBiDirectionalMappingTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.VirtualAttributeTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.validation.QueryParameterValidationTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.validation.ValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.xmlmetadatacomplete.XMLMappingMetadataCompleteJunitTestCase;
 
@@ -185,22 +175,8 @@ public class FullRegressionTestSuite extends TestSuite {
     public static TestSuite suite2() {
         TestSuite fullSuite = new TestSuite();
 
-        // Relationship model.
-        TestSuite suite = new TestSuite();
-        suite.setName("relationships");
-        suite.addTest(EMQueryJUnitTestSuite.suite());
-        suite.addTest(ExpressionJUnitTestSuite.suite());
-        suite.addTest(IsolatedCacheTestSuite.suite());
-        suite.addTest(VirtualAttributeTestSuite.suite());
-        suite.addTest(ValidationTestSuite.suite());
-        suite.addTest(QueryParameterValidationTestSuite.suite());
-        suite.addTest(UniAndBiDirectionalMappingTestSuite.suite());
-        suite.addTest(RelationshipModelJUnitTestSuite.suite());
-        suite.addTest(TestKeyTypeToManyRelationship.suite());
-        fullSuite.addTest(suite);
-
         // JPQL testing model.
-        suite = new TestSuite();
+        TestSuite suite = new TestSuite();
         suite.setName("jpql");
         suite.addTest(JUnitJPQLUnitTestSuite.suite());
         suite.addTest(JUnitJPQLSimpleTestSuite.suite());
@@ -223,59 +199,14 @@ public class FullRegressionTestSuite extends TestSuite {
         // Has security manager issues on some JVMs.
         //fullSuite.addTest(RemoteEntityManagerTestSuite.suite());
 
-        // JPA Advanced Properties model
-        fullSuite.addTest(JPAAdvPropertiesJUnitTestCase.suite());
-
-        // Fetch Groups tests.
-        suite = new TestSuite();
-        suite.setName("Extensibility");
-        fullSuite.addTest(suite);
-
         return fullSuite;
     }
 
     public static TestSuite suite3() {
         TestSuite fullSuite = new TestSuite();
 
-        // FieldAccess advanced model
+        // Fetch Groups tests.
         TestSuite suite = new TestSuite();
-        suite.setName("fieldaccess");
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.NamedNativeQueryJUnitTest.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.CallbackEventJUnitTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.SQLResultSetMappingTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.JoinedAttributeAdvancedJunitTest.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryMultipleReturnTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ExtendedPersistenceContextJUnitTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryConstructorExpressionTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.OptimisticConcurrencyJUnitTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.AdvancedJPAJunitTest.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.AdvancedJunitTest.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.UpdateAllQueryAdvancedJunitTest.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.UniAndBiDirectionalMappingTestSuite.suite());
-        suite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ExpressionJUnitTestSuite.class);
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.RelationshipModelJUnitTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.IsolatedCacheTestSuite.suite());
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.JAXBTestSuite.suite());
-
-        // Fetch Groups tests.
-        TestSuite suiteFg = new TestSuite();
-        suiteFg.setName("fieldaccess.FetchGroups");
-        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.FetchGroupTrackerWeavingTests.suite());
-        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.SimpleDefaultFetchGroupTests.suite());
-        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.SimpleFetchGroupTests.suite());
-        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.SimpleNamedFetchGroupTests.suite());
-        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.SimpleSerializeFetchGroupTests.suite());
-        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.NestedDefaultFetchGroupTests.suite());
-        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.NestedFetchGroupTests.suite());
-        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.NestedNamedFetchGroupTests.suite());
-        suiteFg.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.FetchGroupMergeWithCacheTests.suite());
-        suite.addTest(suiteFg);
-
-        fullSuite.addTest(suite);
-
-        // Fetch Groups tests.
-        suite = new TestSuite();
         suite.setName("FetchGroups");
         suite.addTest(FetchGroupAPITests.suite());
         suite.addTest(FetchGroupTrackerWeavingTests.suite());

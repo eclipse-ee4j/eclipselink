@@ -72,8 +72,8 @@ public class EmployeePopulator {
         proc.addOutputArgument("province_v", String.class);
         proc.addOutputArgument("p_code_v", String.class);
 
-        /**
-         * SQLServer 2008 requires extra prefix and delimiting chars in select statements in stored procedures
+        /*
+          SQLServer 2008 requires extra prefix and delimiting chars in select statements in stored procedures
          */
         String statement = null;
         if(session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
@@ -94,8 +94,8 @@ public class EmployeePopulator {
         proc.addInOutputArgument("address_id_v", Long.class);
         proc.addOutputArgument("street_v", String.class);
 
-        /**
-         * SQLServer 2008 requires extra prefix and delimiting chars in select statements in stored procedures
+        /*
+          SQLServer 2008 requires extra prefix and delimiting chars in select statements in stored procedures
          */
         String statement = null;
         if(session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {

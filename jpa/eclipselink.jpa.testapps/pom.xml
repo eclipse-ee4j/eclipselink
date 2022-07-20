@@ -114,6 +114,16 @@
                 <artifactId>org.eclipse.persistence.jpa.testapps.lob</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.fieldaccess.advanced</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.relationships</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -174,12 +184,20 @@
         <module>jpa.test.composite.advanced/member_3</module>
         <module>jpa.test.delimited</module>
         <module>jpa.test.extensibility</module>
+        <module>jpa.test.fieldaccess.advanced</module>
+        <module>jpa.test.fieldaccess.relationships</module>
+        <module>jpa.test.jpaadvancedproperties</module>
+        <module>jpa.test.jpql</module>
         <module>jpa.test.lob</module>
         <module>jpa.test.orphanremoval</module>
         <module>jpa.test.partitioned</module>
         <module>jpa.test.privateowned</module>
         <module>jpa.test.pu with spaces</module>
+        <module>jpa.test.relationships</module>
+        <module>jpa.test.remote</module>
         <module>jpa.test.sessionbean</module>
+        <module>jpa.test.sessionbean.ha</module>
+        <module>jpa.test.validation</module>
         <module>jpa.test.xml.advanced.multitenant</module>
         <module>jpa.test.xml.composite.advanced</module>
         <module>jpa.test.xml.composite.advanced/common</module>

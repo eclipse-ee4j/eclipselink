@@ -67,9 +67,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
-import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 import org.junit.Assert;
 
 /**
@@ -149,15 +146,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingJOIN"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingEXISTS"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingIN"));
-        suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingJOIN"));
-        suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingEXISTS"));
-        suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingIN"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingINCache"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapLeftJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchOuterJoin"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetching"));
-        suite.addTest(new AdvancedQueryTestSuite("testMapJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetchingCursor"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetchingPagination"));
         suite.addTest(new AdvancedQueryTestSuite("testMapKeyJoinFetching"));
@@ -165,8 +158,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testJPQLCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testCacheIndexes"));
         suite.addTest(new AdvancedQueryTestSuite("testSQLHint"));
-        suite.addTest(new AdvancedQueryTestSuite("testLoadGroup"));
-        suite.addTest(new AdvancedQueryTestSuite("testConcurrentLoadGroup"));
         if (!isJPA10()) {
             suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
             suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
@@ -194,10 +185,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         employeePopulator.buildExamples();
         //Persist the examples in the database
         employeePopulator.persistExample(session);
-
-        new RelationshipsTableManager().replaceTables(session);
-        //populate the relationships model and persist as well
-        new RelationshipsExamples().buildExamples(session);
 
         new InheritanceTableCreator().replaceTables(session);
         InheritancePopulator inheritancePopulator = new InheritancePopulator();
@@ -2075,27 +2062,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     /**
      * Test batch fetching of maps.
      */
-    public void testMapBatchFetchingJOIN() {
-        testMapBatchFetching(BatchFetchType.JOIN, 0);
-    }
-
-    /**
-     * Test batch fetching of maps.
-     */
-    public void testMapBatchFetchingIN() {
-        testMapBatchFetching(BatchFetchType.IN, 100);
-    }
-
-    /**
-     * Test batch fetching of maps.
-     */
-    public void testMapBatchFetchingEXISTS() {
-        testMapBatchFetching(BatchFetchType.EXISTS, 0);
-    }
-
-    /**
-     * Test batch fetching of maps.
-     */
     public void testBasicMapBatchFetching(BatchFetchType type, int size) {
         clearCache();
         EntityManager em = createEntityManager();
@@ -2204,154 +2170,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             clearCache();
             for (Buyer buyer : results) {
                 verifyObject(buyer);
-            }
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-            if (counter != null) {
-                counter.remove();
-            }
-        }
-    }
-
-    /**
-     * Test batch fetching of maps.
-     */
-    public void testMapBatchFetching(BatchFetchType type, int size) {
-        clearCache();
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        // Count SQL.
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        try {
-            Query query = em.createQuery("Select c from Customer c");
-            query.setHint(QueryHints.BATCH_SIZE, size);
-            query.setHint(QueryHints.BATCH_TYPE, type);
-            query.setHint(QueryHints.BATCH, "e.CSInteractions");
-            query.setHint(QueryHints.BATCH, "e.CCustomers");
-            List<Customer> results = query.getResultList();
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
-                fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
-            }
-            int queries = 5;
-            for (Customer customer : results) {
-                queries = queries + customer.getCSInteractions().size();
-            }
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
-                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
-            }
-            clearCache();
-            for (Customer customer : results) {
-                verifyObject(customer);
-            }
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-            if (counter != null) {
-                counter.remove();
-            }
-        }
-    }
-
-    /**
-     * Test load groups.
-     */
-    public void testLoadGroup() {
-        clearCache();
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        // Count SQL.
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        try {
-            Query query = em.createQuery("Select c from Customer c");
-            query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CSInteractions");
-            query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CCustomers");
-            List<Customer> results = query.getResultList();
-            counter.getSqlStatements().clear();
-            for (Customer customer : results) {
-                customer.getCSInteractions().size();
-            }
-            if (counter.getSqlStatements().size() > 0) {
-                fail("Load group should have loaded attributes.");
-            }
-            clearCache();
-            for (Customer customer : results) {
-                verifyObject(customer);
-            }
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-            if (counter != null) {
-                counter.remove();
-            }
-        }
-    }
-
-    /**
-     * Test concurrent load groups.
-     */
-    public void testConcurrentLoadGroup() {
-        clearCache();
-        boolean concurrent = getDatabaseSession().isConcurrent();
-        getDatabaseSession().setIsConcurrent(true);
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        // Count SQL.
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        try {
-            Query query = em.createQuery("Select c from Customer c");
-            query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CSInteractions");
-            query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CCustomers");
-            List<Customer> results = query.getResultList();
-            counter.getSqlStatements().clear();
-            for (Customer customer : results) {
-                customer.getCSInteractions().size();
-            }
-            if (counter.getSqlStatements().size() > 0) {
-                fail("Load group should have loaded attributes.");
-            }
-            clearCache();
-            for (Customer customer : results) {
-                verifyObject(customer);
-            }
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-            if (counter != null) {
-                counter.remove();
-            }
-            getDatabaseSession().setIsConcurrent(concurrent);
-        }
-    }
-
-    /**
-     * Test join fetching of maps.
-     */
-    public void testMapJoinFetching() {
-        clearCache();
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        // Count SQL.
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        try {
-            Query query = em.createQuery("Select c from Customer c");
-            query.setHint(QueryHints.LEFT_FETCH, "e.CSInteractions");
-            query.setHint(QueryHints.LEFT_FETCH, "e.CCustomers");
-            List<Customer> results = query.getResultList();
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
-                fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
-            }
-            int queries = 1;
-            for (Customer customer : results) {
-                queries = queries + customer.getCSInteractions().size();
-            }
-            assertTrue("No data to join.", queries > 1);
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
-                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
-            }
-            clearCache();
-            for (Customer customer : results) {
-                verifyObject(customer);
             }
         } finally {
             rollbackTransaction(em);

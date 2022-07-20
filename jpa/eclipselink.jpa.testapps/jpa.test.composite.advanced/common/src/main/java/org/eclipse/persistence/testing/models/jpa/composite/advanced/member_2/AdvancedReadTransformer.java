@@ -47,7 +47,7 @@ public class AdvancedReadTransformer implements AttributeTransformer {
     public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
         if(attributeName.equals("overtimeHours")) {
             Time[] hours = new Time[2];
-            /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
+            /* This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
             hours[0] = session.getDatasourcePlatform().convertObject(dataRecord.get("START_OVERTIME"), Time.class);
             hours[1] = session.getDatasourcePlatform().convertObject(dataRecord.get("END_OVERTIME"), Time.class);
             return hours;

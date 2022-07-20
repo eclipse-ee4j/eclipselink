@@ -499,7 +499,7 @@ public class PartitionedTest extends JUnitTestCase {
     /**
      * Test that partitioning is being used.
      */
-    public void testPartitioning() throws Exception {
+    public void testPartitioning() {
         if (!validDatabase) {
             return;
         }
@@ -539,7 +539,7 @@ public class PartitionedTest extends JUnitTestCase {
      * Test exclusive partitioning with persist.
      * The persist should decide the connection, not the query.
      */
-    public void testPersistPartitioning() throws Exception {
+    public void testPersistPartitioning() {
         if (!validDatabase) {
             return;
         }
