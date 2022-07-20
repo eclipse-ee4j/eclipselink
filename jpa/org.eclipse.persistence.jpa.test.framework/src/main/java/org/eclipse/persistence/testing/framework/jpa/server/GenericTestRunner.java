@@ -93,7 +93,7 @@ public class GenericTestRunner implements TestRunner {
     }
 
     protected boolean getEjbLookup() {
-        return false;
+        return true;
     }
 
     @SuppressWarnings({"unchecked"})
