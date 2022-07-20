@@ -178,6 +178,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Canoe;
 import org.eclipse.persistence.testing.models.jpa.advanced.ConcreteJob;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
+import org.eclipse.persistence.testing.models.jpa.advanced.CustomerCollection;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customizer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
@@ -214,7 +215,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Vegetable;
 import org.eclipse.persistence.testing.models.jpa.advanced.VegetablePK;
 import org.eclipse.persistence.testing.models.jpa.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.advanced.WorldRank;
-import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 import org.eclipse.persistence.testing.models.jpa.advanced.Material;
 import org.eclipse.persistence.testing.models.jpa.advanced.MaterialHist;
 import org.eclipse.persistence.testing.models.jpa.advanced.PlanArbeitsgang;
@@ -5851,7 +5851,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "java.util.Vector");
         assertTrue("Vector not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClass().equals(java.util.Vector.class));
 
-        query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection");
+        query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "org.eclipse.persistence.testing.models.jpa.advanced.CustomerCollection");
         assertTrue("CustomerCollection not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClass().equals(CustomerCollection.class));
 
         // Query type

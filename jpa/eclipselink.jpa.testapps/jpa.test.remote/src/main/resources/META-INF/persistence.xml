@@ -1,0 +1,110 @@
+<!--
+
+    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="remote" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/static-ref-orm.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Buyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Child</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmploymentPeriod</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Equipment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EquipmentCode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.FormerEmployment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.GoldBuyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Golfer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Man</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.NoIdentityMap</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Parent</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PartnerLink</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PlatinumBuyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SmallProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Source</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SuperLargeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.TargetA</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.TargetB</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Vegetable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Woman</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.WorldRank</class>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.remote.protocol" value="rmi"/>
+            <property name="eclipselink.remote.client.url" value="jpa-remote"/>
+            <!--This property is added to test 'querytimeout' property and test is
+                implemented in 'EntityManagerJUnitTestSuite.testQueryTimeOut()'-->
+            <property name="jakarta.persistence.query.timeout" value="100000"/>
+            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem" value="false"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.sql.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="remote-server" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/static-ref-orm.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Buyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Child</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmploymentPeriod</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Equipment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EquipmentCode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.FormerEmployment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.GoldBuyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Golfer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Man</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.NoIdentityMap</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Parent</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PartnerLink</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PlatinumBuyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SmallProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Source</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SuperLargeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.TargetA</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.TargetB</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Vegetable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Woman</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.WorldRank</class>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.remote.protocol" value="rmi"/>
+            <property name="eclipselink.remote.server.name" value="jpa-remote"/>
+            <!--This property is added to test 'querytimeout' property and test is
+                implemented in 'EntityManagerJUnitTestSuite.testQueryTimeOut()'-->
+            <property name="jakarta.persistence.query.timeout" value="100000"/>
+            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem" value="false"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.sql.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+</persistence>

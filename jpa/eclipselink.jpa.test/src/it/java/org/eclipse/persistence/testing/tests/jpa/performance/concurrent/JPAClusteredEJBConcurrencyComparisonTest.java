@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.rmi.PortableRemoteObject;
 
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
@@ -97,7 +96,7 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
         System.out.println(server + ":" + url);
         try {
             Context context = new InitialContext(properties);
-            service = (EmployeeService)PortableRemoteObject.narrow(context.lookup("EmployeeService#org.eclipse.persistence.testing.models.jpa.performance.EmployeeService"), EmployeeService.class);
+            service = (EmployeeService) context.lookup("EmployeeService#org.eclipse.persistence.testing.models.jpa.performance.EmployeeService");
         } catch (Exception notFoundException) {
             throw new Error("Lookup failed.", notFoundException);
         }

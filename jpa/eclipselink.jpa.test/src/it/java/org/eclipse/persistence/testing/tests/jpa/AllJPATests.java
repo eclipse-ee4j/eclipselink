@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import junit.framework.Test;
 
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.tests.jpa.advanced.JPAAdvancedTestModel;
-import org.eclipse.persistence.testing.tests.jpa.remote.RemoteEntityManagerTestSuite;
 
 /**
  * <p><b>Purpose</b>: Test run for all JPA tests.
@@ -39,7 +38,6 @@ public class AllJPATests extends TestModel {
         public AllJPATests() {
             addTest(new JPAAdvancedTestModel());
             addTest(FullRegressionTestSuite.suite());
-            addTest(RemoteEntityManagerTestSuite.suite());
             try {
                 addTest((Test)Class.forName("org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite").getMethod("suite").invoke(null));
             } catch (Exception exception) {

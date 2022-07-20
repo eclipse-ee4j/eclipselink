@@ -22,10 +22,9 @@
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
 import jakarta.persistence.EntityManager;
-import junit.framework.*;
 
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.AdvancedMultiTenantTableCreator;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Boss;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Capo;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Contract;
