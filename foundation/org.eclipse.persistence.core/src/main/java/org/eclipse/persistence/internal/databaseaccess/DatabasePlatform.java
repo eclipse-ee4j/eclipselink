@@ -276,7 +276,7 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     // DatabaseJsonPlatform has lazy initialization
     /** JSON support for ResultSet data retrieval. */
-    private volatile DatabaseJsonPlatform jsonPlatform;
+    private transient volatile DatabaseJsonPlatform jsonPlatform;
 
     /**
      * Creates an instance of default database platform.
