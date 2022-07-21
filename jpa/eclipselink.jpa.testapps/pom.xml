@@ -285,6 +285,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
                         <useModulePath>true</useModulePath>
+                        <runOrder>alphabetical</runOrder>
                     </configuration>
                     <executions>
                         <execution>

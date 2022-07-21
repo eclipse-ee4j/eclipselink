@@ -32,7 +32,7 @@
     <properties>
         <comp.xlint>-Xlint:all</comp.xlint>
         <comp.xdoclint>-Xdoclint:all,-missing</comp.xdoclint>
-        <comp.test.xlint>-Xlint:all</comp.test.xlint>
+        <comp.test.xlint>-Xlint:all,-serial</comp.test.xlint>
 
         <!--Properties used for test resources filtering/replacement-->
         <!--DB connection properties-->
