@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,9 +45,9 @@ public class ViewCache implements Externalizable {
     public static final String PARAMETER_USER = "USER";
     public static final String PARAMETER_ALL = "ALL";
 
-    protected Connection m_conn;
+    protected transient Connection m_conn;
     protected String m_user;
-    protected Map m_rowsCacheIndex;
+    protected transient Map m_rowsCacheIndex;
     protected ArrayList m_rowsCache;
     protected int m_hits;
     protected int m_visits;

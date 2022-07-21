@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,12 +32,12 @@ public abstract class CompoundFilter<T> implements Filter<T>,
     /**
      * The first {@link Filter} used to accept the value.
      */
-    protected final Filter<T> filter1;
+    protected transient final Filter<T> filter1;
 
     /**
      * The second {@link Filter} used to accept the value.
      */
-    protected final Filter<T> filter2;
+    protected transient final Filter<T> filter2;
 
     /**
      * The version number of this class which is used during deserialization to verify that the
