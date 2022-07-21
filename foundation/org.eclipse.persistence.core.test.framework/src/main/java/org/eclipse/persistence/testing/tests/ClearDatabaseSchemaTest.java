@@ -133,7 +133,7 @@ public class ClearDatabaseSchemaTest extends TestCase {
     }
 
     private void resetDerby(AbstractSession session) {
-        Vector<ArrayRecord> result = session.executeSQL("SELECT 'ALTER TABLE '||S.SCHEMANAME||'.'||T.TABLENAME||' DROP CONSTRAINT '||C.CONSTRAINTNAME\n"
+        Vector<ArrayRecord> result = session.executeSQL("SELECT 'ALTER TABLE '||S.SCHEMANAME||'.'||T.TABLENAME||' DROP CONSTRAINT \"'||C.CONSTRAINTNAME||'\"'\n"
                 + "FROM SYS.SYSCONSTRAINTS C, SYS.SYSSCHEMAS S, SYS.SYSTABLES T\n"
                 + "WHERE C.SCHEMAID = S.SCHEMAID AND C.TABLEID = T.TABLEID AND S.SCHEMANAME = CURRENT SCHEMA ORDER BY C.REFERENCECOUNT DESC");
         List<String> toRetry = execStatements(session, result);
