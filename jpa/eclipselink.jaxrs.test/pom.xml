@@ -180,7 +180,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--Must be before cargo-maven2-plugin to start DB before JEE server and stop after.-->
+            <!--Must be before cargo-maven3-plugin to start DB before JEE server and stop after.-->
             <plugin>
                 <groupId>org.carlspring.maven</groupId>
                 <artifactId>derby-maven-plugin</artifactId>
@@ -232,7 +232,7 @@
             <!--Start selected JEE server configure there datasource and deploy test application-->
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
+                <artifactId>cargo-maven3-plugin</artifactId>
                 <configuration>
                     <skip>${test-skip-jpa-jaxrs}</skip>
                     <deployables>
