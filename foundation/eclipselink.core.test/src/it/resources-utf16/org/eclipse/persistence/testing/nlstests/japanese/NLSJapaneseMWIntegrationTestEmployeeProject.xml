@@ -1,7 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!--
 
-    Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,9 +24,9 @@
          <password>PASSWORD</password>
          <uses-native-sequencing>false</uses-native-sequencing>
          <sequence-preallocation-size>50</sequence-preallocation-size>
-         <sequence-table>ã?¦ã?Šã?¡ã?ªã?Šã?›ã?†ã?Š</sequence-table>
-         <sequence-name-field>ã?¦ã?Šã?¡_ã?›ã?‚ã?™ã?Š</sequence-name-field>
-         <sequence-counter-field>ã?¦ã?Šã?¡_ã?†ã??ã?ªã?›ã?¨</sequence-counter-field>
+         <sequence-table>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</sequence-table>
+         <sequence-name-field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</sequence-name-field>
+         <sequence-counter-field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</sequence-counter-field>
          <should-bind-all-parameters>false</should-bind-all-parameters>
          <should-cache-all-statements>false</should-cache-all-statements>
          <uses-byte-array-binding>true</uses-byte-array-binding>
@@ -46,14 +46,14 @@
       <descriptor>
          <java-class>org.eclipse.persistence.testing.models.employee.domain.Project</java-class>
          <tables>
-            <table>ã?Ÿã?¤ã??ã?“</table>
+            <table>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½</table>
          </tables>
          <primary-key-fields>
-            <field>ã?Ÿã?¤ã??ã?“.ã?Ÿã?¤ã??ã?“_ã?‘ã?ˆ</field>
+            <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
          </primary-key-fields>
          <descriptor-type-value>Normal</descriptor-type-value>
-         <sequence-number-field>ã?Ÿã?¤ã??ã?“_ã?‘ã?ˆ</sequence-number-field>
-         <sequence-number-name>ã?Ÿã?¤ã??ã?“_ã?¦ã?Šã?¡</sequence-number-name>
+         <sequence-number-field>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</sequence-number-field>
+         <sequence-number-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</sequence-number-name>
          <identity-map-class>org.eclipse.persistence.internal.identitymaps.FullIdentityMap</identity-map-class>
          <remote-identity-map-class>org.eclipse.persistence.internal.identitymaps.FullIdentityMap</remote-identity-map-class>
          <identity-map-size>100</identity-map-size>
@@ -68,7 +68,7 @@
             <descriptor-inheritance-policy>
                <should-read-subclasses>true</should-read-subclasses>
                <should-use-class-name-as-indicator>false</should-use-class-name-as-indicator>
-               <class-indicator-field>ã?Ÿã?¤ã??ã?“_ã?¨ã?®ã?Ÿã?Š</class-indicator-field>
+               <class-indicator-field>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</class-indicator-field>
                <class-indicator-associations>
                   <typed-association>
                      <association-key>org.eclipse.persistence.testing.models.employee.domain.LargeProject</association-key>
@@ -99,7 +99,7 @@
          </copy-policy>
          <locking-policy>
             <descriptor-locking-policy>
-               <write-lock-field>ã?«ã?Šã?¤ã?¦ã?‘ã??ã?›</write-lock-field>
+               <write-lock-field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½</write-lock-field>
                <is-stored-in-cache>true</is-stored-in-cache>
                <type>org.eclipse.persistence.descriptors.VersionLockingPolicy</type>
             </descriptor-locking-policy>
@@ -121,20 +121,20 @@
             <database-mapping>
                <attribute-name>description</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Ÿã?¤ã??ã?“.ã?ˆã?Šã?¦ã?†ã?¤ã?‘ã?Ÿ</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <null-value></null-value>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>id</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Ÿã?¤ã??ã?“.ã?Ÿã?¤ã??ã?“_ã?‘ã?ˆ</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>name</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Ÿã?¤ã??ã?“.ã?Ÿã?¤ã??ã?“_ã?›ã?‚ã?™ã?Š</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <null-value></null-value>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
@@ -151,12 +151,12 @@
                </indirection-policy>
                <uses-joining>false</uses-joining>
                <foreign-key-fields>
-                  <field>ã?Ÿã?¤ã??ã?“.ã?—ã?ˆã?¤_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </foreign-key-fields>
                <source-to-target-key-field-associations>
                   <association>
-                     <association-key>ã?Ÿã?¤ã??ã?“.ã?—ã?ˆã?¤_ã?‘ã?ˆ</association-key>
-                     <association-value>ã?Šã?™ã?Ÿ.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</association-value>
+                     <association-key>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</association-key>
+                     <association-value>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</association-value>
                   </association>
                </source-to-target-key-field-associations>
                <type>org.eclipse.persistence.mappings.OneToOneMapping</type>
@@ -167,14 +167,14 @@
       <descriptor>
          <java-class>org.eclipse.persistence.testing.models.employee.domain.Address</java-class>
          <tables>
-            <table>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦</table>
+            <table>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</table>
          </tables>
          <primary-key-fields>
-            <field>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦.ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦_ã?‘ã?ˆ</field>
+            <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
          </primary-key-fields>
          <descriptor-type-value>Normal</descriptor-type-value>
-         <sequence-number-field>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦_ã?‘ã?ˆ</sequence-number-field>
-         <sequence-number-name>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦_ã?¦ã?Šã?¡</sequence-number-name>
+         <sequence-number-field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</sequence-number-field>
+         <sequence-number-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</sequence-number-name>
          <identity-map-class>org.eclipse.persistence.internal.identitymaps.FullIdentityMap</identity-map-class>
          <remote-identity-map-class>org.eclipse.persistence.internal.identitymaps.FullIdentityMap</remote-identity-map-class>
          <identity-map-size>100</identity-map-size>
@@ -207,37 +207,37 @@
             <database-mapping>
                <attribute-name>city</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦.ã?†ã?‘ã?¨ã?®</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>country</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦.ã?†ã??ã?ªã?›ã?¨ã?¤ã?®</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>id</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦.ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦_ã?‘ã?ˆ</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>postalCode</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦.ã?Ÿ_ã?†ã??ã?ˆã?Š</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½_ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>province</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦.ã?Ÿã?¤ã??ã?«ã?‘ã?›ã?†ã?Š</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>street</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦.ã?¦ã?¨ã?¤ã?Šã?Šã?¨</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
          </mappings>
@@ -246,11 +246,11 @@
       <descriptor>
          <java-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</java-class>
          <tables>
-            <table>ã?Ÿã??ã??ã?›ã?Š</table>
+            <table>ï¿½?ï¿½ï¿½??ï¿½??ï¿½?ï¿½ï¿½?ï¿½</table>
          </tables>
          <primary-key-fields>
-            <field>ã?Ÿã??ã??ã?›ã?Š.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field>
-            <field>ã?Ÿã??ã??ã?›ã?Š.ã?¨ã?®ã?Ÿã?Š</field>
+            <field>ï¿½?ï¿½ï¿½??ï¿½??ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
+            <field>ï¿½?ï¿½ï¿½??ï¿½??ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field>
          </primary-key-fields>
          <descriptor-type-value>Normal</descriptor-type-value>
          <identity-map-class>org.eclipse.persistence.internal.identitymaps.FullIdentityMap</identity-map-class>
@@ -359,7 +359,7 @@
          <query-keys>
             <query-key>
                <name>id</name>
-               <field-name>ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.querykeys.DirectQueryKey</type>
             </query-key>
          </query-keys>
@@ -367,19 +367,19 @@
             <database-mapping>
                <attribute-name>areaCode</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Ÿã??ã??ã?›ã?Š.ã?‚ã?¤ã?Šã?‚_ã?†ã??ã?ˆã?Š</field-name>
+               <field-name>ï¿½?ï¿½ï¿½??ï¿½??ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>number</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Ÿã??ã??ã?›ã?Š.ã?Ÿ_ã?›ã?ªã?™ã?„ã?Šã?¤</field-name>
+               <field-name>ï¿½?ï¿½ï¿½??ï¿½??ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>type</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Ÿã??ã??ã?›ã?Š.ã?¨ã?®ã?Ÿã?Š</field-name>
+               <field-name>ï¿½?ï¿½ï¿½??ï¿½??ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
@@ -395,12 +395,12 @@
                </indirection-policy>
                <uses-joining>false</uses-joining>
                <foreign-key-fields>
-                  <field>ã?Ÿã??ã??ã?›ã?Š.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½??ï¿½??ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </foreign-key-fields>
                <source-to-target-key-field-associations>
                   <association>
-                     <association-key>ã?Ÿã??ã??ã?›ã?Š.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</association-key>
-                     <association-value>ã?Šã?™ã?Ÿ.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</association-value>
+                     <association-key>ï¿½?ï¿½ï¿½??ï¿½??ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</association-key>
+                     <association-value>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</association-value>
                   </association>
                </source-to-target-key-field-associations>
                <type>org.eclipse.persistence.mappings.OneToOneMapping</type>
@@ -443,13 +443,13 @@
             <database-mapping>
                <attribute-name>endDate</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Šã?›ã?ˆ_ã?ˆã?‚ã?¨ã?Š</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>startDate</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?¦ã?¨ã?‚ã?¤ã?¨_ã?ˆã?‚ã?¨ã?Š</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
          </mappings>
@@ -458,7 +458,7 @@
       <descriptor>
          <java-class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</java-class>
          <tables>
-            <table>ã?—ã?Ÿã?¤ã??ã?“</table>
+            <table>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½</table>
          </tables>
          <descriptor-type-value>Normal</descriptor-type-value>
          <identity-map-class>org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap</identity-map-class>
@@ -507,13 +507,13 @@
             <database-mapping>
                <attribute-name>budget</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?—ã?Ÿã?¤ã??ã?“.ã?„ã?ªã?ˆã??ã?Šã?¨</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>milestoneVersion</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?—ã?Ÿã?¤ã??ã?“.ã?™ã?‘ã?—ã?Šã?¦ã?¨ã??ã?›ã?Š</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
          </mappings>
@@ -522,7 +522,7 @@
       <descriptor>
          <java-class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</java-class>
          <tables>
-            <table>ã?Ÿã?¤ã??ã?“</table>
+            <table>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½</table>
          </tables>
          <descriptor-type-value>Normal</descriptor-type-value>
          <identity-map-class>org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap</identity-map-class>
@@ -572,15 +572,15 @@
       <descriptor>
          <java-class>org.eclipse.persistence.testing.tests.nls.japanese.NLSEmployee</java-class>
          <tables>
-            <table>ã?Šã?™ã?Ÿ</table>
-            <table>ã?¦ã?‚ã?—ã?‚ã?¤ã?®</table>
+            <table>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</table>
+            <table>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</table>
          </tables>
          <primary-key-fields>
-            <field>ã?Šã?™ã?Ÿ.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field>
+            <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
          </primary-key-fields>
          <descriptor-type-value>Normal</descriptor-type-value>
-         <sequence-number-field>ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</sequence-number-field>
-         <sequence-number-name>ã?Šã?™ã?Ÿ_ã?¦ã?Šã?¡</sequence-number-name>
+         <sequence-number-field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</sequence-number-field>
+         <sequence-number-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</sequence-number-name>
          <identity-map-class>org.eclipse.persistence.internal.identitymaps.FullIdentityMap</identity-map-class>
          <remote-identity-map-class>org.eclipse.persistence.internal.identitymaps.FullIdentityMap</remote-identity-map-class>
          <identity-map-size>100</identity-map-size>
@@ -605,7 +605,7 @@
          </copy-policy>
          <locking-policy>
             <descriptor-locking-policy>
-               <write-lock-field>ã?«ã?Šã?¤ã?¦ã?‘ã??ã?›</write-lock-field>
+               <write-lock-field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½</write-lock-field>
                <is-stored-in-cache>true</is-stored-in-cache>
                <type>org.eclipse.persistence.descriptors.VersionLockingPolicy</type>
             </descriptor-locking-policy>
@@ -2346,33 +2346,33 @@
             <database-mapping>
                <attribute-name>firstName</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Šã?™ã?Ÿ.ã?‹_ã?›ã?‚ã?™ã?Š</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <null-value></null-value>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>id</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Šã?™ã?Ÿ.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>lastName</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Šã?™ã?Ÿ.ã?—_ã?›ã?‚ã?™ã?Š</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <null-value></null-value>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>salary</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?¦ã?‚ã?—ã?‚ã?¤ã?®.ã?¦ã?‚ã?—ã?‚ã?¤ã?®</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <type>org.eclipse.persistence.mappings.DirectToFieldMapping</type>
             </database-mapping>
             <database-mapping>
                <attribute-name>gender</attribute-name>
                <read-only>false</read-only>
-               <field-name>ã?Šã?™ã?Ÿ.ã??ã?Šã?›ã?ˆã?Šã?¤</field-name>
+               <field-name>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½??ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</field-name>
                <field-to-attribute-value-associations>
                   <typed-association>
                      <association-key>M</association-key>
@@ -2400,11 +2400,11 @@
                </indirection-policy>
                <field-to-method-associations>
                   <association>
-                     <association-key>ã?Šã?™ã?Ÿ.ã?¦ã?¨ã?‚ã?¤ã?¨_ã?¨ã?‘ã?™ã?Š</association-key>
+                     <association-key>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</association-key>
                      <association-value>getStartTime</association-value>
                   </association>
                   <association>
-                     <association-key>ã?Šã?™ã?Ÿ.ã?Šã?›ã?ˆ_ã?¨ã?‘ã?™ã?Š</association-key>
+                     <association-key>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</association-key>
                      <association-value>getEndTime</association-value>
                   </association>
                </field-to-method-associations>
@@ -2433,13 +2433,13 @@
                      <type>org.eclipse.persistence.internal.queries.ListContainerPolicy</type>
                   </mapping-container-policy>
                </container-policy>
-               <reference-table>ã?¤ã?Šã?¦ã?Ÿã??ã?›ã?¦</reference-table>
-               <direct-field>ã?¤ã?Šã?¦ã?Ÿã??ã?›ã?¦.ã?ˆã?Šã?¦ã?†ã?¤ã?‘ã?Ÿ</direct-field>
+               <reference-table>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½</reference-table>
+               <direct-field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</direct-field>
                <source-key-fields>
-                  <field>ã?Šã?™ã?Ÿ.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </source-key-fields>
                <reference-key-fields>
-                  <field>ã?¤ã?Šã?¦ã?Ÿã??ã?›ã?¦.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </reference-key-fields>
                <type>org.eclipse.persistence.mappings.DirectCollectionMapping</type>
             </database-mapping>
@@ -2456,12 +2456,12 @@
                </indirection-policy>
                <uses-joining>false</uses-joining>
                <foreign-key-fields>
-                  <field>ã?Šã?™ã?Ÿ.ã?‚ã?ˆã?ˆã?¤_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </foreign-key-fields>
                <source-to-target-key-field-associations>
                   <association>
-                     <association-key>ã?Šã?™ã?Ÿ.ã?‚ã?ˆã?ˆã?¤_ã?‘ã?ˆ</association-key>
-                     <association-value>ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦.ã?‚ã?ˆã?ˆã?¤ã?Šã?¦ã?¦_ã?‘ã?ˆ</association-value>
+                     <association-key>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</association-key>
+                     <association-value>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</association-value>
                   </association>
                </source-to-target-key-field-associations>
                <type>org.eclipse.persistence.mappings.OneToOneMapping</type>
@@ -2479,12 +2479,12 @@
                </indirection-policy>
                <uses-joining>false</uses-joining>
                <foreign-key-fields>
-                  <field>ã?Šã?™ã?Ÿ.ã?™ã?‚ã?›ã?‚ã??ã?Šã?¤_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </foreign-key-fields>
                <source-to-target-key-field-associations>
                   <association>
-                     <association-key>ã?Šã?™ã?Ÿ.ã?™ã?‚ã?›ã?‚ã??ã?Šã?¤_ã?‘ã?ˆ</association-key>
-                     <association-value>ã?Šã?™ã?Ÿ.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</association-value>
+                     <association-key>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</association-key>
+                     <association-value>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</association-value>
                   </association>
                </source-to-target-key-field-associations>
                <type>org.eclipse.persistence.mappings.OneToOneMapping</type>
@@ -2507,10 +2507,10 @@
                   </mapping-container-policy>
                </container-policy>
                <source-key-fields>
-                  <field>ã?Šã?™ã?Ÿ.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </source-key-fields>
                <target-foreign-key-fields>
-                  <field>ã?Šã?™ã?Ÿ.ã?™ã?‚ã?›ã?‚ã??ã?Šã?¤_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </target-foreign-key-fields>
                <type>org.eclipse.persistence.mappings.OneToManyMapping</type>
             </database-mapping>
@@ -2532,10 +2532,10 @@
                   </mapping-container-policy>
                </container-policy>
                <source-key-fields>
-                  <field>ã?Šã?™ã?Ÿ.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </source-key-fields>
                <target-foreign-key-fields>
-                  <field>ã?Ÿã??ã??ã?›ã?Š.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½??ï¿½??ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </target-foreign-key-fields>
                <type>org.eclipse.persistence.mappings.OneToManyMapping</type>
             </database-mapping>
@@ -2556,18 +2556,18 @@
                      <type>org.eclipse.persistence.internal.queries.ListContainerPolicy</type>
                   </mapping-container-policy>
                </container-policy>
-               <relation-table>ã?Ÿ_ã?Šã?™ã?Ÿ</relation-table>
+               <relation-table>ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½</relation-table>
                <source-key-fields>
-                  <field>ã?Šã?™ã?Ÿ.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </source-key-fields>
                <source-relation-key-fields>
-                  <field>ã?Ÿ_ã?Šã?™ã?Ÿ.ã?Šã?™ã?Ÿ_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </source-relation-key-fields>
                <target-key-fields>
-                  <field>ã?Ÿã?¤ã??ã?“.ã?Ÿã?¤ã??ã?“_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </target-key-fields>
                <target-relation-key-fields>
-                  <field>ã?Ÿ_ã?Šã?™ã?Ÿ.ã?Ÿã?¤ã??ã?“_ã?‘ã?ˆ</field>
+                  <field>ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½.ï¿½?ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½_ï¿½?ï¿½ï¿½?ï¿½</field>
                </target-relation-key-fields>
                <type>org.eclipse.persistence.mappings.ManyToManyMapping</type>
             </database-mapping>
