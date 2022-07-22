@@ -35,6 +35,13 @@
             <classifier>model</classifier>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.datetime</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <properties>

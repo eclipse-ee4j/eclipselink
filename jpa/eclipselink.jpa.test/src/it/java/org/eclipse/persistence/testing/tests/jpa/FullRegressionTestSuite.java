@@ -60,7 +60,6 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJ
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTestEnableSelective;
-import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.complexaggregate.ComplexAggregateTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.config.ConfigPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationExtendTablesJUnitTestSuite;
@@ -92,7 +91,6 @@ import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexAggregateTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLDateTimeTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLExamplesTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLInheritanceTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLModifyTestSuite;
@@ -184,7 +182,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(JUnitJPQLInheritanceTestSuite.suite());
         suite.addTest(JUnitJPQLValidationTestSuite.suite());
         suite.addTest(JUnitJPQLComplexAggregateTestSuite.suite());
-        suite.addTest(JUnitJPQLDateTimeTestSuite.suite());
         suite.addTest(JUnitJPQLParameterTestSuite.suite());
         suite.addTest(JUnitJPQLExamplesTestSuite.suite());
         suite.addTest(JUnitJPQLModifyTestSuite.suite());
@@ -239,16 +236,10 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.datatypes.DoesRelationConformTest.class);
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.arraypks.PrimitiveArrayPKCachingJUnitTestCase.suite());
 
-        // DateTime model
-        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datetime.NullBindingJUnitTestCase.suite());
-
         // OSGi Deployment
         //try {
         //    fullSuite.addTestSuite(CompositeEnumerationTest.class);
         //} catch (Throwable ignore) {} // OSgi may not be on classpath.
-
-        // JPA 2.0 Metamodel model
-        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelTestSuite.suite());
 
         // JPA 2.0 Criteria JPQL model
         TestSuite suite = new TestSuite();
@@ -265,8 +256,6 @@ public class FullRegressionTestSuite extends TestSuite {
         // JPA 2.0 Cacheable model
         fullSuite.addTest(CacheableModelJunitTest.suite());
         fullSuite.addTest(CacheableModelJunitTestEnableSelective.suite());
-
-        fullSuite.addTest(CascadeDeletesJUnitTestSuite.suite());
 
         fullSuite.addTest(QueryCastTestSuite.suite());
 

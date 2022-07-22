@@ -48,6 +48,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
 
     public AdvancedQueryTest(String name) {
         super(name);
+        setPuName(getPersistenceUnitName());
     }
 
     @Override

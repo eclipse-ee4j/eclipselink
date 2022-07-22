@@ -26,8 +26,6 @@ import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
-import org.eclipse.persistence.testing.models.jpa.datetime.DateTimePopulator;
-import org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator;
 
 /**
  * <p>
@@ -75,11 +73,6 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
         //Persist the examples in the database
         employeePopulator.persistExample(session);
-
-        // drop and create DateTime tables and persist dateTime test data
-        new DateTimeTableCreator().replaceTables(JUnitTestCase.getServerSession());
-        DateTimePopulator dateTimePopulator = new DateTimePopulator();
-        dateTimePopulator.persistExample(getServerSession());
     }
 
     //This method is run at the end of EVERY test case method
@@ -102,7 +95,6 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLModifyTestSuite("updateUnqualifiedAttributeInSet"));
         suite.addTest(new JUnitJPQLModifyTestSuite("updateUnqualifiedAttributeInWhere"));
         suite.addTest(new JUnitJPQLModifyTestSuite("updateUnqualifiedAttributeInWhereWithInputParameter"));
-        suite.addTest(new JUnitJPQLModifyTestSuite("updateDateTimeFields"));
         suite.addTest(new JUnitJPQLModifyTestSuite("simpleDelete"));
         suite.addTest(new JUnitJPQLModifyTestSuite("simpleUpdateWithInputParameters"));
 
@@ -388,114 +380,6 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
                rollbackTransaction(em);
            }
        }
-    }
-
-    public void updateDateTimeFields()
-    {
-        EntityManager em = createEntityManager();
-        int exp = executeJPQLReturningInt(em, "SELECT COUNT(d) FROM DateTime d");
-        String jpql = null;
-        int updated = 0;
-
-        // test query setting java.sql.Date field
-        try {
-            jpql = "UPDATE DateTime SET date = CURRENT_DATE";
-            beginTransaction(em);
-            updated = em.createQuery(jpql).executeUpdate();
-            assertEquals("updateDateTimeFields set date: " +
-                         "wrong number of updated instances", exp, updated);
-            commitTransaction(em);
-
-            // check database changes
-            jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.date <= CURRENT_DATE";
-            assertEquals("updateDateTimeFields set date: " +
-                         "unexpected number of changed values in the database",
-                         exp, executeJPQLReturningInt(em, jpql));
-        } finally {
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
-            }
-        }
-
-        // test query setting java.sql.Time field
-        try {
-            jpql = "UPDATE DateTime SET time = CURRENT_TIME";
-            beginTransaction(em);
-            updated = em.createQuery(jpql).executeUpdate();
-            assertEquals("updateDateTimeFields set time: " +
-                         "wrong number of updated instances", exp, updated);
-            commitTransaction(em);
-
-            // check database changes
-            jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.time <= CURRENT_TIME";
-            assertEquals("updateDateTimeFields set time: " +
-                         "unexpected number of changed values in the database",
-                         exp, executeJPQLReturningInt(em, jpql));
-        } finally {
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
-            }
-        }
-
-        // test query setting java.sql.Timestamp field
-        try {
-            jpql = "UPDATE DateTime SET timestamp = CURRENT_TIMESTAMP";
-            beginTransaction(em);
-            updated = em.createQuery(jpql).executeUpdate();
-            assertEquals("updateDateTimeFields set timestamp: " +
-                         "wrong number of updated instances", exp, updated);
-            commitTransaction(em);
-
-            // check database changes
-            jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.timestamp <= CURRENT_TIMESTAMP";
-            assertEquals("updateDateTimeFields set timestamp: " +
-                         "unexpected number of changed values in the database",
-                         exp, executeJPQLReturningInt(em, jpql));
-        } finally {
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
-            }
-        }
-
-        // test query setting java.util.Date field
-        beginTransaction(em);
-        try {
-            jpql = "UPDATE DateTime SET utilDate = CURRENT_TIMESTAMP";
-            updated = em.createQuery(jpql).executeUpdate();
-            assertEquals("updateDateTimeFields set utilDate: " +
-                         "wrong number of updated instances", exp, updated);
-            commitTransaction(em);
-
-            // check database changes
-            jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.utilDate <= CURRENT_TIMESTAMP";
-            assertEquals("updateDateTimeFields set utilDate: " +
-                         "unexpected number of changed values in the database",
-                         exp, executeJPQLReturningInt(em, jpql));
-        } finally {
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
-            }
-        }
-
-        // test query setting java.util.Calendar field
-        beginTransaction(em);
-        try {
-            jpql = "UPDATE DateTime SET calendar = CURRENT_TIMESTAMP";
-            updated = em.createQuery(jpql).executeUpdate();
-            assertEquals("updateDateTimeFields set calendar: " +
-                         "wrong number of updated instances", exp, updated);
-            commitTransaction(em);
-
-            // check database changes
-            jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.calendar <= CURRENT_TIMESTAMP";
-            assertEquals("updateDateTimeFields set calendar: " +
-                         "unexpected number of changed values in the database",
-                         exp, executeJPQLReturningInt(em, jpql));
-        } finally {
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
-            }
-        }
     }
 
     public void simpleDelete()
