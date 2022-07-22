@@ -124,6 +124,11 @@
                 <artifactId>org.eclipse.persistence.jpa.testapps.relationships</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.datetime</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -177,11 +182,13 @@
         <module>jpa.test.advanced.multitenant</module>
         <module>jpa.test.beanvalidation</module>
         <module>jpa.test.beanvalidation.dynamic</module>
+        <module>jpa.test.cascadedeletes</module>
         <module>jpa.test.composite.advanced</module>
         <module>jpa.test.composite.advanced/common</module>
         <module>jpa.test.composite.advanced/member_1</module>
         <module>jpa.test.composite.advanced/member_2</module>
         <module>jpa.test.composite.advanced/member_3</module>
+        <module>jpa.test.datetime</module>
         <module>jpa.test.delimited</module>
         <module>jpa.test.extensibility</module>
         <module>jpa.test.fieldaccess.advanced</module>
@@ -189,6 +196,7 @@
         <module>jpa.test.jpaadvancedproperties</module>
         <module>jpa.test.jpql</module>
         <module>jpa.test.lob</module>
+        <module>jpa.test.metamodel</module>
         <module>jpa.test.orphanremoval</module>
         <module>jpa.test.partitioned</module>
         <module>jpa.test.privateowned</module>
@@ -232,6 +240,39 @@
                                 <goal>properties</goal>
                             </goals>
                             <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>compile-with-processor</id>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                            <phase>none</phase>
+                            <configuration>
+                                <annotationProcessors>
+                                    <annotationProcessor>org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor</annotationProcessor>
+                                </annotationProcessors>
+                                <annotationProcessorPaths>
+                                    <path>
+                                        <groupId>org.eclipse.persistence</groupId>
+                                        <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+                                        <version>${project.version}</version>
+                                    </path>
+                                </annotationProcessorPaths>
+                                <compilerArgs combine.children="append">
+                                    <arg>${comp.xlint}</arg>
+                                    <arg>${comp.xdoclint}</arg>
+                                    <arg>-Xmaxwarns</arg>
+                                    <arg>${warn.limit}</arg>
+                                    <arg>-Xmaxerrs</arg>
+                                    <arg>${warn.limit}</arg>
+                                </compilerArgs>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

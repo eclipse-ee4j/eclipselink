@@ -30,10 +30,8 @@
                 <include>org/eclipse/persistence/testing/models/jpa/advanced/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/datatypes/DataTypesTableCreator.class</include>
                 <include>org/eclipse/persistence/testing/models/jpa/datatypes/WrapperTypes.class</include>
-                <include>org/eclipse/persistence/testing/models/jpa/datetime/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/inheritance/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/inherited/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/relationships/*.class</include>
                 <include>org/eclipse/persistence/testing/tests/jpa/advanced/NamedNativeQueryJUnitTest.class</include>
                 <include>org/eclipse/persistence/testing/tests/jpa/jpql/**</include>
             </includes>

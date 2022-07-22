@@ -57,6 +57,7 @@ public class JUnitJPQLComplexAggregateTest extends JUnitTestCase {
     public JUnitJPQLComplexAggregateTest(String name)
     {
         super(name);
+        setPuName(getPersistenceUnitName());
     }
 
     @Override

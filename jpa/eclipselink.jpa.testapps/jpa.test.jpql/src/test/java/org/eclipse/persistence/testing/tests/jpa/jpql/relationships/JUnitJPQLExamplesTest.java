@@ -47,6 +47,7 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
 
     public JUnitJPQLExamplesTest(String name) {
         super(name);
+        setPuName(getPersistenceUnitName());
     }
 
     @Override

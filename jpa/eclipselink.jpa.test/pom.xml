@@ -283,20 +283,6 @@
                             </includes>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>generate-jpa-metamodel-classes</id>
-                        <goals>
-                            <goal>process-test</goal>
-                        </goals>
-                        <phase>generate-test-sources</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/generated-test-sources/jpa-metamodel-src</outputDirectory>
-                            <compilerArguments>-Aeclipselink.persistencexml=${project.basedir}/${integration.test.resources.directory}/eclipselink-metamodel-model/persistence.xml</compilerArguments>
-                            <includes>
-                                <include>org/eclipse/persistence/testing/models/jpa/metamodel/*.java</include>
-                            </includes>
-                        </configuration>
-                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>
@@ -323,11 +309,9 @@
                                 <item>eclipselink-annotation-model</item>
                                 <item>eclipselink-xml-only-model</item>
                                 <item>eclipselink-xml-merge-model</item>
-                                <item>eclipselink-cascade-deletes-model</item>
                                 <item>eclipselink-cacheable-model</item>
                                 <item>eclipselink-ddl-generation-model</item>
                                 <item>eclipselink-jpa21-model</item>
-                                <item>eclipselink-metamodel-model</item>
                                 <item>eclipselink-xml-mapping-metadata-complete</item>
                                 <!--Additional for LRG-->
                                 <item>eclipselink-plsql-model</item>
@@ -457,9 +441,7 @@
                                 <item>eclipselink-ddl-generation-model</item>
                                 <item>eclipselink-cacheable-model</item>
                                 <item>eclipselink-plsql-model</item>
-                                <item>eclipselink-cascade-deletes-model</item>
                                 <item>jpa-performance</item>
-                                <item>eclipselink-metamodel-model</item>
                                 <item>eclipselink-xml-mapping-metadata-complete</item>
                                 <item>eclipselink-xml-extended-model</item>
                             </items>
@@ -487,11 +469,9 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                                         </additionalClasspathElements>
                                         <arguments>
@@ -542,11 +522,9 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                                         </additionalClasspathElements>
                                         <arguments>
@@ -579,13 +557,11 @@
                                 <item>server-test-jpa-cacheable</item>
                                 <item>server-test-jpa-criteria</item>
                                 <item>server-test-jpa-datatypes</item>
-                                <item>server-test-jpa-datetime</item>
                                 <item>server-test-jpa-ddlgeneration</item>
                                 <item>server-test-jpa-fetchgroups</item>
                                 <item>server-test-jpa-inheritance</item>
                                 <item>server-test-jpa-inherited</item>
                                 <item>server-test-jpa-jpql</item>
-                                <item>server-test-jpa-metamodel</item>
                             </items>
                             <baseDirectory>${project.basedir}</baseDirectory>
                             <goals>
@@ -624,12 +600,6 @@
                                     <name>server-test-jpa-xmltest</name>
                                     <properties>
                                         <puName>default</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-cascadedeletes</name>
-                                    <properties>
-                                        <puName>cascade-deletes</puName>
                                     </properties>
                                 </itemWithProperty>
                                 <itemWithProperty>
@@ -856,8 +826,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <!-- Special model jars for LRG 22_4 test.-->
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
@@ -1010,11 +978,9 @@
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-jpa22-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-model.jar</additionalClasspathElement>
@@ -1048,10 +1014,8 @@
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-plsql-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-cacheable-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}jpa-performance.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-metamodel-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
@@ -1402,20 +1366,6 @@
             </properties>
         </profile>
         <profile>
-            <id>server-test-jpa-cascadedeletes</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>cascade-deletes</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-cascade-deletes-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>cascadedeletes</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
             <id>server-test-jpa-criteria</id>
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
@@ -1439,19 +1389,6 @@
                 <extra-model>common-server-generic</extra-model>
                 <packageName>datatypes</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.datatypes.NullBindingJUnitTestCase</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-datetime</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-datetime-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>datetime</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.datetime.NullBindingJUnitTestCase</test-client-class>
             </properties>
         </profile>
         <profile>
@@ -1531,19 +1468,6 @@
                 <extra-model>eclipselink-jpql-model</extra-model>
                 <packageName>jpql</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.jpql.JPQLServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-metamodel</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-metamodel-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>metamodel</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelMetamodelTest</test-client-class>
             </properties>
         </profile>
         <profile>
