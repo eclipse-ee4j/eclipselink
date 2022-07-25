@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.conversion;
+
+import jakarta.xml.bind.DatatypeConverter;
 
 /**
  * INTERNAL:
@@ -49,5 +51,15 @@ public class Base64 {
      */
     public static byte[] base64Encode(byte[] data) {
         return java.util.Base64.getEncoder().encode(data);
+    }
+
+    /**
+     * This method encodes the given byte[] using java.util.Base64.
+     *
+     * @param  data the data
+     * @return the base64-encoded <var>data</var> as a String
+     */
+    public static String base64EncodeToString(byte[] data) {
+        return DatatypeConverter.printBase64Binary(data);
     }
 }
