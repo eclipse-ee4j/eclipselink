@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public class PersistenceUnitReader {
     /**
      * INTERNAL:
      */
-    public PersistenceUnitReader(final MetadataLogger logger, final ProcessingEnvironment processingEnv) throws IOException {
+    public PersistenceUnitReader(final MetadataLogger logger, final ProcessingEnvironment processingEnv) {
         this.logger = logger;
         this.processingEnv = processingEnv;
     }

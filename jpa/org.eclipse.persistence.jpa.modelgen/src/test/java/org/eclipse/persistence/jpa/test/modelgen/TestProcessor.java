@@ -213,10 +213,6 @@ public class TestProcessor {
 
     private List<String> getJavacOptions(String... opts) {
         List<String> result = new ArrayList<>();
-        String systemOpts = System.getProperty("test.junit.jvm.modules");
-        if (systemOpts != null && systemOpts.contains("--add-modules")) {
-            result.addAll(Arrays.asList(System.getProperty("test.junit.jvm.modules").split(" ")));
-        }
         result.add("-proc:only");
         result.add("-Aeclipselink.canonicalmodel.use_static_factory=false");
         result.addAll(Arrays.asList(opts));

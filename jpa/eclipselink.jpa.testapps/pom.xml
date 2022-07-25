@@ -266,7 +266,8 @@
                                 </annotationProcessorPaths>
                                 <compilerArgs combine.children="append">
                                     <arg>${comp.xlint}</arg>
-                                    <arg>${comp.xdoclint}</arg>
+                                    <!-- compiler throws NPE when this is enabled -->
+<!--                                    <arg>${comp.xdoclint}</arg>-->
                                     <arg>-Xmaxwarns</arg>
                                     <arg>${warn.limit}</arg>
                                     <arg>-Xmaxerrs</arg>
