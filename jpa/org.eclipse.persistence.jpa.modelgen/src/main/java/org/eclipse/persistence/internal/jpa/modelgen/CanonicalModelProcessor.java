@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,6 +88,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     private static final Set<String> SUPPORTED_ANNOTATIONS = Collections.unmodifiableSet(new HashSet<String>() {{
         if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_8) > 0) {
             add("java.persistence/jakarta.persistence.*");
+            add("jakarta.persistence/jakarta.persistence.*");
         }
         add("jakarta.persistence.*");
         add("org.eclipse.persistence.annotations.*");
@@ -279,7 +280,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
 
             // Print the package if we have one.
             if (! canonicalpackage.equals("")) {
-                writer.append("package " + canonicalpackage + ";\n\n");
+                writer.append("package ").append(canonicalpackage).append(";\n\n");
             }
 
             // Go through the accessor list, ignoring any transient accessors
@@ -382,7 +383,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 if (generateTimestamp) {
                     Date date = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                    writer.append(", date=\"" +  sdf.format(date) + "\"");
+                    writer.append(", date=\"").append(sdf.format(date)).append("\"");
                 }
                 if (isNewJava && generateComments) {
                     writer.append(", comments=\"");
@@ -391,15 +392,15 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 }
                 writer.append(")\n");
             }
-            writer.append("@StaticMetamodel(" + className + ".class)\n");
+            writer.append("@StaticMetamodel(").append(className).append(".class)\n");
 
             int modifier = accessor.getAccessibleObject().getModifiers();
-            writer.append(java.lang.reflect.Modifier.toString(modifier) + " class " + canonicalName);
+            writer.append(java.lang.reflect.Modifier.toString(modifier)).append(" class ").append(canonicalName);
 
             if (parent == null) {
                 writer.append(" { \n\n");
             } else {
-                writer.append(" extends " + parent + " {\n\n");
+                writer.append(" extends ").append(parent).append(" {\n\n");
             }
 
             // Go through the attributes and write them out.
@@ -538,8 +539,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         String parentCanonicalName = null;
 
         // Get the import list ready to be sorted.
-        ArrayList<String> imps = new ArrayList<>();
-        imps.addAll(typeImports.values());
+        ArrayList<String> imps = new ArrayList<>(typeImports.values());
 
         // Add the standard canonical model generator imports.
         imps.add("jakarta.persistence.metamodel.StaticMetamodel");
@@ -563,7 +563,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
 
         // Write out the imports.
         for (String typeImport : imps) {
-            writer.append("import " + typeImport + ";\n");
+            writer.append("import ").append(typeImport).append(";\n");
         }
 
         writer.append("\n");

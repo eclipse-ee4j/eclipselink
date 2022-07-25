@@ -65,5 +65,6 @@ module org.eclipse.persistence.jpa {
     exports org.eclipse.persistence.internal.jpa.metadata.tables;
     exports org.eclipse.persistence.internal.jpa.metadata.transformers;
 
+    opens org.eclipse.persistence.internal.jpa.deployment to org.eclipse.persistence.core;
     provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;
 }
