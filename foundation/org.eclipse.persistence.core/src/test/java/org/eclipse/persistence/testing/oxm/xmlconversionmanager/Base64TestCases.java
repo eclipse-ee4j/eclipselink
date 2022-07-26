@@ -60,7 +60,8 @@ public class Base64TestCases extends OXTestCase {
             big[i] = (byte) i;
         }
         String base64 = xcm.buildBase64StringFromBytes(big);
-        // Verifies the implementation is not changing the expected result
+        // Verifies the implementation is not changing the expected result.
+        // Currently this check is unnecessary because implementation is the same.
         assertEquals(java.util.Base64.getEncoder().encodeToString(big), base64);
     }
 }
