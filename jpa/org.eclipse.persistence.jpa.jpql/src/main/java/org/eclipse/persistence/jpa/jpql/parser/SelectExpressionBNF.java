@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     identification_variable |
  *                                                     OBJECT(identification_variable) |
  *                                                     constructor_expression</code></div>
- * <p>
+ * <br>
  * JPA 2.0:
  * <div><b>BNF:</b> <code>select_expression ::= single_valued_path_expression |
  *                                                     scalar_expression |
@@ -32,8 +32,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     identification_variable |
  *                                                     OBJECT(identification_variable) |
  *                                                     constructor_expression</code></div>
- * <p>
- *
  * @version 2.5
  * @since 2.3
  * @author Pascal Filion
@@ -53,9 +51,6 @@ public final class SelectExpressionBNF extends JPQLQueryBNF {
         super(ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

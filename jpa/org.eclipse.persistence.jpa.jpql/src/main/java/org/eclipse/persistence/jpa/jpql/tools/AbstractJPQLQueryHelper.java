@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeRepository;
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
- * API will almost certainly be broken (repeatedly) as the API evolves.<p>
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.5
  * @since 2.3
@@ -309,7 +309,7 @@ public abstract class AbstractJPQLQueryHelper {
         }
 
         // Now find the closest type for each location
-        TreeSet<IType> types = new TreeSet<IType>(buildNumericTypeComparator());
+        TreeSet<IType> types = new TreeSet<>(buildNumericTypeComparator());
 
         for (InputParameter inputParameter : inputParameters) {
             IType type = queryContext.getParameterType(inputParameter);
@@ -449,7 +449,7 @@ public abstract class AbstractJPQLQueryHelper {
      * problems} if any was found
      */
     public List<JPQLQueryProblem> validate() {
-        List<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
+        List<JPQLQueryProblem> problems = new LinkedList<>();
         validate(getJPQLExpression(), problems);
         return problems;
     }
@@ -473,7 +473,7 @@ public abstract class AbstractJPQLQueryHelper {
      * problems} if any was found
      */
     public List<JPQLQueryProblem> validateGrammar() {
-        List<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
+        List<JPQLQueryProblem> problems = new LinkedList<>();
         validateGrammar(getJPQLExpression(), problems);
         return problems;
     }
@@ -503,7 +503,7 @@ public abstract class AbstractJPQLQueryHelper {
      * problems} if any was found
      */
     public List<JPQLQueryProblem> validateSemantic() {
-        List<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
+        List<JPQLQueryProblem> problems = new LinkedList<>();
         validateSemantic(getJPQLExpression(), problems);
         return problems;
     }

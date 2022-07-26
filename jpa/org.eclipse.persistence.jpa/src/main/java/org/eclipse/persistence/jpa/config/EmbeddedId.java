@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,11 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface EmbeddedId {
 
-    public AttributeOverride addAttributeOverride();
-    public Property addProperty();
-    public EmbeddedId setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public EmbeddedId setAttributeType(String attributeType);
-    public EmbeddedId setName(String name);
+    AttributeOverride addAttributeOverride();
+    Property addProperty();
+    EmbeddedId setAccess(String access);
+    AccessMethods setAccessMethods();
+    EmbeddedId setAttributeType(String attributeType);
+    EmbeddedId setName(String name);
 
 }

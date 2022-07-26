@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,8 +54,6 @@ public class JavaModelInputImpl implements JavaModelInput {
      * This constructor assumes that the a given type in the list will
      * either be a Class or ParameterizedType.
      *
-     * @param types
-     * @param javaModel
      */
     public JavaModelInputImpl(Type[] types, JavaModel javaModel) {
          jModel = javaModel;
@@ -80,7 +78,7 @@ public class JavaModelInputImpl implements JavaModelInput {
         }
    }
 
-    public JavaModelInputImpl(Class[] classes, JavaModel javaModel) {
+    public JavaModelInputImpl(Class<?>[] classes, JavaModel javaModel) {
         jModel = javaModel;
         jClasses = new JavaClass[classes.length];
         for (int i=0; i<classes.length; i++) {
@@ -93,7 +91,7 @@ public class JavaModelInputImpl implements JavaModelInput {
         if (type instanceof Class) {
             return (JavaClassImpl) jModel.getClass((Class) type);
         } else if (type instanceof GenericArrayType) {
-            Class genericTypeClass = (Class) ((GenericArrayType) type).getGenericComponentType();
+            Class<?> genericTypeClass = (Class) ((GenericArrayType) type).getGenericComponentType();
             genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
             return new JavaClassImpl(genericTypeClass, (JavaModelImpl) jModel);
         } else {

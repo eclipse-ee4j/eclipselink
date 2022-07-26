@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class TestReadDirectEntityU1MMapMapping extends TestCase {
         setName("TestReadDirectEntityU1MMapMapping fetchJoin = " + fetchJoin);
     }
 
+    @Override
     public void setup(){
         mapping = (UnidirectionalOneToManyMapping)getSession().getProject().getDescriptor(DirectEntityU1MMapHolder.class).getMappingForAttributeName("directToEntityMap");
         oldFetchJoinValue = mapping.getJoinFetch();
@@ -57,12 +58,12 @@ public class TestReadDirectEntityU1MMapMapping extends TestCase {
         DirectEntityU1MMapHolder holder = new DirectEntityU1MMapHolder();
         EntityMapValue value = new EntityMapValue();
         value.setId(1);
-        holder.addDirectToEntityMapItem(new Integer(11), value);
+        holder.addDirectToEntityMapItem(11, value);
 
 
         EntityMapValue value2 = new EntityMapValue();
         value2.setId(2);
-        holder.addDirectToEntityMapItem(new Integer(22), value2);
+        holder.addDirectToEntityMapItem(22, value2);
         uow.registerObject(holder);
         uow.registerObject(value);
         uow.registerObject(value2);
@@ -71,10 +72,12 @@ public class TestReadDirectEntityU1MMapMapping extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         holders = getSession().readAllObjects(DirectEntityU1MMapHolder.class, holderExp);
     }
 
+    @Override
     public void verify(){
         if (holders == null || holders.size() != 1){
             throw new TestErrorException("Incorrect number of MapHolders was read.");
@@ -88,12 +91,13 @@ public class TestReadDirectEntityU1MMapMapping extends TestCase {
         if (holder.getDirectToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }
-        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(new Integer(11));
+        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(11);
         if (value.getId() != 1){
             throw new TestErrorException("Incorrect MapEntityValues was read.");
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Iterator i = holders.iterator();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,12 +26,18 @@ import org.eclipse.persistence.platform.server.ServerPlatformDetector;
 
 public class WebLogicPlatformDetector implements ServerPlatformDetector {
 
+    /**
+     * Default constructor.
+     */
+    public WebLogicPlatformDetector() {
+    }
+
     @Override
     public String checkPlatform() {
         String platform = null;
         String serverNameAndVersion;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            serverNameAndVersion = AccessController.doPrivileged(new PrivilegedAction<String>() {
+            serverNameAndVersion = AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public String run() {
                     return getServerNameAndVersionInternal();
@@ -43,7 +49,7 @@ public class WebLogicPlatformDetector implements ServerPlatformDetector {
         if (serverNameAndVersion != null) {
             int idx = serverNameAndVersion.indexOf('.');
             try {
-                int version = Integer.valueOf(serverNameAndVersion.substring(0, idx));
+                int version = Integer.parseInt(serverNameAndVersion.substring(0, idx));
                 if (version >= 12) {
                     platform = TargetServer.WebLogic_12;
                 } else {
@@ -75,7 +81,7 @@ public class WebLogicPlatformDetector implements ServerPlatformDetector {
      */
     private String getServerNameAndVersionInternal() {
         try {
-            Class versionCls = Class.forName("weblogic.version");
+            Class<?> versionCls = Class.forName("weblogic.version");
             Method method = versionCls.getMethod("getReleaseBuildVersion");
             return (String) method.invoke(null);
         } catch (Throwable t) {

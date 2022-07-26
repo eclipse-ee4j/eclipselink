@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ public class SchemaGenImportTestCases extends TestCase {
     }
 
     public void testSchemaGenerationWithImport() {
-        Class[] jClasses = new Class[] { Address.class, Employee.class};
+        Class<?>[] jClasses = new Class<?>[] { Address.class, Employee.class};
 
         Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
         File outDir = setOutDir();
@@ -120,6 +120,7 @@ public class SchemaGenImportTestCases extends TestCase {
             outputDir = dir;
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             File schemaFile = null;
             Result res = null;
@@ -145,7 +146,7 @@ public class SchemaGenImportTestCases extends TestCase {
     public void testRelativeSchemaLocationWithNoSlash() {
         File outDir = setOutDir();
         try {
-            Class[] jClasses = new Class[] { Address.class, Employee.class};
+            Class<?>[] jClasses = new Class<?>[] { Address.class, Employee.class};
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(outDir.getAbsolutePath(), null);
         } catch (Exception x) {
@@ -155,7 +156,7 @@ public class SchemaGenImportTestCases extends TestCase {
     }
 
     public void testRelativeSchemaLocation() throws Exception {
-        JAXBContext jctx = JAXBContextFactory.createContext(new Class[] { Foo.class, Bar.class}, null );
+        JAXBContext jctx = JAXBContextFactory.createContext(new Class<?>[] { Foo.class, Bar.class}, null );
         File outDir = setOutDir();
         MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver(outDir);
         jctx.generateSchema(resolver);

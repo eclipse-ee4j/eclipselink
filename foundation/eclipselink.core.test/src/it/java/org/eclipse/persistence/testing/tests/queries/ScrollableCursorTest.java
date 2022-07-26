@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,12 +29,12 @@ public class ScrollableCursorTest extends TestCase {
     protected int size;
     protected Vector normalQueryObjects;
     protected Vector cursoredQueryObjects;
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected Expression joinExpression;
     protected boolean TYPE_SCROLL_INSENSITIVE_isSupported;
     protected boolean CONCUR_UPDATABLE_isSupported;
 
-    public ScrollableCursorTest(Class referenceClass, Expression expression) {
+    public ScrollableCursorTest(Class<?> referenceClass, Expression expression) {
         setReferenceClass(referenceClass);
         setName(getName() + "(" + referenceClass + ")");
         setDescription("This test verifies that the number of objects read in using a scrollable cursor" +
@@ -50,7 +50,7 @@ public class ScrollableCursorTest extends TestCase {
         return normalQueryObjects;
     }
 
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -66,7 +66,7 @@ public class ScrollableCursorTest extends TestCase {
         normalQueryObjects = objects;
     }
 
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         referenceClass = aClass;
     }
 
@@ -74,6 +74,7 @@ public class ScrollableCursorTest extends TestCase {
         size = aSize;
     }
 
+    @Override
     protected void setup() {
         if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() ||
             getSession().getPlatform().isTimesTen() || getSession().getPlatform().isSymfoware() ||
@@ -94,6 +95,7 @@ public class ScrollableCursorTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
 
         ReadAllQuery query = new ReadAllQuery();
@@ -151,6 +153,7 @@ public class ScrollableCursorTest extends TestCase {
     /**
      * Verify if number of query objects matches number of cursor objects
      */
+    @Override
     protected void verify() {
         if (getNormalQueryObjects().size() != getCursoredQueryObjects().size()) {
             throw new TestErrorException("The number of streamed objects (" + getCursoredQueryObjects().size() +

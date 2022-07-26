@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,19 +22,19 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface Version {
 
-    public Property addProperty();
-    public Version setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public Version setAttributeType(String attributeType);
-    public Column setColumn();
-    public Version setConvert(String convert);
-    public Converter setConverter();
-    public Index setIndex();
-    public Version setMutable(Boolean mutable);
-    public Version setName(String name);
-    public ObjectTypeConverter setObjectTypeConverter();
-    public StructConverter setStructConverter();
-    public Temporal setTemporal();
-    public TypeConverter setTypeConverter();
+    Property addProperty();
+    Version setAccess(String access);
+    AccessMethods setAccessMethods();
+    Version setAttributeType(String attributeType);
+    Column setColumn();
+    Version setConvert(String convert);
+    Converter setConverter();
+    Index setIndex();
+    Version setMutable(Boolean mutable);
+    Version setName(String name);
+    ObjectTypeConverter setObjectTypeConverter();
+    StructConverter setStructConverter();
+    Temporal setTemporal();
+    TypeConverter setTypeConverter();
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,37 +39,45 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/Customer.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/simpleElement.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/simpleElementNoSchema.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return NON_DEFAULT_URI;
     }
 
+    @Override
     protected String getControlRootName() {
         return "customer";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "CustomerType";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
         return packages;
     }
 
+    @Override
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);
@@ -94,6 +102,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         xmlHelper = new SDOHelperContext().getXMLHelper();
         assertNotNull(document);
@@ -101,6 +110,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         assertNull(document.getRootObject().getContainer());
     }
 
+    @Override
     public void testLoadFromAndSaveAfterDefineMultipleSchemas() throws Exception {
         try{
             super.testLoadFromAndSaveAfterDefineMultipleSchemas();
@@ -111,6 +121,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         fail("An SDOException should have been thrown.");
     }
 
+    @Override
     public void testLoadFromDomSourceWithURIAndOptionsSaveDataObjectToStreamResult() throws Exception {
         try{
             super.testLoadFromDomSourceWithURIAndOptionsSaveDataObjectToStreamResult();
@@ -121,6 +132,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         fail("An SDOException should have been thrown.");
     }
 
+    @Override
     public void testLoadFromFileReaderWithURIAndOptionsStreamSaveDataObjectToWriter() throws Exception {
         try{
             super.testLoadFromFileReaderWithURIAndOptionsStreamSaveDataObjectToWriter();
@@ -131,6 +143,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         fail("An SDOException should have been thrown.");
     }
 
+    @Override
     public void testLoadFromInputStreamSaveDocumentToOutputStream() throws Exception {
         try{
             super.testLoadFromInputStreamSaveDocumentToOutputStream();
@@ -141,6 +154,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         fail("An SDOException should have been thrown.");
     }
 
+    @Override
     public void testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToOutputStream() throws Exception {
         try{
             super.testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToOutputStream();
@@ -151,6 +165,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         fail("An SDOException should have been thrown.");
     }
 
+    @Override
     public void testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToStreamResult() throws Exception {
         try{
             super.testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToStreamResult();
@@ -161,6 +176,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         fail("An SDOException should have been thrown.");
     }
 
+    @Override
     public void testLoadFromSAXSourceWithURIAndOptionsSaveDataObjectToStreamResult() throws Exception {
         try{
             super.testLoadFromSAXSourceWithURIAndOptionsSaveDataObjectToStreamResult();
@@ -171,6 +187,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         fail("An SDOException should have been thrown.");
     }
 
+    @Override
     public void testLoadFromStreamSourceWithURIAndOptionsSaveDataObjectToStreamResult() throws Exception {
         try{
             super.testLoadFromStreamSourceWithURIAndOptionsSaveDataObjectToStreamResult();
@@ -181,6 +198,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         fail("An SDOException should have been thrown.");
     }
 
+    @Override
     public void testLoadFromStringSaveDocumentToWriter() throws Exception {
         try{
             super.testLoadFromStringSaveDocumentToWriter();
@@ -191,6 +209,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         fail("An SDOException should have been thrown.");
     }
 
+    @Override
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
         try{
             super.testNoSchemaLoadFromInputStreamSaveDataObjectToString();
@@ -201,6 +220,7 @@ public class LoadAndSaveExceptionBug325353TestCases extends LoadAndSaveTestCases
         fail("An SDOException should have been thrown.");
     }
 
+    @Override
     public void testClassGenerationLoadAndSave() throws Exception {
         try{
             super.testClassGenerationLoadAndSave();

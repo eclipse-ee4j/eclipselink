@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -198,7 +198,7 @@ public class SimpleWeaverTestSuite extends TestCase {
 
     public void buildWeavedClass(byte[] weavedBytes) {
 
-        Class weavedClass = null;
+        Class<?> weavedClass = null;
         try {
             weavedClass = simpleClassLoader.define_class(SimpleObject.class.getName(), weavedBytes, 0, weavedBytes.length);
         }
@@ -207,7 +207,7 @@ public class SimpleWeaverTestSuite extends TestCase {
         }
         assertNotNull("could not build weaved class", weavedClass);
 
-        Class[] interfaces = null;
+        Class<?>[] interfaces = null;
         try {
             interfaces = weavedClass.getInterfaces();
         }
@@ -219,7 +219,7 @@ public class SimpleWeaverTestSuite extends TestCase {
         boolean containsTopLinkWeaved = false;
         boolean containsChangeTracker = false;
         for (int i = 0; i < interfaces.length; i++) {
-            Class c = interfaces[i];
+            Class<?> c = interfaces[i];
             if (c.equals(Serializable.class)) {
                 containsSerializable = true;
             }

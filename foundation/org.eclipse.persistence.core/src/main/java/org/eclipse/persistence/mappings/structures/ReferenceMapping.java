@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -288,7 +288,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * This is a reference class whose instances this mapping will store in the domain objects.
      */
     @Override
-    public void setReferenceClass(Class referenceClass) {
+    public void setReferenceClass(Class<?> referenceClass) {
         this.referenceClass = referenceClass;
     }
 
@@ -313,7 +313,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
                 }
                 return result;
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
-                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null));
             }
         }
         AbstractRecord targetRow = null;

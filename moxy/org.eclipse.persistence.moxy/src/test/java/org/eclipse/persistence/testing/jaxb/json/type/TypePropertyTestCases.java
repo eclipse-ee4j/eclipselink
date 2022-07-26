@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,10 +37,11 @@ public class TypePropertyTestCases extends JSONTestCases {
 
     public TypePropertyTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{PersonWithType.class});
+        setClasses(new Class<?>[]{PersonWithType.class});
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
@@ -67,6 +68,7 @@ public class TypePropertyTestCases extends JSONTestCases {
         return jbe;
     }
 
+    @Override
     protected Object getControlObject() {
         PersonWithType c = new PersonWithType();
         c.name = "theName";

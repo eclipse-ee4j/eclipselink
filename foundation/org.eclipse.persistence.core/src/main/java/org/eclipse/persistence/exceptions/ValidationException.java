@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1634,7 +1634,7 @@ public class ValidationException extends EclipseLinkException {
     * Possible cause:  An amendment method was called but can not be found.
     * Action:  Check that the required amendment method exists on the class specified.
     */
-    public static ValidationException sessionAmendmentExceptionOccured(Exception exception, String amendmentMethod, String amendmentClass, Class[] parameters) {
+    public static ValidationException sessionAmendmentExceptionOccured(Exception exception, String amendmentMethod, String amendmentClass, Class<?>[] parameters) {
         StringBuffer buf = new StringBuffer(30);
         for (int i = 0; i < (parameters.length - 1); i++) {
             buf.append(parameters[i].getName());
@@ -1959,7 +1959,7 @@ public class ValidationException extends EclipseLinkException {
     }
 
     public static ValidationException wrongCollectionChangeEventType(int eveType) {
-        Object[] args = { Integer.valueOf(eveType) };
+        Object[] args = {eveType};
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRONG_COLLECTION_CHANGE_EVENT_TYPE, args));
         validationException.setErrorCode(WRONG_COLLECTION_CHANGE_EVENT_TYPE);
         return validationException;

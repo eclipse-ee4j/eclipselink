@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class IsolatedSessionTestModel extends TestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void addRequiredSystems() {
         if (!(getSession().getPlatform() instanceof OraclePlatform)) {
             throw new TestWarningException("This model is intended for Oracle databases only.");
@@ -35,6 +36,7 @@ public class IsolatedSessionTestModel extends TestModel {
         addRequiredSystem(new IsolatedSessionSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(new VerifyIsolationTest(ExclusiveConnectionMode.Transactional));
         addTest(new VerifyIsolationTest(ExclusiveConnectionMode.Isolated));
@@ -59,9 +61,11 @@ public class IsolatedSessionTestModel extends TestModel {
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
 
+    @Override
     public void addSRGTests() {
     }
 
+    @Override
     public void reset() {
         //need to remove this system so that other tests do not create Isolated Sessions
         getExecutor().removeConfigureSystem(new IsolatedSessionSystem());

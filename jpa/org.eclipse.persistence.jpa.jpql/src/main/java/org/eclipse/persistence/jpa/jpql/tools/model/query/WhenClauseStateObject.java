@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,9 +27,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * A <code><b>WHEN</b></code> predicate is used to calculate a condition and when it's true, its
  * <code><b>THEN</b></code> will be executed.
  *
- * <div><b>BNF:</b> <code>when_clause ::= WHEN conditional_expression THEN scalar_expression</code><p></div>
+ * <div><p><b>BNF:</b> <code>when_clause ::= WHEN conditional_expression THEN scalar_expression</code></p></div>
  * or
- * <div><b>BNF:</b> <code>simple_when_clause ::= WHEN scalar_expression THEN scalar_expression</code><p></div>
+ * <div><p><b>BNF:</b> <code>simple_when_clause ::= WHEN scalar_expression THEN scalar_expression</code></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.WhenClause WhenClause
  *
@@ -99,17 +99,11 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
         parseThen(thenJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -118,9 +112,6 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addProblems(List<Problem> problems) {
 
@@ -135,25 +126,16 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public WhenClause getExpression() {
         return (WhenClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return WHEN;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CaseExpressionStateObject getParent() {
         return (CaseExpressionStateObject) super.getParent();
@@ -179,9 +161,6 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
         return thenStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -240,9 +219,6 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
         firePropertyChanged(THEN_STATE_OBJECT_PROPERTY, oldThenStateObject, thenStateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void toTextInternal(Appendable writer) throws IOException {
 

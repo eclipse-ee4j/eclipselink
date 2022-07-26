@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,13 +17,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The <b>SQRT</b> function takes a numeric argument and returns a double.
- * <p>
+ * <br>
  * JPA 1.0, 2.0:
  * <div><b>BNF:</b> <code>expression ::= SQRT(simple_arithmetic_expression)</code></div>
- * <p>
+ * <br>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= SQRT(arithmetic_expression)</code></div>
- * <p>
  *
  * @version 2.5
  * @since 2.3
@@ -40,25 +39,16 @@ public final class SqrtExpression extends AbstractSingleEncapsulatedExpression {
         super(parent, SQRT);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return InternalSqrtExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningNumericsBNF.ID);

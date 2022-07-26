@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class JAXBInheritanceNSSeparatorTestCases extends JAXBInheritanceNSTestCa
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, '*');
     }
 
+    @Override
     public JAXBMarshaller getJSONMarshaller() throws Exception{
         JAXBMarshaller m = super.getJSONMarshaller();
         m.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, '*');
@@ -58,7 +59,7 @@ public class JAXBInheritanceNSSeparatorTestCases extends JAXBInheritanceNSTestCa
                 StringWriter writer = new StringWriter();
 
                 XMLOutputFactory factory = XMLOutputFactory.newInstance();
-                factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+                factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.FALSE);
                 XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
                 Object objectToWrite = getWriteControlObject();

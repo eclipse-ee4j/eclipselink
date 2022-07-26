@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -378,7 +378,7 @@ public class MongoPlatform extends EISPlatform {
             DatabaseRecord second = new DatabaseRecord();
             appendExpressionToQueryRow(logic.getFirstChild(), first, query);
             appendExpressionToQueryRow(logic.getSecondChild(), second, query);
-            List nested = new Vector();
+            List<DatabaseRecord> nested = new Vector<>();
             nested.add(first);
             nested.add(second);
             if (logic.getOperator().getSelector() == ExpressionOperator.And) {
@@ -468,11 +468,11 @@ public class MongoPlatform extends EISPlatform {
                         || ((QueryKeyExpression)queryKeyExpression.getBaseExpression()).getMapping().isAbstractCompositeDirectCollectionMapping())) {
                     queryKeyExpression = (QueryKeyExpression)queryKeyExpression.getBaseExpression();
                     if (queryKeyExpression.getMapping().isAbstractCompositeObjectMapping()) {
-                        name = ((AbstractCompositeObjectMapping)queryKeyExpression.getMapping()).getField().getName() + "." + name;
+                        name = queryKeyExpression.getMapping().getField().getName() + "." + name;
                     } else if (queryKeyExpression.getMapping().isAbstractCompositeCollectionMapping()) {
-                        name = ((AbstractCompositeCollectionMapping)queryKeyExpression.getMapping()).getField().getName() + "." + name;
+                        name = queryKeyExpression.getMapping().getField().getName() + "." + name;
                     } else if (queryKeyExpression.getMapping().isAbstractCompositeDirectCollectionMapping()) {
-                        name = ((AbstractCompositeDirectCollectionMapping)queryKeyExpression.getMapping()).getField().getName() + "." + name;
+                        name = queryKeyExpression.getMapping().getField().getName() + "." + name;
                     }
                 }
                 DatabaseField field = new DatabaseField();
@@ -495,7 +495,8 @@ public class MongoPlatform extends EISPlatform {
             throw new EISException("Query too complex for Mongo translation, comparison of [" + expression + "] not supported in query: " + query);
         }
         if (value instanceof List) {
-            List values = (List)value;
+            @SuppressWarnings({"unchecked"})
+            List<Object> values = (List<Object>)value;
             for (int index = 0; index < values.size(); index++) {
                 Object element = values.get(index);
                 if (element instanceof Expression) {

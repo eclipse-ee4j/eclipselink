@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,7 +67,7 @@ public class XDKPlatform implements XMLPlatform {
     public XDKPlatform() {
         super();
         try {
-            Class[] argTypes = { URL.class };
+            Class<?>[] argTypes = { URL.class };
             buildSchemaMethod = Helper.getDeclaredMethod(XSDBuilder.class, "build", argTypes);
         } catch (NoSuchMethodException e) {
         }
@@ -75,11 +75,6 @@ public class XDKPlatform implements XMLPlatform {
 
     /**
      * Execute advanced XPath statements that are required for TopLink EIS.
-     * @param contextNode
-     * @param xPath
-     * @param xmlNamespaceResolver
-     * @return
-     * @throws XMLPlatformException
      */
     @Override
     public Node selectSingleNodeAdvanced(Node contextNode, String xPath, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException {
@@ -100,7 +95,6 @@ public class XDKPlatform implements XMLPlatform {
      *         namespaceResolver used to resolve namespace prefixes
      *         to the corresponding namespace URI
      * @return the XPath result
-     * @throws XMLPlatformException
      */
     @Override
     public NodeList selectNodesAdvanced(Node contextNode, String xPath, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ import org.junit.Test;
 import oracle.AQ.AQDequeueOption;
 
 /**
- * Tests based on {@link Order} and {@AAddress} entities and {@code raw_order_queue} model.
+ * Tests based on {@link Order} and {@link Address} entities and {@code raw_order_queue} model.
  */
 public class OrderQueueTest {
 
@@ -109,6 +109,7 @@ public class OrderQueueTest {
         /**
          * Thread main execution method.
          */
+        @Override
         public void run() {
             final DatabaseSession threadSession = SessionHelper.createDatabaseSession(AQTestSuite.project);
             while (!done) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -136,8 +136,6 @@ public class SqlName extends Name {
      * Create a SqlName instance for a PL/SQL type, which requires extra identifying information,
      * such the names for the package and method that mentions this PL/SQL type.
      *
-     * @param schema
-     * @param type
      * @param parentType
      *            The PL/SQL package type that references to the SqlType for which the SqlName is
      *            created for
@@ -181,7 +179,7 @@ public class SqlName extends Name {
 
     /**
      * Determine the SQL type name for a PL/SQL type. Generate a name in the form of
-     * <prefix>_<name>. The <prefix> term is determined as follows in precedency - java user
+     * {@code <prefix>_<name>}. The {@code <prefix>} term is determined as follows in precedency - java user
      * interface name of the associated PL/SQL package - java base interface name of the associated
      * PL/SQL package - the associated PL/SQL package name Generated names are subject to length and
      * conflict check. If length excceeds PL/SQL identifier limit, the name will be chopped. If
@@ -288,17 +286,17 @@ public class SqlName extends Name {
      */
     @Override
     public String getUseClass(String currPackage) {
-        return ((JavaName)getLangName()).getUseClass(currPackage);
+        return getLangName().getUseClass(currPackage);
     }
 
     @Override
     public String getUseClass() {
-        return ((JavaName)getLangName()).getUseClass();
+        return getLangName().getUseClass();
     }
 
     @Override
     public String getUseClass(boolean full) {
-        return ((JavaName)getLangName()).getUseClass(full);
+        return getLangName().getUseClass(full);
     }
 
     /**
@@ -306,7 +304,7 @@ public class SqlName extends Name {
      */
     @Override
     public String getUsePackage() {
-        return ((JavaName)getLangName()).getUsePackage();
+        return getLangName().getUsePackage();
     }
 
     /**
@@ -314,7 +312,7 @@ public class SqlName extends Name {
      */
     @Override
     public boolean hasUseClass() {
-        return ((JavaName)getLangName()).hasUseClass();
+        return getLangName().hasUseClass();
     }
 
     /**
@@ -322,7 +320,7 @@ public class SqlName extends Name {
      */
     @Override
     public String getUseItf() {
-        return ((JavaName)getLangName()).getUseItf();
+        return getLangName().getUseItf();
     }
 
     /**
@@ -337,7 +335,7 @@ public class SqlName extends Name {
      */
     @Override
     public String getUseItfPackage() {
-        return ((JavaName)getLangName()).getUseItfPackage();
+        return getLangName().getUseItfPackage();
     }
 
     /**
@@ -398,7 +396,7 @@ public class SqlName extends Name {
      * the class that JPub generates. It is different from the use class name, the name of the class
      * name generated when the class is used, rather than declared, if the use class is
      * user-written. The user tells JPub that this is the case by putting the clause
-     * "GENERATE <decl name> AS <use name>" in the input file.
+     * "{@code GENERATE <decl name> AS <use name>}" in the input file.
      *
      * * @return the decl class name of a type.
      */
@@ -411,8 +409,8 @@ public class SqlName extends Name {
      * Returns the declaration package name of an SqlName. The declaration package name is the name
      * of the package that JPub generates. It is different from the use package name, the name of
      * the package name generated when the package is used, rather than declared, if the use package
-     * is user-written. The user tells JPub that this is the case by putting the clause "GENERATE
-     * <decl name> AS <use name> in the input file.
+     * is user-written. The user tells JPub that this is the case by putting the clause "{@code GENERATE
+     * <decl name> AS <use name>}" in the input file.
      *
      * * @return the decl package name of a type.
      */
@@ -430,7 +428,7 @@ public class SqlName extends Name {
      */
     @Override
     public String getDeclItf() {
-        return ((JavaName)getLangName()).getDeclItf();
+        return getLangName().getDeclItf();
     }
 
     /**
@@ -445,7 +443,7 @@ public class SqlName extends Name {
      */
     @Override
     public String getDeclItfPackage() {
-        return ((JavaName)getLangName()).getDeclItfPackage();
+        return getLangName().getDeclItfPackage();
     }
 
     /**
@@ -745,15 +743,15 @@ public class SqlName extends Name {
 
     public boolean hasConversion() {
         if (m_hasConversion == null) {
-            m_hasConversion = Boolean.valueOf(getIntoConversion() != null
-                || getOutOfConversion() != null);
+            m_hasConversion = getIntoConversion() != null
+                    || getOutOfConversion() != null;
         }
-        return m_hasConversion.booleanValue();
+        return m_hasConversion;
     }
 
     /**
      * Returns the PL/SQL function to be used for converting this PL/SQL into a SQL type.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     public String getOutOfConversion() {
@@ -775,7 +773,7 @@ public class SqlName extends Name {
 
     /**
      * Returns the PL/SQL function to be used for converting a SQL type into this PL/SQL type.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     public String getIntoConversion() {

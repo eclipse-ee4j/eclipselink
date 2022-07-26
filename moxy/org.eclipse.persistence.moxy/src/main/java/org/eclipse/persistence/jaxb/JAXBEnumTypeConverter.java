@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.*;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import java.util.EnumSet;
+import java.util.Iterator;
+
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -57,23 +56,13 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
      * Convert all the class-name-based settings in this converter to actual
      * class-based settings. This method is used when converting a project
      * that has been built with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    m_enumClass = AccessController.doPrivileged(new PrivilegedClassForName(m_enumClassName, true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception.getException());
-                }
-            } else {
-                m_enumClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(m_enumClassName, true, classLoader);
-            }
-        } catch (ClassNotFoundException exception){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, exception);
-        }
+        m_enumClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(m_enumClassName, true, classLoader),
+                (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(m_enumClassName, ex)
+        );
     }
 
     /**

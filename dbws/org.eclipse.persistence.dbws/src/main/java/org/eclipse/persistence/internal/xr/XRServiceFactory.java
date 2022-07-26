@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -270,7 +270,7 @@ public class XRServiceFactory  {
      */
     protected Project loadORMetadata(final XRDynamicClassLoader xrdecl, final ServerSession session) {
         Project orProject = null;
-        String searchPath = null;
+        String searchPath;
         InputStream inStream = null;
 
         // try "META-INF/" and "/META-INF/"
@@ -309,7 +309,7 @@ public class XRServiceFactory  {
     protected Project loadOXMetadata(final ClassLoader xrdecl, final Session session) {
         Project oxProject = null;
         InputStream inStream = null;
-        String searchPath = null;
+        String searchPath;
 
         // try "META-INF/" and "/META-INF/"
         for (String prefix : META_INF_PATHS) {
@@ -329,7 +329,7 @@ public class XRServiceFactory  {
                 JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
                 XmlBindingsModel model = jaxbElt.getValue();
                 if (model.getBindingsList() != null) {
-                    metadataMap = new HashMap<String, OXMMetadataSource>();
+                    metadataMap = new HashMap<>();
                     for (XmlBindings xmlBindings : model.getBindingsList()) {
                         metadataMap.put(xmlBindings.getPackageName(), new OXMMetadataSource(xmlBindings));
                     }
@@ -342,7 +342,7 @@ public class XRServiceFactory  {
             }
 
             if (metadataMap != null) {
-                Map<String, Map<String, OXMMetadataSource>> properties = new HashMap<String, Map<String, OXMMetadataSource>>();
+                Map<String, Map<String, OXMMetadataSource>> properties = new HashMap<>();
                 properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
                 try {
                     DynamicJAXBContext jCtx = DynamicJAXBContextFactory.createContextFromOXM(xrdecl, properties);
@@ -387,7 +387,7 @@ public class XRServiceFactory  {
                     }
                 }
                 // convert class names to classes on the associated OR descriptor
-                ClassDescriptor odesc = (ClassDescriptor) orProject.getAliasDescriptors().get(alias);
+                ClassDescriptor odesc = orProject.getAliasDescriptors().get(alias);
                 if (odesc != null)  {  // shouldn't be null...
                     // step three:  align OR alias and ordered descriptors (alias names and mappings)
                     ClassDescriptor orderedDescriptor = getDescriptorForClassName(orProject, odesc.getJavaClassName());
@@ -458,7 +458,7 @@ public class XRServiceFactory  {
         xrService.oxSession = (Session) sessions.get(oxSessionKey);
 
         // load OX project via xml-bindings
-        Project oxProject = null;
+        Project oxProject;
         if ((oxProject = loadOXMetadata(projectLoader, xrService.oxSession)) == null) {
             // at this point we may have a legacy deployment XML project, or none set
             oxProject = xrService.oxSession.getProject();
@@ -472,7 +472,7 @@ public class XRServiceFactory  {
         ((XMLLogin) oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
 
         // load OR project via entity-mappings
-        Project orProject = null;
+        Project orProject;
         if ((orProject = loadORMetadata(projectLoader, (ServerSession) xrService.orSession)) == null) {
             // at this point we may have a legacy deployment XML project, or none set
             orProject = xrService.orSession.getProject();
@@ -497,9 +497,8 @@ public class XRServiceFactory  {
     /**
      * <p>INTERNAL:
      */
-    @SuppressWarnings("rawtypes")
     public void buildDescriptorIndex() {
-        for (Iterator i = xrService.oxSession.getProject().getOrderedDescriptors().iterator();
+        for (Iterator<ClassDescriptor> i = xrService.oxSession.getProject().getOrderedDescriptors().iterator();
             i.hasNext();) {
             XMLDescriptor xd = (XMLDescriptor)i.next();
             XMLSchemaReference schemaReference = xd.getSchemaReference();
@@ -703,13 +702,13 @@ public class XRServiceFactory  {
         @Override
         public ClassLoader getNewTempClassLoader() { return xrdecl; }
         @Override
-        public List<String> getMappingFileNames() { return new ArrayList<String>(); }
+        public List<String> getMappingFileNames() { return new ArrayList<>(); }
         @Override
-        public List<String> getManagedClassNames() { return new ArrayList<String>(); }
+        public List<String> getManagedClassNames() { return new ArrayList<>(); }
         @Override
         public DataSource getJtaDataSource() { return null; }
         @Override
-        public List<URL> getJarFileUrls() { return new ArrayList<URL>(); }
+        public List<URL> getJarFileUrls() { return new ArrayList<>(); }
         @Override
         public ClassLoader getClassLoader() { return xrdecl; }
         @Override

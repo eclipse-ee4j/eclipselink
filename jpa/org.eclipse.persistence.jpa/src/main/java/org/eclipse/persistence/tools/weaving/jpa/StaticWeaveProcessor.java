@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,7 +39,6 @@ import org.eclipse.persistence.internal.jpa.weaving.StaticWeaveJAROutputHandler;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
@@ -66,7 +64,6 @@ public class StaticWeaveProcessor {
      * Constructs an instance of StaticWeaveProcessor
      * @param source the name of the location to be weaved
      * @param target the name of the location to be weaved to
-     * @throws MalformedURLException
      */
     public StaticWeaveProcessor(String source, String target)throws MalformedURLException{
         if (source != null) {
@@ -81,7 +78,6 @@ public class StaticWeaveProcessor {
      * Constructs an instance of StaticWeaveProcessor
      * @param source the File object of the source to be weaved
      * @param target the File object of the target to be weaved to
-     * @throws MalformedURLException
      */
     public StaticWeaveProcessor(File source, File target)throws MalformedURLException {
         this.source=source.toURL();
@@ -148,7 +144,6 @@ public class StaticWeaveProcessor {
     /**
      * Set a specific location to look for persistence.xml
      * by default we will look in META-INF/persistence.xml
-     * @param persistenceXMLLocation
      */
     public void setPersistenceXMLLocation(String persistenceXMLLocation) {
         this.persistenceXMLLocation = persistenceXMLLocation;
@@ -183,7 +178,7 @@ public class StaticWeaveProcessor {
         //Instantiate default session log
         AbstractSessionLog.getLog().setLevel(this.logLevel);
         if(logWriter!=null){
-            ((DefaultSessionLog)AbstractSessionLog.getLog()).setWriter(logWriter);
+            AbstractSessionLog.getLog().setWriter(logWriter);
         }
 
         //Make sure the source is existing
@@ -258,9 +253,9 @@ public class StaticWeaveProcessor {
         Archive sourceArchive =(new ArchiveFactoryImpl()).createArchive(source, null, null);
         if (sourceArchive != null) {
             try {
-                Iterator entries = sourceArchive.getEntries();
+                Iterator<String> entries = sourceArchive.getEntries();
                 while (entries.hasNext()){
-                    String entryName = (String)entries.next();
+                    String entryName = entries.next();
                     InputStream entryInputStream = sourceArchive.getEntry(entryName);
 
                     // Add a directory entry
@@ -280,7 +275,7 @@ public class StaticWeaveProcessor {
                     byte[] originalClassBytes=null;
                     byte[] transferredClassBytes=null;
                     try {
-                        Class thisClass = this.classLoader.loadClass(className);
+                        Class<?> thisClass = this.classLoader.loadClass(className);
                         // If the class is not in the classpath, we simply copy the entry
                         // to the target(no weaving).
                         if (thisClass == null){
@@ -322,14 +317,10 @@ public class StaticWeaveProcessor {
                         } else {
                             swoh.addEntry(entryInputStream, newEntry);
                         }
-                    } catch (IllegalClassFormatException e) {
+                    } catch (Throwable e) {
                         AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, e);
                         // Anything went wrong, we need log a warning message, copy the entry to the target and
                         // process next entry.
-                        swoh.addEntry(entryInputStream, newEntry);
-                        continue;
-                    } catch (ClassNotFoundException e) {
-                        AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.WARNING, AbstractSessionLog.WEAVER, e);
                         swoh.addEntry(entryInputStream, newEntry);
                         continue;
                     } finally {

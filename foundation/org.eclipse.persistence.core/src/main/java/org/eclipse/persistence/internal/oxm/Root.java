@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,8 +35,14 @@ public class Root {
     protected String schemaLocation;
     protected String noNamespaceSchemaLocation;
     protected QName schemaType;
-    protected Class declaredType;
+    protected Class<?> declaredType;
     protected boolean nil;
+
+    /**
+     * Default constructor.
+     */
+    public Root() {
+    }
 
     /**
      * Gets the object.  This may be null.
@@ -203,7 +209,7 @@ public class Root {
      *
      * @param type The declared type of this XMLRoot object.
      */
-    public void setDeclaredType(Class type) {
+    public void setDeclaredType(Class<?> type) {
         this.declaredType = type;
     }
 
@@ -214,7 +220,7 @@ public class Root {
      *
      * @return the declared type
      */
-    public Class getDeclaredType() {
+    public Class<?> getDeclaredType() {
         return this.declaredType;
     }
 
@@ -232,7 +238,6 @@ public class Root {
      * Sets that this XMLRoot object is nil.  If setNil(true) is explicitly called then isNil() will
      * return true even if rootObject is not null.
      *
-     * @param nil
      */
     public void setNil(boolean nil) {
         this.nil = nil;

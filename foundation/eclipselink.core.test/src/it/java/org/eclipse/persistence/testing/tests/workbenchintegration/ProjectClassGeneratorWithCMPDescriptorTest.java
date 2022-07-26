@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
 
     }
 
+    @Override
     public void reset() {
         File file = new File(projectShortClassName + ".java");
         file.delete();
@@ -51,6 +52,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
         file.delete();
     }
 
+    @Override
     protected void setup() {
         project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
 
@@ -71,6 +73,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
         project.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Address.class).setCMPPolicy(cmpPolicy);
     }
 
+    @Override
     public void test() {
         String fileName = projectShortClassName + ".java";
         try {
@@ -86,8 +89,8 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
                          "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
             }
             //Class projectClass = (Class) getSession().getPlatform().getConversionManager().convertObject(projectShortClassName, ClassConstants.CLASS);
-            Class projectClass = Class.forName(projectShortClassName);
-            generatedProject = (org.eclipse.persistence.sessions.Project)projectClass.newInstance();
+            Class<?> projectClass = Class.forName(projectShortClassName);
+            generatedProject = (org.eclipse.persistence.sessions.Project)projectClass.getConstructor().newInstance();
         } catch (Exception exception) {
             throw new TestErrorException("Failed obtain new project instance from the generated and compiled project. " +
                     " It may be possible to solve this issue by adding the tools.jar from your JDK to the classpath.",
@@ -95,6 +98,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
         }
     }
 
+    @Override
     protected void verify() {
 
         CMPPolicy cmpPolicy =

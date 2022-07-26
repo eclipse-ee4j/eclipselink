@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 
 /**
  * Tests the decoupling of bean-level pessimistic locking and refresh queries.
- * <p>
  *
  * @author  smcritch
  */
@@ -33,6 +32,7 @@ public class PessimisticLockRefreshTest extends PessimisticLockFineGrainedTest {
                        " be a regular NO_LOCK query.");
     }
 
+    @Override
     public void test() throws Exception {
         checkSelectForUpateSupported();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,12 +25,12 @@ import org.eclipse.persistence.testing.framework.TestWarningException;
  * Object Model: Image [id(int), script(String), picture(byte[]), audio(byte[]), commentary(char[])]
  * Data Schame: IMAGE [id(NUMBER), SCRIPT(CLOB), PICTURE(BLOB)]
  *              CLIP [id(NUMBER), AUDIO(BLOB), COMMENTARY(CLOB)]
- * Descriptor: Image --> (IMAGE, CLIP). i.e. multiple table.
- * Mappings:  id -> ID (direct-to-field mapping).
- *            script -> SCRIPT (TypeConversionMapping, 'converted type': java.sql.Clob).
- *            picture -> PICTURE (TypeConversionMapping, 'converted type': java.sql.Blob).
- *            audio -> AUDIO (TypeConversionMapping, 'converted type': java.sql.Blob).
- *            Commentary -> COMMENTARY (TypeConversionMapping, 'converted type': java.sql.Clob).
+ * Descriptor: Image --{@literal >} (IMAGE, CLIP). i.e. multiple table.
+ * Mappings:  id -{@literal >} ID (direct-to-field mapping).
+ *            script -{@literal >} SCRIPT (TypeConversionMapping, 'converted type': java.sql.Clob).
+ *            picture -{@literal >} PICTURE (TypeConversionMapping, 'converted type': java.sql.Blob).
+ *            audio -{@literal >} AUDIO (TypeConversionMapping, 'converted type': java.sql.Blob).
+ *            Commentary -{@literal >} COMMENTARY (TypeConversionMapping, 'converted type': java.sql.Clob).
  *
  * NOTE: The main purpose of this test model is to test Oracle Thin driver 4k limits. TopLink overally supports
  * BLOB/CLOB well with the proper JDBC drivers. One exception is Oracle thin driver, which has had a well known 4k limits
@@ -61,6 +61,7 @@ public class LOBTestModel extends TestModel {
         setDescription("This suite tests TopLink LOB support with Oracle thin driver.");
     }
 
+    @Override
     public void addRequiredSystems() {
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("WARNING: This model is not supposed to be run on databases other than Oracle.");
@@ -68,6 +69,7 @@ public class LOBTestModel extends TestModel {
         addRequiredSystem(new LOBImageModelSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getLOBInsertTestSuite());
         addTest(getLOBUpdateTestSuite());

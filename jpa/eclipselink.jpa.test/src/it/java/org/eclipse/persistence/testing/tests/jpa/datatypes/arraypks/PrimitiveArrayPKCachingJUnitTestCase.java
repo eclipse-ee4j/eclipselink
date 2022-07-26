@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.datatypes.arraypks.PrimByteArrayPKType;
 import org.eclipse.persistence.testing.models.jpa.datatypes.arraypks.PrimitiveArraysAsPrimaryKeyTableCreator;
 
@@ -40,7 +40,7 @@ import org.eclipse.persistence.testing.models.jpa.datatypes.arraypks.PrimitiveAr
  * <li> Run tests for caching of Entities with primitive array types for primary keys
  * in TopLink's JPA implementation.
  * </ul>
- * @see org.eclipse.persistence.essentials.testing.models.cmp3.datatypes.arraypks.PrimitiveArraysAsPrimaryKeyTableCreator
+ * @see PrimitiveArraysAsPrimaryKeyTableCreator
  */
 public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
     public PrimitiveArrayPKCachingJUnitTestCase() {
@@ -55,6 +55,7 @@ public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
 
         return new TestSetup(suite) {
 
+            @Override
             protected void setUp(){
                 DatabaseSession session = JUnitTestCase.getServerSession();
                 if (!(JUnitTestCase.getServerSession()).getPlatform().isOracle()){
@@ -64,6 +65,7 @@ public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
                 new PrimitiveArraysAsPrimaryKeyTableCreator().replaceTables(session);
             }
 
+            @Override
             protected void tearDown() {
                 new PrimitiveArrayPKCachingJUnitTestCase().clearCache();
             }

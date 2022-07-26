@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlClassExtractor;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 @XmlClassExtractor(MyClassExtractor.class)
 @XmlRootElement(name="vehicle")
@@ -41,7 +41,7 @@ public class Vehicle {
         return false;
     }
 
-    public static Class getClassForRow(Record databaseRow) {
+    public static Class<?> getClassForRow(DataRecord databaseRow) {
         return Car.class;
     }
 }

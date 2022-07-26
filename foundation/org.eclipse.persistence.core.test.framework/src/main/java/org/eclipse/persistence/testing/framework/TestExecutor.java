@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.*;
 import jakarta.persistence.*;
 
+import junit.framework.TestFailure;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
@@ -76,7 +77,7 @@ public class TestExecutor {
     /** Hold JUnit TestResult but test.  Used to store the results for JUnit tests run by the executor. */
     protected static Map junitTestResults;
 
-    /** This is used to get rid pf tests running on server(OC4J) */
+    /** This is used to get rid pf tests running on server */
     public boolean isServer = false;
 
     /** Allow only errors to be logged. */
@@ -555,8 +556,8 @@ public class TestExecutor {
                 log.write(CR);
                 log.write(indent + "Failures:");
                 log.write(CR);
-                for (Enumeration failures = result.failures(); failures.hasMoreElements();) {
-                    junit.framework.TestFailure failure = (junit.framework.TestFailure)failures.nextElement();
+                for (Enumeration<TestFailure> failures = result.failures(); failures.hasMoreElements();) {
+                    junit.framework.TestFailure failure = failures.nextElement();
                     String testString = failure.failedTest().toString();
                     int startIndex = testString.indexOf("(");
                     if (startIndex != -1) {
@@ -576,8 +577,8 @@ public class TestExecutor {
                 log.write(CR);
                 log.write(indent + "Errors:");
                 log.write(CR);
-                for (Enumeration errors = result.errors(); errors.hasMoreElements();) {
-                    junit.framework.TestFailure error = (junit.framework.TestFailure)errors.nextElement();
+                for (Enumeration<TestFailure> errors = result.errors(); errors.hasMoreElements();) {
+                    junit.framework.TestFailure error = errors.nextElement();
                     String testString = error.failedTest().toString();
                     int startIndex = testString.indexOf("(");
                     if (startIndex != -1) {
@@ -616,7 +617,7 @@ public class TestExecutor {
 
             //        executor.handleErrors();
             //        executor.doNotLogResults();
-            executor.execute((TestEntity)Class.forName(arguments[0]).newInstance());
+            executor.execute((TestEntity)Class.forName(arguments[0]).getConstructor().newInstance());
         } catch (Throwable exception) {
             System.out.println(exception.toString());
         }

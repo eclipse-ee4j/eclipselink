@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class CacheExpiryValueholderTest extends CacheExpiryTest {
         setDescription("Test cache expiry across a Valueholder");
     }
 
+    @Override
     public void test() {
         ExpressionBuilder address = new ExpressionBuilder();
         Expression streetExp = address.get("street").equal("1 Habs Place");
@@ -54,6 +55,7 @@ public class CacheExpiryValueholderTest extends CacheExpiryTest {
         readEmployee = (Employee)getSession().readObject(Employee.class, addressExp);
     }
 
+    @Override
     public void verify() {
         if (!readEmployee.getAddress().getStreet().equals("1 Habs Place")) {
             throw new TestErrorException("Invalidation is not working correctly for valueholders.");

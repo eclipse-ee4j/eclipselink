@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,11 +20,12 @@ import org.eclipse.persistence.testing.framework.*;
  * Test the optimistic locking feature by changing the write lock value on the database.
  */
 public class OptimisticLockingDeleteTest extends OptimisticLockingUpdateTest {
-    public OptimisticLockingDeleteTest(Class aClass, boolean useUnitOfWork) {
+    public OptimisticLockingDeleteTest(Class<?> aClass, boolean useUnitOfWork) {
         super(aClass, useUnitOfWork);
         setDescription("This test verifies that the correct object is deleted");
     }
 
+    @Override
     public void test() {
         if (useUOW) {
             uow.deleteObject(originalObject);
@@ -34,6 +35,7 @@ public class OptimisticLockingDeleteTest extends OptimisticLockingUpdateTest {
         }
     }
 
+    @Override
     protected void verify() {
         Object obj = getSession().readObject(originalObject);
         if (obj != null) {

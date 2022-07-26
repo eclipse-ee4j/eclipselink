@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,6 +80,7 @@ public class BLOBTester extends TypeTester {
         bytes = newBytes;
     }
 
+    @Override
     public void setup(Session session) {
         // Access does not support BLOBS or CLOBS
         if (session.getPlatform().isAccess()) {
@@ -106,6 +107,7 @@ public class BLOBTester extends TypeTester {
     /**
      *     Catch null point that occurs frequently an make as warning (known bug).
      */
+    @Override
     protected void test(WriteTypeObjectTest testCase) throws TestWarningException {
         try {
             super.test(testCase);
@@ -134,6 +136,7 @@ public class BLOBTester extends TypeTester {
         }
     }
 
+    @Override
     protected void verify(WriteTypeObjectTest testCase) throws TestException {
         try {
             super.verify(testCase);

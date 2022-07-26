@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,7 +48,7 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 public abstract class InterfaceContainerPolicy extends ContainerPolicy {
 
     /** The concrete container class. */
-    protected Class containerClass;
+    protected Class<?> containerClass;
     protected String containerClassName;
 
     /** The method which will return a clone of an instance of the containerClass. */
@@ -58,7 +58,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Construct a new policy.
      */
-    public InterfaceContainerPolicy() {
+    protected InterfaceContainerPolicy() {
         super();
     }
 
@@ -66,7 +66,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public InterfaceContainerPolicy(Class containerClass) {
+    protected InterfaceContainerPolicy(Class<?> containerClass) {
         setContainerClass(containerClass);
     }
 
@@ -74,7 +74,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class name.
      */
-    public InterfaceContainerPolicy(String containerClassName) {
+    protected InterfaceContainerPolicy(String containerClassName) {
         setContainerClassName(containerClassName);
     }
 
@@ -92,7 +92,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        Class containerClass = getContainerClass();
+        Class<?> containerClass = getContainerClass();
         result = 31 * result + (containerClass != null ? containerClass.hashCode() : 0);
         return result;
     }
@@ -108,7 +108,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         }
 
         Method cloneMethod;
-        Class javaClass = container.getClass();
+        Class<?> javaClass = container.getClass();
         if (javaClass == getContainerClass()) {
             cloneMethod = getCloneMethod();
         } else {
@@ -124,7 +124,6 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * Convert all the class-name-based settings in this ContainerPolicy to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -132,11 +131,11 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         if (getContainerClassName() == null){
             return;
         }
-        Class containerClass = null;
+        Class<?> containerClass = null;
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    containerClass = AccessController.doPrivileged(new PrivilegedClassForName(getContainerClassName(), true, classLoader));
+                    containerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getContainerClassName(), true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(getContainerClassName(), exception.getException());
                 }
@@ -180,15 +179,15 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         return cloneMethod;
     }
 
-    private static final class ClassWeakReference extends WeakReference<Class> {
+    private static final class ClassWeakReference<T> extends WeakReference<Class<T>> {
         private final int hash;
 
-        ClassWeakReference(Class referent) {
+        ClassWeakReference(Class<T> referent) {
             super(referent);
             hash = referent.hashCode();
         }
 
-        ClassWeakReference(Class referent, ReferenceQueue<Class> referenceQueue) {
+        ClassWeakReference(Class<T> referent, ReferenceQueue<Class> referenceQueue) {
             super(referent, referenceQueue);
             hash = referent.hashCode();
         }
@@ -205,7 +204,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
             }
 
             if (obj instanceof ClassWeakReference) {
-                return get() == ((ClassWeakReference) obj).get();
+                return get() == ((ClassWeakReference<?>) obj).get();
             }
 
             return false;
@@ -213,24 +212,24 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
 
         @Override
         public String toString() {
-            Class referent = get();
-            return new StringBuilder("ClassWeakReference: ").append(referent == null ? null : referent).toString();
+            Class<?> referent = get();
+            return "ClassWeakReference: " + (referent);
         }
     }
 
     private static final ReferenceQueue<Class> refQueue = new ReferenceQueue<>();
-    private static final ConcurrentHashMap<ClassWeakReference, Method> cloneMethodCache = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<ClassWeakReference<?>, Method> cloneMethodCache = new ConcurrentHashMap<>();
     
     /**
      * INTERNAL:
      * Return the 'clone()' Method for the specified class.
      * Return null if the method does not exist anywhere in the hierarchy
      */
-    protected Method getCloneMethod(Class javaClass) {
+    protected Method getCloneMethod(Class<?> javaClass) {
         for (Object key; (key = refQueue.poll()) != null;) {
             cloneMethodCache.remove(key);
         }
-        Method cloneMethod = cloneMethodCache.get(new ClassWeakReference(javaClass));
+        Method cloneMethod = cloneMethodCache.get(new ClassWeakReference<>(javaClass));
         if (cloneMethod != null) {
             return cloneMethod;
         }
@@ -258,7 +257,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * Returns the container class to be used with this policy.
      */
     @Override
-    public Class getContainerClass() {
+    public Class<?> getContainerClass() {
         return containerClass;
     }
 
@@ -279,7 +278,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         return null;
     }
 
-    public abstract Class getInterfaceType();
+    public abstract Class<?> getInterfaceType();
 
     /**
      * INTERNAL:
@@ -332,7 +331,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * Validate the container type.
      */
     @Override
-    public boolean isValidContainerType(Class containerType) {
+    public boolean isValidContainerType(Class<?> containerType) {
         return Helper.classImplementsInterface(containerType, getInterfaceType());
     }
 
@@ -359,7 +358,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * Set the class to use as the container.
      */
     @Override
-    public void setContainerClass(Class containerClass) {
+    public void setContainerClass(Class<?> containerClass) {
         this.containerClass = containerClass;
         initializeConstructor();
     }

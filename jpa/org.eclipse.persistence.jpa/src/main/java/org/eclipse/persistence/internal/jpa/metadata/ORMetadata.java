@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -118,7 +118,7 @@ public abstract class ORMetadata {
     private String m_xmlElement;
 
     // Lookup of classname to Class to resolve primitive classes
-    private static final Map<String, Class> primitiveClasses = Collections.unmodifiableMap(getPrimitiveClassesMap());
+    private static final Map<String, Class<?>> primitiveClasses = Collections.unmodifiableMap(getPrimitiveClassesMap());
 
     // Lookup of boxed types of primitive classes.
     private static final Map<String, String> boxedTypes = Collections.unmodifiableMap(getBoxedTypesMap());
@@ -277,7 +277,7 @@ public abstract class ORMetadata {
      * from XML.
      */
     protected String getFullyQualifiedClassName(String className) {
-        Class primitiveClass = getPrimitiveClassForName(className);
+        Class<?> primitiveClass = getPrimitiveClassForName(className);
 
         if (primitiveClass == null) {
             if (loadedFromXML()) {
@@ -313,10 +313,10 @@ public abstract class ORMetadata {
      * temp loader, see getJavaClassName instead which will provide a valid
      * string class name that can be initialized at runtime instead.
      */
-    protected Class getJavaClass(MetadataClass metadataClass) {
+    protected Class<?> getJavaClass(MetadataClass metadataClass) {
         String className = metadataClass.getName();
 
-        Class primitiveClass = getPrimitiveClassForName(className);
+        Class<?> primitiveClass = getPrimitiveClassForName(className);
 
         if (primitiveClass == null) {
             String convertedClassName = className;
@@ -346,7 +346,7 @@ public abstract class ORMetadata {
     public String getJavaClassName(MetadataClass metadataClass) {
         String className = metadataClass.getName();
 
-        Class primitiveClass = getPrimitiveClassForName(className);
+        Class<?> primitiveClass = getPrimitiveClassForName(className);
 
         if (primitiveClass == null) {
             String convertedClassName = className;
@@ -384,7 +384,7 @@ public abstract class ORMetadata {
      * INTERNAL:
      * Return the MetadataClass for the class.
      */
-    public MetadataClass getMetadataClass(Class javaClass) {
+    public MetadataClass getMetadataClass(Class<?> javaClass) {
         if (javaClass == null) {
             return null;
         }
@@ -437,7 +437,7 @@ public abstract class ORMetadata {
     /**
      * INTERNAL:
      */
-    protected Class getPrimitiveClassForName(String className){
+    protected Class<?> getPrimitiveClassForName(String className){
         return (className == null) ? void.class : primitiveClasses.get(className);
     }
 
@@ -461,7 +461,7 @@ public abstract class ORMetadata {
     /**
      * INTERNAL:
      * This is a value is that is used when logging messages for overriding.
-     * @see shouldOverride
+     * @see #shouldOverride(ORMetadata)
      */
     protected String getXMLElement() {
         return m_xmlElement;
@@ -517,9 +517,9 @@ public abstract class ORMetadata {
      * INTERNAL:
      * It is assumed this is a list of ORMetadata
      */
-    protected void initXMLObjects(List metadatas, MetadataAccessibleObject accessibleObject) {
+    protected <T extends ORMetadata> void initXMLObjects(List<T> metadatas, MetadataAccessibleObject accessibleObject) {
         if (metadatas != null) {
-            for (ORMetadata metadata : (List<ORMetadata>) metadatas) {
+            for (T metadata : metadatas) {
                 metadata.initXMLObject(accessibleObject, m_entityMappings);
             }
         }
@@ -533,9 +533,9 @@ public abstract class ORMetadata {
      * compatibility. If the text object is initialized the metadata list is
      * set to null to ease further processing (logging, warnings, overrides etc.)
      */
-    protected String initXMLTextObject(List metadatas) {
+    protected <T extends ORMetadata> String initXMLTextObject(List<T> metadatas) {
         if (metadatas != null && metadatas.size() == 1) {
-            ORMetadata metadata = ((ORMetadata) metadatas.get(0));
+            T metadata = metadatas.get(0);
 
             if (metadata.hasText()) {
                 String text = metadata.getText();
@@ -587,13 +587,13 @@ public abstract class ORMetadata {
      * not check for duplicates or any overrides at this time. Just appends
      * all items from list2 to list1.
      */
-    protected List mergeORObjectLists(List list1, List list2) {
-        List<ORMetadata> newList = new ArrayList<ORMetadata>();
+    protected <T extends ORMetadata> List<T> mergeORObjectLists(List<T> list1, List<T> list2) {
+        List<T> newList = new ArrayList<>();
 
-        for (ORMetadata obj1 : (List<ORMetadata>) list1) {
+        for (T obj1 : list1) {
             boolean found = false;
 
-            for (ORMetadata obj2 : (List<ORMetadata>) list2) {
+            for (T obj2 : list2) {
                 if (obj2.getIdentifier().equals(obj1.getIdentifier())) {
                     if (obj2.shouldOverride(obj1)) {
                         newList.add(obj2);
@@ -612,10 +612,10 @@ public abstract class ORMetadata {
         }
 
         // Now go through m2 and see what is not in m1
-        for (ORMetadata obj2 : (List<ORMetadata>) list2) {
+        for (T obj2 : list2) {
             boolean found = false;
 
-            for (ORMetadata obj1 : (List<ORMetadata>) list1) {
+            for (ORMetadata obj1 : list1) {
                if (obj2.getIdentifier().equals(obj1.getIdentifier())) {
                     found = true;
                     break;
@@ -881,8 +881,8 @@ public abstract class ORMetadata {
         }
     }
 
-    private static Map<String, Class> getPrimitiveClassesMap() {
-        Map<String, Class> mappings = new HashMap<>(28);
+    private static Map<String, Class<?>> getPrimitiveClassesMap() {
+        Map<String, Class<?>> mappings = new HashMap<>(28);
         mappings.put("", void.class);
         mappings.put("void", void.class);
         mappings.put("Boolean", Boolean.class);

@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2009, 2018 Markus Karg, SAP. All rights reserved.
+ * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2009, 2022 Markus Karg, SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,8 +26,9 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.expressions.ListExpressionOperator;
@@ -113,8 +115,8 @@ public final class MaxDBPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        final Hashtable<Class, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        final Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT", false)); // TODO boolean
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE PRECISION", false));
         fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
@@ -181,7 +183,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
         this.addOperator(MaxDBPlatform.createTodayExpressionOperator());
         this.addOperator(MaxDBPlatform.createCurrentDateExpressionOperator());
         this.addOperator(MaxDBPlatform.createCurrentTimeExpressionOperator());
-        this.addNonBindingOperator(MaxDBPlatform.createNullValueOperator());
+        this.addOperator(MaxDBPlatform.createNullValueOperator());
     }
 
     private static ExpressionOperator createConcatExpressionOperator() {
@@ -220,7 +222,9 @@ public final class MaxDBPlatform extends DatabasePlatform {
     }
 
     private static ExpressionOperator createNullValueOperator() {
-        return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "VALUE");
+        ExpressionOperator exOperator = ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "VALUE");
+        exOperator.setIsBindingSupported(false);
+        return exOperator;
     }
 
     /* see bug 316774 */
@@ -239,11 +243,11 @@ public final class MaxDBPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.NullIf);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(4);
-        v.addElement(" (CASE WHEN ");
-        v.addElement(" = ");
-        v.addElement(" THEN NULL ELSE ");
-        v.addElement(" END) ");
+        List<String> v = new ArrayList<>(4);
+        v.add(" (CASE WHEN ");
+        v.add(" = ");
+        v.add(" THEN NULL ELSE ");
+        v.add(" END) ");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         int[] indices = {0, 1, 0};
@@ -255,11 +259,6 @@ public final class MaxDBPlatform extends DatabasePlatform {
     @Override
     public boolean shouldOptimizeDataConversion() {
         return true; // TODO is this needed? (seems to default to true)
-    }
-
-    private void addNonBindingOperator(ExpressionOperator operator) {
-        operator.setIsBindingSupported(false);
-        addOperator(operator);
     }
 
     @Override

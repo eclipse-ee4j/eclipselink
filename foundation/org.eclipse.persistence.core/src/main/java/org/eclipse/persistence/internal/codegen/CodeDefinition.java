@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,13 +33,13 @@ public abstract class CodeDefinition {
     protected static final String JAVA_UTIL_PACKAGE_NAME = "java.util";
     protected static final String TOPLINK_INDIRECTION_PACKAGE_NAME = "org.eclipse.persistence.indirection";
 
-    public CodeDefinition() {
+    protected CodeDefinition() {
         this.accessLevel = new AccessLevel();
         this.name = "";
         this.comment = "";
     }
 
-    private static boolean adjustmentNeededForType(String typeName, Map typeNameMap) {
+    private static boolean adjustmentNeededForType(String typeName, Map<String, Set<String>> typeNameMap) {
         if ((typeName == null) || typeName.equals("")) {
             return false;
         }
@@ -48,7 +48,7 @@ public abstract class CodeDefinition {
             return false;
         }
 
-        Set packages = (Set)typeNameMap.get(shortName(typeName));
+        Set<String> packages = typeNameMap.get(shortName(typeName));
         return (packages == null) || (packages.size() <= 1);
     }
 
@@ -63,7 +63,7 @@ public abstract class CodeDefinition {
      *
      * (e.g. int -&gt; int, java.util.Vector -&gt; Vector, java.lang.Boolean[] -&gt; Boolean[], etc.)
      */
-    protected static String adjustTypeName(String typeName, Map typeNameMap) {
+    protected static String adjustTypeName(String typeName, Map<String, Set<String>> typeNameMap) {
         if (adjustmentNeededForType(typeName, typeNameMap)) {
             putTypeNameInMap(typeName, typeNameMap);
             return typeName.substring(packageName(typeName).length() + 1);
@@ -78,8 +78,8 @@ public abstract class CodeDefinition {
      * indirect collection types.
      * All other searches too intractable at this point.
      */
-    protected static Set parseForTypeNames(String longString) {
-        Set typeNames = new HashSet();
+    protected static Set<String> parseForTypeNames(String longString) {
+        Set<String> typeNames = new HashSet<>();
 
         if (longString != null) {
             typeNames.addAll(parseForTypeNamesInPackage(longString, JAVA_LANG_PACKAGE_NAME));
@@ -90,8 +90,8 @@ public abstract class CodeDefinition {
         return typeNames;
     }
 
-    private static Set parseForTypeNamesInPackage(String longString, String packageName) {
-        Set typeNames = new HashSet();
+    private static Set<String> parseForTypeNamesInPackage(String longString, String packageName) {
+        Set<String> typeNames = new HashSet<>();
         int packageStartIndex = longString.indexOf(packageName);
 
         while (packageStartIndex != -1) {
@@ -116,7 +116,7 @@ public abstract class CodeDefinition {
     /**
      * Used for calculating imports.  @see org.eclipse.persistence.internal.codegen.ClassDefinition#calculateImports()
      */
-    protected static void putTypeNameInMap(String typeName, Map typeNameMap) {
+    protected static void putTypeNameInMap(String typeName, Map<String, Set<String>> typeNameMap) {
         if ((typeName == null) || typeName.equals("")) {
             return;
         }
@@ -125,13 +125,13 @@ public abstract class CodeDefinition {
         String packageName = packageName(typeName);
 
         if (packageName.length() > 0) {
-            Set packageNames;
+            Set<String> packageNames;
 
             if (typeNameMap.get(shortName) == null) {
-                packageNames = new HashSet();
+                packageNames = new HashSet<>();
                 typeNameMap.put(shortName, packageNames);
             } else {
-                packageNames = (Set)typeNameMap.get(shortName);
+                packageNames = typeNameMap.get(shortName);
             }
 
             // There is no package name.  The package is the default package.
@@ -158,7 +158,7 @@ public abstract class CodeDefinition {
      * Assumes that typeName contains only a package name (optional) and a short name,
      * potentially with subtended brackets.
      *
-     * (e.g. int -> int, java.util.Vector -> Vector, java.lang.Boolean[] -> Boolean, etc.)
+     * (e.g. {@code int -> int}, {@code java.util.Vector -> Vector}, {@code java.lang.Boolean[] -> Boolean}, etc.)
      */
     private static String shortName(String typeName) {
         int shortNameStartIndex = typeName.lastIndexOf('.') + 1;
@@ -225,7 +225,7 @@ public abstract class CodeDefinition {
                 nextLineIndex = comment.indexOf(cr, lastLineIndex);
             }
             generator.write(" * ");
-            generator.writeln(comment.substring(lastLineIndex, comment.length()));
+            generator.writeln(comment.substring(lastLineIndex));
             generator.writeln(" */");
             generator.cr();
         }

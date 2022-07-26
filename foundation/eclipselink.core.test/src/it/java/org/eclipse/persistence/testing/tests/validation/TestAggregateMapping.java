@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class TestAggregateMapping extends AggregateMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
 
     }
@@ -35,14 +36,17 @@ public class TestAggregateMapping extends AggregateMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
 
     }
 
+    @Override
     public Object getAttributeValueFromObject(Object object) {
         return null;
     }
 
+    @Override
     public void setReferenceDescriptor(ClassDescriptor aDescriptor) {
         referenceDescriptor = aDescriptor;
     }

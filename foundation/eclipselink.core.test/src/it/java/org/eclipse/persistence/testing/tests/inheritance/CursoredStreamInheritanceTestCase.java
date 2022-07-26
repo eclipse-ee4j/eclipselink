@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ import org.eclipse.persistence.testing.models.inheritance.LabradorRetriever;
 public class CursoredStreamInheritanceTestCase extends TestCase {
     private int transportId = 0;
 
+    @Override
     public void reset() {
         // Remove the elements that were added for this demo
         DatabaseSession session = (DatabaseSession)getSession();
@@ -38,6 +39,7 @@ public class CursoredStreamInheritanceTestCase extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void setup() {
         // add some objects to a leaf node of the Dog branch of the inheritance tree
         DatabaseSession session = (DatabaseSession)getSession();
@@ -47,6 +49,7 @@ public class CursoredStreamInheritanceTestCase extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void test() {
         DatabaseSession session = (DatabaseSession)getSession();
         ReportQuery query = new ReportQuery();
@@ -62,6 +65,7 @@ public class CursoredStreamInheritanceTestCase extends TestCase {
         ;
     }
 
+    @Override
     public void verify() {
     }
 }

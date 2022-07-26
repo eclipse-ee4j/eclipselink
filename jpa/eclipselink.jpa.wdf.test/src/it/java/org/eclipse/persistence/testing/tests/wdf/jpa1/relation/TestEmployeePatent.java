@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -38,8 +38,8 @@ import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.junit.Test;
 
 public class TestEmployeePatent extends JPA1Base {
-    private static final Integer EDISON = new Integer(26);
-    private static final Integer TESLA = new Integer(32);
+    private static final Integer EDISON = 26;
+    private static final Integer TESLA = 32;
 
     @Override
     public void setup() {
@@ -49,8 +49,8 @@ public class TestEmployeePatent extends JPA1Base {
             env.beginTransaction(em);
             Department dep = new Department(25, "R&D");
             em.persist(dep);
-            em.persist(new Employee(EDISON.intValue(), "Thomas Alva", "Edison", dep));
-            em.persist(new Employee(TESLA.intValue(), "Nikola", "Tesla", dep));
+            em.persist(new Employee(EDISON, "Thomas Alva", "Edison", dep));
+            em.persist(new Employee(TESLA, "Nikola", "Tesla", dep));
             for (int i = 0; i < TEST_DATA.length; i++) {
                 em.persist(TEST_DATA[i]);
             }
@@ -172,8 +172,8 @@ public class TestEmployeePatent extends JPA1Base {
         for (final Patent testPatent : testPatents) {
             checkMap.put(testPatent.getId(), testPatent);
         }
-        for (final Iterator iter = patents.iterator(); iter.hasNext();) {
-            final Patent patent = (Patent) iter.next();
+        for (final Iterator<Patent> iter = patents.iterator(); iter.hasNext();) {
+            final Patent patent = iter.next();
             final Patent check = checkMap.get(patent.getId());
             verify(check != null, "retrieved unknown patent with name >>" + patent.getId().getName() + "<<.");
             verify(check.getDescription().equals(patent.getDescription()), "patent with name >>" + patent.getId().getName()

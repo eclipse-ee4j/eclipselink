@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,8 +74,8 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
                 // check for deferred changes
                 if (changes.hasDeferredAttributes()){
                     //need to calculate the changes for these attributes.
-                    for (Iterator iterator = changes.getDeferredSet().iterator(); iterator.hasNext();){
-                        DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName((String)iterator.next());
+                    for (Iterator<String> iterator = changes.getDeferredSet().iterator(); iterator.hasNext();){
+                        DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(iterator.next());
                         mapping.calculateDeferredChanges((ChangeRecord)changes.getChangesForAttributeNamed(mapping.getAttributeName()), session);
                     }
                     changes.getDeferredSet().clear();
@@ -91,10 +91,10 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
                 if(descriptor.hasFetchGroupManager()) {
                     fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(clone);
                 }
-                List mappings = descriptor.getMappings();
+                List<DatabaseMapping> mappings = descriptor.getMappings();
                 int size = mappings.size();
                 for (int index = 0; index < size; index++) {
-                    DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                    DatabaseMapping mapping = mappings.get(index);
                     if ((fetchGroup == null) || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
                         changes.addChange(mapping.compareForChange(clone, null, changes, session));
                     }

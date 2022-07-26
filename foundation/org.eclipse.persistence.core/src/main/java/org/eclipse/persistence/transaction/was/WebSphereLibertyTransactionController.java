@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,6 +21,13 @@ public class WebSphereLibertyTransactionController extends WebSphereTransactionC
     // Class and method to execute to obtain the TransactionManager
     private final static String TX_MANAGER_FACTORY_CLASS = "com.ibm.tx.jta.TransactionManagerFactory";
     private final static String TX_MANAGER_FACTORY_METHOD = "getTransactionManager";
+
+    /**
+     * Default constructor
+     */
+    public WebSphereLibertyTransactionController() {
+        super();
+    }
 
     @Override
     protected String getTxManagerFactoryClass() {

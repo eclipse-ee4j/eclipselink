@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
 import org.eclipse.persistence.services.weblogic.MBeanWebLogicRuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.wls.WebLogicTransactionController11;
 
 /**
@@ -315,16 +316,16 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
             try {
                 // perform a reflective public java.lang.String
                 // weblogic.work.ExecuteThreadRuntime.<getMethodName>
-                Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), getMethodName, new Class[] {}, false);
+                Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), getMethodName, new Class<?>[] {}, false);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    classLoaderOrString = AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, executeThread, null));
+                    classLoaderOrString = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getMethod, executeThread, null));
                 } else {
                     classLoaderOrString = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
                 }
 
                 if(classLoaderOrString instanceof ClassLoader) {
                     // If we are running a version of WebLogic 10.3 that does not support ExecuteThreadRuntime (from 10.3+) then use the ClassLoader
-                    String jpaModuleNameRoot = ((ClassLoader)classLoaderOrString).toString();
+                    String jpaModuleNameRoot = classLoaderOrString.toString();
                     if(null != jpaModuleNameRoot) {
                         int startIndex = jpaModuleNameRoot.indexOf(
                             WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX);
@@ -401,10 +402,10 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
     protected Method getVendorConnectionMethod() {
         if ((this.vendorConnectionMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {
-                this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnectionSafe", new Class[0]);
+                this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnectionSafe", new Class<?>[0]);
             } catch (NoSuchMethodException not1034) {
                 try {
-                    this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnection", new Class[0]);
+                    this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnection", new Class<?>[0]);
                 } catch (NoSuchMethodException exception) {
                     getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
                 }
@@ -437,7 +438,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {
             externalTransactionControllerClass = WebLogicTransactionController11.class;
         }

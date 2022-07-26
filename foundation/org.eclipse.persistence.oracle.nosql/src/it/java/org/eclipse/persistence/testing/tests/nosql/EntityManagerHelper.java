@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,6 @@ import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.SynchronizationType;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -31,9 +30,9 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.framework.server.JEEPlatform;
-import org.eclipse.persistence.testing.framework.server.ServerPlatform;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.server.JEEPlatform;
+import org.eclipse.persistence.testing.framework.jpa.server.ServerPlatform;
 
 public class EntityManagerHelper {
 
@@ -59,7 +58,7 @@ public class EntityManagerHelper {
             return new JEEPlatform();
         } else {
             try {
-                return (ServerPlatform)Class.forName(platformClass).newInstance();
+                return (ServerPlatform)Class.forName(platformClass).getConstructor().newInstance();
             } catch (Exception ex) {
                 LOG.log(SessionLog.WARNING, String.format(
                         "Could not initiaize ServerPlatform: %s", ex.getLocalizedMessage()));
@@ -89,10 +88,10 @@ public class EntityManagerHelper {
                 LOG.log(SessionLog.WARNING, String.format(
                         "ServerPlatform is unknown, using default EntityManagerFactory to create EntityManager"));
                 return JUnitTestCase.getEntityManagerFactory(puName, emProperties, descriptors)
-                        .createEntityManager((SynchronizationType)null, emProperties);            }
+                        .createEntityManager(null, emProperties);            }
         } else {
             return JUnitTestCase.getEntityManagerFactory(puName, emProperties, descriptors)
-                    .createEntityManager((SynchronizationType)null, emProperties);
+                    .createEntityManager(null, emProperties);
         }
     }
 

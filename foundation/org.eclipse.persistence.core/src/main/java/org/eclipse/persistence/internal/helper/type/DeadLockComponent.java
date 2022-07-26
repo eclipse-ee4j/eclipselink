@@ -1,20 +1,21 @@
-/*******************************************************************************
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
 package org.eclipse.persistence.internal.helper.type;
 
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
 import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 
+import java.util.List;
 import java.util.Map;
 
 public class DeadLockComponent {
@@ -24,7 +25,7 @@ public class DeadLockComponent {
     // Mutually exclusive boolean flags
     /**
      * One of the code spots a thread can get stuck is when it is waiting for
-     * {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map)} to
+     * {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map, List, boolean)} to
      * return true in the {@code CacheKey.releaseDeferredLock}
      *
      * <P>
@@ -36,7 +37,7 @@ public class DeadLockComponent {
      *
      * <P>
      * we will need to re-write the
-     * {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map)}
+     * {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map, List, boolean)}
      * to be able to know what thread and what cache key is being thorny point on object building.
      *
      */
@@ -92,14 +93,6 @@ public class DeadLockComponent {
     /**
      * Create a new DeadLockComponent.
      *
-     * @param threadNotAbleToAccessResource
-     * @param stuckOnReleaseDeferredLock
-     * @param stuckThreadAcquiringLockForWriting
-     * @param stuckThreadAcquiringLockForReading
-     * @param cacheKeyThreadWantsToAcquireButCannotGet
-     * @param deadLockPotentiallyCausedByCacheKeyWithCorruptedActiveThread
-     * @param deadLockPotentiallyCausedByCacheKeyWithCorruptedNumberOfReaders
-     * @param nextThreadPartOfDeadLock
      */
     public DeadLockComponent(Thread threadNotAbleToAccessResource, boolean stuckOnReleaseDeferredLock,
                                               boolean stuckThreadAcquiringLockForWriting, boolean stuckThreadAcquiringLockForReading,
@@ -125,7 +118,6 @@ public class DeadLockComponent {
      *
      * Create a new DeadLockComponent.
      *
-     * @param threadNotAbleToAccessResource
      */
     public DeadLockComponent(Thread threadNotAbleToAccessResource) {
         // our deadlock has been found

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.Session;
 
@@ -43,6 +44,7 @@ ConformResultsRedirectorTest extends TestCase implements QueryRedirector {
     public ConformResultsRedirectorTest() {
     }
 
+    @Override
     public void test() {
 
         ReadAllQuery query = new ReadAllQuery(Address.class);
@@ -64,7 +66,8 @@ ConformResultsRedirectorTest extends TestCase implements QueryRedirector {
         }
     }
 
-    public Object invokeQuery(DatabaseQuery query, org.eclipse.persistence.sessions.Record arguments, Session session) {
+    @Override
+    public Object invokeQuery(DatabaseQuery query, DataRecord arguments, Session session) {
         ReadAllQuery conformingQuery = new ReadAllQuery(Address.class);
         conformingQuery.conformResultsInUnitOfWork();
 

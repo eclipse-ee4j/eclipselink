@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,12 +101,14 @@ public class Customer implements java.io.Serializable{
 
     /**
      * Order is mapped in XML as follows:
+     * <pre>{@code
      *  <one-to-many name="orders" target-entity="Order" mapped-by="customer">
      *    <cascade>
      *      <cascade-persist/>
      *      <cascade-remove/>
      *    </cascade>
      * </one-to-many>
+     * }</pre>
      * The annotations should be ignored. If OrderBy is processed, the value
      * will cause an exception during processing.
      *

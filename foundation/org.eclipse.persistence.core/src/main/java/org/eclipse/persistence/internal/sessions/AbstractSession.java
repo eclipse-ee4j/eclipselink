@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,6 @@ import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -238,7 +237,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     transient protected ClassDescriptor lastDescriptorAccessed;
 
     /** PERF: cache descriptors from project. */
-    transient protected Map<Class, ClassDescriptor> descriptors;
+    transient protected Map<Class<?>, ClassDescriptor> descriptors;
 
     /** PERF: cache table per tenant descriptors needing to be initialized per EM */
     transient protected List<ClassDescriptor> tablePerTenantDescriptors;
@@ -335,7 +334,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     transient protected Serializer serializer;
 
     /** Allow CDI injection of entity listeners **/
-    transient protected InjectionManager injectionManager;
+    transient protected InjectionManager<?> injectionManager;
 
     /**
      * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization.
@@ -380,7 +379,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * method may also be used to connect the session, this allows for the user name and password
      * to be given at login but for the other database information to be provided when the session is created.
      */
-    public AbstractSession(Login login) {
+    protected AbstractSession(Login login) {
         this(new org.eclipse.persistence.sessions.Project(login));
     }
 
@@ -392,7 +391,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * method may also be used to connect the session, this allows for the user name and password
      * to be given at login but for the other database information to be provided when the session is created.
      */
-    public AbstractSession(org.eclipse.persistence.sessions.Project project) {
+    protected AbstractSession(org.eclipse.persistence.sessions.Project project) {
         this();
         this.project = project;
         if (project.getDatasourceLogin() == null) {
@@ -457,15 +456,15 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         String validation = (String)getProperty(PersistenceUnitProperties.JPQL_VALIDATION);
         JPAQueryBuilder builder = null;
         try {
-            Class parserClass = null;
+            Class<? extends JPAQueryBuilder> parserClass = null;
             // use class.forName() to avoid loading parser classes for JAXB
             // Use Class.forName not thread class loader to avoid class loader issues.
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                parserClass = AccessController.doPrivileged(new PrivilegedClassForName(queryBuilderClassName));
-                builder = (JPAQueryBuilder)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(parserClass));
+                parserClass = AccessController.doPrivileged(new PrivilegedClassForName<>(queryBuilderClassName));
+                builder = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(parserClass));
             } else {
                 parserClass = PrivilegedAccessHelper.getClassForName(queryBuilderClassName);
-                builder = (JPAQueryBuilder)PrivilegedAccessHelper.newInstanceFromClass(parserClass);
+                builder = PrivilegedAccessHelper.newInstanceFromClass(parserClass);
             }
         } catch (Exception e) {
             throw new IllegalStateException("Could not load the JPQL parser class." /* TODO: Localize string */, e);
@@ -627,10 +626,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Add the query to the session queries.
      */
     protected synchronized void addQuery(DatabaseQuery query, boolean nameMustBeUnique) {
-        Vector queriesByName = (Vector)getQueries().get(query.getName());
+        List<DatabaseQuery> queriesByName = getQueries().get(query.getName());
         if (queriesByName == null) {
             // lazily create Vector in Hashtable.
-            queriesByName = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            queriesByName = new ArrayList<>();
             getQueries().put(query.getName(), queriesByName);
         }
 
@@ -642,8 +641,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             }
         }else{
             // Check that we do not already have a query that matched it
-            for (Iterator enumtr = queriesByName.iterator(); enumtr.hasNext();) {
-                DatabaseQuery existingQuery = (DatabaseQuery)enumtr.next();
+            for (Iterator<DatabaseQuery> enumtr = queriesByName.iterator(); enumtr.hasNext();) {
+                DatabaseQuery existingQuery = enumtr.next();
                 if (Helper.areTypesAssignable(query.getArgumentTypes(), existingQuery.getArgumentTypes())) {
                     throw ValidationException.existingQueryTypeConflict(query, existingQuery);
                 }
@@ -789,7 +788,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 ++retryCount;
                 try {
                     // Give the failover time to recover.
-                    Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                    Thread.sleep(getLogin().getDelayBetweenConnectionAttempts());
                     Object[] args = new Object[1];
                     args[0] = exceptionToThrow;
                     log(SessionLog.INFO, SessionLog.TRANSACTION, "communication_failure_attempting_begintransaction_retry", args, null);
@@ -922,10 +921,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * Check to see if the descriptor of a superclass can be used to describe this class
      *
-     * @param theClass
      * @return ClassDescriptor
      */
-    protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
+    protected ClassDescriptor checkHierarchyForDescriptor(Class<?> theClass){
         return getDescriptor(theClass.getSuperclass());
     }
 
@@ -1169,24 +1167,24 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return getDefaultReadOnlyClasses();
     }
 
-    public DatabaseValueHolder createCloneQueryValueHolder(ValueHolderInterface attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
-        return new ProtectedValueHolder(attributeValue, mapping, this);
+    public <T> DatabaseValueHolder<T> createCloneQueryValueHolder(ValueHolderInterface<T> attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
+        return new ProtectedValueHolder<>(attributeValue, mapping, this);
     }
 
-    public DatabaseValueHolder createCloneTransformationValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
-        return new ProtectedValueHolder(attributeValue, mapping, this);
+    public <T> DatabaseValueHolder<T> createCloneTransformationValueHolder(ValueHolderInterface<T> attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
+        return new ProtectedValueHolder<>(attributeValue, mapping, this);
     }
 
     public <T> InjectionManager<T> createInjectionManager(Object beanManager){
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    Class elim = AccessController.doPrivileged(new PrivilegedClassForName(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
-                    Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(elim, new Class[] {String.class}, false));
-                    return (InjectionManager<T>) AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {beanManager}));
+                    Class<InjectionManager<T>> elim = AccessController.doPrivileged(new PrivilegedClassForName<>(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
+                    Constructor<InjectionManager<T>> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(elim, new Class<?>[]{String.class}, false));
+                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, new Object[]{beanManager}));
             } else {
-                Class elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader());
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(elim, new Class[] {Object.class}, false);
-                return (InjectionManager<T>) PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {beanManager});
+                Class<InjectionManager<T>> elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(InjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader());
+                Constructor<InjectionManager<T>> constructor = PrivilegedAccessHelper.<InjectionManager<T>>getConstructorFor(elim, new Class<?>[] {Object.class}, false);
+                return PrivilegedAccessHelper.<InjectionManager<T>>invokeConstructor(constructor, new Object[] {beanManager});
             }
         } catch (Exception e){
             logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
@@ -1344,7 +1342,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         query.setObject(object);
         query.checkDatabaseForDoesExist();
         query.setIsExecutionClone(true);
-        return ((Boolean)executeQuery(query)).booleanValue();
+        return (Boolean) executeQuery(query);
     }
 
     /**
@@ -1510,7 +1508,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * INTERNAL:
      * Release (if required) connection after call.
-     * @param query
      */
     public void releaseConnectionAfterCall(DatabaseQuery query) {
     }
@@ -1534,7 +1531,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (value == null) {
             return 0;
         } else {
-            return value.intValue();
+            return value;
         }
     }
 
@@ -1579,7 +1576,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass) throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor(domainClass);
 
         if (descriptor == null) {
@@ -1604,8 +1601,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, Object arg1) throws DatabaseException {
-        Vector argumentValues = new Vector();
+    public Object executeQuery(String queryName, Class<?> domainClass, Object arg1) throws DatabaseException {
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         return executeQuery(queryName, domainClass, argumentValues);
     }
@@ -1619,8 +1616,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2) throws DatabaseException {
-        Vector argumentValues = new Vector();
+    public Object executeQuery(String queryName, Class<?> domainClass, Object arg1, Object arg2) throws DatabaseException {
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         argumentValues.addElement(arg2);
         return executeQuery(queryName, domainClass, argumentValues);
@@ -1635,8 +1632,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2, Object arg3) throws DatabaseException {
-        Vector argumentValues = new Vector();
+    public Object executeQuery(String queryName, Class<?> domainClass, Object arg1, Object arg2, Object arg3) throws DatabaseException {
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         argumentValues.addElement(arg2);
         argumentValues.addElement(arg3);
@@ -1652,7 +1649,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, List argumentValues) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass, List argumentValues) throws DatabaseException {
         if (argumentValues instanceof Vector) {
             return executeQuery(queryName, domainClass, (Vector)argumentValues);
         } else {
@@ -1668,7 +1665,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Class domainClass, Vector argumentValues) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass, Vector argumentValues) throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor(domainClass);
 
         if (descriptor == null) {
@@ -1693,7 +1690,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     @Override
     public Object executeQuery(String queryName, Object arg1) throws DatabaseException {
-        Vector argumentValues = new Vector();
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         return executeQuery(queryName, argumentValues);
     }
@@ -1707,7 +1704,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     @Override
     public Object executeQuery(String queryName, Object arg1, Object arg2) throws DatabaseException {
-        Vector argumentValues = new Vector();
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         argumentValues.addElement(arg2);
         return executeQuery(queryName, argumentValues);
@@ -1722,7 +1719,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     @Override
     public Object executeQuery(String queryName, Object arg1, Object arg2, Object arg3) throws DatabaseException {
-        Vector argumentValues = new Vector();
+        Vector<Object> argumentValues = new Vector<>();
         argumentValues.addElement(arg1);
         argumentValues.addElement(arg2);
         argumentValues.addElement(arg3);
@@ -1910,7 +1907,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                     if (retryCount > 1) {
                         // We are retrying more than once lets wait to give connection time to restart.
                         //Give the failover time to recover.
-                        Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                        Thread.sleep(getLogin().getDelayBetweenConnectionAttempts());
                     }
                     return executionSession.executeQuery(query, row, retryCount);
                 } catch (DatabaseException newException){
@@ -1997,7 +1994,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             synchronized (this) {
                 if ((this.accessors == null) && (this.project != null) && (this.project.getDatasourceLogin() != null)) {
                     // PERF: lazy init, not always required.
-                    List<Accessor> newAccessors = new ArrayList(1);
+                    List<Accessor> newAccessors = new ArrayList<>(1);
                     newAccessors.add(this.project.getDatasourceLogin().buildAccessor());
                     this.accessors = newAccessors;
                 }
@@ -2041,56 +2038,67 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public Object basicExecuteCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
         Object result = null;
-        if (query.getAccessors().size() == 1) {
-            result = query.getAccessor().executeCall(call, translationRow, this);
-        } else {
-            RuntimeException exception = null;
-            // Replication or partitioning may require execution on multiple connections.
-            for (Accessor accessor : query.getAccessors()) {
-                Object object = null;
-                try {
-                    object = accessor.executeCall(call, translationRow, this);
-                } catch (RuntimeException failed) {
-                    // Catch any exceptions to allow execution on each connections.
-                    // This is used to have DDL run on every database even if one db fails because table already exists.
-                    if (exception == null) {
-                        exception = failed;
+
+        if (this.eventManager != null) {
+            this.eventManager.preExecuteCall(call);
+        }
+
+        try {
+            if (query.getAccessors().size() == 1) {
+                result = query.getAccessor().executeCall(call, translationRow, this);
+            } else {
+                RuntimeException exception = null;
+                // Replication or partitioning may require execution on multiple connections.
+                for (Accessor accessor : query.getAccessors()) {
+                    Object object = null;
+                    try {
+                        object = accessor.executeCall(call, translationRow, this);
+                    } catch (RuntimeException failed) {
+                        // Catch any exceptions to allow execution on each connections.
+                        // This is used to have DDL run on every database even if one db fails because table already exists.
+                        if (exception == null) {
+                            exception = failed;
+                        }
                     }
-                }
-                if (call.isOneRowReturned()) {
-                    // If one row is desired, then break on first hit.
-                    if (object != null) {
-                        result = object;
-                        break;
-                    }
-                } else if (call.isNothingReturned()) {
-                    // If no return ensure row count is consistent, 0 if any 0, otherwise first number.
-                    if (result == null) {
-                        result = object;
-                    } else {
-                        if (object instanceof Integer) {
-                            if (((Integer)result).intValue() != 0) {
-                                if (((Integer)object).intValue() != 0) {
-                                    result = object;
+                    if (call.isOneRowReturned()) {
+                        // If one row is desired, then break on first hit.
+                        if (object != null) {
+                            result = object;
+                            break;
+                        }
+                    } else if (call.isNothingReturned()) {
+                        // If no return ensure row count is consistent, 0 if any 0, otherwise first number.
+                        if (result == null) {
+                            result = object;
+                        } else {
+                            if (object instanceof Integer) {
+                                if ((Integer) result != 0) {
+                                    if ((Integer) object != 0) {
+                                        result = object;
+                                    }
                                 }
                             }
                         }
-                    }
-                } else {
-                    // Either a set of rows (union), or cursor (return).
-                    if (result == null) {
-                        result = object;
                     } else {
-                        if (object instanceof List) {
-                            ((List)result).addAll((List)object);
+                        // Either a set of rows (union), or cursor (return).
+                        if (result == null) {
+                            result = object;
                         } else {
-                            break; // Not sure what to do, so break (if a cursor, don't only want to open one cursor.
+                            if (object instanceof List) {
+                                ((List)result).addAll((List)object);
+                            } else {
+                                break; // Not sure what to do, so break (if a cursor, don't only want to open one cursor.
+                            }
                         }
                     }
                 }
+                if (exception != null) {
+                    throw exception;
+                }
             }
-            if (exception != null) {
-                throw exception;
+        } finally {
+            if (this.eventManager != null) {
+                this.eventManager.postExecuteCall(call, result);
             }
         }
         return result;
@@ -2250,7 +2258,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
      * at different levels based on Cache Isolation.  This method will return the correct Session
      * for a particular Entity class based on the Isolation Level and the attributes provided.
-     * <p>
+     *
      * @param canReturnSelf true when method calls itself.  If the path
      * starting at <code>this</code> is acceptable.  Sometimes true if want to
      * move to the first valid session, i.e. executing on ClientSession when really
@@ -2292,7 +2300,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (injectionManager == null){
             injectionManager = createInjectionManager(this.getProperty(PersistenceUnitProperties.CDI_BEANMANAGER));
         }
-        return injectionManager;
+        return (InjectionManager<T>) injectionManager;
     }
 
     /**
@@ -2362,7 +2370,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * If the passed Class parameter is null, then null will be returned.
      */
     @Override
-    public ClassDescriptor getClassDescriptor(Class theClass) {
+    public ClassDescriptor getClassDescriptor(Class<?> theClass) {
         if (theClass == null) {
             return null;
         }
@@ -2401,7 +2409,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * new class. If the passed Class is null, null will be returned.
      */
     @Override
-    public ClassDescriptor getDescriptor(Class theClass) {
+    public ClassDescriptor getDescriptor(Class<?> theClass) {
         if (theClass == null) {
             return null;
         }
@@ -2436,9 +2444,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                     // This is used by EJB to find the descriptor for a stub and remote to unwrap it,
                     // and by inheritance to allow for subclasses that have no additional state to not require a descriptor.
                     if (!theClass.isInterface()) {
-                        Class[] interfaces = theClass.getInterfaces();
+                        Class<?>[] interfaces = theClass.getInterfaces();
                         for (int index = 0; index < interfaces.length; ++index) {
-                            Class interfaceClass = interfaces[index];
+                            Class<?> interfaceClass = interfaces[index];
                             descriptor = getDescriptor(interfaceClass);
                             if (descriptor != null) {
                                 getDescriptors().put(interfaceClass, descriptor);
@@ -2501,7 +2509,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return all registered descriptors.
      */
     @Override
-    public Map<Class, ClassDescriptor> getDescriptors() {
+    public Map<Class<?>, ClassDescriptor> getDescriptors() {
         return this.project.getDescriptors();
     }
 
@@ -2752,7 +2760,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the sequnce number from the database
      */
     @Override
-    public Number getNextSequenceNumberValue(Class domainClass) {
+    public Number getNextSequenceNumberValue(Class<?> domainClass) {
         return (Number)getSequencing().getNextValue(domainClass);
     }
 
@@ -2872,7 +2880,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * The platform is used for database specific behavior.
      */
     @Override
-    public Platform getPlatform(Class domainClass) {
+    public Platform getPlatform(Class<?> domainClass) {
         // PERF: Cache the platform.
         if (platform == null) {
             platform = getDatasourcePlatform();
@@ -2907,7 +2915,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     @Override
     public Map<String, Object> getProperties() {
         if (properties == null) {
-            properties = new HashMap(5);
+            properties = new HashMap<>(5);
         }
         return properties;
     }
@@ -2956,7 +2964,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public Map<String, List<DatabaseQuery>> getQueries() {
         // PERF: lazy init, not normally required.
         if (queries == null) {
-            queries = new HashMap(5);
+            queries = new HashMap<>(5);
         }
         return queries;
     }
@@ -2985,9 +2993,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see #getQueries()
      */
     public List<DatabaseQuery> getAllQueries() {
-        Vector allQueries = new Vector();
-        for (Iterator vectors = getQueries().values().iterator(); vectors.hasNext();) {
-            allQueries.addAll((Vector)vectors.next());
+        List<DatabaseQuery> allQueries = new Vector<>();
+        for (Iterator<List<DatabaseQuery>> vectors = getQueries().values().iterator(); vectors.hasNext();) {
+            allQueries.addAll(vectors.next());
         }
         return allQueries;
     }
@@ -3044,11 +3052,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see #getQuery(String, List)
      */
     public DatabaseQuery getQuery(String name, Vector arguments, boolean shouldSearchParent) {
-        Vector queries = (Vector)getQueries().get(name);
+        List<DatabaseQuery> queries = getQueries().get(name);
         if ((queries != null) && !queries.isEmpty()) {
             // Short circuit the simple, most common case of only one query.
             if (queries.size() == 1) {
-                return (DatabaseQuery)queries.firstElement();
+                return queries.get(0);
             }
 
             // CR#3754; Predrag; mar 19/2002;
@@ -3066,8 +3074,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             for (int i = 0; i < argumentTypesSize; i++) {
                 argumentTypes.addElement(arguments.elementAt(i).getClass());
             }
-            for (Enumeration queriesEnum = queries.elements(); queriesEnum.hasMoreElements();) {
-                DatabaseQuery query = (DatabaseQuery)queriesEnum.nextElement();
+            for (DatabaseQuery query: queries) {
                 if (Helper.areTypesAssignable(argumentTypes, query.getArgumentTypes())) {
                     return query;
                 }
@@ -3099,7 +3106,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the session to be used for the class.
      * Used for compatibility with the session broker.
      */
-    public AbstractSession getSessionForClass(Class domainClass) {
+    public AbstractSession getSessionForClass(Class<?> domainClass) {
         if (hasBroker()) {
             return getBroker().getSessionForClass(domainClass);
         }
@@ -3228,7 +3235,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return true if a descriptor exists for the given class.
      */
     @Override
-    public boolean hasDescriptor(Class theClass) {
+    public boolean hasDescriptor(Class<?> theClass) {
         if (theClass == null) {
             return false;
         }
@@ -3321,7 +3328,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Return if the class is defined as read-only.
      */
-    public boolean isClassReadOnly(Class theClass) {
+    public boolean isClassReadOnly(Class<?> theClass) {
         ClassDescriptor descriptor = getDescriptor(theClass);
         return isClassReadOnly(theClass, descriptor);
     }
@@ -3331,7 +3338,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return if the class is defined as read-only.
      * PERF: Pass descriptor to avoid re-lookup.
      */
-    public boolean isClassReadOnly(Class theClass, ClassDescriptor descriptor) {
+    public boolean isClassReadOnly(Class<?> theClass, ClassDescriptor descriptor) {
         if ((descriptor != null) && descriptor.shouldBeReadOnly()) {
             return true;
         }
@@ -3619,7 +3626,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see #readAllObjects(Class, Expression)
      */
     @Override
-    public Vector readAllObjects(Class domainClass) throws DatabaseException {
+    public Vector readAllObjects(Class<?> domainClass) throws DatabaseException {
         ReadAllQuery query = new ReadAllQuery();
         query.setIsExecutionClone(true);
         query.setReferenceClass(domainClass);
@@ -3636,7 +3643,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see ReadAllQuery
      */
-    public Vector readAllObjects(Class domainClass, String sqlString) throws DatabaseException {
+    public Vector readAllObjects(Class<?> domainClass, String sqlString) throws DatabaseException {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(domainClass);
         query.setSQLString(sqlString);
@@ -3653,7 +3660,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see Call
      */
     @Override
-    public Vector readAllObjects(Class referenceClass, Call aCall) throws DatabaseException {
+    public Vector readAllObjects(Class<?> referenceClass, Call aCall) throws DatabaseException {
         ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClass(referenceClass);
         raq.setCall(aCall);
@@ -3669,7 +3676,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see ReadAllQuery
      */
     @Override
-    public Vector readAllObjects(Class domainClass, Expression expression) throws DatabaseException {
+    public Vector readAllObjects(Class<?> domainClass, Expression expression) throws DatabaseException {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(domainClass);
         query.setSelectionCriteria(expression);
@@ -3687,7 +3694,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see #readAllObjects(Class, Expression)
      */
     @Override
-    public Object readObject(Class domainClass) throws DatabaseException {
+    public Object readObject(Class<?> domainClass) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
         query.setIsExecutionClone(true);
@@ -3704,7 +3711,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      *
      * @see ReadObjectQuery
      */
-    public Object readObject(Class domainClass, String sqlString) throws DatabaseException {
+    public Object readObject(Class<?> domainClass, String sqlString) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
         query.setSQLString(sqlString);
@@ -3722,7 +3729,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see JPQLCall
      */
     @Override
-    public Object readObject(Class domainClass, Call aCall) throws DatabaseException {
+    public Object readObject(Class<?> domainClass, Call aCall) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
         query.setCall(aCall);
@@ -3738,7 +3745,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * @see ReadObjectQuery
      */
     @Override
-    public Object readObject(Class domainClass, Expression expression) throws DatabaseException {
+    public Object readObject(Class<?> domainClass, Expression expression) throws DatabaseException {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(domainClass);
         query.setSelectionCriteria(expression);
@@ -3844,14 +3851,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Remove the specific query with the given queryName and argumentTypes.
      */
     public void removeQuery(String queryName, Vector argumentTypes) {
-        Vector queries = (Vector)getQueries().get(queryName);
+        List<DatabaseQuery> queries = getQueries().get(queryName);
         if (queries == null) {
             return;
         } else {
             DatabaseQuery query = null;
-            for (Enumeration enumtr = queries.elements(); enumtr.hasMoreElements();) {
-                query = (DatabaseQuery)enumtr.nextElement();
-                if (Helper.areTypesAssignable(argumentTypes, query.getArgumentTypes())) {
+            for (DatabaseQuery q: queries) {
+                if (Helper.areTypesAssignable(argumentTypes, q.getArgumentTypes())) {
+                    query = q;
                     break;
                 }
             }
@@ -3926,7 +3933,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Set the accessor.
      */
     public void setAccessor(Accessor accessor) {
-        this.accessors = new ArrayList(1);
+        this.accessors = new ArrayList<>(1);
         this.accessors.add(accessor);
     }
 
@@ -3948,7 +3955,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     }
 
     public void setInjectionManager(
-            InjectionManager injectionManager) {
+            InjectionManager<?> injectionManager) {
         this.injectionManager = injectionManager;
     }
 
@@ -4116,7 +4123,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * INTERNAL:
      * Set the user defined properties by shallow copying the propertiesMap.
-     * @param propertiesMap
      */
     public void setProperties(Map<String, Object> propertiesMap) {
         if (null == propertiesMap) {
@@ -4129,7 +4135,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
              * the key:value type values at design time. putAll() is not
              * synchronized. We clone all maps whether immutable or not.
              */
-            properties = new HashMap();
+            properties = new HashMap<>();
             // Shallow copy all internal key:value pairs - a null propertiesMap will throw a NPE
             properties.putAll(propertiesMap);
         }
@@ -4573,12 +4579,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Return the log level
-     * </p><p>
+     * </p>
      *
      * @return the log level
-     * </p><p>
      * @param category  the string representation of a EclipseLink category, e.g. "sql", "transaction" ...
-     * </p>
      */
     @Override
     public int getLogLevel(String category) {
@@ -4589,9 +4593,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Return the log level
-     * </p><p>
-     * @return the log level
      * </p>
+     * @return the log level
      */
     @Override
     public int getLogLevel() {
@@ -4602,10 +4605,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Set the log level
-     * </p><p>
+     * </p>
      *
      * @param level     the new log level
-     * </p>
      */
     @Override
     public void setLogLevel(int level) {
@@ -4626,7 +4628,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * PUBLIC:
      * <p>
-     * Check if a message of the given level would actually be logged.
+     * Check if a message of the given level would actually be logged.</p>
      *
      * @return true if the given message level will be logged
      * @param level  the log request level
@@ -4644,14 +4646,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level and category that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p>
      */
     public void log(int level, String category, String message) {
         if (this.isLoggingOff) {
@@ -4660,23 +4659,19 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (!shouldLog(level, category)) {
             return;
         }
-        log(level, category, message, (Object[])null);
+        log(level, category, message, null);
     }
 
     /**
      * PUBLIC:
      * <p>
      * Log a message with level, category and a parameter that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param param  a parameter of the message
-     * </p>
      */
     public void log(int level, String category, String message, Object param) {
         if (this.isLoggingOff) {
@@ -4692,18 +4687,13 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category and two parameters that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param param1  a parameter of the message
-     * </p><p>
      * @param param2  second parameter of the message
-     * </p>
      */
     public void log(int level, String category, String message, Object param1, Object param2) {
         if (this.isLoggingOff) {
@@ -4719,20 +4709,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category and three parameters that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param param1  a parameter of the message
-     * </p><p>
      * @param param2  second parameter of the message
-     * </p><p>
      * @param param3  third parameter of the message
-     * </p>
      */
     public void log(int level, String category, String message, Object param1, Object param2, Object param3) {
         if (this.isLoggingOff) {
@@ -4748,16 +4732,12 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category and an array of parameters that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param params  array of parameters to the message
-     * </p>
      */
     public void log(int level, String category, String message, Object[] params) {
         if (this.isLoggingOff) {
@@ -4770,18 +4750,13 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category, parameters and accessor that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param params  array of parameters to the message
-     * </p><p>
      * @param accessor  the connection that generated the log entry
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p>
      */
     public void log(int level, String category, String message, Object[] params, Accessor accessor) {
         if (this.isLoggingOff) {
@@ -4794,20 +4769,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category, parameters and accessor.  shouldTranslate determines if the message needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param params  array of parameters to the message
-     * </p><p>
      * @param accessor  the connection that generated the log entry
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param shouldTranslate  true if the message needs to be translated.
-     * </p>
      */
     public void log(int level, String category, String message, Object[] params, Accessor accessor, boolean shouldTranslate) {
         if (this.isLoggingOff) {
@@ -4824,14 +4793,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a throwable with level and category.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param throwable  a Throwable
-     * </p>
      */
     public void logThrowable(int level, String category, Throwable throwable) {
         if (this.isLoggingOff) {
@@ -4850,10 +4816,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a severe level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void severe(String message, String category) {
         if (this.isLoggingOff) {
@@ -4867,10 +4832,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a warning level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void warning(String message, String category) {
         if (this.isLoggingOff) {
@@ -4884,10 +4848,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a info level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void info(String message, String category) {
         if (this.isLoggingOff) {
@@ -4901,10 +4864,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a config level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void config(String message, String category) {
         if (this.isLoggingOff) {
@@ -4918,10 +4880,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a fine level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void fine(String message, String category) {
         if (this.isLoggingOff) {
@@ -4935,10 +4896,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a finer level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void finer(String message, String category) {
         if (this.isLoggingOff) {
@@ -4952,10 +4912,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a finest level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void finest(String message, String category) {
         if (this.isLoggingOff) {
@@ -5003,14 +4962,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void copyDescriptorNamedQueries(boolean allowSameQueryNameDiffArgsCopyToSession) {
         for (ClassDescriptor descriptor : getProject().getOrderedDescriptors()) {
-            Map queries  = descriptor.getQueryManager().getQueries();
+            Map<String, List<DatabaseQuery>> queries  = descriptor.getQueryManager().getQueries();
             if ((queries != null) && (queries.size() > 0)) {
-                for (Iterator keyValueItr = queries.entrySet().iterator(); keyValueItr.hasNext();){
-                    Map.Entry entry = (Map.Entry) keyValueItr.next();
-                    Vector thisQueries = (Vector)entry.getValue();
+                for (Iterator<Map.Entry<String, List<DatabaseQuery>>> keyValueItr = queries.entrySet().iterator(); keyValueItr.hasNext();){
+                    Map.Entry<String, List<DatabaseQuery>> entry = keyValueItr.next();
+                    List<DatabaseQuery> thisQueries = entry.getValue();
                     if ((thisQueries != null) && (thisQueries.size() > 0)){
-                        for( Iterator thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){
-                            DatabaseQuery queryToBeAdded = (DatabaseQuery)thisQueriesItr.next();
+                        for( Iterator<DatabaseQuery> thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){
+                            DatabaseQuery queryToBeAdded = thisQueriesItr.next();
                             if (allowSameQueryNameDiffArgsCopyToSession){
                                 addQuery(queryToBeAdded, false);
                             } else {
@@ -5097,7 +5056,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (value == null) {
             return 0;
         } else {
-            return value.intValue();
+            return value;
         }
     }
 
@@ -5164,7 +5123,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     * or have a common inheritance hierarchy mapped root class.
     * The AttributeGroup should correspond to the object type.
     *
-    * @param objectOrCollection
     */
    public void load(Object objectOrCollection, AttributeGroup group) {
        if (objectOrCollection == null || group == null) {
@@ -5188,7 +5146,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     * or have a common inheritance hierarchy mapped root class.
     * The AttributeGroup should correspond to the object type.
     *
-    * @param objectOrCollection
     */
    public void load(Object objectOrCollection, AttributeGroup group, ClassDescriptor referenceDescriptor, boolean fromFetchGroup) {
        if (objectOrCollection == null || group == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import java.util.ListResourceBundle;
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Xi Chen
  */
-public class DatabaseExceptionResource extends ListResourceBundle {
+public final class DatabaseExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "4003", "Configuration error.  Class [{0}] not found." },
                                            { "4005", "DatabaseAccessor not connected." },
@@ -42,6 +42,13 @@ public class DatabaseExceptionResource extends ListResourceBundle {
                                            { "4021", "Unable to acquire a connection from driver [{0}], user [{1}] and URL [{2}].  Verify that you have set the expected driver class and URL.  Check your login, persistence.xml or sessions.xml resource.  The jdbc.driver property should be set to a class that is compatible with your database platform" },
                                            { "4022", "Accessor or its connection has been set to null.  This can occur if the ClientSession or UnitOfWork was released in a seperate thread, for instance if a Timeout occurred." }
     };
+
+    /**
+     * Default constructor.
+     */
+    public DatabaseExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

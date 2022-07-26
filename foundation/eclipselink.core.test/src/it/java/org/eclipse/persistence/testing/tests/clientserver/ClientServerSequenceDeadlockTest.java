@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,6 +50,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
     /**
      *
      */
+    @Override
     public void reset() {
         for (int i = 0; i < getClients().size(); i++) {
             EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)getClients().elementAt(i);
@@ -64,6 +65,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
     /**
      *
      */
+    @Override
     public void setup() {
         this.login = (DatabaseLogin)getSession().getLogin().clone();
         // Workaround for DB2 bug (or feature?) causing test deadlock, see bug 3550940.
@@ -89,6 +91,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
     /**
      *
      */
+    @Override
     public void test() {
         for (int i = 0; i < NUM_CLIENTS; i++) {
             EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)clients.elementAt(i);
@@ -105,7 +108,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
                     long currentTime = System.currentTimeMillis();
                     if (!fifoArray[i].isEmpty()) {
                         clientLastActionTimeArray[i] = currentTime;
-                        int objectNumber = ((Integer)fifoArray[i].removeHead()).intValue();
+                        int objectNumber = (Integer) fifoArray[i].removeHead();
 
                         //                    System.out.println("Client# = " + i + " object# =  " + objectNumber);
                         if ((objectNumber == numObjects) || (objectNumber == -1)) {
@@ -132,6 +135,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
     /**
      *
      */
+    @Override
     public void verify() {
         for (int i = 0; i < NUM_CLIENTS; i++) {
             EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)clients.elementAt(i);

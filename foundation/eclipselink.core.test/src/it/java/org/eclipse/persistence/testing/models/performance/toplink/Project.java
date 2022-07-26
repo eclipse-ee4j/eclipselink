@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.models.performance.toplink;
 import org.eclipse.persistence.indirection.*;
 
 /**
- * <b>Purpose</b>: Abstract superclass for Large & Small projects in Employee Demo
+ * <b>Purpose</b>: Abstract superclass for Large &amp; Small projects in Employee Demo
  * <p><b>Description</b>:     Project is an example of an abstract superclass. It demonstrates how class inheritance can be mapped to database tables.
  * It's subclasses are concrete and may or may not add columns through additional tables. The PROJ_TYPE field in the
  * database table indicates which subclass to instantiate. Projects are involved in a M:M relationship with employees.
@@ -33,10 +33,12 @@ public abstract class Project extends org.eclipse.persistence.testing.models.per
         this.teamLeaderHolder = new ValueHolder();
     }
 
+    @Override
     public org.eclipse.persistence.testing.models.performance.Employee getTeamLeader() {
         return (Employee)teamLeaderHolder.getValue();
     }
 
+    @Override
     public void setTeamLeader(org.eclipse.persistence.testing.models.performance.Employee teamLeader) {
         this.teamLeaderHolder.setValue(teamLeader);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,7 @@
 //     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.jaxb.plugins;
 
-import static com.sun.xml.xsom.XSFacet.FACET_FRACTIONDIGITS;
-import static com.sun.xml.xsom.XSFacet.FACET_LENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXEXCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXINCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXLENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_MINEXCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MININCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MINLENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
-import static com.sun.xml.xsom.XSFacet.FACET_TOTALDIGITS;
-
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,18 +31,13 @@ import java.util.regex.Pattern;
 
 import jakarta.xml.bind.annotation.XmlElement;
 
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXParseException;
-
 import com.sun.codemodel.JAnnotationArrayMember;
 import com.sun.codemodel.JAnnotationUse;
-import com.sun.codemodel.JAnnotationValue;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JExpressionImpl;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JFormatter;
-import com.sun.codemodel.JStringLiteral;
 import com.sun.codemodel.JType;
 import com.sun.tools.xjc.BadCommandLineException;
 import com.sun.tools.xjc.Options;
@@ -74,16 +52,29 @@ import com.sun.tools.xjc.model.CReferencePropertyInfo;
 import com.sun.tools.xjc.model.CValuePropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
+import com.sun.xml.xsom.XSAttributeUse;
 import com.sun.xml.xsom.XSElementDecl;
 import com.sun.xml.xsom.XSFacet;
 import com.sun.xml.xsom.XSParticle;
+import com.sun.xml.xsom.XSRestrictionSimpleType;
 import com.sun.xml.xsom.XSSimpleType;
 import com.sun.xml.xsom.XSTerm;
 import com.sun.xml.xsom.XSType;
-import com.sun.xml.xsom.impl.AttributeUseImpl;
-import com.sun.xml.xsom.impl.ParticleImpl;
-import com.sun.xml.xsom.impl.RestrictionSimpleTypeImpl;
 import com.sun.xml.xsom.impl.parser.DelayedRef;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
+
+import static com.sun.xml.xsom.XSFacet.FACET_FRACTIONDIGITS;
+import static com.sun.xml.xsom.XSFacet.FACET_LENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXEXCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXINCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MAXLENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_MINEXCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MININCLUSIVE;
+import static com.sun.xml.xsom.XSFacet.FACET_MINLENGTH;
+import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
+import static com.sun.xml.xsom.XSFacet.FACET_TOTALDIGITS;
 
 
 /**
@@ -215,7 +206,6 @@ public class BeanValidationPlugin extends Plugin {
 
     /* ######### CORE FUNCTIONALITY ######### */
     private static final String PATTERN_ANNOTATION_NOT_APPLICABLE = "Facet \"pattern\" was detected on a DOM node with non-string base type. Annotation was not generated, because it is not supported by the Bean Validation specification.";
-    private final boolean securityEnabled = System.getSecurityManager() != null;
 
     private static final JClass ANNOTATION_VALID;
     private static final JClass ANNOTATION_NOTNULL;
@@ -265,6 +255,7 @@ public class BeanValidationPlugin extends Plugin {
      * Processes an xsd value in form of xsd attribute from extended base.
      * <p>
      * Example:
+     * <pre>{@code
      * <xsd:complexType name="Employee">
      * <xsd:simpleContent>
      * <xsd:extension base="a:ShortId">  <- xsd extension base
@@ -278,13 +269,13 @@ public class BeanValidationPlugin extends Plugin {
      * <xsd:minLength value="1"/>        <- This is a special field that is added to the generated class, called "value" (corresponds to the valuePropertyName),
      * <xsd:maxLength value="5"/>           it gets processed by this method and the "value" field receives @Size(min = 1, max = 5).
      * </xsd:restriction>
-     * </xsd:simpleType>
+     * </xsd:simpleType>}</pre>
      */
     private void processValueFromExtendedBase(CValuePropertyInfo valueProperty, ClassOutline classOutline, List<FacetCustomization> customizations) {
         String valuePropertyName = valueProperty.getName(false);
 
         JFieldVar fieldVar = classOutline.implClass.fields().get(valuePropertyName);
-        XSSimpleType type = ((RestrictionSimpleTypeImpl) valueProperty.getSchemaComponent()).asSimpleType();
+        XSSimpleType type = ((XSRestrictionSimpleType) valueProperty.getSchemaComponent()).asSimpleType();
 
         processSimpleType(null, type, fieldVar, customizations);
     }
@@ -293,19 +284,20 @@ public class BeanValidationPlugin extends Plugin {
      * Processes an xsd attribute.
      * <p>
      * Example:
+     * <pre>{@code
      * <xsd:complexType name="Employee">
      * <xsd:simpleContent>
      * <xsd:extension base="a:Person">
      * <xsd:attribute name="id" type="xsd:string" use="optional"/>   << "id" is the attributePropertyName
      * </xsd:extension>
      * </xsd:simpleContent>
-     * </xsd:complexType>
+     * </xsd:complexType>}</pre>
      */
     private void processAttribute(CAttributePropertyInfo attributeProperty, ClassOutline classOutline, List<FacetCustomization> customizations) {
         String attributePropertyName = attributeProperty.getName(false);
         JFieldVar fieldVar = classOutline.implClass.fields().get(attributePropertyName);
 
-        AttributeUseImpl attribute = (AttributeUseImpl) attributeProperty.getSchemaComponent();
+        XSAttributeUse attribute = (XSAttributeUse) attributeProperty.getSchemaComponent();
         XSSimpleType type = attribute.getDecl().getType();
 
         // Use="required". It makes sense to annotate a required attribute with @NotNull even though it's not 100 % semantically equivalent.
@@ -320,7 +312,7 @@ public class BeanValidationPlugin extends Plugin {
      * Processes an xsd element.
      * <p>
      * Example:
-     * <xsd:element name="someCollection" minOccurs="1" maxOccurs="unbounded"/>
+     * {@code <xsd:element name="someCollection" minOccurs="1" maxOccurs="unbounded"/>}
      */
     private void processElement(CElementPropertyInfo propertyInfo, ClassOutline co, List<FacetCustomization> customizations) {
         XSParticle particle = (XSParticle) propertyInfo.getSchemaComponent();
@@ -338,7 +330,7 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private void processTermElement(XSParticle particle, JFieldVar fieldVar, XSElementDecl element, List<FacetCustomization> customizations) {
-        final int minOccurs = getOccursValue("minOccurs", particle);
+        final int minOccurs = particle.getMinOccurs().intValue();
         XSType elementType = element.getType();
 
         if (elementType.isComplexType()) {
@@ -355,7 +347,7 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private void processSimpleType(XSParticle particle, XSSimpleType simpleType, JFieldVar fieldVar, List<FacetCustomization> customizations) {
-        Map<JAnnotationUse, FacetType> annotationsAndTheirOrigin = new HashMap<JAnnotationUse, FacetType>();
+        Map<JAnnotationUse, FacetType> annotationsAndTheirOrigin = new HashMap<>();
 
         applyAnnotations(particle, simpleType, fieldVar, annotationsAndTheirOrigin);
         applyCustomizations(fieldVar, customizations, annotationsAndTheirOrigin);
@@ -525,7 +517,7 @@ public class BeanValidationPlugin extends Plugin {
          * and returns them.
          */
         private List<FacetCustomization> detectCustomizations(CCustomizable ca) {
-            List<FacetCustomization> facetCustomizations = new ArrayList<FacetCustomization>();
+            List<FacetCustomization> facetCustomizations = new ArrayList<>();
             List<CPluginCustomization> pluginCustomizations = ca.getCustomizations();
             if (pluginCustomizations != null)
                 for (CPluginCustomization c : pluginCustomizations) {
@@ -683,8 +675,8 @@ public class BeanValidationPlugin extends Plugin {
      * If the values are not default, the property will be annotated with @Size.
      */
     private void processMinMaxOccurs(XSParticle particle, JFieldVar fieldVar) {
-        final int maxOccurs = getOccursValue("maxOccurs", particle);
-        final int minOccurs = getOccursValue("minOccurs", particle);
+        final int maxOccurs = particle.getMaxOccurs().intValue();
+        final int minOccurs = particle.getMinOccurs().intValue();
         if (maxOccurs > 1) {
             if (notAnnotated(fieldVar, ANNOTATION_SIZE))
                 fieldVar.annotate(ANNOTATION_SIZE).param("min", minOccurs).param("max", maxOccurs);
@@ -702,7 +694,7 @@ public class BeanValidationPlugin extends Plugin {
     private void convertToElement(XSParticle particle, JFieldVar fieldVar) {
         if (notAnnotated(fieldVar, ANNOTATION_XMLELEMENT)) {
             fieldVar.annotate(XmlElement.class);
-            if (particle != null && getOccursValue("minOccurs", particle) > 0) {
+            if (particle != null && particle.getMinOccurs().intValue() > 0) {
                 notNullAnnotate(fieldVar);
             }
         }
@@ -758,7 +750,7 @@ public class BeanValidationPlugin extends Plugin {
      */
     private boolean isMoreSpecificBoundary(JFieldVar fieldVar, String boundaryValue, JAnnotationUse annotationUse,
                                            boolean xorComplement) {
-        String existingBoundaryValue = getExistingBoundaryValue(annotationUse);
+        String existingBoundaryValue = annotationUse.getAnnotationMembers().get(VALUE).toString();
 
         if (existingBoundaryValue == null) return true;
         else if (Long.valueOf(boundaryValue).compareTo(Long.valueOf(existingBoundaryValue)) > 0 ^ xorComplement)
@@ -776,32 +768,17 @@ public class BeanValidationPlugin extends Plugin {
     /* ######### GENERAL UTILITIES ######### */
     private Class<?> loadClass(String className) {
         Class<?> clazz = null;
-        if (securityEnabled) try {
-            clazz = AccessController.doPrivileged(ForNameActionExecutor.INSTANCE.with(className));
-        } catch (PrivilegedActionException ignored) {
-            // - Can be only of type ClassNotFoundException, no check needed, see AccessController.doPrivileged().
-            /* - ClassNotFoundException for us "means" that the fieldVar is of some unknown class - not an issue to be
-             solved by this plugin. */
-        }
-        else try {
-            clazz = loadClassInternal(className);
+        try {
+            clazz = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> Class.forName(className)
+            );
         } catch (ClassNotFoundException ignored) {
             /* - ClassNotFoundException for us "means" that the fieldVar is of some unknown class - not an issue to be
              solved by this plugin. */
+        } catch (Exception ex) {
+            throw new RuntimeException(String.format("Failed loading of %s class", className), ex);
         }
         return clazz;
-    }
-
-    private int getOccursValue(final String attributeName, final XSParticle xsParticle) {
-        return securityEnabled
-            ? AccessController.doPrivileged(OccursValueActionExecutor.INSTANCE.with(attributeName, xsParticle)).intValue()
-            : loadOccursValue(attributeName, xsParticle).intValue();
-    }
-
-    private String getExistingBoundaryValue(final JAnnotationUse jAnnotationUse) {
-        return securityEnabled
-            ? AccessController.doPrivileged(ExistingBoundaryValueActionExecutor.INSTANCE.with(jAnnotationUse))
-            : loadExistingBoundaryValue(jAnnotationUse);
     }
 
     private String eliminateShorthands(String regex) {
@@ -879,6 +856,9 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private boolean isDefaultBoundary(String fieldVarType, String annotationClass, String boundaryValue) {
+        if (unboundedDigitsClasses.contains(fieldVarType)) {
+            return false;
+        }
         return ANNOTATION_DECIMALMIN.fullName().equals(annotationClass)
                 && nonFloatingDigitsClassesBoundaries.get(fieldVarType).min.equals(boundaryValue)
                 || (ANNOTATION_DECIMALMAX.fullName().equals(annotationClass)
@@ -899,7 +879,7 @@ public class BeanValidationPlugin extends Plugin {
     private static final Set<String> nonFloatingDigitsClasses;
 
     static {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         set.add("byte");
         set.add("Byte");
         set.add("short");
@@ -913,29 +893,38 @@ public class BeanValidationPlugin extends Plugin {
         nonFloatingDigitsClasses = Collections.unmodifiableSet(set);
     }
 
+    private static final Set<String> unboundedDigitsClasses;
+
+    static {
+        Set<String> set = new HashSet<>();
+        set.add("BigInteger");
+        set.add("BigDecimal");
+        unboundedDigitsClasses = Collections.unmodifiableSet(new HashSet<>(set));
+    }
+
     private static final Set<String> floatingDigitsClasses;
 
     static {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         set.add("float");
         set.add("Float");
         set.add("double");
         set.add("Double");
-        floatingDigitsClasses = Collections.unmodifiableSet(new HashSet<String>(set));
+        floatingDigitsClasses = Collections.unmodifiableSet(new HashSet<>(set));
     }
 
     private static final Map<String, MinMaxTuple> nonFloatingDigitsClassesBoundaries;
 
     static {
-        HashMap<String, MinMaxTuple> map = new HashMap<String, MinMaxTuple>();
-        map.put("byte", new MinMaxTuple<Byte>(Byte.MIN_VALUE, Byte.MAX_VALUE));
-        map.put("Byte", new MinMaxTuple<Byte>(Byte.MIN_VALUE, Byte.MAX_VALUE));
-        map.put("short", new MinMaxTuple<Short>(Short.MIN_VALUE, Short.MAX_VALUE));
-        map.put("Short", new MinMaxTuple<Short>(Short.MIN_VALUE, Short.MAX_VALUE));
-        map.put("int", new MinMaxTuple<Integer>(Integer.MIN_VALUE, Integer.MAX_VALUE));
-        map.put("Integer", new MinMaxTuple<Integer>(Integer.MIN_VALUE, Integer.MAX_VALUE));
-        map.put("long", new MinMaxTuple<Long>(Long.MIN_VALUE, Long.MAX_VALUE));
-        map.put("Long", new MinMaxTuple<Long>(Long.MIN_VALUE, Long.MAX_VALUE));
+        HashMap<String, MinMaxTuple> map = new HashMap<>();
+        map.put("byte", new MinMaxTuple<>(Byte.MIN_VALUE, Byte.MAX_VALUE));
+        map.put("Byte", new MinMaxTuple<>(Byte.MIN_VALUE, Byte.MAX_VALUE));
+        map.put("short", new MinMaxTuple<>(Short.MIN_VALUE, Short.MAX_VALUE));
+        map.put("Short", new MinMaxTuple<>(Short.MIN_VALUE, Short.MAX_VALUE));
+        map.put("int", new MinMaxTuple<>(Integer.MIN_VALUE, Integer.MAX_VALUE));
+        map.put("Integer", new MinMaxTuple<>(Integer.MIN_VALUE, Integer.MAX_VALUE));
+        map.put("long", new MinMaxTuple<>(Long.MIN_VALUE, Long.MAX_VALUE));
+        map.put("Long", new MinMaxTuple<>(Long.MIN_VALUE, Long.MAX_VALUE));
         nonFloatingDigitsClassesBoundaries = Collections.unmodifiableMap(map);
     }
 
@@ -946,104 +935,6 @@ public class BeanValidationPlugin extends Plugin {
         private MinMaxTuple(T min, T max) {
             this.min = String.valueOf(min);
             this.max = String.valueOf(max);
-        }
-    }
-
-    private static final class ForNameActionExecutor {
-
-        private interface PrivilegedExceptionActionWith<T> extends PrivilegedExceptionAction<T> {
-            PrivilegedExceptionAction<T> with(String className);
-        }
-
-        private static final PrivilegedExceptionActionWith<Class<?>> INSTANCE = new PrivilegedExceptionActionWith<Class<?>>() {
-            private String className;
-
-            @Override
-            public Class<?> run() throws ClassNotFoundException {
-                return loadClassInternal(className);
-            }
-
-            @Override
-            public PrivilegedExceptionActionWith<Class<?>> with(String className) {
-                this.className = className;
-                return this;
-            }
-        };
-    }
-
-    private static Class<?> loadClassInternal(String className) throws ClassNotFoundException {
-        return Class.forName(className);
-    }
-
-    private static final class OccursValueActionExecutor {
-
-        private interface PrivilegedActionWith<T> extends PrivilegedAction<T> {
-            PrivilegedAction<T> with(String fieldName, XSParticle xsParticle);
-        }
-
-        private static final PrivilegedActionWith<BigInteger> INSTANCE = new PrivilegedActionWith<BigInteger>() {
-            private String fieldName;
-            private XSParticle xsParticle;
-
-            @Override
-            public BigInteger run() {
-                return loadOccursValue(fieldName, xsParticle);
-            }
-
-            @Override
-            public PrivilegedActionWith<BigInteger> with(String className, XSParticle xsParticle) {
-                this.fieldName = className;
-                this.xsParticle = xsParticle;
-                return this;
-            }
-        };
-    }
-
-    private static BigInteger loadOccursValue(String fieldName, XSParticle xsParticle) {
-        try {
-            Field field = ParticleImpl.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return ((BigInteger) field.get(xsParticle));
-        } catch (Exception e) {
-            // Nothing we can do, the user should be notified that his app is unable to
-            // execute this plugin correctly and not should not receive generated default values.
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static final class ExistingBoundaryValueActionExecutor {
-
-        private interface PrivilegedActionWith<T> extends PrivilegedAction<T> {
-            PrivilegedAction<T> with(JAnnotationUse jAnnotationUse);
-        }
-
-        private static final PrivilegedActionWith<String> INSTANCE = new PrivilegedActionWith<String>() {
-            private JAnnotationUse jAnnotationUse;
-
-            @Override
-            public String run() {
-                return loadExistingBoundaryValue(jAnnotationUse);
-            }
-
-            @Override
-            public PrivilegedAction<String> with(JAnnotationUse jAnnotationUse) {
-                this.jAnnotationUse = jAnnotationUse;
-                return this;
-            }
-        };
-    }
-
-    private static String loadExistingBoundaryValue(JAnnotationUse jAnnotationUse) {
-        JAnnotationValue jAnnotationValue = jAnnotationUse.getAnnotationMembers().get(VALUE);
-        Class<? extends JAnnotationValue> clazz = jAnnotationValue.getClass();
-        try {
-            Field theValueField = clazz.getDeclaredField(VALUE);
-            theValueField.setAccessible(true);
-            return ((JStringLiteral) theValueField.get(jAnnotationValue)).str;
-        } catch (Exception e) {
-            // Nothing we can do, user should be notified that his app is unable to
-            // execute this plugin correctly and not should not receive generated default values.
-            throw new RuntimeException(e);
         }
     }
 

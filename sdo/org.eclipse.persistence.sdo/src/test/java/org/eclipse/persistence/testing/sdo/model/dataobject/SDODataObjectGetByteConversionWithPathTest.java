@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ import commonj.sdo.Property;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -60,7 +62,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals(by, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals(by, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //3. purpose: getByte with Undefined Byte Property
@@ -104,7 +106,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         double db = 12;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((byte)db, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)db, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //6. purpose: getByte with Undefined Double Property
@@ -132,7 +134,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         float fl = 12;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((byte)fl, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)fl, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //8. purpose: getByte with Undefined float Property
@@ -161,7 +163,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         int in = 12;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((byte)in, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)in, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //10. purpose: getByte with Undefined int Property
@@ -190,7 +192,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         long lg = 12;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((byte)lg, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)lg, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //12. purpose: getByte with Undefined long Property
@@ -219,7 +221,7 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         short shr = 12;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals((byte)shr, dataObject_a.getByte(propertyPath_a_b_c));
+        assertEquals((byte)shr, dataObject_a.getByte(propertyPath_a_b_c));
     }
 
     //14. purpose: getByte with Undefined short Property
@@ -246,10 +248,10 @@ public class SDODataObjectGetByteConversionWithPathTest extends SDODataObjectCon
         dataObject_c._setType(type_c);
 
         String str = "12";
-        Byte s_d = new Byte(str);
+        Byte s_d = Byte.valueOf(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.byteValue(), dataObject_a.getByte(property));
+        assertEquals(s_d.byteValue(), dataObject_a.getByte(property));
     }
 
     //16. purpose: getDouble with Undefined string Property

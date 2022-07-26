@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,10 +38,11 @@ public class WrapperNameNullAbsentTestCases extends JSONMarshalUnmarshalTestCase
 
     public WrapperNameNullAbsentTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Company.class});
+        setClasses(new Class<?>[] {Company.class});
         setControlJSON(JSON);
     }
 
+    @Override
     public JAXBElement<Company> getControlObject() {
         Company company = new Company();
         company.strings = null;
@@ -74,7 +75,7 @@ public class WrapperNameNullAbsentTestCases extends JSONMarshalUnmarshalTestCase
     }
 
     @Override
-    public Class getUnmarshalClass() {
+    public Class<?> getUnmarshalClass() {
         return Company.class;
     }
 

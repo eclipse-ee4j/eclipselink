@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ import org.eclipse.persistence.queries.ReadQuery;
  * @see ObjectLevelReadQuery
  * @author Dorin Sandu
  */
-public class QueryBasedValueHolder extends DatabaseValueHolder {
+public class QueryBasedValueHolder<T> extends DatabaseValueHolder<T> {
 
     /**
      * Stores the query to be executed.
@@ -54,9 +54,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         this(query, null, row, session);
     }
 
-    /**
-
-    /**
+    /*
      * Store the uow identity so that it can be used to determine new
      * transaction logic
      */
@@ -99,9 +97,10 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      * If null is returned then the calling UOW will instantiate as normal.
      */
     @Override
-    public Object getValue(UnitOfWorkImpl uow) {
+    @SuppressWarnings({"unchecked"})
+    public T getValue(UnitOfWorkImpl uow) {
         if (this.query.isReadObjectQuery()){
-            return this.query.getQueryMechanism().checkCacheForObject(this.query.getTranslationRow(), uow);
+            return (T) this.query.getQueryMechanism().checkCacheForObject(this.query.getTranslationRow(), uow);
         }
         //not able to shortcircuit cache lookup to UOW return null;
         return null;
@@ -119,14 +118,15 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     }
 
     @Override
-    protected Object instantiate() throws DatabaseException {
+    protected T instantiate() throws DatabaseException {
         return instantiate(this.session);
     }
 
     /**
      * Instantiate the object by executing the query on the session.
      */
-    protected Object instantiate(AbstractSession session) throws DatabaseException {
+    @SuppressWarnings({"unchecked"})
+    protected T instantiate(AbstractSession session) throws DatabaseException {
         if (session == null) {
             throw ValidationException.instantiatingValueholderWithNullSession();
         }
@@ -136,7 +136,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         Object result = session.executeQuery(getQuery(), getRow());
         // Bug 489898 - ensure that the query's session is dereferenced, post-execution
         getQuery().setSession(null);
-        return result;
+        return (T) result;
     }
 
     /**
@@ -151,7 +151,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      * thread-safe. It must be used in a synchronized manner
      */
     @Override
-    public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
+    public T instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder<T> unitOfWorkValueHolder) {
         return instantiate(unitOfWorkValueHolder.getUnitOfWork());
     }
 
@@ -263,7 +263,6 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
 
     /**
      * INTERNAL:
-     * @param refreshCascadePolicy
      */
     public void setRefreshCascadePolicy(Integer refreshCascadePolicy) {
         this.refreshCascade = refreshCascadePolicy;

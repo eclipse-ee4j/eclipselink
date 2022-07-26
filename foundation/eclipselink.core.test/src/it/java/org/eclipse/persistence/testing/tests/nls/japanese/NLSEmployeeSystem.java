@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class NLSEmployeeSystem extends TestSystem {
         project = new EmployeeProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new EmployeeProject();
@@ -72,6 +73,7 @@ public class NLSEmployeeSystem extends TestSystem {
     /**
     * Return a connected session using the default login.
     */
+    @Override
     public DatabaseSession login() {
         DatabaseSession session;
 
@@ -112,6 +114,7 @@ public class NLSEmployeeSystem extends TestSystem {
      * This method will instantiate all of the example instances and insert them into the database
      * using the given session.
      */
+    @Override
     public void populate(DatabaseSession session) {
         NLSEmployeePopulator system = new NLSEmployeePopulator();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();

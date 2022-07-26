@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,42 +52,27 @@ public class FromClauseStateObject extends AbstractFromClauseStateObject {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String declarationBNF() {
         return InternalFromClauseBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType findManagedType(StateObject stateObject) {
         // This is the declaration clause of the top-level query
         return getManagedType(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public FromClause getExpression() {
         return (FromClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SelectStatementStateObject getParent() {
         return (SelectStatementStateObject) super.getParent();

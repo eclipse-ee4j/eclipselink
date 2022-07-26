@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,13 +30,13 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code></div>
  *
  * <div><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code></div>
- * <p>
+ * <br>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_expression)</code></div>
  *
- * <div><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code><p></div>
+ * <div><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code></div>
  *
- * <div>Example: <code><b>UPDATE</b> Student st <b>SET</b> st.sname=TRIM(st.sname)</code><p></div>
+ * <div>Example: <code><b>UPDATE</b> Student st <b>SET</b> st.sname=TRIM(st.sname)</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -93,26 +93,17 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
         super(parent, TRIM);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getTrimCharacter().accept(visitor);
         super.acceptChildren(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
@@ -147,9 +138,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
         super.addOrderedEncapsulatedExpressionTo(children);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return StringPrimaryBNF.ID;
@@ -177,9 +165,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
         return (specificationIdentifier != null) ? specificationIdentifier : ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningStringsBNF.ID);
@@ -207,9 +192,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
         return trimCharacter;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasEncapsulatedExpression() {
         return hasSpecification() || hasTrimCharacter() || hasFrom || hasExpression();
@@ -274,9 +256,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
               !trimCharacter.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parseEncapsulatedExpression(WordParser wordParser,
                                                int whitespaceCount,
@@ -344,9 +323,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
         return Specification.DEFAULT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 

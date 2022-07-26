@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         setName("TestUpdateEntityDirectMapMapping privateOwned=" + usePrivateOwned);
     }
 
+    @Override
     public void setup(){
         DirectMapMapping mapping = (DirectMapMapping)getSession().getProject().getDescriptor(EntityDirectMapHolder.class).getMappingForAttributeName("entityToDirectMap");
         keyMapping = (ForeignReferenceMapping)((MappedKeyMapContainerPolicy)mapping.getContainerPolicy()).getKeyMapping();
@@ -50,6 +51,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         super.setup();
     }
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(EntityDirectMapHolder.class, holderExp);
@@ -61,7 +63,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         mapKey.setId(3);
         mapKey.setData("testData");
         mapKey = (EntityMapKey)uow.registerObject(mapKey);
-        changedHolder.addEntityDirectMapItem(mapKey, new Integer(3));
+        changedHolder.addEntityDirectMapItem(mapKey, 3);
         uow.commit();
         Object holderForComparison = uow.readObject(changedHolder);
         if (!compareObjects(changedHolder, holderForComparison)){
@@ -69,6 +71,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         }
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(EntityDirectMapHolder.class, holderExp);
@@ -84,7 +87,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         mapKey = new EntityMapKey();
         mapKey.setId(3);
         Integer value = (Integer)holder.getEntityToDirectMap().get(mapKey);
-        if (value.intValue() != 3){
+        if (value != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }
         if (keyMapping.isPrivateOwned()){
@@ -99,6 +102,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         }
     }
 
+    @Override
     public void reset(){
         super.reset();
         keyMapping.setIsPrivateOwned(oldKeyPrivateOwnedValue);

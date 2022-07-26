@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,10 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  *  session.readAllObjects(Company.class, poorAndRich);
  * </pre></blockquote>
  */
-public class ExpressionMath {
+public final class ExpressionMath {
+
+    private ExpressionMath() {
+    }
 
     /**
      * PUBLIC:
@@ -37,7 +40,7 @@ public class ExpressionMath {
      * </pre></blockquote>
      */
     public static Expression abs(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Abs);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Abs);
         return anOperator.expressionFor(expression);
     }
 
@@ -46,7 +49,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression acos(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Acos);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Acos);
         return anOperator.expressionFor(expression);
     }
 
@@ -63,7 +66,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression add(Expression right, Object left) {
-        ExpressionOperator anOperator = right.getOperator(ExpressionOperator.Add);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Add);
         return anOperator.expressionFor(right, left);
     }
 
@@ -72,7 +75,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression asin(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Asin);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Asin);
         return anOperator.expressionFor(expression);
     }
 
@@ -81,7 +84,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression atan(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Atan);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Atan);
         return anOperator.expressionFor(expression);
     }
 
@@ -98,7 +101,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression atan2(Expression expression, Object value) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Atan2);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Atan2);
         return anOperator.expressionFor(expression, value);
     }
 
@@ -107,7 +110,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression atan2(Expression expression1, Expression expression2) {
-        ExpressionOperator anOperator = expression1.getOperator(ExpressionOperator.Atan2);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Atan2);
         return anOperator.expressionFor(expression1, expression2);
     }
 
@@ -116,7 +119,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression ceil(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Ceil);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Ceil);
         return anOperator.expressionFor(expression);
     }
 
@@ -125,7 +128,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression chr(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Chr);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Chr);
         return anOperator.expressionFor(expression);
     }
 
@@ -134,7 +137,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression cos(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Cos);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Cos);
         return anOperator.expressionFor(expression);
     }
 
@@ -144,7 +147,7 @@ public class ExpressionMath {
 
      */
     public static Expression cosh(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Cosh);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Cosh);
         return anOperator.expressionFor(expression);
     }
 
@@ -153,7 +156,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression cot(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Cot);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Cot);
         return anOperator.expressionFor(expression);
     }
 
@@ -170,7 +173,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression divide(Expression left, Object right) {
-        ExpressionOperator anOperator = left.getOperator(ExpressionOperator.Divide);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Divide);
         return anOperator.expressionFor(left, right);
     }
 
@@ -179,7 +182,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression exp(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Exp);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Exp);
         return anOperator.expressionFor(expression);
     }
 
@@ -188,7 +191,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression floor(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Floor);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Floor);
         return anOperator.expressionFor(expression);
     }
 
@@ -197,7 +200,7 @@ public class ExpressionMath {
      * Return the operator.
      */
     public static ExpressionOperator getOperator(int selector) {
-        ExpressionOperator result = ExpressionOperator.getOperator(Integer.valueOf(selector));
+        ExpressionOperator result = Expression.getOperator(selector);
         if (result != null) {
             return result;
         }
@@ -215,7 +218,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression ln(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Ln);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Ln);
         return anOperator.expressionFor(expression);
     }
 
@@ -224,7 +227,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression log(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Log);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Log);
         return anOperator.expressionFor(expression);
     }
 
@@ -241,7 +244,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression max(Expression left, Object right) {
-        ExpressionOperator anOperator = left.getOperator(ExpressionOperator.Greatest);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Greatest);
         return anOperator.expressionFor(left, right);
     }
 
@@ -258,7 +261,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression min(Expression left, Object right) {
-        ExpressionOperator anOperator = left.getOperator(ExpressionOperator.Least);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Least);
         return anOperator.expressionFor(left, right);
     }
 
@@ -275,7 +278,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression mod(Expression expression, Object base) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Mod);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Mod);
         return anOperator.expressionFor(expression, base);
     }
 
@@ -292,7 +295,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression multiply(Expression left, Object right) {
-        ExpressionOperator anOperator = left.getOperator(ExpressionOperator.Multiply);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Multiply);
         return anOperator.expressionFor(left, right);
     }
 
@@ -301,7 +304,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression negate(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Negate);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Negate);
         return anOperator.expressionFor(expression);
     }
 
@@ -318,7 +321,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression power(Expression expression, Object raised) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Power);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Power);
         return anOperator.expressionFor(expression, raised);
     }
 
@@ -335,7 +338,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression round(Expression expression, Object decimalPlaces) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Round);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Round);
         return anOperator.expressionFor(expression, decimalPlaces);
     }
 
@@ -344,7 +347,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression sign(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Sign);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Sign);
         return anOperator.expressionFor(expression);
     }
 
@@ -353,7 +356,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression sin(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Sin);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Sin);
         return anOperator.expressionFor(expression);
     }
 
@@ -362,7 +365,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression sinh(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Sinh);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Sinh);
         return anOperator.expressionFor(expression);
     }
 
@@ -371,7 +374,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression sqrt(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Sqrt);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Sqrt);
         return anOperator.expressionFor(expression);
     }
 
@@ -388,7 +391,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression subtract(Expression left, Object right) {
-        ExpressionOperator anOperator = left.getOperator(ExpressionOperator.Subtract);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Subtract);
         return anOperator.expressionFor(left, right);
     }
 
@@ -397,7 +400,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression tan(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Tan);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Tan);
         return anOperator.expressionFor(expression);
     }
 
@@ -406,7 +409,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression tanh(Expression expression) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Tanh);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Tanh);
         return anOperator.expressionFor(expression);
     }
 
@@ -423,7 +426,7 @@ public class ExpressionMath {
      * Return a new expression that applies the function to the given expression.
      */
     public static Expression trunc(Expression expression, Object decimalPlaces) {
-        ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Trunc);
+        ExpressionOperator anOperator = Expression.getOperator(ExpressionOperator.Trunc);
         return anOperator.expressionFor(expression, decimalPlaces);
     }
 }

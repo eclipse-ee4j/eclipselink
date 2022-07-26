@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,10 +26,11 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 //     02/19/2015 - Rick Curtis
 //       - 458877 : Add national character support
+//     13/01/2022-4.0.0 Tomas Kraus
+//       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
-import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -68,13 +69,14 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ArrayRecord;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
-// EclipseLink imports
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
+
+import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 
 /**
  * INTERNAL:
@@ -289,10 +291,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * If the fields passed in are null, this means that the field are not known and should be
      * built from the column names.  This case occurs for DataReadQuery's.
      */
-    public Vector buildSortedFields(Vector fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
-        Vector sortedFields;
+    public Vector<DatabaseField> buildSortedFields(Vector<DatabaseField> fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
+        Vector<DatabaseField> sortedFields;
         try {
-            Vector columnNames = getColumnNames(resultSet, session);
+            Vector<DatabaseField> columnNames = getColumnNames(resultSet, session);
             if (fields == null) {// Means fields not known.
                 sortedFields = columnNames;
             } else {
@@ -460,7 +462,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * with values from the next valid row in the result set. Intended solely
      * for cursored stream support.
      */
-    public AbstractRecord cursorRetrieveNextRow(Vector fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
+    public AbstractRecord cursorRetrieveNextRow(Vector<DatabaseField> fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
         try {
             if (resultSet.next()) {
                 return fetchRow(fields, resultSet, resultSet.getMetaData(), session);
@@ -479,7 +481,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * with values from the next valid row in the result set. Intended solely
      * for scrollable cursor support.
      */
-    public AbstractRecord cursorRetrievePreviousRow(Vector fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
+    public AbstractRecord cursorRetrievePreviousRow(Vector<DatabaseField> fields, ResultSet resultSet, AbstractSession session) throws DatabaseException {
         try {
             if (resultSet.previous()) {
                 return fetchRow(fields, resultSet, resultSet.getMetaData(), session);
@@ -612,7 +614,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 getActiveBatchWritingMechanism(session).appendCall(session, dbCall);
                 //bug 4241441: passing 1 back to avoid optimistic lock exceptions since there
                 // is no way to know if it succeeded on the DB at this point.
-                return Integer.valueOf(1);
+                return 1;
             } else {
                 getActiveBatchWritingMechanism(session).executeBatchedStatements(session);
             }
@@ -643,6 +645,15 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     // add original (insert or update) call to the LOB locator
                     // Bug 2804663 - LOBValueWriter is no longer a singleton
                     getLOBWriter().addCall(dbCall);
+                }
+
+                if(dbCall.shouldReturnGeneratedKeys()) {
+                    resultSet = statement.getGeneratedKeys();
+
+                    dbCall.setStatement(statement);
+                    dbCall.setGeneratedKeys(resultSet);
+                    this.possibleFailure = false;
+                    return dbCall;
                 }
             } else if ((!dbCall.getReturnsResultSet() || (dbCall.getReturnsResultSet() && dbCall.shouldBuildOutputRow()))) {
                 result = session.getPlatform().executeStoredProcedure(dbCall, (PreparedStatement)statement, this, session);
@@ -759,7 +770,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 }
             } else {
                 boolean hasMultipleResultsSets = call.hasMultipleResultSets();
-                Vector results = null;
+                Vector<AbstractRecord> results = null;
                 boolean hasMoreResultsSets = true;
                 while (hasMoreResultsSets) {
                     boolean hasNext = resultSet.next();
@@ -770,14 +781,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
                             // do not close the result or statement as the rows are being fetched by the thread.
                             return buildThreadCursoredResult(call, resultSet, statement, metaData, session);
                         } else {
-                            results = new Vector(16);
+                            results = new Vector<>(16);
                             while (hasNext) {
                                 results.add(fetchRow(call.getFields(), call.getFieldsArray(), resultSet, metaData, session));
                                 hasNext = resultSet.next();
                             }
                         }
                     } else {
-                        results = new Vector(0);
+                        results = new Vector<>(0);
                     }
                     if (result == null) {
                         if (call.returnMultipleResultSetCollections()) {
@@ -817,8 +828,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This allows for the rows to be fetched concurrently to the objects being built.
      * This code is not currently publicly supported.
      */
-    protected Vector buildThreadCursoredResult(final DatabaseCall dbCall, final ResultSet resultSet, final Statement statement, final ResultSetMetaData metaData, final AbstractSession session) {
-        final ThreadCursoredList results = new ThreadCursoredList(20);
+    protected Vector<AbstractRecord> buildThreadCursoredResult(final DatabaseCall dbCall, final ResultSet resultSet, final Statement statement, final ResultSetMetaData metaData, final AbstractSession session) {
+        final ThreadCursoredList<AbstractRecord> results = new ThreadCursoredList<>(20);
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -883,7 +894,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Execute the statement.
      */
-    public Integer executeDirectNoSelect(Statement statement, DatabaseCall call, AbstractSession session) throws DatabaseException {
+    public Object executeDirectNoSelect(Statement statement, DatabaseCall call, AbstractSession session) throws DatabaseException {
         int rowCount = 0;
 
         try {
@@ -915,7 +926,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
         }
 
-        return Integer.valueOf(rowCount);
+        return rowCount;
     }
 
     /**
@@ -966,8 +977,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Execute the statement.
      */
-    protected Integer executeNoSelect(DatabaseCall call, Statement statement, AbstractSession session) throws DatabaseException {
-        Integer rowCount = executeDirectNoSelect(statement, call, session);
+    protected Object executeNoSelect(DatabaseCall call, Statement statement, AbstractSession session) throws DatabaseException {
+        Object rowCount = executeDirectNoSelect(statement, call, session);
 
         // Allow for procs with outputs to be raised as events for error handling.
         if (call.shouldBuildOutputRow()) {
@@ -1040,14 +1051,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * match the number of column names available on the database.
      * PERF: This method must be highly optimized.
      */
-    protected AbstractRecord fetchRow(Vector fields, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
+    protected AbstractRecord fetchRow(Vector<DatabaseField> fields, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
         int size = fields.size();
-        Vector values = NonSynchronizedVector.newInstance(size);
+        Vector<Object> values = NonSynchronizedVector.newInstance(size);
         // PERF: Pass platform and optimize data flag.
         DatabasePlatform platform = getPlatform();
         boolean optimizeData = platform.shouldOptimizeDataConversion();
         for (int index = 0; index < size; index++) {
-            DatabaseField field = (DatabaseField)fields.elementAt(index);
+            DatabaseField field = fields.elementAt(index);
             // Field can be null for fetch groups.
             if (field != null) {
                 values.add(getObject(resultSet, field, metaData, index + 1, platform, optimizeData, session));
@@ -1070,7 +1081,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * match the number of column names available on the database.
      * PERF: This method must be highly optimized.
      */
-    public AbstractRecord fetchRow(Vector fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
+    public AbstractRecord fetchRow(Vector<DatabaseField> fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
         int size = fieldsArray.length;
         Object[] values = new Object[size];
         // PERF: Pass platform and optimize data flag.
@@ -1168,17 +1179,17 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * @return a Vector of DatabaseRows.
      */
     @Override
-    public Vector getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException {
+    public Vector<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException {
         if (session.shouldLog(SessionLog.FINEST, SessionLog.QUERY)) {// Avoid printing if no logging required.
             Object[] args = { catalog, schema, tableName, columnName };
             session.log(SessionLog.FINEST, SessionLog.QUERY, "query_column_meta_data_with_column", args, this);
         }
-        Vector result = new Vector();
+        Vector<AbstractRecord> result = new Vector<>();
         ResultSet resultSet = null;
         try {
             incrementCallCount(session);
             resultSet = getConnectionMetaData().getColumns(catalog, schema, tableName, columnName);
-            Vector fields = buildSortedFields(null, resultSet, session);
+            Vector<DatabaseField> fields = buildSortedFields(null, resultSet, session);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
@@ -1207,9 +1218,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This is required for custom SQL execution only,
      * as generated SQL already knows the fields returned.
      */
-    protected Vector getColumnNames(ResultSet resultSet, AbstractSession session) throws SQLException {
+    protected Vector<DatabaseField> getColumnNames(ResultSet resultSet, AbstractSession session) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
-        Vector columnNames = new Vector(metaData.getColumnCount());
+        Vector<DatabaseField> columnNames = new Vector<>(metaData.getColumnCount());
 
         for (int index = 0; index < metaData.getColumnCount(); index++) {
             // Changed the following code to use metaData#getColumnLabel() instead of metaData.getColumnName()
@@ -1306,9 +1317,11 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     }
                 } else {
                     value = platform.getObjectFromResultSet(resultSet, columnNumber, type, session);
+                    if (PlatformWrapper.isPlatformWrapper(value)) {
+                        value = platform.convertObject(value, field.getType());
                     // PERF: only perform blob check on non-optimized types.
                     // CR2943 - convert early if the type is a BLOB or a CLOB.
-                    if (isBlob(type)) {
+                    } else if (isBlob(type)) {
                         // EL Bug 294578 - Store previous value of BLOB so that temporary objects can be freed after conversion
                         Object originalValue = value;
                         value = platform.convertObject(value, ClassConstants.APBYTE);
@@ -1341,12 +1354,21 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
-     * Handle the conversion into java optimally through calling the direct type API.
-     * If the type is not one that can be optimized return null.
+     * Handle the {@code ResultSet} conversion into java optimally through calling the direct type API.
+     *
+     * @param resultSet JDBC {@code ResultSet} with query result
+     * @param field database field mapping
+     * @param type database type from {@link java.sql.Types} or provider specific type
+     * @param columnNumber number of column to fetch
+     * @param platform current database platform
+     * @param session current database session
+     * @return new instance of converted type or {@code this} if no optimized conversion wasdone
      */
-    protected Object getObjectThroughOptimizedDataConversion(ResultSet resultSet, DatabaseField field, int type, int columnNumber, DatabasePlatform platform, AbstractSession session) throws SQLException {
+    protected Object getObjectThroughOptimizedDataConversion(
+            ResultSet resultSet, DatabaseField field, int type, int columnNumber,
+            DatabasePlatform platform, AbstractSession session) throws SQLException {
         Object value = this;// Means no optimization, need to distinguish from null.
-        Class fieldType = field.type;
+        Class<?> fieldType = field.type;
 
         if (platform.shouldUseGetSetNString() && (type == Types.NVARCHAR || type == Types.NCHAR)) {
             value = resultSet.getNString(columnNumber);
@@ -1354,7 +1376,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 value = Helper.rightTrimString((String) value);
             }
             return value;
-        }else if (type == Types.VARCHAR || type == Types.CHAR || type == Types.NVARCHAR || type == Types.NCHAR) {
+            // } else if (fieldType == JsonValue.class || fieldType == JsonObject.class || fieldType == JsonArray.class) {
+            // - workaround without jakarta.json dependency
+        } else if (fieldType != null && fieldType.getName().contains("json")) {
+            // JSON types have platform specific ResultSet handlers.
+            return platform.getJsonPlatform().getJsonDataFromResultSet(resultSet, columnNumber, Object.class);
+        } else if (type == Types.VARCHAR || type == Types.CHAR || type == Types.NVARCHAR || type == Types.NCHAR) {
             // CUSTOM PATCH for oracle drivers because they don't respond to getObject() when using scrolling result sets.
             // Chars may require blanks to be trimmed.
             value = resultSet.getString(columnNumber);
@@ -1365,24 +1392,56 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if (fieldType == null) {
             return this;
         }
+
         boolean isPrimitive = false;
 
         // Optimize numeric values to avoid conversion into big-dec and back to primitives.
         if ((fieldType == ClassConstants.PLONG) || (fieldType == ClassConstants.LONG)) {
-            value = Long.valueOf(resultSet.getLong(columnNumber));
-            isPrimitive = ((Long)value).longValue() == 0l;
+            value = resultSet.getLong(columnNumber);
+            isPrimitive = (Long) value == 0L;
         } else if ((fieldType == ClassConstants.INTEGER) || (fieldType == ClassConstants.PINT)) {
-            value = Integer.valueOf(resultSet.getInt(columnNumber));
-            isPrimitive = ((Integer)value).intValue() == 0;
+            value = resultSet.getInt(columnNumber);
+            isPrimitive = (Integer) value == 0;
         } else if ((fieldType == ClassConstants.FLOAT) || (fieldType == ClassConstants.PFLOAT)) {
-            value = Float.valueOf(resultSet.getFloat(columnNumber));
-            isPrimitive = ((Float)value).floatValue() == 0f;
+            value = resultSet.getFloat(columnNumber);
+            isPrimitive = (Float) value == 0f;
         } else if ((fieldType == ClassConstants.DOUBLE) || (fieldType == ClassConstants.PDOUBLE)) {
-            value = Double.valueOf(resultSet.getDouble(columnNumber));
-            isPrimitive = ((Double)value).doubleValue() == 0d;
+            value = resultSet.getDouble(columnNumber);
+            isPrimitive = (Double) value == 0d;
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
-            value = Short.valueOf(resultSet.getShort(columnNumber));
-            isPrimitive = ((Short)value).shortValue() == 0;
+            value = resultSet.getShort(columnNumber);
+            isPrimitive = (Short) value == 0;
+        // Sometimes field type is just Number and it's child type is stored as field.typeName
+        } else if (fieldType == ClassConstants.NUMBER) {
+            switch(field.typeName) {
+                case "java.lang.Byte":
+                    value = resultSet.getByte(columnNumber);
+                    isPrimitive = (Byte) value == 0;
+                    break;
+                case "java.lang.Short":
+                    value = resultSet.getShort(columnNumber);
+                    isPrimitive = (Short) value == 0;
+                    break;
+                case "java.lang.Integer":
+                    value = resultSet.getInt(columnNumber);
+                    isPrimitive = (Integer) value == 0;
+                    break;
+                case "java.lang.Long":
+                    value = resultSet.getLong(columnNumber);
+                    isPrimitive = (Long) value == 0L;
+                    break;
+                case "java.lang.Float":
+                    value = resultSet.getFloat(columnNumber);
+                    isPrimitive = (Float) value == 0f;
+                    break;
+                case "java.lang.Double":
+                    value = resultSet.getDouble(columnNumber);
+                    isPrimitive = (Double) value == 0f;
+                    break;
+            }
+        } else if ((fieldType == ClassConstants.BOOLEAN) || (fieldType == ClassConstants.PBOOLEAN))  {
+            value = resultSet.getBoolean(columnNumber);
+            isPrimitive = !((Boolean) value);
         } else if ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
             if (Helper.shouldOptimizeDates) {
                 // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
@@ -1424,7 +1483,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (value != null) return ((BigDecimal)value).toBigInteger();
         } else if (fieldType == ClassConstants.BIGDECIMAL) {
             value = resultSet.getBigDecimal(columnNumber);
-         }
+        }
 
         // PERF: Only check for null for primitives.
         if (isPrimitive && resultSet.wasNull()) {
@@ -1482,17 +1541,17 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * @return a Vector of DatabaseRows.
      */
     @Override
-    public Vector getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
+    public Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
         if (session.shouldLog(SessionLog.FINEST, SessionLog.QUERY)) {// Avoid printing if no logging required.
             Object[] args = { catalog, schema, tableName };
             session.log(SessionLog.FINEST, SessionLog.QUERY, "query_column_meta_data", args, this);
         }
-        Vector result = new Vector();
+        Vector<AbstractRecord> result = new Vector<>();
         ResultSet resultSet = null;
         try {
             incrementCallCount(session);
             resultSet = getConnectionMetaData().getTables(catalog, schema, tableName, types);
-            Vector fields = buildSortedFields(null, resultSet, session);
+            Vector<DatabaseField> fields = buildSortedFields(null, resultSet, session);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
@@ -1554,9 +1613,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
         Statement statement = null;
         if (call.usesBinding(session) && call.shouldCacheStatement(session)) {
             // Check the cache by sql string, must synchronize check and removal.
-            Map statementCache = getStatementCache();
+            Map<String, Statement> statementCache = getStatementCache();
             synchronized (statementCache) {
-                statement = (PreparedStatement)statementCache.get(call.getSQLString());
+                statement = statementCache.get(call.getSQLString());
                 if (statement != null) {
                     // Need to remove to allow concurrent statement execution.
                     statementCache.remove(call.getSQLString());
@@ -1591,6 +1650,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
             } else if (call.isDynamicCall(session)) {
                 // PERF: Dynamic statements are used for dynamic SQL.
                 statement = allocateDynamicStatement(nativeConnection);
+            } else if(call.shouldReturnGeneratedKeys()) {
+                statement = nativeConnection.prepareStatement(call.getSQLString(), Statement.RETURN_GENERATED_KEYS);
             } else {
                 statement = nativeConnection.prepareStatement(call.getSQLString());
             }
@@ -1607,7 +1668,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         PreparedStatement statement = null;
         // Check the cache by sql string, must synchronize check and removal.
         if (getPlatform().shouldCacheAllStatements()) {
-            Map statementCache = getStatementCache();
+            Map<String, Statement> statementCache = getStatementCache();
             synchronized (statementCache) {
                 statement = (PreparedStatement)statementCache.get(sql);
                 if (statement != null) {
@@ -1787,7 +1848,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * The statement cache stores a fixed sized number of prepared statements.
      */
-    protected void setStatementCache(Hashtable statementCache) {
+    protected void setStatementCache(Hashtable<String, Statement> statementCache) {
         this.statementCache = statementCache;
     }
 
@@ -1795,20 +1856,21 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This method will sort the fields in correct order based
      * on the column names.
      */
-    protected Vector sortFields(Vector fields, Vector columnNames) {
-        Vector sortedFields = new Vector(columnNames.size());
-        Vector eligableFields = (Vector)fields.clone();// Must clone to allow removing to support the same field twice.
-        Enumeration columnNamesEnum = columnNames.elements();
+    protected Vector<DatabaseField> sortFields(Vector<DatabaseField> fields, Vector<DatabaseField> columnNames) {
+        Vector<DatabaseField> sortedFields = new Vector<>(columnNames.size());
+        @SuppressWarnings({"unchecked"})
+        Vector<DatabaseField> eligableFields = (Vector<DatabaseField>)fields.clone();// Must clone to allow removing to support the same field twice.
+        Enumeration<DatabaseField> columnNamesEnum = columnNames.elements();
         boolean valueFound;
         DatabaseField field;
         DatabaseField column;//DatabaseField from the columnNames vector
         while (columnNamesEnum.hasMoreElements()) {
             field = null;
             valueFound = false;
-            column = (DatabaseField)columnNamesEnum.nextElement();
-            Enumeration fieldEnum = eligableFields.elements();
+            column = columnNamesEnum.nextElement();
+            Enumeration<DatabaseField> fieldEnum = eligableFields.elements();
             while (fieldEnum.hasMoreElements()) {
-                field = (DatabaseField)fieldEnum.nextElement();
+                field = fieldEnum.nextElement();
                 if(field != null && field.equals(column)){
                     valueFound = true;
                     sortedFields.addElement(field);

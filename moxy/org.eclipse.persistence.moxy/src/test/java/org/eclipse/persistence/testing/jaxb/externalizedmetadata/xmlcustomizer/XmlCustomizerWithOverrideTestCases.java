@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -42,23 +43,25 @@ public class XmlCustomizerWithOverrideTestCases extends JAXBWithJSONTestCases{
 
     public XmlCustomizerWithOverrideTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlcustomizer/my-eclipselink-oxm.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlcustomizer", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
 
+    @Override
     protected Document getControlDocument() {
         String contents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><employee><my-first-name>Joe</my-first-name><my-last-name>Oracle</my-last-name></employee>";
 
@@ -74,6 +77,7 @@ public class XmlCustomizerWithOverrideTestCases extends JAXBWithJSONTestCases{
     }
 
 
+    @Override
     protected Object getControlObject() {
         Employee emp = new Employee();
         emp.firstName = "Joe";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,16 +39,13 @@ class ReadAllQueryVisitor extends AbstractObjectLevelReadQueryVisitor {
      *
      * @param queryContext The context used to query information about the application metadata and
      * cached information
-     * @param query The {@link ReportQuery} to populate by using this visitor to visit the parsed
+     * @param query The {@link org.eclipse.persistence.queries.ReportQuery} to populate by using this visitor to visit the parsed
      * tree representation of the JPQL query
      */
     ReadAllQueryVisitor(JPQLQueryContext queryContext, ReadAllQuery query) {
         super(queryContext, query);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HierarchicalQueryClause expression) {
 
@@ -91,25 +88,16 @@ class ReadAllQueryVisitor extends AbstractObjectLevelReadQueryVisitor {
             orderByItems = new ArrayList<>();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             expression.acceptChildren(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(OrderSiblingsByClause expression) {
             expression.getOrderByItems().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
             orderByItems.add(queryContext.buildExpression(expression));

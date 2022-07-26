@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class InsuranceORSystem extends TestSystem {
     /**
      * Return the descriptor required for this system.
      */
+    @Override
     public Vector buildDescriptors() {
         return InsuranceProject.getAllDescriptors();
     }
@@ -37,6 +38,7 @@ public class InsuranceORSystem extends TestSystem {
      * Second recreate the tables.
      * Third add the constraints back.
      */
+    @Override
     public void createTables(DatabaseSession session) {
         InsuranceProject project = new InsuranceProject();
         SchemaManager schemaManager = new SchemaManager(session);
@@ -106,6 +108,7 @@ public class InsuranceORSystem extends TestSystem {
     /**
      * Populate the database with example instance of the domain using session.
      */
+    @Override
     public void populate(DatabaseSession session) throws DatabaseException {
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
         PolicyHolder example = null;

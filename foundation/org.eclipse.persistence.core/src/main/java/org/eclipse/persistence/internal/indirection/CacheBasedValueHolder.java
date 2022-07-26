@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  * @author gyorke
  * @since EclipseLink 1.1
  */
-public class CacheBasedValueHolder extends DatabaseValueHolder {
+public class CacheBasedValueHolder<T> extends DatabaseValueHolder<T> {
 
     protected transient ForeignReferenceMapping mapping;
     protected Object[] references;
@@ -61,35 +61,37 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
      * If null is returned then the calling UOW will instantiate as normal.
      */
     @Override
-    public Object getValue(UnitOfWorkImpl uow) {
+    @SuppressWarnings({"unchecked"})
+    public T getValue(UnitOfWorkImpl uow) {
         if (this.references != null && this.references.length != 0){
             if (mapping.isCollectionMapping()){
-                Collection result = uow.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(this.references, this.mapping.getReferenceDescriptor()).values();
+                Collection<Object> result = uow.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(this.references, this.mapping.getReferenceDescriptor()).values();
                 if (result.size() == references.length){
                     ContainerPolicy cp = mapping.getContainerPolicy();
                     Object container = cp.containerInstance(result.size());
                     for (Object object : result){
                         cp.addInto(object, container, uow);
                     }
-                    return container;
+                    return (T) container;
                 }
             }else{
-                return uow.getIdentityMapAccessorInstance().getFromIdentityMap(this.references[0], this.mapping.getReferenceClass());
+                return (T) uow.getIdentityMapAccessorInstance().getFromIdentityMap(this.references[0], this.mapping.getReferenceClass());
             }
         }
         return null;
     }
 
     @Override
-    protected Object instantiate() throws DatabaseException {
+    protected T instantiate() throws DatabaseException {
         return instantiate(this.session);
     }
 
-    protected Object instantiate(AbstractSession localSession) throws DatabaseException {
+    @SuppressWarnings({"unchecked"})
+    protected T instantiate(AbstractSession localSession) throws DatabaseException {
         if (session == null){
             throw ValidationException.instantiatingValueholderWithNullSession();
         }
-        return mapping.valueFromPKList(references, row, localSession);
+        return (T) mapping.valueFromPKList(references, row, localSession);
     }
 
     /**
@@ -104,7 +106,7 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
      * Note: This method is not thread-safe.  It must be used in a synchronized manner
      */
     @Override
-    public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
+    public T instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder<T> unitOfWorkValueHolder) {
         return instantiate(unitOfWorkValueHolder.getUnitOfWork());
     }
 

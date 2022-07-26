@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -63,7 +65,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals((long)by, dataObject_a.getLong(propertyPath_a_b_c));
+        assertEquals(by, dataObject_a.getLong(propertyPath_a_b_c));
     }
 
     //3. purpose: getLong with Undefined Byte Property
@@ -108,7 +110,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         double db = 12;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((long)db, dataObject_a.getLong(propertyPath_a_b_c));
+        assertEquals((long)db, dataObject_a.getLong(propertyPath_a_b_c));
     }
 
     //6. purpose: getLong with Undefined Double Property
@@ -138,7 +140,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         float fl = 12;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((long)fl, dataObject_a.getLong(propertyPath_a_b_c));
+        assertEquals((long)fl, dataObject_a.getLong(propertyPath_a_b_c));
     }
 
     //8. purpose: getLong with Undefined float Property
@@ -168,7 +170,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         int in = 12;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((long)in, dataObject_a.getLong(property));
+        assertEquals(in, dataObject_a.getLong(property));
     }
 
     //10. purpose: getLong with Undefined int Property
@@ -198,7 +200,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         long lg = 12;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals(lg, dataObject_a.getLong(propertyPath_a_b_c));
+        assertEquals(lg, dataObject_a.getLong(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -218,7 +220,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setLong(property3, lg);
 
-        this.assertEquals(lg, dataObject_a.getLong(property3));
+        assertEquals(lg, dataObject_a.getLong(property3));
 
     }
 
@@ -238,7 +240,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setLong(property + ".0", lg);
 
-        this.assertEquals(lg, dataObject_a.getLong(property + ".0"));
+        assertEquals(lg, dataObject_a.getLong(property + ".0"));
 
     }
 
@@ -254,7 +256,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
 
         dataObject_a.setLong(property1, lg);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(lg, dataObject_a.getLong(property1));
+        assertEquals(lg, dataObject_a.getLong(property1));
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -302,7 +304,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         short shr = 12;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals((long)shr, dataObject_a.getLong(propertyPath_a_b_c));
+        assertEquals(shr, dataObject_a.getLong(propertyPath_a_b_c));
     }
 
     //14. purpose: getLong with Undefined short Property
@@ -330,10 +332,10 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         dataObject_c._setType(type_c);
 
         String str = "12";
-        Long s_d = new Long(str);
+        Long s_d = Long.valueOf(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.longValue(), dataObject_a.getLong(propertyPath_a_b_c));
+        assertEquals(s_d.longValue(), dataObject_a.getLong(propertyPath_a_b_c));
     }
 
     //16. purpose: getLong with Undefined string Property
@@ -381,7 +383,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         BigDecimal bd = new BigDecimal(db);
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd.longValue(), dataObject_a.getLong(propertyPath_a_b_c));
+        assertEquals(bd.longValue(), dataObject_a.getLong(propertyPath_a_b_c));
     }
 
     //19. purpose: getLong with Undefined decimal Property
@@ -411,7 +413,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         BigInteger bi = new BigInteger("12");
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi.longValue(), dataObject_a.getLong(propertyPath_a_b_c));
+        assertEquals(bi.longValue(), dataObject_a.getLong(propertyPath_a_b_c));
     }
 
     //21. purpose: getLong with Undefined Integer Property
@@ -442,7 +444,7 @@ public class SDODataObjectGetLongByPositionalPathTest extends SDODataObjectGetBy
         Date bi = new Date(d);
         dataObject_a.setDate(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi.getTime(), dataObject_a.getLong(propertyPath_a_b_c));
+        assertEquals(bi.getTime(), dataObject_a.getLong(propertyPath_a_b_c));
     }
 
     //23. purpose: getLong with Undefined date Property

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,23 +19,23 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.relationshipmaintenance.FieldOffice;
 import org.eclipse.persistence.testing.models.relationshipmaintenance.SalesPerson;
 
-/**
- * <class>
- */
 public class RemoveObjectTest extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     public FieldOffice fieldOfficeClone;
     public SalesPerson sales = null;
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         beginTransaction();
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         this.fieldOfficeClone = (FieldOffice)uow.readObject(FieldOffice.class);
@@ -48,6 +48,7 @@ public class RemoveObjectTest extends org.eclipse.persistence.testing.framework.
         this.fieldOfficeClone.getSalespeople().remove(this.sales);
     }
 
+    @Override
     public void verify() {
         if ((this.fieldOfficeClone.getSalespeople().contains(this.sales)) || (this.sales.getFieldOffice() != null)) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("Failed to set the backPointer information");

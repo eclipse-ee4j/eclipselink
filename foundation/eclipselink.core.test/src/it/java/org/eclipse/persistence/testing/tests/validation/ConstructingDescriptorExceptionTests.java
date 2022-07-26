@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,9 +47,10 @@ public class ConstructingDescriptorExceptionTests extends AutoVerifyTestCase {
     Vector testResults = new Vector();
     EclipseLinkException caughtException = null;
 
+    @Override
     public void test() throws NoSuchMethodException {
         try {
-            Class javaClass = ConstructingDescriptorExceptionTests.class;
+            Class<ConstructingDescriptorExceptionTests> javaClass = ConstructingDescriptorExceptionTests.class;
             RelationalDescriptor descriptor = new RelationalDescriptor();
             descriptor.setJavaClass(javaClass);
             TestErrorException dummyException = new TestErrorException("no ERROR");
@@ -58,7 +59,7 @@ public class ConstructingDescriptorExceptionTests extends AutoVerifyTestCase {
             IndirectListContainerPolicy policy = new IndirectListContainerPolicy();
             Object object = new Object();
             DatabaseRecord row = new DatabaseRecord();
-            Class[] parmClasses = { };
+            Class<?>[] parmClasses = { };
             Method method = javaClass.getDeclaredMethod("test", parmClasses);
 
             DescriptorException descriptorException;
@@ -257,6 +258,7 @@ public class ConstructingDescriptorExceptionTests extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (caughtException != null) {
             throw new TestErrorException("An exception was thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "caught exception was not null! \n\n[EXPECTING] no Exceptions ");

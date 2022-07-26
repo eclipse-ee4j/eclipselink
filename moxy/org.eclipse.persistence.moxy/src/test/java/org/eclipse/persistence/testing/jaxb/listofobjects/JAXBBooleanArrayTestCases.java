@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class JAXBBooleanArrayTestCases extends JAXBListOfObjectsTestCases {
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = boolean[].class;
         setClasses(classes);
         initXsiType();
@@ -53,6 +53,7 @@ public class JAXBBooleanArrayTestCases extends JAXBListOfObjectsTestCases {
     }
 
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/booleanArray.xsd");
 
@@ -61,16 +62,18 @@ public class JAXBBooleanArrayTestCases extends JAXBListOfObjectsTestCases {
         return controlSchema;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() {
         return boolean[].class;
     }
 
+    @Override
     protected Object getControlObject() {
         boolean[] booleans = new boolean[4];
-        booleans[0] = Boolean.FALSE.booleanValue();
-        booleans[1] = Boolean.TRUE.booleanValue();
-        booleans[2] = Boolean.FALSE.booleanValue();
-        booleans[3] = Boolean.TRUE.booleanValue();
+        booleans[0] = false;
+        booleans[1] = true;
+        booleans[2] = false;
+        booleans[3] = true;
 
         QName qname = new QName("examplenamespace", "root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class,null);
@@ -89,6 +92,7 @@ public class JAXBBooleanArrayTestCases extends JAXBListOfObjectsTestCases {
         }
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

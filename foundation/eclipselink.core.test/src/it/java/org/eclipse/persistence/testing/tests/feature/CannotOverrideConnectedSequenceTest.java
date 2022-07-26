@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class CannotOverrideConnectedSequenceTest extends AutoVerifyTestCase {
         setDescription("Attempt to override connected sequence should fail - the old sequence should remain in place.");
     }
 
+    @Override
     public void setup() {
         if (!getSession().isConnected()) {
             throw new TestProblemException("This test requires the session to be connected.");
@@ -36,6 +37,7 @@ public class CannotOverrideConnectedSequenceTest extends AutoVerifyTestCase {
         String seqName = getSession().getDescriptor(Employee.class).getSequenceNumberName();
         originalSequence = getSession().getPlatform().getSequence(seqName);
     }
+    @Override
     public void test() {
         if (originalSequence.isTable()) {
             newSequence = new NativeSequence(originalSequence.getName());
@@ -45,6 +47,7 @@ public class CannotOverrideConnectedSequenceTest extends AutoVerifyTestCase {
         getDatabaseSession().addSequence(newSequence);
     }
 
+    @Override
     public void verify() {
         Sequence sequence = getSession().getPlatform().getSequence(originalSequence.getName());
         if (sequence != originalSequence) {

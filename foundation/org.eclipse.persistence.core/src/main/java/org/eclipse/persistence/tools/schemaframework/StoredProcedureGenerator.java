@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -63,22 +64,22 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class StoredProcedureGenerator {
     public SchemaManager schemaManager;
     /** This hashtable is used to store the storedProcedure referenced by the class name. */
-    private Hashtable storedProcedures;
+    private Hashtable<ClassDescriptor, Vector<StoredProcedureDefinition>> storedProcedures;
     /** This hashtable is used to store the storedProcedure referenced by the mapping name. */
-    private Hashtable mappingStoredProcedures;
-    private Hashtable intToTypeConverterHash;
+    private Hashtable<ClassDescriptor, Hashtable<String, Hashtable<String, StoredProcedureDefinition>>> mappingStoredProcedures;
+    private Hashtable<Integer, Class<?>> intToTypeConverterHash;
     private Writer writer;
     private String prefix;
     private static final String DEFAULT_PREFIX = "";
-    private Hashtable sequenceProcedures;
+    private Hashtable<String, StoredProcedureDefinition> sequenceProcedures;
     private static final int MAX_NAME_SIZE = 30;
 
     public StoredProcedureGenerator(SchemaManager schemaMngr) {
         super();
         this.schemaManager = schemaMngr;
-        this.sequenceProcedures = new Hashtable();
-        this.storedProcedures = new Hashtable();
-        this.mappingStoredProcedures = new Hashtable();
+        this.sequenceProcedures = new Hashtable<>();
+        this.storedProcedures = new Hashtable<>();
+        this.mappingStoredProcedures = new Hashtable<>();
         this.buildIntToTypeConverterHash();
         this.prefix = DEFAULT_PREFIX;
         this.verify();
@@ -88,27 +89,27 @@ public class StoredProcedureGenerator {
      * INTERNAL: Build all conversions based on JDBC return values.
      */
     protected void buildIntToTypeConverterHash() {
-        this.intToTypeConverterHash = new Hashtable();
-        this.intToTypeConverterHash.put(Integer.valueOf(8), Double.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-7), Boolean.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-3), Byte[].class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-6), Short.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(5), Short.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(4), Integer.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(2), java.math.BigDecimal.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(6), Float.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(1), Character.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(12), String.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(91), java.sql.Date.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(93), java.sql.Timestamp.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(3), java.math.BigDecimal.class);
+        this.intToTypeConverterHash = new Hashtable<>();
+        this.intToTypeConverterHash.put(8, Double.class);
+        this.intToTypeConverterHash.put(-7, Boolean.class);
+        this.intToTypeConverterHash.put(-3, Byte[].class);
+        this.intToTypeConverterHash.put(-6, Short.class);
+        this.intToTypeConverterHash.put(5, Short.class);
+        this.intToTypeConverterHash.put(4, Integer.class);
+        this.intToTypeConverterHash.put(2, java.math.BigDecimal.class);
+        this.intToTypeConverterHash.put(6, Float.class);
+        this.intToTypeConverterHash.put(1, Character.class);
+        this.intToTypeConverterHash.put(12, String.class);
+        this.intToTypeConverterHash.put(91, java.sql.Date.class);
+        this.intToTypeConverterHash.put(93, java.sql.Timestamp.class);
+        this.intToTypeConverterHash.put(3, java.math.BigDecimal.class);
 
-        this.intToTypeConverterHash.put(Integer.valueOf(-5), java.math.BigDecimal.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(7), Float.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-1), String.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(92), Time.class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-2), Byte[].class);
-        this.intToTypeConverterHash.put(Integer.valueOf(-4), Byte[].class);
+        this.intToTypeConverterHash.put(-5, java.math.BigDecimal.class);
+        this.intToTypeConverterHash.put(7, Float.class);
+        this.intToTypeConverterHash.put(-1, String.class);
+        this.intToTypeConverterHash.put(92, Time.class);
+        this.intToTypeConverterHash.put(-2, Byte[].class);
+        this.intToTypeConverterHash.put(-4, Byte[].class);
         //this.intToTypeConverterHash.put(Integer.valueOf(0),null.class);
     }
 
@@ -153,11 +154,11 @@ public class StoredProcedureGenerator {
     public void generateAmendmentClass(Writer outputWriter, String packageName, String className) throws ValidationException {
         String methodComment = "/**\n * EclipseLink generated method. \n * <b>WARNING</b>: This code was generated by an automated tool.\n * Any changes will be lost when the code is re-generated\n */";
         ClassDescriptor descriptor;
-        Vector storedProcedureVector;
-        Hashtable mappingHashtable;
+        List<StoredProcedureDefinition> storedProcedureVector;
+        Hashtable<String, Hashtable<String, StoredProcedureDefinition>> mappingHashtable;
         StoredProcedureDefinition definition;
-        Vector storedProcedureDefinitionArguments;
-        Enumeration argumentEnum;
+        List<FieldDefinition> storedProcedureDefinitionArguments;
+        Iterator<FieldDefinition> argumentEnum;
         FieldDefinition fieldDefinition;
         try {
             outputWriter.write("package ");
@@ -167,9 +168,9 @@ public class StoredProcedureGenerator {
             outputWriter.write("This is a EclipseLink generated class to add stored procedure admendments to a project.  \n * Any changes to this code will be lost when the class is regenerated \n */\npublic class ");
             outputWriter.write(className);
             outputWriter.write("{\n");
-            Enumeration descriptorEnum = this.storedProcedures.keys();
+            Enumeration<ClassDescriptor> descriptorEnum = this.storedProcedures.keys();
             while (descriptorEnum.hasMoreElements()) {
-                descriptor = (ClassDescriptor)descriptorEnum.nextElement();
+                descriptor = descriptorEnum.nextElement();
                 if (descriptor.isDescriptorForInterface() || descriptor.isAggregateDescriptor()) {
                     continue;
                 }
@@ -177,19 +178,19 @@ public class StoredProcedureGenerator {
                 outputWriter.write("\npublic static void amend");
                 outputWriter.write(Helper.getShortClassName(descriptor.getJavaClass()));
                 outputWriter.write("ClassDescriptor(ClassDescriptor descriptor){\n\t");
-                storedProcedureVector = (Vector)this.storedProcedures.get(descriptor);
-                mappingHashtable = (Hashtable)this.mappingStoredProcedures.get(descriptor);
-                definition = (StoredProcedureDefinition)storedProcedureVector.elementAt(0);
+                storedProcedureVector = this.storedProcedures.get(descriptor);
+                mappingHashtable = this.mappingStoredProcedures.get(descriptor);
+                definition = storedProcedureVector.get(0);
                 outputWriter.write("\n\t//INSERT QUERY\n");
                 outputWriter.write("\tInsertObjectQuery insertQuery = new InsertObjectQuery();\n\tStoredProcedureCall call = new StoredProcedureCall();\n");
                 outputWriter.write("\tcall.setProcedureName(\"");
                 outputWriter.write(definition.getName());
                 outputWriter.write("\");\n\t");
                 storedProcedureDefinitionArguments = definition.getArguments();
-                argumentEnum = storedProcedureDefinitionArguments.elements();
+                argumentEnum = storedProcedureDefinitionArguments.iterator();
 
-                while (argumentEnum.hasMoreElements()) {
-                    fieldDefinition = (FieldDefinition)argumentEnum.nextElement();
+                while (argumentEnum.hasNext()) {
+                    fieldDefinition = argumentEnum.next();
                     outputWriter.write("call.addNamedArgument(\"");
                     outputWriter.write(fieldDefinition.getName());
                     outputWriter.write("\", \"");
@@ -197,7 +198,7 @@ public class StoredProcedureGenerator {
                     outputWriter.write("\");\n\t");
                 }
                 outputWriter.write("insertQuery.setCall(call);\n\tdescriptor.getQueryManager().setInsertQuery(insertQuery);\n\t");
-                definition = (StoredProcedureDefinition)storedProcedureVector.elementAt(1);
+                definition = storedProcedureVector.get(1);
                 if (definition != null) {
                     outputWriter.write("\n\t//UPDATE QUERY\n");
                     outputWriter.write("\tUpdateObjectQuery updateQuery = new UpdateObjectQuery();\n\tcall = new StoredProcedureCall();\n");
@@ -205,9 +206,9 @@ public class StoredProcedureGenerator {
                     outputWriter.write(definition.getName());
                     outputWriter.write("\");\n\t");
                     storedProcedureDefinitionArguments = definition.getArguments();
-                    argumentEnum = storedProcedureDefinitionArguments.elements();
-                    while (argumentEnum.hasMoreElements()) {
-                        fieldDefinition = (FieldDefinition)argumentEnum.nextElement();
+                    argumentEnum = storedProcedureDefinitionArguments.iterator();
+                    while (argumentEnum.hasNext()) {
+                        fieldDefinition = argumentEnum.next();
                         outputWriter.write("call.addNamedArgument(\"");
                         outputWriter.write(fieldDefinition.getName());
                         outputWriter.write("\", \"");
@@ -216,16 +217,16 @@ public class StoredProcedureGenerator {
                     }
                     outputWriter.write("updateQuery.setCall(call);\n\tdescriptor.getQueryManager().setUpdateQuery(updateQuery);\n");
                 }
-                definition = (StoredProcedureDefinition)storedProcedureVector.elementAt(2);
+                definition = storedProcedureVector.get(2);
                 outputWriter.write("\n\t//DELETE QUERY\n");
                 outputWriter.write("\tDeleteObjectQuery deleteQuery = new DeleteObjectQuery();\n\tcall = new StoredProcedureCall();\n");
                 outputWriter.write("\tcall.setProcedureName(\"");
                 outputWriter.write(definition.getName());
                 outputWriter.write("\");\n\t");
                 storedProcedureDefinitionArguments = definition.getArguments();
-                argumentEnum = storedProcedureDefinitionArguments.elements();
-                while (argumentEnum.hasMoreElements()) {
-                    fieldDefinition = (FieldDefinition)argumentEnum.nextElement();
+                argumentEnum = storedProcedureDefinitionArguments.iterator();
+                while (argumentEnum.hasNext()) {
+                    fieldDefinition = argumentEnum.next();
                     outputWriter.write("call.addNamedArgument(\"");
                     outputWriter.write(fieldDefinition.getName());
                     outputWriter.write("\", \"");
@@ -234,16 +235,16 @@ public class StoredProcedureGenerator {
                 }
                 outputWriter.write("deleteQuery.setCall(call);\n\tdescriptor.getQueryManager().setDeleteQuery(deleteQuery);\n");
                 if (storedProcedureVector.size() > 3) {
-                    definition = (StoredProcedureDefinition)storedProcedureVector.elementAt(3);
+                    definition = storedProcedureVector.get(3);
                     outputWriter.write("\n\t//READ OBJECT QUERY\n");
                     outputWriter.write("\tReadObjectQuery readQuery = new ReadObjectQuery();\n\tcall = new StoredProcedureCall();\n");
                     outputWriter.write("\tcall.setProcedureName(\"");
                     outputWriter.write(definition.getName());
                     outputWriter.write("\");\n\t");
                     storedProcedureDefinitionArguments = definition.getArguments();
-                    argumentEnum = storedProcedureDefinitionArguments.elements();
-                    while (argumentEnum.hasMoreElements()) {
-                        fieldDefinition = (FieldDefinition)argumentEnum.nextElement();
+                    argumentEnum = storedProcedureDefinitionArguments.iterator();
+                    while (argumentEnum.hasNext()) {
+                        fieldDefinition = argumentEnum.next();
                         outputWriter.write("call.addNamedArgument(\"");
                         outputWriter.write(fieldDefinition.getName());
                         outputWriter.write("\", \"");
@@ -255,16 +256,16 @@ public class StoredProcedureGenerator {
 
                 //generate read all stored procs.
                 if (storedProcedureVector.size() > 4) {
-                    definition = (StoredProcedureDefinition)storedProcedureVector.elementAt(4);
+                    definition = storedProcedureVector.get(4);
                     outputWriter.write("\n\t//READ ALL QUERY\n");
                     outputWriter.write("\tReadAllQuery readAllQuery = new ReadAllQuery();\n\tcall = new StoredProcedureCall();\n");
                     outputWriter.write("\tcall.setProcedureName(\"");
                     outputWriter.write(definition.getName());
                     outputWriter.write("\");\n\t");
                     storedProcedureDefinitionArguments = definition.getArguments();
-                    argumentEnum = storedProcedureDefinitionArguments.elements();
-                    while (argumentEnum.hasMoreElements()) {
-                        fieldDefinition = (FieldDefinition)argumentEnum.nextElement();
+                    argumentEnum = storedProcedureDefinitionArguments.iterator();
+                    while (argumentEnum.hasNext()) {
+                        fieldDefinition = argumentEnum.next();
                         outputWriter.write("call.addNamedArgument(\"");
                         outputWriter.write(fieldDefinition.getName());
                         outputWriter.write("\", \"");
@@ -280,9 +281,9 @@ public class StoredProcedureGenerator {
                     //read all
                     outputWriter.write("\tReadAllQuery mappingQuery; \n");
                     outputWriter.write("\tDeleteAllQuery deleteMappingQuery; \n");
-                    for (Enumeration e = mappingHashtable.keys(); e.hasMoreElements();) {
-                        String mappingName = (String)e.nextElement();
-                        definition = (StoredProcedureDefinition)((Hashtable)mappingHashtable.get(mappingName)).get("1MREAD");
+                    for (Enumeration<String> e = mappingHashtable.keys(); e.hasMoreElements();) {
+                        String mappingName = e.nextElement();
+                        definition = mappingHashtable.get(mappingName).get("1MREAD");
                         if (definition != null) {
                             outputWriter.write("\n\t//MAPPING READALL QUERY FOR " + mappingName + "\n");
                             outputWriter.write("\tmappingQuery= new ReadAllQuery();\n\tcall = new StoredProcedureCall();\n");
@@ -290,9 +291,9 @@ public class StoredProcedureGenerator {
                             outputWriter.write(definition.getName());
                             outputWriter.write("\");\n\t");
                             storedProcedureDefinitionArguments = definition.getArguments();
-                            argumentEnum = storedProcedureDefinitionArguments.elements();
-                            while (argumentEnum.hasMoreElements()) {
-                                fieldDefinition = (FieldDefinition)argumentEnum.nextElement();
+                            argumentEnum = storedProcedureDefinitionArguments.iterator();
+                            while (argumentEnum.hasNext()) {
+                                fieldDefinition = argumentEnum.next();
                                 outputWriter.write("call.addNamedArgument(\"");
                                 outputWriter.write(fieldDefinition.getName());
                                 outputWriter.write("\", \"");
@@ -303,7 +304,7 @@ public class StoredProcedureGenerator {
                         }
 
                         //DeleteAll Query
-                        definition = (StoredProcedureDefinition)((Hashtable)mappingHashtable.get(mappingName)).get("1MDALL");
+                        definition = mappingHashtable.get(mappingName).get("1MDALL");
                         if (definition != null) {
                             outputWriter.write("\n\t//MAPPING DELETEALL QUERY FOR " + mappingName + "\n");
                             outputWriter.write("\tdeleteMappingQuery= new DeleteAllQuery();\n\tcall = new StoredProcedureCall();\n");
@@ -311,9 +312,9 @@ public class StoredProcedureGenerator {
                             outputWriter.write(definition.getName());
                             outputWriter.write("\");\n\t");
                             storedProcedureDefinitionArguments = definition.getArguments();
-                            argumentEnum = storedProcedureDefinitionArguments.elements();
-                            while (argumentEnum.hasMoreElements()) {
-                                fieldDefinition = (FieldDefinition)argumentEnum.nextElement();
+                            argumentEnum = storedProcedureDefinitionArguments.iterator();
+                            while (argumentEnum.hasNext()) {
+                                fieldDefinition = argumentEnum.next();
                                 outputWriter.write("call.addNamedArgument(\"");
                                 outputWriter.write(fieldDefinition.getName());
                                 outputWriter.write("\", \"");
@@ -326,16 +327,16 @@ public class StoredProcedureGenerator {
                 }
                 outputWriter.write("}\n");
             }
-            definition = (StoredProcedureDefinition)sequenceProcedures.get("SELECT");
+            definition = sequenceProcedures.get("SELECT");
             if (definition != null) {
                 outputWriter.write("\n\tValueReadQuery seqSelectQuery = new ValueReadQuery();\n\tcall = new StoredProcedureCall();\n");
                 outputWriter.write("\tcall.setProcedureName(\"");
                 outputWriter.write(definition.getName());
                 outputWriter.write("\");\n\t");
                 storedProcedureDefinitionArguments = definition.getArguments();
-                argumentEnum = storedProcedureDefinitionArguments.elements();
-                while (argumentEnum.hasMoreElements()) {
-                    fieldDefinition = (FieldDefinition)argumentEnum.nextElement();
+                argumentEnum = storedProcedureDefinitionArguments.iterator();
+                while (argumentEnum.hasNext()) {
+                    fieldDefinition = argumentEnum.next();
                     outputWriter.write("call.addNamedArgument(\"");
                     outputWriter.write(fieldDefinition.getName());
                     outputWriter.write("\", \"");
@@ -391,13 +392,13 @@ public class StoredProcedureGenerator {
      * INTERNAL: Generates the mapping stored procedures for this descriptor.
      * currently only 1:1 and 1:M are supported
      */
-    protected Hashtable generateMappingStoredProcedures(ClassDescriptor descriptor) {
-        Vector mappings = descriptor.getMappings();
-        Hashtable mappingSP = new Hashtable();
-        Hashtable mappingTable;
-        for (Enumeration enumtr = mappings.elements(); enumtr.hasMoreElements();) {
-            mappingTable = new Hashtable();
-            DatabaseMapping mapping = (DatabaseMapping)enumtr.nextElement();
+    protected Hashtable<String, Hashtable<String, StoredProcedureDefinition>> generateMappingStoredProcedures(ClassDescriptor descriptor) {
+        Vector<DatabaseMapping> mappings = descriptor.getMappings();
+        Hashtable<String, Hashtable<String, StoredProcedureDefinition>> mappingSP = new Hashtable<>();
+        Hashtable<String, StoredProcedureDefinition> mappingTable;
+        for (Enumeration<DatabaseMapping> enumtr = mappings.elements(); enumtr.hasMoreElements();) {
+            mappingTable = new Hashtable<>();
+            DatabaseMapping mapping = enumtr.nextElement();
             if (mapping.isOneToManyMapping()) {
                 if (!getSession().getPlatform().isOracle()) {
                     //reads not supported in oracle
@@ -417,7 +418,7 @@ public class StoredProcedureGenerator {
     /**
      * INTERNAL: Generates the object level stored procedure based on the passed in query
      */
-    protected StoredProcedureDefinition generateObjectStoredProcedure(DatabaseQuery query, List fields, String namePrefix) {
+    protected StoredProcedureDefinition generateObjectStoredProcedure(DatabaseQuery query, List<DatabaseField> fields, String namePrefix) {
         String className = Helper.getShortClassName(query.getDescriptor().getJavaClass());
 
         return generateStoredProcedure(query, fields, getPrefix() + namePrefix + className);
@@ -526,8 +527,8 @@ public class StoredProcedureGenerator {
      */
     protected StoredProcedureDefinition generateStoredProcedure(DatabaseQuery query, List<DatabaseField> fields, AbstractRecord rowForPrepare, String name) {
         StoredProcedureDefinition definition = new StoredProcedureDefinition();
-        Vector callVector;
-        Vector statementVector = new Vector();
+        Vector<DatasourceCall> callVector;
+        Vector<String> statementVector = new Vector<>();
 
         query.checkPrepare(getSession(), rowForPrepare, true);
         callVector = ((CallQueryMechanism)query.getQueryMechanism()).getCalls();
@@ -538,7 +539,7 @@ public class StoredProcedureGenerator {
                 callVector.addElement(((CallQueryMechanism)query.getQueryMechanism()).getCall());
             }
         }
-        Enumeration enumtr = callVector.elements();
+        Enumeration<DatasourceCall> enumtr = callVector.elements();
         while (enumtr.hasMoreElements()) {
             SQLCall call = (SQLCall)enumtr.nextElement();
             statementVector.addElement(this.buildProcedureString(call));
@@ -565,12 +566,12 @@ public class StoredProcedureGenerator {
             Number dataType;
             dataRow = (AbstractRecord)fieldNames.get(fieldsEnum.nextElement());
             dataType = (Number)dataRow.get("DATA_TYPE");
-            Class type = this.getFieldType(dataType);
+            Class<?> type = this.getFieldType(dataType);
             String typeName = (String)dataRow.get("TYPE_NAME");
             if ((type != null) || (typeName == null) || (typeName.length() == 0)) {
-                definition.addArgument(prefixArgToken + (String)dataRow.get("COLUMN_NAME"), type, ((Number)dataRow.get("COLUMN_SIZE")).intValue());
+                definition.addArgument(prefixArgToken + dataRow.get("COLUMN_NAME"), type, ((Number)dataRow.get("COLUMN_SIZE")).intValue());
             } else {
-                definition.addArgument(prefixArgToken + (String)dataRow.get("COLUMN_NAME"), typeName);
+                definition.addArgument(prefixArgToken + dataRow.get("COLUMN_NAME"), typeName);
             }
         }
 
@@ -588,19 +589,19 @@ public class StoredProcedureGenerator {
         // Must turn binding off to ensure literals are printed correctly.
         boolean wasBinding = getSession().getLogin().shouldBindAllParameters();
         getSession().getLogin().setShouldBindAllParameters(false);
-        Map descriptors = getSession().getProject().getDescriptors();
-        Iterator iterator = descriptors.keySet().iterator();
+        Map<Class<?>, ClassDescriptor> descriptors = getSession().getProject().getDescriptors();
+        Iterator<Class<?>> iterator = descriptors.keySet().iterator();
         ClassDescriptor desc;
         StoredProcedureDefinition definition;
-        Vector definitionVector;
+        Vector<StoredProcedureDefinition> definitionVector;
         this.generateSequenceStoredProcedures(getSession().getProject());
         while (iterator.hasNext()) {
-            desc = (ClassDescriptor)descriptors.get(iterator.next());
+            desc = descriptors.get(iterator.next());
             if (desc.isDescriptorForInterface() || desc.isDescriptorTypeAggregate()) {
                 continue;
             }
             definition = this.generateInsertStoredProcedure(desc);
-            definitionVector = new Vector();
+            definitionVector = new Vector<>();
             definitionVector.addElement(definition);
             this.writeDefinition(definition);
             definition = this.generateUpdateStoredProcedure(desc);
@@ -617,14 +618,14 @@ public class StoredProcedureGenerator {
                 definitionVector.addElement(definition);
                 this.writeDefinition(definition);
             }
-            Hashtable mappingDefinitions = this.generateMappingStoredProcedures(desc);
-            for (Enumeration enum2 = mappingDefinitions.elements(); enum2.hasMoreElements();) {
-                Hashtable table = (Hashtable)enum2.nextElement();
-                definition = (StoredProcedureDefinition)table.get("1MREAD");
+            Hashtable<String, Hashtable<String, StoredProcedureDefinition>> mappingDefinitions = this.generateMappingStoredProcedures(desc);
+            for (Enumeration<Hashtable<String, StoredProcedureDefinition>> enum2 = mappingDefinitions.elements(); enum2.hasMoreElements();) {
+                Hashtable<String, StoredProcedureDefinition> table = enum2.nextElement();
+                definition = table.get("1MREAD");
                 if (definition != null) {
                     this.writeDefinition(definition);
                 }
-                definition = (StoredProcedureDefinition)table.get("1MDALL");
+                definition = table.get("1MDALL");
                 if (definition != null) {
                     this.writeDefinition(definition);
                 }
@@ -683,9 +684,9 @@ public class StoredProcedureGenerator {
      * INTERNAL:
      * return the class corresponding to the passed in JDBC type.
      */
-    protected Class getFieldType(Object jdbcDataType) {
-        Integer key = Integer.valueOf(((Number)jdbcDataType).intValue());
-        return (Class)intToTypeConverterHash.get(key);
+    protected Class<?> getFieldType(Object jdbcDataType) {
+        Integer key = ((Number) jdbcDataType).intValue();
+        return intToTypeConverterHash.get(key);
     }
 
     public String getPrefix() {

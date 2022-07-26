@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         setName("TestUpdateDirectEntityMapMapping privateOwned=" + usePrivateOwned);
     }
 
+    @Override
     public void setup(){
         mapping = (ManyToManyMapping)getSession().getProject().getDescriptor(DirectEntityMapHolder.class).getMappingForAttributeName("directToEntityMap");
         oldPrivateOwnedValue = mapping.isPrivateOwned();
@@ -54,12 +55,12 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         holder = new DirectEntityMapHolder();
         EntityMapValue value = new EntityMapValue();
         value.setId(1);
-        holder.addDirectToEntityMapItem(new Integer(11), value);
+        holder.addDirectToEntityMapItem(11, value);
 
 
         EntityMapValue value2 = new EntityMapValue();
         value2.setId(2);
-        holder.addDirectToEntityMapItem(new Integer(22), value2);
+        holder.addDirectToEntityMapItem(22, value2);
         uow.registerObject(holder);
         uow.registerObject(value);
         uow.registerObject(value2);
@@ -71,14 +72,15 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         changedHolder = (DirectEntityMapHolder)uow.readObject(holder);
         EntityMapValue value = new EntityMapValue();
         value.setId(3);
-        changedHolder.addDirectToEntityMapItem(new Integer(33), value);
+        changedHolder.addDirectToEntityMapItem(33, value);
 
-        changedHolder.getDirectToEntityMap().remove(new Integer(11));
+        changedHolder.getDirectToEntityMap().remove(11);
         uow.commit();
         Object holderForComparison = uow.readObject(holder);
         if (!compareObjects(changedHolder, holderForComparison)){
@@ -86,6 +88,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         }
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         holder = (DirectEntityMapHolder)getSession().readObject(holder);
@@ -95,7 +98,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         if (holder.getDirectToEntityMap().size() != 2){
             throw new TestErrorException("Incorrect Number of MapEntityValues was read.");
         }
-        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(new Integer(33));
+        EntityMapValue value = (EntityMapValue)holder.getDirectToEntityMap().get(33);
         if (value.getId() != 3){
             throw new TestErrorException("MapEntityValue was not added properly.");
         }
@@ -115,6 +118,7 @@ public class TestUpdateDirectEntityMapMapping extends TestCase {
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Iterator j = holder.getDirectToEntityMap().keySet().iterator();

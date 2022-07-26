@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ public class ExpressionPersistenceSpecialTypesTest extends ExpressionPersistence
         setDescription("Test that expressions persisted by the WorkBench in the deployent XML works correctly for some special java types");
     }
 
+    @Override
     public void test() {
         getSession().executeQuery(basicQuery);
         systemQuery =

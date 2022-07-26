@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -154,9 +154,7 @@ public class ByteConverter {
             stringValue = getStringFromBinaryData(offset, this.getFieldMetaData().getSize());
         } else if (this.getFieldMetaData().getType() == FieldMetaData.PACKED_DECIMAL) {
             stringValue = this.getStringValueFromPackedDecimal();
-        } else {
-            //todo: handle other types of data
-            stringValue = null;
+          //todo: else handle other types of data
         }
         return insertDecimalInString(stringValue);
     }
@@ -189,8 +187,7 @@ public class ByteConverter {
             this.setBinaryDataToStringValue(value, this.getFieldMetaData().getOffset(), this.getFieldMetaData().getSize());
         } else if (this.getFieldMetaData().getType() == FieldMetaData.PACKED_DECIMAL) {
             this.setByteArrayToPackedDecimalValue(value);
-        } else {
-            //todo: handle other types of data
+          //todo: else handle other types of data
         }
     }
 
@@ -292,9 +289,11 @@ public class ByteConverter {
         }
 
         //add leading zeros
-        while (value.length() < (size * 2)) {
-            value = "0" + value;
+        StringBuilder sb = new StringBuilder(value);
+        while (sb.length() < (size * 2)) {
+            sb.insert(0, "0");
         }
+        value = sb.toString();
 
         //write one byte at a time to array
         for (int i = offset, j = 0; i < (offset + size); i++, j += 2) {
@@ -346,11 +345,11 @@ public class ByteConverter {
         i--;
         //add one to value
         while ((i >= offset) && (Helper.intFromByte(myRecordData[i]) == -1)) {
-            myRecordData[i] += 1;
+            myRecordData[i]++;
             i--;
         }
         if (i >= offset) {
-            myRecordData[i] += 1;
+            myRecordData[i]++;
         }
     }
 
@@ -383,7 +382,7 @@ public class ByteConverter {
             total += (Helper.intFromByte(myRecordData[i]) * Helper.power(2, j * 8));
         }
         if (signed) {
-            return sign + String.valueOf(total);
+            return sign + total;
         } else {
             return String.valueOf(total);
         }
@@ -403,7 +402,7 @@ public class ByteConverter {
         } else if (value.startsWith("+")) {
             value = value.substring(1);
         }
-        int total = Helper.integerFromString(value).intValue();
+        int total = Integer.parseInt(value);
 
         //loop through total dividing down
         for (int i = offset, j = size - 1; i < (size + offset); i++, j--) {

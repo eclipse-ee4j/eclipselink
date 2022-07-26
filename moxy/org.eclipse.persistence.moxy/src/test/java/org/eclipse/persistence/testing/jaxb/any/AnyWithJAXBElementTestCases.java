@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,12 +32,13 @@ public class AnyWithJAXBElementTestCases extends JAXBWithJSONTestCases{
             super(name);
             setControlDocument(XML_RESOURCE);
             setControlJSON(JSON_RESOURCE);
-            Class[] classes = new Class[2];
+            Class<?>[] classes = new Class<?>[2];
             classes[0] = ObjectFactory.class;
             classes[1] = Root.class;
             setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         Root theRoot = new Root();
         QName qname = new QName("namespace","dateLocalName");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,9 +19,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import jakarta.xml.bind.JAXBElement;
@@ -37,13 +35,13 @@ public class WithoutXmlRootElementArrayTestCases extends JSONMarshalUnmarshalTes
 
     public WithoutXmlRootElementArrayTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {WithoutXmlRootElementRoot.class});
+        setClasses(new Class<?>[] {WithoutXmlRootElementRoot.class});
         setControlJSON(CONTROL_JSON);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return WithoutXmlRootElementRoot.class;
     }
 
@@ -76,7 +74,7 @@ public class WithoutXmlRootElementArrayTestCases extends JSONMarshalUnmarshalTes
     public void testUnmarshal() throws Exception {
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Collection<WithoutXmlRootElementRoot>  test = (Collection<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(inputStream), WithoutXmlRootElementRoot.class).getValue();
-        Iterator testIter = test.iterator();
+        Iterator<WithoutXmlRootElementRoot> testIter = test.iterator();
         inputStream.close();
         Collection<WithoutXmlRootElementRoot> control = getReadControlObject().getValue();
         Iterator<WithoutXmlRootElementRoot> controlIter = control.iterator();

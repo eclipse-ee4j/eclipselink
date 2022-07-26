@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,35 +26,21 @@
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <properties>
+        <comp.xlint>-Xlint:all,-serial,-exports</comp.xlint>
+
         <test-skip-moxy-jaxb-srg>${skipTests}</test-skip-moxy-jaxb-srg>
         <test-skip-moxy-jaxb>true</test-skip-moxy-jaxb>
-        <test-skip-moxy-oxm-srg>${skipTests}</test-skip-moxy-oxm-srg>
-        <test-skip-moxy-oxm>true</test-skip-moxy-oxm>
-        <test-skip-moxy-oxm-dom>true</test-skip-moxy-oxm-dom>
-        <test-skip-moxy-oxm-deploymentxml>true</test-skip-moxy-oxm-deploymentxml>
-        <test-skip-moxy-oxm-deploymentxml-tl>true</test-skip-moxy-oxm-deploymentxml-tl>
-        <test-skip-moxy-oxm-docpres>true</test-skip-moxy-oxm-docpres>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.mail</groupId>
-            <artifactId>jakarta.mail-api</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
@@ -85,55 +71,12 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-activation</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!--Test dependencies-->
-        <!--Test framework-->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jmockit</groupId>
-            <artifactId>jmockit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!--APIs and other libs used in test classes-->
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.el</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.json</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-common</artifactId>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <optional>true</optional>
-            <scope>test</scope>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-mail</artifactId>
         </dependency>
     </dependencies>
 
@@ -163,6 +106,25 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.moxy.test</arg>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema=org.eclipse.persistence.moxy.test</arg>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.moxy.test</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <executions>
@@ -178,6 +140,10 @@
                                     org.eclipse.persistence.internal.jaxb.many,
                                     *
                                 </Export-Package>
+                                <Import-Package>
+                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
+                                    *
+                                </Import-Package>
                             </instructions>
                         </configuration>
                     </execution>
@@ -223,8 +189,6 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <!---javaagent:${org.jmockit:jmockit:jar} is required for JDK 9 and higher.-->
-                            <argLine>-javaagent:${org.jmockit:jmockit:jar}</argLine>
                             <skipTests>${test-skip-moxy-jaxb}</skipTests>
                             <reportNameSuffix>test-moxy-jaxb</reportNameSuffix>
                             <forkCount>1</forkCount>
@@ -247,239 +211,180 @@
                                 <include>org.eclipse.persistence.testing.jaxb.json.JSONTestSuite</include>
                                 <include>org.eclipse.persistence.testing.jaxb.rs.RESTfulTestSuite</include>
                                 <include>org.eclipse.persistence.testing.moxy.unit.**.*TestCase</include>
-                                <include>org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyTestCase</include>
                                 <include>org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyNotSetTestCase</include>
                                 <include>org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyNotSetTestCase</include>
                                 <include>org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyTestCase</include>
                             </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-moxy-oxm-srg</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm-srg}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm-srg</reportNameSuffix>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.oxm.OXMSRGTestSuite</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-moxy-oxm</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm</reportNameSuffix>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>*.ContainerAccessorTestSuite</include>
-                                <include>*.*MappingTestSuite</include>
-                                <include>*.RootElementTestSuite</include>
-                                <include>*.InheritanceTestSuite</include>
-                                <include>*.XMLMarshalTestCases</include>
-                                <include>*.XMLMarshalFragmentTestCases</include>
-                                <include>*.XMLUnmarshalTestCases</include>
-                                <include>*.XMLMarshallerValidationModeTestCases</include>
-                                <include>*.*amespaceTestSuite</include>
-                                <include>*.ClassLoaderTestCases</include>
-                                <include>*.MappingClassLoaderTestCases</include>
-                                <include>org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionMappingNillableTestSuite</include>
-                                <include>org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.CompositeKeyTestCases</include>
-                            </includes>
                             <excludes>
-                                <exclude>*.MappingTestSuite</exclude>
-                                <exclude>*.OneTo*TestSuite</exclude>
-                                <exclude>*.DeploymentXMLMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.jaxb.*</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
-                                <exclude>*.SAXMappingTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.moxy.unit.**.*NonDefaultTestCase</exclude>
+                                <exclude>org.eclipse.persistence.testing.jaxb.**.*NonDefaultTestCase</exclude>
                             </excludes>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>test-moxy-oxm-dom</id>
+                        <id>test-moxy-jaxb-non-default-system-properties</id>
                         <goals>
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <skipTests>${test-skip-moxy-oxm-dom}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm-dom</reportNameSuffix>
+                            <skipTests>${test-skip-moxy-jaxb}</skipTests>
+                            <reportNameSuffix>test-moxy-jaxb-non-default-system-properties</reportNameSuffix>
                             <systemPropertyVariables>
-                                <platformType>DOM</platformType>
-                                <metadataType>JAVA</metadataType>
+                                <org.eclipse.persistence.moxy.annotation.xml-id-extension>true</org.eclipse.persistence.moxy.annotation.xml-id-extension>
+                                <org.eclipse.persistence.moxy.annotation.xml-value-extension>true</org.eclipse.persistence.moxy.annotation.xml-value-extension>
+                                <org.eclipse.persistence.json.type-compatibility>true</org.eclipse.persistence.json.type-compatibility>
+                                <org.eclipse.persistence.json.use-xsd-types-prefix>true</org.eclipse.persistence.json.use-xsd-types-prefix>
+                                <eclipselink.logging.level.moxy>FINE</eclipselink.logging.level.moxy>
+                                <eclipselink.logging.payload.moxy>true</eclipselink.logging.payload.moxy>
                             </systemPropertyVariables>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
                             <includes>
-                                <include>**.*TestSuite</include>
-                                <include>**.ClassLoaderTestCases</include>
-                                <include>**.MappingClassLoaderTestCases</include>
-                                <include>**.advancedxpath.**.*TestCases</include>
+                                <include>org.eclipse.persistence.testing.moxy.unit.**.*NonDefaultTestCase</include>
+                                <include>org.eclipse.persistence.testing.jaxb.**.*NonDefaultTestCase</include>
                             </includes>
-                            <excludes>
-                                <exclude>**.OXTestSuite</exclude>
-                                <exclude>**.OXMSRGTestSuite</exclude>
-                                <exclude>**.DeploymentXMLOXTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.jaxb.**.*</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.MappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.SAXMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.sequenced.SequencedMappingTestSuite</exclude>
-                                <!--TODO move to the assembly module. Needs eclipselink.zip file-->
-                                <exclude>org.eclipse.persistence.testing.jaxb.installer.InstallerTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.jaxb.installer.JaxbCompilerTestCase</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-moxy-oxm-deploymentxml</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm-deploymentxml}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm-deploymentxml</reportNameSuffix>
-                            <systemPropertyVariables>
-                                <platformType>DOM</platformType>
-                                <metadataType>XML_ECLIPSELINK</metadataType>
-                            </systemPropertyVariables>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>**.DocumentPreservationTestSuite</include>
-                                <include>**.RootElementTestSuite</include>
-                                <include>**.XMLRootTestSuite</include>
-                                <include>**.XMLMarshalTestCases</include>
-                                <include>**.XMLMarshalFragmentTestCases</include>
-                                <include>**.XMLUnmarshalTestCases</include>
-                                <include>**.ReadOnlyTestSuite</include>
-                                <include>**.InheritanceTestSuite</include>
-                                <include>**.ConverterTestSuite</include>
-                                <include>**.*MappingTestSuite</include>
-                                <include>**.ClassLoaderTestCases</include>
-                                <include>**.MappingClassLoaderTestCases</include>
-                                <include>**.*amespaceTestSuite</include>
-                            </includes>
-                            <excludes>
-                                <exclude>org.eclipse.persistence.testing.jaxb.**.*</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.MappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.SAXMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.choice.XMLChoiceMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.choicecollection.XMLChoiceCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.choicecollection.converter.ConverterTestCases</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.sequenced.SequencedMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.directtofield.converter.DirectToFieldConverterTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.converter.CompositeObjectSelfConverterTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.containeracessor.ContainerAccessorTestSuite</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <!--Oracle ToLink specific test-->
-                    <execution>
-                        <id>test-moxy-oxm-deploymentxml-tl</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm-deploymentxml-tl}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm-deploymentxml-tl</reportNameSuffix>
-                            <systemPropertyVariables>
-                                <platformType>DOM</platformType>
-                                <metadataType>XML_TOPLINK</metadataType>
-                            </systemPropertyVariables>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>**.DocumentPreservationTestSuite</include>
-                                <include>**.RootElementTestSuite</include>
-                                <include>**.XMLRootTestSuite</include>
-                                <include>**.XMLMarshalTestCases</include>
-                                <include>**.XMLMarshalFragmentTestCases</include>
-                                <include>**.XMLUnmarshalTestCases</include>
-                                <include>**.ReadOnlyTestSuite</include>
-                                <include>**.InheritanceTestSuite</include>
-                                <include>**.ConverterTestSuite</include>
-                                <include>**.*MappingTestSuite</include>
-                                <include>**.ClassLoaderTestCases</include>
-                                <include>**.MappingClassLoaderTestCases</include>
-                                <include>**.*amespaceTestSuite</include>
-                            </includes>
-                            <excludes>
-                                <exclude>org.eclipse.persistence.testing.jaxb.**.*</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.MappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.SAXMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.binarydata.XMLBinaryDataMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.XMLBinaryDataCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.choice.XMLChoiceMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.choicecollection.XMLChoiceCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.sequenced.SequencedMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.converter.CompositeObjectSelfConverterTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.containeracessor.ContainerAccessorTestSuite</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-moxy-oxm-docpres</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-moxy-oxm-docpres}</skipTests>
-                            <reportNameSuffix>test-moxy-oxm-docpres</reportNameSuffix>
-                            <systemPropertyVariables>
-                                <platformType>DOC_PRES</platformType>
-                                <metadataType>JAVA</metadataType>
-                            </systemPropertyVariables>
-                            <forkCount>1</forkCount>
-                            <reuseForks>false</reuseForks>
-                            <includes>
-                                <include>**.*TestSuite</include>
-                                <include>**.ClassLoaderTestCases</include>
-                                <include>**.MappingClassLoaderTestCases</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**.ReadOnlyTestSuite</exclude>
-                                <exclude>**.OXTestSuite</exclude>
-                                <exclude>**.OXMSRGTestSuite</exclude>
-                                <exclude>**.OneTo*TestSuite</exclude>
-                                <exclude>**.DeploymentXMLOXTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.jaxb.**.*</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.MappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.DocPresMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.SAXMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.XMLAnyObjectAndAnyCollectionMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.KeyBasedMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.keybased.compositekeyclass.CompositeKeyClassMappingTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.oxm.mappings.sequenced.SequencedMappingTestSuite</exclude>
-                                <!--TODO move to the assembly module. Needs eclipselink.zip file-->
-                                <exclude>org.eclipse.persistence.testing.jaxb.installer.InstallerTestSuite</exclude>
-                                <exclude>org.eclipse.persistence.testing.jaxb.installer.JaxbCompilerTestCase</exclude>
-                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <!--
+            To run tests on JPMS, remove all surefire executions except of the default-test
+            and uncomment following:
+            -->
+<!--        <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-junitlauncher</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-junit</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <record name="${project.build.directory}/build.txt" loglevel="verbose" action="start" />
+
+                                <path id="moxy.test.module.path">
+                                    <pathelement path="${project.build.outputDirectory}"/>
+                                    <pathelement path="${project.build.testOutputDirectory}"/>
+
+                                    <pathelement path="${org.glassfish:jakarta.json:jar}"/>
+
+                                    <pathelement path="${org.eclipse.persistence:org.eclipse.persistence.asm:jar}"/>
+                                    <pathelement path="${org.eclipse.persistence:org.eclipse.persistence.core:jar}"/>
+
+                                    <pathelement path="${jakarta.annotation:jakarta.annotation-api:jar}"/>
+                                    <pathelement path="${jakarta.el:jakarta.el-api:jar}"/>
+                                    <pathelement path="${jakarta.inject:jakarta.inject-api:jar}"/>
+                                    <pathelement path="${jakarta.validation:jakarta.validation-api:jar}"/>
+                                    <pathelement path="${jakarta.ws.rs:jakarta.ws.rs-api:jar}"/>
+                                    <pathelement path="${jakarta.xml.bind:jakarta.xml.bind-api:jar}"/>
+
+                                    <pathelement path="${com.fasterxml:classmate:jar}"/>
+                                    <pathelement path="${com.sun.activation:jakarta.activation:jar}"/>
+                                    <pathelement path="${com.sun.mail:jakarta.mail:jar}"/>
+                                    <pathelement path="${com.sun.xml.bind:jaxb-core:jar}"/>
+                                    <pathelement path="${com.sun.xml.bind:jaxb-impl:jar}"/>
+                                    <pathelement path="${com.sun.xml.bind:jaxb-xjc:jar}"/>
+
+                                    <pathelement path="${org.glassfish:jakarta.el:jar}"/>
+                                    <pathelement path="${org.glassfish.jersey.core:jersey-common:jar}"/>
+                                    <pathelement path="${org.hamcrest:hamcrest-core:jar}"/>
+                                    <pathelement path="${org.hibernate.validator:hibernate-validator:jar}"/>
+                                    <pathelement path="${org.jboss.logging:jboss-logging:jar}"/>
+                                    <pathelement path="${junit:junit:jar}"/>
+                                </path>
+
+                                <path id="moxy.test.class.path">
+                                    <pathelement path="${org.glassfish.hk2:osgi-resource-locator:jar}"/>
+                                </path>
+
+                                <echo message="Running moxy tests on JPMS"/>
+                                <property name="report.dir" location="${project.build.directory}"/>
+                                <property name="src.dir" location="${project.build.testSourceDirectory}"/>
+                                <property name="build.dir" location="${project.build.directory}/ant-run"/>
+                                <delete dir="${report.dir}/jaxb" failonerror="false"/>
+                                <mkdir dir="${report.dir}/jaxb"/>
+                                <mkdir dir="${build.dir}"/>
+                                <mkdir dir="${build.dir}/tmp"/>
+
+                                <junit fork="true" failureproperty="junit.failed.jaxb" logfailedtests="true" showoutput="yes" printsummary="yes"
+                                       dir="${build.dir}" tempdir="${build.dir}/tmp" >
+                                    <jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>
+                                    <modulepath refid="moxy.test.module.path"/>
+                                    <classpath refid="moxy.test.class.path"/>
+                                    <jvmarg value="-ea"/>
+                                    <jvmarg line="- -add-modules jakarta.json,org.eclipse.persistence.moxy.test,com.fasterxml.classmate"/>
+                                    <sysproperty key="platformType" value="SAX"/>
+                                    <sysproperty key="metadataType" value="JAVA"/>
+                                    <sysproperty key="useLogging" value="false"/>
+                                    <sysproperty key="eclipselink.xml.platform" value="org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform"/>
+                                    <sysproperty key="parser" value="org.eclipse.persistence.platform.xml.jaxp.JAXPParser"/>
+                                    <batchtest todir="${report.dir}/jaxb">
+                                        <fileset dir="${src.dir}">
+                                            <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite2.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite3.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite4.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/JAXBBeanValidationTestSuite.java" />
+                                            <include name="org/eclipse/persistence/testing/jaxb/beanvalidation/BeanValidationHelperTestCase.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/listofobjects/JAXBListOfObjectsSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/annotations/AnnotationsTestSuite.java"/>
+                                            <include
+                                                name="org/eclipse/persistence/testing/jaxb/externalizedmetadata/ExternalizedMetadataTestSuite.java"/>
+                                            <include
+                                                name="org/eclipse/persistence/testing/jaxb/javadoc/JavadocAnnotationExamplesTestSuite.java"/>
+                                            <include
+                                                name="org/eclipse/persistence/testing/jaxb/typemappinginfo/TypeMappingInfoTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/schemagen/SchemaGenTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/xmladapter/XmlAdapterTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/dynamic/DynamicJAXBTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/json/JSONTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/rs/RESTfulTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/moxy/unit/**/*TestCase.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/annotations/xmlidref/XmlIdSystemPropertyNotSetTestCase.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/annotations/xmlidref/XmlValueSystemPropertyNotSetTestCase.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/annotations/xmlidref/XmlValueSystemPropertyTestCase.java"/>
+                                        </fileset>
+                                        <formatter type="xml"/>
+                                    </batchtest>
+                                </junit>
+
+                                <junitreport todir="${report.dir}/jaxb">
+                                    <fileset dir="${report.dir}/jaxb">
+                                        <include name="**/*.xml"/>
+                                    </fileset>
+                                    <report todir="${report.dir}/jaxb"/>
+                                </junitreport>
+
+                                <fail message="TESTS FAILED !">
+                                    <condition>
+                                        <and>
+                                            <isset property="junit.failed.jaxb"/>
+                                            <istrue value="${test.fail.fast}"/>
+                                        </and>
+                                    </condition>
+                                </fail>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
         </plugins>
     </build>
 
@@ -489,38 +394,26 @@
             <id>test-srg</id>
             <properties>
                 <test-skip-moxy-jaxb-srg>false</test-skip-moxy-jaxb-srg>
-                <test-skip-moxy-oxm-srg>false</test-skip-moxy-oxm-srg>
             </properties>
         </profile>
         <profile>
             <id>test-lrg</id>
             <properties>
                 <test-skip-moxy-jaxb-srg>true</test-skip-moxy-jaxb-srg>
-                <test-skip-moxy-oxm-srg>true</test-skip-moxy-oxm-srg>
                 <test-skip-moxy-jaxb>false</test-skip-moxy-jaxb>
-                <test-skip-moxy-oxm>false</test-skip-moxy-oxm>
-                <test-skip-moxy-oxm-dom>false</test-skip-moxy-oxm-dom>
-                <test-skip-moxy-oxm-deploymentxml>false</test-skip-moxy-oxm-deploymentxml>
-                <test-skip-moxy-oxm-docpres>false</test-skip-moxy-oxm-docpres>
             </properties>
         </profile>
         <profile>
             <id>test-moxy-srg</id>
             <properties>
                 <test-skip-moxy-jaxb-srg>false</test-skip-moxy-jaxb-srg>
-                <test-skip-moxy-oxm-srg>false</test-skip-moxy-oxm-srg>
             </properties>
         </profile>
         <profile>
             <id>test-moxy-lrg</id>
             <properties>
                 <test-skip-moxy-jaxb-srg>true</test-skip-moxy-jaxb-srg>
-                <test-skip-moxy-oxm-srg>true</test-skip-moxy-oxm-srg>
                 <test-skip-moxy-jaxb>false</test-skip-moxy-jaxb>
-                <test-skip-moxy-oxm>false</test-skip-moxy-oxm>
-                <test-skip-moxy-oxm-dom>false</test-skip-moxy-oxm-dom>
-                <test-skip-moxy-oxm-deploymentxml>false</test-skip-moxy-oxm-deploymentxml>
-                <test-skip-moxy-oxm-docpres>false</test-skip-moxy-oxm-docpres>
             </properties>
         </profile>
         <profile>
@@ -536,40 +429,57 @@
             </properties>
         </profile>
         <profile>
-            <id>test-moxy-oxm-srg</id>
-            <properties>
-                <test-skip-moxy-oxm-srg>false</test-skip-moxy-oxm-srg>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm</id>
-            <properties>
-                <test-skip-moxy-oxm>false</test-skip-moxy-oxm>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm-dom</id>
-            <properties>
-                <test-skip-moxy-oxm-dom>false</test-skip-moxy-oxm-dom>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm-deploymentxml</id>
-            <properties>
-                <test-skip-moxy-oxm-deploymentxml>false</test-skip-moxy-oxm-deploymentxml>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm-deploymentxml-tl</id>
-            <properties>
-                <test-skip-moxy-oxm-deploymentxml-tl>false</test-skip-moxy-oxm-deploymentxml-tl>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-moxy-oxm-docpres</id>
-            <properties>
-                <test-skip-moxy-oxm-docpres>false</test-skip-moxy-oxm-docpres>
-            </properties>
+            <!-- excluded for codeql build -->
+            <id>no-test-deps</id>
+            <activation>
+                <property>
+                    <name>!notests</name>
+                </property>
+            </activation>
+            <dependencies>
+                <!--Test dependencies-->
+                <!--Test framework-->
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <!--Other modules-->
+                <dependency>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.core</artifactId>
+                    <type>test-jar</type>
+                    <scope>test</scope>
+                </dependency>
+                <!--APIs and other libs used in test classes-->
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>jakarta.el</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.eclipse.parsson</groupId>
+                    <artifactId>parsson</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.jersey.core</groupId>
+                    <artifactId>jersey-common</artifactId>
+                    <optional>true</optional>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.hibernate.validator</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                    <optional>true</optional>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 </project>

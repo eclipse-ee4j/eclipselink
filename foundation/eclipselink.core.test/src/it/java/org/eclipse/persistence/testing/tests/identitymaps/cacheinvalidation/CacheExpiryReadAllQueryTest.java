@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class CacheExpiryReadAllQueryTest extends CacheExpiryTest {
         this.shouldExpire = shouldExpire;
     }
 
+    @Override
     public void setup() {
         super.setup();
         // Use time to live expire that create a life long enough for this test to complete
@@ -46,6 +47,7 @@ public class CacheExpiryReadAllQueryTest extends CacheExpiryTest {
         employeeNames = new Vector();
     }
 
+    @Override
     public void test() {
         // Get the names of all the employees
         Enumeration employees = getSession().readAllObjects(Employee.class).elements();
@@ -54,9 +56,9 @@ public class CacheExpiryReadAllQueryTest extends CacheExpiryTest {
         }
 
         // Changed the names of all the employees in the cache
-        Enumeration employeeMap = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(Employee.class).keys();
+        Enumeration<CacheKey> employeeMap = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(Employee.class).keys();
         while (employeeMap.hasMoreElements()) {
-            Employee employee = (Employee)((CacheKey)employeeMap.nextElement()).getObject();
+            Employee employee = (Employee) employeeMap.nextElement().getObject();
             employee.setFirstName(employee.getFirstName() + "-mutated");
         }
 
@@ -72,6 +74,7 @@ public class CacheExpiryReadAllQueryTest extends CacheExpiryTest {
         queriedEmployees = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         Enumeration queriedResults = queriedEmployees.elements();
         while (queriedResults.hasMoreElements()) {

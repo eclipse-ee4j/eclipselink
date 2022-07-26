@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2017, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,13 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "initialize_identitymaps", "initialize identitymaps" },
         { "external_transaction_has_rolled_back_internally", "external transaction has rolled back internally" },
         { "validate_cache", "validate cache." },
+        { "cache_item_creation", "Entity ({0}) with Id ({1}) was stored in the cache by thread (Id: {2} Name: {3})" },
+        { "cache_item_refresh", "Entity ({0}) with Id ({1}) was refreshed in the cache by thread (Id: {2} Name: {3})" },
+        { "cache_item_removal", "Entity ({0}) with Id ({1}) was removed from the cache by thread (Id: {2} Name: {3})" },
+        { "cache_item_invalidation", "Entity ({0}) with Id ({1}) was invalidated from the cache by thread (Id: {2} Name: {3})" },
+        { "cache_class_invalidation", "Entities based on class ({0}) was invalidated from the cache by thread (Id: {1} Name: {2})" },
+        { "cache_hit", "Cache hit for entity ({0}) with Id ({1})" },
+        { "cache_miss", "Cache miss for entity ({0}) with Id ({1})" },
         { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
         { "corrupt_object_referenced_through_mapping", "corrupt object referenced through mapping: {0}" },
         { "corrupt_object", "corrupt object: {0}" },
@@ -101,13 +108,24 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "locked_object", "Locked Object : {0}" },
         { "depth", "Depth : {0}" },
         { "cachekey_released", "This thread is no longer holding the lock.  It must not be a blocking thread."},
+        { "cache_thread_info", "Cached entity ({0}) with Id ({1}) was prepared and stored into cache by another thread (id: {2} name: {3}), than current thread (id: {4} name: {5})" },
         { "deferred_locks", "Deferred lock on : {0}" },
         { "deferred_locks_released", "All deferred locks for thread \"{0}\" have been released." },
         { "acquiring_deferred_lock", "Thread \"{1}\" has acquired a deferred lock on object : {0} in order to avoid deadlock." },
         { "dead_lock_encountered_on_write", "Thread \"{1}\" encountered deadlock when attempting to lock : {0}.  Entering deadlock avoidance algorithm." },
         { "dead_lock_encountered_on_write_no_cache_key", "Thread \"{2}\" encountered deadlock when attempting to lock object of class: {0} with PK {1}.  Entering deadlock avoidance algorithm." },
-        { "concurrency_manager_release_locks_acquired_by_thread_1", "releaseAllLocksAcquiredByThread: Thread \"{1}\"  .The Lock manager is null. This might be an acquire operation. So not possible to lockManager.releaseActiveLocksOnThread(). Cache Key:  \"{2}\"" },
-        { "concurrency_manager_release_locks_acquired_by_thread_2", "releaseAllLocksAcquiredByThread: Release active locks on Thread \"{1}\"" },
+        { "concurrency_manager_release_locks_acquired_by_thread_1", "releaseAllLocksAcquiredByThread: Thread \"{0}\"  .The Lock manager is null. This might be an acquire operation. So not possible to lockManager.releaseActiveLocksOnThread(). Cache Key:  \"{1}\"" },
+        { "concurrency_manager_release_locks_acquired_by_thread_2", "releaseAllLocksAcquiredByThread: Release active locks on Thread \"{0}\"" },
+        { "concurrency_manager_build_object_thread_complete_1", "isBuildObjectComplete ExpandedThread NR  {0}: {1} \n" },
+        { "concurrency_manager_build_object_thread_complete_2", "\nAll threads in this stack are doing object building and needed to defer on one or more cache keys.\n"
+                + "The last thread has deferred lock on ac cache key that is acquired by thread that is not yet finished with its work. \n\n"},
+        { "concurrency_manager_build_object_thread_complete_3", "finalDeferredLockCausingTrouble:  {0} \n"
+                + " This cache key had to be deferred by the last thread on the recursive stack. The thread was ACQUIRED. \n"},
+        { "concurrency_manager_build_object_thread_complete_4", "activeThreadOnTheCacheKey: {0}  \n"
+                + " hasDeferredLockManager: {1} \n "
+                + " This is the thread that has acquired the cache key and has been considered to not yet be finished with its business. \n"
+                + " When hasDeferredLockManager is true it typically means this thread is doing object building. \n"
+                + " When hasDeferredLockManager is false it might an object building thread or it could be a thread doing a commit and acquiring final locks to merge its objects with changesets look at the stack trace to understand. \n"},
         { "concurrency_manager_allow_concurrency_exception_fired_up", "allowConcurrencyExceptionToBeFiredUp: is set to FALSE."
                 + " No any exception be fired to avoid the risk of aborting the current thread not being sufficient to resolve any dead lock."
                 + " and leaving the system in a worth shape where aver 3 retries the business transaction is not re-attempted and the recovery of the system becomes complicated. "
@@ -118,15 +136,17 @@ public class TraceLocalizationResource extends ListResourceBundle {
                 + " The thread has been stuck for: ({3} ms) \n "
                 + " Bellow we will describe the ActiveLocks, DeferredLocks and ReadLocks for this thread. " },
         { "concurrency_util_owned_cache_key_null", "ObjectNull. Most likely not yet in server session cache and in the process of being created."},
-        { "concurrency_util_owned_cache_key_is_cache_key", "--- CacheKey  ({0}):  (primaryKey: {1}) (object: {2}) (cacheKeyClass: {3}) (current cache key owner/activeThread: {4}) (getNumberOfReaders: {5}) "
-                + " (concurrencyManagerId: {6}) (concurrencyManagerCreationDate: {7})"
-                + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {8}) "
-                + " (totalNumberOfTimeCacheKeyReleasedForReading:  {9}) "
-                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {10})  ---"},
+        { "concurrency_util_owned_cache_key_is_cache_key", "--- CacheKey  ({0}):  (primaryKey: {1}) (object hash code: {2}) (cacheKeyClass: {3}) (cacheKey hash code: {4}) (current cache key owner/activeThread: {5}) (getNumberOfReaders: {6}) "
+                + " (concurrencyManagerId: {7}) (concurrencyManagerCreationDate: {8})"
+                + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {9}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReading:  {10}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {11})  "
+                + "(depth: {12}) ---"},
         { "concurrency_util_owned_cache_key_is_not_cache_key", "--- ConcurrencyManager: (ConcurrencyManagerClass: {0} ) (ConcurrencyManagerToString: {1}) (current cache key owner/activeThread: {2}) (concurrencyManagerId: {3}) (concurrencyManagerCreationDate: {4}) "
                 + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {5}) "
                 + " (totalNumberOfTimeCacheKeyReleasedForReading:  {6}) "
-                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {7})  ---"},
+                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {7}) "
+                + "(depth: {8}) ---"},
         { "concurrency_util_header_current_cache_key", "Summary current cache key of thread {0} "},
         { "concurrency_util_header_active_locks_owned_by_thread", "Summary of active locks owned by thread {0} "},
         { "concurrency_util_header_deferred_locks_owned_by_thread", "Summary of deferred locks (could not be acquired and cause thread to wait for object building to complete) of thread {0} "},
@@ -169,18 +189,21 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "concurrency_util_create_information_all_threads_acquire_cache_keys_1", "Concurrency manager - Page 02 start - information about threads waiting to acquire (write/deferred) cache keys "
                 + "\nTotal number of threads waiting to acquire lock: {0}\n\n"},
         { "concurrency_util_create_information_all_threads_acquire_cache_keys_2", "[currentThreadNumber: {0}] [ThreadName: {1}]: Waiting to acquire (write/deferred): {2}\n"},
-        { "concurrency_util_create_information_all_threads_acquire_cache_keys_3", "Concurrency manager - Page 02 end - information about threads waiting to acquire (write/deferred) cache keys\n"},
+        { "concurrency_util_create_information_all_threads_acquire_cache_keys_3", "It seems, that trace was produced by the THREADS_TO_FAIL_TO_ACQUIRE_CACHE_KEYS - - org.eclipse.persistence.internal.helper.WriteLockManager.acquireRequiredLocks(MergeManager, UnitOfWorkChangeSet)"},
+        { "concurrency_util_create_information_all_threads_acquire_cache_keys_4", "[methodNameThatGotStuckWaitingToAcquire: {0}] \n"},
+        { "concurrency_util_create_information_all_threads_acquire_cache_keys_5", "Concurrency manager - Page 02 end - information about threads waiting to acquire (write/deferred) cache keys\n"},
         { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_1", "Concurrency manager - Page 03 start - information about threads waiting to acquire read cache keys "
                 + "\nTotal number of threads waiting to acquire read locks: {0} \n\n"},
         { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_2", "[currentThreadNumber: {0}] [ThreadName: {1} ]: Waiting to acquire (read lock): {2}\n"},
-        { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_3", "Concurrency manager - Page 03 end - information about threads waiting to acquire read cache keys\n"},
+        { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_3", "[methodNameThatGotStuckWaitingToAcquire: {0}]  \n"},
+        { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_4", "Concurrency manager - Page 03 end - information about threads waiting to acquire read cache keys\n"},
         { "concurrency_util_create_information_all_threads_release_deferred_locks_1", "Concurrency manager - Page 04 start - information about threads waiting on release deferred locks (waiting for other thread to finish building the objects deferred) "
                 + "\nTotal number of threads waiting to acquire lock: {0} \n\n"},
         { "concurrency_util_create_information_all_threads_release_deferred_locks_2", "[currentThreadNumber: {0}] [ThreadName: {1} ]\n"},
         { "concurrency_util_create_information_all_threads_release_deferred_locks_3", "Concurrency manager - Page 04 end - information about threads waiting on release deferred locks (waiting for other thread to finish building the objects deferred)\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_1", "Concurrency manager - Page 05 start (currentThreadNumber: {0} of totalNumberOfThreads: {1})  - detailed information about specific thread "
                 + "\nThread: {2}"
-                + "\nThreadWaitingToReleaseDeferredLocks: {3}"},
+                + "\nThreadWaitingToReleaseDeferredLocks: {3}\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_2", " waitingOnAcquireWritingCacheKey: true  waiting to acquire writing: {0}\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_3", " waitingOnAcquireWritingCacheKey: false\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_4", " waitingOnAcquireReadCacheKey: true   waiting to acquire reading: {0}\n"},
@@ -188,7 +211,9 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "concurrency_util_create_information_all_resources_acquired_deferred_6", " writeManagerThreadPrimaryKeysWithChangesToBeMerged: true"
                 + "\n writeManagerThreadPrimaryKeysWithChangesToBeMerged list: {0}\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_7", " writeManagerThreadPrimaryKeysWithChangesToBeMerged: false\n"},
-        { "concurrency_util_create_information_all_resources_acquired_deferred_8", "Concurrency manager - Page 05 end (currentThreadNumber: {0} of totalNumberOfThreads: {1})  - detailed information about specific thread\n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_8", " waitingToReleaseDeferredLocksJustification: \n {0} \n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_9", " waitingToReleaseDeferredLocksJustification: information not available. \n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_10", "Concurrency manager - Page 05 end (currentThreadNumber: {0} of totalNumberOfThreads: {1})  - detailed information about specific thread\n"},
         { "concurrency_util_read_lock_manager_problem01", "Remove cache key from read lock manager problem 01:"
                 + "\n The current thread: {0} is about to decrement the currentNumberOfReaders from: {1}  to decrementedNumberOfReaders {2} "
                 + "\n  on the cache key: {3}"
@@ -382,7 +407,6 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "descriptor_xml_not_in_jar", "The descriptor file ({0}) is not found in jar({1}) file, no migration therefore will be performed for this jar." },
         { "pessimistic_locking_migrated", "The native CMP setting 'pessimistic-locking' on entity({0}) has been migrated and supported." },
         { "read_only_migrated", "The native CMP setting 'read-only' on entity({0}) has been migrated and supported." },
-        { "call_timeout_migrated", "Oc4j native CMP setting 'time-out' on entity({0}) has been migrated and supported." },
         { "verifiy_columns_version_locking_migrated", "Optimistic setting 'Version' on 'verifiy-columns' in entity ({0}) has been migrated." },
         { "verifiy_columns_timestamp_locking_migrated", "Optimistic setting 'Timestamp' on 'verifiy-columns' in entity ({0}) has been migrated." },
         { "verifiy_columns_changedField_locking_migrated", "Optimistic setting 'Modify' on 'verifiy-columns' in entity ({0}) has been migrated." },
@@ -485,6 +509,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_classloader_in_use", "EclipseLink JMX Runtime Services is referencing the [{0}] ClassLoader at: [{1}]" },
         { "metamodel_itentifiableType_javaclass_null_cannot_set_supertype", "Metamodel processing: Unable to set the superclass Hierarchy because the javaClass field is null for the relationalDescriptor [{0}] for the identifiableType [{1}]." },
         { "metamodel_relationaldescriptor_not_fully_initialized_yet", "Metamodel processing: The relationalDescriptor [{0}] for the managedType [{1}] is not fully initialized yet - the Metamodel instance will be incomplete before at least one entityManger session login (after a full deploy)." },
+        { "metamodel_type_collection_empty", "The collection of metamodel types is empty. Model classes may not have been found during entity search for Java SE and some Java EE container managed persistence units.  Please verify that your entity classes are referenced in persistence.xml using either <class> elements or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element" },
+        { "metamodel_not_preinit", "Metamodel for composite member [{0}] not preinitialized"},
         { "no_weaved_vh_method_found_verify_weaving_and_module_order", "An expected weaving method [{0}] was not found on the accessor [{2}] on the mapping [{1}] - verify that the processing order of your modules places the one containing a persistence unit ahead of modules that use it in your deployment descriptor, or disable weaving for the persistence context or the mapping using FetchType.EAGER." },
         { "proxy_connection_customizer_already_proxy_session", "{0}:{1}: proxy session with unknown properties is already opened. Closing it."},
         { "proxy_connection_customizer_opened_proxy_session",  "{0}:{1}: opened proxy session."},
@@ -520,7 +546,10 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "moxy_set_jaxb_context_property", "Setting JAXBContext property (name/value): {0}/{1}"},
         { "invalid_tzone", "Invalid timezone conversion property {0} value: {1}.  Will attempt to resolve default." },
         { "invalid_default_tzone", "Invalid timezone conversion property {0} value: {1}.  Defaulting to UTC." },
-        { "using_conversion_tzone", "ConversionManager using default zone offset: {1}." }
+        { "using_conversion_tzone", "ConversionManager using default zone offset: {1}."},
+        { "open_pkg", "Opening package {0} in {1} to {2} for reflection access."},
+        { "set_accessible", "Cannot setAccessible {0} for {1}."},
+        { "set_accessible_in", "Cannot setAccessible {0} {1} in {2}."}
     };
 
     /**

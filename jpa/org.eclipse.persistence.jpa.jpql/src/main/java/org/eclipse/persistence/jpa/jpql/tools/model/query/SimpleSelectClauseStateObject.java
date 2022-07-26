@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * The <b>SELECT</b> statement queries data from entities. This version simply does not handle
  * <b>OBJECT</b> and <b>NEW</b> identifiers. It is used from within another expression.
  *
- * <div><b>BNF:</b> <code>simple_select_clause ::= SELECT [DISTINCT] simple_select_expression</code><p></div>
+ * <div><p><b>BNF:</b> <code>simple_select_clause ::= SELECT [DISTINCT] simple_select_expression</code></p></div>
  *
  * @see SimpleSelectClause
  *
@@ -62,17 +62,11 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -96,25 +90,16 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
         return builder;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SimpleSelectClause getExpression() {
         return (SimpleSelectClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SimpleFromClauseStateObject getFromClause() {
         return (SimpleFromClauseStateObject) super.getFromClause();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SimpleSelectStatementStateObject getParent() {
         return (SimpleSelectStatementStateObject) super.getParent();
@@ -123,23 +108,16 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
     /**
      * Returns
      *
-     * @return
      */
     public StateObject getSelectItem() {
         return stateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasSelectItem() {
         return stateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -151,9 +129,6 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void parse(String jpqlFragment) {
         StateObject stateObject = buildStateObject(jpqlFragment, SimpleSelectExpressionBNF.ID);
@@ -183,9 +158,6 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
         firePropertyChanged(SELECT_ITEM_PROPERTY, oldStateObject, stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

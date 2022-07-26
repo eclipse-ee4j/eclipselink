@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -154,6 +154,7 @@ public class StringTester extends TypeTester {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify(WriteTypeObjectTest testCase) throws TestErrorException, TestWarningException {
         if ((caughtException != null) && (getVarString().length() > 30)) {
             throw new TestWarningException("Too long exception: " + caughtException.toString());
@@ -162,7 +163,7 @@ public class StringTester extends TypeTester {
             super.verify(testCase);
         } catch (TestErrorException verifyFailedException) {
             // Char fields always are trimmed (by us) this is an error if they are not
-            if (((StringTester)testCase.getObjectFromDatabase()) != null) {
+            if (testCase.getObjectFromDatabase() != null) {
                 String fixed = ((StringTester)testCase.getObjectFromDatabase()).getFixedString();
                 if ((fixed != null) && (fixed.length() > 0) && (fixed.charAt(fixed.length() - 1) == ' ')) {
                     if (fixed.equals(" ")) {// Stupid drivers make "" -> " "

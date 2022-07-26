@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,7 +84,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Specifies the direction in which the hierarchy is traversed in a
      * hierarchical query.
      */
-    public static enum Direction {
+    public enum Direction {
         /**
          * Hierarchy will be traversed from parent to child - PRIOR keyword is
          * generated on the left side of the equation
@@ -131,7 +131,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * It is better to provide the class and expression builder on construction to ensure a single expression builder is used.
      * If no selection criteria is specified this will read all objects of the class from the database.
      */
-    public ReadAllQuery(Class classToRead) {
+    public ReadAllQuery(Class<?> classToRead) {
         this();
         this.referenceClass = classToRead;
     }
@@ -140,7 +140,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * PUBLIC:
      * Return a new read all query for the class and the selection criteria.
      */
-    public ReadAllQuery(Class classToRead, Expression selectionCriteria) {
+    public ReadAllQuery(Class<?> classToRead, Expression selectionCriteria) {
         this();
         this.referenceClass = classToRead;
         setSelectionCriteria(selectionCriteria);
@@ -151,7 +151,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Return a new read all query for the class.
      * The expression builder must be used for all associated expressions used with the query.
      */
-    public ReadAllQuery(Class classToRead, ExpressionBuilder builder) {
+    public ReadAllQuery(Class<?> classToRead, ExpressionBuilder builder) {
         this();
         this.defaultBuilder = builder;
         this.referenceClass = classToRead;
@@ -162,7 +162,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Return a new read all query.
      * The call represents a database interaction such as SQL, Stored Procedure.
      */
-    public ReadAllQuery(Class classToRead, Call call) {
+    public ReadAllQuery(Class<?> classToRead, Call call) {
         this();
         this.referenceClass = classToRead;
         setCall(call);
@@ -277,7 +277,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     && isDefaultPropertiesQuery() && (!hasOrderByExpressions())
                     && descriptor.getQueryManager().hasReadAllQuery();
             setIsCustomQueryUsed(useCustomQueryValue);
-            return Boolean.valueOf(useCustomQueryValue);
+            return useCustomQueryValue;
         }
     }
 
@@ -406,7 +406,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Wrapping is done automatically.
         // Make sure a vector of exactly the right size is returned.
         Object conformedResult = cp.containerInstance(indexedInterimResult.size() + fromDatabase.size());
-        for (Iterator enumtr = indexedInterimResult.values().iterator(); enumtr.hasNext();) {
+        for (Iterator<Object> enumtr = indexedInterimResult.values().iterator(); enumtr.hasNext();) {
             Object eachClone = enumtr.next();
             cp.addInto(eachClone, conformedResult, unitOfWork);
         }
@@ -1145,7 +1145,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * PUBLIC:
      * Set the Hierarchical Query Clause for the query
      * <p>Example:
-     * <p>Expression startWith = builder.get("id").equal(new Integer(100)); //can be any expression which identifies a set of employees
+     * <p>Expression startWith = builder.get("id").equal(Integer.valueOf(100)); //can be any expression which identifies a set of employees
      * <p>Expression connectBy = builder.get("managedEmployees"); //indicated the relationship that the hierarchy is based on, must be self-referential
      * <p>Vector orderBy = new Vector();
      * <p>orderBy.addElement(builder.get("startDate"));
@@ -1168,7 +1168,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * <p>
      * Example:
      * <p>
-     * Expression startWith = builder.get("id").equal(new Integer(100)); //can
+     * Expression startWith = builder.get("id").equal(Integer.valueOf(100)); //can
      * be any expression which identifies a set of employees <br>
      * Expression connectBy = builder.get("managedEmployees"); //indicated the
      * relationship that the hierarchy is based on, must be self-referential <br>
@@ -1212,7 +1212,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Collection interface.
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
-    public void useCollectionClass(Class concreteClass) {
+    public void useCollectionClass(Class<?> concreteClass) {
         // Set container policy.
         setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteClass));
 
@@ -1262,7 +1262,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * <p>jdk1.1.x: The container class must be a subclass of Hashtable.
      * <p>The referenceClass must set before calling this method.
      */
-    public void useMapClass(Class concreteClass, String methodName) {
+    public void useMapClass(Class<?> concreteClass, String methodName) {
         // the reference class has to be specified before coming here
         if (getReferenceClass() == null) {
             throw QueryException.referenceClassMissing(this);

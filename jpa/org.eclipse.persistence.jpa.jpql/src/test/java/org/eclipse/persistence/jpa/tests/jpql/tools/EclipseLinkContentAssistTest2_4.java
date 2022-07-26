@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,17 +36,11 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssistTest {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> classNames() {
         return Collections.emptyList();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> clauses(String afterIdentifier, String beforeIdentifier, boolean subquery) {
 
@@ -141,38 +135,26 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         return proposals;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> columnNames(String tableName) {
         return Collections.emptyList();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> enumConstants() {
         return Collections.emptyList();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> enumTypes() {
         return Collections.emptyList();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> fromClauseInternalClauses(String afterIdentifier) {
 
         if (EclipseLinkVersionTools.isNewerThan2_4(getGrammar())) {
-            List<String> proposals = new ArrayList<String>();
+            List<String> proposals = new ArrayList<>();
 
             if (afterIdentifier == FROM) {
                 proposals.addAll(super.fromClauseInternalClauses(FROM));
@@ -206,18 +188,12 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         return super.fromClauseInternalClauses(afterIdentifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isJoinFetchIdentifiable() {
         EclipseLinkVersion currentVersion = EclipseLinkVersion.value(getGrammar().getProviderVersion());
         return currentVersion.isNewerThanOrEqual(EclipseLinkJPQLGrammar2_4.VERSION);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> tableNames() {
         return Collections.emptyList();
@@ -327,7 +303,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'";
         int position = "Select cast(".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
@@ -340,7 +316,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'";
         int position = "Select cast(e.firstName ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionAggregates());
 
@@ -353,7 +329,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'";
         int position = "Select cast(e.firstName a".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         CollectionTools.addAll(proposals, filter(bnfAccessor.scalarExpressionAggregates(), "a"));
 
@@ -366,7 +342,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'";
         int position = "Select cast(e.firstName as".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         CollectionTools.addAll(proposals, filter(bnfAccessor.scalarExpressionAggregates(), "as"));
 
@@ -562,7 +538,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select extract(YEAR from) from Employee e";
         int position = "Select extract(YEAR ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(FROM);
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
@@ -576,7 +552,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select extract(YEAR from) from Employee e";
         int position = "Select extract(YEAR f".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(FROM);
         CollectionTools.addAll(proposals, filter(bnfAccessor.scalarExpressionFunctions(), "f"));
 
@@ -589,7 +565,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select extract(YEAR from) from Employee e";
         int position = "Select extract(YEAR fr".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(FROM);
         CollectionTools.addAll(proposals, filter(bnfAccessor.scalarExpressionFunctions(), "fr"));
 
@@ -602,7 +578,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select extract(YEAR from) from Employee e";
         int position = "Select extract(YEAR fro".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(FROM);
         CollectionTools.addAll(proposals, filter(bnfAccessor.scalarExpressionFunctions(), "fro"));
 
@@ -615,7 +591,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select extract(YEAR from) from Employee e";
         int position = "Select extract(YEAR from".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(FROM);
         CollectionTools.addAll(proposals, filter(bnfAccessor.scalarExpressionFunctions(), "from"));
 
@@ -628,7 +604,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select extract(YEAR from ) from Employee e";
         int position = "Select extract(YEAR from".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(FROM);
         CollectionTools.addAll(proposals, filter(bnfAccessor.scalarExpressionFunctions(), "from"));
 
@@ -641,7 +617,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select extract(YEAR e.hiringDate) from Employee e";
         int position = "Select extract(YEAR ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(FROM);
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
@@ -655,7 +631,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select extract(YEAR e.hiringDate) from Employee e";
         int position = "Select extract(YEAR e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, filter(bnfAccessor.scalarExpressionFunctions(), "e"));
 
@@ -700,7 +676,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "Select extract(YEAR from ) from Employee e";
         int position = "Select extract(YEAR from ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
@@ -1089,7 +1065,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGEXP ";
         int position = "SELECT e FROM Employee e WHERE e.name REGEXP ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.patternValueFunctions());
 
@@ -1102,7 +1078,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGEXP e";
         int position = "SELECT e FROM Employee e WHERE e.name REGEXP e".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, filter(bnfAccessor.patternValueFunctions(), "e"));
 
@@ -2034,7 +2010,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
         String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name, e";
         int startPosition = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, filter(bnfAccessor.groupByItemFunctions(), "e"));
 

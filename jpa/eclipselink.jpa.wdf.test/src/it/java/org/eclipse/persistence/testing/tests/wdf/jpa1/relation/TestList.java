@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,7 +26,7 @@ import java.util.TreeMap;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.eclipse.persistence.testing.framework.wdf.Issue;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
@@ -39,8 +39,8 @@ import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;
 import org.junit.Test;
 
 public class TestList extends JPA1Base {
-    private static final Integer EMP_ID_DORIS = Integer.valueOf(43);
-    private static final Integer EMP_ID_SABINE = Integer.valueOf(44);
+    private static final Integer EMP_ID_DORIS = 43;
+    private static final Integer EMP_ID_SABINE = 44;
 
     @Override
     protected void setup()  {
@@ -51,9 +51,9 @@ public class TestList extends JPA1Base {
             env.beginTransaction(em);
             final Department dep = new Department(1, "Public Relations");
             em.persist(dep);
-            final Employee emp1 = new Employee(EMP_ID_DORIS.intValue(), "Doris", "Schr\u00f6der-K\u00f6pf", dep);
+            final Employee emp1 = new Employee(EMP_ID_DORIS, "Doris", "Schr\u00f6der-K\u00f6pf", dep);
             em.persist(emp1);
-            final Employee emp2 = new Employee(EMP_ID_SABINE.intValue(), "Sabine", "Leutheusser-Schnarrenberger", dep);
+            final Employee emp2 = new Employee(EMP_ID_SABINE, "Sabine", "Leutheusser-Schnarrenberger", dep);
             em.persist(emp2);
             env.commitTransactionAndClear(em);
         } finally {
@@ -68,7 +68,7 @@ public class TestList extends JPA1Base {
         try {
             env.beginTransaction(em);
             final Course course = createAndPersistCourse(em);
-            final Long courseId = Long.valueOf(course.getCourseId());
+            final Long courseId = course.getCourseId();
             env.commitTransactionAndClear(em);
             final Course storedCourse = em.find(Course.class, courseId);
             verify(storedCourse != null, "didn't find course again");
@@ -76,7 +76,7 @@ public class TestList extends JPA1Base {
             verify(storedCourse.getAttendees().size() == 2, "number of attendees in course (expected: 2, got: "
                     + storedCourse.getAttendees().size() + ").");
             for (final Employee attendee : storedCourse.getAttendees()) {
-                verify(attendee.getId() == EMP_ID_DORIS.intValue() || attendee.getId() == EMP_ID_SABINE.intValue(),
+                verify(attendee.getId() == EMP_ID_DORIS || attendee.getId() == EMP_ID_SABINE,
                         "Wrong attendee: " + attendee);
             }
         } finally {
@@ -105,7 +105,7 @@ public class TestList extends JPA1Base {
         try {
             env.beginTransaction(em);
             final Course course = createAndPersistCourse(em);
-            final Long courseId = Long.valueOf(course.getCourseId());
+            final Long courseId = course.getCourseId();
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             em.remove(em.merge(course));
@@ -124,7 +124,7 @@ public class TestList extends JPA1Base {
         try {
             env.beginTransaction(em);
             final Course course = createAndPersistCourse(em);
-            final Long courseId = Long.valueOf(course.getCourseId());
+            final Long courseId = course.getCourseId();
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             // the remove of Doris takes place on the detached entity: but rather than relying on
@@ -156,7 +156,7 @@ public class TestList extends JPA1Base {
         try {
             env.beginTransaction(em);
             final Course course = createAndPersistCourse(em);
-            final Long courseId = Long.valueOf(course.getCourseId());
+            final Long courseId = course.getCourseId();
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             // the remove of Doris takes place on the managed entity
@@ -183,7 +183,7 @@ public class TestList extends JPA1Base {
         try {
             env.beginTransaction(em);
             final Course course = createAndPersistCourse(em);
-            final Long courseId = Long.valueOf(course.getCourseId());
+            final Long courseId = course.getCourseId();
             final Employee employee1 = em.find(Employee.class, EMP_ID_DORIS);
             attendeeMap.put(employee1.getLastName(), employee1);
             final Employee employee2 = em.find(Employee.class, EMP_ID_SABINE);
@@ -214,7 +214,7 @@ public class TestList extends JPA1Base {
         try {
             env.beginTransaction(em);
             final Course course = createAndPersistCourse(em);
-            final Long courseId = Long.valueOf(course.getCourseId());
+            final Long courseId = course.getCourseId();
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             final Course storedCourse = em.find(Course.class, courseId);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Edwin Tang
  * @version 1.0
- * @date December 14, 2004
  */
 public class SessionsXMLSchemaProjectXMLTest extends AutoVerifyTestCase {
     DatabaseSession employeeSession;
@@ -36,6 +35,7 @@ public class SessionsXMLSchemaProjectXMLTest extends AutoVerifyTestCase {
         setDescription("Test sessions XML schema with project xml");
     }
 
+    @Override
     public void reset() {
         if (employeeSession != null && employeeSession.isConnected()) {
             employeeSession.logout(); // If session is logged in, log it out
@@ -44,6 +44,7 @@ public class SessionsXMLSchemaProjectXMLTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaWithProjectXML.xml");
 
@@ -51,6 +52,7 @@ public class SessionsXMLSchemaProjectXMLTest extends AutoVerifyTestCase {
             employeeSession = (DatabaseSession)SessionManager.getManager().getSession(loader, "EmployeeSession", getClass().getClassLoader(), true, true); // refresh the session
     }
 
+    @Override
     protected void verify() {
         if (employeeSession == null) {
             throw new TestErrorException("Employee session is null");

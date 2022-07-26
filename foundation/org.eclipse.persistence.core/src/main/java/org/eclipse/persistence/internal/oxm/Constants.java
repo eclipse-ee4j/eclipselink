@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.xml.sax.Locator;
 
 public class Constants {
 
@@ -40,10 +41,10 @@ public class Constants {
     public static final String JAXB_FRAGMENT = "jaxb.fragment";
     public static final String JAXB_MARSHALLER = "jaxb.marshaller";
     public static final String LEXICAL_HANDLER_PROPERTY = "http://xml.org/sax/properties/lexical-handler";
-    public static final Class LOCATOR_CLASS = org.xml.sax.Locator.class;
+    public static final Class<Locator> LOCATOR_CLASS = org.xml.sax.Locator.class;
     public static final String LOCATOR_CLASS_NAME = "org.xml.sax.Locator";
     public static final String NO_NS_SCHEMA_LOCATION = "noNamespaceSchemaLocation";
-    public static final Class QNAME_CLASS = QName.class;
+    public static final Class<QName> QNAME_CLASS = QName.class;
     public static final String REF_PREFIX = "ref";
     public static final String REF_URL = "http://ws-i.org/profiles/basic/1.1/xsd";
     public static final String SCHEMA_LOCATION = "schemaLocation";
@@ -54,8 +55,8 @@ public class Constants {
     public static final String SWAREF_XSD = "http://ws-i.org/profiles/basic/1.1/swaref.xsd";
     public static final String TEXT = "text()";
     public static final String UNKNOWN_OR_TRANSIENT_CLASS = "UNKNOWN_OR_TRANSIENT_CLASS";
-    public static final Class URI = java.net.URI.class;
-    public static final Class UUID = java.util.UUID.class;
+    public static final Class<java.net.URI> URI = java.net.URI.class;
+    public static final Class<java.util.UUID> UUID = java.util.UUID.class;
     public static final String VALUE_WRAPPER = "value";
     public static final String XML_MIME_URL = "http://www.w3.org/2005/05/xmlmime";
     public static final String XML_NAMESPACE_SCHEMA_LOCATION = "http://www.w3.org/XML/2001/xml.xsd";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.TestModel;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
 /**
@@ -37,6 +37,7 @@ public class CMP3TestModel extends TestModel {
     public static boolean shouldLogoutOnReset = true;
     protected static Map originalProperties;
 
+    @Override
     public void setup() {
         setup(getSession());
     }
@@ -63,6 +64,7 @@ public class CMP3TestModel extends TestModel {
         }
     }
 
+    @Override
     public void reset() {
         reset(getSession());
     }

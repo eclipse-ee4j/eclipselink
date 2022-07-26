@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,8 +39,9 @@ public @interface StoredProcedureParameter {
     /**
      * (Optional) The direction of the stored procedure parameter.
      * @deprecated
-     * @see mode()
+     * @see #mode()
      */
+    @Deprecated
     Direction direction() default IN;
 
     /**
@@ -67,7 +68,7 @@ public @interface StoredProcedureParameter {
      * (Optional) The type of Java class desired back from the procedure,
      * this is dependent on the type returned from the procedure.
      */
-    Class type() default void.class;
+    Class<?> type() default void.class;
 
     /**
      * (Optional) The JDBC type code, this is dependent on the type returned

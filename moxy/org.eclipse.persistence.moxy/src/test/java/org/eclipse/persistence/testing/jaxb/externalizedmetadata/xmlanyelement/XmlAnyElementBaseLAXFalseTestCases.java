@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,21 +39,23 @@ public class XmlAnyElementBaseLAXFalseTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
 
     }
 
+      @Override
       public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlanyelement/eclipselink-oxm.xml");
 
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement", new StreamSource(inputStream));
             Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             return properties;
         }
 
+    @Override
     public Object getControlObject(){
          Element empElt = null;
             try {
@@ -74,6 +77,7 @@ public class XmlAnyElementBaseLAXFalseTestCases extends JAXBWithJSONTestCases{
             return ctrlEmp;
     }
 
+    @Override
     public Object getReadControlObject(){
          Element empElt = null;
             try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * The <b>GROUP BY</b> construct enables the aggregation of values according to the properties of an
  * entity class.
  *
- * <div><b>BNF:</b> <code>groupby_clause ::= GROUP BY groupby_item {, groupby_item}*</code><p></div>
+ * <div><b>BNF:</b> <code>groupby_clause ::= GROUP BY groupby_item {, groupby_item}*</code></div>
  *
  * @version 2.5.1
  * @since 2.3
@@ -56,33 +56,21 @@ public final class GroupByClause extends AbstractExpression {
         super(parent, GROUP_BY);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getGroupByItems().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getGroupByItems());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -104,21 +92,18 @@ public final class GroupByClause extends AbstractExpression {
      */
     public CollectionExpression buildCollectionExpression() {
 
-        List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+        List<AbstractExpression> children = new ArrayList<>(1);
         children.add((AbstractExpression) getGroupByItems());
 
-        List<Boolean> commas = new ArrayList<Boolean>(1);
+        List<Boolean> commas = new ArrayList<>(1);
         commas.add(Boolean.FALSE);
 
-        List<Boolean> spaces = new ArrayList<Boolean>(1);
+        List<Boolean> spaces = new ArrayList<>(1);
         spaces.add(Boolean.FALSE);
 
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -151,9 +136,6 @@ public final class GroupByClause extends AbstractExpression {
         return groupByItems;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(GroupByClauseBNF.ID);
@@ -178,9 +160,6 @@ public final class GroupByClause extends AbstractExpression {
         return hasSpace;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -193,9 +172,6 @@ public final class GroupByClause extends AbstractExpression {
         groupByItems = parse(wordParser, GroupByItemBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

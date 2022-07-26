@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,6 @@ public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public SchemaGenXmlElementWrapperTestCases(String name) throws Exception {
         super(name);
@@ -53,7 +52,7 @@ public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
     public void testElementWrapper() {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
-            generateSchema(new Class[]{ MyClassThree.class }, outputResolver, null);
+            generateSchema(new Class<?>[]{ MyClassThree.class }, outputResolver, null);
         } catch (Exception ex) {
             fail("Schema generation failed unexpectedly: " + ex.toString());
         }
@@ -71,7 +70,7 @@ public class SchemaGenXmlElementWrapperTestCases extends SchemaGenTestCases {
     public void testElementWrapperRef() {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
-            generateSchema(new Class[]{ MyClassOne.class, MyClassTwo.class }, outputResolver, null);
+            generateSchema(new Class<?>[]{ MyClassOne.class, MyClassTwo.class }, outputResolver, null);
         } catch (Exception ex) {
             fail("Schema generation failed unexpectedly: " + ex.toString());
         }

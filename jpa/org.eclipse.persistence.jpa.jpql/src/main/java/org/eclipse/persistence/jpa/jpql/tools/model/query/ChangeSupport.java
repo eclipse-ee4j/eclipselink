@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,20 +103,20 @@ public class ChangeSupport {
                              String listName,
                              List<? extends T> items) {
 
-        List<T> original = new ArrayList<T>(list);
+        List<T> original = new ArrayList<>(list);
         int index = list.size();
         list.addAll(index, items);
 
         if (hasListChangeListeners(listName)) {
 
-            IListChangeEvent<T> event = new ListChangeEvent<T>(
-                source,
-                original,
-                EventType.ADDED,
-                listName,
-                new ArrayList<T>(items),
-                index,
-                index
+            IListChangeEvent<T> event = new ListChangeEvent<>(
+                    source,
+                    original,
+                    EventType.ADDED,
+                    listName,
+                    new ArrayList<T>(items),
+                    index,
+                    index
             );
 
             fireListChangeEvent(event);
@@ -159,7 +159,7 @@ public class ChangeSupport {
         List<T> listenerList = listeners.get(name);
 
         if (listenerList == null) {
-            listenerList = new ArrayList<T>();
+            listenerList = new ArrayList<>();
             listeners.put(name, listenerList);
         }
 
@@ -237,7 +237,7 @@ public class ChangeSupport {
         if (ExpressionTools.valuesAreDifferent(oldValue, newValue) &&
             hasPropertyChangeListeners(propertyName)) {
 
-            PropertyChangeEvent<Object> event = new PropertyChangeEvent<Object>(source, propertyName, oldValue, newValue);
+            PropertyChangeEvent<Object> event = new PropertyChangeEvent<>(source, propertyName, oldValue, newValue);
 
             for (IPropertyChangeListener<?> listener : propertyChangeListeners(propertyName)) {
                 try {
@@ -297,8 +297,8 @@ public class ChangeSupport {
         Assert.isNotNull(source, "The source StateObject cannot be null");
 
         this.source                  = source;
-        this.listChangeListeners     = new HashMap<String, List<IListChangeListener<?>>>();
-        this.propertyChangeListeners = new HashMap<String, List<IPropertyChangeListener<?>>>();
+        this.listChangeListeners     = new HashMap<>();
+        this.propertyChangeListeners = new HashMap<>();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -344,20 +344,20 @@ public class ChangeSupport {
                                 int oldIndex,
                                 int newIndex) {
 
-        List<T> original = new ArrayList<T>(items);
+        List<T> original = new ArrayList<>(items);
         items.remove(oldIndex);
         items.add(newIndex, item);
 
         if (hasListChangeListeners(listName)) {
 
-            IListChangeEvent<T> event = new ListChangeEvent<T>(
-                source,
-                original,
-                eventType,
-                listName,
-                Collections.singletonList(item),
-                newIndex,
-                oldIndex
+            IListChangeEvent<T> event = new ListChangeEvent<>(
+                    source,
+                    original,
+                    eventType,
+                    listName,
+                    Collections.singletonList(item),
+                    newIndex,
+                    oldIndex
             );
 
             fireListChangeEvent(event);
@@ -383,8 +383,8 @@ public class ChangeSupport {
     }
 
     protected ListIterable<IPropertyChangeListener<?>> propertyChangeListeners(String propertyName) {
-        return new SnapshotCloneListIterable<IPropertyChangeListener<?>>(
-            propertyChangeListeners.get(propertyName)
+        return new SnapshotCloneListIterable<>(
+                propertyChangeListeners.get(propertyName)
         );
     }
 
@@ -402,20 +402,20 @@ public class ChangeSupport {
                                String listName,
                                T item) {
 
-        List<T> original = new ArrayList<T>(items);
+        List<T> original = new ArrayList<>(items);
         int index = items.indexOf(item);
         items.remove(index);
 
         if (hasListChangeListeners(listName)) {
 
-            IListChangeEvent<T> event = new ListChangeEvent<T>(
-                source,
-                original,
-                EventType.REMOVED,
-                listName,
-                Collections.singletonList(item),
-                index,
-                index
+            IListChangeEvent<T> event = new ListChangeEvent<>(
+                    source,
+                    original,
+                    EventType.REMOVED,
+                    listName,
+                    Collections.singletonList(item),
+                    index,
+                    index
             );
 
             fireListChangeEvent(event);
@@ -436,19 +436,19 @@ public class ChangeSupport {
                                 String listName,
                                 Collection<? extends T> items) {
 
-        List<T> original = new ArrayList<T>(list);
+        List<T> original = new ArrayList<>(list);
         list.removeAll(items);
 
         if (hasListChangeListeners(listName)) {
 
-            IListChangeEvent<T> event = new ListChangeEvent<T>(
-                source,
-                original,
-                EventType.REMOVED,
-                listName,
-                new ArrayList<T>(items),
-                -1,
-                -1
+            IListChangeEvent<T> event = new ListChangeEvent<>(
+                    source,
+                    original,
+                    EventType.REMOVED,
+                    listName,
+                    new ArrayList<T>(items),
+                    -1,
+                    -1
             );
 
             fireListChangeEvent(event);
@@ -533,19 +533,19 @@ public class ChangeSupport {
                                 int index,
                                 T item) {
 
-        List<T> original = new ArrayList<T>(items);
+        List<T> original = new ArrayList<>(items);
         items.set(index, item);
 
         if (hasListChangeListeners(listName)) {
 
-            IListChangeEvent<T> event = new ListChangeEvent<T>(
-                source,
-                original,
-                EventType.REPLACED,
-                listName,
-                items,
-                index,
-                index
+            IListChangeEvent<T> event = new ListChangeEvent<>(
+                    source,
+                    original,
+                    EventType.REPLACED,
+                    listName,
+                    items,
+                    index,
+                    index
             );
 
             fireListChangeEvent(event);
@@ -567,20 +567,20 @@ public class ChangeSupport {
                                 String listName,
                                 List<T> newItems) {
 
-        List<T> original = new ArrayList<T>(items);
+        List<T> original = new ArrayList<>(items);
         items.clear();
         items.addAll(newItems);
 
         if (hasListChangeListeners(listName)) {
 
-            IListChangeEvent<T> event = new ListChangeEvent<T>(
-                source,
-                original,
-                EventType.REPLACED,
-                listName,
-                items,
-                -1,
-                -1
+            IListChangeEvent<T> event = new ListChangeEvent<>(
+                    source,
+                    original,
+                    EventType.REPLACED,
+                    listName,
+                    items,
+                    -1,
+                    -1
             );
 
             fireListChangeEvent(event);

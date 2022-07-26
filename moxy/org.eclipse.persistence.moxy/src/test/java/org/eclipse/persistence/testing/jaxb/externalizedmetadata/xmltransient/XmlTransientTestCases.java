@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
@@ -38,22 +39,22 @@ public class XmlTransientTestCases extends JAXBWithJSONTestCases{
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlTransientTestCases(String name) throws Exception{
         super(name);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
 
+     @Override
      public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltransient/eclipselink-oxm.xml");
 
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient", new StreamSource(inputStream));
             Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             return properties;
         }
@@ -119,7 +120,7 @@ public class XmlTransientTestCases extends JAXBWithJSONTestCases{
 
 
     /**
-     * Test a reference to a transient class.  Here, ContactInfo has a List<Address> where
+     * Test a reference to a transient class.  Here, ContactInfo has a {@code List<Address>} where
      * Address is marked transient via XML metadata.  A JAXBException should be thrown.
      *
      * Negative test.
@@ -127,18 +128,19 @@ public class XmlTransientTestCases extends JAXBWithJSONTestCases{
     public void testReferenceToTransientClassException() {
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmltransient/contactinfo-oxm.xml");
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-            JAXBContextFactory.createContext(new Class[] { ContactInfo.class }, properties);
+            JAXBContextFactory.createContext(new Class<?>[] { ContactInfo.class }, properties);
         } catch (JAXBException jaxbex) {
             return;
         }
         fail("The expected exception was not thrown.");
     }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = new Employee();
         emp.firstName = "firstName";

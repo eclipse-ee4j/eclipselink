@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.dcn.Employee;
 import org.eclipse.persistence.testing.models.jpa.dcn.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.dcn.Project;
@@ -112,7 +112,7 @@ public class DCNTestSuite extends JUnitTestCase {
      * Test that updates to existing objects are invalidated.
      */
     public void testUpdate() {
-        if (this.supported) {
+        if (supported) {
             EntityManager em = createEntityManager(DCN2);
             try {
                 em.createQuery("Select e from Employee e").getResultList();
@@ -147,7 +147,7 @@ public class DCNTestSuite extends JUnitTestCase {
      * Test that updates to existing objects are invalidated.
      */
     public void testUpdateProject() {
-        if (this.supported) {
+        if (supported) {
             EntityManager em = createEntityManager(DCN2);
             try {
                 em.createQuery("Select p from Project p").getResultList();
@@ -182,7 +182,7 @@ public class DCNTestSuite extends JUnitTestCase {
      * Test that updates to existing objects are invalidated.
      */
     public void testUpdateSecondaryTable() {
-        if (this.supported) {
+        if (supported) {
             EntityManager em = createEntityManager(DCN2);
             try {
                 em.createQuery("Select e from Employee e").getResultList();
@@ -217,7 +217,7 @@ public class DCNTestSuite extends JUnitTestCase {
      * Test that updates to existing objects are invalidated.
      */
     public void testUpdateElementCollection() {
-        if (this.supported) {
+        if (supported) {
             EntityManager em = createEntityManager(DCN2);
             try {
                 em.createQuery("Select e from Employee e left join fetch e.responsiblities").getResultList();
@@ -252,7 +252,7 @@ public class DCNTestSuite extends JUnitTestCase {
      * Test that updates to existing objects are invalidated.
      */
     public void testUpdateManyToMany() {
-        if (this.supported) {
+        if (supported) {
             EntityManager em = createEntityManager(DCN2);
             try {
                 em.createQuery("Select e from Employee e left join fetch e.projects").getResultList();
@@ -289,7 +289,7 @@ public class DCNTestSuite extends JUnitTestCase {
      * Test that updates to existing objects are invalidated.
      */
     public void testUpdateOneToMany() {
-        if (this.supported) {
+        if (supported) {
             EntityManager em = createEntityManager(DCN2);
             try {
                 em.createQuery("Select e from Employee e left join fetch e.managedEmployees").getResultList();
@@ -327,7 +327,7 @@ public class DCNTestSuite extends JUnitTestCase {
      * Test that updates to new objects are invalidated.
      */
     public void testNewUpdate() {
-        if (this.supported) {
+        if (supported) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
             Employee employee = new Employee();
@@ -370,7 +370,7 @@ public class DCNTestSuite extends JUnitTestCase {
      * Test that removing in once session invalidates the object.
      */
     public void testRemove() {
-        if (this.supported) {
+        if (supported) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
             Employee employee = new Employee();
@@ -410,7 +410,7 @@ public class DCNTestSuite extends JUnitTestCase {
      * Test that update all invalidates the objects.
      */
     public void testUpdateAll() {
-        if (this.supported) {
+        if (supported) {
             EntityManager em = createEntityManager(DCN2);
             try {
                 em.createQuery("Select e from Employee e").getResultList();
@@ -444,7 +444,7 @@ public class DCNTestSuite extends JUnitTestCase {
      * Test that native sql invalidates the objects.
      */
     public void testNativeSQL() {
-        if (this.supported) {
+        if (supported) {
             EntityManager em = createEntityManager(DCN2);
             try {
                 em.createQuery("Select e from Employee e").getResultList();

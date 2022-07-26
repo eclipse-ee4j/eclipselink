@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import jakarta.xml.bind.JAXBContext;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.splitpackage.b.Foo;
 
 public class SplitPackageTestCases extends TestCase{
@@ -36,8 +37,8 @@ public class SplitPackageTestCases extends TestCase{
     public void testJAXBContextCreation() throws Exception {
         InputStream bindingFileA = SplitPackageTestCases.class.getClassLoader().getResourceAsStream(BINDING_FILE_A);
         Map<String, Object> properties = new HashMap<String, Object>(1);
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindingFileA);
-        JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[] {Foo.class}, properties);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindingFileA);
+        JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[] {Foo.class}, properties);
     }
 
 }

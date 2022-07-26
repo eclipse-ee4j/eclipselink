@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -497,7 +497,6 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Return the default table to hold the foreign key of a MapKey when
      * and Entity is used as the MapKey
-     * @return
      */
     @Override
     protected DatabaseTable getDefaultTableForEntityMapKey(){
@@ -796,7 +795,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     @Override
     protected boolean hasMapKeyClass() {
-        return m_mapKeyClass != null && ! m_mapKeyClass.equals(void.class);
+        return m_mapKeyClass != null && ! m_mapKeyClass.isClass(void.class);
     }
 
     /**
@@ -922,7 +921,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                 // Add the reference key field for the direct collection mapping.
                 ((DirectCollectionMapping) mapping).addReferenceKeyField(fkField, pkField);
             } else {
-                ((AggregateCollectionMapping) mapping).addTargetForeignKeyField(fkField, pkField);
+                mapping.addTargetForeignKeyField(fkField, pkField);
             }
         }
 

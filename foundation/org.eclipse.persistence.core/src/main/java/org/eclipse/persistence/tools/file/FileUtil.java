@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
 import java.util.jar.JarEntry;
@@ -40,7 +41,10 @@ import org.eclipse.persistence.logging.SessionLog;
  * @author Steven Vo
  * @since TopLink 4.5
  */
-public class FileUtil {
+public final class FileUtil {
+
+    private FileUtil() {
+    }
 
     /* Copy file to another file or copy content of a directory to another directory
      *
@@ -71,10 +75,10 @@ public class FileUtil {
             }
         }
 
-        Vector files = findFiles(inputPath, filteredExtensions);
+        List<File> files = findFiles(inputPath, filteredExtensions);
 
         for (int i = 0; i < files.size(); i++) {
-            File in = (File)files.elementAt(i);
+            File in = files.get(i);
 
             String outFilePath = in.getAbsolutePath().substring(inputPath.length());
             outFilePath = outputPath + File.separator + outFilePath;
@@ -134,10 +138,10 @@ public class FileUtil {
         JarOutputStream jarOut = null;
         try {
             jarOut = new JarOutputStream(new FileOutputStream(jar), new Manifest());
-            Vector files = findFiles(jarDirectory, filtertedExtensions);
+            List<File> files = findFiles(jarDirectory, filtertedExtensions);
 
             for (int i = 0; i < files.size(); i++) {
-                File file = (File)files.elementAt(i);
+                File file = files.get(i);
 
                 String relativePathToDirectory = file.getAbsolutePath().substring(directory.getAbsolutePath().length() + 1);
                 String entryName = relativePathToDirectory.replace('\\', '/');
@@ -185,8 +189,8 @@ public class FileUtil {
      *      If it's file path then return a single instance of File
      *      If it's directory path then return all instances of File contained in the directory and its sub directories
      */
-    public static Vector findFiles(String path, String[] filteredExtensions) {
-        Vector files = new Vector();
+    public static List<File> findFiles(String path, String[] filteredExtensions) {
+        List<File> files = new Vector<>();
 
         findFilesHelper(new File(path), filteredExtensions, files);
         return files;
@@ -196,7 +200,7 @@ public class FileUtil {
      * INTERNAL: traverse the directory to find all files with filtered extensions.  The result is passed
      * around for each recursive call
      */
-    private static void findFilesHelper(File file, String[] filteredExtensions, Vector result) {
+    private static void findFilesHelper(File file, String[] filteredExtensions, List<File> result) {
         if (!file.exists()) {
             return;
         }
@@ -212,14 +216,14 @@ public class FileUtil {
         } else {
             // add everything if no filtered extension
             if ((filteredExtensions == null) || (filteredExtensions.length == 0)) {
-                result.addElement(file);
+                result.add(file);
                 return;
             }
 
             // add only filtered extensions
             for (int i = 0; i < filteredExtensions.length; i++) {
                 if (file.getName().endsWith(filteredExtensions[i])) {
-                    result.addElement(file);
+                    result.add(file);
                     return;
                 }
             }

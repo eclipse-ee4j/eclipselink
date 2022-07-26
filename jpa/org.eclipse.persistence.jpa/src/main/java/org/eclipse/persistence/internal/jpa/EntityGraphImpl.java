@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.PluralAttribute;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.AttributeItem;
@@ -61,9 +62,9 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     public EntityGraphImpl(AttributeGroup group) {
         super();
         this.attributeGroup = group;
-        this.classType = group.getType();
+        this.classType = (Class<X>) group.getType();
         if (this.classType == null){
-            this.classType = ClassConstants.Object_Class;
+            this.classType = (Class<X>) CoreClassConstants.OBJECT;
         }
     }
 
@@ -115,7 +116,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
 
     @Override
     public <T> Subgraph<T> addSubgraph(Attribute<X, T> attribute) {
-        Class type = attribute.getJavaType();
+        Class<T> type = attribute.getJavaType();
         if (attribute.isCollection()) {
             type = ((PluralAttribute) attribute).getBindableJavaType();
         }
@@ -172,7 +173,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
         }
-        Class type = attribute.getJavaType();
+        Class<T> type = attribute.getJavaType();
         if (attribute.isCollection()) {
             type = ((PluralAttribute) attribute).getBindableJavaType();
         }
@@ -213,7 +214,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
 
         localGroup = new AttributeGroup(attributeName, type, true);
 
-        ClassDescriptor targetDesc = ((MappedKeyMapContainerPolicy) mapping.getContainerPolicy()).getDescriptorForMapKey();
+        ClassDescriptor targetDesc = mapping.getContainerPolicy().getDescriptorForMapKey();
         if (type != null && targetDesc.hasInheritance()) {
             targetDesc = targetDesc.getInheritancePolicy().getDescriptor(type);
             if (targetDesc == null) {
@@ -283,12 +284,12 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
             }
             if (item.getGroups() != null && ! item.getGroups().isEmpty()) {
                 for (AttributeGroup subGroup : item.getGroups().values()) {
-                    Class type = subGroup.getType();
+                    Class<?> type = subGroup.getType();
                     if (type == null) {
-                        type = ClassConstants.Object_Class;
+                        type = CoreClassConstants.OBJECT;
                     }
                     if (localDescriptor != null) {
-                        if (!type.equals(ClassConstants.Object_Class) && localDescriptor.hasInheritance()) {
+                        if (!type.equals(CoreClassConstants.OBJECT) && localDescriptor.hasInheritance()) {
                             localDescriptor = localDescriptor.getInheritancePolicy().getDescriptor(type);
                         }
                         node.addSubgraph(new EntityGraphImpl(subGroup, localDescriptor));
@@ -300,12 +301,12 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
             }
             if (item.getKeyGroups() != null && ! item.getKeyGroups().isEmpty()) {
                 for (AttributeGroup subGroup : item.getKeyGroups().values()) {
-                    Class type = subGroup.getType();
+                    Class<?> type = subGroup.getType();
                     if (type == null) {
-                        type = ClassConstants.Object_Class;
+                        type = CoreClassConstants.OBJECT;
                     }
                     if (localDescriptor != null) {
-                        if (!type.equals(ClassConstants.Object_Class) && localDescriptor.hasInheritance()) {
+                        if (!type.equals(CoreClassConstants.OBJECT) && localDescriptor.hasInheritance()) {
                             localDescriptor = localDescriptor.getInheritancePolicy().getDescriptor(type);
                         }
                         node.addKeySubgraph(new EntityGraphImpl(subGroup, localDescriptor));

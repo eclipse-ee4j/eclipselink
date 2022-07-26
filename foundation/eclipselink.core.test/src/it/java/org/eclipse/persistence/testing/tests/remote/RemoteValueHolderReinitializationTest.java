@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class RemoteValueHolderReinitializationTest extends TestCase {
 
     protected Master master = null;
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         // get the server session from the RemoteModel - it is strange that getServerSession() returns a client session
@@ -37,6 +38,7 @@ public class RemoteValueHolderReinitializationTest extends TestCase {
 
     }
 
+    @Override
     public void test() {
         ExpressionBuilder masters = new ExpressionBuilder();
         Expression expression = masters.get("primaryKey").equal(1);
@@ -51,6 +53,7 @@ public class RemoteValueHolderReinitializationTest extends TestCase {
         master = (Master)getSession().readObject(Master.class, expression);
     }
 
+    @Override
     public void verify() {
         if (master.slavesSerialized()) {
             throw new TestErrorException("TopLink unnecessarily serialized data on the many side " +
@@ -58,6 +61,7 @@ public class RemoteValueHolderReinitializationTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }

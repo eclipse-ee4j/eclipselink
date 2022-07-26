@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -537,12 +537,12 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      */
     // TODO-244124-dclarke: Needs to be updated to reflect new FetchGroup behaviour
     private void refreshFetchGroupIntoClones(Object cachedObject, Object workingClone, Object backupClone, FetchGroup fetchGroupInObject, FetchGroup fetchGroupInClone, UnitOfWorkImpl uow) {
-        Vector mappings = descriptor.getMappings();
+        Vector<DatabaseMapping> mappings = descriptor.getMappings();
         boolean isObjectPartial = (fetchGroupInObject != null);
         Set fetchedAttributes = isObjectPartial ? fetchGroupInObject.getAttributeNames() : null;
         int size = mappings.size();
         for (int index = 0; index < size; index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+            DatabaseMapping mapping = mappings.get(index);
             if ((!isObjectPartial) || ((fetchedAttributes != null) && fetchedAttributes.contains(mapping.getAttributeName()))) {
                 // Only refresh the fetched attributes into clones.
                 mapping.buildClone(cachedObject, null, workingClone, null, uow);
@@ -568,7 +568,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      */
     private void revertDataIntoUnfetchedAttributesOfClones(Object cachedObject, Object workingClone, Object backupClone, FetchGroup fetchGroupInObject, FetchGroup fetchGroupInClone, UnitOfWorkImpl uow) {
         // Fetched attributes set in working clone.
-        Set fetchedAttributesClone = fetchGroupInClone.getAttributeNames();
+        Set<String> fetchedAttributesClone = fetchGroupInClone.getAttributeNames();
         // Fetched attributes set in cached object.
         Set fetchedAttributesCached = null;
         if (fetchGroupInObject != null) {

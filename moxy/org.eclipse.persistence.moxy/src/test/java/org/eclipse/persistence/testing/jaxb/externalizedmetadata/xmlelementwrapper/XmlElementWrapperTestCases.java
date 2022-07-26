@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
@@ -40,16 +41,15 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
      */
     public XmlElementWrapperTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Employee.class });
+        setClasses(new Class<?>[] { Employee.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public Map getProperties() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/eclipselink-oxm.xml");
 
@@ -57,7 +57,7 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper",
                         new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY,
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE,
                 metadataSourceMap);
 
         return properties;
@@ -97,10 +97,9 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
      * so the class annotations should be used to generate the schema.
      *
      * Positive test.
-     * @throws Exception
      */
     public void testXmlElementWrapperNoOverrideSchemaGen() throws Exception {
-         JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
+         JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { Employee.class }, null);
 
          MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
          ctx.generateSchema(outputResolver);
@@ -120,44 +119,40 @@ public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
             .getSystemResourceAsStream(XML_RESOURCE);
          String result = validateAgainstSchema(instanceDocStream, schemaSource);
          assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-
-
     }
 
     /**
      * Tests @XmlElementWrapper via eclipselink-oxm.xml.  Here, a number of
      * overrides are performed.
      *
-     * Here, @XmlElementWrapper.namespace() is not "##default" and different
+     * Here, {@code @XmlElementWrapper.namespace()} is not "{@code ##default}" and different
      * from the target namespace of the enclosing class.  An element declaration
      * whose name is @XmlElementWrapper.name() and target namespace is
-     * @XmlElementWrapper.namespace() should be generated.  Note: The element
+     * {@code @XmlElementWrapper.namespace()} should be generated.  Note: The element
      * declaration is assumed to already exist and is not created.
      *
      * Positive test.
-     * @throws Exception
      */
     public void testXmlElementWrapperNSSchemaGen() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/eclipselink-oxm-ns.xml");
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper",
-                        new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY,
+                new StreamSource(inputStream));
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE,
                 metadataSourceMap);
 
-         JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, properties);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, properties);
 
-         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-         ctx.generateSchema(outputResolver);
+        MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
+        ctx.generateSchema(outputResolver);
 
-         List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
-
-         List controlSchemas = new ArrayList();
+        List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
+        List<InputStream> controlSchemas = new ArrayList<>();
         InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/schema_ns.xsd");
         controlSchemas.add(is);
-         compareSchemas(controlSchemas, generatedSchemas);
+        compareSchemas(controlSchemas, generatedSchemas);
 
     }
 

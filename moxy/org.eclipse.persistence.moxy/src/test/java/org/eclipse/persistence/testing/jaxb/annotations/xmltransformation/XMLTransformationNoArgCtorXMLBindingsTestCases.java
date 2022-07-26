@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
@@ -28,11 +29,12 @@ import org.w3c.dom.Document;
 public class XMLTransformationNoArgCtorXMLBindingsTestCases extends JAXBWithJSONTestCases {
     public XMLTransformationNoArgCtorXMLBindingsTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {EmployeeWithAddress.class});
+        setClasses(new Class<?>[] {EmployeeWithAddress.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.json");
     }
 
+    @Override
     public Object getControlObject() {
         EmployeeWithAddress emp = new EmployeeWithAddress();
         emp.name = "John Smith";
@@ -42,6 +44,7 @@ public class XMLTransformationNoArgCtorXMLBindingsTestCases extends JAXBWithJSON
         return emp;
     }
 
+    @Override
     protected Map getProperties() {
 
          Map overrides = new HashMap();
@@ -73,7 +76,7 @@ public class XMLTransformationNoArgCtorXMLBindingsTestCases extends JAXBWithJSON
        overrides.put("org.eclipse.persistence.testing.jaxb.annotations.xmltransformation", src);
 
        Map props = new HashMap();
-       props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+       props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
        return props;
    }
 

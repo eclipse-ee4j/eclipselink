@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
         setProject(new NestedOwnedToExternalRootProject());
   }
 
+  @Override
   protected Object getControlObject() {
     Company company = new Company();
     company.setName("SomeCompany");
@@ -79,6 +80,7 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
     return objects;
   }
 
+  @Override
   protected ArrayList getRootClasses()
   {
     ArrayList classes = new ArrayList();
@@ -87,14 +89,17 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
     return classes;
   }
 
-    protected Class getSourceClass(){
+    @Override
+    protected Class<?> getSourceClass(){
         return Company.class;
     }
+  @Override
   protected String getTestDocument()
   {
     return XML_TEST_RESOURCE;
   }
 
+  @Override
   protected void createTables()
   {
     // Drop tables

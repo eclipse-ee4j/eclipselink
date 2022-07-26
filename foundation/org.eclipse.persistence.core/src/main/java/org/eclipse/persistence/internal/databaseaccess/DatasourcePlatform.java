@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@
 //       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
 //     02/20/2018-2.7 Will Dazey
 //       - 529602: Added support for CLOBs in DELETE statements for Oracle
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.IOException;
@@ -26,9 +28,9 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -70,14 +72,17 @@ public class DatasourcePlatform implements Platform {
     /** Store the query use to query the current server time. */
     protected ValueReadQuery timestampQuery;
 
+    /** Store the query use to query the current server UUID. */
+    protected ValueReadQuery uuidQuery;
+
     /** Operators specific to this platform */
-    protected transient Map platformOperators;
+    protected transient Map<Integer, ExpressionOperator> platformOperators;
 
     /** Store the list of Classes that can be converted to from the key. */
-    protected Hashtable dataTypesConvertedFromAClass;
+    protected Hashtable<Class<?>, List<Class<?>>> dataTypesConvertedFromAClass;
 
     /** Store the list of Classes that can be converted from to the key. */
-    protected Hashtable dataTypesConvertedToAClass;
+    protected Hashtable<Class<?>, List<Class<?>>> dataTypesConvertedToAClass;
 
     /** Store default sequence */
     protected Sequence defaultSequence;
@@ -90,7 +95,7 @@ public class DatasourcePlatform implements Platform {
     protected String endDelimiter = null;
 
     /** Ensures that only one thread at a time can add/remove sequences */
-    protected Object sequencesLock = new Boolean(true);
+    protected Object sequencesLock = Boolean.TRUE;
 
     /** If the native sequence type is not supported, if table sequencing should be used. */
     protected boolean defaultNativeSequenceToTable;
@@ -98,10 +103,28 @@ public class DatasourcePlatform implements Platform {
     /** If sequences should start at Next Value */
     protected boolean defaultSeqenceAtNextValue;
 
+    /**
+     * This property configures if the database platform will use {@link java.sql.Statement#getGeneratedKeys()}, 
+     * or a separate query, in order to obtain javax.persistence.GenerationType.IDENTITY generated values.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>true</code>" - IDENTITY generated values will be obtained with {@link java.sql.Statement#getGeneratedKeys()}
+     * <li>"<code>false</code>" (DEFAULT) - IDENTITY generated values will be obtained with a separate query {@link #buildSelectQueryForIdentity()}
+     * </ul>
+     * <p>
+     * See:
+     * <ul>
+     * <li>{@link #buildSelectQueryForIdentity()} will be disabled if this property is enabled
+     * </ul>
+     */
+    protected boolean supportsReturnGeneratedKeys;
+
     public DatasourcePlatform() {
         this.tableQualifier = "";
         this.startDelimiter = "";
         this.endDelimiter = "";
+        this.supportsReturnGeneratedKeys = false;
     }
 
     /**
@@ -133,7 +156,7 @@ public class DatasourcePlatform implements Platform {
     }
 
     protected void addOperator(ExpressionOperator operator) {
-        platformOperators.put(Integer.valueOf(operator.getSelector()), operator);
+        platformOperators.put(operator.getSelector(), operator);
     }
 
     /**
@@ -142,7 +165,7 @@ public class DatasourcePlatform implements Platform {
      */
     @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
-        String parameterValue = (String)getConversionManager().convertObject(parameter, ClassConstants.STRING);
+        String parameterValue = getConversionManager().convertObject(parameter, ClassConstants.STRING);
         if (parameterValue == null) {
             parameterValue = "";
         }
@@ -194,11 +217,11 @@ public class DatasourcePlatform implements Platform {
             setDefaultSequence(defaultSequenceClone);
         }
         if (getSequences() != null) {
-            HashMap sequencesCopy = new HashMap(getSequences());
-            HashMap sequencesDeepClone = new HashMap(getSequences().size());
-            Iterator it = sequencesCopy.values().iterator();
+            Map<String, Sequence> sequencesCopy = new HashMap<>(getSequences());
+            Map<String, Sequence> sequencesDeepClone = new HashMap<>(getSequences().size());
+            Iterator<Sequence> it = sequencesCopy.values().iterator();
             while (it.hasNext()) {
-                Sequence sequence = (Sequence)it.next();
+                Sequence sequence = it.next();
                 if ((defaultSequenceClone != null) && (sequence == getDefaultSequence())) {
                     sequencesDeepClone.put(defaultSequenceClone.getName(), defaultSequenceClone);
                 } else {
@@ -224,7 +247,7 @@ public class DatasourcePlatform implements Platform {
      * @return the newly converted object
      */
     @Override
-    public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass) throws ConversionException {
         return getConversionManager().convertObject(sourceObject, javaClass);
     }
 
@@ -239,6 +262,7 @@ public class DatasourcePlatform implements Platform {
         DatasourcePlatform datasourcePlatform = (DatasourcePlatform)platform;
         datasourcePlatform.setTableQualifier(getTableQualifier());
         datasourcePlatform.setTimestampQuery(this.timestampQuery);
+        datasourcePlatform.setUUIDQuery(this.uuidQuery);
         datasourcePlatform.setConversionManager(getConversionManager());
         if (hasDefaultSequence()) {
             datasourcePlatform.setDefaultSequence(getDefaultSequence());
@@ -295,13 +319,13 @@ public class DatasourcePlatform implements Platform {
      * Return the operator for the operator constant defined in ExpressionOperator.
      */
     public ExpressionOperator getOperator(int selector) {
-        return (ExpressionOperator)getPlatformOperators().get(Integer.valueOf(selector));
+        return getPlatformOperators().get(selector);
     }
 
     /**
      * Return any platform-specific operators
      */
-    public Map getPlatformOperators() {
+    public Map<Integer, ExpressionOperator> getPlatformOperators() {
         if (platformOperators == null) {
             synchronized (this) {
                 if (platformOperators == null) {
@@ -369,7 +393,8 @@ public class DatasourcePlatform implements Platform {
             return new java.sql.Timestamp(System.currentTimeMillis());
         } else {
             getTimestampQuery().setSessionName(sessionName);
-            return (java.sql.Timestamp)session.executeQuery(getTimestampQuery());
+            Object result = session.executeQuery(getTimestampQuery());
+            return session.getDatasourcePlatform().convertObject(result, ClassConstants.TIMESTAMP);
         }
     }
 
@@ -381,6 +406,16 @@ public class DatasourcePlatform implements Platform {
     @Override
     public ValueReadQuery getTimestampQuery() {
         return timestampQuery;
+    }
+
+    /**
+     * This method can be overridden by subclasses to return a
+     * query that will return the UUID from the server.
+     * return null if UUID can't be generated by platform.
+     */
+    @Override
+    public ValueReadQuery getUUIDQuery() {
+        return uuidQuery;
     }
 
     /**
@@ -400,7 +435,7 @@ public class DatasourcePlatform implements Platform {
      * Initialize any platform-specific operators
      */
     protected void initializePlatformOperators() {
-        this.platformOperators = new HashMap();
+        this.platformOperators = new HashMap<>();
 
         // Outer join
         addOperator(ExpressionOperator.equalOuterJoin());
@@ -444,6 +479,31 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.except());
         addOperator(ExpressionOperator.exceptAll());
 
+        addOperator(ExpressionOperator.count());
+        addOperator(ExpressionOperator.sum());
+        addOperator(ExpressionOperator.average());
+        addOperator(ExpressionOperator.minimum());
+        addOperator(ExpressionOperator.maximum());
+        addOperator(ExpressionOperator.distinct());
+        addOperator(ExpressionOperator.notOperator());
+        addOperator(ExpressionOperator.ascending());
+        addOperator(ExpressionOperator.descending());
+        addOperator(ExpressionOperator.as());
+        addOperator(ExpressionOperator.nullsFirst());
+        addOperator(ExpressionOperator.nullsLast());
+        addOperator(ExpressionOperator.any());
+        addOperator(ExpressionOperator.some());
+        addOperator(ExpressionOperator.all());
+        addOperator(ExpressionOperator.in());
+        addOperator(ExpressionOperator.inSubQuery());
+        addOperator(ExpressionOperator.notIn());
+        addOperator(ExpressionOperator.notInSubQuery());
+
+        addOperator(ExpressionOperator.and());
+        addOperator(ExpressionOperator.or());
+        addOperator(ExpressionOperator.isNull());
+        addOperator(ExpressionOperator.notNull());
+
         // Date
         addOperator(ExpressionOperator.addMonths());
         addOperator(ExpressionOperator.dateToString());
@@ -455,14 +515,34 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.today());
         addOperator(ExpressionOperator.currentDate());
         addOperator(ExpressionOperator.currentTime());
+        addOperator(ExpressionOperator.localDateTime());
+        addOperator(ExpressionOperator.localTime());
+        addOperator(ExpressionOperator.localDate());
         addOperator(ExpressionOperator.extract());
 
         // Math
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Add, "+"));
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Subtract, "-"));
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Multiply, "*"));
-        addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Divide, "/"));
+        addOperator(ExpressionOperator.add());
+        addOperator(ExpressionOperator.subtract());
+        addOperator(ExpressionOperator.multiply());
+        addOperator(ExpressionOperator.divide());
         addOperator(ExpressionOperator.negate());
+
+        addOperator(ExpressionOperator.equal());
+        addOperator(ExpressionOperator.notEqual());
+        addOperator(ExpressionOperator.lessThan());
+        addOperator(ExpressionOperator.lessThanEqual());
+        addOperator(ExpressionOperator.greaterThan());
+        addOperator(ExpressionOperator.greaterThanEqual());
+
+        addOperator(ExpressionOperator.like());
+        addOperator(ExpressionOperator.likeEscape());
+        addOperator(ExpressionOperator.notLike());
+        addOperator(ExpressionOperator.notLikeEscape());
+        addOperator(ExpressionOperator.between());
+        addOperator(ExpressionOperator.notBetween());
+
+        addOperator(ExpressionOperator.exists());
+        addOperator(ExpressionOperator.notExists());
 
         addOperator(ExpressionOperator.ceil());
         addOperator(ExpressionOperator.cos());
@@ -563,6 +643,11 @@ public class DatasourcePlatform implements Platform {
 
     @Override
     public boolean isInformix() {
+        return false;
+    }
+
+    @Override
+    public boolean isMariaDB() {
         return false;
     }
 
@@ -693,6 +778,14 @@ public class DatasourcePlatform implements Platform {
     }
 
     /**
+     * Can override the default query for returning a UUID from the server.
+     */
+    @Override
+    public void setUUIDQuery(ValueReadQuery uuidQuery) {
+        this.uuidQuery = uuidQuery;
+    }
+
+    /**
      * This method sets the update sequence number query.  It
      * allows for other queries to be used instead of the default one.
      */
@@ -715,7 +808,7 @@ public class DatasourcePlatform implements Platform {
      * @param javaClass - the class that is converted from
      * @return - a vector of classes
      */
-    public Vector getDataTypesConvertedFrom(Class javaClass) {
+    public List<Class<?>> getDataTypesConvertedFrom(Class<?> javaClass) {
         return getConversionManager().getDataTypesConvertedFrom(javaClass);
     }
 
@@ -725,7 +818,7 @@ public class DatasourcePlatform implements Platform {
      * @param javaClass - the class that is converted to
      * @return - a vector of classes
      */
-    public Vector getDataTypesConvertedTo(Class javaClass) {
+    public List<Class<?>> getDataTypesConvertedTo(Class<?> javaClass) {
         return getConversionManager().getDataTypesConvertedTo(javaClass);
     }
 
@@ -776,6 +869,15 @@ public class DatasourcePlatform implements Platform {
     }
 
     /**
+     * Indicates whether the platform supports the use of {@link java.sql.Statement#RETURN_GENERATED_KEYS}.
+     * If supported, IDENTITY values will be obtained through {@link java.sql.Statement#getGeneratedKeys()}
+     * and will replace usage of {@link #buildSelectQueryForIdentity()}
+     */
+    public void setSupportsReturnGeneratedKeys(boolean supportsReturnGeneratedKeys) {
+        this.supportsReturnGeneratedKeys = supportsReturnGeneratedKeys;
+    }
+
+    /**
      * Add sequence corresponding to the name.
      * Use this method with isSessionConnected parameter set to true
      * to add a sequence to connected session.
@@ -787,18 +889,19 @@ public class DatasourcePlatform implements Platform {
         synchronized(sequencesLock) {
             if (isSessionConnected) {
                 if (this.sequences == null) {
-                    this.sequences = new HashMap();
+                    this.sequences = new HashMap<>();
                     this.sequences.put(sequence.getName(), sequence);
                 } else {
                     if (!this.sequences.containsKey(sequence.getName())) {
-                        Map newSequences = (Map)((HashMap)this.sequences).clone();
+                        @SuppressWarnings({"unchecked"})
+                        Map<String, Sequence> newSequences = (Map<String, Sequence>)((HashMap<String, Sequence>)this.sequences).clone();
                         newSequences.put(sequence.getName(), sequence);
                         this.sequences = newSequences;
                     }
                 }
             } else {
                 if (this.sequences == null) {
-                    this.sequences = new HashMap();
+                    this.sequences = new HashMap<>();
                 }
                 this.sequences.put(sequence.getName(), sequence);
             }
@@ -870,11 +973,11 @@ public class DatasourcePlatform implements Platform {
         if ((getSequences() == null) || getSequences().isEmpty()) {
             return null;
         }
-        Map sequencesCopy = new HashMap(getSequences());
-        Map sequencesToWrite = new HashMap();
-        Iterator it = sequencesCopy.values().iterator();
+        Map<String, Sequence> sequencesCopy = new HashMap<>(getSequences());
+        Map<String, Sequence> sequencesToWrite = new HashMap<>();
+        Iterator<Sequence> it = sequencesCopy.values().iterator();
         while (it.hasNext()) {
-            Sequence sequence = (Sequence)it.next();
+            Sequence sequence = it.next();
             if (!(sequence instanceof DefaultSequence) || ((DefaultSequence)sequence).hasPreallocationSize()) {
                 sequencesToWrite.put(sequence.getName(), sequence);
             }
@@ -900,7 +1003,7 @@ public class DatasourcePlatform implements Platform {
      * Sets sequences - for XML support only
      */
     @Override
-    public void setSequences(Map sequences) {
+    public void setSequences(Map<String, Sequence> sequences) {
         this.sequences = sequences;
     }
 
@@ -978,6 +1081,15 @@ public class DatasourcePlatform implements Platform {
     }
 
     /**
+     * Indicates whether the platform supports the use of {@link java.sql.Statement#RETURN_GENERATED_KEYS}.
+     * If supported, IDENTITY values will be obtained through {@link java.sql.Statement#getGeneratedKeys()}
+     * and will replace usage of {@link #buildSelectQueryForIdentity()}
+     */
+    public boolean supportsReturnGeneratedKeys() {
+        return supportsReturnGeneratedKeys;
+    }
+
+    /**
      * INTERNAL:
      * Returns query used to read value generated by sequence object (like Oracle sequence).
      * This method is called when sequence object NativeSequence is connected,
@@ -1008,6 +1120,9 @@ public class DatasourcePlatform implements Platform {
      * the returned query used until the sequence is disconnected.
      * If the platform supportsIdentity then (at least) one of buildSelectQueryForIdentity
      * methods should return non-null query.
+     * <p>
+     * Alternatively, if the platform supports {@link java.sql.Statement#getGeneratedKeys()}, 
+     * see {@link DatabasePlatform#supportsReturnGeneratedKeys()}
      */
     public ValueReadQuery buildSelectQueryForIdentity() {
         return null;
@@ -1063,7 +1178,7 @@ public class DatasourcePlatform implements Platform {
      * Override this method if the platform needs to use a custom function based on the DatabaseField
      * @return An expression for the given field set equal to a parameter matching the field
      */
-    public Expression createExpressionFor(DatabaseField field, Expression builder) {
+    public Expression createExpressionFor(DatabaseField field, Expression builder, String fieldClassificationClassName) {
         Expression subExp1 = builder.getField(field);
         Expression subExp2 = builder.getParameter(field);
         return subExp1.equal(subExp2);

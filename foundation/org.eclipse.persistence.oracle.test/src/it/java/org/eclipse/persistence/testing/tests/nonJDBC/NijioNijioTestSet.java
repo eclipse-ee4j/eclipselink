@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,7 +92,7 @@ public class NijioNijioTestSet {
         query.addArgument("AA", String.class);
         query.setCall(call);
         project.getDescriptor(Empty.class).getQueryManager().addQuery("NijioNijio", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);
@@ -193,14 +193,14 @@ public class NijioNijioTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
-        queryArgs.add(Integer.valueOf(107));
-        queryArgs.add(Integer.valueOf(108));
-        queryArgs.add(Integer.valueOf(1));
+        queryArgs.add(107);
+        queryArgs.add(108);
+        queryArgs.add(1);
         queryArgs.add("MERV");
         boolean worked = false;
         String msg = null;
@@ -218,6 +218,6 @@ public class NijioNijioTestSet {
         assertTrue("wrong y value", y.intValue() == 158);
         String aa = (String)record.get("AA");
         assertTrue("wrong aa value", aa.equals("MERVISH"));
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

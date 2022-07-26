@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014, 2017 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -89,7 +89,7 @@ public class TestBasicPersistence {
         String rmiPortProp = System.getProperty("rmi.port");
         if (!(rmiPortProp == null || rmiPortProp.isEmpty())) {
             try {
-                rmiPortVal = new Integer(rmiPortProp);
+                rmiPortVal = Integer.parseInt(rmiPortProp);
             } catch (NumberFormatException nfe) {
                 // Use default value.
             }
@@ -509,25 +509,34 @@ public class TestBasicPersistence {
             this.text = text;
         }
 
+        @Override
         public Connection getConnection() throws SQLException {
             RuntimeException exception = new RuntimeException(text);
             throw exception;
         }
 
+        @Override
         public Connection getConnection(String username, String password) throws SQLException {
             return getConnection();
         }
 
         //rest are ignored
+        @Override
         public java.io.PrintWriter getLogWriter() throws SQLException {
             return null;
         }
 
+        @Override
         public void setLogWriter(java.io.PrintWriter out) throws SQLException{}
+        @Override
         public void setLoginTimeout(int seconds) throws SQLException{}
+        @Override
         public int getLoginTimeout() throws SQLException { return 1; }
+        @Override
         public <T> T unwrap(Class<T> iface) throws SQLException { return null; }
+        @Override
         public boolean isWrapperFor(Class<?> iface) throws SQLException { return false; }
+        @Override
         public Logger getParentLogger() { return null; }
     }
 

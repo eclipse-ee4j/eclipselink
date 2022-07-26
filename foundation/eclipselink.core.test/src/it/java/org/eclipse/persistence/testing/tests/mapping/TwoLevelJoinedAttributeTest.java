@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class TwoLevelJoinedAttributeTest extends AutoVerifyTestCase {
         setDescription("Ensure objects that use joining to two levels execute join queries properly.");
     }
 
+    @Override
     public void setup() {
         beginTransaction();
         // populate the database
@@ -78,6 +79,7 @@ public class TwoLevelJoinedAttributeTest extends AutoVerifyTestCase {
         descriptor.reInitializeJoinedAttributes();
     }
 
+    @Override
     public void test() {
         // read a baby
         ExpressionBuilder babys = new ExpressionBuilder();
@@ -85,6 +87,7 @@ public class TwoLevelJoinedAttributeTest extends AutoVerifyTestCase {
         baby = (Baby)getSession().readObject(Baby.class, expression);
     }
 
+    @Override
     public void verify() {
         // Since we are using joining, all attributes should be properly populated.
         if ((baby.getCrib() == null) || (baby.getCrib().getBabyMonitor() == null)) {
@@ -92,6 +95,7 @@ public class TwoLevelJoinedAttributeTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

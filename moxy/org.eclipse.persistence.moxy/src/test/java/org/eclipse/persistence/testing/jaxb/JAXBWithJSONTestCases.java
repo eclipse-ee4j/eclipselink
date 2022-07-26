@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,6 @@ import jakarta.json.stream.JsonGenerator;
 import jakarta.json.stream.JsonParser;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.PropertyException;
 import jakarta.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
@@ -519,7 +518,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     public void generateJSONSchema(List<InputStream> controlSchemas) throws Exception {
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
 
-        Class theClass = getWriteControlObject().getClass();
+        Class<? extends Object> theClass = getWriteControlObject().getClass();
         if(getWriteControlObject() instanceof JAXBElement){
              theClass = ((JAXBElement) getWriteControlObject()).getValue().getClass();
         }

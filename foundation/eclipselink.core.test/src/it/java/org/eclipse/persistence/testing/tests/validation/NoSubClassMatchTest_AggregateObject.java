@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,13 +43,14 @@ public class NoSubClassMatchTest_AggregateObject extends ExceptionTest {
         setDescription("This tests No Sub Class Match (AggregateObjectMapping) (TL-ERROR 126) ");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.noSubClassMatch(null, new AggregateObjectMapping());
 
         Employee employee = new Employee();
 
-        ClassDescriptor descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
-        ClassDescriptor projDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class);
+        ClassDescriptor descriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        ClassDescriptor projDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class);
         mapping = (org.eclipse.persistence.mappings.AggregateObjectMapping)descriptor.getMappingForAttributeName("period");
         orgInheritancePolicy = mapping.getReferenceDescriptor().getInheritancePolicyOrNull();
         org.eclipse.persistence.internal.sessions.ObjectChangeSet changeSet = new ObjectChangeSet(new Vector(), projDescriptor, employee, new org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet(), true);
@@ -61,12 +62,14 @@ public class NoSubClassMatchTest_AggregateObject extends ExceptionTest {
         getSession().getIntegrityChecker().dontCatchExceptions();
     }
 
+    @Override
     public void reset() {
         getSession().setIntegrityChecker(orgIntegrityChecker);
         //This is needed because hidden in the test, getInheritancePolicy() is triggered that does lazy initialization.
         mapping.getReferenceDescriptor().setInheritancePolicy(orgInheritancePolicy);
     }
 
+    @Override
     public void test() {
         try {
             mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, new org.eclipse.persistence.sessions.DatabaseRecord(), (AbstractSession)getSession(), WriteType.UNDEFINED);

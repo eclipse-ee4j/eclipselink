@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,11 +37,13 @@ public class TransactionIsolationJoinedTest extends AutoVerifyTestCase {
     Employee original;
     String originalFirstName;
 
+    @Override
     protected void setup() throws Exception {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         unitOfWork = getSession().acquireUnitOfWork();
     }
 
+    @Override
     public void reset() throws Exception {
         if (unitOfWork != null) {
             unitOfWork.release();
@@ -57,6 +59,7 @@ public class TransactionIsolationJoinedTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         unitOfWork.beginEarlyTransaction();
 

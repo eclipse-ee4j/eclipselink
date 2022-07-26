@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -316,9 +316,9 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      */
     public Vector getSourceKeyFieldNames() {
         Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration fieldsEnum = getSourceKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+        for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -417,9 +417,9 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      */
     public Vector getSourceRelationKeyFieldNames() {
         Vector fieldNames = new Vector(getSourceRelationKeyFields().size());
-        for (Enumeration fieldsEnum = getSourceRelationKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+        for (Enumeration<DatabaseField> fieldsEnum = getSourceRelationKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -440,9 +440,9 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      */
     public Vector getTargetKeyFieldNames() {
         Vector fieldNames = new Vector(getTargetKeyFields().size());
-        for (Enumeration fieldsEnum = getTargetKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+        for (Enumeration<DatabaseField> fieldsEnum = getTargetKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -475,9 +475,9 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      */
     public Vector getTargetRelationKeyFieldNames() {
         Vector fieldNames = new Vector(getTargetRelationKeyFields().size());
-        for (Enumeration fieldsEnum = getTargetRelationKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+        for (Enumeration<DatabaseField> fieldsEnum = getTargetRelationKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -546,7 +546,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         initializeDeleteQuery(session, mapping);
 
         if (mapping.extendPessimisticLockScope != ExtendPessimisticLockScope.NONE) {
-            initializeExtendPessipisticLockScope(session, mapping);
+            initializeExtendPessimisticLockScope(session, mapping);
         }
     }
 
@@ -593,7 +593,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * Initialize extendPessimisticLockeScope and lockRelationTableQuery (if required).
      */
-    protected void initializeExtendPessipisticLockScope(AbstractSession session, ForeignReferenceMapping mapping) {
+    protected void initializeExtendPessimisticLockScope(AbstractSession session, ForeignReferenceMapping mapping) {
         if(mapping.usesIndirection()) {
             if(session.getPlatform().isForUpdateCompatibleWithDistinct() && session.getPlatform().supportsLockingQueriesWithMultipleTables()) {
                 mapping.extendPessimisticLockScope = ExtendPessimisticLockScope.SOURCE_QUERY;
@@ -733,8 +733,8 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
             throw DescriptorException.noSourceRelationKeysSpecified(mapping);
         }
 
-        for (Enumeration entry = getSourceRelationKeyFields().elements(); entry.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)entry.nextElement();
+        for (Enumeration<DatabaseField> entry = getSourceRelationKeyFields().elements(); entry.hasMoreElements();) {
+            DatabaseField field = entry.nextElement();
 
             // Update the fields table first if the mapping is from a table per tenant entity.
             ClassDescriptor sourceDescriptor = mapping.getDescriptor();
@@ -780,8 +780,8 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
             throw DescriptorException.noTargetRelationKeysSpecified(mapping);
         }
 
-        for (Enumeration targetEnum = getTargetRelationKeyFields().elements(); targetEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)targetEnum.nextElement();
+        for (Enumeration<DatabaseField> targetEnum = getTargetRelationKeyFields().elements(); targetEnum.hasMoreElements();) {
+            DatabaseField field = targetEnum.nextElement();
 
             // Update the fields table first if the mapping is from a table per tenant entity.
             ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();

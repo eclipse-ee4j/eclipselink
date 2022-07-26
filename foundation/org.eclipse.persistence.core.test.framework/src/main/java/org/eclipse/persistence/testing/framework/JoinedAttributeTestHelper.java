@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.helper.Helper;
 import java.util.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
@@ -99,8 +98,8 @@ public class JoinedAttributeTestHelper {
         for (Iterator iterator = collectionResult.iterator(); iterator.hasNext(); ) {
             Object object = iterator.next();
             boolean remove = false;
-            for (Iterator joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
-                Expression joinExpression = (Expression)joinsIterator.next();
+            for (Iterator<Expression> joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
+                Expression joinExpression = joinsIterator.next();
                 joinExpression.getBuilder().setSession(session);
                 joinExpression.getBuilder().setQueryClass(queryWithJoins.getReferenceClass());
                 // Instantiate value holders that should be instantiated.
@@ -156,8 +155,8 @@ public class JoinedAttributeTestHelper {
             if (excluded.contains(new CacheKey(session.getId(object)))) {
                 iterator.remove();
             } else {
-                for (Iterator joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
-                    Expression joinExpression = (Expression)joinsIterator.next();
+                for (Iterator<Expression> joinsIterator = queryWithJoins.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinsIterator.hasNext(); ) {
+                    Expression joinExpression = joinsIterator.next();
                     // Instantiate value holders that should be instantiated.
                     joinExpression.valueFromObject(object, session, null, valueHolderPolicy, false);
                 }
@@ -216,7 +215,7 @@ public class JoinedAttributeTestHelper {
             }
         }
         if(col1.size() != col2.size()) {
-            errorMsg = ": size1==" + Integer.toString(col1.size()) + "!= size2==" + Integer.toString(col2.size()) + ";  ";
+            errorMsg = ": size1==" + col1.size() + "!= size2==" + col2.size() + ";  ";
             return errorMsg;
         }
 
@@ -285,7 +284,7 @@ public class JoinedAttributeTestHelper {
             }
         }
         if(map1.size() != map2.size()) {
-            errorMsg = ": size1==" + Integer.toString(map1.size()) + "!= size2==" + Integer.toString(map2.size()) + ";  ";
+            errorMsg = ": size1==" + map1.size() + "!= size2==" + map2.size() + ";  ";
             return errorMsg;
         }
 
@@ -344,9 +343,9 @@ public class JoinedAttributeTestHelper {
             return errorMsg;
         }
 
-        Vector mappings = desc.getMappings();
+        Vector<DatabaseMapping> mappings = desc.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+            DatabaseMapping mapping = mappings.get(index);
             String mappingErrorMsg = compareAttributes(obj1, obj2, mapping, session, processed);
             errorMsg += mappingErrorMsg;
         }
@@ -380,7 +379,7 @@ public class JoinedAttributeTestHelper {
                 value1 = frm.getRealAttributeValueFromObject(obj1, session);
                 value2 = frm.getRealAttributeValueFromObject(obj2, session);
                 if(frm.isCollectionMapping()) {
-                    Class containerClass = ((CollectionMapping)frm).getContainerPolicy().getContainerClass();
+                    Class<?> containerClass = frm.getContainerPolicy().getContainerClass();
                     if(Collection.class.isAssignableFrom(containerClass)) {
                         errorMsg += compareCollections((Collection)value1, (Collection)value2, frm.getReferenceDescriptor(), session, processed);
                     } else if(Map.class.isAssignableFrom(containerClass)) {

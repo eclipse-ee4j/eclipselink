@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class ReadAllExpressionInheritanceProjectTest extends PerformanceTest {
         setDescription("This tests the performance of read-all inheritance queries.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         // Fully load the cache.
@@ -44,6 +45,7 @@ public class ReadAllExpressionInheritanceProjectTest extends PerformanceTest {
     /**
      * Read employee and clear the cache, test database read.
      */
+    @Override
     public void test() throws Exception {
         super.test();
         List result = (List)getSession().executeQuery(query);

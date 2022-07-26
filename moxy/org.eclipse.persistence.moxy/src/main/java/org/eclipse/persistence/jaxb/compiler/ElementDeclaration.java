@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,8 +40,8 @@ public class ElementDeclaration {
     private List<ElementDeclaration> substitutableElements;
     private boolean isXmlRootElement = false;
     private boolean isList = false;
-    private Class javaTypeAdapterClass;
-    private Class scopeClass;
+    private Class<?> javaTypeAdapterClass;
+    private Class<?> scopeClass;
     private String defaultValue;
     private TypeMappingInfo typeMappingInfo;
     private boolean xmlAttachmentRef;
@@ -73,7 +73,7 @@ public class ElementDeclaration {
      * @param isList A boolean representing if this corresponds to an xsd:list
      * @param scopeClass The class representing the scope of this element
      */
-    public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList, Class scopeClass) {
+    public ElementDeclaration(QName name, JavaClass javaType, String javaTypeName, boolean isList, Class<?> scopeClass) {
         this(name, javaType, javaTypeName, isList);
         this.scopeClass = scopeClass;
     }
@@ -151,7 +151,6 @@ public class ElementDeclaration {
     }
     /**
      * Return if the global element will be marked as nillable
-     * @return
      */
     public boolean isNillable() {
         return nillable;
@@ -159,7 +158,6 @@ public class ElementDeclaration {
 
     /**
      * Set if the global element should be marked as nillable
-     * @param nillable
      */
     public void setNillable(boolean nillable) {
         this.nillable = nillable;
@@ -206,7 +204,7 @@ public class ElementDeclaration {
      * Get the java type adapter class associated with the element
      * @return the java type adapater class associated with this element. May return null.
      */
-    public Class getJavaTypeAdapterClass() {
+    public Class<?> getJavaTypeAdapterClass() {
         return javaTypeAdapterClass;
     }
 
@@ -214,7 +212,7 @@ public class ElementDeclaration {
      * Set the java type adapter class associated with this element if applicable.
      * @param javaTypeAdapterClass Class of the java type adapter associated with this element.
      */
-    public void setJavaTypeAdapterClass(Class javaTypeAdapterClass) {
+    public void setJavaTypeAdapterClass(Class<?> javaTypeAdapterClass) {
         this.javaTypeAdapterClass = javaTypeAdapterClass;
     }
 
@@ -253,7 +251,7 @@ public class ElementDeclaration {
      * will be XmlElementDecl.GLOBAL
      * @return the scope class associated with this element
      */
-    public Class getScopeClass() {
+    public Class<?> getScopeClass() {
         return scopeClass;
     }
 
@@ -262,7 +260,7 @@ public class ElementDeclaration {
      * Default setting is XmlElementDecl.GLOBAL
      * @param scopeClass associated with this element.
      */
-    public void setScopeClass(Class scopeClass) {
+    public void setScopeClass(Class<?> scopeClass) {
         this.scopeClass = scopeClass;
     }
 

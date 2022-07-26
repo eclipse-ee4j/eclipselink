@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,14 +73,14 @@ public class ExistsNode extends Node {
         // select clause expressions as non fetch join attributes to the
         // ReportQuery representing the subquery. This make sure the FK joins
         // get generated.
-        List items = reportQuery.getItems();
-        for (Iterator i = items.iterator(); i.hasNext();) {
-            ReportItem item = (ReportItem)i.next();
+        List<ReportItem> items = reportQuery.getItems();
+        for (Iterator<ReportItem> i = items.iterator(); i.hasNext();) {
+            ReportItem item = i.next();
             Expression expr = item.getAttributeExpression();
             reportQuery.addNonFetchJoinedAttribute(expr);
         }
         reportQuery.clearItems();
-        Expression one = new ConstantExpression(Integer.valueOf(1), new ExpressionBuilder());
+        Expression one = new ConstantExpression(1, new ExpressionBuilder());
         reportQuery.addItem("one", one);
         reportQuery.dontUseDistinct();
         Expression expr = context.getBaseExpression();

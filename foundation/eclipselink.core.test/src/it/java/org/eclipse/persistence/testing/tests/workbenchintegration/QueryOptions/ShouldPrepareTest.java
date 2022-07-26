@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,10 +35,12 @@ public class ShouldPrepareTest extends AutoVerifyTestCase {
         setDescription("Test SQL prepared once option");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         if (getSession().getPlatform().isDB2()) {
             throw new TestWarningException("This test is not supposed to work with DB2. " +
@@ -60,11 +62,13 @@ public class ShouldPrepareTest extends AutoVerifyTestCase {
         getSession().executeQuery(queryCopy, vec);
     }
 
+    @Override
     public void test() {
         vec.set(0, null);
         getSession().executeQuery(queryCopy, vec);
     }
 
+    @Override
     public void verify() {
         if (queryCopy.getCall().getSQLString().indexOf("NULL") != -1) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("shouldPrepareTest failed, SQL was:" +

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ import commonj.sdo.Property;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -83,7 +85,7 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
 
         dataObject_a.setChar(propertyPath_a_b_c, b);// add it to instance list
 
-        this.assertEquals(b, dataObject_a.getChar(propertyPath_a_b_c));
+        assertEquals(b, dataObject_a.getChar(propertyPath_a_b_c));
     }
 
     //4. purpose: getChar with Undefined Character Property
@@ -201,10 +203,10 @@ public class SDODataObjectGetCharacterConversionWithPathTest extends SDODataObje
         dataObject_c._setType(type_c);
 
         char str = 'c';
-        Character B_STR = new Character(str);
+        Character B_STR = str;
         dataObject_a.setString(propertyPath_a_b_c, B_STR.toString());// add it to instance list
 
-        this.assertEquals(str, dataObject_a.getChar(property));
+        assertEquals(str, dataObject_a.getChar(property));
     }
 
     //11. purpose: getChar with Undefined boolean Property

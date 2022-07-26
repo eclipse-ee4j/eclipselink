@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,8 @@ package org.eclipse.persistence.sequencing;
 
 import java.util.Vector;
 import java.math.BigDecimal;
-import org.eclipse.persistence.sessions.Record;
+
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -93,7 +94,12 @@ public class QuerySequence extends StandardSequence {
     public boolean equals(Object obj) {
         if (obj instanceof QuerySequence && super.equals(obj)) {
             QuerySequence other = (QuerySequence)obj;
-            return (getSelectQuery() == other.getSelectQuery()) && (getUpdateQuery() == other.getUpdateQuery()) && (shouldAcquireValueAfterInsert() == other.shouldAcquireValueAfterInsert()) && (shouldUseTransaction() == other.shouldUseTransaction()) && (shouldSkipUpdate() == other.shouldSkipUpdate()) && (shouldSelectBeforeUpdate() == other.shouldSelectBeforeUpdate());
+            return (getSelectQuery() == other.getSelectQuery())
+                    && (getUpdateQuery() == other.getUpdateQuery())
+                    && (shouldAcquireValueAfterInsert() == other.shouldAcquireValueAfterInsert())
+                    && (shouldUseTransaction() == other.shouldUseTransaction())
+                    && (shouldSkipUpdate() == other.shouldSkipUpdate())
+                    && (shouldSelectBeforeUpdate() == other.shouldSelectBeforeUpdate());
 
         } else {
             return false;
@@ -271,7 +277,7 @@ public class QuerySequence extends StandardSequence {
     */
     @Override
     protected Number updateAndSelectSequence(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
-        Integer sizeInteger = Integer.valueOf(size);
+        Integer sizeInteger = size;
         if (shouldSkipUpdate()) {
             return (Number)select(accessor, writeSession, seqName, sizeInteger);
         } else {
@@ -282,8 +288,8 @@ public class QuerySequence extends StandardSequence {
                     currentValue = BigDecimal.valueOf(((Number)result).longValue());
                 } else if (result instanceof String) {
                     currentValue = new BigDecimal((String)result);
-                } else if (result instanceof Record) {
-                    Object val = ((Record)result).get("text()");
+                } else if (result instanceof DataRecord) {
+                    Object val = ((DataRecord)result).get("text()");
                     currentValue = new BigDecimal((String)val);
                 } else {
                     // DatabaseException.errorPreallocatingSequenceNumbers() is thrown by the superclass
@@ -323,7 +329,7 @@ public class QuerySequence extends StandardSequence {
                 query.setAccessor(accessor);
             }
         }
-        Vector args = createArguments(query, seqName, size);
+        Vector<Object> args = createArguments(query, seqName, size);
         query.setIsUserDefinedSQLCall(false);
         if (args != null) {
             return writeSession.executeQuery(query, args);
@@ -356,7 +362,7 @@ public class QuerySequence extends StandardSequence {
                 query.setAccessor(accessor);
             }
         }
-        Vector args = createArguments(query, seqName, sizeOrNewValue);
+        Vector<Object> args = createArguments(query, seqName, sizeOrNewValue);
         query.setIsUserDefinedSQLCall(false);
         if (args != null) {
             writeSession.executeQuery(query, args);
@@ -368,10 +374,10 @@ public class QuerySequence extends StandardSequence {
     /**
     * INTERNAL:
     */
-    protected Vector createArguments(DatabaseQuery query, String seqName, Number sizeOrNewValue) {
+    protected Vector<Object> createArguments(DatabaseQuery query, String seqName, Number sizeOrNewValue) {
         int nArgs = query.getArguments().size();
         if (nArgs > 0) {
-            Vector args = new Vector(nArgs);
+            Vector<Object> args = new Vector<>(nArgs);
             args.addElement(seqName);
             if (nArgs > 1) {
                 args.addElement(sizeOrNewValue);

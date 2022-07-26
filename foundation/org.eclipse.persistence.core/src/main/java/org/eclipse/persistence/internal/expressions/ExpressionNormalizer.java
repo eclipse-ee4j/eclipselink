@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -133,7 +133,6 @@ public class ExpressionNormalizer {
      * Similar to addAdditionalExpression, this keeps a running expression used for joins so that they can be added locally within 'OR'
      * predicates rather than to the entire where clause.  If addAdditionalExpressionsWithinCurrrentExpressionContext is false, it will work
      * the same as addAdditionalExpression
-     * @param theExpression
      */
     public void addAdditionalLocalExpression(Expression theExpression) {
         // This change puts a null check into every call, but is printing additional
@@ -149,9 +148,6 @@ public class ExpressionNormalizer {
      * INTERNAL
      * This will return the localExpression if isLogicalExpression is false, otherwise it will check the addAdditionalExpressionsWithinCurrrentExpressionContext
      * flag and clear additionalLocalExpression once adding it to the localExpression.
-     * @param localExpression
-     * @param isLogicalExpression
-     * @return
      */
     public Expression processAdditionalLocalExpressions(Expression localExpression, boolean isLogicalExpression) {
         if (!isLogicalExpression || !addAdditionalExpressionsWithinCurrrentExpressionContext) {
@@ -171,7 +167,6 @@ public class ExpressionNormalizer {
      * INTERNAL:
      * Allows keeping track when the normalizer is within a logical OR statement, where additionalExpressions might need to be added to the local
      * expression instead of at the end of the where clause.
-     * @param addAdditionalExpressionsWithinCurrrentExpressionContext
      */
     public void setAddAdditionalExpressionsWithinCurrrentExpressionContext(
             boolean addAdditionalExpressionsWithinCurrrentExpressionContext) {

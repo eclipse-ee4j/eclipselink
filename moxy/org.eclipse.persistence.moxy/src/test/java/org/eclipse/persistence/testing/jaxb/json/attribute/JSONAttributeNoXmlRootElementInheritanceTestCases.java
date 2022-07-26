@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,15 +26,17 @@ public class JSONAttributeNoXmlRootElementInheritanceTestCases extends JSONMarsh
 
     public JSONAttributeNoXmlRootElementInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{MailingAddressNoRoot.class});
+        setClasses(new Class<?>[]{MailingAddressNoRoot.class});
         setControlJSON(JSON_RESOURCE);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
-    public Class getUnmarshalClass(){
+    @Override
+    public Class<?> getUnmarshalClass(){
         return AddressNoRoot.class;
     }
 
+    @Override
     protected Object getControlObject() {
         MailingAddressNoRoot add = new MailingAddressNoRoot();
         add.setId(10);
@@ -44,8 +46,9 @@ public class JSONAttributeNoXmlRootElementInheritanceTestCases extends JSONMarsh
         return add;
     }
 
+    @Override
     public Object getReadControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, (AddressNoRoot)getControlObject());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, (AddressNoRoot)getControlObject());
         return jbe;
     }
 

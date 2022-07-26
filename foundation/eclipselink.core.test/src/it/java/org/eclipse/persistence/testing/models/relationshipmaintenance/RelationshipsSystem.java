@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class RelationshipsSystem extends TestSystem {
         project = new RelationshipsProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new RelationshipsProject();
@@ -34,12 +35,14 @@ public class RelationshipsSystem extends TestSystem {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         new RelationshipsTableCreator().replaceTables(session);
         SchemaManager schemaManager = new SchemaManager(session);
         schemaManager.createSequences();
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         FieldOffice fieldOffice1 = new FieldOffice();
         FieldOffice fieldOffice2 = new FieldOffice();
@@ -118,26 +121,26 @@ public class RelationshipsSystem extends TestSystem {
         uow.registerObject(fieldOffice2);
 
         Dept dept = new Dept();
-        dept.setDeptno(new Double(5.0));
+        dept.setDeptno(5.0);
         dept.setDname("Goofs");
 
         Emp emp = new Emp();
-        emp.setEmpno(new Double(5.0));
+        emp.setEmpno(5.0);
         emp.setEname("Anthony");
         emp.setDeptno(dept);
 
         Emp emp1 = new Emp();
-        emp1.setEmpno(new Double(6.0));
+        emp1.setEmpno(6.0);
         emp1.setEname("Bob");
         emp1.setDeptno(dept);
 
         Emp emp2 = new Emp();
-        emp2.setEmpno(new Double(7.0));
+        emp2.setEmpno(7.0);
         emp2.setEname("Fargo");
         emp2.setDeptno(dept);
 
         Emp emp3 = new Emp();
-        emp3.setEmpno(new Double(8.0));
+        emp3.setEmpno(8.0);
         emp3.setEname("Oneder");
         emp3.setDeptno(dept);
 

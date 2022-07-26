@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,18 +24,22 @@ public class CompanyTypeImpl extends SDODataObject implements CompanyType {
 
    public CompanyTypeImpl() {}
 
+   @Override
    public java.lang.String getCompanyName() {
       return getString(START_PROPERTY_INDEX + 0);
    }
 
+   @Override
    public void setCompanyName(java.lang.String value) {
       set(START_PROPERTY_INDEX + 0 , value);
    }
 
+   @Override
    public boolean getPublic() {
       return getBoolean(START_PROPERTY_INDEX + 1);
    }
 
+   @Override
    public void setPublic(boolean value) {
       set(START_PROPERTY_INDEX + 1 , value);
    }

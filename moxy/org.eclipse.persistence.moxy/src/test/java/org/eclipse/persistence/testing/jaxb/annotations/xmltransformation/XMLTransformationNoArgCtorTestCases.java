@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,11 +20,12 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class XMLTransformationNoArgCtorTestCases extends JAXBWithJSONTestCases{
     public XMLTransformationNoArgCtorTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {EmployeeWithAddressAndTransformer.class});
+        setClasses(new Class<?>[] {EmployeeWithAddressAndTransformer.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/annotations/xmltransformation/employee.json");
     }
 
+    @Override
     public Object getControlObject() {
         EmployeeWithAddressAndTransformer emp = new EmployeeWithAddressAndTransformer();
         emp.name = "John Smith";

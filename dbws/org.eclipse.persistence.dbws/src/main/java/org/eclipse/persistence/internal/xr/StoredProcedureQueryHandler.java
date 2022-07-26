@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,9 +49,9 @@ import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
 public class StoredProcedureQueryHandler extends QueryHandler {
     public static final String CURSOR_STR = "CURSOR";
     protected String name;
-    protected List<ProcedureArgument> inArguments = new ArrayList<ProcedureArgument>();
-    protected List<ProcedureOutputArgument> inOutArguments = new ArrayList<ProcedureOutputArgument>();
-    protected List<ProcedureOutputArgument> outArguments = new ArrayList<ProcedureOutputArgument>();
+    protected List<ProcedureArgument> inArguments = new ArrayList<>();
+    protected List<ProcedureOutputArgument> inOutArguments = new ArrayList<>();
+    protected List<ProcedureOutputArgument> outArguments = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -194,8 +194,8 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                     field.setSqlType(queryOperation.getResult().getJdbcType());
                     field.setSqlTypeName(getTypeNameForJDBCType(queryOperation.getResult().getJdbcType()));
                     // replace the original field with the new one
-                    ((StoredFunctionCall)spCall).getParameters().remove(0);
-                    ((StoredFunctionCall)spCall).getParameters().add(0, field);
+                    spCall.getParameters().remove(0);
+                    spCall.getParameters().add(0, field);
                 }
                 // support stored function with out args
                 for (ProcedureOutputArgument arg : getOutArguments()) {
@@ -245,11 +245,11 @@ public class StoredProcedureQueryHandler extends QueryHandler {
 
     protected void setSingleResult(XRServiceAdapter xrService, StoredProcedureCall spCall, QName resultType) {
         if (getOutArguments().size() == 1) {
-            ProcedureArgument arg = getOutArguments().get(0);
+            ProcedureOutputArgument arg = getOutArguments().get(0);
             // check query's returnType or arg's returnType
             if (isCursorType(xrService, resultType) ||
                 ( arg instanceof ProcedureOutputArgument && isCursorType(xrService,
-                    ((ProcedureOutputArgument)arg).getResultType())))  {
+                    arg.getResultType())))  {
                 spCall.useNamedCursorOutputAsResultSet(arg.getName());
             } else {
                 spCall.addNamedOutputArgument(arg.getName());

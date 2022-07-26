@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,10 +23,10 @@ import org.eclipse.persistence.exceptions.*;
 /**
  * <p><b>Purpose</b>:
  * The object is used as a wrapper to the CursoredStream object in the remote transaction (via RMI, CORBA, etc.)
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Wraps a database result set cursor to provide a stream to the remote client side on the resulting selected objects.
- *
+ * </p>
  * @author King (Yaoping) Wang
  * @since TOPLink/Java 3.0
  */

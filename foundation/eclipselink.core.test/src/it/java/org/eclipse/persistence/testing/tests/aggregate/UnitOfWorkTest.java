@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,11 +46,12 @@ import org.eclipse.persistence.testing.models.aggregate.Responsibility;
  *                                <li>    <i>3 Level Aggregation</i>, modifying object at third level
  *                                <li> <i>1 Level Aggregation's 1:1 Mapping</i>, replacing object with new object
  *                                <li>    <i>1 Level Aggregation's 1:1 Mapping</i>, Replacing with a new object
- *                                <li>    <i>1 Level Aggregation's 1:M Mapping<i>, Deletion of an object
+ *                                <li>    <i>1 Level Aggregation's 1:M Mapping</i>, Deletion of an object
  *                                <li>    <i>1 Level Aggregation's 1:M Mapping</i>,Addition of a new element
  *                                <li> <i>1 Level Aggregation's M:M Mapping </i>, Deleting an Object
  *                                <li> <i>1 Level Aggregation's M:M Mapping</i>, Modifying an object
  *                                <li>    <i>1 Level Aggregation's M:M Mapping</i>, Replacing with a new object
+ *                                </ul>
  *
  */
 public class UnitOfWorkTest extends WriteObjectTest {
@@ -107,6 +108,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
         languages.addElement(Language.example7());
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -121,6 +123,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         this.unitOfWork.commit();
     }
@@ -129,6 +132,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         if (!(compareObjects(this.unitOfWorkWorkingCopy, this.objectToBeWritten))) {
             throw new TestErrorException("The object in the unit of work has not been commited properly to its parent");

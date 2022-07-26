@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,7 +74,6 @@ import org.eclipse.persistence.internal.sessions.factories.model.session.Session
 import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSPublishingTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSTopicTransportManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.Oc4jJGroupsTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.RMIIIOPTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.RMITransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.SunCORBATransportManagerConfig;
@@ -97,6 +96,7 @@ import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sequencing.UnaryTableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
@@ -197,11 +197,12 @@ public class SessionsFactory {
         String sessionCustomizerClassName = sessionConfig.getSessionCustomizerClass();
         if (sessionCustomizerClassName != null) {
             try {
-                Class sessionCustomizerClass = m_classLoader.loadClass(sessionCustomizerClassName);
+                @SuppressWarnings({"unchecked"})
+                Class<SessionCustomizer> sessionCustomizerClass = (Class<SessionCustomizer>) m_classLoader.loadClass(sessionCustomizerClassName);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    ((SessionCustomizer)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(sessionCustomizerClass))).customize(session);
+                    AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(sessionCustomizerClass)).customize(session);
                 }else{
-                    ((SessionCustomizer)PrivilegedAccessHelper.newInstanceFromClass(sessionCustomizerClass)).customize(session);
+                    PrivilegedAccessHelper.newInstanceFromClass(sessionCustomizerClass).customize(session);
                 }
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("session-customizer-class", sessionCustomizerClassName, exception);
@@ -342,6 +343,7 @@ public class SessionsFactory {
      * Load a projectConfig from the session.xml file. This method will determine
      * the proper loading scheme, that is, for a class or xml project.
      */
+    @SuppressWarnings({"unchecked"})
     protected Project loadProjectConfig(ProjectConfig projectConfig) {
         Project project = null;
         String projectString = projectConfig.getProjectString().trim();
@@ -349,9 +351,9 @@ public class SessionsFactory {
         if (projectConfig.isProjectClassConfig()) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    project = (Project) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(m_classLoader.loadClass(projectString)));
+                    project = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>((Class<Project>) m_classLoader.loadClass(projectString)));
                 }else{
-                    project = (Project) PrivilegedAccessHelper.newInstanceFromClass(m_classLoader.loadClass(projectString));
+                    project = PrivilegedAccessHelper.newInstanceFromClass((Class<Project>)m_classLoader.loadClass(projectString));
                 }
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadProjectClass(projectString, exception);
@@ -403,12 +405,13 @@ public class SessionsFactory {
         String specClassName = eisLoginConfig.getConnectionSpecClass();
         if (specClassName != null) {
             try {
-                Class specClass = m_classLoader.loadClass(specClassName);
+                @SuppressWarnings({"unchecked"})
+                Class<EISConnectionSpec> specClass = (Class<EISConnectionSpec>) m_classLoader.loadClass(specClassName);
                 EISConnectionSpec spec = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    spec = (EISConnectionSpec)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(specClass));
+                    spec = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(specClass));
                 }else{
-                    spec = (EISConnectionSpec)PrivilegedAccessHelper.newInstanceFromClass(specClass);
+                    spec = PrivilegedAccessHelper.newInstanceFromClass(specClass);
                 }
                 eisLogin.setConnectionSpec(spec);
             } catch (Exception exception) {
@@ -454,7 +457,7 @@ public class SessionsFactory {
         String driverClassName = databaseLoginConfig.getDriverClass();
         if (driverClassName != null) {
             try {
-                Class driverClass = m_classLoader.loadClass(driverClassName);
+                Class<?> driverClass = m_classLoader.loadClass(driverClassName);
                 databaseLogin.setDriverClass(driverClass);
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("driver-class", driverClassName, exception);
@@ -472,7 +475,7 @@ public class SessionsFactory {
         if (datasourceName != null) {
             try {
                 JNDIConnector jndiConnector = new JNDIConnector(new javax.naming.InitialContext(), datasourceName);
-                jndiConnector.setLookupType(databaseLoginConfig.getLookupType().intValue());
+                jndiConnector.setLookupType(databaseLoginConfig.getLookupType());
                 databaseLogin.setConnector(jndiConnector);
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("datasource", datasourceName, exception);
@@ -512,7 +515,7 @@ public class SessionsFactory {
         // Max batch writing size - XML Schema default is 32000
         Integer maxBatchWritingSize = databaseLoginConfig.getMaxBatchWritingSize();
         if (maxBatchWritingSize != null) {
-            databaseLogin.setMaxBatchWritingSize(maxBatchWritingSize.intValue());
+            databaseLogin.setMaxBatchWritingSize(maxBatchWritingSize);
         }
 
         // Native SQL - XML Schema default is false
@@ -543,25 +546,26 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
+    @SuppressWarnings({"unchecked"})
     protected void processStructConverterConfig(StructConverterConfig converterClassConfig, DatabaseLogin login) {
         if (converterClassConfig != null) {
             Platform platform = login.getDatasourcePlatform();
             if (platform instanceof DatabasePlatform){
-                Iterator i = converterClassConfig.getStructConverterClasses().iterator();
+                Iterator<String> i = converterClassConfig.getStructConverterClasses().iterator();
 
                 while (i.hasNext()) {
-                    String converterClassName = (String)i.next();
+                    String converterClassName = i.next();
                     try {
-                        Class converterClass = m_classLoader.loadClass(converterClassName);
+                        Class<StructConverter> converterClass = (Class<StructConverter>) m_classLoader.loadClass(converterClassName);
                         StructConverter converter = null;
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                             try{
-                                converter = (StructConverter)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(converterClass));
+                                converter = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(converterClass));
                             }catch (PrivilegedActionException ex){
                                 throw (Exception)ex.getCause();
                             }
                         }else{
-                            converter = (StructConverter)PrivilegedAccessHelper.newInstanceFromClass(converterClass);
+                            converter = PrivilegedAccessHelper.newInstanceFromClass(converterClass);
                         }
                         ((DatabasePlatform)platform).addStructConverter(converter);
                     } catch (Exception exception) {
@@ -581,11 +585,12 @@ public class SessionsFactory {
         String platformClassName = loginConfig.getPlatformClass();
         if (platformClassName != null) {
             try {
-                Class platformClass = m_classLoader.loadClass(platformClassName);
+                @SuppressWarnings({"unchecked"})
+                Class<DatasourcePlatform> platformClass = (Class<DatasourcePlatform>) m_classLoader.loadClass(platformClassName);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    login.usePlatform((DatasourcePlatform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass)));
+                    login.usePlatform(AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass)));
                 }else{
-                    login.usePlatform((DatasourcePlatform)PrivilegedAccessHelper.newInstanceFromClass(platformClass));
+                    login.usePlatform(PrivilegedAccessHelper.newInstanceFromClass(platformClass));
                 }
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("platform-class", platformClassName, exception);
@@ -622,10 +627,10 @@ public class SessionsFactory {
             }
 
             if ((loginConfig.getSequencingConfig().getSequenceConfigs() != null) && !loginConfig.getSequencingConfig().getSequenceConfigs().isEmpty()) {
-                Enumeration eSequenceConfigs = loginConfig.getSequencingConfig().getSequenceConfigs().elements();
+                Enumeration<SequenceConfig> eSequenceConfigs = loginConfig.getSequencingConfig().getSequenceConfigs().elements();
 
                 while (eSequenceConfigs.hasMoreElements()) {
-                    Sequence sequence = buildSequence((SequenceConfig)eSequenceConfigs.nextElement());
+                    Sequence sequence = buildSequence(eSequenceConfigs.nextElement());
                     login.addSequence(sequence);
                 }
             }
@@ -633,10 +638,10 @@ public class SessionsFactory {
 
         // Properties (assumes they are all valid)
         if (loginConfig.getPropertyConfigs() != null) {
-            Enumeration e = loginConfig.getPropertyConfigs().elements();
+            Enumeration<PropertyConfig> e = loginConfig.getPropertyConfigs().elements();
 
             while (e.hasMoreElements()) {
-                PropertyConfig propertyConfig = (PropertyConfig)e.nextElement();
+                PropertyConfig propertyConfig = e.nextElement();
                 login.getProperties().put(propertyConfig.getName(), propertyConfig.getValue());
             }
         }
@@ -667,9 +672,9 @@ public class SessionsFactory {
             }
 
             // Connection pools
-            Enumeration e = poolsConfig.getConnectionPoolConfigs().elements();
+            Enumeration<ConnectionPoolConfig> e = poolsConfig.getConnectionPoolConfigs().elements();
             while (e.hasMoreElements()) {
-                ConnectionPoolConfig connectionPoolConfig = (ConnectionPoolConfig)e.nextElement();
+                ConnectionPoolConfig connectionPoolConfig = e.nextElement();
                 serverSession.addConnectionPool(buildConnectionPoolConfig(connectionPoolConfig, serverSession));
             }
         }
@@ -686,13 +691,13 @@ public class SessionsFactory {
         // Max connections
         Integer maxConnections = poolConfig.getMaxConnections();
         if (maxConnections != null) {
-            serverSession.getSequencingControl().setMaxPoolSize(maxConnections.intValue());
+            serverSession.getSequencingControl().setMaxPoolSize(maxConnections);
         }
 
         // Min connections
         Integer minConnections = poolConfig.getMinConnections();
         if (minConnections != null) {
-            serverSession.getSequencingControl().setMinPoolSize(minConnections.intValue());
+            serverSession.getSequencingControl().setMinPoolSize(minConnections);
         }
 
         // Name - no need to process
@@ -730,19 +735,20 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
+    @SuppressWarnings({"unchecked"})
     protected ServerPlatform buildCustomServerPlatformConfig(CustomServerPlatformConfig platformConfig, DatabaseSessionImpl session) {
         ServerPlatform platform;
 
         // Server class - XML schema default is org.eclipse.persistence.platform.server.CustomServerPlatform
         String serverClassName = platformConfig.getServerClassName();
         try {
-            Class serverClass = m_classLoader.loadClass(serverClassName);
+            Class<ServerPlatform> serverClass = (Class<ServerPlatform>) m_classLoader.loadClass(serverClassName);
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false));
-                platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { session }));
+                Constructor<ServerPlatform> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(serverClass, new Class<?>[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false));
+                platform = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, new Object[] { session }));
             }else{
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false);
-                platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
+                Constructor<ServerPlatform> constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class<?>[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false);
+                platform = PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
             }
         } catch (Exception e) {
             throw SessionLoaderException.failedToLoadTag("server-class", serverClassName, e);
@@ -752,7 +758,7 @@ public class SessionsFactory {
         String externalTransactionControllerClass = platformConfig.getExternalTransactionControllerClass();
         if (externalTransactionControllerClass != null) {
             try {
-                platform.setExternalTransactionControllerClass(m_classLoader.loadClass(externalTransactionControllerClass));
+                platform.setExternalTransactionControllerClass((Class<ExternalTransactionController>) m_classLoader.loadClass(externalTransactionControllerClass));
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("external-transaction-controller-class", externalTransactionControllerClass, exception);
             }
@@ -810,13 +816,13 @@ public class SessionsFactory {
         // Max connections
         Integer maxConnections = poolConfig.getMaxConnections();
         if (maxConnections != null) {
-            connectionPool.setMaxNumberOfConnections(maxConnections.intValue());
+            connectionPool.setMaxNumberOfConnections(maxConnections);
         }
 
         // Min connections
         Integer minConnections = poolConfig.getMinConnections();
         if (minConnections != null) {
-            connectionPool.setMinNumberOfConnections(minConnections.intValue());
+            connectionPool.setMinNumberOfConnections(minConnections);
         }
     }
 
@@ -854,11 +860,12 @@ public class SessionsFactory {
         String exceptionHandlerClassName = sessionConfig.getExceptionHandlerClass();
         if (exceptionHandlerClassName != null) {
             try {
-                Class exceptionHandlerClass = m_classLoader.loadClass(exceptionHandlerClassName);
+                @SuppressWarnings({"unchecked"})
+                Class<ExceptionHandler> exceptionHandlerClass = (Class<ExceptionHandler>) m_classLoader.loadClass(exceptionHandlerClassName);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    session.setExceptionHandler((ExceptionHandler)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(exceptionHandlerClass)));
+                    session.setExceptionHandler(AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(exceptionHandlerClass)));
                 }else{
-                    session.setExceptionHandler((ExceptionHandler)PrivilegedAccessHelper.newInstanceFromClass(exceptionHandlerClass));
+                    session.setExceptionHandler(PrivilegedAccessHelper.newInstanceFromClass(exceptionHandlerClass));
                 }
             } catch (Exception e) {
                 throw SessionLoaderException.failedToLoadTag("exception-handler-class", exceptionHandlerClassName, e);
@@ -920,16 +927,14 @@ public class SessionsFactory {
      * INTERNAL:
      */
     protected void buildTransportManager(TransportManagerConfig tmConfig, RemoteCommandManager rcm) {
-        if (tmConfig instanceof RMITransportManagerConfig) {
-            buildRMITransportManagerConfig((RMITransportManagerConfig)tmConfig, rcm);
-        } else if (tmConfig instanceof RMIIIOPTransportManagerConfig) {
+        if (tmConfig instanceof RMIIIOPTransportManagerConfig) {
             buildRMIIIOPTransportManagerConfig((RMIIIOPTransportManagerConfig)tmConfig, rcm);
-        }  else if (tmConfig instanceof JMSTopicTransportManagerConfig) {
+        }  else if (tmConfig instanceof RMITransportManagerConfig) {
+            buildRMITransportManagerConfig((RMITransportManagerConfig)tmConfig, rcm);
+        } else if (tmConfig instanceof JMSTopicTransportManagerConfig) {
             buildJMSTopicTransportManagerConfig((JMSTopicTransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof JMSPublishingTransportManagerConfig) {
             buildJMSPublishingTransportManagerConfig((JMSPublishingTransportManagerConfig)tmConfig, rcm);
-        } else if (tmConfig instanceof Oc4jJGroupsTransportManagerConfig) {
-            buildOc4jJGroupsTransportManagerConfig((Oc4jJGroupsTransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof SunCORBATransportManagerConfig) {
             buildSunCORBATransportManagerConfig((SunCORBATransportManagerConfig)tmConfig, rcm);
         } else if (tmConfig instanceof UserDefinedTransportManagerConfig) {
@@ -941,7 +946,9 @@ public class SessionsFactory {
      * INTERNAL:
      */
     protected void buildRMITransportManagerConfig(RMITransportManagerConfig tmConfig, RemoteCommandManager rcm) {
-        RMITransportManager tm = new RMITransportManager(rcm);
+        RMITransportManager tm = (tmConfig instanceof RMIIIOPTransportManagerConfig)
+                ? (RMITransportManager) TransportManager.newTransportManager("org.eclipse.persistence.sessions.remote.rmi.iiop.RMIIIOPTransportManager", rcm)
+                : new RMITransportManager(rcm);
 
         // Set the transport manager. This will initialize the DiscoveryManager
         // This needs to be done before we process the DiscoveryConfig.
@@ -963,8 +970,6 @@ public class SessionsFactory {
             processRMIRegistryNamingServiceConfig(tmConfig.getRMIRegistryNamingServiceConfig(), tm);
         }
 
-        tm.setIsRMIOverIIOP(tmConfig instanceof RMIIIOPTransportManagerConfig);
-
         // Send mode - Can only be Asynchronous (true) or Synchronous (false), validated by the schema
         // XML Schema default is Asynchronous
         rcm.setShouldPropagateAsynchronously(tmConfig.getSendMode().equals("Asynchronous"));
@@ -983,7 +988,7 @@ public class SessionsFactory {
         }
 
         String name = sequenceConfig.getName();
-        int size = sequenceConfig.getPreallocationSize().intValue();
+        int size = sequenceConfig.getPreallocationSize();
 
         if (sequenceConfig instanceof DefaultSequenceConfig) {
             return new DefaultSequence(name, size);
@@ -998,8 +1003,9 @@ public class SessionsFactory {
         } else if (sequenceConfig instanceof XMLFileSequenceConfig) {
             try {
                 // Can no longer reference class directly as in a different project.
-                Class xmlClass = Class.forName("org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence");
-                Sequence sequence = (Sequence)xmlClass.newInstance();
+                @SuppressWarnings({"unchecked"})
+                Class<Sequence> xmlClass = (Class<Sequence>) Class.forName("org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence");
+                Sequence sequence = xmlClass.getConstructor().newInstance();
                 sequence.setName(name);
                 sequence.setInitialValue(size);
                 return sequence;
@@ -1074,31 +1080,6 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
-    protected void buildOc4jJGroupsTransportManagerConfig(Oc4jJGroupsTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
-        TransportManager tm = null;
-        try {
-            Class tmClass = m_classLoader.loadClass(tmConfig.getTransportManagerClassName());
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false));
-                tm = (TransportManager)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { rcm, tmConfig.useSingleThreadedNotification(), tmConfig.getTopicName() }));
-            }else{
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false);
-                tm = (TransportManager)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { rcm, tmConfig.useSingleThreadedNotification(), tmConfig.getTopicName() });
-            }
-        } catch (Exception e) {
-            throw SessionLoaderException.failedToParseXML("Oc4jJGroupsTransportManager class is invalid: " + tmConfig.getTransportManagerClassName(), e);
-        }
-
-        // Set the transport manager. This will initialize the DiscoveryManager
-        rcm.setTransportManager(tm);
-
-        // Process the common elements in TransportManagerConfig
-        processTransportManagerConfig(tmConfig, tm);
-    }
-
-    /**
-     * INTERNAL:
-     */
     protected void buildUserDefinedTransportManagerConfig(UserDefinedTransportManagerConfig tmConfig, RemoteCommandManager rcm) {
         TransportManager tm = null;
 
@@ -1106,11 +1087,12 @@ public class SessionsFactory {
         String transportManagerClassName = tmConfig.getTransportClass();
         if (transportManagerClassName != null) {
             try {
-                Class transportManagerClass = m_classLoader.loadClass(transportManagerClassName);
+                @SuppressWarnings({"unchecked"})
+                Class<TransportManager> transportManagerClass = (Class<TransportManager>) m_classLoader.loadClass(transportManagerClassName);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    tm = (TransportManager)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(transportManagerClass));
+                    tm = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(transportManagerClass));
                 }else{
-                    tm = (TransportManager)PrivilegedAccessHelper.newInstanceFromClass(transportManagerClass);
+                    tm = PrivilegedAccessHelper.newInstanceFromClass(transportManagerClass);
                 }
             } catch (Exception exception) {
                 throw SessionLoaderException.failedToLoadTag("transport-class", transportManagerClassName, exception);
@@ -1147,10 +1129,10 @@ public class SessionsFactory {
         tm.setInitialContextFactoryName(namingConfig.getInitialContextFactoryName());
 
         // Properties (assumes they are all valid)
-        Enumeration e = namingConfig.getPropertyConfigs().elements();
+        Enumeration<PropertyConfig> e = namingConfig.getPropertyConfigs().elements();
 
         while (e.hasMoreElements()) {
-            PropertyConfig propertyConfig = (PropertyConfig)e.nextElement();
+            PropertyConfig propertyConfig = e.nextElement();
             tm.getRemoteContextProperties().put(propertyConfig.getName(), propertyConfig.getValue());
         }
     }
@@ -1195,19 +1177,20 @@ public class SessionsFactory {
      */
     protected void processSessionEventManagerConfig(SessionEventManagerConfig sessionEventManagerConfig, AbstractSession session) {
         if (sessionEventManagerConfig != null) {
-            Enumeration e = sessionEventManagerConfig.getSessionEventListeners().elements();
+            Enumeration<String> e = sessionEventManagerConfig.getSessionEventListeners().elements();
 
             while (e.hasMoreElements()) {
-                String listenerClassName = (String)e.nextElement();
+                String listenerClassName = e.nextElement();
 
                 try {
-                    Class listenerClass = m_classLoader.loadClass(listenerClassName);
+                    @SuppressWarnings({"unchecked"})
+                    Class<SessionEventListener> listenerClass = (Class<SessionEventListener>) m_classLoader.loadClass(listenerClassName);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        session.getEventManager().addListener((SessionEventListener)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(listenerClass)));
+                        session.getEventManager().addListener(AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(listenerClass)));
                     }else{
 
                     }
-                    session.getEventManager().addListener((SessionEventListener)PrivilegedAccessHelper.newInstanceFromClass(listenerClass));
+                    session.getEventManager().addListener(PrivilegedAccessHelper.newInstanceFromClass(listenerClass));
                 } catch (Exception exception) {
                     throw SessionLoaderException.failedToLoadTag("event-listener-class", listenerClassName, exception);
                 }
@@ -1233,13 +1216,14 @@ public class SessionsFactory {
     /**
      * INTERNAL:
      */
+    @SuppressWarnings({"unchecked"})
     protected SessionLog buildJavaLogConfig(JavaLogConfig javaLogConfig, AbstractSession session) {
         SessionLog javaLog = null;
         try {
             // use ConversionManager to avoid loading the JDK 1.4 class unless it is needed.
             ConversionManager conversionManager = new ConversionManager();
             conversionManager.setLoader(getClass().getClassLoader());
-            javaLog = (SessionLog)((Class)conversionManager.convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).newInstance();
+            javaLog = ((Class<SessionLog>)conversionManager.convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).getConstructor().newInstance();
             javaLog.setSession(session);
         } catch (Exception exception) {
             throw ValidationException.unableToLoadClass("org.eclipse.persistence.logging.JavaLog", exception);
@@ -1286,19 +1270,19 @@ public class SessionsFactory {
     protected void processLogConfig(LogConfig logConfig, SessionLog log) {
         if (logConfig.getLoggingOptions() != null) {
             if (logConfig.getLoggingOptions().getShouldLogExceptionStackTrace() != null) {
-                log.setShouldLogExceptionStackTrace(logConfig.getLoggingOptions().getShouldLogExceptionStackTrace().booleanValue());
+                log.setShouldLogExceptionStackTrace(logConfig.getLoggingOptions().getShouldLogExceptionStackTrace());
             }
             if (logConfig.getLoggingOptions().getShouldPrintConnection() != null) {
-                log.setShouldPrintConnection(logConfig.getLoggingOptions().getShouldPrintConnection().booleanValue());
+                log.setShouldPrintConnection(logConfig.getLoggingOptions().getShouldPrintConnection());
             }
             if (logConfig.getLoggingOptions().getShouldPrintDate() != null) {
-                log.setShouldPrintDate(logConfig.getLoggingOptions().getShouldPrintDate().booleanValue());
+                log.setShouldPrintDate(logConfig.getLoggingOptions().getShouldPrintDate());
             }
             if (logConfig.getLoggingOptions().getShouldPrintSession() != null) {
-                log.setShouldPrintSession(logConfig.getLoggingOptions().getShouldPrintSession().booleanValue());
+                log.setShouldPrintSession(logConfig.getLoggingOptions().getShouldPrintSession());
             }
             if (logConfig.getLoggingOptions().getShouldPrintThread() != null) {
-                log.setShouldPrintThread(logConfig.getLoggingOptions().getShouldPrintThread().booleanValue());
+                log.setShouldPrintThread(logConfig.getLoggingOptions().getShouldPrintThread());
             }
         }
     }
@@ -1308,7 +1292,7 @@ public class SessionsFactory {
      * Builds a Sun CORBA transport manager with the given remote command manager
      */
     protected void buildSunCORBATransportManagerConfig(SunCORBATransportManagerConfig tmConfig, RemoteCommandManager rcm) {
-        TransportManager tm = TransportManager.newSunCORBATransportManager(rcm);
+        TransportManager tm = TransportManager.newTransportManager("org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager", rcm);
 
         // Set the transport manager. This will initialize the DiscoveryManager
         rcm.setTransportManager(tm);

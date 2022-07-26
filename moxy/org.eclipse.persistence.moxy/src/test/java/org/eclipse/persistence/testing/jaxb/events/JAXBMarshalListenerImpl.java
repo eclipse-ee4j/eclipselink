@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,18 +20,19 @@ import jakarta.xml.bind.*;
 
 
 public class JAXBMarshalListenerImpl extends Marshaller.Listener {
-    static Integer EMPLOYEE_BEFORE_MARSHAL = new Integer(0);
-    static Integer ADDRESS_BEFORE_MARSHAL = new Integer(1);
-    static Integer PHONE_BEFORE_MARSHAL = new Integer(2);
-    static Integer EMPLOYEE_AFTER_MARSHAL = new Integer(3);
-    static Integer ADDRESS_AFTER_MARSHAL = new Integer(4);
-    static Integer PHONE_AFTER_MARSHAL = new Integer(5);
+    static Integer EMPLOYEE_BEFORE_MARSHAL = 0;
+    static Integer ADDRESS_BEFORE_MARSHAL = 1;
+    static Integer PHONE_BEFORE_MARSHAL = 2;
+    static Integer EMPLOYEE_AFTER_MARSHAL = 3;
+    static Integer ADDRESS_AFTER_MARSHAL = 4;
+    static Integer PHONE_AFTER_MARSHAL = 5;
 
     public ArrayList events = null;
 
     public JAXBMarshalListenerImpl() {
         events = new ArrayList();
     }
+    @Override
     public void beforeMarshal(Object obj) {
         if(obj instanceof Employee) {
             events.add(EMPLOYEE_BEFORE_MARSHAL);
@@ -41,6 +42,7 @@ public class JAXBMarshalListenerImpl extends Marshaller.Listener {
             events.add(PHONE_BEFORE_MARSHAL);
         }
     }
+    @Override
     public void afterMarshal(Object obj) {
         if(obj instanceof Employee) {
             events.add(EMPLOYEE_AFTER_MARSHAL);

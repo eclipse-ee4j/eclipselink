@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,9 +19,9 @@ import java.security.PrivilegedAction;
 
 public class PrivilegedGetDeclaredMethods implements PrivilegedAction<Method[]> {
 
-    private final Class javaClass;
+    private final Class<?> javaClass;
 
-    public PrivilegedGetDeclaredMethods(Class javaClass) {
+    public PrivilegedGetDeclaredMethods(Class<?> javaClass) {
         this.javaClass = javaClass;
     }
 

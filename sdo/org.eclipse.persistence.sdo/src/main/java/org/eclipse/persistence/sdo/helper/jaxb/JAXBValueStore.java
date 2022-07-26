@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -195,8 +196,9 @@ public class JAXBValueStore implements ValueStore {
             // OLD VALUE
             if (mapping.isAbstractCompositeObjectMapping()) {
                 XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping) mapping;
-                if (oldValue != null && compositeMapping.getContainerAccessor() != null) {
-                    compositeMapping.getContainerAccessor().setAttributeValueInObject(oldValue, null);
+                XMLInverseReferenceMapping inverseReferenceMapping = compositeMapping.getInverseReferenceMapping();
+                if (oldValue != null && inverseReferenceMapping != null && inverseReferenceMapping.getAttributeAccessor() != null) {
+                    inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(oldValue, null);
                 }
             }
 
@@ -205,8 +207,9 @@ public class JAXBValueStore implements ValueStore {
             mapping.getAttributeAccessor().setAttributeValueInObject(entity, newValue);
             if (mapping.isAbstractCompositeObjectMapping()) {
                 XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping) mapping;
-                if (value != null && compositeMapping.getContainerAccessor() != null) {
-                    compositeMapping.getContainerAccessor().setAttributeValueInObject(newValue, entity);
+                XMLInverseReferenceMapping inverseReferenceMapping = compositeMapping.getInverseReferenceMapping();
+                if (value != null && inverseReferenceMapping != null && inverseReferenceMapping.getAttributeAccessor() != null) {
+                    inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(newValue, entity);
                 }
             }
         }
@@ -250,7 +253,8 @@ public class JAXBValueStore implements ValueStore {
             // OLD VALUE
             if (mapping.isAbstractCompositeCollectionMapping()) {
                 XMLCompositeCollectionMapping compositeMapping = (XMLCompositeCollectionMapping) mapping;
-                if (compositeMapping.getContainerAccessor() != null) {
+                XMLInverseReferenceMapping inverseReferenceMapping = compositeMapping.getInverseReferenceMapping();
+                if (inverseReferenceMapping != null && inverseReferenceMapping.getAttributeAccessor() != null) {
 
                     Object oldContainer = mapping.getAttributeValueFromObject(entity);
                     if (oldContainer != null) {
@@ -258,7 +262,7 @@ public class JAXBValueStore implements ValueStore {
                         Object iterator = containerPolicy.iteratorFor(oldContainer);
                         while (containerPolicy.hasNext(iterator)) {
                             Object oldValue = containerPolicy.next(iterator, session);
-                            compositeMapping.getContainerAccessor().setAttributeValueInObject(oldValue, null);
+                            inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(oldValue, null);
                         }
                     }
                 }
@@ -272,9 +276,10 @@ public class JAXBValueStore implements ValueStore {
             Object oldValue = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
             if (mapping.isAbstractCompositeObjectMapping()) {
                 XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping) mapping;
-                if (compositeMapping.getContainerAccessor() != null) {
+                final XMLInverseReferenceMapping inverseReferenceMapping = compositeMapping.getInverseReferenceMapping();
+                if (inverseReferenceMapping != null && inverseReferenceMapping.getAttributeAccessor() != null) {
                     if (oldValue != null) {
-                        compositeMapping.getContainerAccessor().setAttributeValueInObject(oldValue, null);
+                        inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(oldValue, null);
                     }
                 }
             }
@@ -367,20 +372,20 @@ public class JAXBValueStore implements ValueStore {
                     xPathFragment = null;
                     break;
                 }
-                Map attributeChildrenMap = xPathNode.getAttributeChildrenMap();
+                Map<XPathFragment, XPathNode> attributeChildrenMap = xPathNode.getAttributeChildrenMap();
                 if (null == attributeChildrenMap) {
                     xPathNode = null;
                 } else {
-                    xPathNode = (XPathNode) attributeChildrenMap.get(xPathFragment);
+                    xPathNode = attributeChildrenMap.get(xPathFragment);
                 }
             } else if (xPathFragment.nameIsText()) {
                 xPathNode = xPathNode.getTextNode();
             } else {
-                Map nonAttributeChildrenMap = xPathNode.getNonAttributeChildrenMap();
+                Map<XPathFragment, XPathNode> nonAttributeChildrenMap = xPathNode.getNonAttributeChildrenMap();
                 if (null == nonAttributeChildrenMap) {
                     xPathNode = null;
                 } else {
-                    xPathNode = (XPathNode) nonAttributeChildrenMap.get(xPathFragment);
+                    xPathNode = nonAttributeChildrenMap.get(xPathFragment);
                 }
             }
             xPathFragment = xPathFragment.getNextFragment();

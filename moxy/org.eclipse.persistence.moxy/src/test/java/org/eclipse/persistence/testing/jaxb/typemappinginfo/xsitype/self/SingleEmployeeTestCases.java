@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,6 +64,7 @@ public class SingleEmployeeTestCases extends TypeMappingInfoWithJSONTestCases {
         return typeMappingInfos;
     }
 
+    @Override
     public Object getWriteControlObject() {
         Employee emp = new Employee();
         emp.id = "123";
@@ -72,11 +73,13 @@ public class SingleEmployeeTestCases extends TypeMappingInfoWithJSONTestCases {
         return emp;
     }
 
+    @Override
     public Object getControlObject(){
         return new JAXBElement<Object>(new QName("someuri", "response"), Object.class, getWriteControlObject());
 
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();
 
@@ -86,6 +89,7 @@ public class SingleEmployeeTestCases extends TypeMappingInfoWithJSONTestCases {
         return controlSchema;
     }
 
+    @Override
     public TypeMappingInfo getTypeMappingInfo(){
         return typeMappingInfos[1];
     }

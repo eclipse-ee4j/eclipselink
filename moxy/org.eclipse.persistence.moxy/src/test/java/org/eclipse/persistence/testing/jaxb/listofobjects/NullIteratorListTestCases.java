@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,11 +26,12 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.w3c.dom.Document;
 
 import junit.framework.TestCase;
+import org.w3c.dom.Node;
 
 public class NullIteratorListTestCases extends TestCase {
 
     public void testMarshal() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {NullIteratorListRoot.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {NullIteratorListRoot.class}, null);
 
         NullIteratorListRoot nilr = new NullIteratorListRoot();
         nilr.setElementList(new NullIteratorList());
@@ -42,7 +43,7 @@ public class NullIteratorListTestCases extends TestCase {
     }
 
     public void testBinderMarshal() throws Exception {
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[] {NullIteratorListRoot.class}, null);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {NullIteratorListRoot.class}, null);
 
         NullIteratorListRoot nilr = new NullIteratorListRoot();
         nilr.setElementList(new NullIteratorList());
@@ -52,7 +53,7 @@ public class NullIteratorListTestCases extends TestCase {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.newDocument();
-        Binder binder = jc.createBinder();
+        Binder<Node> binder = jc.createBinder();
         binder.marshal(nilr, document);
     }
 

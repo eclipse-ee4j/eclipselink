@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
  * entity abstract schema type, more than one identification variable ranging over the abstract
  * schema type is needed in the <code><b>FROM</b></code> clause.
  *
- * <div><b>BNF:</b> <code>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</code><p></div>
+ * <div><p><b>BNF:</b> <code>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</code></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration RangeVariableDeclaration
  *
@@ -68,25 +68,16 @@ public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDe
         super(parent, entityName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RangeVariableDeclarationStateObject addAs() {
         return (RangeVariableDeclarationStateObject) super.addAs();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected StateObject buildRootStateObject() {
         return new AbstractSchemaNameStateObject(this);
@@ -110,9 +101,6 @@ public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDe
         return getRootStateObject().getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
@@ -123,17 +111,11 @@ public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDe
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getRootPath() {
         return getEntityName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSchemaNameStateObject getRootStateObject() {
         return (AbstractSchemaNameStateObject) super.getRootStateObject();
@@ -191,9 +173,6 @@ public class RangeVariableDeclarationStateObject extends AbstractRangeVariableDe
         getRootStateObject().setText(abstractSchemaName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setRootPath(String root) {
         setEntityName(root);

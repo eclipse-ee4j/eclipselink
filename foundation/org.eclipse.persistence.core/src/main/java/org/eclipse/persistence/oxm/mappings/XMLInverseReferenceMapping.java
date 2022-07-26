@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.ContainerMapping;
@@ -90,7 +91,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        setFields(new Vector<DatabaseField> ());
+        setFields(new Vector<>());
         if(inlineMapping != null){
             inlineMapping.initialize(session);
         }
@@ -220,9 +221,9 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
     }
 
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors,
-            Map processedObjects, ObjectLevelReadQuery query,
-            DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors,
+                                    Map<Object, Object> processedObjects, ObjectLevelReadQuery query,
+                                    DistributedSession session) {
     }
 
     @Override
@@ -252,7 +253,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
     }
 
     @Override
-    public void useCollectionClass(Class concreteClass) {
+    public void useCollectionClass(Class<?> concreteClass) {
         this.containerPolicy = new CollectionContainerPolicy(concreteClass);
     }
 
@@ -267,7 +268,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
     }
 
     @Override
-    public void useMapClass(Class concreteClass, String methodName) {
+    public void useMapClass(Class<?> concreteClass, String methodName) {
         this.containerPolicy = new MapContainerPolicy(concreteClass);
     }
 

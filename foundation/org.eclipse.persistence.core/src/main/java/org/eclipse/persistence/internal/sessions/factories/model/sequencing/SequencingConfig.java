@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import java.util.Vector;
  */
 public class SequencingConfig {
     private SequenceConfig m_defaultSequenceConfig;
-    private Vector m_sequenceConfigs;
+    private Vector<SequenceConfig> m_sequenceConfigs;
 
     public SequencingConfig() {
         super();
@@ -35,11 +35,11 @@ public class SequencingConfig {
         return m_defaultSequenceConfig;
     }
 
-    public void setSequenceConfigs(Vector sequenceConfigs) {
+    public void setSequenceConfigs(Vector<SequenceConfig> sequenceConfigs) {
         m_sequenceConfigs = sequenceConfigs;
     }
 
-    public Vector getSequenceConfigs() {
+    public Vector<SequenceConfig> getSequenceConfigs() {
         return m_sequenceConfigs;
     }
 
@@ -145,7 +145,7 @@ public class SequencingConfig {
             sequenceConfig = tableSequenceConfig;
         }
         sequenceConfig.setName("");
-        sequenceConfig.setPreallocationSize(Integer.valueOf(50));
+        sequenceConfig.setPreallocationSize(50);
         setDefaultSequenceConfig(sequenceConfig);
     }
 }

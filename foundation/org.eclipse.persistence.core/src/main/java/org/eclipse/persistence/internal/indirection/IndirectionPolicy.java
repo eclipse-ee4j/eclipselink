@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -39,26 +40,26 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <h2>Purpose</h2>:
+ * <p>
  * An IndirectionPolicy acts as a 'rules' holder that determines
  * the behavior of a ForeignReferenceMapping (or TransformationMapping)
  * with respect to indirection, or lack thereof.
- * <p>
+ * </p>
  * <h3>Description</h3>:
+ * <p>
  * IndirectionPolicy is an abstract class that defines the protocol to be implemented by
  * subclasses so that the assorted DatabaseMappings can use an assortment of
- * indirection policies:<ul>
+ * indirection policies:</p><ul>
  * <li> no indirection policy (read everything from database)
  * <li> basic indirection policy (use ValueHolders)
  * <li> transparent indirection policy (collections only)
  * <li> proxy indirection policy (transparent 1:1 indirection using JDK 1.3's <CODE>Proxy</CODE>)
  * </ul>
  *
- * <p>
  * <h3>Responsibilities</h3>:
  *     <ul>
  *     <li>instantiate the various IndirectionPolicies
  *     </ul>
- * <p>
  *
  * @see ForeignReferenceMapping
  * @author Mike Norman
@@ -71,7 +72,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Construct a new indirection policy.
      */
-    public IndirectionPolicy() {
+    protected IndirectionPolicy() {
         super();
     }
 
@@ -160,7 +161,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public abstract void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session);
+    public abstract void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session);
 
     /**
      * INTERNAL:
@@ -243,16 +244,14 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Extract and return the appropriate value from the
      * specified remote value holder.
      */
-    public abstract Object getValueFromRemoteValueHolder(RemoteValueHolder remoteValueHolder);
+    public abstract Object getValueFromRemoteValueHolder(RemoteValueHolder<?> remoteValueHolder);
 
     /**
      * INTERNAL:
      * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
-     * @param attributeValue
-     * @return
-     * @see validateAttributeOfInstantiatedObject(Object attributeValue)
+     * @see #validateAttributeOfInstantiatedObject(Object)
      */
     public boolean isAttributeValueFullyBuilt(Object attributeValue){
         return true;
@@ -288,7 +287,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Replace the client value holder with the server value holder,
      * after copying some of the settings from the client value holder.
      */
-    protected void mergeClientIntoServerValueHolder(RemoteValueHolder serverValueHolder, MergeManager mergeManager) {
+    protected void mergeClientIntoServerValueHolder(RemoteValueHolder<?> serverValueHolder, MergeManager mergeManager) {
         serverValueHolder.setMapping(this.mapping);
         serverValueHolder.setSession(mergeManager.getSession());
 
@@ -354,9 +353,6 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Same functionality as setRealAttributeValueInObject(Object target, Object attributeValue) but allows
      * overridden behavior for IndirectionPolicies that track changes
-     * @param target
-     * @param attributeValue
-     * @param allowChangeTracking
      */
     public void setRealAttributeValueInObject(Object target, Object attributeValue, boolean allowChangeTracking) {
         setRealAttributeValueInObject(target, attributeValue);
@@ -452,7 +448,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * indirection policy. If it is incorrect, add an exception to the
      * integrity checker.
      */
-    public void validateDeclaredAttributeType(Class attributeType, IntegrityChecker checker) throws DescriptorException {
+    public void validateDeclaredAttributeType(Class<?> attributeType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 
@@ -461,7 +457,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Verify that attributeType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      */
-    public void validateDeclaredAttributeTypeForCollection(Class attributeType, IntegrityChecker checker) throws DescriptorException {
+    public void validateDeclaredAttributeTypeForCollection(Class<?> attributeType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 
@@ -471,7 +467,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * indirection policy. If it is incorrect, add an exception
      * to the integrity checker.
      */
-    public void validateGetMethodReturnType(Class returnType, IntegrityChecker checker) throws DescriptorException {
+    public void validateGetMethodReturnType(Class<?> returnType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 
@@ -480,7 +476,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Verify that getter returnType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      */
-    public void validateGetMethodReturnTypeForCollection(Class returnType, IntegrityChecker checker) throws DescriptorException {
+    public void validateGetMethodReturnTypeForCollection(Class<?> returnType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 
@@ -490,7 +486,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * indirection policy. If it is incorrect, add an exception
      * to the integrity checker.
      */
-    public void validateSetMethodParameterType(Class parameterType, IntegrityChecker checker) throws DescriptorException {
+    public void validateSetMethodParameterType(Class<?> parameterType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 
@@ -499,7 +495,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Verify that setter parameterType is an appropriate collection type for the
      * indirection policy. If it is incorrect, add an exception to the integrity checker.
      */
-    public void validateSetMethodParameterTypeForCollection(Class parameterType, IntegrityChecker checker) throws DescriptorException {
+    public void validateSetMethodParameterTypeForCollection(Class<?> parameterType, IntegrityChecker checker) throws DescriptorException {
         // by default, do nothing
     }
 

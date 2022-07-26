@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
         this.useMultipleConsumers = useMultipleConsumers;
     }
 
+    @Override
     public boolean isOriginalSetupRequired() {
         return false;
     }
@@ -48,13 +49,14 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
     boolean useMultipleConsumers;
     Hashtable tableNamesToPkFields = new Hashtable();
 
+    @Override
     public void updateProject(Project project, Session session) {
-        Iterator it = project.getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> it = project.getDescriptors().values().iterator();
         while (it.hasNext()) {
-            ClassDescriptor desc = (ClassDescriptor)it.next();
-            Enumeration enumDescTableNames = desc.getTables().elements();
+            ClassDescriptor desc = it.next();
+            Enumeration<DatabaseTable> enumDescTableNames = desc.getTables().elements();
             while (enumDescTableNames.hasMoreElements()) {
-                String tableName = ((DatabaseTable)enumDescTableNames.nextElement()).getName();
+                String tableName = enumDescTableNames.nextElement().getName();
                 if (!tableNamesToPkFields.containsKey(tableName)) {
                     while (desc.isChildDescriptor()) {
                         desc = project.getClassDescriptor(desc.getInheritancePolicy().getParentClass());
@@ -65,6 +67,7 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
         }
     }
 
+    @Override
     public void updateDatabase(Session session) {
         if (!session.getPlatform().isOracle()) {
             throw new TestWarningException("Currently supports Oracle platform only");
@@ -167,12 +170,12 @@ public class DbChangeNotificationAdapter implements ProjectAndDatabaseAdapter {
 
     protected String getPkFieldString(DatabaseField field) {
         String name = field.getName();
-        Class type = field.getType();
+        Class<?> type = field.getType();
         String str = "  msg.set_" + getJmsPropertyTypeName(type) + "_property('" + name + "', :old." + name + ");";
         return str;
     }
 
-    protected String getJmsPropertyTypeName(Class type) {
+    protected String getJmsPropertyTypeName(Class<?> type) {
         if (Helper.getShortClassName(type).equals("BigDecimal")) {
             return "double";
         } else if (Helper.getShortClassName(type).equals("String")) {

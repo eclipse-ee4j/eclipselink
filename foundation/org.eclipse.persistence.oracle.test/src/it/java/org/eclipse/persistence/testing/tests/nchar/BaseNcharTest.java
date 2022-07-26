@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public abstract class BaseNcharTest extends TestCase {
         return (Oracle9Platform)getSession().getPlatform();
     }
 
+    @Override
     protected void setup() {
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("This test case works on Oracle only");
@@ -55,6 +56,7 @@ public abstract class BaseNcharTest extends TestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (object == null) {
             throw new TestException("object is missing");
@@ -73,11 +75,11 @@ public abstract class BaseNcharTest extends TestCase {
         }
         if (object.getNchar() != null) {
             if (!object.getNchar().equals(controlObject.getNchar())) {
-                throw new TestException("wrong NCHAR: " + charCode(object.getNchar().charValue()) + "; should be: " + charCode(controlObject.getNchar().charValue()));
+                throw new TestException("wrong NCHAR: " + charCode(object.getNchar()) + "; should be: " + charCode(controlObject.getNchar()));
             }
         } else {
             if (controlObject.getNchar() != null) {
-                throw new TestException("wrong NCHAR: NULL  should be: " + charCode(controlObject.getNchar().charValue()));
+                throw new TestException("wrong NCHAR: NULL  should be: " + charCode(controlObject.getNchar()));
             }
         }
         if (object.getStr() != null) {
@@ -166,6 +168,7 @@ public abstract class BaseNcharTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         if (object != null) {
             UnitOfWork uow = getSession().acquireUnitOfWork();

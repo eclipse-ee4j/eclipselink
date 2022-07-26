@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,10 @@
 //     Rick Barkhouse - 2.1 - Initial implementation
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
@@ -51,15 +48,6 @@ public class XJCJavaPackageImpl implements JavaPackage {
     protected JPackage xjcPackage;
     private DynamicClassLoader dynamicClassLoader;
 
-    private static Field JPACKAGE_ANNOTATIONS = null;
-    static {
-        try {
-            JPACKAGE_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JPackage.class, "annotations", true);
-        } catch (Exception e) {
-            throw JAXBException.errorCreatingDynamicJAXBContext(e);
-        }
-    }
-
     /**
      * Construct a new instance of <code>XJCJavaPackageImpl</code>.
      *
@@ -84,17 +72,7 @@ public class XJCJavaPackageImpl implements JavaPackage {
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
 
-            Collection<JAnnotationUse> annotations = null;
-            try {
-                annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JPACKAGE_ANNOTATIONS, xjcPackage);
-            } catch (Exception e) {
-                throw JAXBException.errorCreatingDynamicJAXBContext(e);
-            }
-
-            if (annotations == null) {
-                return null;
-            }
-
+            Collection<JAnnotationUse> annotations = xjcPackage.annotations();
             for (JAnnotationUse annotationUse : annotations) {
                 XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);
                 if (xjcAnnotation.getJavaAnnotationClass().getCanonicalName().equals(aClass.getQualifiedName())) {
@@ -116,18 +94,9 @@ public class XJCJavaPackageImpl implements JavaPackage {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<JavaAnnotation> getAnnotations() {
-        ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
+        ArrayList<JavaAnnotation> annotationsList = new ArrayList<>();
 
-        Collection<JAnnotationUse> annotations = null;
-        try {
-            annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JPACKAGE_ANNOTATIONS, xjcPackage);
-        } catch (Exception e) {
-            throw JAXBException.errorCreatingDynamicJAXBContext(e);
-        }
-
-        if (annotations == null) {
-            return annotationsList;
-        }
+        Collection<JAnnotationUse> annotations = xjcPackage.annotations();
 
         for (JAnnotationUse annotationUse : annotations) {
             XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);

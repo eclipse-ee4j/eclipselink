@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,9 +38,9 @@ import org.eclipse.persistence.expressions.Expression;
 public class GenerationContext {
     protected AbstractSession session;
     protected ParseTreeContext parseTreeContext;
-    protected Class baseQueryClass;
+    protected Class<?> baseQueryClass;
     protected Expression baseExpression;
-    protected Hashtable expressions;
+    protected Hashtable<String, Expression> expressions;
     protected ParseTree parseTree;
     protected boolean isNotIndicatedInMemberOf = false;
 
@@ -51,7 +51,7 @@ public class GenerationContext {
 
     public GenerationContext() {
         super();
-        expressions = new Hashtable();
+        expressions = new Hashtable<>();
     }
 
     public GenerationContext(ParseTreeContext newContext, AbstractSession newSession, ParseTree newParseTree) {
@@ -66,7 +66,7 @@ public class GenerationContext {
     }
 
     public Expression expressionFor(String aliasName) {
-        Expression exp = (Expression) expressions.get(aliasName);
+        Expression exp = expressions.get(aliasName);
 
         if (exp == null && (! expressions.isEmpty()) && isSelectGenerationContext()) {
             GenerationContext outerContext = ((SelectGenerationContext) this).getOuterContext();
@@ -79,7 +79,7 @@ public class GenerationContext {
         return exp;
     }
 
-    public Class getBaseQueryClass() {
+    public Class<?> getBaseQueryClass() {
         return baseQueryClass;
     }
 
@@ -95,7 +95,7 @@ public class GenerationContext {
         return session;
     }
 
-    public void setBaseQueryClass(java.lang.Class newBaseQueryClass) {
+    public void setBaseQueryClass(Class<?> newBaseQueryClass) {
         baseQueryClass = newBaseQueryClass;
     }
 
@@ -164,7 +164,7 @@ public class GenerationContext {
     }
 
     /** */
-    public Expression joinVariables(Set variables) {
+    public Expression joinVariables(Set<String> variables) {
         return null;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -84,7 +84,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
     protected Map<String, Noun> normalWeightNouns;
     protected Map<String, Noun> heavyWeightNouns;
     protected Map<String, Noun> allWeightNouns;
-    protected ThreadLocal operationStartTokenThreadLocal;
+    protected ThreadLocal<Map<String, Long>> operationStartTokenThreadLocal;
     protected static boolean isDMSSpyInitialized;
     protected int weight;
 
@@ -104,15 +104,15 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      */
     public DMSPerformanceProfiler(Session session) {
         this.session = (AbstractSession)session;
-        this.normalWeightNouns = new Hashtable<String, Noun>(1);
-        this.heavyWeightNouns = new Hashtable<String, Noun>(5);
-        this.allWeightNouns = new Hashtable<String, Noun>(1);
-        this.normalWeightSensors = new Hashtable<String, Sensor>(4);
-        this.heavyWeightSensors = new Hashtable<String, Sensor>();
-        this.allWeightSensors = new Hashtable<String, Sensor>(22);
-        this.normalAndHeavyWeightSensors = new Hashtable<String, Sensor>();
-        this.normalHeavyAndAllWeightSensors = new Hashtable<String, Sensor>();
-        this.operationStartTokenThreadLocal = new ThreadLocal();
+        this.normalWeightNouns = new Hashtable<>(1);
+        this.heavyWeightNouns = new Hashtable<>(5);
+        this.allWeightNouns = new Hashtable<>(1);
+        this.normalWeightSensors = new Hashtable<>(4);
+        this.heavyWeightSensors = new Hashtable<>();
+        this.allWeightSensors = new Hashtable<>(22);
+        this.normalAndHeavyWeightSensors = new Hashtable<>();
+        this.normalHeavyAndAllWeightSensors = new Hashtable<>();
+        this.operationStartTokenThreadLocal = new ThreadLocal<>();
         this.weight = DMSConsole.getSensorWeight();
         if (!isDMSSpyInitialized) {
             isDMSSpyInitialized = true;
@@ -225,7 +225,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         }
         Sensor phaseEvent = getSensorByName(operationName);
         if (phaseEvent != null) {
-            Long startToken = new Long(((PhaseEvent)phaseEvent).start());
+            Long startToken = ((PhaseEvent) phaseEvent).start();
             getPhaseEventStartToken().put(operationName, startToken);
         }
     }
@@ -247,7 +247,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
 
         Sensor phaseEvent = getPhaseEventForQuery(operationName, query, weight);
         if (phaseEvent != null) {
-            Long startToken = new Long(((PhaseEvent)phaseEvent).start());
+            Long startToken = ((PhaseEvent) phaseEvent).start();
             if (query != null) {
                 getPhaseEventStartToken().put(query.getSensorName(operationName, getSessionName()), startToken);
             } else {
@@ -269,8 +269,8 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         }
         Sensor phaseEvent = getSensorByName(operationName);
         if (phaseEvent != null) {
-            Long startTime = (Long)getPhaseEventStartToken().get(operationName);
-            ((PhaseEvent)phaseEvent).stop(startTime.longValue());
+            Long startTime = getPhaseEventStartToken().get(operationName);
+            ((PhaseEvent)phaseEvent).stop(startTime);
         }
     }
 
@@ -293,11 +293,11 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         if (phaseEvent != null) {
             Long startTime;
             if (query != null) {
-                startTime = (Long)getPhaseEventStartToken().get(query.getSensorName(operationName, getSessionName()));
+                startTime = getPhaseEventStartToken().get(query.getSensorName(operationName, getSessionName()));
             } else {
-                startTime = (Long)getPhaseEventStartToken().get(operationName);
+                startTime = getPhaseEventStartToken().get(operationName);
             }
-            ((PhaseEvent)phaseEvent).stop(startTime.longValue());
+            ((PhaseEvent)phaseEvent).stop(startTime);
         }
     }
 
@@ -390,7 +390,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
             return null;
         }
         Noun noun = null;
-        Map map = null;
+        Map<String, Noun> map = null;
         if (weight == DMSConsole.NORMAL) {
             map = getNormalWeightNouns();
         } else if (weight == DMSConsole.HEAVY) {
@@ -399,7 +399,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
             map = getAllWeightNouns();
         }
         if (map != null) {
-            noun = (Noun)map.get(type);
+            noun = map.get(type);
             if (noun == null) {
                 if (parentNoun != null) {
                     noun = Noun.create(parentNoun, type, type);
@@ -504,9 +504,9 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         getHeavyWeightNouns().put(ConnectionNounType, connectionsNoun);
         //ConnectionsInUse
         if (getSession().isServerSession()) {
-            Iterator enumtr = ((ServerSession)getSession()).getConnectionPools().keySet().iterator();
+            Iterator<String> enumtr = ((ServerSession)getSession()).getConnectionPools().keySet().iterator();
             while (enumtr.hasNext()) {
-                String poolName = (String)enumtr.next();
+                String poolName = enumtr.next();
                 State connectionInUse = State.create(connectionsNoun, ConnectionInUse + "(" + poolName + ")", "", DMSLocalization.buildMessage("connection_in_used"), "not available");
                 getHeavyWeightSensors().put(poolName, connectionInUse);
             }
@@ -644,7 +644,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * Destroy sensors based on dms weight when user changes the weight at runtime.
      */
     protected void destroySensorsByWeight(int weight) {
-        Iterator iterator = null;
+        Iterator<Sensor> iterator = null;
         if (weight == DMSConsole.HEAVY) {
             iterator = getHeavyWeightSensors().values().iterator();
         } else if (weight == DMSConsole.ALL) {
@@ -652,7 +652,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         }
         if (iterator != null) {
             while (iterator.hasNext()) {
-                ((Sensor)iterator.next()).destroy();
+                iterator.next().destroy();
             }
         }
     }
@@ -663,17 +663,17 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      */
     protected void destroyNounsByWeight(int weight) {
         if (weight == DMSConsole.NORMAL) {
-            Iterator iterator = getNormalWeightNouns().values().iterator();
+            Iterator<Noun> iterator = getNormalWeightNouns().values().iterator();
             while (iterator.hasNext()) {
-                ((Noun)iterator.next()).destroy();
+                iterator.next().destroy();
             }
             getNormalWeightNouns().clear();
             getNormalWeightSensors().clear();
         }
         if (weight == DMSConsole.HEAVY) {
-            Iterator iterator = getHeavyWeightNouns().values().iterator();
+            Iterator<Noun> iterator = getHeavyWeightNouns().values().iterator();
             while (iterator.hasNext()) {
-                ((Noun)iterator.next()).destroy();
+                iterator.next().destroy();
             }
             getHeavyWeightNouns().clear();
             destroySensorsByWeight(DMSConsole.HEAVY);
@@ -681,9 +681,9 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
             getHeavyWeightSensors().clear();
         }
         if (weight == DMSConsole.ALL) {
-            Iterator iterator = getAllWeightNouns().values().iterator();
+            Iterator<Noun> iterator = getAllWeightNouns().values().iterator();
             while (iterator.hasNext()) {
-                ((Noun)iterator.next()).destroy();
+                iterator.next().destroy();
             }
             getAllWeightNouns().clear();
             destroySensorsByWeight(DMSConsole.ALL);
@@ -692,11 +692,11 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         }
     }
 
-    protected HashMap getPhaseEventStartToken() {
+    protected Map<String, Long> getPhaseEventStartToken() {
         if (getOperationStartTokenThreadLocal().get() == null) {
-            getOperationStartTokenThreadLocal().set(new HashMap());
+            getOperationStartTokenThreadLocal().set(new HashMap<>());
         }
-        return (HashMap)getOperationStartTokenThreadLocal().get();
+        return getOperationStartTokenThreadLocal().get();
     }
 
     protected Map<String, Sensor> getNormalWeightSensors() {
@@ -731,7 +731,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
         return allWeightNouns;
     }
 
-    protected ThreadLocal getOperationStartTokenThreadLocal() {
+    protected ThreadLocal<Map<String, Long>> getOperationStartTokenThreadLocal() {
         return operationStartTokenThreadLocal;
     }
 
@@ -753,7 +753,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
     }
 
     @Override
-    public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
+    public Object profileExecutionOfQuery(DatabaseQuery query, DataRecord row, AbstractSession session) {
         //This is to profile the query execution and no operation name is given
         startOperationProfile(null, query, DMSConsole.HEAVY);
         Object result = null;

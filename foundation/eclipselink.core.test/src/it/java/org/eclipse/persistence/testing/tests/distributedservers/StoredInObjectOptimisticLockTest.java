@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class StoredInObjectOptimisticLockTest extends ComplexUpdateTest {
         super(originalObject);
     }
 
+    @Override
     protected void changeObject() {
         Client client = (Client)this.workingCopy;
 
@@ -39,6 +40,7 @@ public class StoredInObjectOptimisticLockTest extends ComplexUpdateTest {
         client.setName("Name:" + System.currentTimeMillis());
     }
 
+    @Override
     protected void test() {
         changeObject();
         // Ensure that the original has not been changed.
@@ -52,6 +54,7 @@ public class StoredInObjectOptimisticLockTest extends ComplexUpdateTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         Session remoteServer = ((DistributedServer)DistributedServersModel.getDistributedServers().get(0)).getDistributedSession();
         // The main session is now in transaction (started in TransactionalTestCase.setup).

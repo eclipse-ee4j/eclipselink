@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class AttributeFormDefaultUnqualifiedTestCases extends JAXBWithJSONTestCa
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -42,7 +43,7 @@ public class AttributeFormDefaultUnqualifiedTestCases extends JAXBWithJSONTestCa
         types[0] = Address.class;
         setTypes(types);
 
-        Map namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("myns","ns0");
         jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
@@ -50,6 +51,7 @@ public class AttributeFormDefaultUnqualifiedTestCases extends JAXBWithJSONTestCa
     }
 
 
+    @Override
     protected Object getControlObject() {
         Address addr = new Address();
         addr.city = "Ottawa";

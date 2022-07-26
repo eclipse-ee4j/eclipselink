@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.TransformationMapping;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 //Created by Ian Reid
@@ -29,10 +29,11 @@ public class SecurityOnInitializingAttributeMethodTest extends ExceptionTestSave
 
     private TransformationMapping mapping;
 
-    public SecurityOnInitializingAttributeMethodTest(Class c) {
+    public SecurityOnInitializingAttributeMethodTest(Class<?> c) {
         super("This tests security on initializing attribute method (TL-ERROR 84)", c);
     }
 
+    @Override
     protected void setup() {
         super.setup();
         expectedException = DescriptorException.securityOnInitializingAttributeMethod("buildNormalHours", mapping, new Exception());
@@ -45,6 +46,7 @@ public class SecurityOnInitializingAttributeMethodTest extends ExceptionTestSave
         mapping.setDescriptor(getTestDescriptor());
     }
 
+    @Override
     public void test() {
         try {
             mapping.initialize((AbstractSession)getSession());
@@ -66,21 +68,21 @@ public class SecurityOnInitializingAttributeMethodTest extends ExceptionTestSave
     }
 
     static class AttributeMethodOneArg extends AttributeMethod {
-        public Date buildNormalHours(Record record) {
+        public Date buildNormalHours(DataRecord dataRecord) {
             //do nothing security manager will cause error to occur
             return null;
         }
     }
 
     static class AttributeMethodAbstractSession extends AttributeMethod {
-        public Date buildNormalHours(Record record, AbstractSession session) {
+        public Date buildNormalHours(DataRecord dataRecord, AbstractSession session) {
             //do nothing security manager will cause error to occur
             return null;
         }
     }
 
     static class AttributeMethodSession extends AttributeMethod {
-        public Date buildNormalHours(Record record, Session s) {
+        public Date buildNormalHours(DataRecord dataRecord, Session s) {
             //do nothing security manager will cause error to occur
             return null;
         }

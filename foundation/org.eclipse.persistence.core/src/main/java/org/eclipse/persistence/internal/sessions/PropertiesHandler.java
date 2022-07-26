@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -581,6 +581,7 @@ public class PropertiesHandler {
                 {TargetDatabase.Informix, pcg + "InformixPlatform"},
                 {TargetDatabase.JavaDB, pcg + "JavaDBPlatform"},
                 {TargetDatabase.MySQL, pcg + "MySQLPlatform"},
+                {TargetDatabase.MariaDB, pcg + "MariaDBPlatform"},
                 {TargetDatabase.MaxDB, pcg + "MaxDBPlatform"},
                 {TargetDatabase.MySQL4, pcg + "MySQLPlatform"}, // 211249: keep backwards compatibility
                 {TargetDatabase.PointBase,  pcg + "PointBasePlatform"},
@@ -601,7 +602,6 @@ public class PropertiesHandler {
             String pcg = "org.eclipse.persistence.platform.server.";
             valueArray = new Object[][] {
                 {TargetServer.None, pcg + "NoServerPlatform"},
-                {TargetServer.OC4J, pcg + "oc4j.Oc4jPlatform"},
                 {TargetServer.Glassfish, pcg + "glassfish.GlassfishPlatform"},
                 {TargetServer.WebSphere, pcg + "was.WebSpherePlatform"},
                 {TargetServer.WebSphere_6_1, pcg + "was.WebSphere_6_1_Platform"},

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,10 +37,8 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -52,10 +50,10 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for call queries.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Executes the appropriate call.
- *
+ * </p>
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
@@ -240,7 +238,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             for (int index = getCalls().size() - 1; index >= 0; index--) {
                 DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
                 Integer rowCount = (Integer)executeCall(databseCall);
-                if ((index == (getCalls().size() - 1)) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
+                if ((index == (getCalls().size() - 1)) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                     returnedRowCount = rowCount;
                 }
             }
@@ -285,11 +283,24 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Execute a non selecting call.
      * @exception  DatabaseException - an error has occurred on the database.
-     * @return the row count.
+     * @return Returns either a {@link DatabaseCall} or Integer value, 
+     * depending on if this INSERT call needs to return generated keys
      */
     @Override
-    public Integer executeNoSelect() throws DatabaseException {
+    public Object executeNoSelect() throws DatabaseException {
+        if(((DatabaseCall)this.call).shouldReturnGeneratedKeys()) {
+            return generateKeysExecuteNoSelect();
+        }
         return executeNoSelectCall();
+    }
+
+    /**
+     * Execute a non selecting call.
+     * @exception  DatabaseException - an error has occurred on the database.
+     * @return the row count.
+     */
+    public DatabaseCall generateKeysExecuteNoSelect() throws DatabaseException {
+        return (DatabaseCall)executeCall();
     }
 
     /**
@@ -303,7 +314,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             for (int index = 0; index < getCalls().size(); index++) {
                 DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
                 Integer rowCount = (Integer)executeCall(databseCall);
-                if ((index == 0) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
+                if ((index == 0) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                     returnedRowCount = rowCount;
                 }
             }
@@ -413,7 +424,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                         updateObjectAndRowWithReturnRow(returnFields, index == 0);
                     }
                     if ((index == 0) && usesSequencing && shouldAcquireValueAfterInsert) {
-                        updateObjectAndRowWithSequenceNumber();
+                        if(result instanceof DatabaseCall) {
+                            updateObjectAndRowWithSequenceNumber((DatabaseCall) result);
+                        } else {
+                            updateObjectAndRowWithSequenceNumber();
+                        }
                     }
                 }
             }
@@ -427,7 +442,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                 updateObjectAndRowWithReturnRow(returnFields, true);
             }
             if (usesSequencing && shouldAcquireValueAfterInsert) {
-                updateObjectAndRowWithSequenceNumber();
+                if(result instanceof DatabaseCall) {
+                    updateObjectAndRowWithSequenceNumber((DatabaseCall) result);
+                } else {
+                    updateObjectAndRowWithSequenceNumber();
+                }
             }
         }
 
@@ -864,11 +883,11 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                     Integer rowCount;
                     if (result instanceof AbstractRecord) {
                         this.query.setProperty("output", result);
-                        rowCount = Integer.valueOf(1);
+                        rowCount = 1;
                     } else {
                         rowCount = (Integer)result;
                     }
-                    if ((index == 0) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
+                    if ((index == 0) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                         returnedRowCount = rowCount;
                     }
                     if (returnFields != null) {
@@ -881,7 +900,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             // Set the return row if one was returned (Postgres).
             if (result instanceof AbstractRecord) {
                 this.query.setProperty("output", result);
-                returnedRowCount = Integer.valueOf(1);
+                returnedRowCount = 1;
             } else {
                 returnedRowCount = (Integer)result;
             }
@@ -964,7 +983,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             try {
                 DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
                 Integer rowCount = (Integer)executeCall(databseCall);
-                if ((index == nTables*2) || (rowCount.intValue() <= 0)) {// Row count returned must be from first table or zero if any are zero.
+                if ((index == nTables*2) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                     returnedRowCount = rowCount;
                 }
             } catch (DatabaseException databaseEx) {

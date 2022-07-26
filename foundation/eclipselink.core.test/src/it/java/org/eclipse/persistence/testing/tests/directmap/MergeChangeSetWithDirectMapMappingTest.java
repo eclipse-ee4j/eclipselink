@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import org.eclipse.persistence.testing.models.directmap.*;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date March 04, 2003
  */
 public class MergeChangeSetWithDirectMapMappingTest extends TransactionalTestCase {
     boolean m_exceptionCaught;
@@ -38,23 +37,25 @@ public class MergeChangeSetWithDirectMapMappingTest extends TransactionalTestCas
         setDescription("Tests the merge change set over a distributed cache using a direct map mapping");
     }
 
+    @Override
     public void setup() {
         super.setup();
         m_exceptionCaught = false;
     }
 
+    @Override
     public void test() throws Exception {
         // put a new value in, will now be in the cache
         UnitOfWork uow1 = getSession().acquireUnitOfWork();
         DirectMapMappings maps = (DirectMapMappings)uow1.registerObject(new DirectMapMappings());
-        maps.directMap.put(new Integer(1), "bogus");
-        maps.directMap.put(new Integer(3), "third");
+        maps.directMap.put(1, "bogus");
+        maps.directMap.put(3, "third");
         uow1.commit();
 
         UnitOfWork uow2 = getSession().acquireUnitOfWork();
         DirectMapMappings mapsClone = (DirectMapMappings)uow2.registerObject(maps);
-        mapsClone.directMap.put(new Integer(2), "axemen");
-        mapsClone.directMap.put(new Integer(1), "guy");
+        mapsClone.directMap.put(2, "axemen");
+        mapsClone.directMap.put(1, "guy");
 
         UnitOfWorkChangeSet changes = (UnitOfWorkChangeSet)uow2.getCurrentChanges();
         uow2.release();
@@ -72,6 +73,7 @@ public class MergeChangeSetWithDirectMapMappingTest extends TransactionalTestCas
         mapsQueryResult = (DirectMapMappings)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() throws Exception {
         if (m_exceptionCaught) {
             throw new TestErrorException("Merge change set into distributed cache failed with direct-map mapping");
@@ -79,15 +81,15 @@ public class MergeChangeSetWithDirectMapMappingTest extends TransactionalTestCas
 
         // Some checks to ensure it actually worked as expected
 
-        if (!mapsQueryResult.directMap.containsKey(new Integer(1))) {
+        if (!mapsQueryResult.directMap.containsKey(1)) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.get(new Integer(1)).equals("guy")) {
+        } else if (!mapsQueryResult.directMap.get(1).equals("guy")) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.containsKey(new Integer(2))) {
+        } else if (!mapsQueryResult.directMap.containsKey(2)) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.get(new Integer(2)).equals("axemen")) {
+        } else if (!mapsQueryResult.directMap.get(2).equals("axemen")) {
             throw new TestErrorException("Change set did not merge into cache properly");
-        } else if (!mapsQueryResult.directMap.containsKey(new Integer(3))) {
+        } else if (!mapsQueryResult.directMap.containsKey(3)) {
             throw new TestErrorException("Change set did not merge into cache properly");
         }
     }

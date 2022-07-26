@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class TestReadAggregateDirectMapMapping extends TestCase {
         setName("TestReadAggregateDirectMapMapping fetchJoin = " + fetchJoin);
     }
 
+    @Override
     public void setup(){
         mapping = (DirectCollectionMapping)getSession().getProject().getDescriptor(AggregateDirectMapHolder.class).getMappingForAttributeName("aggregateToDirectMap");
         oldFetchJoinValue = mapping.getJoinFetch();
@@ -54,20 +55,22 @@ public class TestReadAggregateDirectMapMapping extends TestCase {
         AggregateDirectMapHolder holder = new AggregateDirectMapHolder();
         AggregateMapKey mapKey = new AggregateMapKey();
         mapKey.setKey(1);
-        holder.addAggregateToDirectMapItem(mapKey, new Integer(1));
+        holder.addAggregateToDirectMapItem(mapKey, 1);
         AggregateMapKey mapKey2 = new AggregateMapKey();
         mapKey2.setKey(2);
-        holder.addAggregateToDirectMapItem(mapKey2, new Integer(2));
+        holder.addAggregateToDirectMapItem(mapKey2, 2);
         uow.registerObject(holder);
         uow.commit();
         holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         holders = getSession().readAllObjects(AggregateDirectMapHolder.class, holderExp);
     }
 
+    @Override
     public void verify(){
         if (holders == null || holders.size() != 1){
             throw new TestErrorException("Incorrect number of MapHolders was read.");
@@ -83,11 +86,12 @@ public class TestReadAggregateDirectMapMapping extends TestCase {
         AggregateMapKey mapKey = new AggregateMapKey();
         mapKey.setKey(1);
         Integer value = (Integer)holder.getAggregateToDirectMap().get(mapKey);
-        if (value.intValue() != 1){
+        if (value != 1){
             throw new TestErrorException("Incorrect map value was read.");
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteAllObjects(holders);

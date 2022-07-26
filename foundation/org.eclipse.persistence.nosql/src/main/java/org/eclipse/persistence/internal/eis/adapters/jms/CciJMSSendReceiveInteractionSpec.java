@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,7 +73,6 @@ public class CciJMSSendReceiveInteractionSpec extends CciJMSInteractionSpec {
      * Since we are doing a send/receive in one interaction, we know that this value
      * indicates the response queue as well.
      *
-     * @param url
      */
     public void setReplyToDestinationURL(String url) {
         replyToDestinationURL = url;
@@ -100,7 +99,6 @@ public class CciJMSSendReceiveInteractionSpec extends CciJMSInteractionSpec {
      * Since we are doing a send/receive in one interaction, we know that this value
      * indicates the response queue as well.
      *
-     * @param dest
      */
     public void setReplyToDestination(String dest) {
         replyToDestination = dest;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,7 +79,7 @@ public class JavaMethodImpl implements JavaMethod {
     @Override
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         if (arg0 != null && !isMetadataComplete) {
-            Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
+            Class<?> annotationClass = ((JavaClassImpl) arg0).getJavaClass();
             Annotation anno = javaModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass);
             if (anno != null) {
                 return new JavaAnnotationImpl(anno);
@@ -107,7 +107,7 @@ public class JavaMethodImpl implements JavaMethod {
 
     @Override
     public JavaClass[] getParameterTypes() {
-        Class[] params = PrivilegedAccessHelper.getMethodParameterTypes(jMethod);
+        Class<?>[] params = PrivilegedAccessHelper.getMethodParameterTypes(jMethod);
         JavaClass[] paramArray = new JavaClass[params.length];
         for (int i=0; i<params.length; i++) {
             paramArray[i] = javaModelImpl.getClass(params[i]);
@@ -116,14 +116,14 @@ public class JavaMethodImpl implements JavaMethod {
     }
 
     public JavaClass getResolvedType() {
-        Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
+        Class<Object> returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
         return javaModelImpl.getClass(returnType);
     }
 
     @Override
     public JavaClass getReturnType() {
         Type type = jMethod.getGenericReturnType();
-        Class returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
+        Class<Object> returnType = PrivilegedAccessHelper.getMethodReturnType(jMethod);
         if (type instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) type;
             return new JavaClassImpl(pType, returnType, javaModelImpl);

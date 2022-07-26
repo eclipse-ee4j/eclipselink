@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,6 @@ public class QuerySQLTracker extends DefaultSessionLog {
     /**
      * Instantiating a QuerySQLTracker will replace the session's log with the QuerySQLTracker
      * and store the old log.  The old log will be replaced when remove() is called.
-     * @param session
      */
     public QuerySQLTracker(Session session) {
         this.originalLog = session.getSessionLog();
@@ -63,6 +62,7 @@ public class QuerySQLTracker extends DefaultSessionLog {
         getSession().getEventManager().removeListener(this.listener);
     }
 
+    @Override
     public synchronized void log(SessionLogEntry entry) {
         if (!isSuspended) {
             // Extend SessionLog.log() by also adding SQL statements into a tracking List that are above the FINEST level
@@ -81,6 +81,7 @@ public class QuerySQLTracker extends DefaultSessionLog {
         return new SessionEventAdapter() {
                 private QuerySQLTracker tracker = QuerySQLTracker.this;
 
+                @Override
                 public void preExecuteQuery(SessionEvent event) {
                     this.tracker.getQueries().add(event.getQuery());
                 }

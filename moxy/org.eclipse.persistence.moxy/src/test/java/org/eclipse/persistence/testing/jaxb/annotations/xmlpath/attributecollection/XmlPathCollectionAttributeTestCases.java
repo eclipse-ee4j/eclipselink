@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public class XmlPathCollectionAttributeTestCases extends JAXBTestCases {
     public XmlPathCollectionAttributeTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        setTypes(new Class[] { TestClass.class });
+        setTypes(new Class<?>[] { TestClass.class });
     }
 
     @Override
@@ -60,7 +60,7 @@ public class XmlPathCollectionAttributeTestCases extends JAXBTestCases {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(instream);
 
-            Object testObject = (TestClass) jaxbUnmarshaller.unmarshal(doc);
+            Object testObject = jaxbUnmarshaller.unmarshal(doc);
             instream.close();
             xmlToObjectTest(testObject);
         }

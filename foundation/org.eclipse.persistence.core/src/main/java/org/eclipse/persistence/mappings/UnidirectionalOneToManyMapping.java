@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -245,9 +245,9 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, UnitOfWorkImpl uow) {
         // targets are added to and/or removed to/from the source.
         CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeRecord;
-        Iterator it = collectionChangeRecord.getAddObjectList().values().iterator();
+        Iterator<ObjectChangeSet> it = collectionChangeRecord.getAddObjectList().values().iterator();
         while(it.hasNext()) {
-            ObjectChangeSet change = (ObjectChangeSet)it.next();
+            ObjectChangeSet change = it.next();
             if(!change.hasChanges()) {
                 change.setShouldModifyVersionField(Boolean.TRUE);
                 ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)change.getUOWChangeSet()).addObjectChangeSet(change, uow, false);
@@ -256,7 +256,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         // in the mapping is privately owned then the target will be deleted - no need to modify target version.
         it = collectionChangeRecord.getRemoveObjectList().values().iterator();
         while(it.hasNext()) {
-            ObjectChangeSet change = (ObjectChangeSet)it.next();
+            ObjectChangeSet change = it.next();
             if (!isPrivateOwned()){
                 if(!change.hasChanges()) {
                     change.setShouldModifyVersionField(Boolean.TRUE);
@@ -344,7 +344,6 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     /**
      * INTERNAL:
      * UnidirectionalOneToManyMapping performs some events after INSERT/UPDATE to maintain the keys
-     * @return
      */
     @Override
     public boolean requiresDataModificationEvents(){

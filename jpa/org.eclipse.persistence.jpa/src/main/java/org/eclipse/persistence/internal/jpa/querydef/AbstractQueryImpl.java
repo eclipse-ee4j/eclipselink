@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,6 @@ import jakarta.persistence.criteria.AbstractQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 
@@ -40,7 +39,6 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
  * <b>Description</b>: This is the container class for the components that
  * define a query. This is the superclass of both the CriteriaQuery and the
  * SubQuery.
- * <p>
  *
  * @see jakarta.persistence.criteria CriteriaQuery
  *
@@ -113,13 +111,13 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * @return the modified query
      */
     @Override
-    public AbstractQuery<T> having(Expression<Boolean> restriction){
-        if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()){
+    public AbstractQuery<T> having(Expression<Boolean> restriction) {
+        findRootAndParameters(restriction);
+        if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()) {
             this.havingClause = (Predicate) restriction;
-        }else{
+        } else {
             this.havingClause = queryBuilder.isTrue(restriction);
         }
-
         return this;
     }
 
@@ -140,6 +138,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
             for (Predicate predicate : restrictions) {
                 conjunction = this.queryBuilder.and(conjunction, predicate);
             }
+            findRootAndParameters(conjunction);
             this.havingClause = conjunction;
         }
         return this;
@@ -239,14 +238,6 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
 
     protected void findJoins(FromImpl root) {
         root.findJoins(this);
-    }
-
-    protected void findRootAndParameters(Selection<?> selection) {
-        if (selection.isCompoundSelection()) {
-            for (Selection subSelection : selection.getCompoundSelectionItems()) {
-                findRootAndParameters(subSelection);
-            }
-        }
     }
 
     /**

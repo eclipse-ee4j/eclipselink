@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +15,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 //     05/24/2011-2.3 Guy Pelletier
 //       - 345962: Join fetch query when using tenant discriminator column fails.
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.expressions;
 
 import java.io.BufferedWriter;
@@ -95,7 +98,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * Base Expression Constructor.  Not generally used by Developers
      */
-    public Expression() {
+    protected Expression() {
         super();
     }
 
@@ -430,7 +433,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000 AND PROJ.TYPE = "L"
      * </pre></blockquote>
      */
-    public Expression treat(Class castClass) {
+    public Expression treat(Class<?> castClass) {
         return this;
     }
 
@@ -704,7 +707,7 @@ public abstract class Expression implements Serializable, Cloneable {
     }
 
     public Expression between(Expression leftExpression, Expression rightExpression) {
-        return between((Object)leftExpression, (Object)rightExpression);
+        return between(leftExpression, (Object)rightExpression);
 
     }
 
@@ -771,10 +774,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see ArgumentListFunctionExpression
      */
     public ArgumentListFunctionExpression caseStatement() {
-
-        ListExpressionOperator caseOperator = (ListExpressionOperator)getOperator(ExpressionOperator.Case);
-        ListExpressionOperator clonedCaseOperator = new ListExpressionOperator();
-        caseOperator.copyTo(clonedCaseOperator);
+        ExpressionOperator caseOperator = getOperator(ExpressionOperator.Case);
+        ExpressionOperator clonedCaseOperator = caseOperator.clone();
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
@@ -843,9 +844,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see ArgumentListFunctionExpression
      */
     public ArgumentListFunctionExpression caseConditionStatement() {
-        ListExpressionOperator caseOperator = (ListExpressionOperator)getOperator(ExpressionOperator.CaseCondition);
-        ListExpressionOperator clonedCaseOperator = new ListExpressionOperator();
-        caseOperator.copyTo(clonedCaseOperator);
+        ExpressionOperator caseOperator = getOperator(ExpressionOperator.CaseCondition);
+        ExpressionOperator clonedCaseOperator = caseOperator.clone();
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
@@ -906,9 +906,8 @@ public abstract class Expression implements Serializable, Cloneable {
     }
 
     public ArgumentListFunctionExpression coalesce() {
-        ListExpressionOperator coalesceOperator = (ListExpressionOperator)getOperator(ExpressionOperator.Coalesce);
-        ListExpressionOperator clonedCoalesceOperator = new ListExpressionOperator();
-        coalesceOperator.copyTo(clonedCoalesceOperator);
+        ExpressionOperator coalesceOperator = getOperator(ExpressionOperator.Coalesce);
+        ExpressionOperator clonedCoalesceOperator = coalesceOperator.clone();
 
         ArgumentListFunctionExpression expression = new ArgumentListFunctionExpression();
         expression.setBaseExpression(this);
@@ -1194,6 +1193,34 @@ public abstract class Expression implements Serializable, Cloneable {
    public Expression currentTime() {
        return getFunction(ExpressionOperator.CurrentTime);
    }
+
+    /**
+     * PUBLIC:
+     * This gives access to the local date and time on the database through expression.
+     */
+    public Expression localDateTime() {
+        return getFunction(ExpressionOperator.LocalDateTime);
+    }
+
+    /**
+     * PUBLIC:
+     * This gives access to the local date only on the database through expression.
+     * Note the difference between localDate() and this method. This method does
+     * not return the time portion of local datetime where as localDate() does.
+     */
+    public Expression localDate() {
+        return getFunction(ExpressionOperator.LocalDate);
+    }
+
+    /**
+     * PUBLIC:
+     * This gives access to the local time only on the database through expression.
+     * Note the difference between localDate() and this method. This method does
+     * not return the date portion of local datetime where as localDate() does.
+     */
+    public Expression localTime() {
+        return getFunction(ExpressionOperator.LocalTime);
+    }
 
     /**
      * PUBLIC:
@@ -2001,14 +2028,24 @@ public abstract class Expression implements Serializable, Cloneable {
      * INTERNAL:
      * Create a new expression tree with the named operator. Part of the implementation of user-level "get"
      */
-    public ExpressionOperator getOperator(int selector) {
-        ExpressionOperator result = ExpressionOperator.getOperator(Integer.valueOf(selector));
+    public static ExpressionOperator getOperator(int selector) {
+        ExpressionOperator result = ExpressionOperator.getOperator(selector);
         if (result != null) {
             return result;
         }
 
-        // Make a temporary operator which we expect the platform
-        // to supply later.
+        /*
+         * Create an operator based on known selectors.
+         * This is actually a temporary object which we expect Platforms to supply later.
+         * @see org.eclipse.persistence.internal.expressions.CompoundExpression#initializePlatformOperator(DatabasePlatform platform)
+         * @see org.eclipse.persistence.internal.expressions.FunctionExpression#initializePlatformOperator(DatabasePlatform platform)
+         */
+        result = ExpressionOperator.getInternalOperator(Integer.valueOf(selector));
+        if (result != null) {
+            return result;
+        }
+
+        // Create a default Function ExpressionOperator
         result = new ExpressionOperator();
         result.setSelector(selector);
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -2349,7 +2386,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            values.add(Byte.valueOf(theBytes[index]));
+            values.add(theBytes[index]);
         }
 
         return in(values);
@@ -2364,7 +2401,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            values.add(Character.valueOf(theChars[index]));
+            values.add(theChars[index]);
         }
 
         return in(values);
@@ -2379,7 +2416,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            values.add(Double.valueOf(theDoubles[index]));
+            values.add(theDoubles[index]);
         }
 
         return in(values);
@@ -2394,7 +2431,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            values.add(Float.valueOf(theFloats[index]));
+            values.add(theFloats[index]);
         }
 
         return in(values);
@@ -2409,7 +2446,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            values.add(Integer.valueOf(theInts[index]));
+            values.add(theInts[index]);
         }
 
         return in(values);
@@ -2424,7 +2461,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            values.add(Long.valueOf(theLongs[index]));
+            values.add(theLongs[index]);
         }
 
         return in(values);
@@ -2454,7 +2491,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            values.add(Short.valueOf(theShorts[index]));
+            values.add(theShorts[index]);
         }
 
         return in(values);
@@ -2469,7 +2506,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            values.add(Boolean.valueOf(theBooleans[index]));
+            values.add(theBooleans[index]);
         }
 
         return in(values);
@@ -3177,7 +3214,6 @@ public abstract class Expression implements Serializable, Cloneable {
      * the WHERE clause in any query
      *
      * EclipseLink: eb.get("mapAttribute").mapEntry()
-     * @return
      */
     public Expression mapEntry(){
         MapEntryExpression expression = new MapEntryExpression(this);
@@ -3191,7 +3227,6 @@ public abstract class Expression implements Serializable, Cloneable {
      * This expression can be used either in as a return value in a ReportQuery or in the WHERE clause in a query
      *
      * EclipseLink: eb.get("mapAttribute").mapKey()
-     * @return
      */
     public Expression mapKey(){
         return new MapEntryExpression(this);
@@ -3557,7 +3592,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            values.add(Byte.valueOf(theBytes[index]));
+            values.add(theBytes[index]);
         }
 
         return notIn(values);
@@ -3572,7 +3607,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            values.add(Character.valueOf(theChars[index]));
+            values.add(theChars[index]);
         }
 
         return notIn(values);
@@ -3587,7 +3622,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            values.add(Double.valueOf(theDoubles[index]));
+            values.add(theDoubles[index]);
         }
 
         return notIn(values);
@@ -3602,7 +3637,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            values.add(Float.valueOf(theFloats[index]));
+            values.add(theFloats[index]);
         }
 
         return notIn(values);
@@ -3617,7 +3652,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            values.add(Integer.valueOf(theInts[index]));
+            values.add(theInts[index]);
         }
 
         return notIn(values);
@@ -3632,7 +3667,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            values.add(Long.valueOf(theLongs[index]));
+            values.add(theLongs[index]);
         }
 
         return notIn(values);
@@ -3667,7 +3702,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            values.add(Short.valueOf(theShorts[index]));
+            values.add(theShorts[index]);
         }
 
         return notIn(values);
@@ -3682,7 +3717,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            values.add(Boolean.valueOf(theBooleans[index]));
+            values.add(theBooleans[index]);
         }
 
         return notIn(values);
@@ -4070,7 +4105,6 @@ public abstract class Expression implements Serializable, Cloneable {
      * Set whether this expression should be included in the SELECT clause of a query
      * that uses it in the ORDER BY clause.
      *
-     * @param selectIfOrderedBy
      */
     public void setSelectIfOrderedBy(boolean selectIfOrderedBy) {
         this.selectIfOrderedBy = selectIfOrderedBy;
@@ -4117,7 +4151,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is a case where a fast operation in java does not translate to an
      * equally fast operation in SQL, requiring a correlated subselect.
      */
-    public Expression size(Class returnType) {
+    public Expression size(Class<?> returnType) {
         if (((BaseExpression)this).getBaseExpression() == null){
             return SubSelectExpression.createSubSelectExpressionForCount(this, this, null, returnType);
         }
@@ -4370,7 +4404,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression trim(Object substring) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Trim2);
-        return anOperator.expressionForWithBaseLast(this, substring);
+        return anOperator.expressionFor(this, substring);
     }
 
     /**
@@ -4778,7 +4812,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            values.add(Byte.valueOf(theBytes[index]));
+            values.add(theBytes[index]);
         }
 
         return any(values);
@@ -4793,7 +4827,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            values.add(Character.valueOf(theChars[index]));
+            values.add(theChars[index]);
         }
 
         return any(values);
@@ -4808,7 +4842,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            values.add(Double.valueOf(theDoubles[index]));
+            values.add(theDoubles[index]);
         }
 
         return any(values);
@@ -4823,7 +4857,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            values.add(Float.valueOf(theFloats[index]));
+            values.add(theFloats[index]);
         }
 
         return any(values);
@@ -4838,7 +4872,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            values.add(Integer.valueOf(theInts[index]));
+            values.add(theInts[index]);
         }
 
         return any(values);
@@ -4853,7 +4887,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            values.add(Long.valueOf(theLongs[index]));
+            values.add(theLongs[index]);
         }
 
         return any(values);
@@ -4883,7 +4917,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            values.add(Short.valueOf(theShorts[index]));
+            values.add(theShorts[index]);
         }
 
         return any(values);
@@ -4898,7 +4932,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            values.add(Boolean.valueOf(theBooleans[index]));
+            values.add(theBooleans[index]);
         }
 
         return any(values);
@@ -5041,7 +5075,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            values.add(Byte.valueOf(theBytes[index]));
+            values.add(theBytes[index]);
         }
 
         return some(values);
@@ -5056,7 +5090,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            values.add(Character.valueOf(theChars[index]));
+            values.add(theChars[index]);
         }
 
         return some(values);
@@ -5071,7 +5105,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            values.add(Double.valueOf(theDoubles[index]));
+            values.add(theDoubles[index]);
         }
 
         return some(values);
@@ -5086,7 +5120,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            values.add(Float.valueOf(theFloats[index]));
+            values.add(theFloats[index]);
         }
 
         return some(values);
@@ -5101,7 +5135,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            values.add(Integer.valueOf(theInts[index]));
+            values.add(theInts[index]);
         }
 
         return some(values);
@@ -5116,7 +5150,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            values.add(Long.valueOf(theLongs[index]));
+            values.add(theLongs[index]);
         }
 
         return some(values);
@@ -5146,7 +5180,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            values.add(Short.valueOf(theShorts[index]));
+            values.add(theShorts[index]);
         }
 
         return some(values);
@@ -5161,7 +5195,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            values.add(Boolean.valueOf(theBooleans[index]));
+            values.add(theBooleans[index]);
         }
 
         return some(values);
@@ -5203,7 +5237,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
-            values.add(Byte.valueOf(theBytes[index]));
+            values.add(theBytes[index]);
         }
 
         return all(values);
@@ -5218,7 +5252,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
-            values.add(Character.valueOf(theChars[index]));
+            values.add(theChars[index]);
         }
 
         return all(values);
@@ -5233,7 +5267,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
-            values.add(Double.valueOf(theDoubles[index]));
+            values.add(theDoubles[index]);
         }
 
         return all(values);
@@ -5248,7 +5282,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
-            values.add(Float.valueOf(theFloats[index]));
+            values.add(theFloats[index]);
         }
 
         return all(values);
@@ -5263,7 +5297,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
-            values.add(Integer.valueOf(theInts[index]));
+            values.add(theInts[index]);
         }
 
         return all(values);
@@ -5278,7 +5312,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
-            values.add(Long.valueOf(theLongs[index]));
+            values.add(theLongs[index]);
         }
 
         return all(values);
@@ -5308,7 +5342,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
-            values.add(Short.valueOf(theShorts[index]));
+            values.add(theShorts[index]);
         }
 
         return all(values);
@@ -5323,7 +5357,7 @@ public abstract class Expression implements Serializable, Cloneable {
         List values = new ArrayList(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
-            values.add(Boolean.valueOf(theBooleans[index]));
+            values.add(theBooleans[index]);
         }
 
         return all(values);

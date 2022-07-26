@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,12 @@
 //       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
 package org.eclipse.persistence.testing.tests.jpa.xml.metadatacomplete;
 
-import jakarta.persistence.EntityManager;
-
 import junit.framework.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa.xml.metadatacomplete.Drywall;
 import org.eclipse.persistence.testing.models.jpa.xml.metadatacomplete.Hammer;
@@ -62,7 +59,7 @@ public class EntityMappingsMetadataCompleteJUnitTestCase extends JUnitTestCase {
      *  - Screwdriver : metadata-complete=false (default)
      *  - Tool : metadata-complete=true
      *
-     *  There is NO <xml-mapping-metadata-mapping> setting.
+     *  There is NO {@code <xml-mapping-metadata-mapping>} setting.
      */
     public void testMetadataComplete() {
         ServerSession session = getServerSession("METADATA_COMPLETE");
@@ -132,7 +129,7 @@ public class EntityMappingsMetadataCompleteJUnitTestCase extends JUnitTestCase {
      *  - Screwdriver : metadata-complete=false (default)
      *  - Tool : metadata-complete=false
      *
-     *  There is <xml-mapping-metadata-mapping> setting meaning the settings
+     *  There is {@code <xml-mapping-metadata-mapping>} setting meaning the settings
      *  above should be ignored.
      */
     public void testXMLMappingMetadataComplete() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,11 +36,13 @@ public class TranslatedStringsTest extends AutoVerifyTestCase {
         setDescription("Ensure it is possible to get the translated strings from a multiple call query.");
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
     }
 
+    @Override
     public void test() {
         Employee employee = new Employee();
         employee.setFirstName("Sonny");
@@ -49,6 +51,7 @@ public class TranslatedStringsTest extends AutoVerifyTestCase {
         WriteObjectQuery query = new WriteObjectQuery(employee);
 
         getSession().getDescriptor(Employee.class).getEventManager().addListener(new DescriptorEventAdapter() {
+                @Override
                 public void postInsert(org.eclipse.persistence.descriptors.DescriptorEvent event) {
                     translatedSQLStrings = event.getQuery().getTranslatedSQLStrings(event.getSession(), event.getQuery().getTranslationRow());
                     sqlStrings = event.getQuery().getSQLStrings();
@@ -61,6 +64,7 @@ public class TranslatedStringsTest extends AutoVerifyTestCase {
         getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         if (translatedSQLStrings.size() != 2) {
             throw new TestErrorException("Translated SQL Strings were not properly returned.");
@@ -83,6 +87,7 @@ public class TranslatedStringsTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();

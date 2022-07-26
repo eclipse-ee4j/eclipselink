@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.jaxb.xmlelementref;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -30,11 +29,12 @@ public class XMLElementRefConverterTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = ComplexTypeObjectFactory.class;
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
 
         ComplexType ct = new ComplexType();
@@ -43,7 +43,7 @@ public class XMLElementRefConverterTestCases extends JAXBWithJSONTestCases{
         ComplexType.TestLocal testLocal = new ComplexType.TestLocal(bd);
         ct.setLocal(testLocal);
         QName qname = new QName("clazz/typeDef", "root");
-        JAXBElement jaxbElement = new JAXBElement<ComplexType>(qname, ComplexType.class, ct);
+        JAXBElement<ComplexType> jaxbElement = new JAXBElement<ComplexType>(qname, ComplexType.class, ct);
 
         return jaxbElement;
      }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class MarshallerEncodingTest extends OXTestCase {
     private final static int CONTROL_EMPLOYEE_ID = 123;
     private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
     private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xml";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xml";
     private Object controlObject;
     private DocumentBuilder parser;
     private String encoding;
@@ -51,6 +51,7 @@ public class MarshallerEncodingTest extends OXTestCase {
         this.controlString = controlString;
     }
 
+    @Override
     public void setUp() throws Exception {
         contextPath = System.getProperty("jaxb.test.contextpath", JAXBSAXTestSuite.CONTEXT_PATH);
 
@@ -63,7 +64,7 @@ public class MarshallerEncodingTest extends OXTestCase {
         originalEncoding = (String)marshaller.getProperty(Marshaller.JAXB_ENCODING);
         originalFormatting = (Boolean)marshaller.getProperty(Marshaller.JAXB_FORMATTED_OUTPUT);
         marshaller.setProperty(Marshaller.JAXB_ENCODING, encoding);
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(false));
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
         controlObject = setupControlObject();
 
     }
@@ -250,6 +251,7 @@ public class MarshallerEncodingTest extends OXTestCase {
         fail("A MarshalException should have been thrown but was not");
     }
 
+    @Override
     public void tearDown() throws PropertyException {
         marshaller.setProperty(Marshaller.JAXB_ENCODING, originalEncoding);
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, originalFormatting);

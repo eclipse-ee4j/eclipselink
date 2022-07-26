@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,16 +24,17 @@ import org.eclipse.persistence.testing.models.interfaces.*;
 public class VariableOneToOneInsertTest extends TransactionalTestCase {
     public Company company;
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         this.company = new Company();
         Company c = (Company)uow.registerObject(this.company);
         c.setName("Company One");
-        c.setId(new Integer(54));
+        c.setId(54);
         Email email = new Email();
         email.setAddress("@Blather.ca");
         email.setHolder(c);
-        email.setId(new Integer(45));
+        email.setId(45);
         c.setContact(email);
         c.email = email;
 

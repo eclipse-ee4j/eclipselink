@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,10 +35,12 @@ public class InsertUpdateStoredProcedureAdapter implements ProjectAndDatabaseAda
 
     StoredProcedureGeneratorForAdapter generator;
 
+    @Override
     public boolean isOriginalSetupRequired() {
         return true;
     }
 
+    @Override
     public void updateProject(Project project, Session session) {
         verifySession(session);
         if (generator == null) {
@@ -51,6 +53,7 @@ public class InsertUpdateStoredProcedureAdapter implements ProjectAndDatabaseAda
         generator.amendDescriptors();
     }
 
+    @Override
     public void updateDatabase(Session session) {
         try {
             generator.writeStoredProcedures();
@@ -67,9 +70,9 @@ public class InsertUpdateStoredProcedureAdapter implements ProjectAndDatabaseAda
 
     protected int removeOptimisticLocking(Project project) {
         int removed = 0;
-        Iterator descriptors = project.getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = project.getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor desc = (ClassDescriptor)descriptors.next();
+            ClassDescriptor desc = descriptors.next();
             if (desc.getOptimisticLockingPolicy() != null) {
                 desc.setOptimisticLockingPolicy(null);
                 removed++;

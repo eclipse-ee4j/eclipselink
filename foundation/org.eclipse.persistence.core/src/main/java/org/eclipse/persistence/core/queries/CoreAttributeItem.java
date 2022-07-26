@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,7 +104,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             if (this.group == null){
                 this.group = group;
             }
-            Object type = group.getType();
+            Serializable type = group.getType();
             if (type == null){
                 type = group.getTypeName();
             }
@@ -157,7 +157,6 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Map<Object, ATTRIBUTE_GROUP> newMap = new HashMap<>();
@@ -203,9 +202,9 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             if(obj == null) {
                 return false;
             }
-            CoreAttributeItem anotherItem = null;
+            CoreAttributeItem<ATTRIBUTE_GROUP> anotherItem = null;
             try {
-                anotherItem = (CoreAttributeItem)obj;
+                anotherItem = (CoreAttributeItem<ATTRIBUTE_GROUP>)obj;
             } catch (ClassCastException cce) {
                 return false;
             }
@@ -216,7 +215,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
                 }
                 if (this.subGroups.size() == anotherItem.subGroups.size()){
                     for (Map.Entry<Object, ATTRIBUTE_GROUP> entry : this.subGroups.entrySet()){
-                        ATTRIBUTE_GROUP anotherGroup = (ATTRIBUTE_GROUP)anotherItem.subGroups.get(entry.getKey());
+                        ATTRIBUTE_GROUP anotherGroup = anotherItem.subGroups.get(entry.getKey());
                         if (! entry.getValue().equals(anotherGroup)){
                             return false;
                         }
@@ -234,7 +233,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
                 }
                 if (this.keyGroups.size() == anotherItem.keyGroups.size()){
                     for (Map.Entry<Object, ATTRIBUTE_GROUP> entry : this.keyGroups.entrySet()){
-                        ATTRIBUTE_GROUP anotherGroup = (ATTRIBUTE_GROUP)anotherItem.keyGroups.get(entry.getKey());
+                        ATTRIBUTE_GROUP anotherGroup = anotherItem.keyGroups.get(entry.getKey());
                         if (! entry.getValue().equals(anotherGroup)){
                             return false;
                         }
@@ -267,7 +266,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         return this.group;
     }
 
-    public ATTRIBUTE_GROUP getGroup(Class type) {
+    public ATTRIBUTE_GROUP getGroup(Class<?> type) {
         if (this.subGroups == null || type == null){
             return null;
         }
@@ -293,12 +292,12 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         return this.keyGroups.get(CoreClassConstants.OBJECT);
     }
 
-    public ATTRIBUTE_GROUP getKeyGroup(Class type) {
+    public ATTRIBUTE_GROUP getKeyGroup(Class<?> type) {
         if (this.keyGroups == null || type == null){
             return null;
         }
         ATTRIBUTE_GROUP result = this.keyGroups.get(type);
-        Class currentType = type;
+        Class<?> currentType = type;
         while(result == null && !currentType.equals(CoreClassConstants.OBJECT)){
             currentType = currentType.getSuperclass();
             if (currentType == null){
@@ -319,12 +318,10 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
 
     /**
      * Will order the subGroups based on hierarchy.  Returns true if the group is the new root.
-     * @param group
-     * @param subGroups
      * @return true if the group is the new root.
      */
     protected static boolean orderInheritance(CoreAttributeGroup group, Map<Object, ? extends CoreAttributeGroup> subGroups) {
-        Class type = group.getType();
+        Class<?> type = group.getType();
         if (type != null){
             CoreAttributeGroup superClass = null;
             while (!type.equals(CoreClassConstants.OBJECT) && superClass == null){
@@ -347,10 +344,10 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + getAttributeName() + ")" + (this.subGroups!=null ? " => " + this.subGroups.toString() : "") + (this.keyGroups!=null ? " => " + this.keyGroups.toString() : "");
+        return getClass().getSimpleName() + "(" + getAttributeName() + ")" + (this.subGroups!=null ? " => " + this.subGroups : "") + (this.keyGroups!=null ? " => " + this.keyGroups : "");
     }
 
     public String toStringNoClassName() {
-        return getAttributeName() + (this.subGroups!=null ? " => " + this.subGroups.toString() : "")+ (this.keyGroups!=null ? " => " + this.keyGroups.toString() : "");
+        return getAttributeName() + (this.subGroups!=null ? " => " + this.subGroups : "")+ (this.keyGroups!=null ? " => " + this.keyGroups : "");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * An <b>EXISTS</b> expression is a predicate that is <code>true</code> only if the result of the
  * subquery consists of one or more values and that is <code>false</code> otherwise.
  *
- * <div><b>BNF:</b> <code>exists_expression ::= [NOT] EXISTS(subquery)</code><p></div>
+ * <div><b>BNF:</b> <code>exists_expression ::= [NOT] EXISTS(subquery)</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -44,17 +44,11 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
         super(parent, EXISTS);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return SubqueryBNF.ID;
@@ -71,9 +65,6 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
         return (notIdentifier != null) ? notIdentifier : ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ExistsExpressionBNF.ID);
@@ -88,9 +79,6 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
         return (notIdentifier != null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -104,9 +92,6 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
         super.parse(wordParser, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 

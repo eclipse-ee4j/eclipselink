@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date November 18, 2003
  */
 public class SessionsXMLSchemaReloadTest extends TestCase {
     DatabaseSession employeeSession;
@@ -38,6 +37,7 @@ public class SessionsXMLSchemaReloadTest extends TestCase {
         setDescription("Test loading of a basic session xml against the XML Schema");
     }
 
+    @Override
     public void reset() {
         if (employeeSession != null && employeeSession.isConnected()) {
             employeeSession.logout(); // If session is logged in, log it out
@@ -51,6 +51,7 @@ public class SessionsXMLSchemaReloadTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         SessionManager.getManager().getSessions().remove("EmployeeSession");
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSession.xml");
@@ -58,6 +59,7 @@ public class SessionsXMLSchemaReloadTest extends TestCase {
         employeeSession2 = (DatabaseSession)SessionManager.getManager().getSession(loader, "EmployeeSession", new AlternateLoader());
     }
 
+    @Override
     protected void verify() {
         if (employeeSession == null) {
             throw new TestErrorException("Employee session is null");

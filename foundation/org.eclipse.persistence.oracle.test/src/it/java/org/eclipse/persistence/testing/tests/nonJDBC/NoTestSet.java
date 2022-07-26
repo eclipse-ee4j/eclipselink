@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,7 +80,7 @@ public class NoTestSet {
         DataModifyQuery query = new DataModifyQuery();
         query.setCall(call);
         project.getDescriptor(Empty.class).getQueryManager().addQuery("No", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);
@@ -146,9 +146,9 @@ public class NoTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         boolean worked = false;
         String msg = null;
@@ -161,7 +161,7 @@ public class NoTestSet {
         }
         assertTrue("invocation no failed: " + msg, worked);
         Integer bool2int = (Integer)o;
-        assertTrue("wrong bool2int value", bool2int.intValue() == 1);
-        ((DatabaseSession)s).logout();
+        assertTrue("wrong bool2int value", bool2int == 1);
+        s.logout();
     }
 }

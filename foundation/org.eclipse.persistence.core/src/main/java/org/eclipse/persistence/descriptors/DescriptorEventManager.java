@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,6 @@ package org.eclipse.persistence.descriptors;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -31,7 +29,6 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
@@ -189,7 +186,6 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * INTERNAL:
      * This method was added to allow JPA project caching so that DescriptorEventListeners could be
      * serialized and re-added to the EventManager using a SerializableDescriptorEventHolder.
-     * @param classLoader
      */
     public void processDescriptorEventHolders(AbstractSession session, ClassLoader classLoader) {
         if (this.descriptorEventHolders != null) {
@@ -244,30 +240,24 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
             }
 
             // Now that I have the method, I need to invoke it
-            try {
-                Object[] runtimeParameters = new Object[1];
-                runtimeParameters[0] = event;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        AccessController.doPrivileged(new PrivilegedMethodInvoker(eventMethod, event.getSource(), runtimeParameters));
-                    } catch (PrivilegedActionException exception) {
-                        Exception throwableException = exception.getException();
-                        if (throwableException instanceof IllegalAccessException) {
-                            throw DescriptorException.illegalAccessWhileEventExecution(eventMethod.getName(), getDescriptor(), throwableException);
-                        } else {
-                            throw DescriptorException.targetInvocationWhileEventExecution(eventMethod.getName(), getDescriptor(), throwableException);
+            Object[] runtimeParameters = new Object[1];
+            runtimeParameters[0] = event;
+            PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.invokeMethod(eventMethod, event.getSource(), runtimeParameters),
+                    (ex) -> {
+                        if (ex instanceof IllegalAccessException) {
+                            return DescriptorException.illegalAccessWhileEventExecution(eventMethod.getName(), getDescriptor(), ex);
                         }
+                        if (ex instanceof IllegalArgumentException) {
+                            return DescriptorException.illegalArgumentWhileObsoleteEventExecute(eventMethod.getName(), getDescriptor(), ex);
+                        }
+                        if (ex instanceof InvocationTargetException) {
+                            return DescriptorException.targetInvocationWhileEventExecution(eventMethod.getName(), getDescriptor(), ex);
+                        }
+                        return new RuntimeException(String.format("Invocation of %s method failed", eventMethod.getName()), ex);
                     }
-                } else {
-                    PrivilegedAccessHelper.invokeMethod(eventMethod, event.getSource(), runtimeParameters);
-                }
-            } catch (IllegalAccessException exception) {
-                throw DescriptorException.illegalAccessWhileEventExecution(eventMethod.getName(), getDescriptor(), exception);
-            } catch (IllegalArgumentException exception) {
-                throw DescriptorException.illegalArgumentWhileObsoleteEventExecute(eventMethod.getName(), getDescriptor(), exception);
-            } catch (InvocationTargetException exception) {
-                throw DescriptorException.targetInvocationWhileEventExecution(eventMethod.getName(), getDescriptor(), exception);
-            }
+            );
+
         } finally {
             event.getSession().endOperationProfile(SessionProfiler.DescriptorEvent);
         }
@@ -279,7 +269,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
      * backward compatibility.
      */
     protected Method findMethod(int selector) throws DescriptorException {
-        Class[] declarationParameters = new Class[1];
+        Class<?>[] declarationParameters = new Class<?>[1];
         declarationParameters[0] = ClassConstants.DescriptorEvent_Class;
         String methodName = getEventSelectors().get(selector);
 
@@ -665,10 +655,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
         // Step 2 - Notify the Entity Listener's first, top -> down.
         for (int index = entityListenerEventManagers.size() - 1; index >= 0; index--) {
-            List entityListenerEventListeners = entityListenerEventManagers.get(index).getEntityListenerEventListeners();
+            List<DescriptorEventListener> entityListenerEventListeners = entityListenerEventManagers.get(index).getEntityListenerEventListeners();
 
             for (int i = 0; i < entityListenerEventListeners.size(); i++) {
-                DescriptorEventListener listener = (DescriptorEventListener) entityListenerEventListeners.get(i);
+                DescriptorEventListener listener = entityListenerEventListeners.get(i);
                 notifyListener(listener, event);
             }
         }
@@ -1050,26 +1040,26 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     }
 
     /**
-     * Create an instance of {@link AtomicIntegerArray} initialized with {@code NullEvent} values.
+     * Create an instance of {@link java.util.concurrent.atomic.AtomicIntegerArray} initialized with {@code NullEvent} values.
      *
      * @param length length of the array.
-     * @return initialized instance of {@link AtomicIntegerArray}
+     * @return initialized instance of {@link java.util.concurrent.atomic.AtomicIntegerArray}
      */
     private static <T> AtomicReferenceArray<T> newAtomicReferenceArray(final int length) {
-        final AtomicReferenceArray array = new AtomicReferenceArray<>(length);
+        final AtomicReferenceArray<T> array = new AtomicReferenceArray<>(length);
         for (int index = 0; index < length; array.set(index++, null));
         return array;
     }
 
     /**
-     * Create an instance of {@link AtomicIntegerArray} initialized with content of provided array.
+     * Create an instance of {@link java.util.concurrent.atomic.AtomicIntegerArray} initialized with content of provided array.
      *
      * @param src source array.
-     * @return initialized instance of {@link AtomicIntegerArray}
+     * @return initialized instance of {@link java.util.concurrent.atomic.AtomicIntegerArray}
      */
     private static <T> AtomicReferenceArray<T> newAtomicReferenceArray(final AtomicReferenceArray<T> src) {
         final int length = src.length();
-        final AtomicReferenceArray array = new AtomicReferenceArray<>(length);
+        final AtomicReferenceArray<T> array = new AtomicReferenceArray<>(length);
         for (int index = 0; index < length; array.set(index, src.get(index++)));
         return array;
     }

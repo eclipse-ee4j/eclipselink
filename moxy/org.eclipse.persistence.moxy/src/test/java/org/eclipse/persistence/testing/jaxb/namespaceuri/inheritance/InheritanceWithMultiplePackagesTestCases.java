@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ public class InheritanceWithMultiplePackagesTestCases extends JAXBWithJSONTestCa
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootComplex.class});
+        setClasses(new Class<?>[] {RootComplex.class});
         initXsiType();
     }
 
@@ -46,6 +46,7 @@ public class InheritanceWithMultiplePackagesTestCases extends JAXBWithJSONTestCa
         return namespaces;
     }
 
+    @Override
     protected Object getControlObject() {
         RootComplex root = new RootComplex();
         SubType subType = new SubType();
@@ -67,7 +68,7 @@ public class InheritanceWithMultiplePackagesTestCases extends JAXBWithJSONTestCa
 
         List objectList = new ArrayList(baseTypes);
         objectList.add(new String("string test"));
-        objectList.add(new Integer(500));
+        objectList.add(500);
         root.objectList = objectList;
 
         List anyObjectList = new ArrayList(baseTypes);
@@ -77,7 +78,7 @@ public class InheritanceWithMultiplePackagesTestCases extends JAXBWithJSONTestCa
         choiceList.add(anotherPackageSubType);
         choiceList.add(subTypeLevel2);
         choiceList.add(new String("choice string test"));
-        choiceList.add(new Integer(500));
+        choiceList.add(500);
         root.choiceList = choiceList;
         return root;
     }

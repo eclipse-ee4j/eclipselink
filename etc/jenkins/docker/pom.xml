@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink Docker Image</name>
+    <description>Docker image used in Eclipse Foundation build infrastructure to build EclipseLink and run LRG tests</description>
+    <groupId>org.eclipse.persistence.build</groupId>
+    <artifactId>org.eclipse.persistence.build.docker</artifactId>
+    <packaging>pom</packaging>
+    <!-- Version is used as target docker image tag -->
+    <version>2.0.1</version>
+
+    <properties>
+        <!-- Source docker image -->
+        <docker.source>oraclelinux:8</docker.source>
+        <!-- Target docker image name-->
+        <docker.image>tkraus/el-build</docker.image>
+        <!-- Packages to be installed -->
+        <java.pkg>jdk-17.0.2_linux-x64_bin.tar.gz</java.pkg>
+        <java.url>https://download.oracle.com/java/17/archive/${java.pkg}</java.url>
+        <ant.pkg>apache-ant-1.10.12-bin.tar.gz</ant.pkg>
+        <ant.url>https://dlcdn.apache.org//ant/binaries/${ant.pkg}</ant.url>
+        <maven.pkg>apache-maven-3.8.5-bin.tar.gz</maven.pkg>
+        <maven.url>https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/${maven.pkg}</maven.url>
+        <mysql.pkg>mysql80-community-release-el8-3.noarch.rpm</mysql.pkg>
+        <mysql.url>https://dev.mysql.com/get/${mysql.pkg}</mysql.url>
+        <mongo.pkg>mysql80-community-release-el8-3.noarch.rpm</mongo.pkg>
+        <mongo.url>https://dev.mysql.com/get/${mysql.pkg}</mongo.url>
+        <!-- Installation directory structure -->
+        <install.root>/opt</install.root>
+        <install.scripts>${install.root}/bin</install.scripts>
+        <install.java>${install.root}/java</install.java>
+        <!-- Jenkins user name and UID -->
+        <build.user.name>jenkins</build.user.name>
+        <build.user.uid>1001560000</build.user.uid>
+        <!-- Jenkins user group and GID -->
+        <build.group.name>jenkins</build.group.name>
+        <build.group.gid>1001560000</build.group.gid>
+        <!-- Jenkins additional user attributes -->
+        <build.user.shell>/bin/bash</build.user.shell>
+        <build.user.comment>Jenkins user</build.user.comment>
+        <!-- Skip install and deploy plugins -->
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <!-- MySQL database setup properties file -->
+        <mysql.database>ecltests</mysql.database>
+        <mysql.properties.file>${project.basedir}/../../el-test.mysql.properties</mysql.properties.file>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/image</directory>
+                <targetPath>${project.build.directory}/image</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>Dockerfile</include>
+                    <include>install.sh</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/scripts</directory>
+                <targetPath>${project.build.directory}/image</targetPath>
+                <filtering>false</filtering>
+                <includes>
+                    <include>*.sh</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.googlecode.maven-download-plugin</groupId>
+                    <artifactId>download-maven-plugin</artifactId>
+                    <version>1.6.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.39.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>properties-maven-plugin</artifactId>
+                    <version>1.1.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- Enable resources processing -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>docker</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Packages download -->
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jdk</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${java.url}</url>
+                            <outputFileName>${java.pkg}</outputFileName>
+                            <outputDirectory>${project.build.directory}/image</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ant</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${ant.url}</url>
+                            <outputFileName>${ant.pkg}</outputFileName>
+                            <outputDirectory>${project.build.directory}/image</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>maven</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${maven.url}</url>
+                            <outputFileName>${maven.pkg}</outputFileName>
+                            <outputDirectory>${project.build.directory}/image</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>mysql</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${mysql.url}</url>
+                            <outputFileName>${mysql.pkg}</outputFileName>
+                            <outputDirectory>${project.build.directory}/image</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Docker image lifecycle -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <images>
+                        <image>
+                            <name>${docker.image}:${project.version}</name>
+                            <build>
+                                <contextDir>${project.build.directory}/image</contextDir>
+                                <buildOptions>
+                                    <squash/>
+                                </buildOptions>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>deploy-image</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>clean-image</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>remove</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${mysql.properties.file}</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

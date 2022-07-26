@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyCalendar;
 import org.w3c.dom.Document;
@@ -37,6 +38,7 @@ public class XmlAdapterUnspecifiedClassTestCases extends JAXBWithJSONTestCases{
     public XmlAdapterUnspecifiedClassTestCases(String name) throws Exception {
         super(name);
     }
+    @Override
     public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -46,6 +48,7 @@ public class XmlAdapterUnspecifiedClassTestCases extends JAXBWithJSONTestCases{
         setTypes(types);
     }
 
+    @Override
     protected Object getControlObject() {
         MyCalendar myCalendar = new MyCalendar();
         myCalendar.day = 1;
@@ -65,6 +68,7 @@ public class XmlAdapterUnspecifiedClassTestCases extends JAXBWithJSONTestCases{
         return emp;
     }
 
+    @Override
     protected Map getProperties() {
 
             Map overrides = new HashMap();
@@ -91,7 +95,7 @@ public class XmlAdapterUnspecifiedClassTestCases extends JAXBWithJSONTestCases{
             overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.unspecified", src);
 
             Map props = new HashMap();
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
             return props;
         }
 

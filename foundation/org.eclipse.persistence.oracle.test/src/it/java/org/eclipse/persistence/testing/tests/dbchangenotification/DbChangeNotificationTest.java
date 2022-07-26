@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,6 +68,7 @@ public class DbChangeNotificationTest extends TestCase {
         setName(getName() + uses + type);
     }
 
+    @Override
     protected void setup() throws Exception {
         javax.jms.TopicConnectionFactory topicConnectionFactory = null;
         javax.jms.QueueConnectionFactory queueConnectionFactory = null;
@@ -82,7 +83,7 @@ public class DbChangeNotificationTest extends TestCase {
             ((DatabaseSession)session[i]).addDescriptors(new EmployeeProject());
             session[i].setSessionLog(getSession().getSessionLog());
             session[i].setLogLevel(getSession().getLogLevel());
-            session[i].setName("session[" + Integer.toString(i) + "]");
+            session[i].setName("session[" + i + "]");
             ((DatabaseSession)session[i]).login();
             employees[i] = session[i].readAllObjects(Employee.class);
             smallProjects[i] = session[i].readAllObjects(SmallProject.class);
@@ -126,6 +127,7 @@ public class DbChangeNotificationTest extends TestCase {
         Thread.sleep(1000);
     }
 
+    @Override
     protected void test() throws Exception {
         int[] numMessagesExpected = new int[n];
         int numUpdated;
@@ -180,6 +182,7 @@ public class DbChangeNotificationTest extends TestCase {
         }
     }
 
+    @Override
     protected void verify() throws Exception {
         Thread.sleep(1000);
         // 1 ********************************************************
@@ -255,6 +258,7 @@ public class DbChangeNotificationTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() throws Exception {
         // disable sending notification messages - set appId to null
         getSession().executeNonSelectingCall(new SQLCall("BEGIN NOTIFY_SET_APPID; END;"));

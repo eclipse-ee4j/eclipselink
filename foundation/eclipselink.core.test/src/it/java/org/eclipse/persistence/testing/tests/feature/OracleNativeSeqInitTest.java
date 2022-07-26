@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,6 +109,7 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         if (!getSession().getPlatform().supportsSequenceObjects()) {
             throw new TestWarningException("This test requires a platform that supports sequence objects");
@@ -134,9 +135,9 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
 
         lastSeqNumberOriginal = getSession().getNextSequenceNumberValue(Employee.class).intValue() - 1;
 
-        usesBatchWritingOriginal = Boolean.valueOf(getSession().getPlatform().usesBatchWriting());
+        usesBatchWritingOriginal = getSession().getPlatform().usesBatchWriting();
 
-        shouldCacheAllStatementsOriginal = Boolean.valueOf(getSession().getPlatform().shouldCacheAllStatements());
+        shouldCacheAllStatementsOriginal = getSession().getPlatform().shouldCacheAllStatements();
 
         getDatabaseSession().getSequencingControl().initializePreallocated();
 
@@ -240,6 +241,7 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
         getSession().getPlatform().getSequence(descriptor.getSequenceNumberName()).setPreallocationSize(seqPreallocationSize);
     }
 
+    @Override
     public void test() {
         try {
             id = getSession().getNextSequenceNumberValue(Employee.class).intValue();
@@ -250,6 +252,7 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception != null) {
             throw new TestErrorException("Sequence allocation failed", exception);
@@ -259,6 +262,7 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         // make sure reset isn't performed twice
         if(sequence == null) {
@@ -284,10 +288,10 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
         getSession().getPlatform().getSequence(getSession().getDescriptor(Employee.class).getSequenceNumberName()).setPreallocationSize(seqPreallocationSizeOriginal);
 
         if (shouldCacheAllStatementsOriginal != null) {
-            getSession().getPlatform().setShouldCacheAllStatements(shouldCacheAllStatementsOriginal.booleanValue());
+            getSession().getPlatform().setShouldCacheAllStatements(shouldCacheAllStatementsOriginal);
         }
         if (usesBatchWritingOriginal != null) {
-            getSession().getPlatform().setUsesBatchWriting(usesBatchWritingOriginal.booleanValue());
+            getSession().getPlatform().setUsesBatchWriting(usesBatchWritingOriginal);
         }
 
         if ((usesNativeSequencingOriginal != null) && !usesNativeSequencingOriginal) {

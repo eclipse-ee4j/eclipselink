@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -243,6 +243,7 @@ public class SqlType extends TypeClass {
         return false;
     }
 
+    @Override
     public boolean hasConversion() {
         // For SqlRefType, getSqlName()==null
         if (getSqlName() == null) {
@@ -269,11 +270,12 @@ public class SqlType extends TypeClass {
 
     /**
      * Returns the PL/SQL function to be used for converting this PL/SQL into a SQL type.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     //static Hashtable m_convFuns = new Hashtable();
 
+    @Override
     public String getOutOfConversion() {
         // For SqlRefType, getSqlName()==null
         if (getSqlName() == null) {
@@ -284,9 +286,10 @@ public class SqlType extends TypeClass {
 
     /**
      * Returns the PL/SQL function to be used for converting a SQL type into this PL/SQL type.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
+    @Override
     public String getIntoConversion() {
         // For SqlRefType, getSqlName()==null
         if (getSqlName() == null) {
@@ -298,6 +301,7 @@ public class SqlType extends TypeClass {
     // Return the conversion function name
     // prefixed with package name,
     // if the conversion function is a generated one
+    @Override
     public String getOutOfConversionQualified() {
         // For SqlRefType, getSqlName()==null
         if (getSqlName() == null) {
@@ -309,6 +313,7 @@ public class SqlType extends TypeClass {
     // Return the conversion function name
     // prefixed with package name,
     // if the conversion function is a generated one
+    @Override
     public String getIntoConversionQualified() {
         // For SqlRefType, getSqlName()==null
         if (getSqlName() == null) {
@@ -322,7 +327,7 @@ public class SqlType extends TypeClass {
         String sqlTypeDecl = "";
         if (isPlsqlRecord() && !getSqlName().isReused()) {
             sqlTypeDecl += "CREATE OR REPLACE TYPE " + getTargetTypeName() + " AS OBJECT (\n";
-            List<AttributeField> fields = ((PlsqlRecordType)this).getFields(true);
+            List<AttributeField> fields = this.getFields(true);
             for (int i = 0; i < fields.size(); i++) {
                 if (i != 0) {
                     sqlTypeDecl += ",\n";
@@ -372,7 +377,7 @@ public class SqlType extends TypeClass {
             sqlConvPkgDecl += "\t-- Redefine a PL/SQL RECORD type originally defined via CURSOR%ROWTYPE"
                 + "\n";
             sqlConvPkgDecl += "\tTYPE " + getTypeName() + " IS RECORD (\n";
-            List<AttributeField> fields = ((PlsqlRecordType)this).getFields(true);
+            List<AttributeField> fields = this.getFields(true);
             for (int i = 0; i < fields.size(); i++) {
                 if (i != 0) {
                     sqlConvPkgDecl += ",\n";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,15 @@ package org.eclipse.persistence.internal.oxm;
 public abstract class NamespacePrefixMapper {
 
     /**
+     * Default constructor.
+     */
+    protected NamespacePrefixMapper() {
+    }
+
+    /**
      * Returns a string array of prefixes and namespace uris that are already available in
      * this context. Only required when marshalling to an output stream or a writer, since
      * it's not possible to determine which namespaces are already in scope.
-     * @return
      */
     public String[] getContextualNamespaceDecls() {
         return new String[0];
@@ -43,7 +48,6 @@ public abstract class NamespacePrefixMapper {
      * Returns a string array of prefixes and namespace uris to be declared at the root of
      * the document. This eliminates the need of implementing both getPredeclaredNamespaceUris
      * and getPreferredPrefix since the prefix and uri can be associated here.
-     * @return
      */
     public String[] getPreDeclaredNamespaceUris2() {
         return new String[0];

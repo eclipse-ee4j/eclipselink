@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.exceptions.*;
  * The query is also shared by all other value holders within the batch and it must be ensured that the query is only
  * executed once.  Concurrency must also be maintained across all of the value holders in the batch.
  */
-public class BatchValueHolder extends QueryBasedValueHolder {
+public class BatchValueHolder<T> extends QueryBasedValueHolder<T> {
     protected transient ForeignReferenceMapping mapping;
     protected transient ObjectLevelReadQuery originalQuery;
     protected transient CacheKey parentCacheKey;
@@ -57,8 +57,9 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      * since they all share the same query, the extractResultFromBatchQuery method must be synchronized.
      */
     @Override
-    protected Object instantiate(AbstractSession session) throws EclipseLinkException {
-        return this.mapping.extractResultFromBatchQuery(this.query, this.parentCacheKey, this.row, session, this.originalQuery);
+    @SuppressWarnings({"unchecked"})
+    protected T instantiate(AbstractSession session) throws EclipseLinkException {
+        return (T) this.mapping.extractResultFromBatchQuery(this.query, this.parentCacheKey, this.row, session, this.originalQuery);
     }
 
     /**
@@ -75,14 +76,15 @@ public class BatchValueHolder extends QueryBasedValueHolder {
      * as the batch is local to the unit of work.
      */
     @Override
-    public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
+    @SuppressWarnings({"unchecked"})
+    public T instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder<T> unitOfWorkValueHolder) {
         UnitOfWorkImpl unitOfWork = unitOfWorkValueHolder.getUnitOfWork();
         ReadQuery localQuery = unitOfWork.getBatchQueries().get(this.query);
         if (localQuery == null) {
             localQuery = (ReadQuery)this.query.clone();
             unitOfWork.getBatchQueries().put(this.query, localQuery);
         }
-        return this.mapping.extractResultFromBatchQuery(localQuery, this.parentCacheKey, this.row, unitOfWorkValueHolder.getUnitOfWork(), this.originalQuery);
+        return (T) this.mapping.extractResultFromBatchQuery(localQuery, this.parentCacheKey, this.row, unitOfWorkValueHolder.getUnitOfWork(), this.originalQuery);
     }
 
     /**

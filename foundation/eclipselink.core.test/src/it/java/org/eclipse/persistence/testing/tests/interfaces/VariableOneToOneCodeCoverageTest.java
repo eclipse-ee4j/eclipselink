@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,17 +31,20 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
     VariableOneToOneMapping mapping;
     private String testFailures;
 
+    @Override
     public void setup() {
         mapping = new VariableOneToOneMapping();
         testFailures = "";
     }
 
+    @Override
     public void verify() {
         if (testFailures.length() > 0) {
             throw new TestErrorException("Tests failures from VariableOneToOneMapping: " + testFailures);
         }
     }
 
+    @Override
     public void test() {
         runTests();
     }
@@ -171,11 +174,13 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
 }
 
 class VariableOneToOneMapping2 extends VariableOneToOneMapping {
+    @Override
     public void setTypeField(DatabaseField typeField) {
         super.setTypeField(typeField);
     }
 
-    public Object getTypeForImplementor(Class implementor) {
+    @Override
+    public Object getTypeForImplementor(Class<?> implementor) {
         return super.getTypeForImplementor(implementor);
     }
 

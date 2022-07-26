@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -59,7 +58,7 @@ public abstract class CacheInterceptor implements IdentityMap {
 
     protected AbstractSession interceptedSession;
 
-    public CacheInterceptor(IdentityMap targetIdentityMap, AbstractSession interceptedSession){
+    protected CacheInterceptor(IdentityMap targetIdentityMap, AbstractSession interceptedSession){
         this.targetIdentityMap = targetIdentityMap;
         this.interceptedSession = interceptedSession;
     }
@@ -187,7 +186,6 @@ public abstract class CacheInterceptor implements IdentityMap {
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     @Override
     public abstract Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session);
@@ -199,7 +197,6 @@ public abstract class CacheInterceptor implements IdentityMap {
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     @Override
     public abstract Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session);
@@ -232,7 +229,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Return the class that this is the map for.
      */
     @Override
-    public Class getDescriptorClass() {
+    public Class<?> getDescriptorClass() {
         return this.targetIdentityMap.getDescriptorClass();
     }
 
@@ -258,7 +255,7 @@ public abstract class CacheInterceptor implements IdentityMap {
      * Recurse = true will include subclasses of myClass in the count.
      */
     @Override
-    public int getSize(Class myClass, boolean recurse) {
+    public int getSize(Class<?> myClass, boolean recurse) {
         return this.targetIdentityMap.getSize(myClass, recurse);
     }
 

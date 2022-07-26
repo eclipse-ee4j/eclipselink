@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,7 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -27,14 +24,12 @@ import jakarta.persistence.EntityManager;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.metadata.FileBasedProjectCache;
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
 
 import junit.framework.TestSuite;
 import junit.framework.Test;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 /**
  * @author cdelahun
@@ -103,7 +98,7 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
 
     public void testFileBasedProjectCacheReading(String persistenceUnitName) {
         FileBasedProjectCache projectCache = new FileBasedProjectCache();
-        Session session = this.getServerSession(persistenceUnitName);
+        Session session = getServerSession(persistenceUnitName);
         Project project = projectCache.retrieveProject(getProperties(), session.getDatasourcePlatform().getConversionManager().getLoader(), session.getSessionLog());
         if (project == null) {
             fail("Project returned from FileBasedProjectCache.retrieveProject() was null");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,12 +27,8 @@ import junit.framework.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
-import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
-import org.eclipse.persistence.testing.models.jpa.advanced.Project;
-import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk.*;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.derivedid.*;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
@@ -227,7 +223,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             DepartmentAdminRolePK depAdminPk= new DepartmentAdminRolePK(depName, depRole, location, adminEmp.getEmployee().getId());
 
             DepartmentAdminRole cacheObject = em.find(DepartmentAdminRole.class, depAdminPk);
-            this.assertTrue("Find did not return the DepartmentAdminRole", cacheObject!=null);
+            assertTrue("Find did not return the DepartmentAdminRole", cacheObject!=null);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

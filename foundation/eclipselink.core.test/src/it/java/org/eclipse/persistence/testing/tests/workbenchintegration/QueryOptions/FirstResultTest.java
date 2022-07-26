@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,18 +26,22 @@ public class FirstResultTest extends AutoVerifyTestCase {
         setDescription("Test that FirstResult persists properly.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         employees =
                 (Vector)getSession().executeQuery("firstResultQuery", org.eclipse.persistence.testing.models.employee.domain.Employee.class);
     }
 
+    @Override
     public void verify() {
         if (employees.size() != 10) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("ReadAllQuery with setFirstResult test failed. Mismatched objects returned");

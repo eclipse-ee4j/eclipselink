@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * If this clause is omitted, then Oracle uses all rows in the table as root rows. The <code><b>START
  * WITH</b></code> condition can contain a subquery, but it cannot contain a scalar subquery expression.
  *
- * <div><b>BNF:</b> <code>start_with_clause ::= <b>START WITH</b> conditional_expression</code><p></div>
+ * <div><b>BNF:</b> <code>start_with_clause ::= <b>START WITH</b> conditional_expression</code></div>
  *
  * @see HierarchicalQueryClause
  *
@@ -39,17 +39,11 @@ public final class StartWithClause extends AbstractConditionalClause {
         super(parent, Expression.START_WITH);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(StartWithClauseBNF.ID);

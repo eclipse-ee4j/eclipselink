@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +42,8 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
  * @since EclipseLink 2.5.1
  */
 public class RuntimeFactory {
+    private RuntimeFactory() {
+    }
 
     public EntityManagerFactory createEntityManagerFactory(PersistenceUnit pu) {
         EntityManagerSetupImpl emSetupImpl = null;
@@ -64,7 +67,7 @@ public class RuntimeFactory {
                 if (emSetupImpl != null) {
                     if (puInfo.getClassLoader() != emSetupImpl.getPersistenceUnitInfo().getClassLoader()) {
                         emSetupImpl.undeploy();
-                        EntityManagerFactoryProvider.getEmSetupImpls().remove(sessionName);
+                        EntityManagerFactoryProvider.emSetupImpls.remove(sessionName);
 
                         SessionManager manager = SessionManager.getManager();
                         if (manager.getSessions().containsKey(sessionName)) {

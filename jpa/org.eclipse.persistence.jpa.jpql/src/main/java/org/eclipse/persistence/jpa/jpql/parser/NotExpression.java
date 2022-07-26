@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * <div><b>BNF:</b> <code>expression ::= NOT conditional_primary</code><p></div>
+ * <div><b>BNF:</b> <code>expression ::= NOT conditional_primary</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -39,7 +39,7 @@ public final class NotExpression extends AbstractExpression {
     private boolean hasSpaceAfterNot;
 
     /**
-     * The actual <b></b> identifier found in the string representation of the JPQL query.
+     * The actual <b>NOT</b> identifier found in the string representation of the JPQL query.
      */
     private String identifier;
 
@@ -52,33 +52,21 @@ public final class NotExpression extends AbstractExpression {
         super(parent, NOT);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -93,9 +81,6 @@ public final class NotExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -128,9 +113,6 @@ public final class NotExpression extends AbstractExpression {
         return expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ConditionalPrimaryBNF.ID);
@@ -157,9 +139,6 @@ public final class NotExpression extends AbstractExpression {
         return hasSpaceAfterNot;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return wordParser.startsWithIdentifier(AND) ||
@@ -167,9 +146,6 @@ public final class NotExpression extends AbstractExpression {
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
         identifier = wordParser.moveForward(NOT);
@@ -177,9 +153,6 @@ public final class NotExpression extends AbstractExpression {
         expression = parse(wordParser, ConditionalPrimaryBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,6 +90,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         // user code begin {1}
         // user code end
@@ -130,9 +131,9 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             }
         } else {
             Vector summariesHasResult = new Vector();
-            for (Enumeration enumtr = selectedSummary.getLoadBuildSummary().getSummaries().elements();
-                     enumtr.hasMoreElements();) {
-                TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
+            for (Enumeration<TestResultsSummary> enumtr = selectedSummary.getLoadBuildSummary().getSummaries().elements();
+                 enumtr.hasMoreElements();) {
+                TestResultsSummary summary = enumtr.nextElement();
                 if ((summary.getResults() != null) && (summary.getResults().size() != 0)) {
                     summariesHasResult.addElement(summary);
                 }
@@ -164,7 +165,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     /**
-     * connEtoC1:  (UpButton.action.actionPerformed(java.awt.event.ActionEvent) --> LoadBuildDisplayPanel.up()V)
+     * connEtoC1:  (UpButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoadBuildDisplayPanel.up()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC1(java.awt.event.ActionEvent arg1) {
@@ -176,7 +177,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     /**
-     * connEtoC2:  (LoadErrorTestResultButton.action.actionPerformed(java.awt.event.ActionEvent) --> LoadBuildDisplayPanel.loadErrorTestResults()V)
+     * connEtoC2:  (LoadErrorTestResultButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoadBuildDisplayPanel.loadErrorTestResults()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC2(java.awt.event.ActionEvent arg1) {
@@ -188,7 +189,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     /**
-     * connEtoC3:  (InspectButton1.action.actionPerformed(java.awt.event.ActionEvent) --> LoadBuildDisplayPanel.inspectSelectedLoadBuild()V)
+     * connEtoC3:  (InspectButton1.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoadBuildDisplayPanel.inspectSelectedLoadBuild()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC3(java.awt.event.ActionEvent arg1) {
@@ -200,7 +201,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     /**
-     * connEtoC4:  (JButton1.action.actionPerformed(java.awt.event.ActionEvent) --> LoadBuildDisplayPanel.viewStackTrace()V)
+     * connEtoC4:  (JButton1.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoadBuildDisplayPanel.viewStackTrace()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -221,7 +222,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     /**
-     * connEtoC9:  (DeleteButton.action.actionPerformed(java.awt.event.ActionEvent) --> LoadBuildDisplayPanel.deleteLoadBuild()V)
+     * connEtoC9:  (DeleteButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoadBuildDisplayPanel.deleteLoadBuild()V)
      * @param arg1 java.awt.event.ActionEvent
      */
 
@@ -759,8 +760,8 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     public void initilaizeTestSummaryCache(LoadBuildSummary loadBuild) {
         Vector rootSummaries = new Vector();
 
-        for (Enumeration enumtr = loadBuild.getSummaries().elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
+        for (Enumeration<TestResultsSummary> enumtr = loadBuild.getSummaries().elements(); enumtr.hasMoreElements();) {
+            TestResultsSummary summary = enumtr.nextElement();
             if (summary.getParent() == null) {
                 rootSummaries.addElement(summary);
             }
@@ -777,9 +778,9 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
 
         Vector children = new Vector();
 
-        for (Enumeration enumtr = theSummary.getLoadBuildSummary().getSummaries().elements();
-                 enumtr.hasMoreElements();) {
-            TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
+        for (Enumeration<TestResultsSummary> enumtr = theSummary.getLoadBuildSummary().getSummaries().elements();
+             enumtr.hasMoreElements();) {
+            TestResultsSummary summary = enumtr.nextElement();
             if ((summary.getParent() != null) && summary.getParent().getName().equals(theSummary.getName())) {
                 children.addElement(summary);
             }
@@ -789,7 +790,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
 
     public void inspect(Object object) {
         try {
-            Class[] argTypes = new Class[1];
+            Class<?>[] argTypes = new Class<?>[1];
             argTypes[0] = Object.class;
             Object[] args = new Object[1];
             args[0] = object;
@@ -828,6 +829,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     /**
      * Invoked when the mouse has been clicked on a component.
      */
+    @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getClickCount() > 1) {
             down();
@@ -837,24 +839,28 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     /**
      * Invoked when the mouse enters a component.
      */
+    @Override
     public void mouseEntered(MouseEvent e) {
     }
 
     /**
      * Invoked when the mouse exits a component.
      */
+    @Override
     public void mouseExited(MouseEvent e) {
     }
 
     /**
      * Invoked when a mouse button has been pressed on a component.
      */
+    @Override
     public void mousePressed(MouseEvent e) {
     }
 
     /**
      * Invoked when a mouse button has been released on a component.
      */
+    @Override
     public void mouseReleased(MouseEvent e) {
     }
 
@@ -873,12 +879,12 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             row.addElement(summary.getLoadBuildSummary().jvm);
             row.addElement(summary.getLoadBuildSummary().machine);
             row.addElement(summary.getLoadBuildSummary().toplinkVersion);
-            row.addElement(new Integer(summary.getTotalTests()));
-            row.addElement(new Integer(summary.getSetupFailures()));
-            row.addElement(new Integer(summary.getErrors()));
-            row.addElement(new Integer(summary.getFatalErrors()));
-            row.addElement(new Integer(summary.getProblems()));
-            row.addElement(new Long(summary.getTotalTime()));
+            row.addElement(summary.getTotalTests());
+            row.addElement(summary.getSetupFailures());
+            row.addElement(summary.getErrors());
+            row.addElement(summary.getFatalErrors());
+            row.addElement(summary.getProblems());
+            row.addElement(summary.getTotalTime());
             tableModel.addRow(row);
         }
         getSelectedTable().setModel(tableModel);
@@ -900,9 +906,9 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             Vector row = new Vector();
             row.addElement(result.getName());
             row.addElement(result.getOutcome());
-            row.addElement(new Long(result.getTestTime()));
-            row.addElement(new Long(result.getTotalTime()));
-            row.addElement(new Boolean(result.getException() != null));
+            row.addElement(result.getTestTime());
+            row.addElement(result.getTotalTime());
+            row.addElement(result.getException() != null);
             row.addElement(result.getLoadBuildSummary().timestamp);
             row.addElement(result.getLoadBuildSummary().loginChoice);
             row.addElement(result.getLoadBuildSummary().os);
@@ -929,14 +935,14 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
             Vector row = new Vector();
             row.addElement(summary.getName());
-            row.addElement(new Integer(summary.getTotalTests()));
-            row.addElement(new Integer(summary.getSetupFailures()));
-            row.addElement(new Integer(summary.getPassed()));
-            row.addElement(new Integer(summary.getErrors()));
-            row.addElement(new Integer(summary.getFatalErrors()));
-            row.addElement(new Integer(summary.getProblems()));
-            row.addElement(new Integer(summary.getWarnings()));
-            row.addElement(new Long(summary.getTotalTime()));
+            row.addElement(summary.getTotalTests());
+            row.addElement(summary.getSetupFailures());
+            row.addElement(summary.getPassed());
+            row.addElement(summary.getErrors());
+            row.addElement(summary.getFatalErrors());
+            row.addElement(summary.getProblems());
+            row.addElement(summary.getWarnings());
+            row.addElement(summary.getTotalTime());
             tableModel.addRow(row);
         }
         getSelectedTable().setModel(tableModel);

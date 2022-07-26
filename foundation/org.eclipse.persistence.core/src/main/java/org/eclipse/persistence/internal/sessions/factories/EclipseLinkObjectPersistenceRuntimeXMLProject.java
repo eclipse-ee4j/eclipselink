@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -309,7 +309,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         sqlTypeMapping.setGetMethodName("getSqlType");
         sqlTypeMapping.setSetMethodName("setSqlType");
         sqlTypeMapping.setXPath(getPrimaryNamespaceXPath() + "@sql-typecode");
-        sqlTypeMapping.setNullValue(Integer.valueOf(NULL_SQL_TYPE));
+        sqlTypeMapping.setNullValue(NULL_SQL_TYPE);
         NullPolicy nullPolicy = new NullPolicy();
         nullPolicy.setNullRepresentedByEmptyNode(false);
         nullPolicy.setNullRepresentedByXsiNil(false);

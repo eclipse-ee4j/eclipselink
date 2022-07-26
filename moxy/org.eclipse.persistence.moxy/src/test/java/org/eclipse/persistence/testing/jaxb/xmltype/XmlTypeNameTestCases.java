@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ public class XmlTypeNameTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[13];
+        Class<?>[] classes = new Class<?>[13];
         classes[0] = GetPageResponse.class;
         classes[1] = A2BCDESomeTest.class; //complex type for this should be "a2BCDESomeTest"
         classes[2] = b.class;  //complex type should be "b"
@@ -48,6 +48,7 @@ public class XmlTypeNameTestCases extends JAXBWithJSONTestCases {
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         Page returnPage = new Page();
         returnPage.setIsEmailLinkRequired(VALUE);

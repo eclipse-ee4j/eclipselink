@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,12 @@ import org.eclipse.persistence.testing.framework.ReadAllTest;
  *
  */
 public class PredefinedQueryReadAllTest extends ReadAllTest {
-    public PredefinedQueryReadAllTest(Class referenceClass, int originalObjectsSize) {
+    public PredefinedQueryReadAllTest(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
         setName("PredefinedQueryReadAllTest");
     }
 
+    @Override
     protected void setup() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
@@ -38,6 +39,7 @@ public class PredefinedQueryReadAllTest extends ReadAllTest {
 
     }
 
+    @Override
     protected void test() {
         this.objectsFromDatabase = getSession().executeQuery("getAllEmployees");
         // Test execution twice to ensure query is cloned correctly

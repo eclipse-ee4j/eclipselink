@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2017, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -191,7 +191,7 @@ public class DriverWrapper implements Driver {
     static Driver getDriver() {
         if(driver == null) {
             try {
-                driver = (Driver)Class.forName(driverName, true, Thread.currentThread().getContextClassLoader()).newInstance();
+                driver = (Driver)Class.forName(driverName, true, Thread.currentThread().getContextClassLoader()).getConstructor().newInstance();
             } catch (Exception ex) {
                 throw new RuntimeException("DriverWrapper: failed to instantiate " + driverName, ex);
             }
@@ -223,6 +223,7 @@ public class DriverWrapper implements Driver {
     /*
      * The following methods implement Driver interface
      */
+    @Override
     public Connection connect(String url, java.util.Properties info) throws SQLException {
         if(driverBroken) {
             throw new SQLException(getDriverBrokenExceptionString());
@@ -243,6 +244,7 @@ public class DriverWrapper implements Driver {
         }
     }
 
+    @Override
     public boolean acceptsURL(String url) throws SQLException {
         if(driverName != null) {
             if(driverBroken) {
@@ -256,6 +258,7 @@ public class DriverWrapper implements Driver {
         }
     }
 
+    @Override
     public DriverPropertyInfo[] getPropertyInfo(String url, java.util.Properties info) throws SQLException {
         if(driverBroken) {
             throw new SQLException(getDriverBrokenExceptionString());
@@ -263,17 +266,21 @@ public class DriverWrapper implements Driver {
         return getDriver().getPropertyInfo(url, info);
     }
 
+    @Override
     public int getMajorVersion() {
         return getDriver().getMajorVersion();
     }
 
+    @Override
     public int getMinorVersion() {
         return getDriver().getMinorVersion();
     }
 
+    @Override
     public boolean jdbcCompliant() {
         return getDriver().jdbcCompliant();
     }
 
+    @Override
     public Logger getParentLogger() {return null;}
 }

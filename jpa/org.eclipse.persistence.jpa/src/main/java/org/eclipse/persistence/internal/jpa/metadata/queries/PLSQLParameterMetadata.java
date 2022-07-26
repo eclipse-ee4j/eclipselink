@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +16,8 @@
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import org.eclipse.persistence.annotations.Direction;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -229,8 +232,8 @@ public class PLSQLParameterMetadata extends ORMetadata {
             // check for cursor return type
             if (Direction.OUT_CURSOR.name().equals(m_direction)) {
                 // the constructor by default adds a RETURN argument, so remove it
-                ((PLSQLStoredFunctionCall)call).getArguments().remove(0);
-                ((PLSQLStoredFunctionCall)call).useNamedCursorOutputAsResultSet(Direction.OUT_CURSOR.name(), type);
+                call.getArguments().remove(0);
+                call.useNamedCursorOutputAsResultSet(Direction.OUT_CURSOR.name(), type);
             } else {
                 if (getLength() != null) {
                     ((PLSQLStoredFunctionCall)call).setResult(type, getLength());
@@ -267,7 +270,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
             }
         } else if (m_direction.equals(Direction.OUT_CURSOR.name())) {
             boolean multipleCursors = false;
-            if (call.getParameterTypes().contains(call.OUT_CURSOR)) {
+            if (call.getParameterTypes().contains(ParameterType.OUT_CURSOR)) {
                 multipleCursors = true;
             }
             call.useNamedCursorOutputAsResultSet(procedureParameterName, type);

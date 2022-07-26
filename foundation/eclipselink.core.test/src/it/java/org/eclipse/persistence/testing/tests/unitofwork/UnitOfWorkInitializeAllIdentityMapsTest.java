@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,16 +37,19 @@ public class UnitOfWorkInitializeAllIdentityMapsTest extends AutoVerifyTestCase 
         setDescription("UnitOfWorkInitializeAllIdentityMapsTest checks the getIdentityMapAccessor().initializeAllIdentityMaps() method.");
     }
 
+    @Override
     public void reset() {
         // Initialize Session identitymaps
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         // Initialize Session identitymaps
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void test() {
         try {
             // Get a UnitOfWork
@@ -90,6 +93,7 @@ public class UnitOfWorkInitializeAllIdentityMapsTest extends AutoVerifyTestCase 
         }
     }
 
+    @Override
     protected void verify() throws Exception {
         // If any errors, throw them here
         if (storedException != null) {

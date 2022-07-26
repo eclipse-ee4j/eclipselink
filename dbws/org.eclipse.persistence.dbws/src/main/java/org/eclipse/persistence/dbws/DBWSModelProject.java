@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,8 +62,8 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 import org.xml.sax.Attributes;
 
@@ -283,6 +283,7 @@ public class DBWSModelProject extends Project {
 
         XMLDirectMapping isCollection = new XMLDirectMapping();
         isCollection.setAttributeAccessor(new AttributeAccessor() {
+
             @Override
             public String getAttributeName() {
                 return "isCollection";
@@ -307,9 +308,10 @@ public class DBWSModelProject extends Project {
         descriptor.getInheritancePolicy().setClassIndicatorField(isColl);
         descriptor.getInheritancePolicy().setClassExtractor(new ClassExtractor() {
             @Override
-            public Class<?> extractClassFromRow(Record record, Session session) {
+            @SuppressWarnings({"unchecked"})
+            public <T> Class<T> extractClassFromRow(DataRecord dataRecord, Session session) {
                 Class<?> clz = Result.class;
-                UnmarshalRecord uRecord = (UnmarshalRecord)record;
+                UnmarshalRecord uRecord = (UnmarshalRecord) dataRecord;
                 Attributes attrs = uRecord.getAttributes();
                 if (attrs != null) {
                     for (int i = 0, l = attrs.getLength(); i < l; i++) {
@@ -323,7 +325,7 @@ public class DBWSModelProject extends Project {
                         }
                     }
                 }
-                return clz;
+                return (Class<T>) clz;
             }
         });
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package org.eclipse.persistence.internal.sequencing;
 
 import java.util.Iterator;
-import org.eclipse.persistence.internal.sequencing.Sequencing;
+
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 
@@ -25,9 +25,9 @@ class SessionBrokerSequencing implements Sequencing {
 
     public static boolean atLeastOneSessionHasSequencing(SessionBroker br) {
         boolean hasSequencing = false;
-        Iterator sessionEnum = br.getSessionsByName().values().iterator();
+        Iterator<AbstractSession> sessionEnum = br.getSessionsByName().values().iterator();
         while (sessionEnum.hasNext() && !hasSequencing) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             hasSequencing = session.getSequencing() != null;
         }
         return hasSequencing;
@@ -41,9 +41,9 @@ class SessionBrokerSequencing implements Sequencing {
     protected void initialize() {
         whenShouldAcquireValueForAll = UNDEFINED;
         boolean first = true;
-        Iterator sessionEnum = broker.getSessionsByName().values().iterator();
+        Iterator<AbstractSession> sessionEnum = broker.getSessionsByName().values().iterator();
         while ((first || (whenShouldAcquireValueForAll != UNDEFINED)) && sessionEnum.hasNext()) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
+            AbstractSession session = sessionEnum.next();
             Sequencing sequencing = session.getSequencing();
             if (sequencing != null) {
                 if (first) {
@@ -59,7 +59,7 @@ class SessionBrokerSequencing implements Sequencing {
     }
 
     // internal
-    protected Sequencing get(Class cls) {
+    protected Sequencing get(Class<?> cls) {
         return broker.getSessionForClass(cls).getSequencing();
     }
 
@@ -69,7 +69,7 @@ class SessionBrokerSequencing implements Sequencing {
     }
 
     @Override
-    public Object getNextValue(Class cls) {
+    public Object getNextValue(Class<?> cls) {
         return get(cls).getNextValue(cls);
     }
 }

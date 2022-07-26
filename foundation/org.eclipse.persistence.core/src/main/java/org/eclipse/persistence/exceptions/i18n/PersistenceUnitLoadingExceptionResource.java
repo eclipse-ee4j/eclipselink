@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,7 +19,7 @@ package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
 
-public class PersistenceUnitLoadingExceptionResource extends ListResourceBundle {
+public final class PersistenceUnitLoadingExceptionResource extends ListResourceBundle {
 
         static final Object[][] contents = {
                                            { "30001", "An exception was thrown while trying to load a persistence unit for directory: {0}"},
@@ -42,6 +42,13 @@ public class PersistenceUnitLoadingExceptionResource extends ListResourceBundle 
                                            { "30018", "Exception: {1} occurred while trying to instantiate user-specified ArchiveFactory: {0}."},
                                            { "30019", "You are calling refreshMetadata on an EntityManagerFactory for persistence unit {0}.  The metadata cannot be refreshed because this EntityManagerFactory was created from a session object rather derived from a persistence unit."}
     };
+
+    /**
+     * Default constructor.
+     */
+    public PersistenceUnitLoadingExceptionResource() {
+        // for reflection
+    }
 
     /**
       * Return the lookup table.

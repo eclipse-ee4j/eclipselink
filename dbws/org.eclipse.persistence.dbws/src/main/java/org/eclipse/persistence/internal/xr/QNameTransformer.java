@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,6 @@
 package org.eclipse.persistence.internal.xr;
 
 //javase imports
-import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
-import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY_QNAME;
@@ -78,14 +76,14 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class QNameTransformer implements AttributeTransformer, FieldTransformer {
 
   public static final Map<String, QName> SCHEMA_QNAMES;
   static {
-      SCHEMA_QNAMES = Collections.unmodifiableMap(new HashMap<String, QName>() {
+      SCHEMA_QNAMES = Collections.unmodifiableMap(new HashMap<>() {
           {
               put(ANY, ANY_QNAME);
               put(ANY_SIMPLE_TYPE, ANY_SIMPLE_TYPE_QNAME);
@@ -117,7 +115,7 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
 
   AbstractTransformationMapping transformationMapping;
   private transient NamespaceResolver namespaceResolver;
-  private String xPath;
+  private final String xPath;
 
   public QNameTransformer(String xPath) {
       super();
@@ -131,40 +129,30 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
   }
 
   @Override
-  public Object buildAttributeValue(Record record, Object object, Session session) {
-      if (null == record) {
+  public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
+      if (null == dataRecord) {
           return null;
       }
-      String value = (String)record.get(xPath);
+      String value = (String) dataRecord.get(xPath);
       if (null == value) {
           return null;
       }
-      QName qName = null;
       int index = value.lastIndexOf(COLON);
       if (index > -1) {
           String prefix = value.substring(0, index);
           String localName = value.substring(index + 1);
-          String namespaceURI = ((XMLRecord)record).resolveNamespacePrefix(prefix);
+          String namespaceURI = ((XMLRecord) dataRecord).resolveNamespacePrefix(prefix);
           // check for W3C_XML_SCHEMA_NS_URI - return TL_OX pre-built QName's
           if (W3C_XML_SCHEMA_NS_URI.equals(namespaceURI)) {
-              qName = SCHEMA_QNAMES.get(localName);
+              QName qName = SCHEMA_QNAMES.get(localName);
               if (qName == null) { // unknown W3C_XML_SCHEMA_NS_URI type ?
-                  qName = new QName(W3C_XML_SCHEMA_NS_URI, localName,
-                      prefix == null ? DEFAULT_NS_PREFIX : prefix);
+                  return new QName(W3C_XML_SCHEMA_NS_URI, localName, prefix);
               }
           }
-          else {
-              qName = new QName(namespaceURI == null ? NULL_NS_URI : namespaceURI, localName,
-                  prefix == null ? DEFAULT_NS_PREFIX : prefix);
-          }
-          return qName;
+          return new QName(namespaceURI, localName, prefix);
       }
-      else {
-          String namespaceURI = ((XMLRecord)record)
-              .resolveNamespacePrefix(DEFAULT_NAMESPACE_PREFIX);
-          qName = new QName(namespaceURI, value);
-      }
-      return qName;
+      String namespaceURI = ((XMLRecord) dataRecord).resolveNamespacePrefix(DEFAULT_NAMESPACE_PREFIX);
+      return new QName(namespaceURI, value);
   }
 
   @Override

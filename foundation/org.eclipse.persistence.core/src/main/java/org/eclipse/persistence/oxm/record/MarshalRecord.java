@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,7 +78,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     protected static final String TRUE = "true";
 
 
-    public MarshalRecord() {
+    protected MarshalRecord() {
         super(null);
         namespaceResolver = new NamespaceResolver();
     }
@@ -118,7 +118,6 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * INTERNAL:
      * If an XPathNode does not have an associated NodeValue then add it to the
      * MarshalRecord as a grouping element.
-     * @param xPathNode
      */
     @Override
     public void addGroupingElement(XPathNode xPathNode) {
@@ -131,7 +130,6 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     /**
      *
      * INTERNAL:
-     * @param xPathNode
      */
     @Override
     public void removeGroupingElement(XPathNode xPathNode) {
@@ -207,10 +205,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     /**
      * Handle marshal of an empty collection.
-     * @param xPathFragment
-     * @param namespaceResolver
      * @param openGrouping if grouping elements should be marshalled for empty collections
-     * @return
      */
     @Override
     public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
@@ -225,8 +220,6 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     /**
      * Add the specified namespace declaration
-     * @param prefix
-     * @param namespaceURI
      */
     @Override
     public void namespaceDeclaration(String prefix, String namespaceURI){
@@ -235,7 +228,6 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     /**
      * Add the defaultNamespace declaration
-     * @param defaultNamespace
      */
     public void defaultNamespaceDeclaration(String defaultNamespace){
         attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE, javax.xml.XMLConstants.XMLNS_ATTRIBUTE, defaultNamespace);
@@ -373,7 +365,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
              String convertedValue = getStringForQName((QName)value);
              attribute(xPathFragment, namespaceResolver, convertedValue);
          } else{
-             String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+             String convertedValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
              attribute(xPathFragment, namespaceResolver, convertedValue);
          }
     }
@@ -397,7 +389,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             String convertedValue = getStringForQName((QName)value);
             characters(convertedValue);
         }else{
-            String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+            String convertedValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
             if(isCDATA){
                 cdata(convertedValue);
             }else{
@@ -416,7 +408,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }else if(value.getClass() == String.class){
             return (String) value;
         }
-        return (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
+        return conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
     protected String getStringForQName(QName qName){
@@ -528,7 +520,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             if (null == index) {
                 start = 1;
             } else {
-                start = index.intValue();
+                start = index;
             }
             for (int x = start; x < xPathFragment.getIndexValue(); x++) {
                 element(xPathFragment);
@@ -715,7 +707,6 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     /**
      * INTERNAL:
      * Private function to process or create an entry in the NamespaceResolver for the xsi prefix.
-     * @param namespaceResolver
      * @return xsi prefix
      * @since EclipseLink 2.4
 

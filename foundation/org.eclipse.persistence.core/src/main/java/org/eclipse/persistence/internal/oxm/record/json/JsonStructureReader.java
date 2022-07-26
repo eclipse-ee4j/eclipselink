@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,7 +74,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
     private NamespaceResolver namespaces = null;
     private boolean includeRoot;
     private String textWrapper;
-    private Class unmarshalClass;
+    private Class<?> unmarshalClass;
     private boolean isInCollection;
     private JsonStructure jsonStructure;
     private JsonAttributes attributes = new JsonAttributes();
@@ -88,7 +88,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
         this(u, null);
     }
 
-    public JsonStructureReader(Unmarshaller u, Class clazz) {
+    public JsonStructureReader(Unmarshaller u, Class<?> clazz) {
         this.attributePrefix = u.getAttributePrefix();
         if (Constants.EMPTY_STRING.equals(attributePrefix)) {
             attributePrefix = null;
@@ -512,6 +512,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 .getContentHandler() instanceof UnmarshalRecord;
     }
 
+    @Override
     public boolean isNullRepresentedByXsiNil(AbstractNullPolicy nullPolicy) {
         return true;
     }
@@ -567,7 +568,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                     return new QName(localName);
                 }
             } else {
-                Class fieldType = xmlField.getType();
+                Class<?> fieldType = xmlField.getType();
                 if (fieldType == null) {
                     fieldType = xmlField.getJavaClass(xmlField.getSchemaType(), conversionManager);
                 }

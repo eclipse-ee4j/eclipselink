@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import java.util.Map;
 /**
  * <p>
  * <b>Purpose</b>: Synchronous and asynchronous propagation of remote commands
+ * </p>
  * <p>
  * <b>Description</b>: Maintains a reference to the RemoteCommandManager to obtain
  * the connection information required to send the commands. In sync mode the caller
@@ -30,7 +31,7 @@ import java.util.Map;
  * async mode then a CommandPropagator instance is further created for each of the
  * connections and control is returned to the caller while the threads send the
  * command to the remote services.
- * <p>
+ * </p>
  */
 public class CommandPropagator implements Runnable {
 
@@ -86,10 +87,10 @@ public class CommandPropagator implements Runnable {
      */
     public void synchronousPropagateCommand() {
         rcm.logDebug("sync_propagation", null);
-        Iterator connections = rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation().values().iterator();
+        Iterator<RemoteConnection> connections = rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation().values().iterator();
 
         while (connections.hasNext()) {
-            connection = (RemoteConnection)connections.next();
+            connection = connections.next();
             this.propagateCommand(connection);
         }
     }
@@ -196,18 +197,18 @@ public class CommandPropagator implements Runnable {
                 this.rcm.getCommandProcessor().endOperationProfile(SessionProfiler.CacheCoordination);
             }
         } else {
-            Map mapConnections = this.rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation();
-            Iterator iterator = mapConnections.values().iterator();
+            Map<String, RemoteConnection> mapConnections = this.rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation();
+            Iterator<RemoteConnection> iterator = mapConnections.values().iterator();
             if (mapConnections.size() == 1) {
                 // There is only one connection - no need for yet another thread.
                 // Set the connection into the current one
                 // so that it's recognized as async propagation in handleCommunicationException method.
-                this.connection = (RemoteConnection)iterator.next();
+                this.connection = iterator.next();
                 propagateCommand(this.connection);
             } else {
                 // This is the top level thread. We need to spawn off a bunch of async connection threads
                 while (iterator.hasNext()) {
-                    RemoteConnection remoteConnection = (RemoteConnection)iterator.next();
+                    RemoteConnection remoteConnection = iterator.next();
                     CommandPropagator propagator = new CommandPropagator(this.rcm, this.command, this.commandBytes, remoteConnection);
                     this.rcm.getServerPlatform().launchContainerRunnable(propagator);
                 }

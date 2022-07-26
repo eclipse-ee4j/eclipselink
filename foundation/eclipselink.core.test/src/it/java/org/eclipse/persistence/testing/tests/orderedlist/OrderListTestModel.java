@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import java.util.Vector;
 import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
@@ -83,7 +84,7 @@ public class OrderListTestModel extends TestModel {
      * setup saves there the original state of something, sets a new state required for testing,
      * then reset brings back the saved original state.
      */
-    Map<Class, ObjectChangeTrackingPolicy> originalChangeTrackingPolicies;
+    Map<Class<?>, ObjectChangeTrackingPolicy> originalChangeTrackingPolicies;
 
     /*
      * Constants used by WhereToAdd tests.
@@ -272,12 +273,14 @@ public class OrderListTestModel extends TestModel {
         }
     }
 
+    @Override
     public void addRequiredSystems() {
         if(!isTopLevel) {
             addRequiredSystem(new EmployeeSystem(useListOrderField, useIndirection, isPrivatelyOwned, useSecondaryTable, useVarcharOrder, changeTracking, orderCorrectionType, shouldOverrideContainerPolicy, joinFetchOrBatchRead));
         }
     }
 
+    @Override
     public void addTests() {
         if(!isTopLevel) {
             addTest(new CreateTest());
@@ -351,11 +354,12 @@ public class OrderListTestModel extends TestModel {
         }
     }
 
+    @Override
     public void setup() {
         if(!isTopLevel) {
             if(changeTracking == ChangeTracking.ATTRIBUTE) {
                 // Save change policies for the all employee demo class in order to restore them at reset time.
-                Map originalChangeTrackingPolicies = new HashMap<Class, ObjectChangeTrackingPolicy>();
+                Map<Class<?>, ObjectChangePolicy> originalChangeTrackingPolicies = new HashMap<>();
 
                 originalChangeTrackingPolicies.put(Employee.class, getSession().getDescriptor(Employee.class).getObjectChangePolicy());
                 getSession().getDescriptor(Employee.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
@@ -378,13 +382,14 @@ public class OrderListTestModel extends TestModel {
         }
     }
 
+    @Override
     public void reset() {
         if(!isTopLevel) {
             // restore original change policies.
             if(originalChangeTrackingPolicies != null) {
-                Iterator<Map.Entry<Class, ObjectChangeTrackingPolicy>> it = originalChangeTrackingPolicies.entrySet().iterator();
+                Iterator<Map.Entry<Class<?>, ObjectChangeTrackingPolicy>> it = originalChangeTrackingPolicies.entrySet().iterator();
                 while(it.hasNext()) {
-                    Map.Entry<Class, ObjectChangeTrackingPolicy> entry = it.next();
+                    Map.Entry<Class<?>, ObjectChangeTrackingPolicy> entry = it.next();
                     getSession().getDescriptor(entry.getKey()).setObjectChangePolicy(entry.getValue());
                 }
                 originalChangeTrackingPolicies = null;
@@ -471,6 +476,7 @@ public class OrderListTestModel extends TestModel {
          * Debugging: putting a breakpoint at the first line of this method is a good place to set some of
          * useManagedEmployees, useChildren, useProjects, useResponsibilities, usePhones to false if desired.
          */
+        @Override
         public void setup() {
             if(!useManagedEmployees && !useChildren && !useProjects && !useResponsibilities && !usePhones) {
                 throw new TestProblemException("useManagedEmployees, useChildren, useProjects, useResponsibilities, usePhones are all false - nothing to test");
@@ -478,6 +484,7 @@ public class OrderListTestModel extends TestModel {
             validateFlags();
         }
 
+        @Override
         public void reset() {
             if(useManagedEmployees) {
                 if(useSecondaryTable) {
@@ -1165,6 +1172,7 @@ public class OrderListTestModel extends TestModel {
             uow.commit();
         }
 
+        @Override
         protected void verify() {
             if(manager == null) {
                 throw new TestErrorException("manager == null. Nothing to verify");
@@ -1254,6 +1262,7 @@ public class OrderListTestModel extends TestModel {
             }
         }
 
+        @Override
         public void reset() {
             super.reset();
             manager = null;
@@ -1272,6 +1281,7 @@ public class OrderListTestModel extends TestModel {
         CreateTest() {
             super();
         }
+        @Override
         public void test() {
             createManager();
         }
@@ -1295,6 +1305,7 @@ public class OrderListTestModel extends TestModel {
         ChangeTest() {
             super();
         }
+        @Override
         public void setup() {
             super.setup();
             createManager();
@@ -1403,6 +1414,7 @@ public class OrderListTestModel extends TestModel {
                 }
             }
         }
+        @Override
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             transpose(uow);
@@ -1422,9 +1434,11 @@ public class OrderListTestModel extends TestModel {
             // This test transposes objects in detached collection, doesn't care whether set or remove/add
             super(oldIndexes, newIndexes, true);
         }
+        @Override
         void setName() {
             setName(getName() + " " + toString(oldIndexes) + " -> " + toString(newIndexes));
         }
+        @Override
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             transpose(uow);
@@ -1445,6 +1459,7 @@ public class OrderListTestModel extends TestModel {
             super();
         }
 
+        @Override
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
@@ -1466,6 +1481,7 @@ public class OrderListTestModel extends TestModel {
             super();
         }
 
+        @Override
         public void setup() {
             // Strings are immutable - can't update.
             useResponsibilities = false;
@@ -1474,6 +1490,7 @@ public class OrderListTestModel extends TestModel {
             super.setup();
         }
 
+        @Override
         public void test() {
             // create a list of objects to be added
             List newList = this.create("new", 0);
@@ -1500,6 +1517,7 @@ public class OrderListTestModel extends TestModel {
             uow.commit();
         }
 
+        @Override
         public void verify() {
             super.verify();
             if(isPrivatelyOwned) {
@@ -1522,6 +1540,7 @@ public class OrderListTestModel extends TestModel {
             nSize = 12;
         }
 
+        @Override
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
@@ -1542,6 +1561,7 @@ public class OrderListTestModel extends TestModel {
             super();
         }
 
+        @Override
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
@@ -1567,6 +1587,7 @@ public class OrderListTestModel extends TestModel {
             setName(getName() + (useSet ? " set" : " remove/add"));
         }
 
+        @Override
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
@@ -1578,7 +1599,7 @@ public class OrderListTestModel extends TestModel {
                     addTo(managerClone, create("temp", 2));
                 }
             }
-            List list = createList();
+            List<List> list = createList();
             addTo(list, create("new", 0));
             addTo(list, create("new", 1));
             setListInto(managerClone, list);
@@ -1603,6 +1624,7 @@ public class OrderListTestModel extends TestModel {
             this.useIndex = useIndex;
             setName(getName() + (useIndex ? " use index()" : " use getField()"));
         }
+        @Override
         public void test() {
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
             if(useManagedEmployees) {
@@ -1698,6 +1720,7 @@ public class OrderListTestModel extends TestModel {
             return Integer.parseInt(str);
         }
 
+        @Override
         protected void verify() {
             if(errorMsg.length() > 0) {
                 errorMsg = "\n" + errorMsg;
@@ -1761,6 +1784,7 @@ public class OrderListTestModel extends TestModel {
             setName(getName() + " " + whereToAdd);
         }
 
+        @Override
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
@@ -1787,6 +1811,7 @@ public class OrderListTestModel extends TestModel {
         AddNullTest(String whereToAdd) {
             super(whereToAdd);
         }
+        @Override
         List objectToAdd() {
             List list = create("new", 0);
             for(int i=0; i < list.size(); i++) {
@@ -1808,6 +1833,7 @@ public class OrderListTestModel extends TestModel {
         AddDuplicateTest(String whereToAdd) {
             super(whereToAdd);
         }
+        @Override
         List objectToAdd() {
             List newList = create("new", 0);
             List oldList = getFrom(managerClone, 0);
@@ -1834,8 +1860,10 @@ public class OrderListTestModel extends TestModel {
                 throw new TestProblemException("Requires OrderCorrectionType.EXCEPTION");
             }
         }
+        @Override
         abstract public void test();
 
+        @Override
         protected void verify() {
             try {
                 super.verify();
@@ -1854,6 +1882,7 @@ public class OrderListTestModel extends TestModel {
         BreakOrderExceptionTest_OneToMany() {
             super();
         }
+        @Override
         public void test() {
             breakManagedEmployeesOrder();
         }
@@ -1862,6 +1891,7 @@ public class OrderListTestModel extends TestModel {
         BreakOrderExceptionTest_UnidirectionalOneToMany() {
             super();
         }
+        @Override
         public void test() {
             breakChildrenOrder();
         }
@@ -1870,6 +1900,7 @@ public class OrderListTestModel extends TestModel {
         BreakOrderExceptionTest_ManyToMany() {
             super();
         }
+        @Override
         public void test() {
             breakProjectsOrder();
         }
@@ -1878,6 +1909,7 @@ public class OrderListTestModel extends TestModel {
         BreakOrderExceptionTest_DirectCollection() {
             super();
         }
+        @Override
         public void test() {
             breakResponsibilitiesOrder();
         }
@@ -1886,6 +1918,7 @@ public class OrderListTestModel extends TestModel {
         BreakOrderExceptionTest_AggregateCollection() {
             super();
         }
+        @Override
         public void test() {
             breakPhonesOrder();
         }
@@ -1899,6 +1932,7 @@ public class OrderListTestModel extends TestModel {
         BreakOrderCorrectionAndRemoveTest(boolean shoulReadManagerThroughUow) {
             super(shoulReadManagerThroughUow);
         }
+        @Override
         public void test() {
             breakOrder();
 
@@ -1960,6 +1994,7 @@ public class OrderListTestModel extends TestModel {
             }
             setName(getName() + (shoulReadManagerThroughUow ? " ReadThroughUow" : " ReadThroughSession"));
         }
+        @Override
         public void test() {
             breakOrder();
 
@@ -2003,6 +2038,7 @@ public class OrderListTestModel extends TestModel {
             uow.commit();
         }
 
+        @Override
         protected void verify() {
             OrderCorrectionType originalMode = this.changeOrderCorrectionType(OrderCorrectionType.EXCEPTION);
             try {
@@ -2071,12 +2107,14 @@ public class OrderListTestModel extends TestModel {
             uow.commit();
         }
 
+        @Override
         public void reset() {
             super.reset();
             managers.clear();
             managerClones.clear();
         }
 
+        @Override
         public void verify() {
             if(managers == null || managers.isEmpty()) {
                 throw new TestErrorException("managers is null or empty. Nothing to verify");
@@ -2125,6 +2163,7 @@ public class OrderListTestModel extends TestModel {
             super();
         }
 
+        @Override
         public void setup() {
             createManagers();
         }
@@ -2146,15 +2185,16 @@ public class OrderListTestModel extends TestModel {
      * are of the expected type.
      */
     class VerifyContainerPolicyClassTest extends TestCase {
-        Class expectedClass;
+        Class<?> expectedClass;
         VerifyContainerPolicyClassTest() {
             this(NullsLastOrderedListContainerPolicy.class);
         }
-        VerifyContainerPolicyClassTest(Class expectedClass) {
+        VerifyContainerPolicyClassTest(Class<?> expectedClass) {
             super();
             this.expectedClass = expectedClass;
             setName("VerifyContainerPolicyClassTest");
         }
+        @Override
         public void verify() {
             String errorMsg = "";
             List<CollectionMapping> listOrderMappings = EmployeeSystem.getListOrderMappings(getDatabaseSession());
@@ -2193,12 +2233,14 @@ public class OrderListTestModel extends TestModel {
             setName(getShortClassName() + (deleteSourceObject ? "_deleteSource" : "_removeTarget"));
         }
         // Only tests OneToMany and UnideirectionalOneToMany
+        @Override
         public void setup() {
             this.usePhones = false;
             this.useProjects = false;
             this.useResponsibilities = false;
             super.setup();
         }
+        @Override
         public void test() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             managerClone = (Employee)uow.registerObject(manager);
@@ -2221,6 +2263,7 @@ public class OrderListTestModel extends TestModel {
             }
             uow.commit();
         }
+        @Override
         public void verify() {
             // assume (as usual) that there were no objects in the db when the test started,
             // then all the objects left should have their order set to null (including manager if not deleted).

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,9 +143,9 @@ public abstract class QueryHandler {
     public void initializeArguments(XRServiceAdapter xrService, QueryOperation queryOperation,
         DatabaseQuery databaseQuery) {
         for (int i = 0; i < queryOperation.getParameters().size(); i++) {
-            Object o = queryOperation.getParameters().get(i);
+            Parameter o = queryOperation.getParameters().get(i);
             if (o instanceof Parameter) {
-                Parameter p = (Parameter)o;
+                Parameter p = o;
                 String name = p.getName();
                 if (name != null && name.length() > 0 ) {
                     databaseQuery.addArgument(name);

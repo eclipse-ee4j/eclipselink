@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,12 +32,13 @@ public class NoFieldNameForMappingTest extends ExceptionTest {
         setDescription("This tests No Field Name For Mapping (TL-ERROR 50) " + "");
     }
 
+    @Override
     protected void setup() {
         //    expectedException = DescriptorException.noFieldNameForMapping(null);
         expectedException = DescriptorException.attributeNameNotSpecified();
         expectedException.setErrorCode(50); //work around to avoid 7012 error
 
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
         getSession().setIntegrityChecker(new IntegrityChecker());
         getSession().getIntegrityChecker().dontCatchExceptions();
@@ -46,8 +47,9 @@ public class NoFieldNameForMappingTest extends ExceptionTest {
     ClassDescriptor orgDescriptor;
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         if (orgDescriptor != null) {
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         }
@@ -56,6 +58,7 @@ public class NoFieldNameForMappingTest extends ExceptionTest {
         }
     }
 
+    @Override
     public void test() {
         try {
             ((DatabaseSession)getSession()).addDescriptor(descriptor());

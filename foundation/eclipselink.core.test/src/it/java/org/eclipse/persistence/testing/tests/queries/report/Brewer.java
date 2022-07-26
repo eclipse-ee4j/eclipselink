@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 /**
  * Insert the type's description here.
  * Creation date: (3/2/2003 8:51:02 AM)
- * @author: Administrator
+ * @author Administrator
  */
 public class Brewer implements Cloneable, java.io.Serializable {
     protected String key = null;
@@ -60,6 +60,7 @@ public class Brewer implements Cloneable, java.io.Serializable {
         this.printSomething();
     }
 
+    @Override
     public Object clone() {
         Brewer brewer = new Brewer();
         brewer.key = this.key;

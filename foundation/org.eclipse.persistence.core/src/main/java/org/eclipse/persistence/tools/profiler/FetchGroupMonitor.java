@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  */
 public class FetchGroupMonitor {
 
-    public static Hashtable<Class<?>, Set<String>> fetchedAttributes = new Hashtable<Class<?>, Set<String>>();
+    public static Hashtable<Class<?>, Set<String>> fetchedAttributes = new Hashtable<>();
     public static Boolean shouldMonitor;
 
     public static boolean shouldMonitor() {
@@ -44,7 +44,7 @@ public class FetchGroupMonitor {
                 shouldMonitor = Boolean.TRUE;
             }
         }
-        return shouldMonitor.booleanValue();
+        return shouldMonitor;
     }
 
     public static void recordFetchedAttribute(Class<?> domainClass, String attributeName) {
@@ -54,7 +54,7 @@ public class FetchGroupMonitor {
         synchronized (fetchedAttributes) {
             Set<String> classesFetchedAttributes = fetchedAttributes.get(domainClass);
             if (classesFetchedAttributes == null) {
-                classesFetchedAttributes = new HashSet<String>();
+                classesFetchedAttributes = new HashSet<>();
                 fetchedAttributes.put(domainClass, classesFetchedAttributes);
             }
             if (!classesFetchedAttributes.contains(attributeName)) {

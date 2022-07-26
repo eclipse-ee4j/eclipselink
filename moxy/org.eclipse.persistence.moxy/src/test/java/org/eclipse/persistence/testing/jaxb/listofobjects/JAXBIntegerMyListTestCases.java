@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class JAXBIntegerMyListTestCases extends JAXBIntegerArrayTestCases {
         super(name);
     }
 
+    @Override
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -54,17 +55,19 @@ public class JAXBIntegerMyListTestCases extends JAXBIntegerArrayTestCases {
         return namespaces;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = getClass().getField("integerMyList");
         return fld.getGenericType();
     }
 
+    @Override
     protected Object getControlObject() {
         MyList<Integer> integers = new MyList<Integer>();
-        integers.add(new Integer("10"));
-        integers.add(new Integer("20"));
-        integers.add(new Integer("30"));
-        integers.add(new Integer("40"));
+        integers.add(Integer.valueOf("10"));
+        integers.add(Integer.valueOf("20"));
+        integers.add(Integer.valueOf("30"));
+        integers.add(Integer.valueOf("40"));
 
         QName qname = new QName("examplenamespace", "root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
@@ -73,6 +76,7 @@ public class JAXBIntegerMyListTestCases extends JAXBIntegerArrayTestCases {
         return jaxbElement;
     }
 
+    @Override
     public  List<InputStream> getControlSchemaFiles(){
 
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/integerMyList.xsd");
@@ -83,6 +87,7 @@ public class JAXBIntegerMyListTestCases extends JAXBIntegerArrayTestCases {
         }
 
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

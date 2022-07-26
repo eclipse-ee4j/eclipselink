@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import org.eclipse.persistence.tools.schemaframework.*;
 import org.eclipse.persistence.testing.framework.*;
 
 public class InterfaceWithTablesSystem extends TestSystem {
+    @Override
     public void addDescriptors(DatabaseSession session) {
         Vector descriptors = new Vector();
 
@@ -42,6 +43,7 @@ public class InterfaceWithTablesSystem extends TestSystem {
         return descriptor;
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
 
@@ -74,6 +76,7 @@ public class InterfaceWithTablesSystem extends TestSystem {
         return table;
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         PopulationManager manager = PopulationManager.getDefaultManager();
 
@@ -84,12 +87,12 @@ public class InterfaceWithTablesSystem extends TestSystem {
         Commercial eatYourWeaties = new Commercial();
         eatYourWeaties.setName("Eat Your Weaties");
         eatYourWeaties.setDescription("Mikey says that he likes it.");
-        eatYourWeaties.setDuration(new Float(0.5));
+        eatYourWeaties.setDuration(Float.valueOf(0.5f));
 
         Show zena = new Show();
         zena.setName("Zena");
         zena.setDescription("Zena the worrier princess");
-        zena.setDuration(new Float(20));
+        zena.setDuration(Float.valueOf(20));
 
         schedule.segments.addElement(eatYourWeaties);
         schedule.segments.addElement(zena);

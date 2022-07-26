@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class Scenario1_9f extends ReportQueryTestCase {
         setDescription("SUM aggregate function with group by on gender");
     }
 
+    @Override
     protected void buildExpectedResults() {
         Vector employees = getSession().readAllObjects(Employee.class);
         BigDecimal maleSum = new BigDecimal(0);
@@ -47,6 +48,7 @@ public class Scenario1_9f extends ReportQueryTestCase {
         addResult(new Object[] { "Male", maleSum }, null);
     }
 
+    @Override
     protected void setup() throws Exception {
         super.setup();
         reportQuery = new ReportQuery(new ExpressionBuilder());
@@ -58,6 +60,7 @@ public class Scenario1_9f extends ReportQueryTestCase {
         reportQuery.addAscendingOrdering("gender");
     }
 
+    @Override
     protected void verify() {
         if (results.size() != expectedResults.size()) {
             throw new TestErrorException("ReportQuery test failed: The result size are different");

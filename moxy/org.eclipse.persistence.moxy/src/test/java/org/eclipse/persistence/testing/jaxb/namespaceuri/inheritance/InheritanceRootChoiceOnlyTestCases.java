@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class InheritanceRootChoiceOnlyTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootChoiceOnly.class});
+        setClasses(new Class<?>[] {RootChoiceOnly.class});
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("rootNamespace","ns0");
         namespaces.put("uri1", "ns5");
@@ -48,6 +48,7 @@ public class InheritanceRootChoiceOnlyTestCases extends JAXBWithJSONTestCases {
         jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    @Override
     protected Object getControlObject() {
         RootChoiceOnly root = new RootChoiceOnly();
         SubType subType = new SubType();
@@ -61,10 +62,10 @@ public class InheritanceRootChoiceOnlyTestCases extends JAXBWithJSONTestCases {
         List choiceList = new ArrayList();
         choiceList.add(new String("choice string test2"));
         choiceList.add(anotherPackageSubType);
-        choiceList.add(new Integer(400));
+        choiceList.add(400);
         choiceList.add(subTypeLevel2);
         choiceList.add(new String("choice string test"));
-        choiceList.add(new Integer(500));
+        choiceList.add(500);
         root.choiceList = choiceList;
         return root;
     }

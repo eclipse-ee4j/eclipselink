@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public class SDOXMLHelperDatatypeQNameTestCases extends SDOXMLHelperDatatypeTest
     }
 
     @Override
-    protected Class getDatatypeJavaClass() {
+    protected Class<?> getDatatypeJavaClass() {
         return String.class;
     }
 
@@ -122,7 +122,7 @@ public class SDOXMLHelperDatatypeQNameTestCases extends SDOXMLHelperDatatypeTest
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
-        ((SDOXMLHelper) xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
 
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);
@@ -140,7 +140,7 @@ public class SDOXMLHelperDatatypeQNameTestCases extends SDOXMLHelperDatatypeTest
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
-        ((SDOXMLHelper) xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
 
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);

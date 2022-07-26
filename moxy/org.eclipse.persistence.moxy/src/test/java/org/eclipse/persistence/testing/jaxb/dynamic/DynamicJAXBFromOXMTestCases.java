@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,13 @@
 //     rbarkhouse - 2.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.dynamic;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -35,41 +31,27 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import junit.framework.TestCase;
 
-import org.eclipse.persistence.config.DescriptorCustomizer;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.ClassExtractor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-import org.eclipse.persistence.mappings.transformers.AttributeTransformerAdapter;
-import org.eclipse.persistence.mappings.transformers.FieldTransformerAdapter;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.Computer;
-import org.eclipse.persistence.testing.jaxb.dynamic.util.ComputerAdapter;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.LinkAdapter;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.LinkAdapterString;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class DynamicJAXBFromOXMTestCases extends TestCase {
 
@@ -79,6 +61,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: OXM: " + super.getName();
     }
@@ -94,7 +77,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -132,7 +115,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -173,7 +156,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         metadataSourceMap.put("", new StreamSource(iStream));
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -210,7 +193,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -235,7 +218,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -281,7 +264,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -308,7 +291,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -339,7 +322,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -380,7 +363,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -409,7 +392,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -435,7 +418,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -467,7 +450,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -502,7 +485,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -515,7 +498,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
         company.set("name", "ACME International");
         company.set("address", "165 Main St, Anytown US, 93012");
-        company.set("id", Integer.valueOf(882));
+        company.set("id", 882);
 
         person.set("name", "Bob Dobbs");
         person.set("company", company);
@@ -543,7 +526,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -580,7 +563,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -621,7 +604,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -646,7 +629,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -674,7 +657,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -697,7 +680,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -730,7 +713,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
             }
 
             Map<String, Object> properties = new HashMap<String, Object>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
             jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -791,14 +774,14 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
             }
 
             Map<String, Object> properties = new HashMap<String, Object>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
             jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
             InputStream xmlStream = ClassLoader.getSystemResourceAsStream(PERSON_XML);
             JAXBElement person = (JAXBElement) jaxbContext.createUnmarshaller().unmarshal(xmlStream);
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "person"), person.getName());
-            JAXBElement name = (JAXBElement) ((DynamicEntity) person.getValue()).get("name");
+            JAXBElement name = ((DynamicEntity) person.getValue()).get("name");
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "name"), name.getName());
 
             // ====================================================================
@@ -806,7 +789,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
             InputStream xmlStream2 = ClassLoader.getSystemResourceAsStream(PERSONNE_XML);
             JAXBElement person2 = (JAXBElement) jaxbContext.createUnmarshaller().unmarshal(xmlStream2);
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "personne"), person2.getName());
-            JAXBElement name2 = (JAXBElement) ((DynamicEntity) person2.getValue()).get("name");
+            JAXBElement name2 = ((DynamicEntity) person2.getValue()).get("name");
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "nom"), name2.getName());
         } catch (UndeclaredThrowableException e) {
             if (e.getUndeclaredThrowable() instanceof NoSuchMethodException) {
@@ -828,7 +811,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         metadataSourceMap.put("", new StreamSource(iStream));
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -864,7 +847,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -890,7 +873,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -916,7 +899,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -941,7 +924,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -965,7 +948,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1019,7 +1002,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1028,7 +1011,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
         // Ensure that properties were set on the Descriptor and Mapping
         XMLDescriptor d = jaxbContext.getXMLContext().getDescriptor(new QName("mynamespace", "person"));
-        assertEquals("Descriptor property not present.", Integer.valueOf(101), d.getProperty("identifier"));
+        assertEquals("Descriptor property not present.", 101, d.getProperty("identifier"));
         assertEquals("Descriptor property not present.", Boolean.FALSE, d.getProperty("active"));
 
         XMLDirectMapping m = (XMLDirectMapping) d.getMappingForAttributeName("name");
@@ -1044,7 +1027,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1067,7 +1050,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1091,7 +1074,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1141,7 +1124,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1191,7 +1174,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1238,7 +1221,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1251,8 +1234,8 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         DynamicEntity readCompany = (DynamicEntity) jaxbContext.createUnmarshaller().unmarshal(companyDoc);
 
         ArrayList<DynamicEntity> readEmployees = readCompany.get("employees");
-        for (Iterator iterator = readEmployees.iterator(); iterator.hasNext();) {
-            DynamicEntity emp = (DynamicEntity) iterator.next();
+        for (Iterator<DynamicEntity> iterator = readEmployees.iterator(); iterator.hasNext();) {
+            DynamicEntity emp = iterator.next();
             DynamicEntity add = emp.get("address");
 
             String idString = ((Integer)emp.get("id")).toString();
@@ -1271,7 +1254,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1306,7 +1289,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         DynamicEntity readAddress = readPerson.get("address");
         assertEquals("Backpointer was not properly set.", readPerson, readAddress.get("person"));
 
-        Vector<DynamicEntity> readPhones = (Vector<DynamicEntity>) readPerson.get("phoneNumbers");
+        Vector<DynamicEntity> readPhones = readPerson.get("phoneNumbers");
         for (DynamicEntity readPhone : readPhones) {
             assertEquals("Backpointer was not properly set.", readPerson, readPhone.get("person"));
         }
@@ -1320,7 +1303,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         }
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 
@@ -1360,7 +1343,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         InputStream iStream = classLoader.getResourceAsStream(OXM_METADATA);
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         DynamicJAXBContext jc = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 

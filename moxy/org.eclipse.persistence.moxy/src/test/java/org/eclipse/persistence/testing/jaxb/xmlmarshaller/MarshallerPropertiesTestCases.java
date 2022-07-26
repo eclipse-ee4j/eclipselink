@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,10 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases.FakeSchema;
 
 public class MarshallerPropertiesTestCases extends OXTestCase {
-    private final static String CONTROL_NO_NAMESPACE_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_NoNamespaceSchema.xml";
-    private final static String CONTROL_NAMESPACE_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_NamespaceSchema.xml";
-    private final static String CONTROL_BOTH = "org/eclipse/persistence/testing/oxm/jaxb/Employee_BothNamespaceAttr.xml";
-    private final static String CONTROL_NONE = "org/eclipse/persistence/testing/oxm/jaxb/Employee_NoSchemaLocation.xml";
+    private final static String CONTROL_NO_NAMESPACE_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_NoNamespaceSchema.xml";
+    private final static String CONTROL_NAMESPACE_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_NamespaceSchema.xml";
+    private final static String CONTROL_BOTH = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_BothNamespaceAttr.xml";
+    private final static String CONTROL_NONE = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_NoSchemaLocation.xml";
     private Marshaller marshaller;
     private DocumentBuilder parser;
     private String contextPath;
@@ -45,6 +45,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         contextPath = System.getProperty("jaxb.test.contextpath", JAXBSAXTestSuite.CONTEXT_PATH);
 
@@ -58,6 +59,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         originalSchemaLocation = (String)marshaller.getProperty("jaxb.schemaLocation");
     }
 
+    @Override
     public void tearDown() throws Exception {
         marshaller.setProperty("jaxb.noNamespaceSchemaLocation", originalNNSchemaLocation);
         marshaller.setProperty("jaxb.schemaLocation", originalSchemaLocation);

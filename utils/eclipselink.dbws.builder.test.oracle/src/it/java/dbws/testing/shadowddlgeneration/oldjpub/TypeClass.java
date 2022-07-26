@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,11 @@ import java.util.List;
 import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
 
 /**
- * Instances of the class </code>Type</code> represent user-declared or predefined types in SQL or
- * PL/SQL that may have fields and methods. Currently, subclasses of </code>Type</code> represent
+ * Instances of the class <code>Type</code> represent user-declared or predefined types in SQL or
+ * PL/SQL that may have fields and methods. Currently, subclasses of <code>Type</code> represent
  * PL/SQL packages, the top-level PL/SQL scope, Oracle 8 user-defined types (objects, varrays and
  * nested tables) and the primitive database types.
- * <p/>
+ * <br>
  * This class is analogous to java.lang.Class.
  */
 public abstract class TypeClass {
@@ -105,7 +105,7 @@ public abstract class TypeClass {
 
     /**
      * Determines if this Type represents an array type.
-     * <p/>
+     * <br>
      */
     public boolean isArray() {
         return false;
@@ -113,7 +113,7 @@ public abstract class TypeClass {
 
     /**
      * Determines if this Type represents an object type.
-     * <p/>
+     * <br>
      */
     public boolean isObject() {
         return false;
@@ -266,7 +266,7 @@ public abstract class TypeClass {
 
     /**
      * Returns the PL/SQL function to be used for converting this PL/SQL into a SQL type.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     public String getOutOfConversion() {
@@ -276,7 +276,7 @@ public abstract class TypeClass {
     /**
      * Returns the PL/SQL function to be used for converting this PL/SQL into a SQL type, qualified
      * with package name.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     public String getOutOfConversionQualified() {
@@ -286,7 +286,7 @@ public abstract class TypeClass {
     /**
      * Returns the PL/SQL function to be used for converting a SQL type into this PL/SQL type,
      * qualified with package name.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     public String getIntoConversion() {
@@ -296,7 +296,7 @@ public abstract class TypeClass {
     /**
      * Returns the PL/SQL function to be used for converting a SQL type into this PL/SQL type,
      * qualified with package name.
-     * <p/>
+     * <br>
      * Returns null if this is not a PL/SQL type or if it does not have user-defined conversions.
      */
     public String getIntoConversionQualified() {

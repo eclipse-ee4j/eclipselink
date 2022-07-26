@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,11 +24,12 @@ import org.eclipse.persistence.testing.framework.*;
  * This test will throws warnings on problem, not error because of VM differences.
  */
 public class ReadSoftCacheWeakIdentityMapTest extends ReadWeakIdentityMapTest {
-    public ReadSoftCacheWeakIdentityMapTest(Class mapClass) {
+    public ReadSoftCacheWeakIdentityMapTest(Class<? extends IdentityMap> mapClass) {
         super(mapClass);
         setDescription("This test verifies that the SoftCacheWeakIdentityMap holds onto the SoftReferences appropriately");
     }
 
+    @Override
     public void test() {
         if (getIdentityMap().getSize() == 0) {
             throw new TestWarningException("We did not fill the cache, the test is invalid.");
@@ -57,13 +58,14 @@ public class ReadSoftCacheWeakIdentityMapTest extends ReadWeakIdentityMapTest {
         System.gc();
     }
 
+    @Override
     public void verify() {
         // Ensure that some ref have garbage collected,
         // if not all through warning as different VM have different gc behavior.
-        Map cache = getIdentityMap().getCacheKeys();
+        Map<Object, CacheKey> cache = getIdentityMap().getCacheKeys();
         int numObjects = 0;
-        for (Iterator iterator = cache.values().iterator(); iterator.hasNext();) {
-            CacheKey key = (CacheKey)iterator.next();
+        for (Iterator<CacheKey> iterator = cache.values().iterator(); iterator.hasNext();) {
+            CacheKey key = iterator.next();
             if (key.getObject() != null) {
                 numObjects++;
             }

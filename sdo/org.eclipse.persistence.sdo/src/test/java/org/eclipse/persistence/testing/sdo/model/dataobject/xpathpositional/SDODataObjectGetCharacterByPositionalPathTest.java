@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -80,7 +82,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
         dataObject_a.setChar(propertyPath_a_b_c, b);// add it to instance list
 
-        this.assertEquals(b, dataObject_a.getChar(propertyPath_a_b_c));
+        assertEquals(b, dataObject_a.getChar(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -100,7 +102,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setChar(property3, bb);
 
-        this.assertEquals(bb, dataObject_a.getChar(property3));
+        assertEquals(bb, dataObject_a.getChar(property3));
 
     }
 
@@ -120,7 +122,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setChar(property + ".0", bb);
 
-        this.assertEquals(bb, dataObject_a.getChar(property + ".0"));
+        assertEquals(bb, dataObject_a.getChar(property + ".0"));
 
     }
 
@@ -136,7 +138,7 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
 
         dataObject_a.setChar(property1, bb);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(bb, dataObject_a.getChar(property1));
+        assertEquals(bb, dataObject_a.getChar(property1));
     }
 
     /* public void testGetCharacterConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -272,10 +274,10 @@ public class SDODataObjectGetCharacterByPositionalPathTest extends SDODataObject
         dataObject_c._setType(type_c);
 
         char str = 'c';
-        Character B_STR = new Character(str);
+        Character B_STR = str;
         dataObject_a.setString(propertyPath_a_b_c, B_STR.toString());// add it to instance list
 
-        this.assertEquals(str, dataObject_a.getChar(property));
+        assertEquals(str, dataObject_a.getChar(property));
     }
 
     //11. purpose: getChar with Undefined boolean Property

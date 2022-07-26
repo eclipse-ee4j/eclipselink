@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,18 +32,20 @@ public class FeatureTestModelWithoutBinding extends FeatureTestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void reset() {
         if (origionalStatementCachingState != null) {
-            this.getSession().getPlatform().setShouldCacheAllStatements(this.origionalStatementCachingState.booleanValue());
+            this.getSession().getPlatform().setShouldCacheAllStatements(this.origionalStatementCachingState);
         }
         if (origionalBindingState != null) {
-            this.getSession().getPlatform().setShouldBindAllParameters(this.origionalBindingState.booleanValue());
+            this.getSession().getPlatform().setShouldBindAllParameters(this.origionalBindingState);
         }
     }
 
+    @Override
     public void setup() {
-        this.origionalBindingState = new Boolean(this.getSession().getPlatform().shouldBindAllParameters());
-        this.origionalStatementCachingState = new Boolean(this.getSession().getPlatform().shouldCacheAllStatements());
+        this.origionalBindingState = this.getSession().getPlatform().shouldBindAllParameters();
+        this.origionalStatementCachingState = this.getSession().getPlatform().shouldCacheAllStatements();
         this.getSession().getPlatform().setShouldBindAllParameters(false);
         this.getSession().getPlatform().setShouldCacheAllStatements(false);
     }

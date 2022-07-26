@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethodParameterTypes;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -73,23 +73,23 @@ public class MethodBasedAttributeTransformer implements AttributeTransformer {
     @Override
     public void initialize(AbstractTransformationMapping mapping) {
         this.mapping = mapping;
-        final Class javaClass = this.mapping.getDescriptor().getJavaClass();
+        final Class<?> javaClass = this.mapping.getDescriptor().getJavaClass();
         try {
             // look for the one-argument version with Record first
-            Class[] parameterTypes = new Class[1];
+            Class<?>[] parameterTypes = new Class<?>[1];
             parameterTypes[0] = ClassConstants.Record_Class;
             attributeTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, parameterTypes);
         } catch (NoSuchMethodException ex) {
             try {
                 // if the one-argument version is not there, look for the two-argument version
-                Class[] parameterTypes = new Class[2];
+                Class<?>[] parameterTypes = new Class<?>[2];
                 parameterTypes[0] = ClassConstants.Record_Class;
                 parameterTypes[1] = ClassConstants.PublicInterfaceSession_Class;
                 attributeTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, parameterTypes);
             } catch (NoSuchMethodException ex2) {
                 try {
                     //now look for the 2 argument version using Record and sessions Session
-                    Class[] parameterTypes = new Class[2];
+                    Class<?>[] parameterTypes = new Class<?>[2];
                     parameterTypes[0] = ClassConstants.Record_Class;
                     parameterTypes[1] = ClassConstants.SessionsSession_Class;
                     attributeTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, parameterTypes);
@@ -114,8 +114,8 @@ public class MethodBasedAttributeTransformer implements AttributeTransformer {
      * Build the attribute value by invoking the user's transformation method.
      */
     @Override
-    public Object buildAttributeValue(Record record, Object object, Session session) {
-        Class[] parameterTypes = null;
+    public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
+        Class<?>[] parameterTypes = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
                 parameterTypes = AccessController.doPrivileged(new PrivilegedGetMethodParameterTypes(attributeTransformationMethod));
@@ -126,7 +126,7 @@ public class MethodBasedAttributeTransformer implements AttributeTransformer {
             parameterTypes = PrivilegedAccessHelper.getMethodParameterTypes(attributeTransformationMethod);
         }
         Object[] parameters = new Object[parameterTypes.length];
-        parameters[0] = record;
+        parameters[0] = dataRecord;
         if (parameters.length == 2) {
             parameters[1] = session;
         }

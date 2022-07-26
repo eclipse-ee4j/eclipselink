@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Collection;
@@ -59,7 +58,6 @@ import org.eclipse.persistence.queries.ReportQuery;
  * @author Pascal Filion
  * @author John Bracken
  */
-@SuppressWarnings("nls")
 final class JPQLQueryContext {
 
     /**
@@ -114,7 +112,7 @@ final class JPQLQueryContext {
 
     /**
      * This visitor is used to retrieve a variable name from various type of
-     * {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}.
+     * {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression}.
      */
     private EclipseLinkLiteralVisitor literalVisitor;
 
@@ -141,8 +139,8 @@ final class JPQLQueryContext {
     private AbstractSession session;
 
     /**
-     * This resolver is used to calculate the type of any {@link org.eclipse.persistence.jpa.jpql.
-     * parser.Expression JPQL Expression}.
+     * This resolver is used to calculate the type of any
+     * {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression}.
      */
     private TypeResolver typeResolver;
 
@@ -157,8 +155,8 @@ final class JPQLQueryContext {
     private Set<String> usedIdentificationVariables;
 
     /**
-     * An empty array used when the type of an {@link org.eclipse.persistence.jpa.jpql.parser.
-     * Expression JPQL Expression} is not required.
+     * An empty array used when the type of an
+     * {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression} is not required.
      */
     private static final Class<?>[] EMPTY_TYPE = new Class<?>[1];
 
@@ -207,8 +205,8 @@ final class JPQLQueryContext {
     /**
      * Caches the given input parameter name with its calculated type.
      *
-     * @param parameterName The name of the input parameter
-     * @param type The calculated type based on its surrounding, which is never <code>null</code>
+     * @param inputParameter The input parameter
+     * @param queryExpression The {@link Expression} that can be reused rather than being recreated
      */
     void addInputParameter(InputParameter inputParameter, Expression queryExpression) {
 
@@ -294,15 +292,14 @@ final class JPQLQueryContext {
      * @param typeName The fully qualified type name
      * @return The Java type if it could be retrieved; <code>null</code> otherwise
      */
-    @SuppressWarnings("unchecked")
-    private Class<?> attemptLoadType(String typeName) {
+    private <T> Class<T> attemptLoadType(String typeName) {
 
         try {
 
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     return AccessController.doPrivileged(
-                        new PrivilegedClassForName(typeName, true, getClassLoader())
+                        new PrivilegedClassForName<>(typeName, true, getClassLoader())
                     );
                 }
                 catch (PrivilegedActionException exception) {
@@ -522,14 +519,12 @@ final class JPQLQueryContext {
      * @return The {@link Constructor} or <code>null</code> if none exist or the privilege access
      * was denied
      */
-    @SuppressWarnings("unchecked")
-    <T> Constructor<T> getConstructor(Class<?> type, Class<?>[] parameterTypes) {
-
+    <T> Constructor<T> getConstructor(Class<T> type, Class<?>[] parameterTypes) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     return AccessController.doPrivileged(
-                        new PrivilegedGetConstructorFor(type, parameterTypes, true)
+                        new PrivilegedGetConstructorFor<>(type, parameterTypes, true)
                     );
                 }
                 catch (PrivilegedActionException exception) {
@@ -967,7 +962,7 @@ final class JPQLQueryContext {
         StringBuilder sb = new StringBuilder();
         sb.append(typeName.substring(0, index));
         sb.append("$");
-        sb.append(typeName.substring(index + 1, typeName.length()));
+        sb.append(typeName.substring(index + 1));
         typeName = sb.toString();
 
         return loadTypeImp(typeName);
@@ -1004,9 +999,8 @@ final class JPQLQueryContext {
      * @param parameter The object to pass during instantiation
      * @return A new instance or <code>null</code> if a problem was encountered during instantiation
      */
-    @SuppressWarnings("unchecked")
-    <T> T newInstance(Class<?> type, Class<?> parameterType, Object parameter) {
-        return (T) newInstance(type, new Class[] { parameterType }, new Object[] { parameter });
+    <T> T newInstance(Class<T> type, Class<?> parameterType, Object parameter) {
+        return newInstance(type, new Class<?>[] { parameterType }, new Object[] { parameter });
     }
 
     /**
@@ -1018,7 +1012,7 @@ final class JPQLQueryContext {
      * @return A new instance of the given type or <code>null</code> if a problem was encountered
      * during instantiation
      */
-    <T> T newInstance(Class<?> type, Class<?>[] parameterTypes, Object[] parameters) {
+    <T> T newInstance(Class<T> type, Class<?>[] parameterTypes, Object[] parameters) {
 
         Constructor<T> constructor = getConstructor(type, parameterTypes);
 
@@ -1036,15 +1030,14 @@ final class JPQLQueryContext {
      * @param parameters The objects to pass during instantiation
      * @return A new instance or <code>null</code> if a problem was encountered during instantiation
      */
-    @SuppressWarnings("unchecked")
     <T> T newInstance(Constructor<T> constructor, Object[] parameters) {
 
         try {
 
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    return (T) AccessController.doPrivileged(
-                        new PrivilegedInvokeConstructor(constructor, parameters)
+                    return AccessController.doPrivileged(
+                        new PrivilegedInvokeConstructor<>(constructor, parameters)
                     );
                 }
                 catch (PrivilegedActionException exception) {
@@ -1052,15 +1045,9 @@ final class JPQLQueryContext {
                 }
             }
 
-            return (T) PrivilegedAccessHelper.invokeConstructor(constructor, parameters);
+            return PrivilegedAccessHelper.invokeConstructor(constructor, parameters);
         }
-        catch (InstantiationException e) {
-            return null;
-        }
-        catch (InvocationTargetException e) {
-            return null;
-        }
-        catch (IllegalAccessException e) {
+        catch (ReflectiveOperationException e) {
             return null;
         }
     }

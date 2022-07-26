@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,14 +76,14 @@ public class LogLevelHelper {
         for (LogLevel level : LogLevel.values()) {
             int id = level.getId();
             LogLevel levelValue = LogLevel.toValue(id);
-            assertEquals("Log level was not found for ID: " + Integer.toString(id), level, levelValue);
+            assertEquals("Log level was not found for ID: " + id, level, levelValue);
         }
         // Check some invalid IDs.
         final int[] invalidIds = new int[] { -2, -1, LogLevel.length, LogLevel.length + 1};
         for (int id : invalidIds) {
             try {
                 LogLevel.toValue(-1);
-                fail("LogLevel.toValue(" + Integer.toString(id) + ") shall throw IllegalArgumentException");
+                fail("LogLevel.toValue(" + id + ") shall throw IllegalArgumentException");
             } catch (IllegalArgumentException ex) {
                 // This exception is expected for illegal IDs.
             }
@@ -99,13 +99,13 @@ public class LogLevelHelper {
             int id = level.getId();
             LogLevel levelValue = level == LogLevel.ALL
                     ? LogLevel.toValue(id, LogLevel.OFF) : LogLevel.toValue(id, LogLevel.ALL);
-            assertEquals("Log level was not found for ID: " + Integer.toString(id), level, levelValue);
+            assertEquals("Log level was not found for ID: " + id, level, levelValue);
         }
         // Check some invalid IDs, expecting LogLevel.ALL as fall back.
         final int[] invalidIds = new int[] { -2, -1, LogLevel.length, LogLevel.length + 1};
         for (int id : invalidIds) {
             LogLevel level = LogLevel.toValue(id, LogLevel.ALL);
-            assertEquals("Expected log level " + LogLevel.ALL.getName() + " for ID: " + Integer.toString(id),
+            assertEquals("Expected log level " + LogLevel.ALL.getName() + " for ID: " + id,
                     level, LogLevel.ALL);
         }
     }

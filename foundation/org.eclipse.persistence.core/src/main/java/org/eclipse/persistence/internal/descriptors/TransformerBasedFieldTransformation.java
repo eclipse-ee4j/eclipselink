@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.descriptors;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.mappings.transformers.*;
+import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 
 /**
  * INTERNAL:
@@ -30,7 +26,7 @@ import org.eclipse.persistence.mappings.transformers.*;
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
 public class TransformerBasedFieldTransformation extends FieldTransformation {
-    protected Class transformerClass;
+    protected Class<?> transformerClass;
     protected String transformerClassName;
     protected FieldTransformer transformer;
 
@@ -46,11 +42,11 @@ public class TransformerBasedFieldTransformation extends FieldTransformation {
         }
     }
 
-    public Class getTransformerClass() {
+    public Class<?> getTransformerClass() {
         return transformerClass;
     }
 
-    public void setTransformerClass(Class transformerClass) {
+    public void setTransformerClass(Class<?> transformerClass) {
         this.transformerClass = transformerClass;
     }
 
@@ -65,16 +61,9 @@ public class TransformerBasedFieldTransformation extends FieldTransformation {
     @Override
     public FieldTransformer buildTransformer() throws Exception {
         if (transformer == null) {
-            Class transformerClass = getTransformerClass();
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
-                    transformer = (FieldTransformer)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(transformerClass));
-                }catch (PrivilegedActionException ex){
-                    throw (Exception)ex.getCause();
-                }
-            }else{
-                transformer = (FieldTransformer)PrivilegedAccessHelper.newInstanceFromClass(transformerClass);
-            }
+            transformer = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> (FieldTransformer) PrivilegedAccessHelper.newInstanceFromClass(getTransformerClass())
+            );
         }
         return transformer;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ public class DataTypesConvertedFromAClassForOracle9Test extends DataTypesConvert
         setDescription("Test getDataTypesConvertedFrom() in Oracle9Platform.");
     }
 
+    @Override
     public void setup() {
         if(!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("This test requires Oracle database");
@@ -32,7 +33,8 @@ public class DataTypesConvertedFromAClassForOracle9Test extends DataTypesConvert
         cm = getSession().getPlatform();
     }
 
-    protected boolean isChar(Class aClass) {
+    @Override
+    protected boolean isChar(Class<?> aClass) {
         return super.isChar(aClass) || aClass == Oracle9Platform.NCHAR || aClass == Oracle9Platform.NSTRING ||
             aClass == Oracle9Platform.NCLOB;
     }

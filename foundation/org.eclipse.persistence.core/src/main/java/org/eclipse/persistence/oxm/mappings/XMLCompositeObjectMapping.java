@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,6 @@ import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 /**
  * <p>Composite object XML mappings represent a relationship between two classes.  In XML, the "owned"
@@ -387,7 +386,6 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
      *
-     * @param aNullPolicy
      */
     @Override
     public void setNullPolicy(AbstractNullPolicy aNullPolicy) {
@@ -398,7 +396,6 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
      * INTERNAL:
      * Get the AbstractNullPolicy from the Mapping.<br>
      * The default policy is NullPolicy.<br>
-     * @return
      */
     @Override
     public AbstractNullPolicy getNullPolicy() {
@@ -535,10 +532,10 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 toReturn = convertToSimpleTypeIfPresent(toReturn,  nestedRow, executionSession);
                 return toReturn;
             } else {
-                NodeList children =((Element) nestedRow.getDOM()).getChildNodes();
+                NodeList children = nestedRow.getDOM().getChildNodes();
                 for(int i=0, childrenLength=children.getLength(); i<childrenLength ; i++){
                     Node nextNode = children.item(i);
-                    if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
+                    if(nextNode.getNodeType() == Node.ELEMENT_NODE){
                         //complex child
                         String type = ((Element) nestedRow.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         if(type != null && type.length() > 0) {
@@ -554,7 +551,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             }
         } else {
             if (aDescriptor.hasInheritance()) {
-                Class classValue = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+                Class<?> classValue = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
                 if (classValue == null) {
                     // no xsi:type attribute - look for type indicator on the field
                     QName leafElementType = ((XMLField) getField()).getLeafElementType();
@@ -592,10 +589,10 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     private Object convertToSimpleTypeIfPresent(Object toReturn, XMLRecord nestedRow, AbstractSession executionSession){
-        Node textchild = ((Element) nestedRow.getDOM()).getFirstChild();
+        Node textchild = nestedRow.getDOM().getFirstChild();
         String stringValue = null;
         if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-            stringValue = ((Text) textchild).getNodeValue();
+            stringValue = textchild.getNodeValue();
             if(stringValue != null && getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && getKeepAsElementPolicy()!=UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT){
                 toReturn = stringValue;
             }
@@ -612,7 +609,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
             QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());
             ConversionManager conversionManager = (ConversionManager) executionSession.getDatasourcePlatform().getConversionManager();
-            Class theClass = conversionManager.javaType(schemaTypeQName);
+            Class<Object> theClass = conversionManager.javaType(schemaTypeQName);
             if (theClass != null) {
                 toReturn = conversionManager.convertObject(stringValue, theClass, schemaTypeQName);
             }
@@ -738,7 +735,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     @Override
-    protected ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
+    protected ClassDescriptor getReferenceDescriptor(Class<?> theClass, AbstractSession session) {
         if ((getReferenceDescriptor() != null) && getReferenceDescriptor().getJavaClass().equals(theClass)) {
             return getReferenceDescriptor();
         }

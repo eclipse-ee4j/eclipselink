@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,12 @@ public class MenuItem implements ChangeTracker {
         super();
     }
 
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return listener;
     }
 
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.listener = listener;
     }
@@ -244,7 +246,7 @@ public class MenuItem implements ChangeTracker {
     }
 
     public void setPrice(float newValue) {
-        propertyChange("price", new Float(this.price), new Float(newValue));
+        propertyChange("price", this.price, newValue);
         this.price = newValue;
     }
 

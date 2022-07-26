@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ public class JSONWithNullNameTestCases extends JAXBWithJSONTestCases{
 
     public JSONWithNullNameTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Simple.class});
+        setClasses(new Class<?>[]{Simple.class});
         setControlJSON(JSON_RESOURCE);
         setControlDocument(XML_RESOURCE);
     }
@@ -41,13 +41,16 @@ public class JSONWithNullNameTestCases extends JAXBWithJSONTestCases{
         return test;
     }
 
+    @Override
     public boolean isUnmarshalTest (){
         return false;
     }
 
+    @Override
     public void testJSONMarshalToBuilderResult() throws Exception{
     }
 
+    @Override
     public void testJSONMarshalToGeneratorResult() throws Exception{
     }
 

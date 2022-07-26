@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,12 @@
 //     Denise Smith - October 2012
 package org.eclipse.persistence.testing.jaxb.jaxbelement.dom.nofactory;
 
-import javax.print.Doc;
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.eclipse.persistence.oxm.XMLConstants;
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
-import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.ObjectFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public class ElementNoNamespaceTestCases extends JAXBWithJSONTestCases{
 
@@ -36,7 +29,7 @@ public class ElementNoNamespaceTestCases extends JAXBWithJSONTestCases{
 
     public ElementNoNamespaceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{});
+        setClasses(new Class<?>[]{});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
@@ -46,7 +39,7 @@ public class ElementNoNamespaceTestCases extends JAXBWithJSONTestCases{
         Document doc;
         try {
             doc = parser.parse(this.getClass().getClassLoader().getResourceAsStream(XML_RESOURCE_ORIGINAL));
-            JAXBElement  obj = new JAXBElement<Object>(new QName("mynewname"), Object.class, doc.getDocumentElement());
+            JAXBElement<Object> obj = new JAXBElement<Object>(new QName("mynewname"), Object.class, doc.getDocumentElement());
             return obj;
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,6 +48,7 @@ public class ElementNoNamespaceTestCases extends JAXBWithJSONTestCases{
         }
     }
 
+    @Override
     public boolean isUnmarshalTest(){
         return false;
     }

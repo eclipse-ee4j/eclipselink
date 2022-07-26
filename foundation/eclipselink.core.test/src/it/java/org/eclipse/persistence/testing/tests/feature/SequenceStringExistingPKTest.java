@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class SequenceStringExistingPKTest extends org.eclipse.persistence.testin
         setDescription("Tests that existing String Primary Key is not overridden by sequencing.");
     }
 
+    @Override
     public void reset() {
         if (testObject != null) {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -42,6 +43,7 @@ public class SequenceStringExistingPKTest extends org.eclipse.persistence.testin
         }
     }
 
+    @Override
     protected void setup() {
         if (getSession().getPlatform().getDefaultSequence().shouldAcquireValueAfterInsert()) {
             throw new TestWarningException("This test doesn't work with *after insert* sequencing.");
@@ -66,6 +68,7 @@ public class SequenceStringExistingPKTest extends org.eclipse.persistence.testin
         }
     }
 
+    @Override
     protected void test() {
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -78,6 +81,7 @@ public class SequenceStringExistingPKTest extends org.eclipse.persistence.testin
         }
     }
 
+    @Override
     protected void verify() throws Exception {
         // If any errors, throw them here
         if (storedException != null) {

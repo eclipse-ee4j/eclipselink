@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -129,7 +129,7 @@ public class FlashbackUnitTestSuite extends TestSuite {
         query.setAsOfClause(clause);
         query.addArgument("TIME");
         Vector arguments = new Vector();
-        arguments.add(new Long(value));
+        arguments.add(value);
 
         Vector employees = (Vector)getSession().executeQuery(query, arguments);
         if (employees.size() != 0) {
@@ -491,7 +491,7 @@ public class FlashbackUnitTestSuite extends TestSuite {
     public void _testHistoricalQueriesMustPreserveGlobalCacheExceptionTest() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").equal("Bob"));
-        query.setAsOfClause(new AsOfSCNClause(new Long(0)));
+        query.setAsOfClause(new AsOfSCNClause(Long.valueOf(0)));
         try {
             getSession().executeQuery(query);
             getSession().getIdentityMapAccessor().initializeIdentityMaps();
@@ -561,6 +561,7 @@ public class FlashbackUnitTestSuite extends TestSuite {
         }
     }
 
+    @Override
     public void addTests() {
         addTest(new UnitTestCase("AsOfCurrentTimeMillisTest"));
         // broken addTest(new UnitTestCase("AsOfCurrentTimeMillisParameterTest"));

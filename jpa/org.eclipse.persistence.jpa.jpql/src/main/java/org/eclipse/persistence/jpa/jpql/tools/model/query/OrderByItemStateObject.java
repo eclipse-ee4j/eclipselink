@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,8 +48,8 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * ordering be used. Ascending ordering is the default.
  * <p>
  * JPA 1.0: <div><b>BNF:</b> <code>orderby_item ::= state_field_path_expression [ ASC | DESC ]</code></div>
- * <p>
- * JPA 2.0 <div><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code><p></div>
+ * <br>
+ * JPA 2.0 <div><p><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code></p></div>
  *
  * @see OrderByItem
  *
@@ -134,17 +134,11 @@ public class OrderByItemStateObject extends AbstractStateObject {
         parse(jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -153,9 +147,6 @@ public class OrderByItemStateObject extends AbstractStateObject {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public OrderByItem getExpression() {
         return (OrderByItem) super.getExpression();
@@ -171,9 +162,6 @@ public class OrderByItemStateObject extends AbstractStateObject {
         return ordering;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public OrderByClauseStateObject getParent() {
         return (OrderByClauseStateObject) super.getParent();
@@ -225,9 +213,6 @@ public class OrderByItemStateObject extends AbstractStateObject {
         return ordering == Ordering.DESC;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -296,9 +281,6 @@ public class OrderByItemStateObject extends AbstractStateObject {
         firePropertyChanged(STATE_OBJECT_PROPERTY, oldStateObject, stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

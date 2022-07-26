@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,10 +24,10 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
 /**
  * <p><b>Purpose</b>:
  * The object is used as a wrapper to the ScrollableCursor object in the remote transaction (via RMI, CORBA, etc.)
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Wraps a database result set cursor to provide a stream to the remote client side on the resulting selected objects.
- * <p>
+ * </p>
  * Note: Most of the APIs only work with JDBC 2.0
  *
  * @author King (Yaoping) Wang

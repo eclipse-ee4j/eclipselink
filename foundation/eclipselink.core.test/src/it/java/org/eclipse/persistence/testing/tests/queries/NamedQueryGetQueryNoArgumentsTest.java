@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,12 +44,14 @@ public class NamedQueryGetQueryNoArgumentsTest extends MultiNameQueriesTestCase 
         setDescription("Verifies if a Named Query with no arguments" + " can be retreived from DescriptorQueryManager" + " just by calling getQuery, eventhough there are" + " some other queries with the same name cached" + " on DescriptorQueryManager");
     }
 
+    @Override
     public void reset() {
         // do not want to keep named queries on employee descriptor
         descriptor.getQueryManager().removeQuery("namedQuerySameName");
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         setDescriptorNamedQueries(Employee.class);
         addNamedQueryFirstName();
@@ -64,7 +66,7 @@ public class NamedQueryGetQueryNoArgumentsTest extends MultiNameQueriesTestCase 
     }
 
     // end of getDescriptorNamedQuery
-    public void setDescriptorNamedQueries(Class cls) {
+    public void setDescriptorNamedQueries(Class<?> cls) {
         this.descriptor = getSession().getClassDescriptor(cls);
     }
 
@@ -92,6 +94,7 @@ public class NamedQueryGetQueryNoArgumentsTest extends MultiNameQueriesTestCase 
     }
 
     // end of addNamedQueryFirstAndLastNameNoArguments
+    @Override
     public void test() {
         // Can more than one named query co-exist with the same name?
         // Same name "namedQuerySameName" added three times to the very
@@ -106,6 +109,7 @@ public class NamedQueryGetQueryNoArgumentsTest extends MultiNameQueriesTestCase 
     }
 
     // end of test()
+    @Override
     public void verify() {
         if (caughtException != null) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("Multiple queries with the same named cached on the DescriptorQueryManager.\n" + "Each with different argument sets, or no arguments.\n" + "This exception thrown while testing test case\n" + "----- NamedQueryGetQueryNoArgumentsTest() -----\n");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class JAXBArrayTestCases extends JAXBListOfObjectsTestCases {
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[4];
+        Class<?>[] classes = new Class<?>[4];
         classes[0] = char[].class;
         classes[1] = BigDecimal[].class;
         classes[2] = BigInteger[].class;
@@ -59,6 +59,7 @@ public class JAXBArrayTestCases extends JAXBListOfObjectsTestCases {
         return namespaces;
     }
 
+    @Override
     protected Object getControlObject() {
         BigInteger[] bigIntegers = new BigInteger[4];
         bigIntegers[0] = new BigInteger("1");
@@ -73,6 +74,7 @@ public class JAXBArrayTestCases extends JAXBListOfObjectsTestCases {
         return jaxbElement;
     }
 
+    @Override
     public List<InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/arrays.xsd");
         List<InputStream> controlSchema = new ArrayList<InputStream>();
@@ -80,17 +82,19 @@ public class JAXBArrayTestCases extends JAXBListOfObjectsTestCases {
         return controlSchema;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         return BigInteger[].class;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }
 
     public void testConflict() {
         try {
-            Class[] classes = new Class[2];
+            Class<?>[] classes = new Class<?>[2];
             classes[0] = Integer[].class;
             classes[1] = int[].class;
             JAXBContextFactory.createContext(classes, null);

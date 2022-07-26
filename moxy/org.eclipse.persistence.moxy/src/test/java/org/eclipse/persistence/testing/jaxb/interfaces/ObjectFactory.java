@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,13 +38,14 @@ public class ObjectFactory {
     }
 
     private <T> T createInstance(Class<T> anInterface) {
-        return (T) Proxy.newProxyInstance(anInterface.getClassLoader(), new Class[] {anInterface}, new InterfaceInvocationHandler());
+        return (T) Proxy.newProxyInstance(anInterface.getClassLoader(), new Class<?>[] {anInterface}, new InterfaceInvocationHandler());
     }
 
     private static class InterfaceInvocationHandler implements InvocationHandler {
 
         private Map<String, Object> values = new HashMap<String, Object>();
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             String methodName = method.getName();
             if(methodName.startsWith("get")) {

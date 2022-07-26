@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -260,7 +260,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
 
     /**
      * Tests handing in no optional args.
-     * Expects -1 for 'X' & 'Z'.
+     * Expects -1 for 'X' &amp; 'Z'.
      */
     @Test
     public void optionalArgTest3() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,6 +55,7 @@ public class AndFilter<T> extends CompoundFilter<T> {
      * @return A new chain of {@link AndFilter AndFilters} that will "accept" any object when all
      * {@link Filter filters} accepts the object
      */
+    @SafeVarargs
     public static <T> Filter<T> and(Filter<T>... filters) {
 
         int length = filters.length;
@@ -67,34 +68,25 @@ public class AndFilter<T> extends CompoundFilter<T> {
             return filters[0];
         }
 
-        AndFilter<T> filter = new AndFilter<T>(filters[0], filters[1]);
+        AndFilter<T> filter = new AndFilter<>(filters[0], filters[1]);
 
         for (int index = 2; index < length; index++) {
-            filter = new AndFilter<T>(filter, filters[index]);
+            filter = new AndFilter<>(filter, filters[index]);
         }
 
         return filter;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean accept(T value) {
         return filter1.accept(value) && filter2.accept(value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AndFilter<T> clone() {
         return (AndFilter<T>) super.clone();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String operatorString() {
         return "AND";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,7 @@ import org.eclipse.persistence.testing.models.inheritance.Company;
  *                                <li>    <i>Bus added to vehicles</i>, 2L inheritance from vehicle, has own table
  *                                <li>    <i>Vehicle deleted</i>, deletion with inheritance
  *                                <li>    <i>Company name adjusted</i>,
+ *                                </ul>
  *
  * */
 public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
@@ -80,14 +81,14 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
     */
     protected void changeUnitOfWorkWorkingCopy() {
         Company company = (Company)this.unitOfWorkWorkingCopy;
-        Vector vehicles = (Vector)company.getVehicles().getValue();
+        Vector<Vehicle> vehicles = company.getVehicles().getValue();
 
         // Delete a vehicle
         vehicles.removeElement(vehicles.firstElement());
 
         // Change a vehicle
-        Vehicle aVehicle = (Vehicle)vehicles.lastElement();
-        aVehicle.setPassengerCapacity(new Integer(15));
+        Vehicle aVehicle = vehicles.lastElement();
+        aVehicle.setPassengerCapacity(15);
 
         // Add some vehicles
         Car car = Car.example2();
@@ -103,7 +104,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
     */
     protected void changeUnitOfWorkWorkingCopyAgain() {
         Company company = (Company)this.unitOfWorkWorkingCopy;
-        Vector vehicles = (Vector)company.getVehicles().getValue();
+        Vector<Vehicle> vehicles = company.getVehicles().getValue();
 
         // Adjust Company name
         company.setName(company.name + "0");
@@ -112,8 +113,8 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
         vehicles.removeElement(vehicles.firstElement());
 
         // Change a vehicle
-        Vehicle aVehicle = (Vehicle)vehicles.firstElement();
-        aVehicle.setPassengerCapacity(new Integer(15));
+        Vehicle aVehicle = vehicles.firstElement();
+        aVehicle.setPassengerCapacity(15);
 
         // Add some vehicles
         Car car = Car.example2();
@@ -126,6 +127,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
 
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -140,6 +142,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         // CommitAndResume, changeAgain, CommitAndResume again.
         this.unitOfWork.commitAndResume();
@@ -151,6 +154,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         try {
             if (!(((AbstractSession)getSession()).compareObjects(this.unitOfWorkWorkingCopy, this.objectToBeWritten))) {

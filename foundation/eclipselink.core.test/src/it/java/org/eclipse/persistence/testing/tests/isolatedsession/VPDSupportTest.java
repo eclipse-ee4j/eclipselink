@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.tests.isolatedsession;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.*;
@@ -36,7 +37,7 @@ public class VPDSupportTest extends AutoVerifyTestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
             descriptors.addElement(iterator.next());
         }
         this.server.addDescriptors(descriptors);
@@ -44,6 +45,7 @@ public class VPDSupportTest extends AutoVerifyTestCase {
         this.server.getProject().setHasIsolatedClasses(true);
     }
 
+    @Override
     public void reset() {
         try {
             this.server.logout();
@@ -60,6 +62,7 @@ public class VPDSupportTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         try {
             Vector emps = getSession().readAllObjects(IsolatedEmployee.class);
@@ -93,6 +96,7 @@ public class VPDSupportTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         Session client1 = this.server.acquireClientSession();
         Session client2 = this.server.acquireClientSession();
@@ -115,6 +119,7 @@ public class VPDSupportTest extends AutoVerifyTestCase {
         client2.release();
     }
 
+    @Override
     public void verify() {
         if (this.nonVPDSession.readAllObjects(IsolatedEmployee.class).size() > 0) {
             throw new TestErrorException("The objects were not isolated by the VPD");

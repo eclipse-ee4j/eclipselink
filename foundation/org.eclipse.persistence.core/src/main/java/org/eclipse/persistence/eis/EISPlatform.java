@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
@@ -31,8 +29,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -234,7 +230,7 @@ public class EISPlatform extends DatasourcePlatform {
     /**
      * Allow the platform to handle record to row conversion.
      */
-    public Vector buildRows(jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
+    public Vector<AbstractRecord> buildRows(jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
         jakarta.resource.cci.Record output = record;
         if (getRecordConverter() != null) {
             output = getRecordConverter().converterFromAdapterRecord(output);
@@ -277,41 +273,23 @@ public class EISPlatform extends DatasourcePlatform {
      */
     public void setDOMInRecord(Element dom, jakarta.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         if (domMethod == null) {
-            Class[] argumentTypes = new Class[1];
+            Class<?>[] argumentTypes = new Class<?>[1];
             argumentTypes[0] = Element.class;
             try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    domMethod = AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "setDom", argumentTypes, false));
-                }else{
-                    domMethod = PrivilegedAccessHelper.getMethod(record.getClass(), "setDom", argumentTypes, false);
-                }
+                domMethod = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.getMethod(record.getClass(), "setDom", argumentTypes, false)
+                );
             } catch (Exception notFound) {
-                try {
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        domMethod = AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "setDOM", argumentTypes, false));
-                    }else{
-                        domMethod = PrivilegedAccessHelper.getMethod(record.getClass(), "setDOM", argumentTypes, false);
-                    }
-                } catch (Exception cantFind) {
-                    throw new EISException(cantFind);
-                }
+                domMethod = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.getMethod(record.getClass(), "setDOM", argumentTypes, false),
+                        EISException::new
+                );
             }
         }
-        try {
-            Object[] arguments = new Object[1];
-            arguments[0] = dom;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker(domMethod, record, arguments));
-                }catch (PrivilegedActionException ex){
-                    throw (Exception)ex.getCause();
-                }
-            }else{
-                PrivilegedAccessHelper.invokeMethod(domMethod, record, arguments);
-            }
-        } catch (Exception error) {
-            throw new EISException(error);
-        }
+        PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(domMethod, record, new Object[] {dom}),
+                EISException::new
+        );
     }
 
     /**
@@ -334,7 +312,7 @@ public class EISPlatform extends DatasourcePlatform {
     @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
         if (parameter instanceof Vector) {
-            Vector records = (Vector)parameter;
+            Vector<?> records = (Vector<?>)parameter;
 
             // May be a collection of record.
             for (int index = 0; index < records.size(); index++) {
@@ -345,7 +323,7 @@ public class EISPlatform extends DatasourcePlatform {
 
             // For some reason the transform always prints the XML header, so trim it off.
             int start = xml.indexOf('>');
-            xml = xml.substring(start + 1, xml.length());
+            xml = xml.substring(start + 1);
             try {
                 writer.write(xml);
             } catch (IOException exception) {

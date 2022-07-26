@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa21.advanced.AdvancedTableCreator;
@@ -58,12 +58,14 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         setPuName("MulitPU-1");
     }
 
+    @Override
     public void setUp () {
         m_reset = true;
         super.setUp();
         clearCache();
     }
 
+    @Override
     public void tearDown () {
         if (m_reset) {
             m_reset = false;
@@ -120,9 +122,9 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join address = root.join("address");
+        Join<Object, Object> address = root.join("address");
         address.on(qb.equal(address.get("city"), "Ottawa"));
-        List testResult = em.createQuery(cq).getResultList();
+        List<Employee> testResult = em.createQuery(cq).getResultList();
 
         clearCache();
         closeEntityManager(em);
@@ -141,9 +143,9 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join phoneNumber = root.join("phoneNumbers");
+        Join<Object, Object> phoneNumber = root.join("phoneNumbers");
         phoneNumber.on(qb.equal(phoneNumber.get("areaCode"), "613"));
-        List testResult = em.createQuery(cq).getResultList();
+        List<Employee> testResult = em.createQuery(cq).getResultList();
 
         clearCache();
         closeEntityManager(em);
@@ -163,10 +165,10 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee>cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join address = root.join("address", JoinType.LEFT);
+        Join<Object, Object> address = root.join("address", JoinType.LEFT);
         address.on(qb.equal(address.get("city"), "Ottawa"));
         cq.where(qb.isNotNull(address.get("postalCode")));
-        List testResult = em.createQuery(cq).getResultList();
+        List<Employee> testResult = em.createQuery(cq).getResultList();
 
         clearCache();
         closeEntityManager(em);
@@ -193,7 +195,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         CriteriaBuilder qb = jpaEM.getCriteriaBuilder();
         CriteriaQuery<Employee>cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        Join address = root.join("manager", JoinType.LEFT).join("address", JoinType.LEFT);
+        Join<Object, Object> address = root.join("manager", JoinType.LEFT).join("address", JoinType.LEFT);
         address.on(qb.equal(address.get("city"), "Ottawa"));
         cq.where(qb.isNotNull(address.get("postalCode")));
         EJBQueryImpl testQuery = (EJBQueryImpl)jpaEM.createQuery(cq);
@@ -390,7 +392,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
         closeEntityManager(em);
         if (testSQL != null) {
-            this.assertEquals("UPDATE Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
+            assertEquals("UPDATE Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
                         +testSQL + "\"  but we expected: \""+baseSQL+"\"", testSQL, baseSQL);
         } else {
             //check list of strings instead
@@ -550,7 +552,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         closeEntityManager(em);
 
         if (testSQL != null) {
-            this.assertEquals("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
+            assertEquals("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
                         +testSQL + "\"  but we expected: \""+baseSQL+"\"", testSQL, baseSQL);
         } else {
             //check list of strings instead

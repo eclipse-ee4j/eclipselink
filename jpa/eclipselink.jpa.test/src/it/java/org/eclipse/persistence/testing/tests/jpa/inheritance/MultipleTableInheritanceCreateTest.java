@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class MultipleTableInheritanceCreateTest extends EntityContainerTestBase 
         setDescription("Tests the creation of an inheritance subclass that uses multiple tables with a different pk column than its parent");
     }
 
+    @Override
     public void setup () {
         super.setup();
         m_reset = true;
@@ -41,6 +42,7 @@ public class MultipleTableInheritanceCreateTest extends EntityContainerTestBase 
         ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() throws Exception {
         try {
             Person busDriver = new Person();
@@ -48,8 +50,8 @@ public class MultipleTableInheritanceCreateTest extends EntityContainerTestBase 
 
             Bus bus = new Bus();
             bus.setBusDriver(busDriver);
-            bus.setFuelCapacity(new Integer(275));
-            bus.setPassengerCapacity(new Integer(100));
+            bus.setFuelCapacity(275);
+            bus.setPassengerCapacity(100);
 
             beginTransaction();
             getEntityManager().persist(bus);
@@ -60,12 +62,14 @@ public class MultipleTableInheritanceCreateTest extends EntityContainerTestBase 
         }
     }
 
+    @Override
     public void reset () {
         if (m_reset) {
             m_reset = false;
         }
     }
 
+    @Override
     public void verify() {
         if (m_exception != null) {
             throw new TestErrorException("Exception was thrown when creating a bus: " + m_exception.getMessage());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
  */
 public class LOBValueWriter {
     //DatabaseCalls still to be processed
-    private Collection calls = null;
+    private Collection<DatabaseCall> calls = null;
     private Accessor accessor;
     private boolean isNativeConnectionRequired;
 
@@ -92,11 +92,11 @@ public class LOBValueWriter {
     * Fetch the locator(s) from the result set and write LOB value to the table
     */
     public void fetchLocatorAndWriteValue(DatabaseCall dbCall, Object resultSet) throws SQLException {
-        Enumeration enumFields = dbCall.getContexts().getFields().elements();
-        Enumeration enumValues = dbCall.getContexts().getValues().elements();
+        Enumeration<DatabaseField> enumFields = dbCall.getContexts().getFields().elements();
+        Enumeration<?> enumValues = dbCall.getContexts().getValues().elements();
         AbstractSession executionSession = dbCall.getQuery().getSession().getExecutionSession(dbCall.getQuery());
         while (enumFields.hasMoreElements()) {
-            DatabaseField field = (DatabaseField)enumFields.nextElement();
+            DatabaseField field = enumFields.nextElement();
             Object value = enumValues.nextElement();
 
             //write the value through the locator
@@ -109,7 +109,7 @@ public class LOBValueWriter {
     */
     private SQLSelectStatement buildSelectStatementForLocator(WriteObjectQuery writeQuery, DatabaseCall call, AbstractSession session) {
         SQLSelectStatement selectStatement = new SQLSelectStatement();
-        Vector tables = writeQuery.getDescriptor().getTables();
+        Vector<DatabaseTable> tables = writeQuery.getDescriptor().getTables();
         selectStatement.setTables(tables);
         //rather than get ALL fields from the descriptor, only use the LOB-related fields to build the minimal SELECT statement.
         selectStatement.setFields(call.getContexts().getFields());
@@ -171,9 +171,9 @@ public class LOBValueWriter {
     public void addCall(Call call) {
         if (calls == null) {
             //use lazy initialization
-            calls = new ArrayList(2);
+            calls = new ArrayList<>(2);
         }
-        calls.add(call);
+        calls.add((DatabaseCall) call);
     }
 
     // Bug 3110860: RETURNINGPOLICY-OBTAINED PK CAUSES LOB TO BE INSERTED INCORRECTLY
@@ -194,8 +194,8 @@ public class LOBValueWriter {
 
         //all INSERTs have been executed, time to execute the SELECTs
         try {
-            for (Iterator callIt = calls.iterator(); callIt.hasNext();) {
-                DatabaseCall dbCall = (DatabaseCall)callIt.next();
+            for (Iterator<DatabaseCall> callIt = calls.iterator(); callIt.hasNext();) {
+                DatabaseCall dbCall = callIt.next();
                 buildAndExecuteCall(dbCall, session);
             }
         } finally {

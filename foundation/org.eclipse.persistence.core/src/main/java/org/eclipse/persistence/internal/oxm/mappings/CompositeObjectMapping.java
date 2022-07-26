@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public interface CompositeObjectMapping<
      * PUBLIC:
      * Returns the reference class
      */
-    Class getReferenceClass();
+    Class<?> getReferenceClass();
 
     String getReferenceClassName();
 
@@ -65,14 +65,13 @@ public interface CompositeObjectMapping<
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
      *
-     * @param aNullPolicy
      */
     void setNullPolicy(AbstractNullPolicy aNullPolicy);
 
     /**
      * This is a reference class whose instances this mapping will store in the domain objects.
      */
-    void setReferenceClass(Class aClass);
+    void setReferenceClass(Class<?> aClass);
 
     void setReferenceClassName(String aClassName);
 

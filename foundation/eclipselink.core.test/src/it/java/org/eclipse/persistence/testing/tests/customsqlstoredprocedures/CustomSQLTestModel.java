@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class CustomSQLTestModel extends TestModel {
     /**
      * This sets the custom SQL for the populate.
      */
+    @Override
     public void addForcedRequiredSystems() {
         getExecutor().removeConfigureSystem(new EmployeeSystem());
 
@@ -60,6 +61,7 @@ public class CustomSQLTestModel extends TestModel {
         }
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new org.eclipse.persistence.testing.models.legacy.LegacySystem());
     }
@@ -67,6 +69,7 @@ public class CustomSQLTestModel extends TestModel {
     /**
     * Ensure that the employee model is setup and change the employee descriptor to use custom SQL.
     */
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getRefreshObjectTestSuite());
@@ -85,7 +88,7 @@ public class CustomSQLTestModel extends TestModel {
         suite.setName("CustomSQLDeleteObjectTestSuite");
         suite.setDescription("This suite tests delete SQL.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new EmployeeDeleteTest(manager.getObject(employeeClass, "0001")));
@@ -135,7 +138,7 @@ public class CustomSQLTestModel extends TestModel {
         suite.setName("CustomSQLReadObjectTestSuite");
         suite.setDescription("This suite test read sql.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "0001")));
@@ -153,7 +156,7 @@ public class CustomSQLTestModel extends TestModel {
         TestSuite suite = new TestSuite();
         suite.setName("RefreshObjectTestSuite");
         suite.setDescription("This Suite contains tests that verify that Refreshing of Objects is working correctly");
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
         suite.addTest(new ReadObjectQueryTest((Employee)manager.getObject(employeeClass, "0003")));
         return suite;
@@ -177,7 +180,7 @@ public class CustomSQLTestModel extends TestModel {
         suite.setName("CustomSQLStoredProcedureTestSuite");
         suite.setDescription("This suite tests certains aspects of StoredProcedures");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new CacheHitTest(manager.getObject(employeeClass, "0003")));
@@ -236,7 +239,7 @@ public class CustomSQLTestModel extends TestModel {
         suite.setName("CustomSQLUpdateObjectTestSuite");
         suite.setDescription("This suite tests update sql.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(employeeClass, "0001")));
@@ -257,6 +260,7 @@ public class CustomSQLTestModel extends TestModel {
     /**
      * Revert the descriptors back to their old state.
      */
+    @Override
     public void reset() {
         getExecutor().removeConfigureSystem(new EmployeeCustomSQLSystem());
 
@@ -267,6 +271,7 @@ public class CustomSQLTestModel extends TestModel {
     /**
      * Ensure that the employee model is setup and change the employee descriptor to use custom SQL.
      */
+    @Override
     public void setup() {
         // Setup complex mapping employee as well.
         ClassDescriptor empDescriptor = getSession().getClassDescriptor(org.eclipse.persistence.testing.models.legacy.Employee.class);
@@ -278,6 +283,7 @@ public class CustomSQLTestModel extends TestModel {
      */
     public static TestCase buildSQLTransactionTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 uow.executeNonSelectingSQL("Insert into ADDRESS (ADDRESS_ID) values (999999)");
@@ -303,6 +309,7 @@ public class CustomSQLTestModel extends TestModel {
      */
     public static TestCase build2OutCursorTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 if (!(getSession().getPlatform().isOracle())) {
                     throwWarning("This test can only be run in Oracle");
@@ -333,6 +340,7 @@ public class CustomSQLTestModel extends TestModel {
      */
     public static TestCase buildUnnamedCursorTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 if (!(getSession().getPlatform().isOracle())) {
                     throwWarning("This test can only be run in Oracle");
@@ -356,6 +364,7 @@ public class CustomSQLTestModel extends TestModel {
      */
     public static TestCase build2ResultSetTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 if (!(getSession().getPlatform().isMySQL())) {
                     throwWarning("This test can only be run in MySQL");
@@ -381,6 +390,7 @@ public class CustomSQLTestModel extends TestModel {
      */
     public static TestCase buildStoredFunctionRefCursorTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 if (!(getSession().getPlatform().isOracle())) {
                     throwWarning("This test can only be run in Oracle");

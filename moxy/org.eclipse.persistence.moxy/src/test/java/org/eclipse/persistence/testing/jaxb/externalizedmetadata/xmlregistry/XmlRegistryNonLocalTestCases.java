@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlRegistryNonLocalTestCases extends JAXBWithJSONTestCases{
@@ -36,21 +36,23 @@ public class XmlRegistryNonLocalTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { FooBar.class, ObjectFactory2.class });
+        setClasses(new Class<?>[] { FooBar.class, ObjectFactory2.class });
     }
 
+    @Override
     protected Object getControlObject() {
         QName name = new QName("foos");
-        JAXBElement jaxbElement = new JAXBElement<Integer>(name, Integer.class, 5);
+        JAXBElement<Integer> jaxbElement = new JAXBElement<Integer>(name, Integer.class, 5);
         return jaxbElement;
     }
 
+      @Override
       public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlregistry/eclipselink-oxm-non-local.xml");
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry", new StreamSource(inputStream));
             Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             return properties;
         }

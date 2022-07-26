@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,9 +36,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * collection-valued association-field of an entity abstract schema type. The syntax for declaring a
  * collection member identification variable is as follows:
  *
- * <div><b>BNF:</b> <code>collection_member_declaration ::= IN(collection_valued_path_expression) [AS] identification_variable</code><p></div>
+ * <div><p><b>BNF:</b> <code>collection_member_declaration ::= IN(collection_valued_path_expression) [AS] identification_variable</code></p></div>
  * or
- * <div><b>BNF:</b> <code>derived_collection_member_declaration ::= IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field</code><p></div>
+ * <div><p><b>BNF:</b> <code>derived_collection_member_declaration ::= IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field</code></p></div>
  *
  * @see FromClauseStateObject
  * @see CollectionMemberDeclaration
@@ -139,9 +139,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         setPath(collectionValuedPath);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -159,9 +156,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -180,9 +174,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return collectionValuedPath;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CollectionMemberDeclaration getExpression() {
         return (CollectionMemberDeclaration) super.getExpression();
@@ -199,9 +190,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return identificationVariable;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
@@ -212,9 +200,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractFromClauseStateObject getParent() {
         return (AbstractFromClauseStateObject) super.getParent();
@@ -239,17 +224,11 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return identificationVariable.hasText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<IdentificationVariableStateObject> identificationVariables() {
-        return new SingleElementListIterable<IdentificationVariableStateObject>(identificationVariable);
+        return new SingleElementListIterable<>(identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
@@ -270,9 +249,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         return derived;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -390,9 +366,6 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
         setAs(!as);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

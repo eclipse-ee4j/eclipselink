@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,9 @@ import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.*;
+
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * <p>
@@ -103,15 +106,15 @@ public class WriteObjectTest extends TransactionalTestCase {
          * descriptor, which is then used to find the mappings and determine if
          * one exists that can be mutated
          */
-        Class objectClass = objectToBeMutated.getClass();
+        Class<? extends Object> objectClass = objectToBeMutated.getClass();
         ClassDescriptor descriptor = getSession().getProject().getClassDescriptor(objectClass);
-        java.util.Vector mappings = descriptor.getMappings();
+        Vector<DatabaseMapping> mappings = descriptor.getMappings();
 
         if (isInUOW) {
             mutationString += "U";
         }
 
-        java.util.Enumeration en = mappings.elements();
+        Enumeration<DatabaseMapping> en = mappings.elements();
 
         /**
          * Parse the mappings for the object's descriptor to find a suitable
@@ -119,12 +122,12 @@ public class WriteObjectTest extends TransactionalTestCase {
          * Not a primary key mapping
          * Must be direct to field
          * Must be a string field
-         * Must not have a converter (i.e. Male-->M, Female-->F, Unknown-->U)
+         * Must not have a converter (i.e. Male--{@literal >}M, Female--{@literal >}F, Unknown--{@literal >}U)
          * The loop exits once an appropriate mapping is found or the list of
          * mappings has been fully parsed (whichever occurs first)
          */
         while (en.hasMoreElements ()) {
-            dbMapping = (DatabaseMapping) en.nextElement();
+            dbMapping = en.nextElement();
 
             if (!dbMapping.isPrimaryKeyMapping()
                     && dbMapping.isDirectToFieldMapping()
@@ -169,9 +172,10 @@ public class WriteObjectTest extends TransactionalTestCase {
         return testShouldMutate;
     }
 
+    @Override
     public void reset() {
         if (bindAllParametersOriginal != null) {
-            getSession().getLogin().setShouldBindAllParameters(bindAllParametersOriginal.booleanValue());
+            getSession().getLogin().setShouldBindAllParameters(bindAllParametersOriginal);
         }
         super.reset();
     }
@@ -208,13 +212,14 @@ public class WriteObjectTest extends TransactionalTestCase {
      * run much slower than before.
      */
     public void setShouldBindAllParameters(boolean value) {
-        bindAllParameters = Boolean.valueOf(value);
+        bindAllParameters = value;
     }
 
+    @Override
     protected void setup() {
         if (shouldBindAllParameters() != null) {
-            bindAllParametersOriginal = Boolean.valueOf(getSession().getLogin().shouldBindAllParameters());
-            getSession().getLogin().setShouldBindAllParameters(shouldBindAllParameters().booleanValue());
+            bindAllParametersOriginal = getSession().getLogin().shouldBindAllParameters();
+            getSession().getLogin().setShouldBindAllParameters(shouldBindAllParameters());
         }
         super.setup();
 
@@ -248,6 +253,7 @@ public class WriteObjectTest extends TransactionalTestCase {
      * findAndMutateDirectToFieldMappingInObject method, and will then attempt
      * to write the object to the database.
      */
+    @Override
     protected void test() {
 
         if (makesTrivialUpdate() && testShouldMutate()) {
@@ -267,6 +273,7 @@ public class WriteObjectTest extends TransactionalTestCase {
      * to use the descriptors.  This will compare the objects and all of
      * their privately owned parts.
      */
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         this.objectFromDatabase = getSession().executeQuery(this.query);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,12 +28,13 @@ public class XmlAdapterListSingleBarTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = FooWithBar.class;
         classes[1] = Bar.class;
         setClasses(classes);
     }
 
+    @Override
     public Object getControlObject() {
         FooWithBar fooWithBar = new FooWithBar();
         List<String> itemlist = new ArrayList<String>();

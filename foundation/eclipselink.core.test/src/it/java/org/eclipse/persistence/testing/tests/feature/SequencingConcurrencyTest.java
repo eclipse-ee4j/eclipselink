@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,6 +95,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
     /**
      * Compare the two BigDecimal, for using TOPSort.
      */
+    @Override
     public int compare(Object b1, Object b2) {
         java.math.BigDecimal big1 = new java.math.BigDecimal(((Number)b1).longValue());
         java.math.BigDecimal big2 = new java.math.BigDecimal(((Number)b2).longValue());
@@ -104,6 +105,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
     /**
      * Sets the logging and the sequence preallocation size the way it was.
      */
+    @Override
     public void reset() {
         if (useServerSession) {
             if (serverSession != null) {
@@ -130,6 +132,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
                 /**
                  * Each thread does this: gets nIterations number of sequence numbers and puts them in a thread specific array.
                  */
+                @Override
                 public void run() {
                     // Test
                     Number[] sequence = (Number[])sequences.elementAt(threadNumber);
@@ -163,6 +166,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
             };
     }
 
+    @Override
     public void setup() {
         if (getAbstractSession().getDescriptor(Employee.class).getSequence().shouldAcquireValueAfterInsert()) {
             throw new org.eclipse.persistence.testing.framework.TestWarningException("Not a valid test against databases where the native sequencing is done entirely in the database.");
@@ -207,6 +211,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
     /**
      * Start each thread, then wait until all of them are finished.
      */
+    @Override
     public void test() {
         //
         Thread[] threads = new Thread[nThreads];
@@ -235,11 +240,12 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
     /**
      * Make sure that the sequence numbers generated contained no gaps or duplicates.
      */
+    @Override
     public void verify() {
         // Verify
         for (int i = 0; i < nThreads; i++) {
             if (tests[i].exception != null) {
-                throw new org.eclipse.persistence.testing.framework.TestErrorException("exception in thread " + i + ", session(" + String.valueOf(System.identityHashCode(session)) + ") ", tests[i].exception);
+                throw new org.eclipse.persistence.testing.framework.TestErrorException("exception in thread " + i + ", session(" + System.identityHashCode(session) + ") ", tests[i].exception);
             }
         }
 

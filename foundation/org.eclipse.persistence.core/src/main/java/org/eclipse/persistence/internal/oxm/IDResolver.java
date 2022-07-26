@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,12 @@ import org.xml.sax.SAXException;
 public abstract class IDResolver {
 
     /**
+     * Default constructor.
+     */
+    protected IDResolver() {
+    }
+
+    /**
      * <p>
      * Resolve the object of Class <code>type</code>, uniquely identified by <code>id</code>.
      * </p>
@@ -46,9 +52,8 @@ public abstract class IDResolver {
      *
      * @return a <code>Callable</code> that will return the resolved object.
      *
-     * @throws SAXException
      */
-    public abstract Callable<?> resolve(Object id, Class type) throws SAXException;
+    public abstract Callable<?> resolve(Object id, Class<?> type) throws SAXException;
 
     /**
      * <p>
@@ -60,9 +65,8 @@ public abstract class IDResolver {
      *
      * @return a <code>Callable</code> that will return the resolved object.
      *
-     * @throws SAXException
      */
-    public abstract Callable<?> resolve(Map<String, Object> id, Class type) throws SAXException;
+    public abstract Callable<?> resolve(Map<String, Object> id, Class<?> type) throws SAXException;
 
     /**
      * <p>
@@ -72,7 +76,6 @@ public abstract class IDResolver {
      * @param id The id <code>Object</code> that uniquely identifies the object to be bound.
      * @param obj The object that will be bound to this id.
      *
-     * @throws SAXException
      */
     public abstract void bind(Object id, Object obj) throws SAXException;
 
@@ -84,7 +87,6 @@ public abstract class IDResolver {
      * @param id A <code>Map</code> of id values, keyed on attribute name.
      * @param obj The object that will be bound to this id.
      *
-     * @throws SAXException
      */
     public abstract void bind(Map<String, Object> id, Object obj) throws SAXException;
 
@@ -95,7 +97,6 @@ public abstract class IDResolver {
      *
      * @param errorHandler Any errors encountered during the unmarshal process should be reported to this handler.
      *
-     * @throws SAXException
      */
     public void startDocument(ErrorHandler errorHandler) throws SAXException {}
 
@@ -104,7 +105,6 @@ public abstract class IDResolver {
      * Called when unmarshalling ends.
      * </p>
      *
-     * @throws SAXException
      */
     public void endDocument() throws SAXException {}
 

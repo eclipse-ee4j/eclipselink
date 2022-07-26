@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
@@ -30,7 +31,7 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
  * to XML.
  */
 public class XMLSessionConfigWriter {
-    public XMLSessionConfigWriter() {
+    private XMLSessionConfigWriter() {
         super();
     }
 
@@ -43,7 +44,7 @@ public class XMLSessionConfigWriter {
      */
     public static void write(SessionConfigs eclipseLinkSessions, String fileName) {
         //Bug#4305370 Needs to be utf-8 encoded.
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")) {
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8)) {
             write(eclipseLinkSessions, writer);
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);

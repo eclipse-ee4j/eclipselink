@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.oxm.XMLTestCase;
 import org.w3c.dom.Document;
@@ -46,6 +47,7 @@ public class NamespaceTestCases extends XMLTestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "ExternalizedMetadata - Namespace: " + super.getName();
     }
@@ -72,9 +74,9 @@ public class NamespaceTestCases extends XMLTestCase {
     public void testBasicNamespaces() throws Exception {
         InputStream bindings = ClassLoader.getSystemResourceAsStream(BINDINGS1);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{ Customer.class }, properties);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{ Customer.class }, properties);
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
@@ -99,9 +101,9 @@ public class NamespaceTestCases extends XMLTestCase {
     public void testNonDefaultRootElement() throws Exception {
         InputStream bindings = ClassLoader.getSystemResourceAsStream(BINDINGS2);
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{ Customer.class }, properties);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{ Customer.class }, properties);
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);

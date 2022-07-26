@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.weaving.jpa;
 
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.Path;
+import org.eclipse.persistence.exceptions.StaticWeaveException;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,15 +28,9 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Vector;
-
-import org.eclipse.persistence.exceptions.StaticWeaveException;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.types.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
 * <p>
@@ -75,9 +76,15 @@ public class StaticWeaveAntTask extends Task{
     private String persistenceinfo;
     private String persistencexml;
     private String target;
-    private Vector classPaths = new Vector();
+    private List<Path> classPaths = new ArrayList<>();
     private int logLevel = SessionLog.OFF;
     private Writer logWriter;
+
+    /**
+     * Default constructor.
+     */
+    public StaticWeaveAntTask() {
+    }
 
     /**
      * Set the input archive to be used to weave.
@@ -138,17 +145,13 @@ public class StaticWeaveAntTask extends Task{
     /**
      * Parse the class path element and store them into vector.
      */
-    private Vector getPathElement(){
-        Vector pathElements = new Vector();
-        for(int i=0;i<classPaths.size();i++){
-            String thisPath = ((Path)classPaths.get(i)).toString();
-            if(thisPath!=null){
-               String[] thisSplitedPath=thisPath.split(File.pathSeparator);
-               if(thisSplitedPath!=null){
-                   for(int j=0;j<thisSplitedPath.length;j++){
-                     pathElements.add(thisSplitedPath[j]);
-                   }
-               }
+    private List<String> getPathElement(){
+        List<String> pathElements = new ArrayList<>();
+        for (int i = 0; i < classPaths.size(); i++) {
+            String thisPath = classPaths.get(i).toString();
+            if (thisPath != null) {
+                String[] thisSplitedPath = thisPath.split(File.pathSeparator);
+                pathElements.addAll(Arrays.asList(thisSplitedPath));
             }
         }
         return pathElements;
@@ -159,11 +162,11 @@ public class StaticWeaveAntTask extends Task{
      * the classloader.
      */
     private URL[] getURLs(){
-        Vector pathElements = getPathElement();
+        List<String> pathElements = getPathElement();
         URL[] urls = new URL[pathElements.size()];
         for(int i=0;i<pathElements.size();i++){
            try {
-               urls[i] = (new File((String)pathElements.get(i))).toURI().toURL();
+               urls[i] = (new File(pathElements.get(i))).toURI().toURL();
            } catch (MalformedURLException e) {
                throw StaticWeaveException.exceptionPerformWeaving(e, pathElements.get(i));
            }
@@ -182,7 +185,6 @@ public class StaticWeaveAntTask extends Task{
 
     /**
      * Verify the value of attributes.
-     * @throws BuildException
      */
     private void verifyOptions() throws BuildException {
        if (source==null) {

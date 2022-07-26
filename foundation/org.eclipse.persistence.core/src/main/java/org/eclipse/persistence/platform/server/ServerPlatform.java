@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 
 /**
  * PUBLIC:
@@ -92,7 +93,7 @@ public interface ServerPlatform {
      * @see #disableJTA()
      * @see #initializeExternalTransactionController()
      */
-    Class getExternalTransactionControllerClass();
+    Class<? extends ExternalTransactionController> getExternalTransactionControllerClass();
 
     /**
      * INTERNAL: setExternalTransactionControllerClass(Class newClass): Set the class of external
@@ -104,7 +105,7 @@ public interface ServerPlatform {
      * @see #disableJTA()
      * @see #initializeExternalTransactionController()
      */
-    void setExternalTransactionControllerClass(Class newClass);
+    void setExternalTransactionControllerClass(Class<? extends ExternalTransactionController> newClass);
 
     /**
      * INTERNAL: initializeExternalTransactionController(): Populate the DatabaseSession's
@@ -214,7 +215,7 @@ public interface ServerPlatform {
      *
      * Default behavior is to use Thread(runnable).start()
      *
-     * @param runnable: the instance of runnable to be "started"
+     * @param runnable the instance of runnable to be "started"
      */
     void launchContainerRunnable(Runnable runnable);
 

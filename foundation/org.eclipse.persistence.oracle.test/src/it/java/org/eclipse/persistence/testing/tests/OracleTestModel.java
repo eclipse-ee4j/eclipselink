@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class OracleTestModel extends TestModel {
         addTests();
     }
 
+    @Override
     public void addTests() {
         if (!getTests().isEmpty()) {
             return;
@@ -63,7 +64,7 @@ public class OracleTestModel extends TestModel {
 
         for (int index = 0; index < tests.size(); ++index) {
             try {
-                addTest((TestModel)Class.forName((String)tests.get(index)).newInstance());
+                addTest((TestModel)Class.forName((String)tests.get(index)).getConstructor().newInstance());
             } catch (Throwable exception) {
                 System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
             }
@@ -71,6 +72,7 @@ public class OracleTestModel extends TestModel {
 
         // Sort the tests alphabetically.
         Collections.sort(this.getTests(), new Comparator() {
+                @Override
                 public int compare(Object left, Object right) {
                     return Helper.getShortClassName(left.getClass()).compareTo(Helper.getShortClassName(right.getClass()));
                 }

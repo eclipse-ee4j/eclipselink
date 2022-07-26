@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.testing.models.aggregate.SellingPoint;
  * @author Tom Ware
  */
 public class NestedAggregateCollectionTest extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
-    private Class cls;
+    private Class<?> cls;
     private String errorMessage = null;
     private UnitOfWork uow = null;
     // that's either Agent or Builder
@@ -34,20 +34,23 @@ public class NestedAggregateCollectionTest extends org.eclipse.persistence.testi
     private House house = null;
 
     // Must be Agent or Builder.
-    public NestedAggregateCollectionTest(Class cls) {
+    public NestedAggregateCollectionTest(Class<?> cls) {
         super();
         this.cls = cls;
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
     }
 
+    @Override
     public void setup() {
         beginTransaction();
     }
 
+    @Override
     public void test() {
         DatabaseSession session = (DatabaseSession)getSession();
 
@@ -97,6 +100,7 @@ public class NestedAggregateCollectionTest extends org.eclipse.persistence.testi
         }
     }
 
+    @Override
     public void verify() {
         if (errorMessage != null) {
             throw new TestErrorException(errorMessage);

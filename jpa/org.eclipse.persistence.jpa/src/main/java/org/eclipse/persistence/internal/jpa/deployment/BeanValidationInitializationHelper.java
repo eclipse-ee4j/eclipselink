@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,9 @@
 
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.Map;
-
+import jakarta.validation.Configuration;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
@@ -31,29 +27,38 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.Map;
+
 /**
  * Responsible for intialializing Bean Validation. The only expected instance of this interface is the inner class.
  * @author Mitesh Meswani
  */
 public interface BeanValidationInitializationHelper {
-    public void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader);
+    void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader);
 
-    static class BeanValidationInitializationHelperImpl implements BeanValidationInitializationHelper {
+    class BeanValidationInitializationHelperImpl implements BeanValidationInitializationHelper {
+
+        public BeanValidationInitializationHelperImpl() {
+        }
+
         @Override
         public void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader) {
 
-            ValidatorFactory validatorFactory = getValidatorFactory(puProperties);
+            ValidatorFactory validatorFactory = getValidatorFactory(puProperties, appClassLoader);
 
             //Check user/environment has specified the validator factory
             if (validatorFactory != null) {
                 // We could obtain a validator factory => Bean Validation API is available at runtime. It is ok to cast now
                 ValidatorFactory beanValidatorFactory = validatorFactory;
 
-                Class[] groupPrePersit = translateValidationGroups(
+                Class<?>[] groupPrePersit = translateValidationGroups(
                         (String) puProperties.get(PersistenceUnitProperties.VALIDATION_GROUP_PRE_PERSIST), appClassLoader) ;
-                Class[] groupPreUpdate = translateValidationGroups(
+                Class<?>[] groupPreUpdate = translateValidationGroups(
                         (String) puProperties.get(PersistenceUnitProperties.VALIDATION_GROUP_PRE_UPDATE), appClassLoader);
-                Class[] groupPreRemove = translateValidationGroups(
+                Class<?>[] groupPreRemove = translateValidationGroups(
                         (String) puProperties.get(PersistenceUnitProperties.VALIDATION_GROUP_PRE_REMOVE), appClassLoader);
 
                 BeanValidationListener validationListener =
@@ -71,13 +76,36 @@ public interface BeanValidationInitializationHelper {
         /**
          * INTERNAL:
          * @param puProperties merged properties for this persitence unit
+         * @param appClassLoader application class loader (can be ie DynamicClassLoader, or its subclass,
+         *                      with the knowledge about Virtual/Dynamic Entities)
          * @return ValidatorFactory instance to be used for this persistence unit.
          */
-        private ValidatorFactory getValidatorFactory(Map puProperties) {
+        private ValidatorFactory getValidatorFactory(Map puProperties, final ClassLoader appClassLoader) {
             ValidatorFactory validatorFactory = (ValidatorFactory)puProperties.get(PersistenceUnitProperties.VALIDATOR_FACTORY);
 
             if (validatorFactory == null) {
-                validatorFactory = Validation.buildDefaultValidatorFactory();
+                Configuration<?> conf = Validation.byDefaultProvider().configure();
+                if (appClassLoader != null) {
+                    try {
+                        Configuration<?> finalConf = conf;
+                        // set external classloader for hibernate-validator to let it find dynamic (virtual) entities
+                        // without having compile-time dependency on it; in the other words, we can't do:
+                        //      Validation.byProvider( HibernateValidator.class )
+                        //        .configure()
+                        //        .externalClassLoader( classLoader )
+                        //        .buildValidatorFactory()
+                        conf = PrivilegedAccessHelper.callDoPrivilegedWithThrowable(() -> {
+                                    Method m = PrivilegedAccessHelper.getMethod(finalConf.getClass(),
+                                            "externalClassLoader", new Class[]{ClassLoader.class},
+                                            false);
+                                    return (Configuration<?>) m.invoke(finalConf, appClassLoader);
+                                }
+                        );
+                    } catch (Throwable t) {
+                        // not hibernate-validator, so ignore
+                    }
+                }
+                validatorFactory = conf.buildValidatorFactory();
             }
             return validatorFactory;
         }
@@ -89,13 +117,13 @@ public interface BeanValidationInitializationHelper {
          * @param validationGroups Array of "," deliminated fully qualified class names
          * @param appClassLoader The classloader for application
          * @return Array of classes corresponding to classnames in given <code>validationGroups</code>.
-         *         <code>null<code> if given <code>validationGroups</code> is null or empty
+         *         <code>null</code> if given <code>validationGroups</code> is null or empty
          */
-        private Class[] translateValidationGroups(String validationGroups, ClassLoader appClassLoader) {
-            Class[] validationGroupsClasses = null;
+        private Class<?>[] translateValidationGroups(String validationGroups, ClassLoader appClassLoader) {
+            Class<?>[] validationGroupsClasses = null;
             if(validationGroups != null && validationGroups.length() != 0 ) {
                 String[] validationGroupClassNames = validationGroups.split(",");
-                validationGroupsClasses = new Class[validationGroupClassNames.length];
+                validationGroupsClasses = new Class<?>[validationGroupClassNames.length];
                 for(int i = 0; i < validationGroupClassNames.length; i++) {
                     String validationGroupClassName = validationGroupClassNames[i];
                     try {
@@ -116,14 +144,12 @@ public interface BeanValidationInitializationHelper {
          * @param className Fully qualified class name
          * @param classLoader ClassLoader to be used for loading the class
          * @return Loaded Class
-         * @throws java.security.PrivilegedActionException
-         * @throws ClassNotFoundException
          */
-        private Class loadClass(String className, ClassLoader classLoader) throws PrivilegedActionException, ClassNotFoundException {
-            Class loadedClass = null;
+        private Class<?> loadClass(String className, ClassLoader classLoader) throws PrivilegedActionException, ClassNotFoundException {
+            Class<?> loadedClass = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 loadedClass = AccessController.doPrivileged(
-                        new PrivilegedClassForName(className, true, classLoader));
+                        new PrivilegedClassForName<>(className, true, classLoader));
             } else {
                 loadedClass = PrivilegedAccessHelper.getClassForName(className, true, classLoader);
             }

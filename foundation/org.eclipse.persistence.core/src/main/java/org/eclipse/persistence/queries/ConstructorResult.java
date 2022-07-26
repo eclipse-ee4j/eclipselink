@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,13 +47,13 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class ConstructorResult extends SQLResult {
     /** Stores the class of result  */
     protected String targetClassName;
-    protected transient Class targetClass;
+    protected transient Class<?> targetClass;
 
     /** Stored the column results of this constructor result */
     protected List<ColumnResult> columnResults;
 
-    protected transient Constructor constructor;
-    protected Class[] constructorArgTypes;
+    protected transient Constructor<?> constructor;
+    protected Class<?>[] constructorArgTypes;
 
     /**
      * Default constructor is protected. Users must initialize the constructor
@@ -66,7 +66,7 @@ public class ConstructorResult extends SQLResult {
     /**
      * Constructor accepting target class.
      */
-    public ConstructorResult(Class targetClass){
+    public ConstructorResult(Class<?> targetClass){
         this();
 
         if (targetClass == null) {
@@ -102,7 +102,6 @@ public class ConstructorResult extends SQLResult {
      * Convert all the class-name-based settings in this query to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -118,7 +117,7 @@ public class ConstructorResult extends SQLResult {
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        targetClass = AccessController.doPrivileged(new PrivilegedClassForName(targetClassName, true, classLoader));
+                        targetClass = AccessController.doPrivileged(new PrivilegedClassForName<>(targetClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(targetClassName, exception.getException());
                     }
@@ -179,7 +178,7 @@ public class ConstructorResult extends SQLResult {
      */
     protected void initialize(DatabaseRecord record, ResultSetMappingQuery query) {
         int columnResultsSize = getColumnResults().size();
-        constructorArgTypes = new Class[columnResultsSize];
+        constructorArgTypes = new Class<?>[columnResultsSize];
 
         for (int i = 0; i < columnResultsSize; i++) {
             ColumnResult result = getColumnResults().get(i);
@@ -201,7 +200,7 @@ public class ConstructorResult extends SQLResult {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(targetClass, constructorArgTypes, true));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(targetClass, constructorArgTypes, true));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.exceptionWhileInitializingConstructor(exception.getException(), query, targetClass);
                 }

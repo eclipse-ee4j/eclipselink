@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,18 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.io.Serializable;
-import java.security.AccessController;
-import java.util.*;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,8 +35,8 @@ import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -74,10 +84,19 @@ public class ConcurrencyManager implements Serializable {
     private final AtomicLong totalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero = new AtomicLong(0);
 
     private static final Map<Thread, ConcurrencyManager> THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK = new ConcurrentHashMap<>();
+    private static final Map<Thread, String> THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE = new ConcurrentHashMap<>();
     private static final Map<Thread, ConcurrencyManager> THREADS_TO_WAIT_ON_ACQUIRE = new ConcurrentHashMap<>();
+    private static final Map<Thread, String> THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE = new ConcurrentHashMap<>();
+
     // Holds as a keys threads that needed to acquire one or more read locks on different cache keys.
     private static final Map<Thread, ReadLockManager> READ_LOCK_MANAGERS = new ConcurrentHashMap<>();
     private static final Set<Thread> THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS = ConcurrentHashMap.newKeySet();
+    private static final Map<Thread, String> THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE = new ConcurrentHashMap<>();
+
+    private static final String ACQUIRE_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquire(...)";
+    private static final String ACQUIRE_READ_LOCK_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquireReadLock(...)";
+    private static final String ACQUIRE_WITH_WAIT_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquireWithWait(...)";
+    private static final String ACQUIRE_DEFERRED_LOCK_METHOD_NAME = ConcurrencyManager.class.getName() + ".acquireDeferredLock(...)";
 
     /**
      * Initialize the newly allocated instance of this class.
@@ -116,7 +135,7 @@ public class ConcurrencyManager implements Serializable {
         // is just storing debug metadata that we can use when we detect the system is frozen in a dead lock
         final boolean currentThreadWillEnterTheWhileWait = ((this.activeThread != null) || (this.numberOfReaders.get() > 0)) && (this.activeThread != currentThread);
         if(currentThreadWillEnterTheWhileWait) {
-            putThreadAsWaitingToAcquireLockForWriting(currentThread);
+            putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_METHOD_NAME);
         }
         while (((this.activeThread != null) || (this.numberOfReaders.get() > 0)) && (this.activeThread != Thread.currentThread())) {
             // This must be in a while as multiple threads may be released, or another thread may rush the acquire after one is released.
@@ -194,7 +213,7 @@ public class ConcurrencyManager implements Serializable {
             return true;
         } else {
             try {
-                putThreadAsWaitingToAcquireLockForWriting(currentThread);
+                putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_WITH_WAIT_METHOD_NAME); 
                 wait(wait);
             } catch (InterruptedException e) {
                 return false;
@@ -243,7 +262,7 @@ public class ConcurrencyManager implements Serializable {
             final long whileStartTimeMillis = System.currentTimeMillis();
             final boolean currentThreadWillEnterTheWhileWait = this.numberOfReaders.get() != 0;
             if(currentThreadWillEnterTheWhileWait) {
-                putThreadAsWaitingToAcquireLockForWriting(currentThread);
+                putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_DEFERRED_LOCK_METHOD_NAME); 
             }
             while (this.numberOfReaders.get() != 0) {
                 // There are readers of this object, wait until they are done before determining if
@@ -319,7 +338,7 @@ public class ConcurrencyManager implements Serializable {
         ReadLockManager readLockManager = getReadLockManager(currentThread);
         final boolean currentThreadWillEnterTheWhileWait = (this.activeThread != null) && (this.activeThread != currentThread);
         if (currentThreadWillEnterTheWhileWait) {
-            THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK.put(currentThread, this);
+            putThreadAsWaitingToAcquireLockForReading(currentThread, ACQUIRE_READ_LOCK_METHOD_NAME); 
         }
         // Cannot check for starving writers as will lead to deadlocks.
         while ((this.activeThread != null) && (this.activeThread != Thread.currentThread())) {
@@ -329,13 +348,13 @@ public class ConcurrencyManager implements Serializable {
             } catch (InterruptedException exception) {
                 releaseAllLocksAcquiredByThread(lockManager);
                 if (currentThreadWillEnterTheWhileWait) {
-                    THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK.remove(currentThread);
+                    removeThreadNoLongerWaitingToAcquireLockForReading(currentThread);
                 }
                 throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
             }
         }
         if (currentThreadWillEnterTheWhileWait) {
-            THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK.remove(currentThread);
+            removeThreadNoLongerWaitingToAcquireLockForReading(currentThread);
         }
         try {
             addReadLockToReadLockManager();
@@ -381,8 +400,8 @@ public class ConcurrencyManager implements Serializable {
     /**
      * Init the deferred lock managers (thread - DeferredLockManager).
      */
-    protected static Map initializeDeferredLockManagers() {
-        return new ConcurrentHashMap();
+    protected static Map<Thread, DeferredLockManager> initializeDeferredLockManagers() {
+        return new ConcurrentHashMap<>();
     }
 
     /**
@@ -425,9 +444,21 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /**
-     * Check if the deferred locks of a thread are all released
+     * Check if the deferred locks of a thread are all released.
+     * Should write dead lock diagnostic information into the {@link #THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE}.
+     * <br>
+     * @param thread
+     *            the current thread to be explored. It starts by being the thread that it is stuck but then it evolves
+     *            to be other that have acquired locks our main thread was needing but whcich themslves are stuck...
+     *            threads in the deffered lock chain that are going nowhere themselves.
+     * @param recursiveSet
+     *            this prevents the algorithm going into an infinite loop of expanding the same thread more than once.
+     * @param parentChainOfThreads
+     *            this starts by being a basket containing the current thread, but each time we go deeper it evolves to
+     *            contain the thread we will explore next.
+     * @return true if object is complete
      */
-    public static boolean isBuildObjectOnThreadComplete(Thread thread, Map recursiveSet) {
+    public static boolean isBuildObjectOnThreadComplete(Thread thread, Map<Thread, Thread> recursiveSet, List<Thread> parentChainOfThreads, boolean deadLockDiagnostic) {
         if (recursiveSet.containsKey(thread)) {
             return true;
         }
@@ -438,10 +469,10 @@ public class ConcurrencyManager implements Serializable {
             return true;
         }
 
-        Vector deferredLocks = lockManager.getDeferredLocks();
-        for (Enumeration deferredLocksEnum = deferredLocks.elements();
+        Vector<ConcurrencyManager> deferredLocks = lockManager.getDeferredLocks();
+        for (Enumeration<ConcurrencyManager> deferredLocksEnum = deferredLocks.elements();
              deferredLocksEnum.hasMoreElements();) {
-            ConcurrencyManager deferedLock = (ConcurrencyManager)deferredLocksEnum.nextElement();
+            ConcurrencyManager deferedLock = deferredLocksEnum.nextElement();
             Thread activeThread = null;
             if (deferedLock.isAcquired()) {
                 activeThread = deferedLock.getActiveThread();
@@ -451,22 +482,91 @@ public class ConcurrencyManager implements Serializable {
                 if (activeThread != null) {
                     DeferredLockManager currentLockManager = getDeferredLockManager(activeThread);
                     if (currentLockManager == null) {
+                    // deadlock diagnostic extension
+                        if (deadLockDiagnostic && parentChainOfThreads != null) {
+                            StringBuilder justificationForReturningFalse = new StringBuilder();
+                            enrichStringBuildingExplainWhyThreadIsStuckInIsBuildObjectOnThreadComplete(parentChainOfThreads, deferedLock, activeThread, false, justificationForReturningFalse);
+                            setJustificationWhyMethodIsBuildingObjectCompleteReturnsFalse(justificationForReturningFalse.toString());
+                        }
                         return false;
                     } else if (currentLockManager.isThreadComplete()) {
                         activeThread = deferedLock.getActiveThread();
                         // The lock may suddenly finish and no longer have an active thread.
                         if (activeThread != null) {
-                            if (!isBuildObjectOnThreadComplete(activeThread, recursiveSet)) {
+                            // deadlock diagnostic extension
+                            List<Thread> currentChainOfThreads = null;
+                            if (deadLockDiagnostic) {
+                                currentChainOfThreads = (parentChainOfThreads == null) ? new ArrayList<>() : new ArrayList<>(parentChainOfThreads);
+                                currentChainOfThreads.add(activeThread);
+                            }
+                            if (!isBuildObjectOnThreadComplete(activeThread, recursiveSet, currentChainOfThreads, deadLockDiagnostic)) {
                                 return false;
                             }
                         }
                     } else {
+                        if (deadLockDiagnostic && parentChainOfThreads != null) {
+                            StringBuilder justificationForReturningFalse = new StringBuilder();
+                            enrichStringBuildingExplainWhyThreadIsStuckInIsBuildObjectOnThreadComplete(parentChainOfThreads, deferedLock, activeThread, true, justificationForReturningFalse);
+                            setJustificationWhyMethodIsBuildingObjectCompleteReturnsFalse(justificationForReturningFalse.toString());
+                        }
                         return false;
                     }
                 }
             }
         }
+        if (parentChainOfThreads != null && parentChainOfThreads.size() == 1) {
+            clearJustificationWhyMethodIsBuildingObjectCompleteReturnsFalse();
+        }
         return true;
+    }
+
+    /**
+     * When the recursive algorithm decides to return false it is because it is confronted with a cache key that had to
+     * be deferred. And the cache key is either being owned by a thread that did not flage itsef as being finished and
+     * waiting in the wait for deferred locks. Or the thread that ows the cache key is not playing nice - and not using
+     * deferred locks - so it has acquire the cache key, it is going about its business (e.g. committing a transaction
+     * or perhaps doing object building. Normally, but not always, in object building threads do have a lock manager,
+     * but sometimes not when they agressive acquire lock policy. )
+     *
+     * @param chainOfThreadsExpandedInRecursion
+     *            This the chaing threads that were expanded as we went down with the recursion
+     * @param finalDeferredLockCausingTrouble
+     *            this is a lock that was deferred either by current thread or by a thread that is also itself waiting
+     *            around . This lock is what is causing us ultimately to return FALSE, because the lock is still ACUIRED
+     *            so not yet free. And the thread that owns it is also still not finished yet.
+     *
+     * @param activeThreadOnDeferredLock
+     *            this is the thread that was spotted as owning/being actively owning the the deferred lock. So we can
+     *            consider this thread as being the ultimate cause of why the current thread and perhaps a hole chaing
+     *            of related threads are not evolving. But certainly the current thread.
+     * @param hasDeferredLockManager
+     *            Some threads have deferred lock managers some not. Not clear when they do. But threads doing object
+     *            building typically end up creating a deferred lock manager when they find themselves unable to acquire
+     *            an object and need to defer on the cache key.
+     * @param justification
+     *            this is what we want to populate it will allow us to build a trace to explain why the thread on the
+     *            wait for deferred lock is going nowhere. This trace will be quite important to help us interpret the
+     *            massive dumps since it is quite typical to find threads in this state.
+     *
+     */
+    public static void enrichStringBuildingExplainWhyThreadIsStuckInIsBuildObjectOnThreadComplete(
+            List<Thread> chainOfThreadsExpandedInRecursion,
+            ConcurrencyManager finalDeferredLockCausingTrouble,
+            Thread activeThreadOnDeferredLock,
+            boolean hasDeferredLockManager,
+            StringBuilder justification) {
+        // (a) summarize the threads navigated via deferred locks
+        int currentThreadNumber = 0;
+        for (Thread currentExpandedThread : chainOfThreadsExpandedInRecursion) {
+            currentThreadNumber++;
+            justification.append(TraceLocalization.buildMessage("concurrency_manager_build_object_thread_complete_1", new Object[] {currentThreadNumber, currentExpandedThread.getName()}));
+        }
+        justification.append(TraceLocalization.buildMessage("concurrency_manager_build_object_thread_complete_2"));
+        // (b) Described the cache key blocking us from finishing the oject building
+        String cacheKeyStr = ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(finalDeferredLockCausingTrouble);
+        justification.append(TraceLocalization.buildMessage("concurrency_manager_build_object_thread_complete_3", new Object[] {cacheKeyStr}));
+        // (c) Describe the thread that has acquired the cache key and is not done yet
+        justification.append(TraceLocalization.buildMessage("concurrency_manager_build_object_thread_complete_4", new Object[] {activeThreadOnDeferredLock, hasDeferredLockManager}));
     }
 
     /**
@@ -536,20 +636,23 @@ public class ConcurrencyManager implements Serializable {
         boolean releaseAllLocksAquiredByThreadAlreadyPerformed = false;
         boolean currentThreadRegisteredAsWaitingForisBuildObjectOnThreadComplete = false;
 
+        clearJustificationWhyMethodIsBuildingObjectCompleteReturnsFalse();
         // Thread have three stages, one where they are doing work (i.e. building objects)
         // two where they are done their own work but may be waiting on other threads to finish their work,
         // and a third when they and all the threads they are waiting on are done.
         // This is essentially a busy wait to determine if all the other threads are done.
         while (true) {
+            boolean isBuildObjectCompleteSlow = ConcurrencyUtil.SINGLETON.tooMuchTimeHasElapsed(whileStartTimeMillis, ConcurrencyUtil.SINGLETON.getBuildObjectCompleteWaitTime());
             try{
                 // 2612538 - the default size of Map (32) is appropriate
-                Map recursiveSet = new IdentityHashMap();
-                if (isBuildObjectOnThreadComplete(currentThread, recursiveSet)) {// Thread job done.
+                Map<Thread, Thread> recursiveSet = new IdentityHashMap<>();
+                if (isBuildObjectOnThreadComplete(currentThread, recursiveSet, Arrays.asList(currentThread), isBuildObjectCompleteSlow)) {// Thread job done.
                     // Remove from debug metadata the fact that the current thread needed to wait
                     // for one or more build objects to be completed by other threads.
                     if(currentThreadRegisteredAsWaitingForisBuildObjectOnThreadComplete) {
                         THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS.remove(currentThread);
                     }
+                    clearJustificationWhyMethodIsBuildingObjectCompleteReturnsFalse();
                     lockManager.releaseActiveLocksOnThread();
                     removeDeferredLockManager(currentThread);
                     AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "deferred_locks_released", currentThread.getName());
@@ -565,16 +668,20 @@ public class ConcurrencyManager implements Serializable {
                         Thread.sleep(20);
                         ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
                     } catch (InterruptedException interrupted) {
+                        THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS.remove(currentThread);
                         AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, interrupted);
                         releaseAllLocksAcquiredByThread(lockManager);
                         releaseAllLocksAquiredByThreadAlreadyPerformed = true;
+                        clearJustificationWhyMethodIsBuildingObjectCompleteReturnsFalse();
                         throw ConcurrencyException.waitWasInterrupted(interrupted.getMessage());
                     }
                 }
             } catch (Error error) {
                 if (!releaseAllLocksAquiredByThreadAlreadyPerformed) {
+                    THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS.remove(currentThread);
                     AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, error);
                     releaseAllLocksAcquiredByThread(lockManager);
+                    clearJustificationWhyMethodIsBuildingObjectCompleteReturnsFalse();
                 }
                 throw error;
             }
@@ -674,12 +781,14 @@ public class ConcurrencyManager implements Serializable {
         //When this method is invoked during an acquire lock sometimes there is no lock manager
         if (lockManager == null) {
             String cacheKeyToString = ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(this);
-            AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE,"concurrency_manager_release_locks_acquired_by_thread_1", currentThread.getName(), cacheKeyToString);
+            StringWriter writer = new StringWriter();
+            writer.write(TraceLocalization.buildMessage("concurrency_manager_release_locks_acquired_by_thread_1", new Object[] {currentThread.getName(), cacheKeyToString}));
+            AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
             return;
         }
-
-        //Release the active locks on the thread
-        AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE,"concurrency_manager_release_locks_acquired_by_thread_2", currentThread.toString());
+        StringWriter writer = new StringWriter();
+        writer.write(TraceLocalization.buildMessage("concurrency_manager_release_locks_acquired_by_thread_2", new Object[] {currentThread.toString()}));
+        AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
         lockManager.releaseActiveLocksOnThread();
         removeDeferredLockManager(currentThread);
     }
@@ -711,7 +820,7 @@ public class ConcurrencyManager implements Serializable {
      */
     @Override
     public String toString() {
-        Object[] args = { Integer.valueOf(getDepth()) };
+        Object[] args = {getDepth()};
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("nest_level", args);
     }
 
@@ -735,16 +844,13 @@ public class ConcurrencyManager implements Serializable {
      * this flag may inadvertently remove the deadlock because of the change in timings.
      *
      * There is also a system level property for this setting. "eclipselink.cache.record-stack-on-lock"
-     * @param shouldTrackStack
      */
     public static void setShouldTrackStack(boolean shouldTrackStack) {
         ConcurrencyManager.shouldTrackStack = shouldTrackStack;
     }
 
     private static String getPropertyRecordStackOnLock() {
-        return (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
-                AccessController.doPrivileged(new PrivilegedGetSystemProperty(SystemProperties.RECORD_STACK_ON_LOCK))
-                : System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK);
+        return PrivilegedAccessHelper.callDoPrivileged(() -> System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK));
     }
 
     /**
@@ -753,8 +859,9 @@ public class ConcurrencyManager implements Serializable {
      * to try to acquire a cache key this acquiring logic is not being managed directly inside of the wait manager.
      *
      */
-    public  void putThreadAsWaitingToAcquireLockForWriting(Thread thread){
+    public void putThreadAsWaitingToAcquireLockForWriting(Thread thread, String methodName){
         THREADS_TO_WAIT_ON_ACQUIRE.put(thread, this);
+        THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE.put(thread, methodName);
     }
 
     /**
@@ -763,6 +870,24 @@ public class ConcurrencyManager implements Serializable {
      */
     public void removeThreadNoLongerWaitingToAcquireLockForWriting(Thread thread) {
         THREADS_TO_WAIT_ON_ACQUIRE.remove(thread);
+        THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE.remove(thread);
+    }
+
+    /**
+     * The thread is trying to acquire a read lock but it is not being able to make process on getting the read lock.
+     *
+     * @param methodName
+     *            metadata to help us debug trace leaking. If we start blowing up threads we do not want the traces
+     *            created by the current thread to remain.
+     */
+    public void putThreadAsWaitingToAcquireLockForReading(Thread currentThread, String methodName) {
+        THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK.put(currentThread, this);
+        THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE.put(currentThread, methodName);
+    }
+
+    public void removeThreadNoLongerWaitingToAcquireLockForReading(Thread thread) {
+        THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK.remove(thread);
+        THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE.remove(thread);
     }
 
     /** Getter for {@link #concurrencyManagerId} */
@@ -795,14 +920,29 @@ public class ConcurrencyManager implements Serializable {
         return new HashMap<>(THREADS_TO_WAIT_ON_ACQUIRE);
     }
 
+    /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE} */
+    public static Map<Thread, String> getThreadsToWaitOnAcquireMethodName() {
+        return new HashMap<>(THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE);
+    }
+
     /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK} */
     public static Map<Thread, ConcurrencyManager> getThreadsToWaitOnAcquireReadLock() {
         return THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK;
     }
 
+    /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE} */
+    public static Map<Thread, String> getThreadsToWaitOnAcquireReadLockMethodName() {
+        return THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE;
+    }
+
     /** Getter for {@link #THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS} */
     public static Set<Thread> getThreadsWaitingToReleaseDeferredLocks() {
         return new HashSet<>(THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS);
+    }
+
+    /** Getter for {@link #THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE} */
+    public static Map<Thread, String> getThreadsWaitingToReleaseDeferredLocksJustification() {
+        return new HashMap<>(THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE);
     }
 
     /**
@@ -874,5 +1014,36 @@ public class ConcurrencyManager implements Serializable {
                 readLockManagers.remove(thread);
             }
         }
+    }
+
+    /**
+     * Clear the justification why the {@link #isBuildObjectOnThreadComplete(Thread, Map, List, boolean) } is
+     * going nowhere.
+     *
+     * <P>
+     * WHEN TO INVOKE: <br>
+     * Should be invoked if we decide to blowup a thread with the explosive approach, for a thread in wait for release
+     * deferred lock. We do not want to keep traces of threads that left eclipselink code. <br>
+     *
+     * Should be infokved when the algorithm returns TRUE - build object is complete. <br>
+     * Should be invoked when we are not yet stuck for sufficient time and the release defferred logic algorithm is
+     * using the {@link #isBuildObjectOnThreadComplete(Thread, Map, List, boolean)} instead of the more verbose and slower
+     * {@link #isBuildObjectOnThreadComplete(Thread, Map, List, boolean)}.
+     */
+    public static void clearJustificationWhyMethodIsBuildingObjectCompleteReturnsFalse() {
+        THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE.remove(Thread.currentThread());
+    }
+
+    /**
+     * See {@link #clearJustificationWhyMethodIsBuildingObjectCompleteReturnsFalse()} in this case we want to store the
+     * justification computed by the
+     * {@link #enrichStringBuildingExplainWhyThreadIsStuckInIsBuildObjectOnThreadComplete(List, ConcurrencyManager, Thread, boolean, StringBuilder)}
+     *
+     * @param justification
+     *            a string that helps us understand why the recursive algorithm returned false, building object is not
+     *            yet complete.
+     */
+    public static void setJustificationWhyMethodIsBuildingObjectCompleteReturnsFalse(String justification) {
+        THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE.put(Thread.currentThread(), justification);
     }
 }

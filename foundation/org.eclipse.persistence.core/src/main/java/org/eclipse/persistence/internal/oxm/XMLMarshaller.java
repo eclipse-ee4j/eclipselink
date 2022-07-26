@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,6 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
@@ -96,36 +95,36 @@ public abstract class XMLMarshaller<
     private static final String WRITE_TO_STREAM_METHOD_NAME = "writeToStream";
     private static final String WRITE_TO_EVENT_WRITER_METHOD_NAME = "writeToEventWriter";
 
-    protected static Class staxResultClass;
+    protected static Class<?> staxResultClass;
     protected static Method staxResultGetStreamWriterMethod;
     protected static Method staxResultGetEventWriterMethod;
     private static Constructor xmlStreamWriterRecordConstructor;
     private static Constructor xmlEventWriterRecordConstructor;
     protected static Method writeToStreamMethod;
     protected static Method writeToEventWriterMethod;
-    protected static Class domToStreamWriterClass;
-    protected static Class domToEventWriterClass;
+    protected static Class<?> domToStreamWriterClass;
+    protected static Class<?> domToEventWriterClass;
 
     static {
         try {
             staxResultClass = PrivilegedAccessHelper.getClassForName(STAX_RESULT_CLASS_NAME);
             if(staxResultClass != null) {
-                staxResultGetStreamWriterMethod = PrivilegedAccessHelper.getDeclaredMethod(staxResultClass, GET_XML_STREAM_WRITER_METHOD_NAME, new Class[]{});
-                staxResultGetEventWriterMethod = PrivilegedAccessHelper.getDeclaredMethod(staxResultClass, GET_XML_EVENT_WRITER_METHOD_NAME, new Class[]{});
+                staxResultGetStreamWriterMethod = PrivilegedAccessHelper.getDeclaredMethod(staxResultClass, GET_XML_STREAM_WRITER_METHOD_NAME, new Class<?>[]{});
+                staxResultGetEventWriterMethod = PrivilegedAccessHelper.getDeclaredMethod(staxResultClass, GET_XML_EVENT_WRITER_METHOD_NAME, new Class<?>[]{});
             }
-            Class streamWriterRecordClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_WRITER_RECORD_CLASS_NAME);
-            Class streamWriterClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_WRITER_CLASS_NAME);
-            xmlStreamWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(streamWriterRecordClass, new Class[]{streamWriterClass}, true);
+            Class<Object> streamWriterRecordClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_WRITER_RECORD_CLASS_NAME);
+            Class<Object> streamWriterClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_WRITER_CLASS_NAME);
+            xmlStreamWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(streamWriterRecordClass, new Class<?>[]{streamWriterClass}, true);
 
-            Class eventWriterRecordClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_WRITER_RECORD_CLASS_NAME);
-            Class eventWriterClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_WRITER_CLASS_NAME);
-            xmlEventWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(eventWriterRecordClass, new Class[]{eventWriterClass}, true);
+            Class<Object> eventWriterRecordClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_WRITER_RECORD_CLASS_NAME);
+            Class<Object> eventWriterClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_WRITER_CLASS_NAME);
+            xmlEventWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(eventWriterRecordClass, new Class<?>[]{eventWriterClass}, true);
 
             domToStreamWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_STREAM_WRITER_CLASS_NAME);
-            writeToStreamMethod = PrivilegedAccessHelper.getMethod(domToStreamWriterClass, WRITE_TO_STREAM_METHOD_NAME, new Class[] {CoreClassConstants.NODE, CoreClassConstants.STRING, CoreClassConstants.STRING, streamWriterClass}, true);
+            writeToStreamMethod = PrivilegedAccessHelper.getMethod(domToStreamWriterClass, WRITE_TO_STREAM_METHOD_NAME, new Class<?>[] {CoreClassConstants.NODE, CoreClassConstants.STRING, CoreClassConstants.STRING, streamWriterClass}, true);
 
             domToEventWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_EVENT_WRITER_CLASS_NAME);
-            writeToEventWriterMethod = PrivilegedAccessHelper.getMethod(domToEventWriterClass, WRITE_TO_EVENT_WRITER_METHOD_NAME, new Class[] {CoreClassConstants.NODE, CoreClassConstants.STRING, CoreClassConstants.STRING, eventWriterClass}, true);
+            writeToEventWriterMethod = PrivilegedAccessHelper.getMethod(domToEventWriterClass, WRITE_TO_EVENT_WRITER_METHOD_NAME, new Class<?>[] {CoreClassConstants.NODE, CoreClassConstants.STRING, CoreClassConstants.STRING, eventWriterClass}, true);
 
         } catch (Exception ex) {
             // Do nothing
@@ -150,7 +149,7 @@ public abstract class XMLMarshaller<
     private Object marshalAttributeGroup;
     private Boolean logPayload;
 
-    public XMLMarshaller(CONTEXT context) {
+    protected XMLMarshaller(CONTEXT context) {
         super(context);
         this.includeRoot = true;
         this.marshalEmptyCollections = true;
@@ -260,7 +259,7 @@ public abstract class XMLMarshaller<
      * INTERNAL:
      * Return the descriptor for the root object.
      */
-     protected DESCRIPTOR getDescriptor(Class clazz, ABSTRACT_SESSION session) throws XMLMarshalException {
+     protected DESCRIPTOR getDescriptor(Class<?> clazz, ABSTRACT_SESSION session) throws XMLMarshalException {
          DESCRIPTOR descriptor = (DESCRIPTOR) session.getDescriptor(clazz);
          if (descriptor == null) {
              throw XMLMarshalException.descriptorNotFoundInProject(clazz.getName());
@@ -444,7 +443,6 @@ public abstract class XMLMarshaller<
     /**
      * Determine if the @XMLRootElement should be marshalled when present.
      * Ignored marshalling XML.
-     * @return
      * @since 2.4
      */
     @Override
@@ -489,7 +487,7 @@ public abstract class XMLMarshaller<
     }
 
     protected boolean isSimpleXMLRoot(Root xmlRoot) {
-        Class xmlRootObjectClass = xmlRoot.getObject().getClass();
+        Class<?> xmlRootObjectClass = xmlRoot.getObject().getClass();
 
         ConversionManager conversionManager = (ConversionManager) context.getSession().getDatasourcePlatform().getConversionManager();
         if (conversionManager.schemaType(xmlRootObjectClass) != null || CoreClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass) || CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(xmlRootObjectClass) || CoreClassConstants.DURATION.isAssignableFrom(xmlRootObjectClass)) {
@@ -547,7 +545,7 @@ public abstract class XMLMarshaller<
                 }
             }
         }else{
-            Class objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
@@ -589,7 +587,7 @@ public abstract class XMLMarshaller<
                 }
             }
         }else{
-            Class objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
@@ -821,6 +819,7 @@ public abstract class XMLMarshaller<
         }else{
             marshalRecord.afterContainmentMarshal(null, object);
         }
+        marshalRecord.flush();
     }
 
     /**
@@ -854,7 +853,7 @@ public abstract class XMLMarshaller<
                 }
             }
         }else{
-            Class objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
@@ -981,7 +980,7 @@ public abstract class XMLMarshaller<
                 }
             }
         }else{
-            Class objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
@@ -1136,7 +1135,7 @@ public abstract class XMLMarshaller<
                 }
             }
         }else{
-            Class objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             if(object instanceof Collection) {
                 int valueSize = ((Collection)object).size();
                 if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
@@ -1202,7 +1201,7 @@ public abstract class XMLMarshaller<
      * (such as FileWriters and OutputStreamWriters).
      */
     private Writer wrapWriter(Writer writer) {
-        if (writer instanceof OutputStreamWriter || writer instanceof FileWriter) {
+        if (writer instanceof OutputStreamWriter) {
             return new BufferedWriter(writer);
         }
         return writer;
@@ -1326,7 +1325,6 @@ public abstract class XMLMarshaller<
     /**
      * Set the MediaType for this xmlMarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
-     * @param mediaType
      */
     public void setMediaType(MEDIA_TYPE mediaType) {
         this.mediaType = mediaType;

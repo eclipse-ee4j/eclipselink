@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,12 +39,13 @@ GetClassDescriptorWithNullTest extends AutoVerifyTestCase {
         setDescription("Verifies calling getClassDescriptor() with a null parameter returns null");
     }
 
+    @Override
     public void test() {
         Session aSession = getSession();
         Project aProject = aSession.getProject();
 
         // important to declare types as Object / Class to invoke correct methods on Session
-        Class aClass = null;
+        Class<?> aClass = null;
         Object anObject = null;
 
         /* when null is passed to Project / Session getClassDescriptor(Object) /
@@ -56,6 +57,7 @@ GetClassDescriptorWithNullTest extends AutoVerifyTestCase {
         testSessionDescriptorResult = aSession.getDescriptor(anObject);
     }
 
+    @Override
     public void verify() {
         assertNull("non-null value returned from null param passed to Project>>getClassDescriptor(Class)", testProjectResult);
         assertNull("non-null value returned from null param passed to Session>>getClassDescriptor(Class)", testSessionClassResult);

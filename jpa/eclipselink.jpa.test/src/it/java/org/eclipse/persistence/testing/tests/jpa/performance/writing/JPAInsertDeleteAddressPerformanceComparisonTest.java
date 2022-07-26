@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,12 +30,13 @@ public class JPAInsertDeleteAddressPerformanceComparisonTest extends Performance
     /**
      * Read an existing address for emulated database run.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         Address any = (Address)manager.createQuery("Select a from Address a").getResultList().get(0);
         // Create a query to avoid a cache hit to load emulated data.
         Query query = manager.createQuery("Select a from Address a where a.id = :id");
-        query.setParameter("id", new Long(any.getId()));
+        query.setParameter("id", any.getId());
         any = (Address)query.getSingleResult();
         manager.close();
         manager = createEntityManager();
@@ -47,6 +48,7 @@ public class JPAInsertDeleteAddressPerformanceComparisonTest extends Performance
     /**
      * Insert and delete address.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
@@ -60,7 +62,7 @@ public class JPAInsertDeleteAddressPerformanceComparisonTest extends Performance
 
         manager = createEntityManager();
         manager.getTransaction().begin();
-        address = manager.getReference(Address.class, new Long(address.getId()));
+        address = manager.getReference(Address.class, address.getId());
         manager.remove(address);
         manager.getTransaction().commit();
         manager.close();

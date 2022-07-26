@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,15 +32,17 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
         super(name);
         setControlJSON(JSON_RESOURCE_NO_ROOT);
         setWriteControlJSON(JSON_RESOURCE_TYPE);
-        setClasses(new Class[]{AddressWithRootElement.class});
+        setClasses(new Class<?>[]{AddressWithRootElement.class});
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
       }
 
+    @Override
     public Object getControlObject() {
         AddressWithRootElement addr = new AddressWithRootElement();
         addr.setId(10);
@@ -51,17 +53,19 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return AddressWithRootElement.class;
     }
 
+    @Override
     public Object getReadControlObject(){
         QName name = new QName("");
-        JAXBElement jbe = new JAXBElement<AddressWithRootElement>(name, AddressWithRootElement.class, (AddressWithRootElement)getControlObject());
+        JAXBElement<AddressWithRootElement> jbe = new JAXBElement<AddressWithRootElement>(name, AddressWithRootElement.class, (AddressWithRootElement)getControlObject());
         return jbe;
     }
 
 
+    @Override
     public void testJSONSchemaGeneration() throws Exception{
         generateJSONSchema(getClass().getClassLoader().getResourceAsStream(JSON_SCHEMA));
     }
@@ -70,7 +74,7 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
     public Map<Object, Object> getProperties() {
         HashMap m = new HashMap();
 
-        m.put(JAXBContextProperties.JSON_INCLUDE_ROOT, new Boolean(false));
+        m.put(JAXBContextProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
         return m;
 
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,11 +30,13 @@ public class OptimisticLockingTestModel extends TestModel {
         setDescription("This model tests EclipseLink optimistic locking features.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new OptimisticLockingSystem());
         addRequiredSystem(new BarSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getOptimisticLockingTestSuite());
         addTest(getCascadeOptimisticLockingTestSuite());
@@ -142,7 +144,7 @@ public class OptimisticLockingTestModel extends TestModel {
         suite.setName("UpdateNullValueOptimisticLockingTestSuite");
         suite.setDescription("Tests the functionality of updating fields with a null database value, with optimistic locking");
 
-        final Class[] policies = { AllFieldsLockingPolicy.class, SelectedFieldsLockingPolicy.class,
+        final Class<?>[] policies = { AllFieldsLockingPolicy.class, SelectedFieldsLockingPolicy.class,
                 ChangedFieldsLockingPolicy.class, VersionLockingPolicy.class, TimestampLockingPolicy.class };
         // done this way for test ordering
         for (int i = 0; i < policies.length; i++) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 package org.eclipse.persistence.sessions.factories;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
@@ -33,7 +35,7 @@ public class XMLProjectWriter {
     /**
      * Default constructor.
      */
-    public XMLProjectWriter() {
+    private XMLProjectWriter() {
         super();
     }
 
@@ -49,7 +51,7 @@ public class XMLProjectWriter {
         Writer writer;
         try {
             FileOutputStream stream = new FileOutputStream(fileName);
-            writer = new OutputStreamWriter(stream, "UTF-8");
+            writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);
             write(project, writer);
             writer.close();
         } catch (IOException exception) {

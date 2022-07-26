@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -416,9 +416,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * Return an instance of a ManagedType based on the RelationalDescriptor parameter
-     * @param metamodel
-     * @param descriptor
-     * @return
      */
     protected static ManagedTypeImpl<?> create(MetamodelImpl metamodel, ClassDescriptor descriptor) {
         // Get the ManagedType property on the descriptor if it exists
@@ -659,7 +656,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * Return the RelationalDescriptor associated with this ManagedType
-     * @return
      */
     public ClassDescriptor getDescriptor() {
         return this.descriptor;
@@ -687,7 +683,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *  @return ListAttribute of the given name
      *  @throws IllegalArgumentException if attribute of the given
      *          name is not present in the managed type
-     * @return
      */
     private ListAttribute<? super X, ?> getList(String name, boolean performNullCheck) {
         /*
@@ -712,15 +707,14 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * @param attributeElementType - the java element or basic element type
      * @param aReturnCollectionType - the plural return type
      * @throws IllegalArgumentException if either type is wrong
-     * @return void
      */
-    private void verifyAttributeTypeAndReturnType(Attribute anAttribute, Class attributeElementType, CollectionType aReturnCollectionType) {
+    private void verifyAttributeTypeAndReturnType(Attribute anAttribute, Class<?> attributeElementType, CollectionType aReturnCollectionType) {
         // Check for plural or singular attribute
         if(anAttribute.isCollection()) {
             // check for CollectionAttribute
             if(((PluralAttribute)anAttribute).getCollectionType().equals(aReturnCollectionType)) {
                 // check that the java class is correct (use BindableJavaType not elementType.getJavaType()
-                Class aBindableJavaClass = ((PluralAttribute)anAttribute).getBindableJavaType();
+                Class<?> aBindableJavaClass = ((PluralAttribute)anAttribute).getBindableJavaType();
                 if(attributeElementType != aBindableJavaClass) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                         "metamodel_managed_type_attribute_type_incorrect",
@@ -773,7 +767,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Note this method provides the same functionality of the more specific IdentifiableType.superType but is general to ManagedTypeImpl
         ManagedTypeImpl<?> aSuperType = null;
         // Get the superType if it exists (without using IdentifiableType.superType)
-        Class aSuperClass = this.getJavaType().getSuperclass();
+        Class<? super X> aSuperClass = this.getJavaType().getSuperclass();
         // The superclass for top-level types will be Object - which we will leave as a null supertype on the type
         if(null != aSuperClass && aSuperClass != ClassConstants.OBJECT &&
                 this.getMetamodel().getType(aSuperClass).isManagedType()) { // 315287: return null for BasicType
@@ -835,7 +829,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * Return the Map of AttributeImpl members keyed by String.
-     * @return
      */
     protected java.util.Map<String, Attribute<X, ?>> getMembers() {
         return this.members;
@@ -844,7 +837,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * Return the Metamodel that this ManagedType is associated with.
-     * @return
      */
     protected MetamodelImpl getMetamodel() {
         return this.metamodel;
@@ -926,9 +918,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      *
      * @param targetPrimitiveOrWrapperClass (the type we are verifying against)
      * @param actualPrimitiveOrWrapperClass (the type that may be the autoboxed or primitive equal
-     * @return
      */
-    private boolean isAutoboxedType(Class targetPrimitiveOrWrapperClass, Class actualPrimitiveOrWrapperClass) {
+    private boolean isAutoboxedType(Class<?> targetPrimitiveOrWrapperClass, Class<?> actualPrimitiveOrWrapperClass) {
         BasicTypeHelperImpl typeHelper = BasicTypeHelperImpl.getInstance();
         if ((targetPrimitiveOrWrapperClass == null) || (actualPrimitiveOrWrapperClass == null)) {
             return false;
@@ -1079,7 +1070,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
          *     Exit(false) as soon as attribute is found in a superType - without continuing to the root
          *     continue as long as we find an attribute in the superType (essentially only MappedSuperclass parents)
          **/
-        Attribute anAttribute = this.getMembers().get(attributeName);
+        Attribute<X, ?> anAttribute = this.getMembers().get(attributeName);
         ManagedTypeImpl<?> aSuperType = getManagedSuperType();
 
         // Base Case: If we are at the root, check for the attribute and return results immediately
@@ -1097,7 +1088,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             }
         } else {
            // Recursive Case: check hierarchy both if the immediate superclass is a MappedSuperclassType or EntityType
-           Attribute aSuperTypeAttribute = aSuperType.getMembers().get(attributeName);
+           Attribute<?, ?> aSuperTypeAttribute = aSuperType.getMembers().get(attributeName);
            // UC1.3 The immediate mappedSuperclass may have the attribute - we check it in the base case of the next recursive call
            if(null != aSuperTypeAttribute) {
                // return false immediately if a superType exists above the first level
@@ -1114,9 +1105,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * INTERNAL:
      * Handle the case where we were unable to determine the element type of the plural attribute.
      * Normally this function is never required and should have a code coverage of 0%.
-     * @param managedType
-     * @param colMapping
-     * @param validation
      */
     private AttributeImpl initializePluralAttributeTypeNotFound(ManagedTypeImpl managedType, CollectionMapping collectionMapping, boolean validation) {
         // default to List
@@ -1190,7 +1178,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                      * Handle lazy Collections and Lists and the fact that both return an IndirectList policy.
                      * We check the type on the attributeField of the attributeAccessor on the mapping
                      */
-                    Class aType = null;
+                    Class<?> aType = null;
                     // 325699: AttributeAccessor is subclassed by both IntanceVariableAttributeAccessor (JPA) and ValuesAccessor (Dynamic JPA)
                     if(colMapping.getAttributeAccessor() instanceof ValuesAccessor) {
                         member = new ListAttributeImpl(this, colMapping);
@@ -1232,7 +1220,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                              * The following call will perform a getMethod call for us.
                              * If no getMethod exists, we will secondarily check the getMethodName below.
                              */
-                            aType = ((MethodAttributeAccessor)colMapping.getAttributeAccessor()).getAttributeClass();
+                            aType = colMapping.getAttributeAccessor().getAttributeClass();
                             if((aType != null) && List.class.isAssignableFrom(aType)) {
                                 member = new ListAttributeImpl(this, colMapping, true);
                             } else if((aType != null) && Collection.class.isAssignableFrom(aType)) {
@@ -1346,10 +1334,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * INTERNAL:
      * Get the elementType directly from the class using a reflective method call
      * directly on the containing java class associated with this managedType.
-     * @param mapping
-     * @return
      */
-    protected Class getTypeClassFromAttributeOrMethodLevelAccessor(DatabaseMapping mapping) {
+    protected Class<?> getTypeClassFromAttributeOrMethodLevelAccessor(DatabaseMapping mapping) {
         /**
          * In this block we have the following scenario:
          * 1) The access type is "method" or "field"
@@ -1359,7 +1345,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
          */
         // Type may be null when no getMethod exists for the class for a ManyToMany mapping
         // Here we check the returnType on the declared method on the class directly
-        Class aType = null;
+        Class<?> aType = null;
         Field aField = null;
         String getMethodName = null;
         //boolean isFieldLevelAccess = false;
@@ -1455,7 +1441,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EntityType and MappedSuperclassType
-     * @return
      */
     @Override
     protected boolean isIdentifiableType() {
@@ -1466,7 +1451,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EmbeddableType as well as EntityType and MappedSuperclassType
-     * @return
      */
     @Override
     protected boolean isManagedType() {

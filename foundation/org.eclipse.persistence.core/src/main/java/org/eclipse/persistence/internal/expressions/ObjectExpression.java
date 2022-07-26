@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,7 +48,7 @@ public abstract class ObjectExpression extends DataExpression {
     protected boolean shouldUseOuterJoin;
 
     /** Allow an expression node to be cast to a subclass or implementation class. */
-    protected Class castClass;
+    protected Class<?> castClass;
 
     /** Defines that this expression has been joined to the source expression. */
     protected Expression joinSource;
@@ -62,7 +62,7 @@ public abstract class ObjectExpression extends DataExpression {
     /** Allow hasBeenAliased to be marked independently from the existence of the tableAliases collection. */
     protected boolean hasBeenAliased = false;
 
-    public ObjectExpression() {
+    protected ObjectExpression() {
         this.shouldUseOuterJoin = false;
     }
 
@@ -80,7 +80,7 @@ public abstract class ObjectExpression extends DataExpression {
      * </pre>
      */
     @Override
-    public Expression treat(Class castClass){
+    public Expression treat(Class<?> castClass){
         //to be used on expressionBuilders
         QueryKeyExpression clonedExpression = new TreatAsExpression(castClass, this);
         clonedExpression.shouldQueryToManyRelationship = false;
@@ -161,9 +161,9 @@ public abstract class ObjectExpression extends DataExpression {
         HashMap tablesJoinExpressions = null;
         if(isUsingOuterJoinForMultitableInheritance()) {
             tablesJoinExpressions = new HashMap();
-            List childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
+            List<DatabaseTable> childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             for( int i=0; i < childrenTables.size(); i++) {
-                DatabaseTable table = (DatabaseTable)childrenTables.get(i);
+                DatabaseTable table = childrenTables.get(i);
                 Expression joinExpression = getDescriptor().getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                 if (getBaseExpression() != null){
                     joinExpression = getBaseExpression().twist(joinExpression, this);
@@ -432,7 +432,7 @@ public abstract class ObjectExpression extends DataExpression {
         return result;
     }
 
-    public Class getCastClass() {
+    public Class<?> getCastClass() {
         return castClass;
     }
 
@@ -585,7 +585,7 @@ public abstract class ObjectExpression extends DataExpression {
         ClassDescriptor descriptor = getDescriptor();
         List<DatabaseTable> tables = null;
         if (descriptor == null) {
-            List additionalTables = getAdditionalTables();
+            List<DatabaseTable> additionalTables = getAdditionalTables();
             if (additionalTables == null) {
                 return null;
             } else {
@@ -600,7 +600,7 @@ public abstract class ObjectExpression extends DataExpression {
         } else {
             tables = descriptor.getTables();
         }
-        List additionalTables = getAdditionalTables();
+        List<DatabaseTable> additionalTables = getAdditionalTables();
         if (additionalTables != null) {
             tables = new Vector(tables);
             Helper.addAllUniqueToList(tables, additionalTables);
@@ -719,7 +719,7 @@ public abstract class ObjectExpression extends DataExpression {
         this.onClause = onClause;
     }
 
-    public void setCastClass(Class castClass) {
+    public void setCastClass(Class<?> castClass) {
         this.castClass = castClass;
     }
 

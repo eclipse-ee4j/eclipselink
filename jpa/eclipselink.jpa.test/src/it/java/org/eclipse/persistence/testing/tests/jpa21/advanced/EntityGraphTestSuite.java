@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.LargeProject;
@@ -38,7 +38,7 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.Runner;
 
 public class EntityGraphTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;
-    protected Map guaranteedIds = new HashMap<Class, Object>();
+    protected Map<Class, Object> guaranteedIds = new HashMap<Class, Object>();
 
     public EntityGraphTestSuite() {}
 
@@ -62,12 +62,14 @@ public class EntityGraphTestSuite extends JUnitTestCase {
         return suite;
     }
 
+    @Override
     public void setUp() {
         m_reset = true;
         super.setUp();
         clearCache();
     }
 
+    @Override
     public void tearDown() {
         if (m_reset) {
             m_reset = false;
@@ -99,7 +101,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testsubclassSubgraphs(){
         EntityManager em = createEntityManager();
-        EntityGraph employeeGraph = em.createEntityGraph(Project.class);
+        EntityGraph<Project> employeeGraph = em.createEntityGraph(Project.class);
         employeeGraph.addSubclassSubgraph(LargeProject.class).addAttributeNodes("budget");
         employeeGraph.addAttributeNodes("description");
         List<Project> result = em.createQuery("Select p from Project p where type(p) = LargeProject").setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).getResultList();
@@ -113,7 +115,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testEmbeddedFetchGroup(){
         EntityManager em = createEntityManager();
-        EntityGraph employeeGraph = em.createEntityGraph(Employee.class);
+        EntityGraph<Employee> employeeGraph = em.createEntityGraph(Employee.class);
         employeeGraph.addSubgraph("period").addAttributeNodes("startDate");
         Employee result = (Employee) em.createQuery("Select e from Employee e").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
@@ -128,7 +130,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testNestedEmbeddedFetchGroup(){
         EntityManager em = createEntityManager();
-        EntityGraph fetchGraph = em.createEntityGraph(Runner.class);
+        EntityGraph<Runner> fetchGraph = em.createEntityGraph(Runner.class);
         fetchGraph.addSubgraph("info").addSubgraph("status").addAttributeNodes("runningStatus");
         Runner result = (Runner)em.createQuery("Select r from Runner r").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, fetchGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
@@ -144,7 +146,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testLoadGroup(){
         EntityManager em = createEntityManager();
-        EntityGraph employeeGraph = em.createEntityGraph(Employee.class);
+        EntityGraph<Employee> employeeGraph = em.createEntityGraph(Employee.class);
         employeeGraph.addAttributeNodes("address");
         Employee result = (Employee) em.createQuery("Select e from Employee e").setMaxResults(1).setHint(QueryHints.JPA_LOAD_GRAPH, employeeGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
@@ -155,7 +157,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testEmbeddedFetchGroupRefresh(){
         EntityManager em = createEntityManager();
-        EntityGraph employeeGraph = em.createEntityGraph(Employee.class);
+        EntityGraph<Employee> employeeGraph = em.createEntityGraph(Employee.class);
         employeeGraph.addSubgraph("period").addAttributeNodes("startDate");
         Employee result = (Employee) em.createQuery("Select e from Employee e order by e.salary desc").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
@@ -167,7 +169,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
 
     public void testMapKeyFetchGroupRefresh(){
         EntityManager em = createEntityManager();
-        EntityGraph runnerGraph = em.createEntityGraph(Runner.class);
+        EntityGraph<Runner> runnerGraph = em.createEntityGraph(Runner.class);
         runnerGraph.addKeySubgraph("shoes");
         Runner result = (Runner) em.createQuery("Select r from Runner r join r.shoes s").setHint(QueryHints.JPA_FETCH_GRAPH, runnerGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();

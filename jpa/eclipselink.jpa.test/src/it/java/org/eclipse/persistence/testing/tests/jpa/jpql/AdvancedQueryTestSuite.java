@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,6 @@ import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
-import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
@@ -55,7 +54,7 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Engineer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritancePopulator;
@@ -68,9 +67,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
-import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 import org.junit.Assert;
 
 /**
@@ -78,7 +74,7 @@ import org.junit.Assert;
  * <b>Purpose</b>: Test advanced JPA Query functionality.
  * <p>
  * <b>Description</b>: This tests query hints, caching and query optimization.
- * <p>
+ *
  */
 public class AdvancedQueryTestSuite extends JUnitTestCase {
 
@@ -94,12 +90,14 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
 
     // This method is run at the start of EVERY test case method.
 
+    @Override
     public void setUp() {
 
     }
 
     // This method is run at the end of EVERY test case method.
 
+    @Override
     public void tearDown() {
         clearCache();
     }
@@ -148,15 +146,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingJOIN"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingEXISTS"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingIN"));
-        suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingJOIN"));
-        suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingEXISTS"));
-        suite.addTest(new AdvancedQueryTestSuite("testMapBatchFetchingIN"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingINCache"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapLeftJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchOuterJoin"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetching"));
-        suite.addTest(new AdvancedQueryTestSuite("testMapJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetchingCursor"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetchingPagination"));
         suite.addTest(new AdvancedQueryTestSuite("testMapKeyJoinFetching"));
@@ -164,8 +158,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testJPQLCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testCacheIndexes"));
         suite.addTest(new AdvancedQueryTestSuite("testSQLHint"));
-        suite.addTest(new AdvancedQueryTestSuite("testLoadGroup"));
-        suite.addTest(new AdvancedQueryTestSuite("testConcurrentLoadGroup"));
         if (!isJPA10()) {
             suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
             suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
@@ -193,10 +185,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         employeePopulator.buildExamples();
         //Persist the examples in the database
         employeePopulator.persistExample(session);
-
-        new RelationshipsTableManager().replaceTables(session);
-        //populate the relationships model and persist as well
-        new RelationshipsExamples().buildExamples(session);
 
         new InheritanceTableCreator().replaceTables(session);
         InheritancePopulator inheritancePopulator = new InheritancePopulator();
@@ -594,12 +582,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter(1, employee.getId());
             query.setParameter(2, employee.getFirstName());
             arrayResult = (Object[])query.getSingleResult();
-            if ((arrayResult.length != 1) || (!new Integer(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
+            if ((arrayResult.length != 1) || (!Integer.valueOf(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
             listResult = query.getResultList();
             arrayResult = (Object[])listResult.get(0);
-            if ((arrayResult.length != 1) || (!new Integer(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
+            if ((arrayResult.length != 1) || (!Integer.valueOf(((Number)arrayResult[0]).intValue()).equals(employee.getId()))) {
                 fail("Array result not correct: " + arrayResult);
             }
 
@@ -609,12 +597,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter(1, employee.getId());
             query.setParameter(2, employee.getFirstName());
             Map mapResult = (Map)query.getSingleResult();
-            if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+            if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(Integer.valueOf(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
             listResult = query.getResultList();
             mapResult = (Map)listResult.get(0);
-            if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+            if ((mapResult.size() != 2) || (!mapResult.get("F_NAME").equals(employee.getFirstName())) || (!(Integer.valueOf(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
 
@@ -624,12 +612,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter(1, employee.getId());
             query.setParameter(2, employee.getFirstName());
             mapResult = (Map)query.getSingleResult();
-            if ((mapResult.size() != 1) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+            if ((mapResult.size() != 1) || (!(Integer.valueOf(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
             listResult = query.getResultList();
             mapResult = (Map)listResult.get(0);
-            if ((mapResult.size() != 1) || (!(new Integer(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
+            if ((mapResult.size() != 1) || (!(Integer.valueOf(((Number)mapResult.get("EMP_ID")).intValue())).equals(employee.getId()))) {
                 fail("Map result not correct: " + mapResult);
             }
 
@@ -638,12 +626,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter(1, employee.getId());
             query.setParameter(2, employee.getFirstName());
             Object valueResult = query.getSingleResult();
-            if (!(new Integer(((Number)valueResult).intValue())).equals(employee.getId())) {
+            if (!(Integer.valueOf(((Number)valueResult).intValue())).equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
             listResult = query.getResultList();
             valueResult = listResult.get(0);
-            if (!(new Integer(((Number)valueResult).intValue())).equals(employee.getId())) {
+            if (!(Integer.valueOf(((Number)valueResult).intValue())).equals(employee.getId())) {
                 fail("Value result not correct: " + valueResult);
             }
         } finally {
@@ -1343,7 +1331,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 commitTransaction(em);
 
                 employee = em.find(Employee.class, employee.getId());
-                assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
+                assertTrue("The version was not updated on the pessimistic lock.", version1 < employee.getVersion());
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
@@ -1664,6 +1652,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             this.timeout = timeout;
         }
 
+        @Override
         public void run() {
             // sleep for "timeout" milliseconds) to allow the first lock to timeout
             try {
@@ -1764,7 +1753,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 commitTransaction(em);
 
                 employee = em.find(Employee.class, employee.getId());
-                assertTrue("The version was not updated on the pessimistic read lock.", version1.intValue() < employee.getVersion().intValue());
+                assertTrue("The version was not updated on the pessimistic read lock.", version1 < employee.getVersion());
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
@@ -1837,7 +1826,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 commitTransaction(em);
 
                 employee = em.find(Employee.class, employee.getId());
-                assertTrue("The version was not updated on the pessimistic write lock.", version1.intValue() < employee.getVersion().intValue());
+                assertTrue("The version was not updated on the pessimistic write lock.", version1 < employee.getVersion());
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
@@ -2073,27 +2062,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     /**
      * Test batch fetching of maps.
      */
-    public void testMapBatchFetchingJOIN() {
-        testMapBatchFetching(BatchFetchType.JOIN, 0);
-    }
-
-    /**
-     * Test batch fetching of maps.
-     */
-    public void testMapBatchFetchingIN() {
-        testMapBatchFetching(BatchFetchType.IN, 100);
-    }
-
-    /**
-     * Test batch fetching of maps.
-     */
-    public void testMapBatchFetchingEXISTS() {
-        testMapBatchFetching(BatchFetchType.EXISTS, 0);
-    }
-
-    /**
-     * Test batch fetching of maps.
-     */
     public void testBasicMapBatchFetching(BatchFetchType type, int size) {
         clearCache();
         EntityManager em = createEntityManager();
@@ -2202,154 +2170,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             clearCache();
             for (Buyer buyer : results) {
                 verifyObject(buyer);
-            }
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-            if (counter != null) {
-                counter.remove();
-            }
-        }
-    }
-
-    /**
-     * Test batch fetching of maps.
-     */
-    public void testMapBatchFetching(BatchFetchType type, int size) {
-        clearCache();
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        // Count SQL.
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        try {
-            Query query = em.createQuery("Select c from Customer c");
-            query.setHint(QueryHints.BATCH_SIZE, size);
-            query.setHint(QueryHints.BATCH_TYPE, type);
-            query.setHint(QueryHints.BATCH, "e.CSInteractions");
-            query.setHint(QueryHints.BATCH, "e.CCustomers");
-            List<Customer> results = query.getResultList();
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
-                fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
-            }
-            int queries = 5;
-            for (Customer customer : results) {
-                queries = queries + customer.getCSInteractions().size();
-            }
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
-                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
-            }
-            clearCache();
-            for (Customer customer : results) {
-                verifyObject(customer);
-            }
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-            if (counter != null) {
-                counter.remove();
-            }
-        }
-    }
-
-    /**
-     * Test load groups.
-     */
-    public void testLoadGroup() {
-        clearCache();
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        // Count SQL.
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        try {
-            Query query = em.createQuery("Select c from Customer c");
-            query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CSInteractions");
-            query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CCustomers");
-            List<Customer> results = query.getResultList();
-            counter.getSqlStatements().clear();
-            for (Customer customer : results) {
-                customer.getCSInteractions().size();
-            }
-            if (counter.getSqlStatements().size() > 0) {
-                fail("Load group should have loaded attributes.");
-            }
-            clearCache();
-            for (Customer customer : results) {
-                verifyObject(customer);
-            }
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-            if (counter != null) {
-                counter.remove();
-            }
-        }
-    }
-
-    /**
-     * Test concurrent load groups.
-     */
-    public void testConcurrentLoadGroup() {
-        clearCache();
-        boolean concurrent = getDatabaseSession().isConcurrent();
-        getDatabaseSession().setIsConcurrent(true);
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        // Count SQL.
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        try {
-            Query query = em.createQuery("Select c from Customer c");
-            query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CSInteractions");
-            query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CCustomers");
-            List<Customer> results = query.getResultList();
-            counter.getSqlStatements().clear();
-            for (Customer customer : results) {
-                customer.getCSInteractions().size();
-            }
-            if (counter.getSqlStatements().size() > 0) {
-                fail("Load group should have loaded attributes.");
-            }
-            clearCache();
-            for (Customer customer : results) {
-                verifyObject(customer);
-            }
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-            if (counter != null) {
-                counter.remove();
-            }
-            getDatabaseSession().setIsConcurrent(concurrent);
-        }
-    }
-
-    /**
-     * Test join fetching of maps.
-     */
-    public void testMapJoinFetching() {
-        clearCache();
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        // Count SQL.
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        try {
-            Query query = em.createQuery("Select c from Customer c");
-            query.setHint(QueryHints.LEFT_FETCH, "e.CSInteractions");
-            query.setHint(QueryHints.LEFT_FETCH, "e.CCustomers");
-            List<Customer> results = query.getResultList();
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
-                fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
-            }
-            int queries = 1;
-            for (Customer customer : results) {
-                queries = queries + customer.getCSInteractions().size();
-            }
-            assertTrue("No data to join.", queries > 1);
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
-                fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
-            }
-            clearCache();
-            for (Customer customer : results) {
-                verifyObject(customer);
             }
         } finally {
             rollbackTransaction(em);

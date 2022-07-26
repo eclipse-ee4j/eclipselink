@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package dbws.testing.shadowddlgeneration.oldjpub;
 
 /**
- * Instances of the class </code>SqlRefType</code> represent SQL REF types.
+ * Instances of the class <code>SqlRefType</code> represent SQL REF types.
  */
 public class SqlRefType extends SqlType {
 
@@ -38,22 +38,25 @@ public class SqlRefType extends SqlType {
     /**
      * Returns the fully-qualified name of the type represented by this Type object, as a String.
      */
+    @Override
     public String getName() {
         return "REF " + m_refeeType.getName();
     }
 
+    @Override
     public String getTargetTypeName() {
         if (m_refeeType instanceof SqlType) {
-            return "REF " + ((SqlType)m_refeeType).getTargetTypeName();
+            return "REF " + m_refeeType.getTargetTypeName();
         }
         else {
             return getName();
         }
     }
 
+    @Override
     public String getTypeName() {
         if (m_refeeType instanceof SqlType) {
-            return "REF " + ((SqlType)m_refeeType).getTypeName();
+            return "REF " + m_refeeType.getTypeName();
         }
         else {
             return getName();
@@ -64,6 +67,7 @@ public class SqlRefType extends SqlType {
      * If this Type has a component type, return the Type object that represents the component type;
      * otherwise returns null.
      */
+    @Override
     public TypeClass getComponentType() {
         return m_refeeType;
     }

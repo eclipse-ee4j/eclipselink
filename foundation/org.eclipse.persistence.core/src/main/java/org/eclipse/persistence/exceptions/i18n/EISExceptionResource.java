@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import java.util.ListResourceBundle;
  * Creation date: (2/28/01 9:47:38 AM)
  * @author TopLink Maintenance Team
  */
-public class EISExceptionResource extends ListResourceBundle {
+public final class EISExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "17007", "{0} property must be set." },
                                            { "17008", "Invalid {0} property encountered." },
@@ -45,6 +45,13 @@ public class EISExceptionResource extends ListResourceBundle {
                                            { "17024", "Could not delete file: {0}" },
                                            { "17025", "This mapping requires a foreign key grouping element, as mulitple foreign keys exist." }
     };
+
+    /**
+     * Default constructor.
+     */
+    public EISExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

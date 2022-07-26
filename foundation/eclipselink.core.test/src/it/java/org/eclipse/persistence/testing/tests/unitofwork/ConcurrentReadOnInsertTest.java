@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class ConcurrentReadOnInsertTest extends AutoVerifyTestCase {
     public ConcurrentReadOnInsertTest() {
     }
 
+    @Override
     public void setup() {
         // The purpose of this test is to test multi-threaded server execution,
         // remote is for a single client, so this test is not relevant.
@@ -40,6 +41,7 @@ public class ConcurrentReadOnInsertTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         ConcurrentAddress address = new ConcurrentAddress();
         address.setCity("Toronto");
@@ -76,6 +78,7 @@ public class ConcurrentReadOnInsertTest extends AutoVerifyTestCase {
 
     public Runnable runnable() {
         return new Runnable() {
+                @Override
                 public void run() {
                     try {
                         synchronized (readAddress) {
@@ -91,6 +94,7 @@ public class ConcurrentReadOnInsertTest extends AutoVerifyTestCase {
             };
     }
 
+    @Override
     public void reset() {
         try {
             UnitOfWork unitOfWork = getSession().acquireUnitOfWork();

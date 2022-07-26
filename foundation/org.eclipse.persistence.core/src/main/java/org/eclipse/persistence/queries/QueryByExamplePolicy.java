@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -173,7 +173,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * @see org.eclipse.persistence.expressions.Expression#containsSubstring(java.lang.String) containsSubstring
      * @see org.eclipse.persistence.expressions.Expression#containsSubstringIgnoringCase(java.lang.String) containsSubstringIgnoringCase
      */
-    public void addSpecialOperation(Class attributeValueClass, String operation) {
+    public void addSpecialOperation(Class<?> attributeValueClass, String operation) {
         this.getSpecialOperations().put(attributeValueClass, operation);
     }
 
@@ -189,11 +189,11 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * Example: To find all projects without a budget set <code>budget</code> to 0 in the
      * example object and call <code>alwaysIncludeAttribute(Project.class, "budget")</code>
      * on the policy.
-     * <p>
+     *
      * @param exampleClass The class that the attribute belongs to, normally this is the example class unless using nested QBE.
      * @param attributeName The name of a mapped attribute.
      */
-    public void alwaysIncludeAttribute(Class exampleClass, String attributeName) {
+    public void alwaysIncludeAttribute(Class<?> exampleClass, String attributeName) {
         Vector included = (Vector)getAttributesToAlwaysInclude().get(exampleClass);
         if (included == null) {
             included = new Vector(3);
@@ -207,7 +207,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * INTERNAL:
      * This method is used to determine which operation to use for comparison (equal, or a special operation).
      */
-    public Expression completeExpression(Expression expression, Object attributeValue, Class attributeValueClass) {
+    public Expression completeExpression(Expression expression, Object attributeValue, Class<?> attributeValueClass) {
         String operation = this.getOperation(attributeValue.getClass());
 
         if (operation == null) {
@@ -215,7 +215,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
             return expression.equal(attributeValue);
         }
 
-        Class[] argTypes = { attributeValueClass };
+        Class<?>[] argTypes = { attributeValueClass };
         Object[] args = { attributeValue };
         try {
             java.lang.reflect.Method anOperator = Helper.getDeclaredMethod(ClassConstants.Expression_Class, operation, argTypes);
@@ -229,10 +229,10 @@ public class QueryByExamplePolicy implements java.io.Serializable {
                     throw (RuntimeException) ex.getCause();
                 }
             }else{
-                expression = (Expression)PrivilegedAccessHelper.invokeMethod(anOperator, expression, args);
+                expression = PrivilegedAccessHelper.invokeMethod(anOperator, expression, args);
             }
         } catch (NoSuchMethodException nsme) {
-            Class superClass = attributeValueClass.getSuperclass();
+            Class<?> superClass = attributeValueClass.getSuperclass();
             if (superClass != null) {
                 return completeExpression(expression, attributeValue, superClass);
             } else {
@@ -386,7 +386,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * INTERNAL:
      * determines which operation to use for comparison.
      */
-    public String getOperation(Class aClass) {
+    public String getOperation(Class<?> aClass) {
         String operation = (String)this.getSpecialOperations().get(aClass);
         if (operation != null) {
             if (!operation.equals("equal")) {
@@ -443,7 +443,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * INTERNAL:
      * returns whether the attributeName is to be always included.
      */
-    public boolean isAlwaysIncluded(Class theClass, String attributeName) {
+    public boolean isAlwaysIncluded(Class<?> theClass, String attributeName) {
         Vector values = (Vector)this.getAttributesToAlwaysInclude().get(theClass);
         if (values != null) {
             return (values.contains(attributeName));
@@ -466,7 +466,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * Considers all attributes set to a previously excluded value on the example object.
      * <p>
      * Primitive values to be removed must first be wrapped inside an Object.
-     * <p>
+     *
      * @param value No attributes set to <code>value</code> will be excluded from a Query By Example.
      * <code>value.getClass()</code> is a key of the Hashtable returned by {@link #getValuesToExclude}.
      * <p>Note: There is a distinction between an attribute and the value
@@ -517,7 +517,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
 
     /**
      * PUBLIC:
-     * The special operations to use in place of <code>equal</code>.<p>
+     * The special operations to use in place of <code>equal</code>.
      * @param newOperations A hashtable where the keys are <code>Class</code> objects and the values
      * are the names of operations to use for attributes of that <code>Class</code>.
      * @see #addSpecialOperation
@@ -559,7 +559,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * INTERNAL:
      * This method determines whether an attribute pair is be included in the query.
      */
-    public boolean shouldIncludeInQuery(Class aClass, String attributeName, Object attributeValue) {
+    public boolean shouldIncludeInQuery(Class<?> aClass, String attributeName, Object attributeValue) {
         if (attributeValue == null) {
             if (this.isAlwaysIncluded(aClass, attributeName)) {
                 //this attribute is to be included always, even if its value is null.
@@ -593,7 +593,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * attribute <code>address</code> to <code>null</code> in the example object,
      * call <code>alwaysIncludeAttribute(Employee.class, "address")</code> and then
      * call <code>setShouldUseEqualityForNulls(false)</code>.
-     * <p>
+     *
      * @return If true (by default) uses <code>isNull</code> else <code>notNull</code>.
      * @see #addSpecialOperation addSpecialOperation
      * @see #alwaysIncludeAttribute alwaysIncludeAttribute

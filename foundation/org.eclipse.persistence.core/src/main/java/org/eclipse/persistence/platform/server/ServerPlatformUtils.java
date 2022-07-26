@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -44,7 +44,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * A utility class to interact with ServerPlatforms.
  */
 public final class ServerPlatformUtils {
-    private static final List<ServerPlatformDetector> PLATFORMS = new ArrayList<ServerPlatformDetector>() {{
+    private static final List<ServerPlatformDetector> PLATFORMS = new ArrayList<>() {{
         add(new NoServerPlatformDetector());
         add(new WebSpherePlatformDetector());
         add(new WebLogicPlatformDetector());
@@ -54,8 +54,11 @@ public final class ServerPlatformUtils {
     private static final String UNKNOWN_MARKER = "UNKNOWN";
     private static String SERVER_PLATFORM_CLS;
 
+    private ServerPlatformUtils() {
+        // no instance please
+    }
+
     /**
-     * @param session
      * @return The target-server class string that represents platform that is
      *         currently running. Return null if unknown.
      */
@@ -106,7 +109,7 @@ public final class ServerPlatformUtils {
         if (platformClass == null) {
             throw ServerPlatformException.invalidServerPlatformClass(null, null);
         }
-        Class cls = null;
+        Class<? extends ServerPlatform> cls = null;
         try {
             //try the supplied classloader
             cls = findClass(platformClass, loader);
@@ -124,22 +127,22 @@ public final class ServerPlatformUtils {
                 throw ServerPlatformException.serverPlatformClassNotFound(platformClass, ex);
             }
         }
-        final Class[] paramTypes = new Class[] { DatabaseSession.class };
+        final Class<?>[] paramTypes = new Class<?>[] { DatabaseSession.class };
         final Object[] params = new Object[] { session };
         ServerPlatform platform = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                Constructor constructor = AccessController.doPrivileged(
-                        new PrivilegedGetConstructorFor(cls, paramTypes, false));
-                platform = (ServerPlatform) AccessController.doPrivileged(
-                        new PrivilegedInvokeConstructor(constructor, params));
+                Constructor<? extends ServerPlatform> constructor = AccessController.doPrivileged(
+                        new PrivilegedGetConstructorFor<>(cls, paramTypes, false));
+                platform = AccessController.doPrivileged(
+                        new PrivilegedInvokeConstructor<>(constructor, params));
             } catch (PrivilegedActionException ex) {
                 throw ServerPlatformException.invalidServerPlatformClass(platformClass, ex);
             }
         } else {
             try {
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(cls, paramTypes, false);
-                platform = (ServerPlatform) PrivilegedAccessHelper.invokeConstructor(constructor, params);
+                Constructor<? extends ServerPlatform> constructor = PrivilegedAccessHelper.getConstructorFor(cls, paramTypes, false);
+                platform = PrivilegedAccessHelper.invokeConstructor(constructor, params);
             } catch (NoSuchMethodException | IllegalAccessException
                     | InvocationTargetException | InstantiationException ex) {
                 throw ServerPlatformException.invalidServerPlatformClass(platformClass, ex);
@@ -148,9 +151,9 @@ public final class ServerPlatformUtils {
         return platform;
     }
 
-    private static Class findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
+    private static Class<? extends ServerPlatform> findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedClassForName(className, false, loader));
+            return AccessController.doPrivileged(new PrivilegedClassForName<>(className, false, loader));
         } else {
             return PrivilegedAccessHelper.getClassForName(className, false, loader);
         }

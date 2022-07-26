@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.expressions.BaseExpression;
 import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -253,9 +254,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         if (getBaseQuery().hasPartialAttributeExpressions()) {
             fieldIndex = getDescriptor().getPrimaryKeyFields().size(); // Query will select pks
             //next check for any partial attributes that are not joined attributes
-            Iterator partialAttributes = ((ObjectLevelReadQuery)getBaseQuery()).getPartialAttributeExpressions().iterator();
+            Iterator<Expression> partialAttributes = ((ObjectLevelReadQuery)getBaseQuery()).getPartialAttributeExpressions().iterator();
             while(partialAttributes.hasNext()){
-                Expression expression = (Expression)partialAttributes.next();
+                Expression expression = partialAttributes.next();
                 if (expression.isQueryKeyExpression()){
                     if (!getJoinedMappingExpressions().contains(expression) && ! getJoinedAttributeExpressions().contains(expression)){
                         fieldIndex += ((QueryKeyExpression)expression).getFields().size();
@@ -348,7 +349,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             final ObjectExpression localExpression = objectExpression
                     .getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList(1));
             if ((localExpression == objectExpression) && (mapping != null) && mapping.isForeignReferenceMapping()) {
-                getJoinedMappingIndexes_().put(mapping, Integer.valueOf(currentIndex));
+                getJoinedMappingIndexes_().put(mapping, currentIndex);
             }
             final ClassDescriptor descriptor = mapping.getReferenceDescriptor();
             int numberOfFields = 0;
@@ -559,10 +560,6 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      *  all intermediate steps.
      *  Example expression "emp.project.pk" with a clone Employee will trigger indirection and return
      *  the project pk value.
-     * @param session
-     * @param clone
-     * @param expression
-     * @return
      */
     public Object getValueFromObjectForExpression(AbstractSession session, Object clone, ObjectExpression expression){
         if (!expression.isExpressionBuilder()){
@@ -791,10 +788,6 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * adds expression and its base expressions recursively to the expressionList in groups, so that an expression is never listed before
      * its base expression
-     * @param expression
-     * @param expressionlist
-     * @param lastJoinedAttributeBaseExpression
-     * @return
      */
     protected Expression addExpressionAndBaseToGroupedList(Expression expression, List expressionlist, Expression lastJoinedAttributeBaseExpression){
         if(!expressionlist.contains(expression)) {
@@ -887,7 +880,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         }
         ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
         if (objectBuilder.hasJoinedAttributes()) {
-            List mappingJoinedAttributes = objectBuilder.getJoinedAttributes();
+            List<DatabaseMapping> mappingJoinedAttributes = objectBuilder.getJoinedAttributes();
             if (!hasJoinedAttributeExpressions()) {
                 for (int i = 0; i < mappingJoinedAttributes.size(); i++) {
                     ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);
@@ -998,14 +991,14 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         List<AbstractRecord> childRows = null;
         ObjectBuilder builder = getDescriptor().getObjectBuilder();
         int parentIndex = getParentResultIndex();
-        Vector trimedFields = null;
+        Vector<DatabaseField> trimedFields = null;
         for (int dataResultsIndex = 0; dataResultsIndex < size; dataResultsIndex++) {
             AbstractRecord row = this.dataResults.get(dataResultsIndex);
             AbstractRecord parentRow = row;
             // Must adjust for the parent index to ensure the correct pk is extracted.
             if (parentIndex > 0) {
                 if (trimedFields == null) { // The fields are always the same, so only build once.
-                    trimedFields = new NonSynchronizedSubVector(row.getFields(), parentIndex, row.size());
+                    trimedFields = new NonSynchronizedSubVector<>(row.getFields(), parentIndex, row.size());
                 }
                 Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), parentIndex, row.size());
                 parentRow = new DatabaseRecord(trimedFields, trimedValues);
@@ -1065,14 +1058,14 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public AbstractRecord processDataResults(AbstractRecord row, Cursor cursor, boolean forward) {
         if (this.dataResultsByPrimaryKey == null) {
-            this.dataResultsByPrimaryKey = new HashMap();
+            this.dataResultsByPrimaryKey = new HashMap<>();
         }
         AbstractRecord parentRow = row;
         List<AbstractRecord> childRows = new ArrayList<>();
         childRows.add(row);
         int parentIndex = getParentResultIndex();
         // Must adjust for the parent index to ensure the correct pk is extracted.
-        Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), parentIndex, row.size());
+        Vector<DatabaseField> trimedFields = new NonSynchronizedSubVector<>(row.getFields(), parentIndex, row.size());
         if (parentIndex > 0) {
             Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), parentIndex, row.size());
             parentRow = new DatabaseRecord(trimedFields, trimedValues);

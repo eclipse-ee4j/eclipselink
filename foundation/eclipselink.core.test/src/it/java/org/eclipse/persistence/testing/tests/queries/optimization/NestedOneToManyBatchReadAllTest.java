@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,10 +24,11 @@ import org.eclipse.persistence.testing.framework.*;
 
 public class NestedOneToManyBatchReadAllTest extends ReadAllTest {
 
-    public NestedOneToManyBatchReadAllTest(Class referenceClass, int originalObjectsSize) {
+    public NestedOneToManyBatchReadAllTest(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
     }
 
+    @Override
     public void reset() {
         org.eclipse.persistence.mappings.OneToManyMapping mapping =
             (OneToManyMapping)getSession().getDescriptor(Restaurant.class).getMappingForAttributeName("menus");
@@ -35,6 +36,7 @@ public class NestedOneToManyBatchReadAllTest extends ReadAllTest {
 
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
@@ -45,6 +47,7 @@ public class NestedOneToManyBatchReadAllTest extends ReadAllTest {
 
     }
 
+    @Override
     protected void test() {
         super.test();
 
@@ -55,6 +58,7 @@ public class NestedOneToManyBatchReadAllTest extends ReadAllTest {
 
     }
 
+    @Override
     public void verify() {
 
         // Check the identity map and count that all the MenuItems got read in.

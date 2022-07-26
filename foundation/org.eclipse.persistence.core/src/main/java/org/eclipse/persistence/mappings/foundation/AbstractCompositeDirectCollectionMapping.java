@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.converters.*;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMapping;
@@ -61,7 +62,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     /**
      * Default constructor.
      */
-    public AbstractCompositeDirectCollectionMapping() {
+    protected AbstractCompositeDirectCollectionMapping() {
         super();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.elementDataTypeName = "";
@@ -289,7 +290,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // Do nothing....
         // The nested collection should de-serialize without need for any further manipulation.
     }
@@ -302,7 +303,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    public Class getAttributeElementClass() {
+    public Class<?> getAttributeElementClass() {
         if (!(getValueConverter() instanceof TypeConversionConverter)) {
             return null;
         }
@@ -343,7 +344,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This is optional - if left null, the elements will be added
      * to the database row's collection unconverted.
      */
-    public Class getFieldElementClass() {
+    public Class<?> getFieldElementClass() {
         if (!(getValueConverter() instanceof TypeConversionConverter)) {
             return null;
         }
@@ -428,7 +429,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    public void setAttributeElementClass(Class attributeElementClass) {
+    public void setAttributeElementClass(Class<?> attributeElementClass) {
         TypeConversionConverter converter;
         if (getValueConverter() instanceof TypeConversionConverter) {
             converter = (TypeConversionConverter)getValueConverter();
@@ -482,7 +483,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * This is optional - if left null, the elements will be added
      * to the database row's collection unconverted.
      */
-    public void setFieldElementClass(Class fieldElementClass) {
+    public void setFieldElementClass(Class<?> fieldElementClass) {
         TypeConversionConverter converter;
         if (getValueConverter() instanceof TypeConversionConverter) {
             converter = (TypeConversionConverter)getValueConverter();
@@ -501,7 +502,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
     @Override
-    public void useCollectionClass(Class concreteClass) {
+    public void useCollectionClass(Class<?> concreteClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteClass));
     }
 
@@ -531,7 +532,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * It supports only Collection containers.
      */
     @Override
-    public void useMapClass(Class concreteClass, String methodName) {
+    public void useMapClass(Class<?> concreteClass, String methodName) {
         throw new UnsupportedOperationException(this.getClass().getName() + ".useMapClass(Class, String)");
     }
 
@@ -700,7 +701,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * By default this is unknown.
      */
     @Override
-    public Class getFieldClassification(DatabaseField fieldToClassify) {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) {
         return getAttributeElementClass();
     }
 

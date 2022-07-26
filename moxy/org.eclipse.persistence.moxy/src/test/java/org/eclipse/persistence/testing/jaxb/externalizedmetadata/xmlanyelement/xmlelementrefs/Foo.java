@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,6 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.
 import java.util.List;
 
 public interface Foo {
-    public List<Object> getOthers();
-    public void setOthers(List<Object> others);
+    List<Object> getOthers();
+    void setOthers(List<Object> others);
 }

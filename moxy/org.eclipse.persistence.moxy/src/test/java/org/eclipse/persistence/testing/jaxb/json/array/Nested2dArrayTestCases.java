@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,16 +30,18 @@ public class Nested2dArrayTestCases extends JSONTestCases {
 
     public Nested2dArrayTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Root2DArray.class});
+        setClasses(new Class<?>[]{Root2DArray.class});
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         jsonMarshaller.setProperty(MarshallerProperties.JSON_DISABLE_NESTED_ARRAY_NAME, true);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
+    @Override
     protected Object getControlObject() {
         Root2DArray root2DArray = new Root2DArray();
         String[][] string2DArray = {{"aa", "bb"}, {"cc", "dd"}};

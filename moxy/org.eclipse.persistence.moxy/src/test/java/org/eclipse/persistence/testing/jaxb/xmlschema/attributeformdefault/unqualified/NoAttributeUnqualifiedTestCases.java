@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,12 @@ public class NoAttributeUnqualifiedTestCases extends JAXBWithJSONTestCases{
 
     public NoAttributeUnqualifiedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{RootNoAttributes.class});
+        setClasses(new Class<?>[]{RootNoAttributes.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         RootNoAttributes root = new RootNoAttributes();
         root.child = "abc";

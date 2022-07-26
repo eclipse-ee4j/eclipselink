@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,9 +102,6 @@ public class JUnitTestCaseHelper {
             if (puProperties == null) {
                 if (puName.equals("composite-advanced") || puName.equals("xml-composite-advanced") || puName.equals("xml-extended-composite-advanced")) {
                     String prefix = puName;
-                    if (puName.equals("xml-extended-composite-advanced")) {
-                        prefix = "xml-composite-advanced";
-                    }
                     String[] sessions = {"member_1", "member_2", "member_3"};
                     for(int i=0; i < sessions.length; i++) {
                         sessions[i] = prefix + "-" + sessions[i];
@@ -200,8 +197,8 @@ public class JUnitTestCaseHelper {
 
         Map compositeMap = new HashMap();
         properties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, compositeMap);
-        Map defaultProperties = getDatabaseProperties();
-        String logLevel = (String)defaultProperties.get(PersistenceUnitProperties.LOGGING_LEVEL);
+        Map<String, String> defaultProperties = getDatabaseProperties();
+        String logLevel = defaultProperties.get(PersistenceUnitProperties.LOGGING_LEVEL);
         if (logLevel != null) {
             properties.put(PersistenceUnitProperties.LOGGING_LEVEL, logLevel);
         }
@@ -210,7 +207,7 @@ public class JUnitTestCaseHelper {
         for (int i = 1; i < sessions.length; i++) {
             String dbIndex = Integer.toString(i + 1);
             // the second session uses db2.user, db2.pwd ...
-            Map sessionProperties = getDatabasePropertiesForIndex(dbIndex);
+            Map<String, String> sessionProperties = getDatabasePropertiesForIndex(dbIndex);
             if (sessionProperties.isEmpty() && shouldUseSingleDb()) {
                 // if non of these properties defined, then use firstSessionProperties
                 sessionProperties = defaultProperties;

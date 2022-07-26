@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -107,26 +107,17 @@ public abstract class AbstractPathExpression extends AbstractExpression {
         this.pathSize = -1;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getIdentificationVariable().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         checkPaths();
         children.add(identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addOrderedChildrenTo(List<Expression> children) {
 
@@ -146,7 +137,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
             return;
         }
 
-        paths = new ArrayList<String>();
+        paths = new ArrayList<>();
         String text = getText();
         char character = '\0';
         StringBuilder singlePath = new StringBuilder();
@@ -233,9 +224,6 @@ public abstract class AbstractPathExpression extends AbstractExpression {
         return endsWithDot;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -291,9 +279,6 @@ public abstract class AbstractPathExpression extends AbstractExpression {
         return identificationVariable.isVirtual();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void parse(WordParser wordParser, boolean tolerant) {
         wordParser.moveForward(getText());
@@ -306,7 +291,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
      */
     public final ListIterable<String> paths() {
         checkPaths();
-        return new SnapshotCloneListIterable<String>(paths);
+        return new SnapshotCloneListIterable<>(paths);
     }
 
     /**
@@ -366,9 +351,6 @@ public abstract class AbstractPathExpression extends AbstractExpression {
         return writer.toString();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void toParsedText(StringBuilder writer, boolean actual) {
 

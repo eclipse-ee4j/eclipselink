@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,20 +31,24 @@ public class ConcurrentIdentityMapKeyEnumerationTest extends TestCase {
         identityMap = new FullIdentityMap(1, null, null, false);
     }
 
+    @Override
     public void reset() {
         shouldRun = false;
     }
 
+    @Override
     public void setup() {
         storedObject = getSession().readObject(Employee.class);
         shouldRun = true;
     }
 
+    @Override
     public void test() {
         Thread enumeration = new Thread() {
+            @Override
             public void run() {
                 while (shouldRun) {
-                    Enumeration keys = identityMap.keys();
+                    Enumeration<CacheKey> keys = identityMap.keys();
                     while (keys.hasMoreElements()) {
                         try {
                             Object key = keys.nextElement();
@@ -60,6 +64,7 @@ public class ConcurrentIdentityMapKeyEnumerationTest extends TestCase {
         };
         enumeration.start();
         Thread remover = new Thread() {
+            @Override
             public void run() {
                 Vector pk = new Vector(1);
                 pk.add(((Employee)storedObject).getId());

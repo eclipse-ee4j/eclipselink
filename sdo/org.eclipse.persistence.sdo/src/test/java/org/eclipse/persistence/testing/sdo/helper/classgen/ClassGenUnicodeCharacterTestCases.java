@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,18 +37,22 @@ public class ClassGenUnicodeCharacterTestCases extends SDOClassGenTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/classgen/DeptView.xsd";
     }
 
+    @Override
     protected String getSourceFolder() {
         return "./unicode";
     }
 
+    @Override
     protected String getControlSourceFolder() {
         return "./org/eclipse/persistence/testing/sdo/helper/classgen/unicode";
     }
 
+    @Override
     protected List getControlFileNames() {
         ArrayList list = new ArrayList();
         list.add("DeptView\u00c9SDO.java");
@@ -56,6 +60,7 @@ public class ClassGenUnicodeCharacterTestCases extends SDOClassGenTestCases {
         return list;
     }
 
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("model/mbcs/common");
@@ -63,6 +68,7 @@ public class ClassGenUnicodeCharacterTestCases extends SDOClassGenTestCases {
         return packages;
     }
 
+    @Override
     public String getSchema(InputStream is, String fileName) {
         String xsdSchema = EMPTY_STRING;
         try {

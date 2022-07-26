@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class ReadAllMaxRowsFirstResultVsRownumFilteringTest extends PerformanceC
         addReadAllMaxRowsFirstResultTest();
     }
     int maxrows;
+    @Override
     public void setup() throws Throwable {
         super.setup();
         int size = (getSession().readAllObjects(Employee.class)).size();
@@ -40,6 +41,7 @@ public class ReadAllMaxRowsFirstResultVsRownumFilteringTest extends PerformanceC
     /**
      * Read all employees with cursored stream.
      */
+    @Override
     public void test() throws Exception {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         getSession().executeQuery(query);
@@ -50,6 +52,7 @@ public class ReadAllMaxRowsFirstResultVsRownumFilteringTest extends PerformanceC
      */
     public void addReadAllRownumFilteringTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.setMaxRows(maxrows);
@@ -65,21 +68,24 @@ public class ReadAllMaxRowsFirstResultVsRownumFilteringTest extends PerformanceC
 
     public void addReadAllMaxRowsFirstResultTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.setMaxRows(maxrows);
                 query.setFirstResult(maxrows-1);
                 getSession().executeQuery(query);
             }
+            @Override
             public void startTest() {
-                ((OraclePlatform)getSession().getPlatform()).setShouldUseRownumFiltering(false);
+                getSession().getPlatform().setShouldUseRownumFiltering(false);
             }
 
             /**
              * Allows any test specific setup before starting the test run.
              */
+            @Override
             public void endTest() {
-                ((OraclePlatform)getSession().getPlatform()).setShouldUseRownumFiltering(true);
+                getSession().getPlatform().setShouldUseRownumFiltering(true);
             }
         };
         test.setName("ReadAllMaxRowsFirstResultTest");

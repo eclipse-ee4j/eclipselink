@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,14 +30,14 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
 
-    static protected Class[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
+    static protected Class<?>[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
     static protected Vector[] objectVectors = {null, null, null, null};
 
     static protected EmployeePopulator populator = new EmployeePopulator();
@@ -50,6 +50,7 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         clearCache();

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,12 +26,18 @@
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <properties>
-        <dep.sources.mr>${project.build.directory}/generated-sources/dependencies-mr</dep.sources.mr>
+        <dep.sources>${project.build.directory}/generated-sources/dependencies</dep.sources>
+        <jdoc.doclint>-missing</jdoc.doclint>
+        <!-- XXX deprecated comes from commonj.sdo which we don't want to touch,
+             we also do not want to see what has already been reported earlier -->
+        <comp.xlint>-Xlint:all,-rawtypes,-unchecked,-serial,-deprecation,-dep-ann</comp.xlint>
+        <comp.test.xlint>-Xlint:all,-rawtypes,-unchecked,-serial,-deprecation,-dep-ann</comp.test.xlint>
+        <comp.xdoclint>-Xdoclint:none</comp.xdoclint>
 
         <test-skip-sdo-srg>${skipTests}</test-skip-sdo-srg>
         <test-skip-sdo>true</test-skip-sdo>
@@ -62,6 +68,12 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>commonj.sdo</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!--Test dependencies-->
         <!--Test framework-->
         <dependency>
@@ -70,13 +82,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-activation</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-mail</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -88,7 +100,7 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>unpack-sources-mr</id>
+                        <id>unpack-sources</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>unpack-dependencies</goal>
@@ -99,8 +111,8 @@
                             <classifier>sources</classifier>
                             <excludeTransitive>true</excludeTransitive>
                             <excludes>module-info.*,META-INF/versions/**,META-INF/MANIFEST.MF,
-                                META-INF/*.SF,META-INF/*.DSA,META-INF/*.RSA,META-INF/*.inf</excludes>
-                            <outputDirectory>${dep.sources.mr}/META-INF/versions/9</outputDirectory>
+                                META-INF/*.SF,META-INF/*.DSA,META-INF/*.RSA,META-INF/*.inf,plugin.properties</excludes>
+                            <outputDirectory>${dep.sources}</outputDirectory>
                         </configuration>
                     </execution>
                     <!--Resolve and store into maven property build classpath-->
@@ -115,40 +127,37 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+           <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>add-mr-resource</id>
-                        <phase>prepare-package</phase>
+                        <id>add-resource</id>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>add-resource</goal>
                         </goals>
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>${dep.sources.mr}</directory>
+                                    <directory>${dep.sources}</directory>
+                                    <excludes>
+                                        <exclude>**/*.java</exclude>
+                                    </excludes>
                                 </resource>
                             </resources>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
                     <execution>
-                        <id>default-compile-mr</id>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>compile</goal>
+                            <goal>add-source</goal>
                         </goals>
                         <configuration>
-                            <compileSourceRoots>
-                                <compileSourceRoot>${dep.sources.mr}/META-INF/versions/9</compileSourceRoot>
-                            </compileSourceRoots>
-                            <outputDirectory>${project.build.outputDirectory}/META-INF/versions/9</outputDirectory>
+                            <sources>
+                                <source>${dep.sources}</source>
+                            </sources>
                         </configuration>
                     </execution>
                 </executions>
@@ -174,6 +183,14 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- XXX deprecated comes from commonj.sdo which we don't want to touch -->
+                    <showDeprecation>false</showDeprecation>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -260,6 +277,7 @@
                                     *
                                 </Export-Package>
                                 <Import-Package>
+                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
                                     jakarta.activation;resolution:=optional,
                                     jakarta.mail.internet;resolution:=optional,
                                     *
@@ -278,44 +296,27 @@
                         <manifest>
                             <addDefaultEntries>false</addDefaultEntries>
                         </manifest>
-                        <manifestEntries>
-                            <Multi-Release>true</Multi-Release>
-                        </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <!-- need javadoc even in normal/short build
+                        for inclusion in binary distribution -->
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
 
     <profiles>
-        <profile>
-            <id>jdk8</id>
-            <activation>
-                <jdk>1.8</jdk>
-            </activation>
-            <dependencies>
-                <!-- Required on Java SE 8 -->
-                <dependency>
-                    <groupId>org.eclipse.persistence</groupId>
-                    <artifactId>commonj.sdo</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>jdk9</id>
-            <activation>
-                <jdk>(1.8,)</jdk>
-            </activation>
-            <dependencies>
-                <!-- Let's treat this as provided for now on JDK 9+ since we're including this under META-INF/versions/9
-                     to get around the split package problem with commonj.sdo.impl.HelperProviderImpl -->
-                <dependency>
-                    <groupId>org.eclipse.persistence</groupId>
-                    <artifactId>commonj.sdo</artifactId>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
-        </profile>
         <!--SDO related profiles-->
         <profile>
             <id>test-sdo-srg</id>

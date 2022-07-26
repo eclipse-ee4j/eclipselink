@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -66,9 +66,9 @@ public class WebSphereTransactionController extends JTATransactionController {
     protected TransactionManager acquireTransactionManager() throws Exception {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
-                Class clazz = AccessController.doPrivileged(new PrivilegedClassForName(getTxManagerFactoryClass()));
+                Class<? extends TransactionManager> clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(getTxManagerFactoryClass()));
                 Method method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, getTxManagerFactoryMethod(), null, false));
-                return (TransactionManager) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, null, null));
+                return AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, null, null));
             }catch (PrivilegedActionException ex){
                 if (ex.getCause() instanceof ClassNotFoundException){
                     throw (ClassNotFoundException)ex.getCause();
@@ -85,9 +85,9 @@ public class WebSphereTransactionController extends JTATransactionController {
                 throw (RuntimeException) ex.getCause();
             }
         }else{
-            Class clazz = PrivilegedAccessHelper.getClassForName(getTxManagerFactoryClass());
+            Class<? extends TransactionManager> clazz = PrivilegedAccessHelper.getClassForName(getTxManagerFactoryClass());
             Method method = PrivilegedAccessHelper.getMethod(clazz, getTxManagerFactoryMethod(), null, false);
-            return (TransactionManager)PrivilegedAccessHelper.invokeMethod(method, null, null);
+            return PrivilegedAccessHelper.invokeMethod(method, null, null);
         }
     }
 }

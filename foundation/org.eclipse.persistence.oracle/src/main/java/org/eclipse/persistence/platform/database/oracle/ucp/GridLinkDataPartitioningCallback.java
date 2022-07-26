@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,9 +33,16 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class GridLinkDataPartitioningCallback extends UCPDataPartitioningCallback {
     /** The id is stored in a static thread local. */
-    protected static ThreadLocal partitionId = new ThreadLocal();
+    protected static ThreadLocal<Integer> partitionId = new ThreadLocal<>();
 
     public static boolean isRegistered = false;
+
+    /**
+     * Default constructor.
+     */
+    public GridLinkDataPartitioningCallback() {
+        super();
+    }
 
     /**
      * Registration only occurs once in WLS (against all data sources), so must be static registered.
@@ -56,12 +63,12 @@ public class GridLinkDataPartitioningCallback extends UCPDataPartitioningCallbac
             return;
         }
         try {
-            Class dataSourceManager = PrivilegedAccessHelper.getClassForName("weblogic.jdbc.common.internal.DataSourceManager");
+            Class<Object> dataSourceManager = PrivilegedAccessHelper.getClassForName("weblogic.jdbc.common.internal.DataSourceManager");
             Method getInstance = PrivilegedAccessHelper.getMethod(dataSourceManager, "getInstance", null, false);
             Object instance = PrivilegedAccessHelper.invokeMethod(getInstance, null, null);
             Method getDataSourceService = PrivilegedAccessHelper.getMethod(instance.getClass(), "getDataSourceService", null, false);
             Object service = PrivilegedAccessHelper.invokeMethod(getDataSourceService, instance, null);
-            Class[] argumentTypes = new Class[] {DataBasedConnectionAffinityCallback.class};
+            Class<?>[] argumentTypes = new Class<?>[] {DataBasedConnectionAffinityCallback.class};
             Method registerDataAffinityCallback = PrivilegedAccessHelper.getMethod(service.getClass(), "registerDataAffinityCallback", argumentTypes, false);
             Object[] arguments = new Object[] {new GridLinkDataPartitioningCallback()};
             PrivilegedAccessHelper.invokeMethod(registerDataAffinityCallback, service, arguments);
@@ -81,7 +88,7 @@ public class GridLinkDataPartitioningCallback extends UCPDataPartitioningCallbac
 
     @Override
     public int getPartitionId() {
-        Integer id = (Integer)partitionId.get();
+        Integer id = partitionId.get();
         if (id == null) {
             return 0;
         }

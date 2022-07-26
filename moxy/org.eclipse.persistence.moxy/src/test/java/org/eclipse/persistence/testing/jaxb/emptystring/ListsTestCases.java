@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,11 +32,12 @@ public class ListsTestCases extends JAXBWithJSONTestCases{
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_WRITE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = ListsTestObject.class;
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         ListsTestObject testObject = new ListsTestObject();
         ArrayList<String> strings = new ArrayList<String>();

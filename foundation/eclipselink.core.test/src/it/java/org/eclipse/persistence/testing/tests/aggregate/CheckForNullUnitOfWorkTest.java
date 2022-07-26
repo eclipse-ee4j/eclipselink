@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,11 +48,11 @@ import org.eclipse.persistence.testing.models.aggregate.ProjectDescription;
  *                                <li>    <i>First and Last Name</i>, Direct To Field
  *                                <li> <i>Project's Description</i>, Aggregate Objects, Direct To Field
  *                                <li>    <i>Period</i>, Third level Aggregate Object replaced
- *                                <li>    <i>Computer<i>, Aggregate Object's 1 to 1 mapped object
+ *                                <li>    <i>Computer</i>, Aggregate Object's 1 to 1 mapped object
  *                                <li>    <i>Responsibilities</i>,Aggregate objects 1:M mapping
  *                                <li> <i>Language Modified</i>, Aggregate objects M:M mapping
  *                                <li> <i>null added to languages</i>, Aggregate objects M:M mapping
- *
+ *                                </ul>
  */
 public class CheckForNullUnitOfWorkTest extends WriteObjectTest {
     public Object unitOfWorkWorkingCopy;
@@ -98,6 +98,7 @@ public class CheckForNullUnitOfWorkTest extends WriteObjectTest {
         //languages.addElement(null);
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -112,6 +113,7 @@ public class CheckForNullUnitOfWorkTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         this.unitOfWork.commit();
     }
@@ -120,6 +122,7 @@ public class CheckForNullUnitOfWorkTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         if (!(compareObjects(this.unitOfWorkWorkingCopy, this.objectToBeWritten))) {
             throw new TestErrorException("The object in the unit of work has not been commited properly to its parent");

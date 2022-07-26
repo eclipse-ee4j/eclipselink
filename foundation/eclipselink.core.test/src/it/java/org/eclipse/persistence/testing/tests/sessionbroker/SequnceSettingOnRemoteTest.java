@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,10 +25,12 @@ public class SequnceSettingOnRemoteTest extends WriteObjectTest {
         setDescription("The test for sequence setup within the remote session");
     }
 
+    @Override
     protected void setup() {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee newEmployee = new Employee();
@@ -43,6 +45,7 @@ public class SequnceSettingOnRemoteTest extends WriteObjectTest {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
 
     }

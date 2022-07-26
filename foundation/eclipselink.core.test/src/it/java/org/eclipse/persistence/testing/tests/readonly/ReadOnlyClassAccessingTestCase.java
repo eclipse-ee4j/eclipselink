@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,19 +75,22 @@ public class ReadOnlyClassAccessingTestCase extends TestCase {
         return true;
     }
 
+    @Override
     public void reset() {
         getSession().getProject().setDefaultReadOnlyClasses(new Vector());
     }
 
+    @Override
     protected void setup() {
         getSession().getProject().setDefaultReadOnlyClasses(new Vector());
 
     }
 
+    @Override
     protected void test() {
         // Test acquiring a unit of work.
         UnitOfWork uow1 = getSession().acquireUnitOfWork();
-        if (!((UnitOfWorkImpl)uow1).getReadOnlyClasses().isEmpty()) {
+        if (!uow1.getReadOnlyClasses().isEmpty()) {
             throw new TestErrorException(" When acquiring a UnitOfWork from a Session, the read-only classes where not empty as expected.");
         }
         uow1.release();
@@ -99,7 +102,7 @@ public class ReadOnlyClassAccessingTestCase extends TestCase {
         UnitOfWork uow2 = getSession().acquireUnitOfWork();
         uow2.removeAllReadOnlyClasses();
         uow2.addReadOnlyClasses(classes);
-        if (!areEqual(((UnitOfWorkImpl)uow2).getReadOnlyClasses(), classes)) {
+        if (!areEqual(uow2.getReadOnlyClasses(), classes)) {
             throw new TestErrorException("When acquiring a UnitOfWork from a Session, the read-only classes specified did not get set in the UnitOfWork;");
         }
 
@@ -125,7 +128,7 @@ public class ReadOnlyClassAccessingTestCase extends TestCase {
 
         // Test the removeAll.
         uow2.removeAllReadOnlyClasses();
-        if ((uow2.isClassReadOnly(Country.class)) || (!((UnitOfWorkImpl)uow2).getReadOnlyClasses().isEmpty())) {
+        if ((uow2.isClassReadOnly(Country.class)) || (!uow2.getReadOnlyClasses().isEmpty())) {
             throw new TestErrorException("Did not remove all the read-only classes from a UnitOfWork properly");
         }
 
@@ -134,7 +137,7 @@ public class ReadOnlyClassAccessingTestCase extends TestCase {
             uow2.registerObject(new Address());
             uow2.removeAllReadOnlyClasses();
             uow2.addReadOnlyClasses(classes);
-            if (areEqual(((UnitOfWorkImpl)uow2).getReadOnlyClasses(), classes)) {
+            if (areEqual(uow2.getReadOnlyClasses(), classes)) {
                 throw new TestErrorException("Shouldn't be able to change the readOnlyClasses of a UnitOfWork after an object was registered.");
             }
         } catch (org.eclipse.persistence.exceptions.ValidationException ex) {
@@ -149,7 +152,7 @@ public class ReadOnlyClassAccessingTestCase extends TestCase {
         someClasses.addElement(Address.class);
         getSession().getProject().setDefaultReadOnlyClasses(someClasses);
         UnitOfWork uow3 = getSession().acquireUnitOfWork();
-        if (!areEqual(((UnitOfWorkImpl)uow3).getReadOnlyClasses(), someClasses)) {
+        if (!areEqual(uow3.getReadOnlyClasses(), someClasses)) {
             throw new TestErrorException("The default read-only classes were not set properly when a UnitOfWork was aquired");
         }
         // Nested units of work should not be able to reduce the set of read-only classes.

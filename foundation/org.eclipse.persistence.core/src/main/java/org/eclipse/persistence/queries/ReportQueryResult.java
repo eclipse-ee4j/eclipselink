@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -34,12 +34,12 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.ReportItem;
@@ -113,7 +113,7 @@ public class ReportQueryResult implements Serializable, Map {
             // For bug 3115576 this is only used for EXISTS sub-selects so no result is needed.
         }
 
-        List<Object> results = new ArrayList<Object>();
+        List<Object> results = new ArrayList<>();
         for(ReportItem item: query.getItems()) {
             if (item.isConstructorItem()) {
                 Object result = processConstructorItem(query, row, toManyData, (ConstructorReportItem) item);
@@ -139,7 +139,7 @@ public class ReportQueryResult implements Serializable, Map {
 
     private Object processConstructorItem(ReportQuery query, AbstractRecord row, Vector toManyData, ConstructorReportItem constructorItem) {
         // For constructor items need to process each constructor argument.
-        Class[] constructorArgTypes = constructorItem.getConstructorArgTypes();
+        Class<?>[] constructorArgTypes = constructorItem.getConstructorArgTypes();
         int numberOfArguments = constructorItem.getReportItems().size();
         Object[] constructorArgs = new Object[numberOfArguments];
 
@@ -251,7 +251,7 @@ public class ReportQueryResult implements Serializable, Map {
                 AbstractRecord subRow = row;
                 // Check if at the start of the row, then avoid building a subRow.
                 if (itemIndex > 0) {
-                    Vector trimedFields = new NonSynchronizedSubVector(row.getFields(), itemIndex, rowSize);
+                    Vector<DatabaseField> trimedFields = new NonSynchronizedSubVector<>(row.getFields(), itemIndex, rowSize);
                     Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
                     subRow = new DatabaseRecord(trimedFields, trimedValues);
                 }
@@ -289,21 +289,6 @@ public class ReportQueryResult implements Serializable, Map {
                 }
             } else {
                 value = row.getValues().get(itemIndex);
-
-                // Verify that the expected result type matches the actual value type
-                if(value != null) {
-                    Class valueType = value.getClass();
-                    Class resultType = item.getResultType();
-                    if(!valueType.isInstance(resultType)) {
-                        try {
-                            value = query.getSession().getPlatform().convertObject(value, resultType);
-                        } catch (ConversionException e) {
-                            // If an Exception is thrown while attempting to 
-                            // convert, ignore and return the original value
-                        }
-                    }
-                }
-
                 // GF_ISSUE_395
                 if (this.key != null) {
                     this.key.append(value);
@@ -677,7 +662,7 @@ public class ReportQueryResult implements Serializable, Map {
      * PUBLIC:
      * If the PKs were retrieved with the attributes then this method can be used to read the real object from the database.
      */
-    public Object readObject(Class javaClass, Session session) {
+    public Object readObject(Class<?> javaClass, Session session) {
         if (getId() == null) {
             throw QueryException.reportQueryResultWithoutPKs(this);
         }
@@ -738,7 +723,7 @@ public class ReportQueryResult implements Serializable, Map {
      * Converts the ReportQueryResult to a simple array of values.
      */
     public Object[] toArray(){
-       List list = getResults();
+       List<Object> list = getResults();
        return (list == null) ? null : list.toArray();
     }
 

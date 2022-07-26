@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,6 @@ public abstract class CciJMSInteractionSpec implements InteractionSpec {
      * Set the name of the destination to be used.  This is required if JNDI is
      * not being used to lookup the destination.
      *
-     * @param dest
      */
     public void setDestination(String dest) {
         destination = dest;
@@ -89,7 +88,6 @@ public abstract class CciJMSInteractionSpec implements InteractionSpec {
      * will set the JMSCorrelationID of the reponse message using the JMSMessageID of
      * the request messsage.
      *
-     * @param selector
      */
     public void setMessageSelector(String selector) {
         messageSelector = selector;

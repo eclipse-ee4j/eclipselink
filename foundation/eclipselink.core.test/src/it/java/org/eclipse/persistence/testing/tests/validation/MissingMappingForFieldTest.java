@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,10 +32,12 @@ public class MissingMappingForFieldTest extends ExceptionTest {
         setDescription("This tests Missing Mapping For Field (TL-ERROR 45)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.missingMappingForField(null, null);
     }
 
+    @Override
     public void test() {
         RelationalDescriptor descriptor = descriptor();
         org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems person = new org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems();

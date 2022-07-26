@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
 
     public XMLGregorianCalendarObjectTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {XMLGregorianCalendarHolder.class});
+        setClasses(new Class<?>[] {XMLGregorianCalendarHolder.class});
     }
 
     @Override
@@ -97,6 +97,7 @@ public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
         return holder;
     }
 
+    @Override
     public boolean isUnmarshalTest() {
         return false;
     }

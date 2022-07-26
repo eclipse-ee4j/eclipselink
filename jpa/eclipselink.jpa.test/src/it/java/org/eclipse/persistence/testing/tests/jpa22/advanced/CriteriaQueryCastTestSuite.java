@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import jakarta.persistence.criteria.Subquery;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
@@ -513,7 +513,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<BeerConsumer> cq = qb.createQuery(BeerConsumer.class);
             Root<BeerConsumer> root = cq.from(BeerConsumer.class);
-            Join blueLightJoin = qb.treat((Join<Object, Object>) root.join("blueBeersToConsume"), BlueLight.class);
+            Join blueLightJoin = qb.treat(root.join("blueBeersToConsume"), BlueLight.class);
             cq.where(qb.equal(blueLightJoin.get("discount"), 10));
 
             List resultList = em.createQuery(cq).getResultList();

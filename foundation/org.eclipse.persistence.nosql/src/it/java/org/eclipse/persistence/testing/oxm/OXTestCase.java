@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.Iterator;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
@@ -61,9 +63,9 @@ import org.w3c.dom.NodeList;
 public abstract class OXTestCase extends XMLTestCase {
     protected static XMLInputFactory XML_INPUT_FACTORY;
     protected static XMLOutputFactory XML_OUTPUT_FACTORY;
-    protected static Class staxResultClass;
+    protected static Class<?> staxResultClass;
     protected static String staxResultClassName = "javax.xml.transform.stax.StAXResult";
-    protected static Class staxSourceClass;
+    protected static Class<?> staxSourceClass;
     protected static String staxSourceClassName = "javax.xml.transform.stax.StAXSource";
     protected static Constructor staxResultStreamWriterConstructor;
     protected static Constructor staxResultEventWriterConstructor;
@@ -80,16 +82,16 @@ public abstract class OXTestCase extends XMLTestCase {
         }
         try {
             staxResultClass = PrivilegedAccessHelper.getClassForName(staxResultClassName);
-            staxResultStreamWriterConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLStreamWriter.class}, true);
-            staxResultEventWriterConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class[]{XMLEventWriter.class}, true);
+            staxResultStreamWriterConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class<?>[]{XMLStreamWriter.class}, true);
+            staxResultEventWriterConstructor = PrivilegedAccessHelper.getConstructorFor(staxResultClass, new Class<?>[]{XMLEventWriter.class}, true);
         } catch(Exception ex) {
             staxResultClass = null;
         }
 
         try {
             staxSourceClass = PrivilegedAccessHelper.getClassForName(staxSourceClassName);
-            staxSourceStreamReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class[]{XMLStreamReader.class}, true);
-            staxSourceEventReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class[]{XMLEventReader.class}, true);
+            staxSourceStreamReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class<?>[]{XMLStreamReader.class}, true);
+            staxSourceEventReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class<?>[]{XMLEventReader.class}, true);
         } catch(Exception ex) {
             staxSourceClass = null;
         }
@@ -125,10 +127,10 @@ public abstract class OXTestCase extends XMLTestCase {
 
     public XMLContext getXMLContext(Project project) {
         if (platform == Platform.DOC_PRES) {
-            java.util.Collection descriptors = project.getDescriptors().values();
-            java.util.Iterator iter = descriptors.iterator();
+            Collection<ClassDescriptor> descriptors = project.getDescriptors().values();
+            Iterator<ClassDescriptor> iter = descriptors.iterator();
             while (iter.hasNext()) {
-                ClassDescriptor nextDesc = (ClassDescriptor)iter.next();
+                ClassDescriptor nextDesc = iter.next();
                 if (nextDesc instanceof org.eclipse.persistence.oxm.XMLDescriptor) {
                     ((org.eclipse.persistence.oxm.XMLDescriptor)nextDesc).setShouldPreserveDocument(true);
                 }
@@ -231,6 +233,7 @@ public abstract class OXTestCase extends XMLTestCase {
         }
     }
 
+    @Override
     public String getName() {
         String longClassName = this.getClass().getName();
         String shortClassName = longClassName.substring(longClassName.lastIndexOf(".") + 1, longClassName.length() - 1);

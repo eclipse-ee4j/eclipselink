@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.SessionProfilerAdapter;
 
 /**
@@ -64,13 +64,13 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      */
     public PerformanceProfiler(boolean shouldLogProfile) {
         super();
-        this.profiles = new Vector();
+        this.profiles = new Vector<>();
         this.shouldLogProfile = shouldLogProfile;
         this.nestLevel = 0;
         this.profileTime = 0;
         this.nestTime = 0;
-        this.operationTimingsByThread = new Hashtable();
-        this.operationStartTimesByThread = new Hashtable();
+        this.operationTimingsByThread = new Hashtable<>();
+        this.operationStartTimesByThread = new Hashtable<>();
     }
 
     protected void addProfile(Profile profile) {
@@ -96,18 +96,17 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
             summary.setLocalTime(summary.getLocalTime() + profile.getLocalTime());
             summary.setProfileTime(summary.getProfileTime() + profile.getProfileTime());
             summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() + profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames = profile.getOperationTimings().keys();
-                     operationNames.hasMoreElements();) {
-                String name = (String)operationNames.nextElement();
-                Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime = ((Long)profile.getOperationTimings().get(name)).longValue();
+            for (Map.Entry<String, Long> entry: profile.getOperationTimings().entrySet()) {
+                String name = entry.getKey();
+                Long oldTime = summary.getOperationTimings().get(name);
+                long profileTime = entry.getValue();
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, Long.valueOf(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
@@ -118,16 +117,16 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * INTERNAL:
      * Return a map of summary profiles reporting on the profile contained.
      */
-    public Hashtable buildProfileSummaryByClass() {
-        Hashtable summaries = new Hashtable();
+    public Hashtable<Class<?>, Profile> buildProfileSummaryByClass() {
+        Hashtable<Class<?>, Profile> summaries = new Hashtable<>();
 
         for (Profile profile : getProfiles()) {
-            Class domainClass = profile.getDomainClass();
+            Class<?> domainClass = profile.getDomainClass();
             if (domainClass == null) {
                 domainClass = Void.class;
             }
 
-            Profile summary = (Profile)summaries.get(domainClass);
+            Profile summary = summaries.get(domainClass);
             if (summary == null) {
                 summary = new Profile();
                 summary.setDomainClass(domainClass);
@@ -143,18 +142,17 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
             summary.setLocalTime(summary.getLocalTime() + profile.getLocalTime());
             summary.setProfileTime(summary.getProfileTime() + profile.getProfileTime());
             summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() + profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames = profile.getOperationTimings().keys();
-                     operationNames.hasMoreElements();) {
-                String name = (String)operationNames.nextElement();
-                Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime = ((Long)profile.getOperationTimings().get(name)).longValue();
+            for (Map.Entry<String, Long> entry: profile.getOperationTimings().entrySet()) {
+                String name = entry.getKey();
+                Long oldTime = summary.getOperationTimings().get(name);
+                long profileTime = entry.getValue();
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, Long.valueOf(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
@@ -165,16 +163,16 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * INTERNAL:
      * Return a map of summary profiles reporting on the profile contained.
      */
-    public Hashtable buildProfileSummaryByQuery() {
-        Hashtable summaries = new Hashtable();
+    public Hashtable<Class<?>, Profile> buildProfileSummaryByQuery() {
+        Hashtable<Class<?>, Profile> summaries = new Hashtable<>();
 
         for (Profile profile : getProfiles()) {
-            Class queryType = profile.getQueryClass();
+            Class<?> queryType = profile.getQueryClass();
             if (queryType == null) {
                 queryType = Void.class;
             }
 
-            Profile summary = (Profile)summaries.get(queryType);
+            Profile summary = summaries.get(queryType);
             if (summary == null) {
                 summary = new Profile();
                 summary.setQueryClass(queryType);
@@ -184,18 +182,17 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
             summary.setLocalTime(summary.getLocalTime() + profile.getLocalTime());
             summary.setProfileTime(summary.getProfileTime() + profile.getProfileTime());
             summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() + profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames = profile.getOperationTimings().keys();
-                     operationNames.hasMoreElements();) {
-                String name = (String)operationNames.nextElement();
-                Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime = ((Long)profile.getOperationTimings().get(name)).longValue();
+            for (Map.Entry<String, Long> entry: profile.getOperationTimings().entrySet()) {
+                String name = entry.getKey();
+                Long oldTime = summary.getOperationTimings().get(name);
+                long profileTime = entry.getValue();
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, Long.valueOf(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
@@ -231,7 +228,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         if (startTime == null) {
             return;
         }
-        long time = endTime - startTime.longValue();
+        long time = endTime - startTime;
 
         if (getNestLevel() == 0) {
             // Log as a profile if not within query execution,
@@ -257,9 +254,9 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
 
         Long totalTime = getOperationTimings().get(operationName);
         if (totalTime == null) {
-            getOperationTimings().put(operationName, Long.valueOf(time));
+            getOperationTimings().put(operationName, time);
         } else {
-            getOperationTimings().put(operationName, Long.valueOf(totalTime.longValue() + time));
+            getOperationTimings().put(operationName, totalTime + time);
         }
     }
 
@@ -281,9 +278,9 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     }
 
     protected Map<String, Long> getOperationStartTimes() {
-        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
+        Integer threadId = Thread.currentThread().hashCode();
         if (getOperationStartTimesByThread().get(threadId) == null) {
-            getOperationStartTimesByThread().put(threadId, new Hashtable(10));
+            getOperationStartTimesByThread().put(threadId, new Hashtable<>(10));
         }
         return getOperationStartTimesByThread().get(threadId);
     }
@@ -293,9 +290,9 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     }
 
     protected Map<String, Long> getOperationTimings() {
-        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
+        Integer threadId = Thread.currentThread().hashCode();
         if (getOperationTimingsByThread().get(threadId) == null) {
-            getOperationTimingsByThread().put(threadId, new Hashtable(10));
+            getOperationTimingsByThread().put(threadId, new Hashtable<>(10));
         }
         return getOperationTimingsByThread().get(threadId);
     }
@@ -346,10 +343,10 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * Log a profile summary by class.
      */
     public void logProfileSummaryByClass() {
-        Hashtable summaries = buildProfileSummaryByClass();
+        Hashtable<Class<?>, Profile> summaries = buildProfileSummaryByClass();
 
-        for (Enumeration classes = summaries.keys(); classes.hasMoreElements();) {
-            Class domainClass = (Class)classes.nextElement();
+        for (Enumeration<Class<?>> classes = summaries.keys(); classes.hasMoreElements();) {
+            Class<?> domainClass = classes.nextElement();
             Writer writer = getSession().getLog();
             try {
                 writer.write(summaries.get(domainClass).toString());
@@ -364,10 +361,10 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * Log a profile summary by query.
      */
     public void logProfileSummaryByQuery() {
-        Hashtable summaries = buildProfileSummaryByQuery();
+        Hashtable<Class<?>, Profile> summaries = buildProfileSummaryByQuery();
 
-        for (Enumeration classes = summaries.keys(); classes.hasMoreElements();) {
-            Class queryType = (Class)classes.nextElement();
+        for (Enumeration<Class<?>> classes = summaries.keys(); classes.hasMoreElements();) {
+            Class<?> queryType = classes.nextElement();
             Writer writer = getSession().getLog();
             try {
                 writer.write(summaries.get(queryType).toString());
@@ -386,7 +383,8 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * @return the execution result of the query.
      */
     @Override
-    public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
+    @SuppressWarnings({"unchecked"})
+    public Object profileExecutionOfQuery(DatabaseQuery query, DataRecord row, AbstractSession session) {
         long profileStartTime = System.nanoTime();
         long nestedProfileStartTime = getProfileTime();
         Profile profile = new Profile();
@@ -398,14 +396,14 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         try {
             if (shouldLogProfile()) {
                 writeNestingTabs(writer);
-                writer.write(ToStringLocalization.buildMessage("begin_profile_of", null) + "{" + query.toString() + Helper.cr());
+                writer.write(ToStringLocalization.buildMessage("begin_profile_of", null) + "{" + query + Helper.cr());
                 writer.flush();
             }
 
             setNestLevel(getNestLevel() + 1);
             long startNestTime = getNestTime();
-            Map<String, Long> timingsBeforeExecution = (Map<String, Long>)((Hashtable)getOperationTimings()).clone();
-            Map<String, Long> startTimingsBeforeExecution = (Map<String, Long>)((Hashtable)getOperationStartTimes()).clone();
+            Map<String, Long> timingsBeforeExecution = (Map<String, Long>)((Hashtable<String, Long>)getOperationTimings()).clone();
+            Map<String, Long> startTimingsBeforeExecution = (Map<String, Long>)((Hashtable<String, Long>)getOperationStartTimes()).clone();
             long startTime = System.nanoTime();
             try {
                 result = session.internalExecuteQuery(query, (AbstractRecord)row);
@@ -416,10 +414,10 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
 
                 for (String name : getOperationTimings().keySet()) {
                     Long operationStartTime = timingsBeforeExecution.get(name);
-                    long operationEndTime = getOperationTimings().get(name).longValue();
+                    long operationEndTime = getOperationTimings().get(name);
                     long operationTime;
                     if (operationStartTime != null) {
-                        operationTime = operationEndTime - operationStartTime.longValue();
+                        operationTime = operationEndTime - operationStartTime;
                     } else {
                         operationTime = operationEndTime;
                     }
@@ -451,8 +449,8 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                 if (getNestLevel() == 0) {
                     setNestTime(0);
                     setProfileTime(0);
-                    setOperationTimings(new Hashtable());
-                    setOperationStartTimes(new Hashtable());
+                    setOperationTimings(new Hashtable<>());
+                    setOperationStartTimes(new Hashtable<>());
                     long profileEndTime = System.nanoTime();
                     long totalTimeIncludingProfiling = profileEndTime - profileStartTime;// Try to remove the profiling time from the total time.
                     profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
@@ -464,8 +462,8 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                     long totalTimeIncludingProfiling = profileEndTime - profileStartTime;// Try to remove the profiling time from the total time.
                     setProfileTime(getProfileTime() + (totalTimeIncludingProfiling - (endTime - startTime)));
                     profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
-                    for (String timingName : ((Map<String, Long>)(((Hashtable)startTimingsBeforeExecution).clone())).keySet()) {
-                        startTimingsBeforeExecution.put(timingName, Long.valueOf(((Number)startTimingsBeforeExecution.get(timingName)).longValue() + totalTimeIncludingProfiling));
+                    for (String timingName : ((Map<String, Long>)(((Hashtable<String, Long>)startTimingsBeforeExecution).clone())).keySet()) {
+                        startTimingsBeforeExecution.put(timingName, ((Number) startTimingsBeforeExecution.get(timingName)).longValue() + totalTimeIncludingProfiling);
                     }
                 }
             }
@@ -483,24 +481,24 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     }
 
     protected void setOperationStartTimes(Map<String, Long> operationStartTimes) {
-        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
+        Integer threadId = Thread.currentThread().hashCode();
         getOperationStartTimesByThread().put(threadId, operationStartTimes);
     }
 
-    protected void setOperationStartTimesByThread(Hashtable operationStartTimesByThread) {
+    protected void setOperationStartTimesByThread(Map<Integer, Map<String, Long>> operationStartTimesByThread) {
         this.operationStartTimesByThread = operationStartTimesByThread;
     }
 
     protected void setOperationTimings(Map<String, Long> operationTimings) {
-        Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
+        Integer threadId = Thread.currentThread().hashCode();
         getOperationTimingsByThread().put(threadId, operationTimings);
     }
 
-    protected void setOperationTimingsByThread(Hashtable operationTimingsByThread) {
+    protected void setOperationTimingsByThread(Map<Integer, Map<String, Long>> operationTimingsByThread) {
         this.operationTimingsByThread = operationTimingsByThread;
     }
 
-    protected void setProfiles(Vector profiles) {
+    protected void setProfiles(Vector<Profile> profiles) {
         this.profiles = profiles;
     }
 
@@ -532,7 +530,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      */
     @Override
     public void startOperationProfile(String operationName) {
-        getOperationStartTimes().put(operationName, Long.valueOf(System.nanoTime()));
+        getOperationStartTimes().put(operationName, System.nanoTime());
     }
 
     /**

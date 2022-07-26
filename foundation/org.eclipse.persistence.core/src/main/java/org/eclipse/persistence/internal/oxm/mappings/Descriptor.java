@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -106,7 +106,7 @@ public interface Descriptor <
     /**
      * Return the java class.
      */
-    Class getJavaClass();
+    <T> Class<T> getJavaClass();
 
     /**
      * Return the class name, used by the MW.
@@ -224,7 +224,7 @@ public interface Descriptor <
       * Set the Java class that this descriptor maps.
       * Every descriptor maps one and only one class.
       */
-      void setJavaClass(Class theJavaClass);
+      void setJavaClass(Class<?> theJavaClass);
 
       /**
        * INTERNAL:
@@ -276,10 +276,6 @@ public interface Descriptor <
           * unmarshalled does not equal the descriptor's default root
           * element.
           *
-          * @param object
-          * @param elementNamespaceUri
-          * @param elementLocalName
-          * @param elementPrefix
           * @return object
           */
         Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap, boolean isNamespaceAware, UNMARSHALLER xmlUnmarshaller);
@@ -298,7 +294,6 @@ public interface Descriptor <
           * unmarshalled does not equal the descriptor's default root
           * element.
           *
-          * @param unmarshalRecord
           * @return object
           */
          Object wrapObjectInXMLRoot(UNMARSHAL_RECORD unmarshalRecord, boolean forceWrap);

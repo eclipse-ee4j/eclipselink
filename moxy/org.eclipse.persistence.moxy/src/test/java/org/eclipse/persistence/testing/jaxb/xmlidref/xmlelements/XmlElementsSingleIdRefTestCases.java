@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,11 @@
 // Oracle = 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-
-import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
-import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlElementsSingleIdRefTestCases extends JAXBWithJSONTestCases{
@@ -47,7 +41,7 @@ public class XmlElementsSingleIdRefTestCases extends JAXBWithJSONTestCases{
 
     public XmlElementsSingleIdRefTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[4];
+        Class<?>[] classes = new Class<?>[4];
         classes[0] = AddressSingle.class;
         classes[1] = EmployeeSingle.class;
         classes[2] = RootEmployeeSingle.class;
@@ -57,6 +51,7 @@ public class XmlElementsSingleIdRefTestCases extends JAXBWithJSONTestCases{
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         EmployeeSingle employee = new EmployeeSingle();
         employee.id = CONTROL_ID;

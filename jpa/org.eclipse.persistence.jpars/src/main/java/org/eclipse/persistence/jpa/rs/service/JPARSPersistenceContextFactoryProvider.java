@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,22 @@ import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 
+/**
+ * Concrete implementation of {@link PersistenceContextFactoryProvider}.
+ */
 public class JPARSPersistenceContextFactoryProvider implements
         PersistenceContextFactoryProvider {
 
+    /**
+     * The single point to bootstrap and look up PersistenceContexts in the JPARS application.
+     */
     protected static PersistenceContextFactory factory = new PersistenceFactoryBase();
+
+    /**
+     * Default constructor.
+     */
+    public JPARSPersistenceContextFactoryProvider() {
+    }
 
     @Override
     public PersistenceContextFactory getPersistenceContextFactory(Map<String, Object> properteis) {

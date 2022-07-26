@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * @throws ValidationException when provided type is not valid database type.
      */
     protected static final FieldTypeDefinition getFieldTypeDefinition(
-            final AbstractSession session, final Class type, final String name) {
+            final AbstractSession session, final Class<?> type, final String name) {
         final FieldTypeDefinition fieldType = type != null
                 ? session.getPlatform().getFieldTypeDefinition(type)
                 : new FieldTypeDefinition(name);
@@ -78,7 +78,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * @throws ValidationException when provided type is not valid database type.
      */
     protected static final FieldTypeDefinition getFieldTypeDefinition(
-            final DatabasePlatform platform, final Class type, final String name) {
+            final DatabasePlatform platform, final Class<?> type, final String name) {
         FieldTypeDefinition fieldType;
         if (type != null) { //translate Java 'type'
             fieldType = platform.getFieldTypeDefinition(type);
@@ -86,8 +86,8 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
                 throw ValidationException.javaTypeIsNotAValidDatabaseType(type);
             }
         } else if (name != null) { //translate generic type name
-            final Map<String, Class> fieldTypes = platform.getClassTypes();
-            final Class typeFromName = fieldTypes.get(name);
+            final Map<String, Class<?>> fieldTypes = platform.getClassTypes();
+            final Class<?> typeFromName = fieldTypes.get(name);
             if (typeFromName == null) { // if unknown type name, use as it is
                 fieldType = new FieldTypeDefinition(name);
             } else {
@@ -103,7 +103,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
         return fieldType;
     }
 
-    public DatabaseObjectDefinition() {
+    protected DatabaseObjectDefinition() {
         this.name = "";
         this.qualifier = "";
     }
@@ -326,16 +326,12 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
 
     /**
      * Execute any statements required after the creation of the object
-     * @param session
-     * @param createSchemaWriter
      */
     public void postCreateObject(AbstractSession session, Writer createSchemaWriter, boolean createSQLFiles){
     }
 
     /**
      * Execute any statements required before the deletion of the object
-     * @param session
-     * @param dropSchemaWriter
      */
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles){
     }

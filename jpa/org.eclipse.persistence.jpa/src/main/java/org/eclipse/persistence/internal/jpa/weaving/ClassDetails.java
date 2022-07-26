@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -178,8 +178,6 @@ public class ClassDetails {
      * INTERNAL:
      * Search the list of virtualAccessMethods for a VirtualAttributeMethodInfo with the given
      * getMethodName.  Return the VirtualAttributeMethodInfo if there is one, else return null
-     * @param getMethodName
-     * @return
      */
     public VirtualAttributeMethodInfo getInfoForVirtualGetMethod(String getMethodName){
         Iterator<VirtualAttributeMethodInfo> i = virtualAccessMethods.iterator();
@@ -196,8 +194,6 @@ public class ClassDetails {
      * INTERNAL:
      * Search the list of virtualAccessMethods for a VirtualAttributeMethodInfo with the given
      * setMethodName.  Return the VirtualAttributeMethodInfo if there is one, else return null
-     * @param setMethodName
-     * @return
      */
     public VirtualAttributeMethodInfo getInfoForVirtualSetMethod(String setMethodName){
         Iterator<VirtualAttributeMethodInfo> i = virtualAccessMethods.iterator();
@@ -218,7 +214,6 @@ public class ClassDetails {
      * Return the name of the most direct superclass that has a direct implementation of
      * a clone method.
      * If there is not one, return null
-     * @return
      */
     public String getNameOfSuperclassImplementingCloneMethod(){
         if (superClassDetails == null){
@@ -317,8 +312,6 @@ public class ClassDetails {
      *
      * Assume java.lang.Object is in the hierarchy
      *
-     * @param className
-     * @return
      */
     public boolean isInMetadataHierarchy(String className){
         if (className.equals(Object.class.getName().replace('.', '/'))){
@@ -340,8 +333,6 @@ public class ClassDetails {
      *
      * Assume java.lang.Object is in the hierarchy
      *
-     * @param className
-     * @return
      */
     public boolean isInSuperclassHierarchy(String className){
         if (className.equals(Object.class.getName().replace('.', '/'))){

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,8 +79,8 @@ public class Studio {
     public static Studio example4() {
         Studio example = new Studio();
 
-        example.setName("Tall & Short Studio");
-        example.setOwner("Mutt & Jeff");
+        example.setName("Tall &amp; Short Studio");
+        example.setOwner("Mutt &amp; Jeff");
         example.setAddress(Address.example4());
 
         return example;

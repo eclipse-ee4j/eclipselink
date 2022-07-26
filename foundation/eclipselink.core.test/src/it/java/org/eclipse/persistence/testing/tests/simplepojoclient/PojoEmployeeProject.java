@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ PojoEmployeeProject extends org.eclipse.persistence.sessions.Project {
         addDescriptor(buildPojoEmployeeDescriptor());
     }
 
+    @Override
     public void applyLogin() {
         DatabaseLogin login = new DatabaseLogin();
         login.usePlatform(OracleDBPlatformHelper.getInstance().getOracle9Platform());
@@ -91,8 +92,8 @@ PojoEmployeeProject extends org.eclipse.persistence.sessions.Project {
         genderMapping.setSetMethodName("setGender");
         genderMapping.setFieldName("POJO_EMPLOYEE.GENDER");
         ObjectTypeConverter genderMappingConverter = new ObjectTypeConverter();
-        genderMappingConverter.addConversionValue(new Character('F'), "Female");
-        genderMappingConverter.addConversionValue(new Character('M'), "Male");
+        genderMappingConverter.addConversionValue('F', "Female");
+        genderMappingConverter.addConversionValue('M', "Male");
         genderMapping.setConverter(genderMappingConverter);
         descriptor.addMapping(genderMapping);
 

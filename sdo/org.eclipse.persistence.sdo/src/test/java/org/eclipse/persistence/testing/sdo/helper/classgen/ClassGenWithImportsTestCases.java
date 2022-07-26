@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class ClassGenWithImportsTestCases extends SDOClassGenTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         try {
@@ -45,10 +46,12 @@ public class ClassGenWithImportsTestCases extends SDOClassGenTestCases {
         }
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/ImportsWithNamespaces.xsd";
     }
 
+    @Override
     protected String getSourceFolder() {
         return "./srcImports";
     }
@@ -58,6 +61,7 @@ public class ClassGenWithImportsTestCases extends SDOClassGenTestCases {
      * There are two packages [my] and [uri2.my]
      */
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("uri/my");
@@ -67,6 +71,7 @@ public class ClassGenWithImportsTestCases extends SDOClassGenTestCases {
         return packages;
     }
 
+    @Override
     public void testClassGen() throws Exception {
         StringReader reader = new StringReader(xsdString);
         org.eclipse.persistence.sdo.helper.DefaultSchemaResolver schemaResolver = new org.eclipse.persistence.sdo.helper.DefaultSchemaResolver();
@@ -80,10 +85,12 @@ public class ClassGenWithImportsTestCases extends SDOClassGenTestCases {
         compareFiles(getControlFiles(), getGeneratedFiles(classGenerator.getGeneratedBuffers()));
     }
 
+    @Override
     protected String getControlSourceFolder() {
         return "./org/eclipse/persistence/testing/sdo/helper/classgen/srcImports";
     }
 
+    @Override
     protected List<String> getControlFileNames() {
         ArrayList<String> list = new ArrayList<String>();
         list.add("PurchaseOrder.java");

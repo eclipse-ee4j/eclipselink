@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import java.util.*;
  * Simple order object. Just a test fixture.
  * Collections are held in Sets.
  * this should only be used in jdk1.2+
- * @author: Big Country
+ * @author Big Country
  */
 public class SetOrder extends Order {
 
@@ -41,6 +41,7 @@ public class SetOrder extends Order {
     /**
      * initialize the instance
      */
+    @Override
     protected void initialize() {
         super.initialize();
         salesReps = new HashSet();
@@ -48,6 +49,7 @@ public class SetOrder extends Order {
         lines = new HashSet();
     }
 
+    @Override
     public void clearLines() {
         lines = new HashSet();
     }

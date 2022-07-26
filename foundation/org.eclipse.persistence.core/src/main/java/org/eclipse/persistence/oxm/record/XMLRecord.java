@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
      */
     public static final XMLRecord.Nil NIL = org.eclipse.persistence.internal.oxm.record.XMLRecord.NIL;
 
-    public XMLRecord() {
+    protected XMLRecord() {
         super(null, null, 0);
         abstractMarshalRecord = new AbstractMarshalRecordImpl(this);
         // Required for subclasses.
@@ -89,10 +89,6 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
 
     /**
      * Marshal an attribute for the give namespaceURI, localName, preifx and value
-     * @param namespaceURI
-     * @param localName
-     * @param prefix
-     * @param value
      */
     @Override
     public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){
@@ -105,10 +101,6 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
 
     /**
      * Marshal an attribute for the give namespaceURI, localName, qualifiedName and value
-     * @param namespaceURI
-     * @param localName
-     * @param qName
-     * @param value
      */
     @Override
     public void attribute(String namespaceURI, String localName, String qName, String value){
@@ -120,8 +112,6 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
 
     /**
      * Marshal a namespace declaration for the given prefix and url
-     * @param prefix
-     * @param namespaceURI
      */
     @Override
     public void namespaceDeclaration(String prefix, String namespaceURI){

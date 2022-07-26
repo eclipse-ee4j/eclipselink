@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.sessions.factories.model.login;
 
 import java.util.Vector;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
+import org.eclipse.persistence.internal.sessions.factories.model.property.PropertyConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.sequencing.SequencingConfig;
 
 /**
@@ -30,9 +31,9 @@ public abstract class LoginConfig {
     private boolean m_externalConnectionPooling;
     private boolean m_externalTransactionController;
     private SequencingConfig m_sequencingConfig;
-    private Vector m_propertyConfigs;
+    private Vector<PropertyConfig> m_propertyConfigs;
 
-    public LoginConfig() {
+    protected LoginConfig() {
         // Without setting the encryption class name the object holder will
         // default to JCE.
         m_securableObjectHolder = new SecurableObjectHolder();
@@ -69,7 +70,6 @@ public abstract class LoginConfig {
      * securable object initialization remains in the constructor with default
      * to JCE and changes only if an encryption class is set.
      *
-     * @param password
      */
     public void setPassword(String password) {
         setEncryptedPassword(password);
@@ -81,7 +81,6 @@ public abstract class LoginConfig {
      * assumes the password is encrypted. If it is not we will make sure it is
      * encrypted.
      *
-     * @param encryptedPassword
      */
     public void setEncryptedPassword(String encryptedPassword) {
         // Bug 4117441 - Secure programming practices, store password in char[]
@@ -158,11 +157,11 @@ public abstract class LoginConfig {
         return m_sequencingConfig;
     }
 
-    public void setPropertyConfigs(Vector propertyConfigs) {
+    public void setPropertyConfigs(Vector<PropertyConfig> propertyConfigs) {
         m_propertyConfigs = propertyConfigs;
     }
 
-    public Vector getPropertyConfigs() {
+    public Vector<PropertyConfig> getPropertyConfigs() {
         return m_propertyConfigs;
     }
 }

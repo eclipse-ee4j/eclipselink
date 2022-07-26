@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,43 +24,45 @@ public class EscapeCharactersTestCases extends JSONMarshalUnmarshalTestCases {
 
     public EscapeCharactersTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{EscapeCharacterHolder.class});
+        setClasses(new Class<?>[]{EscapeCharacterHolder.class});
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         EscapeCharacterHolder holder = new EscapeCharacterHolder();
 
         holder.stringValue = "a\"a\\a/a\ba\fa\na\ra\t\b\u0003\u001Caaa\\TESThttp://this/is/my/test";
 
         List<Character> characters = new ArrayList<Character>();
-        characters.add(new Character('a'));
-        characters.add(new Character('"'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\\'));
-        characters.add(new Character('a'));
-        characters.add(new Character('/'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\b'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\f'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\n'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\r'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\t'));
-        characters.add(new Character('\b'));
-        characters.add(new Character('\u0003'));
-        characters.add(new Character('\u001C'));
-        characters.add(new Character('a'));
-        characters.add(new Character('a'));
-        characters.add(new Character('a'));
-        characters.add(new Character('\\'));
+        characters.add('a');
+        characters.add('"');
+        characters.add('a');
+        characters.add('\\');
+        characters.add('a');
+        characters.add('/');
+        characters.add('a');
+        characters.add('\b');
+        characters.add('a');
+        characters.add('\f');
+        characters.add('a');
+        characters.add('\n');
+        characters.add('a');
+        characters.add('\r');
+        characters.add('a');
+        characters.add('\t');
+        characters.add('\b');
+        characters.add('\u0003');
+        characters.add('\u001C');
+        characters.add('a');
+        characters.add('a');
+        characters.add('a');
+        characters.add('\\');
         holder.characters = characters;
         return holder;
     }
 
+    @Override
     protected void compareStrings(String test, String testString, String expectedString, boolean removeWhitespace) {
         log(test);
         log("Expected (With All Whitespace Removed):");

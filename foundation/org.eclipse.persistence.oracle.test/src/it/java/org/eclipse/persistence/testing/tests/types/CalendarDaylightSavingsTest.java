@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -152,6 +152,7 @@ public class CalendarDaylightSavingsTest extends TestCase {
         return tests;
     }
 
+    @Override
     public void setup() {
         if (!(getSession().getPlatform() instanceof Oracle9Platform)) {
             throw new TestWarningException("Test is only supported on Oracle9 platform and above, as TIMESTAMPTZ is used");
@@ -183,6 +184,7 @@ public class CalendarDaylightSavingsTest extends TestCase {
         sqlTracker = new QuerySQLTracker(getSession());
     }
 
+    @Override
     public void test() {
         // write myself out to the database
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -197,12 +199,13 @@ public class CalendarDaylightSavingsTest extends TestCase {
         ExpressionBuilder builder = query.getExpressionBuilder();
         Expression expression = builder.get("testId").equal(getTestId());
         query.setSelectionCriteria(expression);
-        query.setCacheUsage(query.DoNotCheckCache);
+        query.setCacheUsage(ObjectLevelReadQuery.DoNotCheckCache);
 
         // cache the result for later verification
         result = (CalendarDaylightSavingsTest)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         final String TZR = "TZR";
         final String TZR_TZD = "TZR TZD";
@@ -232,6 +235,7 @@ public class CalendarDaylightSavingsTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         // Compatibility for Oracle 9 and above is checked in the setup() method
         Oracle9Platform platform = (Oracle9Platform) getSession().getPlatform();

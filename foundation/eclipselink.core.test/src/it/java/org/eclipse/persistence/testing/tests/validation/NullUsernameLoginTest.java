@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,11 +26,13 @@ public class NullUsernameLoginTest extends TestCase {
 
     protected DatasourceLogin login;
 
+    @Override
     public void test() {
         login = getSession().getLogin().clone();
         login.setUserName(null);
     }
 
+    @Override
     public void verify() {
         assertNull("Login should return null for 'user'", login.getUserName());
         assertFalse("Login properties should not contain 'user'", login.getProperties().contains("user"));

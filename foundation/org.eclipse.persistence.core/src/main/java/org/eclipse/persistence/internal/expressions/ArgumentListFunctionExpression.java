@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,17 +48,15 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      * Add a new Expression to the list of arguments.
      * This method will update the list of arguments and any constant strings that are required
      * to be printed with the arguments
-     * @param argument
      */
     @Override
     public synchronized void addChild(Expression argument){
-        if (hasLastChild != null && hasLastChild.booleanValue()){
+        if (hasLastChild != null && hasLastChild){
             getChildren().add(getChildren().size() - 1, argument);
         } else {
             super.addChild(argument);
         }
         setBaseExpression(getChildren().firstElement());
-        ((ListExpressionOperator)operator).incrementNumberOfItems();
     }
 
     /**
@@ -65,10 +64,9 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      * Add a child and ensure it is the rightmost in the tree as long as it
      * is in the tree
      * If there is already a node that is set as therightmost node, replace it
-     * @param argument
      */
     public synchronized void addRightMostChild(Expression argument){
-        if (hasLastChild != null && hasLastChild.booleanValue()){
+        if (hasLastChild != null && hasLastChild){
             getChildren().remove(super.getChildren().size() - 1);
             super.addChild(argument);
         } else {
@@ -88,7 +86,6 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
     public void setOperator(ExpressionOperator theOperator) {
         assert(theOperator instanceof ListExpressionOperator);
         super.setOperator(theOperator);
-        ((ListExpressionOperator)theOperator).setNumberOfItems(0);
     }
 
     /**
@@ -97,16 +94,16 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      */
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
-        ListExpressionOperator platformOperator = (ListExpressionOperator)getPlatformOperator(printer.getPlatform());
-        platformOperator.copyTo(operator);
-        ((ListExpressionOperator)operator).setIsComplete(true);
-        operator.printCollection(getChildren(), printer);
+        ListExpressionOperator realOperator;
+        realOperator = (ListExpressionOperator)getPlatformOperator(printer.getPlatform());
+        operator.copyTo(realOperator);
+        ((ListExpressionOperator) realOperator).setIsComplete(true);
+        realOperator.printCollection(this.children, printer);
     }
 
 
     @Override
     protected void postCopyIn(Map alreadyDone) {
-        ((ListExpressionOperator)operator).setNumberOfItems(0);
         Boolean hasLastChildCopy = hasLastChild;
         hasLastChild = null;
         super.postCopyIn(alreadyDone);
@@ -119,9 +116,5 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
     @Override
     public void initializePlatformOperator(DatabasePlatform platform) {
         super.initializePlatformOperator(platform);
-        ((ListExpressionOperator)platformOperator).setNumberOfItems(((ListExpressionOperator)operator).getNumberOfItems());
     }
-
-
 }
-

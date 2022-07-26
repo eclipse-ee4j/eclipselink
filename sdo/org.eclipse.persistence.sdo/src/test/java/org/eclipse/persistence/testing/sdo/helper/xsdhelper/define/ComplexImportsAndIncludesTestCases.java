@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import javax.xml.transform.Source;
@@ -62,13 +63,14 @@ public class ComplexImportsAndIncludesTestCases extends XSDHelperTestCases {
             java.util.Properties fileProps = new java.util.Properties();
             fileProps.load(indexFIS);
 
-            java.util.Enumeration keyEnum = fileProps.keys();
+            Enumeration<Object> keyEnum = fileProps.keys();
             while (keyEnum.hasMoreElements()) {
                 String s = (String) keyEnum.nextElement();
                 fileIndex.put(fileProps.get(s), s);
             }
         }
 
+        @Override
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             if (schemaLocation == null) {
                 return null;
@@ -107,10 +109,9 @@ public class ComplexImportsAndIncludesTestCases extends XSDHelperTestCases {
          * Satisfy EntityResolver interface implementation.
          * Allow resolution of external entities.
          *
-         * @param publicId
-         * @param systemId
          * @return null
          */
+        @Override
         public InputSource resolveEntity(String publicId, String systemId) {
             return null;
         }

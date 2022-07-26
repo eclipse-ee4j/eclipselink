@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,6 +55,7 @@ public class XmlListTestCases extends OXTestCase {
 
     public void _testArray(Object controlArray) throws Exception{
         XmlList xmlList = new XmlList() {
+            @Override
             public Class<? extends Annotation> annotationType() {
                 return XmlList.class;
             }
@@ -96,6 +97,7 @@ public class XmlListTestCases extends OXTestCase {
 
     public void _testJSONArray(Object controlArray, String controlString, String mediaType) throws Exception{
         XmlList xmlList = new XmlList() {
+            @Override
             public Class<? extends Annotation> annotationType() {
                 return XmlList.class;
             }

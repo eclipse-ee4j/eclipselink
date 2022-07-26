@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
@@ -39,6 +40,7 @@ public class EMFlushBatchWritingTest extends EntityContainerTestBase {
     }
     private boolean usesBatchWriting;
     private boolean usesJDBCBatchWriting;
+    @Override
     public void setup() {
         super.setup();
         JpaEntityManager em = JpaHelper.getEntityManager(getEntityManager());
@@ -54,6 +56,7 @@ public class EMFlushBatchWritingTest extends EntityContainerTestBase {
         this.reset = true;
     }
 
+    @Override
     public void reset() {
         if (reset){
             JpaEntityManager em = JpaHelper.getEntityManager(getEntityManager());
@@ -67,6 +70,7 @@ public class EMFlushBatchWritingTest extends EntityContainerTestBase {
         super.reset();
     }
 
+    @Override
     public void test(){
         Exception expectedException = null;
         try {
@@ -84,7 +88,7 @@ public class EMFlushBatchWritingTest extends EntityContainerTestBase {
         } finally {
             this.rollbackTransaction();
         }
-        this.assertNotNull("Native query did not get executed when EntityManager was flushed", expectedException);
+        assertNotNull("Native query did not get executed when EntityManager was flushed", expectedException);
     }
 
 }

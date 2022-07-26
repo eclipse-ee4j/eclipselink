@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,11 +25,11 @@ import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlList;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.Employee;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 import org.w3c.dom.Element;
 
@@ -105,6 +105,7 @@ public class ConflictingListTypeTestCases extends TypeMappingInfoWithJSONTestCas
         return typeMappingInfos;
     }
 
+    @Override
     protected Object getControlObject() {
 
         List<Employee> emps = new ArrayList<Employee>();
@@ -122,6 +123,7 @@ public class ConflictingListTypeTestCases extends TypeMappingInfoWithJSONTestCas
         return jaxbElement;
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingListTypes.xsd");
 
@@ -138,13 +140,14 @@ public class ConflictingListTypeTestCases extends TypeMappingInfoWithJSONTestCas
     }
 
     public void testDescriptorsSize(){
-        List descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
+        List<ClassDescriptor> descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
         assertEquals(4, descriptors.size());
     }
 
+    @Override
     public Map getProperties() {
         Map props = new HashMap();
-        props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "someUri");
+        props.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, "someUri");
         return props;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,10 +29,11 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
 
     public NewObjectWithOptimisticLockingTest(){
         super();
-        cacheSyncConfigValues.put(ListHolder.class, new Integer(ClassDescriptor.SEND_OBJECT_CHANGES));
-        cacheSyncConfigValues.put(ListItem.class, new Integer(ClassDescriptor.SEND_OBJECT_CHANGES));
+        cacheSyncConfigValues.put(ListHolder.class, ClassDescriptor.SEND_OBJECT_CHANGES);
+        cacheSyncConfigValues.put(ListItem.class, ClassDescriptor.SEND_OBJECT_CHANGES);
     }
 
+    @Override
     public void setup(){
         super.setup();
         // super.setup begins transaction with intention to keep it until reset.
@@ -51,6 +52,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         uow.commit();
     }
 
+    @Override
     public void test(){
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
         UnitOfWork uow = server.getDistributedSession().acquireUnitOfWork();
@@ -62,6 +64,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         uow.commit();
     }
 
+    @Override
     public void verify(){
         // ensure the changes are propagated
         try{
@@ -73,9 +76,9 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         }
 
         boolean found = false;
-        Iterator i = holder.getItems().iterator();
+        Iterator<ListItem> i = holder.getItems().iterator();
         while (i.hasNext()){
-            ListItem item = (ListItem)i.next();
+            ListItem item = i.next();
             if (item.getDescription() != null && item.getDescription().equals("test2")){
                 found = true;
             }
@@ -86,10 +89,11 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
 
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = (ListHolder)uow.readObject(ListHolder.class);
-        Iterator i = holder.getItems().iterator();
+        Iterator<ListItem> i = holder.getItems().iterator();
         while (i.hasNext()){
             uow.deleteObject(i.next());
         }

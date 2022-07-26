@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,6 @@ public class XPathEngine {
      *
      * @param contextNode the node relative to which the XPath statement will be executed
      * @return the first node located matching the XPath statement
-     * @throws XMLPlatformException
      */
     public Node selectSingleNode(Node contextNode, String[] xPathFragments) {
         if (contextNode == null) {
@@ -75,7 +74,6 @@ public class XPathEngine {
      *
      * @param contextNode the node relative to which the XPath statement will be executed
      * @return a list of nodes matching the XPath statement
-     * @throws XMLPlatformException
      */
     public NodeList selectNodes(Node contextNode, String[] xPathFragments) {
         if (contextNode == null) {
@@ -199,7 +197,7 @@ public class XPathEngine {
         for (int i = 0; i < childrenNodes.getLength(); i++) {
             Node next = childrenNodes.item(i);
             if (next.getNodeType() == Node.TEXT_NODE) {
-                String val = ((Text)next).getNodeValue();
+                String val = next.getNodeValue();
                 if (val != null) {
                     if (returnVal == null) {
                         returnVal = "";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
         if (shouldGenerateSchema) {
             outputResolver = new MySchemaOutputResolver();
             try {
-                Class[] classes = new Class[]{ WrappedByteArray.class };
+                Class<?>[] classes = new Class<?>[]{ WrappedByteArray.class };
                 JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
                 context.generateSchema(outputResolver);
             } catch (Exception ex) {
@@ -94,6 +94,7 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
             schemaFiles = new ArrayList<File>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             File schemaFile = new File(tmpdir, suggestedFileName);
             schemaFiles.add(schemaFile);

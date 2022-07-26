@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -92,7 +92,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /** Keep track of whether the accessor is "connected". */
     protected boolean isConnected;
 
-    /** PERF: Cache platform to avoid gets (small but can add up). */
+    /* PERF: Cache platform to avoid gets (small but can add up). */
     /** This is also required to ensure all accessors for a session are using the same platform. */
     protected DatasourcePlatform platform;
 
@@ -155,7 +155,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      *    Default Constructor.
      */
-    public DatasourceAccessor() {
+    protected DatasourceAccessor() {
         this.isInTransaction = false;
         this.callCount = 0;
         this.isConnected = false;
@@ -503,7 +503,7 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     @Override
     public void disconnect(AbstractSession session) throws DatabaseException {
-        session.log(SessionLog.FINE, SessionLog.CONNECTION, "disconnect", (Object[])null, this);
+        session.log(SessionLog.FINE, SessionLog.CONNECTION, "disconnect", null, this);
 
         if (this.datasourceConnection == null) {
             return;
@@ -596,7 +596,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Note: Connections that are participating in transactions will not be refreshed.^M
      */
     protected void reconnect(AbstractSession session) throws DatabaseException {
-        session.log(SessionLog.FINEST, SessionLog.CONNECTION, "reconnecting_to_external_connection_pool", (Object[])null, this);
+        session.log(SessionLog.FINEST, SessionLog.CONNECTION, "reconnecting_to_external_connection_pool", null, this);
         session.startOperationProfile(SessionProfiler.ConnectionManagement);
         try {
             connectInternal(this.login, session);
@@ -643,8 +643,8 @@ public abstract class DatasourceAccessor implements Accessor {
      * database objects.
      */
     @Override
-    public Vector getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException {
-        return new Vector();
+    public Vector<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException {
+        return new Vector<>();
     }
 
     /**
@@ -673,8 +673,8 @@ public abstract class DatasourceAccessor implements Accessor {
      * database objects.
      */
     @Override
-    public Vector getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
-        return new Vector();
+    public Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
+        return new Vector<>();
     }
 
     /**

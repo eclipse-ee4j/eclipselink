@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class JavaVersionTest {
 
     /**
      * Test Java version retrieval from {@code Runtime.Version}. It just calls {@code JavaVersion#runtimeVersion()} method
-     * on current Java SE when >9 and checks that no exception is thrown.
+     * on current Java SE when {@literal >}9 and checks that no exception is thrown.
      */
     @Test
     public void testRuntimeVersion() {
@@ -70,7 +70,7 @@ public class JavaVersionTest {
             final String versionString = ReflectionHelper.<String>invokeStaticMethod(
                     "vmVersionString", JavaVersion.class, null, String.class);
             final JavaVersion version =  ReflectionHelper.<JavaVersion>invokeStaticMethod(
-                    "propertyVersionParser", JavaVersion.class, new Class[] {String.class}, JavaVersion.class, versionString);
+                    "propertyVersionParser", JavaVersion.class, new Class<?>[] {String.class}, JavaVersion.class, versionString);
         } catch (ReflectiveOperationException e) {
             fail("Exception: " + e.getMessage());
         }
@@ -90,11 +90,11 @@ public class JavaVersionTest {
             final String versionString = JavaSEPlatform.versionString(major, minor);
             try {
                 final JavaVersion javaVersion =  ReflectionHelper.<JavaVersion>invokeStaticMethod(
-                        "propertyVersionParser", JavaVersion.class, new Class[] {String.class}, JavaVersion.class, versionString);
+                        "propertyVersionParser", JavaVersion.class, new Class<?>[] {String.class}, JavaVersion.class, versionString);
                 assertNotNull("JavaVersion instance must be returned for valid platform"
-                        +" version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", javaVersion);
+                        +" version number ["+ major +","+ minor +"]", javaVersion);
                 assertTrue("Returned JavaVersion instance numbers do not match provided"
-                        + " version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", major == javaVersion.getMajor()
+                        + " version number ["+ major +","+ minor +"]", major == javaVersion.getMajor()
                         && minor == javaVersion.getMinor());
             } catch (ReflectiveOperationException e) {
                 fail("Exception: " + e.getMessage());
@@ -107,11 +107,11 @@ public class JavaVersionTest {
             final String versionString = JavaSEPlatform.versionString(major, minor);
             try {
                 final JavaVersion javaVersion =  ReflectionHelper.<JavaVersion>invokeStaticMethod(
-                        "propertyVersionParser", JavaVersion.class, new Class[] {String.class}, JavaVersion.class, versionString);
+                        "propertyVersionParser", JavaVersion.class, new Class<?>[] {String.class}, JavaVersion.class, versionString);
                 assertNotNull("JavaVersion instance must be returned for invalid platform"
-                        +" version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", javaVersion);
+                        +" version number ["+ major +","+ minor +"]", javaVersion);
                 assertTrue("Returned JavaVersion instance numbers do not match provided"
-                        + " version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", major == javaVersion.getMajor()
+                        + " version number ["+ major +","+ minor +"]", major == javaVersion.getMajor()
                         && minor == javaVersion.getMinor());
             } catch (ReflectiveOperationException e) {
                 fail("Exception: " + e.getMessage());

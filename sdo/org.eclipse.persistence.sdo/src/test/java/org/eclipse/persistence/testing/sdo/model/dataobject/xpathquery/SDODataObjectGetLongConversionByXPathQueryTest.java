@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,25 +27,25 @@ public class SDODataObjectGetLongConversionByXPathQueryTest extends SDODataObjec
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_LONG);
 
-        Long bb = new Long(12);
+        Long bb = 12L;
 
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setLong(propertyTest + "test", bb.longValue());
+        dataObject_a.setLong(propertyTest + "test", bb);
 
         assertEquals(bb.longValue(), dataObject_a.getLong(propertyTest + "test"));
     }
 
     // purpose: opencontent properties
     public void testGetLongConversionFromDefinedPropertyWithPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_LONG);
         List objects = new ArrayList();
-        Long b = new Long(12);
-        Long bb = new Long(2);
+        Long b = 12L;
+        Long bb = 2L;
         objects.add(b);
         objects.add(bb);
 
@@ -100,9 +100,9 @@ public class SDODataObjectGetLongConversionByXPathQueryTest extends SDODataObjec
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Long bb = new Long(12);
+        Long bb = 12L;
 
-        dataObject_a.setLong("PName-a0/PName-b0[number='1']/PName-c1.0", bb.longValue());
+        dataObject_a.setLong("PName-a0/PName-b0[number='1']/PName-c1.0", bb);
 
         assertEquals(bb.longValue(), dataObject_a.getLong("PName-a0/PName-b0[number='1']/PName-c1.0"));
     }

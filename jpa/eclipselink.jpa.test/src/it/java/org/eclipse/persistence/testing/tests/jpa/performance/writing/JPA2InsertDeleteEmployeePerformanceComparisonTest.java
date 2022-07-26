@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,12 +35,13 @@ public class JPA2InsertDeleteEmployeePerformanceComparisonTest extends Performan
     /**
      * Read an existing employee for emulated database run.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         Employee any = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
         // Create a query to avoid a cache hit to load emulated data.
         Query query = manager.createQuery("Select e from Employee e where e.id = :id");
-        query.setParameter("id", new Long(any.getId()));
+        query.setParameter("id", any.getId());
         any = (Employee)query.getSingleResult();
         manager.close();
         manager = createEntityManager();
@@ -52,6 +53,7 @@ public class JPA2InsertDeleteEmployeePerformanceComparisonTest extends Performan
     /**
      * Insert employee.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
@@ -82,7 +84,7 @@ public class JPA2InsertDeleteEmployeePerformanceComparisonTest extends Performan
 
         manager = createEntityManager();
         manager.getTransaction().begin();
-        employee = manager.getReference(Employee.class, new Long(employee.getId()));
+        employee = manager.getReference(Employee.class, employee.getId());
         manager.remove(employee);
         manager.getTransaction().commit();
         manager.close();

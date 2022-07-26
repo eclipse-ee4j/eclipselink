@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
 import junit.framework.TestCase;
+import org.w3c.dom.Node;
 
 public class JAXBHelperTestCases extends TestCase {
     private JAXBContext jaxbContext;
@@ -38,8 +39,9 @@ public class JAXBHelperTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Customer.class;
         jaxbContext = JAXBContextFactory.createContext(classes, null);
     }
@@ -59,7 +61,7 @@ public class JAXBHelperTestCases extends TestCase {
     }
 
     public void testCastToJAXBBinder() throws Exception {
-        Binder binder = jaxbContext.createBinder();
+        Binder<Node> binder = jaxbContext.createBinder();
         assertTrue(JAXBHelper.getBinder(binder) instanceof JAXBBinder);
     }
 
@@ -92,12 +94,12 @@ public class JAXBHelperTestCases extends TestCase {
     }
 
     public void testUnwrapJAXBBinderToJAXBImpl() throws Exception {
-        Binder binder = jaxbContext.createBinder();
+        Binder<Node> binder = jaxbContext.createBinder();
         assertTrue(JAXBHelper.unwrap(binder, JAXBBinder.class) instanceof JAXBBinder);
     }
 
     public void testUnwrapJAXBBinderToXMLBinder() throws Exception {
-        Binder binder = jaxbContext.createBinder();
+        Binder<Node> binder = jaxbContext.createBinder();
         assertTrue(JAXBHelper.unwrap(binder, XMLBinder.class) instanceof XMLBinder);
     }
 }

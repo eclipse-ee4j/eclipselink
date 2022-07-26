@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class JAXBInheritanceSubTypeTestCases extends JAXBWithJSONTestCases {
     public JAXBInheritanceSubTypeTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {SubTypeWithRootElement.class});
+        setClasses(new Class<?>[] {SubTypeWithRootElement.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/ns/subTypeRoot.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/ns/subTypeRoot.json");
 
@@ -38,6 +38,7 @@ public class JAXBInheritanceSubTypeTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    @Override
     public JAXBMarshaller getJSONMarshaller() throws Exception{
         Map<String, String> namespaces= new HashMap<String, String>();
         namespaces.put("rootNamespace","ns0");
@@ -50,6 +51,7 @@ public class JAXBInheritanceSubTypeTestCases extends JAXBWithJSONTestCases {
         return jsonMarshaller;
     }
 
+    @Override
     public Object getControlObject() {
         SubTypeWithRootElement subType = new SubTypeWithRootElement();
         return subType;

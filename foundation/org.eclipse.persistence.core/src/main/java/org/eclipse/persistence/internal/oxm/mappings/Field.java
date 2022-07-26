@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public interface Field<
     * @param qname The qualified name of the XML Schema type to use as a key in the lookup
     * @return The class corresponding to the specified schema type, if no corresponding match found returns null
     */
-    Class getJavaClass(QName qname, ConversionManager conversionManager);
+    Class<?> getJavaClass(QName qname, ConversionManager conversionManager);
 
     /**
      * INTERNAL:
@@ -71,14 +71,14 @@ public interface Field<
       */
      QName getSchemaTypeForValue(Object value, CoreAbstractSession session);
 
-     @Override Class getType();
+     @Override Class<?> getType();
 
      /**
       * Return the qualified XML Schema type for a given class
       * @param javaClass The class to use as a key in the lookup
       * @return QName The qualified XML Schema type, if no corresponding match found returns null
       */
-     QName getXMLType(Class javaClass, ConversionManager conversionManager);
+     QName getXMLType(Class<?> javaClass, ConversionManager conversionManager);
 
      /**
      * Returns the xpath statement associated with this XMLField
@@ -95,7 +95,6 @@ public interface Field<
 
      /**
       * INTERNAL:
-      * @return
       */
      boolean hasLastXPathFragment();
 
@@ -104,8 +103,7 @@ public interface Field<
 
      /**
      * INTERNAL:
-     * @return
-     */
+      */
     boolean isCDATA();
 
      /**
@@ -146,8 +144,7 @@ public interface Field<
 
   /**
     * INTERNAL:
-    *@param CDATA
-    */
+   */
     void setIsCDATA(boolean CDATA);
 
     /**
@@ -203,12 +200,12 @@ public interface Field<
      *
      * @param nestedArray flag.
      */
-    public void setNestedArray(boolean nestedArray);
+    void setNestedArray(boolean nestedArray);
 
     /**
      * INTERNAL:
      *
      * @return True if content is nested array.
      */
-    public boolean isNestedArray();
+    boolean isNestedArray();
 }

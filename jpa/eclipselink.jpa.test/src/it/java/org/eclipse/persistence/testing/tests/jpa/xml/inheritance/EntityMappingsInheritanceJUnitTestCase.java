@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.Defa
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener3;
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 /**
  * JUnit test case(s) xml specified inheritance metadata.
@@ -177,8 +177,8 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         beginTransaction(em);
 
         Bus bus = new Bus();
-        bus.setPassengerCapacity(new Integer(50));
-        bus.setFuelCapacity(new Integer(175));
+        bus.setPassengerCapacity(50);
+        bus.setFuelCapacity(175);
         bus.setDescription("OC Transpo Bus");
         bus.setFuelType("Diesel");
 

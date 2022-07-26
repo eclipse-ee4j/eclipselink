@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010, 2015 Dies Koper (Fujitsu) All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,8 +28,8 @@ import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 
 /*
- * Apache Derby and Symfoware in general are configured to use transaction isolation level
- * READ_COMMITTED or SERIALIZABLE.<br/>
+ * <p>Apache Derby and Symfoware in general are configured to use transaction isolation level
+ * READ_COMMITTED or SERIALIZABLE.</p>
  * That causes a few tests to hang, or fail with an error message saying that the table is locked
  * (depending on a setting on the database side): these tests begin transaction, update a row,
  * then (before the transaction has been committed) attempt to read the row through another connection.
@@ -58,6 +58,7 @@ public class TransactionIsolationLevelSwitchListener extends SessionEventAdapter
         }
     }
 
+    @Override
     public void postAcquireConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor) event.getResult())
                 .getConnection();
@@ -104,6 +105,7 @@ public class TransactionIsolationLevelSwitchListener extends SessionEventAdapter
         }
     }
 
+    @Override
     public void preReleaseConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor) event.getResult())
                 .getConnection();

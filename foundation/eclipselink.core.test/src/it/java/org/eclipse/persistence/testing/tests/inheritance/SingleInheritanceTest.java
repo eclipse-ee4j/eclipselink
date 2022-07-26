@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class SingleInheritanceTest extends TestCase {
         setDescription("The test uses inheritance on a single class w/ no subclasses and calls printIdentityMaps on the session");
     }
 
+    @Override
     public void reset() {
         //reset the descriptors, and add back the Vehicle's inheritance info and 1:1 mapping
         getSession().getProject().setDescriptors(originalDescriptors);
@@ -51,6 +52,7 @@ public class SingleInheritanceTest extends TestCase {
         getSession().setLog(originalLogWriter);
     }
 
+    @Override
     protected void setup() {
 
         /*
@@ -71,7 +73,7 @@ public class SingleInheritanceTest extends TestCase {
 
         //empty Vehicle's inheritance info
         InheritancePolicy newInheritancePolicy = (InheritancePolicy)originalInheritancePolicy.clone();
-        newInheritancePolicy.addClassIndicator(org.eclipse.persistence.testing.models.inheritance.Vehicle.class, new java.lang.Long(8));
+        newInheritancePolicy.addClassIndicator(org.eclipse.persistence.testing.models.inheritance.Vehicle.class, 8L);
         newInheritancePolicy.setChildDescriptors(new Vector());
         newInheritancePolicy.setClassIndicatorMapping(new Hashtable(3));
         vehicleDescriptor.setInheritancePolicy(newInheritancePolicy);
@@ -81,6 +83,7 @@ public class SingleInheritanceTest extends TestCase {
         getSession().getProject().addDescriptor(vehicleDescriptor);
     }
 
+    @Override
     public void test() {
     }
 
@@ -88,6 +91,7 @@ public class SingleInheritanceTest extends TestCase {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         try {
             ((AbstractSession)getSession()).getIdentityMapAccessorInstance().printIdentityMaps();

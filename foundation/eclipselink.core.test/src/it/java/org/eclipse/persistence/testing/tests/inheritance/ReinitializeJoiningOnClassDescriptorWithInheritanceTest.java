@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.models.inheritance.*;
  *
  * Test to ensure that no exceptions are thrown when reInitializeJoinedAttributes() is
  * invoked on a ClassDescriptor when inheritance is involved.
- * Although this method is internal, it is invoked by OneToOneMapping>>setUsesJoining()
+ * Although this method is internal, it is invoked by OneToOneMapping{@literal >>}setUsesJoining()
  * which is a deprecated method. This test invokes this API directly for this reason.
  * @author dminsky
  */
@@ -36,6 +36,7 @@ public class ReinitializeJoiningOnClassDescriptorWithInheritanceTest extends Tes
         setDescription("Test reinitializing the joined attributes of a ClassDescriptor at the root of an inheritance tree");
     }
 
+    @Override
     public void test() {
         // descriptor used is the root of an inheritance tree
         ClassDescriptor descriptor = getSession().getDescriptor(Computer.class);
@@ -47,6 +48,7 @@ public class ReinitializeJoiningOnClassDescriptorWithInheritanceTest extends Tes
         }
     }
 
+    @Override
     public void verify() {
         if (thrownException != null) {
             String msg = "Invoking ClassDescriptor>>reInitializeJoinedAttributes() threw an Exception";
@@ -54,6 +56,7 @@ public class ReinitializeJoiningOnClassDescriptorWithInheritanceTest extends Tes
         }
     }
 
+    @Override
     public void reset() {
         thrownException = null;
     }

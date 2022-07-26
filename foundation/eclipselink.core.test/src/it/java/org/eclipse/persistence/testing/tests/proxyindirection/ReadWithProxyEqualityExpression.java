@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,14 +31,17 @@ public class ReadWithProxyEqualityExpression extends AutoVerifyTestCase {
         setDescription("Tests ReadObject using an Expression using Proxy Indirection and equality to a proxy object.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         // Read an employee so we can get it's address proxy
         ReadObjectQuery q = new ReadObjectQuery();
@@ -56,6 +59,7 @@ public class ReadWithProxyEqualityExpression extends AutoVerifyTestCase {
         employee = (Employee)getSession().executeQuery(q);
     }
 
+    @Override
     public void verify() {
         if (employee == null) {
             throw new TestErrorException("Employee not returned when searched by address");

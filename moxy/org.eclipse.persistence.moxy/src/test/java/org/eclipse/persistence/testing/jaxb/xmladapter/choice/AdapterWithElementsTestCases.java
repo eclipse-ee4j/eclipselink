@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,10 +27,11 @@ public class AdapterWithElementsTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[] {Foo.class, BarA.class, BarB.class, BarC.class};
+        Class<?>[] classes = new Class<?>[] {Foo.class, BarA.class, BarB.class, BarC.class};
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         Foo foo = new Foo();
         foo.singleChoice = new BarA();
@@ -43,7 +44,7 @@ public class AdapterWithElementsTestCases extends JAXBWithJSONTestCases {
         barC.a = "a";
         barC.b = "b";
         foo.collectionChoice.add(barC);
-        foo.collectionChoice.add(new Integer(123));
+        foo.collectionChoice.add(123);
 
         return foo;
     }

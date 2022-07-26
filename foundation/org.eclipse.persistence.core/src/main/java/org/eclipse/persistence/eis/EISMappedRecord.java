@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,8 +45,8 @@ public class EISMappedRecord extends AbstractRecord {
      * getFields() is sued internally in a few places, so try to make that work for mapped records.
      */
     @Override
-    public Vector getFields() {
-        return new Vector(getRecord().keySet());
+    public Vector<DatabaseField> getFields() {
+        return new Vector<>(getRecord().keySet());
     }
 
     /**
@@ -55,7 +55,7 @@ public class EISMappedRecord extends AbstractRecord {
      */
     @Override
     public Vector getValues() {
-        return new Vector(getRecord().values());
+        return new Vector<>(getRecord().values());
     }
 
     /**
@@ -122,12 +122,12 @@ public class EISMappedRecord extends AbstractRecord {
     public Object get(DatabaseField field) {
         Object value = get(field.getName());
         if (value instanceof Map) {
-            Vector nestedRows = new Vector(1);
+            Vector<EISMappedRecord> nestedRows = new Vector<>(1);
             nestedRows.add(new EISMappedRecord((Map)value, getAccessor()));
             value = nestedRows;
         } else if (value instanceof List) {
-            List values = (List)value;
-            Vector nestedValues = new Vector(values.size());
+            List<?> values = (List<?>)value;
+            Vector<Object> nestedValues = new Vector<>(values.size());
             for (int index = 0; index < values.size(); index++) {
                 Object nestedValue = values.get(index);
                 if (nestedValue instanceof Map) {
@@ -194,7 +194,7 @@ public class EISMappedRecord extends AbstractRecord {
         writer.write(Helper.getShortClassName(getClass()));
         writer.write("(");
 
-        for (Iterator keysIterator = keySet().iterator(); keysIterator.hasNext();) {
+        for (Iterator<?> keysIterator = keySet().iterator(); keysIterator.hasNext();) {
             Object key = keysIterator.next();
             writer.write(Helper.cr());
             writer.write("\t");

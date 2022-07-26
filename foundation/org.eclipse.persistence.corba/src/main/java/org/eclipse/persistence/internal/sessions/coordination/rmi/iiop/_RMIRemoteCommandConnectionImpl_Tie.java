@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,6 +41,13 @@ public class _RMIRemoteCommandConnectionImpl_Tie extends org.omg.CORBA_2_3.porta
     private static final String[] _type_ids = {
         "RMI:org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection:0000000000000000"
     };
+
+    /**
+     * Default constructor.
+     */
+    public _RMIRemoteCommandConnectionImpl_Tie() {
+        super();
+    }
 
     @Override
     public void setTarget(Remote target) {
@@ -99,10 +106,14 @@ public class _RMIRemoteCommandConnectionImpl_Tie extends org.omg.CORBA_2_3.porta
                     if (method.equals("executeCommand__org_omg_boxedRMI_seq1_octet")) {
                         return executeCommand__org_omg_boxedRMI_seq1_octet(in, reply);
                     }
+                    break;
                 case 69: 
                     if (method.equals("executeCommand__org_eclipse_persistence_sessions_coordination_Command")) {
                         return executeCommand__org_eclipse_persistence_sessions_coordination_Command(in, reply);
                     }
+                    break;
+                default:
+                    throw new BAD_OPERATION();
             }
             throw new BAD_OPERATION();
         } catch (SystemException ex) {

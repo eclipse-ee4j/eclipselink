@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public class XMLNamespaceTestCases extends JAXBWithJSONTestCases{
 
     public XMLNamespaceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Address.class});
+        setClasses(new Class<?>[]{Address.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
@@ -42,6 +42,7 @@ public class XMLNamespaceTestCases extends JAXBWithJSONTestCases{
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    @Override
     protected JAXBMarshaller getJSONMarshaller() throws Exception {
         JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
         jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");

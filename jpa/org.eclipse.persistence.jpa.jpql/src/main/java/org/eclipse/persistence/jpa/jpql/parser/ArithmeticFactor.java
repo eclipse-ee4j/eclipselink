@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * This expression simply adds a plus or minus sign to the arithmetic primary expression.
  *
- * <div><b>BNF:</b> <code>arithmetic_factor ::= [{+|-}] arithmetic_primary</code><p></div>
+ * <div><b>BNF:</b> <code>arithmetic_factor ::= [{+|-}] arithmetic_primary</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -56,33 +56,21 @@ public final class ArithmeticFactor extends AbstractExpression {
         operator = arithmeticFactor.charAt(0);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -97,9 +85,6 @@ public final class ArithmeticFactor extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -122,17 +107,11 @@ public final class ArithmeticFactor extends AbstractExpression {
         return expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ArithmeticFactorBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean handleAggregate(JPQLQueryBNF queryBNF) {
         return false;
@@ -167,9 +146,6 @@ public final class ArithmeticFactor extends AbstractExpression {
         return operator == '-';
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return wordParser.isArithmeticSymbol(wordParser.character()) ||
@@ -185,9 +161,6 @@ public final class ArithmeticFactor extends AbstractExpression {
         return operator == '+';
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -200,9 +173,6 @@ public final class ArithmeticFactor extends AbstractExpression {
         expression = parse(wordParser, ArithmeticFactorBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

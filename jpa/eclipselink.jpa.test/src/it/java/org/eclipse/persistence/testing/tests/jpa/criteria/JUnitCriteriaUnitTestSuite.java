@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -45,7 +45,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
@@ -88,6 +88,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
   }
 
   //This method is run at the end of EVERY test case method
+  @Override
   public void tearDown()
   {
       clearCache();
@@ -148,7 +149,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         employeePopulator.persistExample(session);
     }
 
-    public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass) {
+    public Vector getAttributeFromAll(String attributeName, Vector objects, Class<?> referenceClass) {
         ClassDescriptor descriptor = getServerSession().getClassDescriptor(referenceClass);
         DirectToFieldMapping mapping = (DirectToFieldMapping)descriptor.getMappingForAttributeName(attributeName);
 
@@ -176,7 +177,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             //SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-            Root from = cq.from(Employee.class);
+            Root<Employee> from = cq.from(Employee.class);
             cq.where(qb.equal(from.get("firstName"), qb.parameter(String.class, "firstname")));
             Query query = em.createQuery(cq);
 
@@ -221,7 +222,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         cq.from(Employee.class).join("address", JoinType.LEFT);
         cq.distinct(true);
 
-        List result = em.createQuery(cq).getResultList();
+        List<Employee> result = em.createQuery(cq).getResultList();
 
 
         assertTrue("Outer join was not properly added to the query", initialSize + 1 == result.size());
@@ -270,10 +271,10 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
            CriteriaBuilder qb = em.getCriteriaBuilder();
            CriteriaQuery<String> cq = qb.createQuery(String.class);
            Root<Employee> root = cq.from(Employee.class);
-           Join phone = root.join("phoneNumbers");
+           Join<Object, Object> phone = root.join("phoneNumbers");
            cq.select(phone.get("areaCode"));
            cq.where(qb.equal(phone.get("areaCode"), "613"));
-           List result = em.createQuery(cq).getResultList();
+           List<String> result = em.createQuery(cq).getResultList();
 
            Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
@@ -300,7 +301,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
            Join<Employee, PhoneNumber> sqo = sqc.join("phoneNumbers");
            sq.select(sqo);
            cquery.where(qbuilder.not(qbuilder.exists(sq)));
-           List result = em.createQuery(cquery).getResultList();
+           List<Employee> result = em.createQuery(cquery).getResultList();
            Assert.assertTrue("testExistWithJoin test failed !", comparer.compareObjects(result,expected));
       } finally {
           rollbackTransaction(em);
@@ -346,10 +347,10 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             Root<Employee> root = cq.from(Employee.class);
-            Join joinedPhone = root.join("phoneNumbers");
+            Join<Object, Object> joinedPhone = root.join("phoneNumbers");
             cq.select(joinedPhone.get("areaCode"));
             cq.where(qb.and(qb.equal(joinedPhone.get("areaCode"), "613")), qb.equal(joinedPhone.get("owner").get("firstName"), firstName));
-            List result = em.createQuery(cq).getResultList();
+            List<String> result = em.createQuery(cq).getResultList();
 
             Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
@@ -393,12 +394,12 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             Root<Employee> root = cq.from(Employee.class);
-            Join joinedPhone = root.join("phoneNumbers");
+            Join<Object, Object> joinedPhone = root.join("phoneNumbers");
             cq.select(joinedPhone.get("number"));
             //cq.where(qb.equal(joinedPhone.get("areaCode"), areaCode).add(qb.equal(joinedPhone.get("owner").get("id"), root.get("id"))).add(qb.equal(root.get("firstName"), firstName)));
             Predicate firstAnd = qb.and(qb.equal(joinedPhone.get("areaCode"), areaCode), qb.equal(joinedPhone.get("owner").get("id"), root.get("id")));
             cq.where(qb.and( firstAnd, qb.equal(root.get("firstName"), firstName)));
-            List result = em.createQuery(cq).getResultList();
+            List<String> result = em.createQuery(cq).getResultList();
 
             Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
@@ -440,12 +441,12 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = qb.createQuery(String.class);
             Root<Employee> root = cq.from(Employee.class);
-            Join joinedPhone = root.join("phoneNumbers");
+            Join<Object, Object> joinedPhone = root.join("phoneNumbers");
             cq.select(joinedPhone.get("number"));
             Predicate firstNameEquality = qb.equal(joinedPhone.get("owner").get("firstName"), firstName);
             Predicate areaCodeEquality =qb.equal(joinedPhone.get("areaCode"), areaCode);
             cq.where( qb.and(firstNameEquality, areaCodeEquality) );
-            List result = em.createQuery(cq).getResultList();
+            List<String> result = em.createQuery(cq).getResultList();
 
             Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
@@ -469,7 +470,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
                 //need to cast to erase the type on the get("id") expression so it matches the type on param1
                 cq.where(qb.or( qb.greaterThan(root.<Integer>get("id" ), param1), param1.isNull()) );
 
-                em.createQuery(cq).setParameter(param1, new Integer(1)).getResultList();
+                em.createQuery(cq).setParameter(param1, 1).getResultList();
             } finally {
                 rollbackTransaction(em);
                 closeEntityManager(em);
@@ -519,7 +520,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = qb.createTupleQuery();
             Root<Employee> rootEmp = cq.from(Employee.class);
-            Join joinedManager = rootEmp.join("manager", JoinType.LEFT);
+            Join<Object, Object> joinedManager = rootEmp.join("manager", JoinType.LEFT);
             cq.multiselect(rootEmp.get("id"), joinedManager.get("id"));
 
             Query query = em.createQuery(cq);
@@ -552,9 +553,9 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             clearCache();
             //"SELECT e.id FROM Employee e group by e.id"
             CriteriaBuilder qb = em.getCriteriaBuilder();
-            CriteriaQuery cq = qb.createQuery(Integer.class);
+            CriteriaQuery<Integer> cq = qb.createQuery(Integer.class);
             Root<Employee> rootEmp = cq.from(Employee.class);
-            Join joinedManager = rootEmp.join("manager", JoinType.LEFT);
+            Join<Object, Object> joinedManager = rootEmp.join("manager", JoinType.LEFT);
             cq.select(rootEmp.get("id"));
 
             Query query = em.createQuery(cq);
@@ -624,7 +625,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
                 cq.multiselect(rootEmp, rootAddress);
                 cq.where(qb.and( qb.equal(rootAddress.get("city"), "Ottawa"), qb.equal(rootEmp.get("address").get("country"), rootAddress.get("country"))));
 
-                List resultList =  em.createQuery(cq).getResultList();
+                List<Tuple> resultList =  em.createQuery(cq).getResultList();
             } finally {
                 rollbackTransaction(em);
                 closeEntityManager(em);
@@ -651,12 +652,12 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             em.flush();
             //"SELECT DISTINCT e.address FROM Employee e"
             CriteriaBuilder qb = em.getCriteriaBuilder();
-            CriteriaQuery cq = qb.createQuery();
+            CriteriaQuery<Object> cq = qb.createQuery();
             Root<Employee> rootEmp = cq.from(Employee.class);
             cq.select(rootEmp.get("address"));
             cq.distinct(true);
 
-            List resultList =  em.createQuery(cq).getResultList();
+            List<Object> resultList =  em.createQuery(cq).getResultList();
         }finally{
             rollbackTransaction(em);
         }
@@ -681,7 +682,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             Root<Employee> from = cq.from(Employee.class);
             EntityType<Employee> Emp_ = em.getMetamodel().entity(Employee.class);
             cq.multiselect( qb.min(from.get(Emp_.getSingularAttribute("salary", int.class))));
-            List resultList =  em.createQuery(cq).getResultList();
+            List<?> resultList =  em.createQuery(cq).getResultList();
             Object resultObject = resultList.get(0);
             assertTrue("constructor expression test expected DataHolder object, got " + resultObject,(resultObject instanceof DataHolder));
             assertEquals("Expected DataHolder to contain int value of -100, Got :" + resultObject, -100, ((DataHolder)resultObject).getPrimitiveInt());
@@ -705,7 +706,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         } catch (IllegalArgumentException exception){
             expectedException = exception;
         }
-        this.assertNotNull("Expected IllegalArgumentException not thrown when using a non-existing constructor", expectedException);
+        assertNotNull("Expected IllegalArgumentException not thrown when using a non-existing constructor", expectedException);
     }
 
     public void testIsNullAndIsNotNull(){

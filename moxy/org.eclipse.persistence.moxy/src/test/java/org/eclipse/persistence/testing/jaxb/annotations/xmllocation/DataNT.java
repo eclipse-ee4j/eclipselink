@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,12 @@
 //  - rbarkhouse - 08 September 2011 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmllocation;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlLocation;
 import org.xml.sax.Locator;
@@ -53,8 +51,8 @@ public class DataNT {
         }
 
         String subDataS = "\n";
-        for (Iterator iterator = subData.iterator(); iterator.hasNext();) {
-            SubDataNT type = (SubDataNT) iterator.next();
+        for (Iterator<SubDataNT> iterator = subData.iterator(); iterator.hasNext();) {
+            SubDataNT type = iterator.next();
             subDataS += "\t" + type.toString() + "\n";
         }
 

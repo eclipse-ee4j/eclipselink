@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,12 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface NamedStoredFunctionQuery {
 
-    public StoredProcedureParameter addParameter();
-    public QueryHint addQueryHint();
-    public NamedStoredFunctionQuery setCallByIndex(Boolean callByIndex);
-    public NamedStoredFunctionQuery setFunctionName(String functionName);
-    public NamedStoredFunctionQuery setName(String name);
-    public NamedStoredFunctionQuery setResultSetMapping(String resultSetMapping);
-    public StoredProcedureParameter setReturnParameter();
+    StoredProcedureParameter addParameter();
+    QueryHint addQueryHint();
+    NamedStoredFunctionQuery setCallByIndex(Boolean callByIndex);
+    NamedStoredFunctionQuery setFunctionName(String functionName);
+    NamedStoredFunctionQuery setName(String name);
+    NamedStoredFunctionQuery setResultSetMapping(String resultSetMapping);
+    StoredProcedureParameter setReturnParameter();
 
 }

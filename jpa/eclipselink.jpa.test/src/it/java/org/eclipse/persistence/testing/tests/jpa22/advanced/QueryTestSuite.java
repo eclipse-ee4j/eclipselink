@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
@@ -37,7 +38,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa22.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa22.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa22.advanced.Item;
@@ -128,7 +129,7 @@ public class QueryTestSuite extends JUnitTestCase {
     public void testTypedQueryParameter(){
         EntityManager em = createEntityManager();
         TypedQuery<Employee> query = em.createQuery("select e from Employee e where e.firstName = :firstName", Employee.class);
-        Parameter parameter = query.getParameter("firstName");
+        Parameter<?> parameter = query.getParameter("firstName");
         assertTrue("Parameter did not return correct type", parameter.getParameterType().equals(String.class));
     }
 
@@ -215,8 +216,8 @@ public class QueryTestSuite extends JUnitTestCase {
     public void testCriteriaGetGroupList(){
         EntityManager em = createEntityManager();
         CriteriaBuilder qb = em.getCriteriaBuilder();
-        CriteriaQuery query = qb.createQuery(Employee.class);
-        List groupList = query.getGroupList();
+        CriteriaQuery<Employee> query = qb.createQuery(Employee.class);
+        List<Expression<?>> groupList = query.getGroupList();
         assertNotNull("getGroupList returned null.", groupList);
     }
 
@@ -240,7 +241,7 @@ public class QueryTestSuite extends JUnitTestCase {
     public void testCriteriaGetJoinType(){
         EntityManager em = createEntityManager();
         CriteriaBuilder qbuilder = em.getCriteriaBuilder();
-        CriteriaQuery query = qbuilder.createQuery(Employee.class);
+        CriteriaQuery<Employee> query = qbuilder.createQuery(Employee.class);
         Root<Employee> employee = query.from(Employee.class);
         JoinType jt =  employee.join("phoneNumbers", JoinType.LEFT).getJoinType();
         assertEquals("The join type was incorect.", jt, JoinType.LEFT);
@@ -249,7 +250,7 @@ public class QueryTestSuite extends JUnitTestCase {
     public void testCriteriaIsCorelated(){
         EntityManager em = createEntityManager();
         CriteriaBuilder qbuilder = em.getCriteriaBuilder();
-        CriteriaQuery query = qbuilder.createQuery(Employee.class);
+        CriteriaQuery<Employee> query = qbuilder.createQuery(Employee.class);
         From<Employee, Employee> employee = query.from(Employee.class);
         boolean isCorr = employee.isCorrelated();
         assertFalse(isCorr);
@@ -341,7 +342,7 @@ public class QueryTestSuite extends JUnitTestCase {
                     methodList = methodList +", "+methodName;
                 }
             }
-            this.fail("Expected IllegalStateException not thrown from Query methods "+methodList);
+            fail("Expected IllegalStateException not thrown from Query methods "+methodList);
         }
     }
 

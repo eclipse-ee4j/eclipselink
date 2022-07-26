@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,7 +60,6 @@ import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 /**
  * <p>Composite collection XML mappings map an attribute that contains a homogeneous collection of objects
@@ -326,7 +325,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null) {
             if (cp.getContainerClass() == null) {
-                Class cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
+                Class<Object> cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
                 cp.setContainerClass(cls);
             }
             if (cp instanceof MapContainerPolicy) {
@@ -548,10 +547,10 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 //simple case
                 objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);
             } else {
-                NodeList children =((Element) ((DOMRecord)nestedRow).getDOM()).getChildNodes();
+                NodeList children = ((DOMRecord)nestedRow).getDOM().getChildNodes();
                 for(int i=0; i< children.getLength(); i++){
                     Node nextNode = children.item(i);
-                    if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
+                    if(nextNode.getNodeType() == Node.ELEMENT_NODE){
                         //complex child
                         String type = ((Element) ((DOMRecord)nestedRow).getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         if(type != null && type.length() > 0) {
@@ -567,7 +566,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
         else{
             if (aDescriptor.hasInheritance()) {
-                Class newElementClass = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+                Class<?> newElementClass = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
                 if (newElementClass == null) {
                     // no xsi:type attribute - look for type indicator on the field
                     QName leafElementType = ((XMLField) getField()).getLeafElementType();
@@ -604,7 +603,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         Node textchild = theElement.getFirstChild();
 
         if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-            stringValue = ((Text) textchild).getNodeValue();
+            stringValue = textchild.getNodeValue();
             if(stringValue != null && getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && getKeepAsElementPolicy()!=UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT){
                 objectToAdd = stringValue;
             }
@@ -620,7 +619,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             typeFragment.setNamespaceURI(namespaceURI);
             QName schemaTypeQName = new QName(namespaceURI, typeFragment.getLocalName());
             ConversionManager conversionManager = (ConversionManager) executionSession.getDatasourcePlatform().getConversionManager();
-            Class theClass = conversionManager.javaType(schemaTypeQName);
+            Class<Object> theClass = conversionManager.javaType(schemaTypeQName);
             if (theClass != null) {
                 objectToAdd = conversionManager.convertObject(stringValue, theClass, schemaTypeQName);
             }
@@ -668,7 +667,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     }
 
     @Override
-    protected ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
+    protected ClassDescriptor getReferenceDescriptor(Class<?> theClass, AbstractSession session) {
         if ((getReferenceDescriptor() != null) && getReferenceDescriptor().getJavaClass().equals(theClass)) {
             return getReferenceDescriptor();
         }
@@ -692,7 +691,6 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
      *
-     * @param aNullPolicy
      */
     @Override
     public void setNullPolicy(AbstractNullPolicy aNullPolicy) {
@@ -703,7 +701,6 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      * INTERNAL:
      * Get the AbstractNullPolicy from the Mapping.<br>
      * The default policy is NullPolicy.<br>
-     * @return
      */
     @Override
     public AbstractNullPolicy getNullPolicy() {

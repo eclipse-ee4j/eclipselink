@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.QueryRedirector;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -29,7 +29,8 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class DoNotRedirect implements QueryRedirector {
 
-    public Object invokeQuery(DatabaseQuery query, Record arguments, Session session) {
+    @Override
+    public Object invokeQuery(DatabaseQuery query, DataRecord arguments, Session session) {
         query.setDoNotRedirect(true);
         return ((AbstractSession) session).executeQuery(query, (AbstractRecord) arguments);
     }

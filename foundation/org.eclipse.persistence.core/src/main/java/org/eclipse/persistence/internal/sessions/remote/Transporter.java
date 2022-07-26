@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public class Transporter implements Serializable {
     public boolean wasOperationSuccessful;
 
     // Changed to public to allow access to TransporterHolder and TransporterHepler in org.eclipse.persistence.sessions.remote.corba.orbix.
-    protected Map objectDescriptors;
+    protected Map<Object, ObjectDescriptor> objectDescriptors;
     protected DatabaseQuery query;
 
     public Transporter() {
@@ -85,7 +85,7 @@ public class Transporter implements Serializable {
     /**
      * Returns a hashtable of object descriptors.
      */
-    public Map getObjectDescriptors() {
+    public Map<Object, ObjectDescriptor> getObjectDescriptors() {
         return objectDescriptors;
     }
 
@@ -99,7 +99,6 @@ public class Transporter implements Serializable {
 
     /**
      *  Set the exception associated with this Transporter
-     *  @param exception
      */
     public void setException(RuntimeException exception) {
         setObject(exception);
@@ -116,13 +115,12 @@ public class Transporter implements Serializable {
     /**
      * Get object to object descriptor
      */
-    public void setObjectDescriptors(Map objectDescriptors) {
+    public void setObjectDescriptors(Map<Object, ObjectDescriptor> objectDescriptors) {
         this.objectDescriptors = objectDescriptors;
     }
 
     /**
      *  Set the query associated with this transporter
-     *  @param query
      */
     public void setQuery(DatabaseQuery query) {
         this.query = query;
@@ -130,7 +128,6 @@ public class Transporter implements Serializable {
 
     /**
      *  Set whether the operation which caused this transporter to be returned was successful.
-     *  @param wasOperationSuccessful
      */
     public void setWasOperationSuccessful(boolean wasOperationSuccessful) {
         this.wasOperationSuccessful = wasOperationSuccessful;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class QueryTimeoutTest extends TestCase {
         this.limitExceed = false;
     }
 
+    @Override
     public void test() {
         if (getSession().getLogin().getPlatform().isSymfoware()) {
             throwWarning("Test QueryTimeoutTest skipped for this platform, "
@@ -55,6 +56,7 @@ public class QueryTimeoutTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (!limitExceed) {
             throw new TestErrorException("Timeout did not occur.");

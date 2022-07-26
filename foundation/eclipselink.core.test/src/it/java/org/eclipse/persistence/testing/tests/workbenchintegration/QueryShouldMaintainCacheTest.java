@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class QueryShouldMaintainCacheTest extends AutoVerifyTestCase {
         setDescription("Ensure should maintain cache settings for descriptors are properly written out.");
     }
 
+    @Override
     public void setup() {
         project = new EmployeeProject();
         ClassDescriptor descriptor =
@@ -63,11 +64,13 @@ public class QueryShouldMaintainCacheTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     public void test() {
         XMLProjectWriter.write(FILENAME, project);
         project = XMLProjectReader.read(FILENAME, getClass().getClassLoader());
     }
 
+    @Override
     public void verify() {
         ClassDescriptor descriptor =
             project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
@@ -86,6 +89,7 @@ public class QueryShouldMaintainCacheTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     public void reset() {
         File file = new File(FILENAME);
         file.delete();

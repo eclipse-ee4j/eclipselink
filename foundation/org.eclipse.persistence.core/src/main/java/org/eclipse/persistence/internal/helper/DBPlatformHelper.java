@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,14 +20,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 
 
@@ -88,9 +87,8 @@ public class DBPlatformHelper {
             if(_nameToVendorPlatform == null) {
                 _nameToVendorPlatform = new ArrayList<>();
                 try {
-                    loadFromResource(_nameToVendorPlatform, VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME,
-                                            DBPlatformHelper.class.getClassLoader() );
-                } catch (IOException e) {
+                    loadFromResource(_nameToVendorPlatform, VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME);
+                } catch (Throwable e) {
                     logger.log(SessionLog.WARNING, SessionLog.CONNECTION, "dbPlatformHelper_noMappingFound", VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME);
                 }
             }
@@ -125,7 +123,6 @@ public class DBPlatformHelper {
     * any error compiling regExp.
     * @param regExp The regular expression.
     * @param target The target against which we are trying to match regExp.
-    * @param logger
     * @return false if there is error compiling regExp or target does not
     * match regExp. true if regExp matches pattern.
     */
@@ -142,9 +139,9 @@ public class DBPlatformHelper {
     }
 
     //-----Property Loading helper methods ----/
-    private static void loadFromResource(List<String[]> properties, String resourceName, ClassLoader classLoader)
+    private static void loadFromResource(List<String[]> properties, String resourceName)
             throws IOException {
-        load(properties, resourceName, classLoader);
+        load(properties, resourceName);
     }
 
     /**
@@ -155,14 +152,11 @@ public class DBPlatformHelper {
      *                      If loadFromFile  is true, this is fully qualified path name to a file.
      *                      param classLoader is ignored.
      *                      If loadFromFile  is false,this is resource name.
-     * @param classLoader   The class loader that should be used to load the resource. If null,primordial
-     *                      class loader is used.
      */
-    private static void load(List<String[]> properties, final String resourceName,
-            final ClassLoader classLoader)
+    private static void load(List<String[]> properties, final String resourceName)
                             throws IOException {
         try (BufferedReader bin = new BufferedReader(
-                new InputStreamReader(openResourceInputStream(resourceName,classLoader)))) {
+                new InputStreamReader(openResourceInputStream(resourceName)))) {
             for (String line = bin.readLine(); line != null; line = bin.readLine()) {
                 String[] keyValue = validateLineForReturnAsKeyValueArray(line);
                 if (keyValue != null) {
@@ -175,19 +169,10 @@ public class DBPlatformHelper {
     /**
      * Open resourceName as input stream inside doPriviledged block
      */
-    private static InputStream openResourceInputStream(final String resourceName, final ClassLoader classLoader) {
-        return (InputStream) AccessController.doPrivileged(
-            new PrivilegedAction() {
-                @Override
-                public Object run() {
-                    if (classLoader != null) {
-                        return classLoader.getResourceAsStream(resourceName);
-                    } else {
-                        return ClassLoader.getSystemResourceAsStream(resourceName);
-                    }
-                }
-            }
-        );
+    private static InputStream openResourceInputStream(final String resourceName) throws IOException {
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> DBPlatformHelper.class.getModule().getResourceAsStream(resourceName),
+                (ex) -> (IOException) ex);
     }
 
     private static String[] validateLineForReturnAsKeyValueArray(String line) {

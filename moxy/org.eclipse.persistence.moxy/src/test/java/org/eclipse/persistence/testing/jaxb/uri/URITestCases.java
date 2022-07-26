@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,12 +30,13 @@ public class URITestCases extends JAXBWithJSONTestCases{
 
     public URITestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{});
+        setClasses(new Class<?>[]{});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         //setWriteControlDocument(XML_WRITE_RESOURCE);
     }
 
+    @Override
     public Object getControlObject(){
 
         JAXBElement<URI> jbe = null;
@@ -49,6 +50,7 @@ public class URITestCases extends JAXBWithJSONTestCases{
         return jbe;
     }
 
+    @Override
     public boolean isUnmarshalTest() {
         return false;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,16 +40,16 @@ public class IDResolverWrapper extends IDResolver {
     private final static String RESOLVE_METHOD_NAME = "resolve";
     private final static String START_DOCUMENT_METHOD_NAME = "startDocument";
 
-    private final static Class[] BIND_PARAMS = new Class[] { CoreClassConstants.STRING, CoreClassConstants.OBJECT };
-    private final static Class[] RESOLVE_PARAMS = new Class[] { CoreClassConstants.STRING, CoreClassConstants.CLASS };
-    private final static Class[] START_DOCUMENT_PARAMS = new Class[] { ValidationEventHandler.class };
+    private final static Class<?>[] BIND_PARAMS = new Class<?>[] { CoreClassConstants.STRING, CoreClassConstants.OBJECT };
+    private final static Class<?>[] RESOLVE_PARAMS = new Class<?>[] { CoreClassConstants.STRING, CoreClassConstants.CLASS };
+    private final static Class<?>[] START_DOCUMENT_PARAMS = new Class<?>[] { ValidationEventHandler.class };
 
     private Object resolver;
     private Method bindMethod, endDocumentMethod, resolveMethod, startDocumentMethod;
 
     public IDResolverWrapper(Object sunResolver) {
         this.resolver = sunResolver;
-        Class resolverClass = sunResolver.getClass();
+        Class<? extends Object> resolverClass = sunResolver.getClass();
 
         try {
             this.bindMethod = PrivilegedAccessHelper.getMethod(resolverClass, BIND_METHOD_NAME, BIND_PARAMS, false);
@@ -57,7 +57,7 @@ public class IDResolverWrapper extends IDResolver {
             throw XMLMarshalException.errorProcessingIDResolver(BIND_METHOD_NAME, sunResolver, ex);
         }
         try {
-            this.endDocumentMethod = PrivilegedAccessHelper.getMethod(resolverClass, END_DOCUMENT_METHOD_NAME, new Class[] {}, false);
+            this.endDocumentMethod = PrivilegedAccessHelper.getMethod(resolverClass, END_DOCUMENT_METHOD_NAME, new Class<?>[] {}, false);
         } catch (Exception ex) {
             throw XMLMarshalException.errorProcessingIDResolver(END_DOCUMENT_METHOD_NAME, sunResolver, ex);
         }
@@ -103,17 +103,17 @@ public class IDResolverWrapper extends IDResolver {
     }
 
     @Override
-    public Callable<?> resolve(Object id, Class targetType) throws SAXException {
+    public Callable<?> resolve(Object id, Class<?> targetType) throws SAXException {
         try {
             Object[] params = new Object[] { id.toString(), targetType };
-            return (Callable<?>) PrivilegedAccessHelper.invokeMethod(this.resolveMethod, this.resolver, params);
+            return PrivilegedAccessHelper.invokeMethod(this.resolveMethod, this.resolver, params);
         } catch (Exception ex) {
             throw XMLMarshalException.errorInvokingIDResolver(RESOLVE_METHOD_NAME, this.resolver, ex);
         }
     }
 
     @Override
-    public Callable<?> resolve(Map<String, Object> id, Class type) throws SAXException {
+    public Callable<?> resolve(Map<String, Object> id, Class<?> type) throws SAXException {
         // If the user is still using a Sun IDResolver, then they must only have one XML ID,
         // as only EclipseLink supports multiple IDs through XmlKey.  So if this method is called,
         // throw an exception informing the user.

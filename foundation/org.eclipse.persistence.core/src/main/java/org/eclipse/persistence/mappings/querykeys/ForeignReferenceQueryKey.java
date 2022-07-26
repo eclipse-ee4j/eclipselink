@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
  * </ul>
  */
 public class ForeignReferenceQueryKey extends QueryKey {
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected String referenceClassName;
     protected Expression joinCriteria;
 
@@ -50,16 +50,15 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * INTERNAL:
      * Convert all the class-name-based settings in this project to actual class-based
      * settings
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        Class referenceClass = null;
+        Class<?> referenceClass = null;
         try{
             if (referenceClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName(referenceClassName, true, classLoader));
+                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(referenceClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(referenceClassName, exception.getException());
                     }
@@ -85,7 +84,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * PUBLIC:
      * Return the reference class of the relationship.
      */
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -127,7 +126,7 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * Set the reference class of the relationship.
      * This is not required for direct collection query keys.
      */
-    public void setReferenceClass(Class referenceClass) {
+    public void setReferenceClass(Class<?> referenceClass) {
         this.referenceClass = referenceClass;
     }
 
@@ -135,7 +134,6 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * PUBLIC:
      * Set the reference class name for this relationship
      * This is used when projects are built without using classes
-     * @param referenceClassName
      */
     public void setReferenceClassName(String referenceClassName) {
         this.referenceClassName = referenceClassName;

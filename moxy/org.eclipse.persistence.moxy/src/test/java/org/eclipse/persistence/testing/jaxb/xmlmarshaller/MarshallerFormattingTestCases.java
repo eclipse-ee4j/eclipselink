@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.io.StringWriter;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.PropertyException;
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
@@ -44,6 +45,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() throws Exception {
         contextPath = System.getProperty("jaxb.test.contextpath", JAXBSAXTestSuite.CONTEXT_PATH);
         JAXBContext jaxbContext = JAXBContext.newInstance(contextPath, getClass().getClassLoader());
@@ -71,10 +73,10 @@ public class MarshallerFormattingTestCases extends OXTestCase {
 
     public void testInvalidFormatting() throws Exception {
         try {
-            Object value = new Integer(10);
+            Object value = 10;
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, value);
         } catch (PropertyException e) {
-            this.assertTrue(true);
+            assertTrue(true);
             return;
         } catch (Exception e) {
             fail("The wrong exception occurred, should have been a PropertyException" + e.getMessage());
@@ -87,7 +89,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
         StringWriter writer = new StringWriter();
         Boolean originalSetting = (Boolean) marshaller.getProperty(Marshaller.JAXB_FORMATTED_OUTPUT);
 
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(isFormatted));
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, isFormatted);
         marshaller.marshal(controlObject, writer);
 
         log("Expected:" + controlString);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,19 +41,21 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
     static HashMap sessionCalls = new HashMap();
     static HashMap descriptorCalls = new HashMap();
 
+    @Override
     public void customize(Session session) throws Exception {
         String sessionName = session.getName();
         Integer numberOfCalls = (Integer)sessionCalls.get(sessionName);
         int num = 0;
         if(numberOfCalls != null) {
-            num = numberOfCalls.intValue();
+            num = numberOfCalls;
         }
-        sessionCalls.put(sessionName, new Integer(num + 1));
+        sessionCalls.put(sessionName, num + 1);
 
         //**temp
         session.getEventManager().addListener(new AcquireReleaseListener());
 
         session.getEventManager().addListener(new SessionEventAdapter() {
+            @Override
             public void postLogin(SessionEvent event) {
                 if (event.getSession().getPlatform().isPostgreSQL()) {
                     event.getSession().setQueryTimeoutDefault(0);
@@ -61,20 +63,20 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
             }
         });
 
-        if (Boolean.valueOf(System.getProperty("sop"))) {
-            boolean isRecoverable = Boolean.valueOf(System.getProperty("sop.recoverable"));
-            Class sopClass = Class.forName("oracle.toplink.exalogic.sop.SerializedObjectPolicy");
+        if (Boolean.parseBoolean(System.getProperty("sop"))) {
+            boolean isRecoverable = Boolean.parseBoolean(System.getProperty("sop.recoverable"));
+            Class<?> sopClass = Class.forName("oracle.toplink.exalogic.sop.SerializedObjectPolicy");
             Method setIsRecoverableMethod = null;
             if (isRecoverable) {
-                setIsRecoverableMethod = sopClass.getDeclaredMethod("setIsRecoverable", new Class[] {boolean.class});
+                setIsRecoverableMethod = sopClass.getDeclaredMethod("setIsRecoverable", boolean.class);
             }
 
-            Class[] sopEntities = {Employee.class, Address.class, Project.class};
-            for (Class sopEntity : sopEntities) {
+            Class<?>[] sopEntities = {Employee.class, Address.class, Project.class};
+            for (Class<?> sopEntity : sopEntities) {
                 ClassDescriptor descriptor = session.getDescriptor(sopEntity);
-                Object sop = sopClass.newInstance();
+                Object sop = sopClass.getConstructor().newInstance();
                 if (isRecoverable) {
-                    setIsRecoverableMethod.invoke(sop, new Object[] {true});
+                    setIsRecoverableMethod.invoke(sop, true);
                 }
                 ((SerializedObjectPolicy)sop).setField(new DatabaseField("SOP"));
                 descriptor.setSerializedObjectPolicy((SerializedObjectPolicy)sop);
@@ -85,14 +87,15 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         }
     }
 
+    @Override
     public void customize(ClassDescriptor descriptor) {
         String javaClassName = descriptor.getJavaClass().getName();
         Integer numberOfCalls = (Integer)descriptorCalls.get(javaClassName);
         int num = 0;
         if(numberOfCalls != null) {
-            num = numberOfCalls.intValue();
+            num = numberOfCalls;
         }
-        descriptorCalls.put(javaClassName, new Integer(num + 1));
+        descriptorCalls.put(javaClassName, num + 1);
 
         addCustomQueryKeys(descriptor);
     }
@@ -110,7 +113,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         if(numberOfCalls == null) {
             return 0;
         } else {
-            return numberOfCalls.intValue();
+            return numberOfCalls;
         }
     }
 
@@ -119,7 +122,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         if(numberOfCalls == null) {
             return 0;
         } else {
-            return numberOfCalls.intValue();
+            return numberOfCalls;
         }
     }
 
@@ -219,6 +222,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
     }
     //**temp
     static class AcquireReleaseListener extends SessionEventAdapter {
+        @Override
         public void postAcquireConnection(SessionEvent event) {
             DatasourceAccessor accessor = (DatasourceAccessor)event.getResult();
             try {
@@ -233,6 +237,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                 throw ex;
             }
         }
+        @Override
         public void preReleaseConnection(SessionEvent event) {
             DatasourceAccessor accessor = (DatasourceAccessor)event.getResult();
             try {

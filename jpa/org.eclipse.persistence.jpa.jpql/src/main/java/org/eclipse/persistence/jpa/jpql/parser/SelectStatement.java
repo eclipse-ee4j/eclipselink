@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * A <code><b>SELECT</b></code> query is an operation that retrieves data from one or more tables or
  * views.
- * <p>
+ * <br>
  * JPA:
  * <div><b>BNF:</b> <code>select_statement ::= select_clause
  *                                                    from_clause
@@ -30,7 +30,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                                                    [groupby_clause]
  *                                                    [having_clause]
  *                                                    [orderby_clause]</code></div>
- * <p>
+ * <br>
  * EclipseLink 2.4:
  * <div><b>BNF:</b> <code>select_statement ::= select_clause
  *                                                    from_clause
@@ -39,7 +39,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                                                    [having_clause]
  *                                                    [orderby_clause]
  *                                                    {union_clause}*</code></div>
- * <p>
+ * <br>
  * HQL query (EclipseLink 2.5):
  * <div><b>BNF:</b> <code>select_statement ::= [select_clause]
  *                                                    from_clause
@@ -48,7 +48,6 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                                                    [having_clause]
  *                                                    [orderby_clause]
  *                                                    {union_clause}*</code></div>
- * <p>
  *
  * @see FromClause
  * @see GroupByClause
@@ -96,17 +95,11 @@ public final class SelectStatement extends AbstractSelectStatement {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         super.acceptChildren(visitor);
@@ -114,9 +107,6 @@ public final class SelectStatement extends AbstractSelectStatement {
         getUnionClauses().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         super.addChildrenTo(children);
@@ -124,9 +114,6 @@ public final class SelectStatement extends AbstractSelectStatement {
         children.add(getUnionClauses());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -147,25 +134,16 @@ public final class SelectStatement extends AbstractSelectStatement {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected FromClause buildFromClause() {
         return new FromClause(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected SelectClause buildSelectClause() {
         return new SelectClause(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -192,9 +170,6 @@ public final class SelectStatement extends AbstractSelectStatement {
         return orderByClause;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(SelectStatementBNF.ID);
@@ -254,9 +229,6 @@ public final class SelectStatement extends AbstractSelectStatement {
               !unionClauses.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
@@ -270,9 +242,6 @@ public final class SelectStatement extends AbstractSelectStatement {
         return super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -293,9 +262,6 @@ public final class SelectStatement extends AbstractSelectStatement {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

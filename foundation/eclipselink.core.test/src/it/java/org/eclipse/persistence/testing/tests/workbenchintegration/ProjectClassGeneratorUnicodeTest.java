@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class ProjectClassGeneratorUnicodeTest extends AutoVerifyTestCase {
         setDescription("Test if ProjectClassGenerator generates unicode escaped characters for non-ASCII characters properly");
     }
 
+    @Override
     protected void setup() throws Exception {
         org.eclipse.persistence.sessions.Project initialProject =
             new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
@@ -47,18 +48,20 @@ public class ProjectClassGeneratorUnicodeTest extends AutoVerifyTestCase {
                throw new TestErrorException("Project class generation compile failed. This could either be a legitimate compile " +
                         "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
             }
-            Class projectClass = Class.forName(PROJECT_FILE);
-            unicodeProject = (org.eclipse.persistence.sessions.Project)projectClass.newInstance();
+            Class<?> projectClass = Class.forName(PROJECT_FILE);
+            unicodeProject = (org.eclipse.persistence.sessions.Project)projectClass.getConstructor().newInstance();
         } catch (Exception exception) {
             throw new RuntimeException("Project class generation failed.It may be possible to solve this issue by adding the tools.jar from your JDK to the classpath.", exception);
         }
     }
 
+    @Override
     public void test() {
         unicodeMap =
                 unicodeProject.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class).getMappingForAttributeName("\u5E08\u592B");
     }
 
+    @Override
     protected void verify() {
         if (unicodeMap == null) {
             throw new TestErrorException("Mapping for unicode does not exist after written out and read in from project class");

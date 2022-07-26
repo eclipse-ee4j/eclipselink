@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,27 +24,27 @@ package org.eclipse.persistence.testing.tests.proxyindirection;
  * @since        08/15/2000 15:51:05
  */
 public interface Address {
-    public String getCity();
+    String getCity();
 
-    public String getCountry();
+    String getCountry();
 
-    public int getID();
+    int getID();
 
-    public String getPostalCode();
+    String getPostalCode();
 
-    public String getState();
+    String getState();
 
-    public String getStreet();
+    String getStreet();
 
-    public void setCity(String value);
+    void setCity(String value);
 
-    public void setCountry(String value);
+    void setCountry(String value);
 
-    public void setID(int value);
+    void setID(int value);
 
-    public void setPostalCode(String value);
+    void setPostalCode(String value);
 
-    public void setState(String value);
+    void setState(String value);
 
-    public void setStreet(String value);
+    void setStreet(String value);
 }

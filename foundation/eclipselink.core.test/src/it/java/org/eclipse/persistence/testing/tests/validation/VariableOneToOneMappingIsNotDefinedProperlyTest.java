@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,9 +59,10 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
     Actor actor;
 
 
+    @Override
     protected void setup() {
 
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(Actor.class);
+        descriptor = getSession().getDescriptor(Actor.class);
         mapping = (VariableOneToOneMapping)descriptor.getMappingForAttributeName("program");
 
         sourceField = new DatabaseField("ACTOR.PROGRAM_ID");
@@ -87,17 +88,19 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
 
     }
 
+    @Override
     public void reset() {
         mapping.addForeignQueryKeyName("ACTOR.PROGRAM_ID", targetQueryKeyName);
         mapping.getForeignKeyFields().removeElement(sourceField);
     }
 
+    @Override
     public void test() {
         try {
             if (testMode == 0) {
                 mapping.writeFromObjectIntoRow(actor, databaseRow, (AbstractSession)getSession(), WriteType.UNDEFINED); //test one
             } else if (testMode == 1) {
-                mapping.writeFromObjectIntoRowWithChangeRecord((org.eclipse.persistence.internal.sessions.ChangeRecord)changeRecord, databaseRow, (AbstractSession)getSession(), WriteType.UNDEFINED); //test two
+                mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, databaseRow, (AbstractSession)getSession(), WriteType.UNDEFINED); //test two
             } else if (testMode == 2) {
                 mapping.writeFromObjectIntoRowForWhereClause(deleteObjectQuery, databaseRow); //test three
             } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.conversion;
 
+import java.util.List;
 import java.util.Vector;
 import java.util.Calendar;
 import java.sql.*;
@@ -33,25 +34,27 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
     protected Object cm;
     protected Exception exception1;
     protected Exception exception2;
-    protected Class sourceClass;
-    protected Class targetClass;
-    protected Class[] convertedToClasses = new Class[] { BigDecimal.class, BigInteger.class, Boolean.class, Byte.class, byte[].class, Byte[].class, Calendar.class, Character.class, Character[].class, char[].class, java.sql.Date.class, Double.class, Float.class, Integer.class, Long.class, Number.class, Short.class, String.class, Timestamp.class, Time.class, java.util.Date.class };
+    protected Class<?> sourceClass;
+    protected Class<?> targetClass;
+    protected Class<?>[] convertedToClasses = new Class<?>[] { BigDecimal.class, BigInteger.class, Boolean.class, Byte.class, byte[].class, Byte[].class, Calendar.class, Character.class, Character[].class, char[].class, java.sql.Date.class, Double.class, Float.class, Integer.class, Long.class, Number.class, Short.class, String.class, Timestamp.class, Time.class, java.util.Date.class };
 
     public DataTypesConvertedToAClassTest() {
         setDescription("Test getDataTypesConvertedTo() in ConversionManager.");
     }
 
+    @Override
     public void setup() {
         cm = ConversionManager.getDefaultManager();
     }
 
+    @Override
     public void test() {
-        Vector vec;
+        List vec;
         int x;
         int y;
         int z;
         Object obj;
-        Class type;
+        Class<?> type;
         CMAndPlatformWrapper wrapper = new CMAndPlatformWrapper(cm);
 
         ConversionDataObjectForSupportedTypes example = ConversionDataObjectForSupportedTypes.example();
@@ -61,7 +64,7 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
             for (y = 0; y < vec.size(); y++) {
                 for (z = 0; z < fields.length; z++) {
                     type = fields[z].getType();
-                    if (vec.elementAt(y) == type) {
+                    if (vec.get(y) == type) {
                         try {
                             obj = fields[z].get(example);
                         } catch (IllegalAccessException e) {
@@ -84,6 +87,7 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception1 != null) {
             throw (new TestErrorException(exception1.toString()));
@@ -93,15 +97,15 @@ public class DataTypesConvertedToAClassTest extends AutoVerifyTestCase {
         }
     }
 
-    protected boolean isNumber(Class aClass) {
+    protected boolean isNumber(Class<?> aClass) {
         return Number.class.isAssignableFrom(aClass);
     }
 
-    protected boolean isTimestamp(Class aClass) {
+    protected boolean isTimestamp(Class<?> aClass) {
         return (aClass == java.util.Date.class) || (aClass == Timestamp.class) || (aClass == Calendar.class);
     }
 
-    protected boolean isChar(Class aClass) {
+    protected boolean isChar(Class<?> aClass) {
         return (aClass == Character.class) || (aClass == Character[].class) || (aClass == char[].class) || (aClass == String.class) || (aClass == java.sql.Clob.class);
     }
 }

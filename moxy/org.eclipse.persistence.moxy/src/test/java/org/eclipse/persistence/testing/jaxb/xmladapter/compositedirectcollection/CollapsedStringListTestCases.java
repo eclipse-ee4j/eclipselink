@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,9 +35,10 @@ public class CollapsedStringListTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE_READ);
         setWriteControlJSON(JSON_RESOURCE_WRITE);
         setWriteControlFormattedJSON(JSON_RESOURCE_WRITE_FORMATTED);
-        setClasses(new Class[] {CollapsedStringListRoot.class});
+        setClasses(new Class<?>[] {CollapsedStringListRoot.class});
     }
 
+    @Override
     public boolean shouldRemoveEmptyTextNodesFromControlDoc() {
         return false;
     }

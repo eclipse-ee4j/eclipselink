@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -121,7 +121,6 @@ public class SDOHelperContext implements HelperContext {
     private static final ConcurrentHashMap<String,Map<SDOWrapperTypeId,SDOWrapperType>> SDO_WRAPPER_TYPES = new ConcurrentHashMap<>();
 
     // Application server identifiers
-    private static String OC4J_CLASSLOADER_NAME = "oracle";
     private static String WLS_CLASSLOADER_NAME = "weblogic";
     private static String WAS_CLASSLOADER_NAME = "com.ibm.ws";
     private static String JBOSS_CLASSLOADER_NAME = "jboss";
@@ -150,7 +149,7 @@ public class SDOHelperContext implements HelperContext {
     private static final String WLS_APPLICATION_VERSION = "ApplicationVersion";
     private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
     private static final String WLS_ACTIVE_VERSION_STATE = "ActiveVersionState";
-    private static final Class[] WLS_PARAMETER_TYPES = {};
+    private static final Class<?>[] WLS_PARAMETER_TYPES = {};
 
     // For WebSphere
     private static final String WAS_NEWLINE = "\n";
@@ -246,7 +245,7 @@ public class SDOHelperContext implements HelperContext {
      */
     public SDOHelperContext(ClassLoader aClassLoader) {
         super();
-        this.identifier = this.GLOBAL_HELPER_IDENTIFIER;
+        this.identifier = GLOBAL_HELPER_IDENTIFIER;
         initialize(aClassLoader);
     }
 
@@ -543,7 +542,7 @@ public class SDOHelperContext implements HelperContext {
         if (null == contextMap) {
             contextMap = new ConcurrentHashMap<String, HelperContext>();
             // use putIfAbsent to avoid concurrent entries in the map
-            ConcurrentHashMap existingMap = helperContexts.putIfAbsent(contextMapKey, contextMap);
+            ConcurrentHashMap<String, HelperContext> existingMap = helperContexts.putIfAbsent(contextMapKey, contextMap);
             if (existingMap != null) {
                 // if a new entry was just added, use it instead of the one we just created
                 contextMap = existingMap;
@@ -670,32 +669,11 @@ public class SDOHelperContext implements HelperContext {
      * This method will return the MapKeyLookupResult instance to be used to
      * store/retrieve the global helper context for a given application.
      *
-     * OC4J classLoader levels:
-     *      0 - APP.web (servlet/jsp) or APP.wrapper (ejb)
-     *      1 - APP.root (parent for helperContext)
-     *      2 - default.root
-     *      3 - system.root
-     *      4 - oc4j.10.1.3 (remote EJB) or org.eclipse.persistence:11.1.1.0.0
-     *      5 - api:1.4.0
-     *      6 - jre.extension:0.0.0
-     *      7 - jre.bootstrap:1.5.0_07 (with various J2SE versions)
-     *
-     * @return MapKeyLookupResult wrapping the application classloader for OC4J,
-     *         the application name for WebLogic and WebSphere, the archive file
+     * @return MapKeyLookupResult wrapping the application name for WebLogic and WebSphere, the archive file
      *         name for JBoss - if available; otherwise a MapKeyLookupResult
      *         wrapping Thread.currentThread().getContextClassLoader()
      */
     private static MapKeyLookupResult getContextMapKey(ClassLoader classLoader, String classLoaderName) {
-        // Helper contexts in OC4J server will be keyed on classloader
-        if (classLoaderName.startsWith(OC4J_CLASSLOADER_NAME)) {
-            // Check to see if we are running in a Servlet container or a local EJB container
-            if ((classLoader.getParent() != null) //
-                    && ((classLoader.toString().indexOf(SDOConstants.CLASSLOADER_WEB_FRAGMENT) != -1) //
-                    ||  (classLoader.toString().indexOf(SDOConstants.CLASSLOADER_EJB_FRAGMENT) != -1))) {
-                classLoader = classLoader.getParent();
-            }
-            return new MapKeyLookupResult(classLoader);
-        }
         // Helper contexts in WebLogic server will be keyed on application name if available
         if (classLoaderName.contains(WLS_CLASSLOADER_NAME)) {
             if (null == applicationAccessWLS) {
@@ -943,7 +921,7 @@ public class SDOHelperContext implements HelperContext {
      * care about "destroy", "start" etc.
      *
      */
-    public static class MyNotificationFilter extends NotificationFilterSupport {
+    static class MyNotificationFilter extends NotificationFilterSupport {
         MyNotificationFilter() {
             super.enableType(JBOSS_TYPE_STOP);
         }
@@ -1329,7 +1307,7 @@ public class SDOHelperContext implements HelperContext {
         if (null == alias) {
             alias = new ConcurrentHashMap<String, String>();
             // use putIfAbsent to avoid concurrent entries in the map
-            ConcurrentHashMap existingMap = aliasMap.putIfAbsent(mapKey, alias);
+            ConcurrentHashMap<String, String> existingMap = aliasMap.putIfAbsent(mapKey, alias);
             if (existingMap != null) {
                 // if a new entry was just added, use it instead of the one we just created
                 alias = existingMap;
@@ -1459,14 +1437,14 @@ public class SDOHelperContext implements HelperContext {
         public ReflectionHelperContextResolver(Object target) {
             this.target = target;
             try {
-                this.method = findMethod(target.getClass(), "getHelperContext", new Class[]{String.class, ClassLoader.class});
+                this.method = findMethod(target.getClass(), "getHelperContext", new Class<?>[]{String.class, ClassLoader.class});
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 throw new IllegalStateException(e);
             }
         }
 
-        private Method findMethod(Class clazz, String methodName, Class[] params) throws java.security.PrivilegedActionException, NoSuchMethodException {
+        private Method findMethod(Class<?> clazz, String methodName, Class<?>[] params) throws java.security.PrivilegedActionException, NoSuchMethodException {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess())
                 return AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, params, true));
             return PrivilegedAccessHelper.getMethod(clazz, methodName, params, true);

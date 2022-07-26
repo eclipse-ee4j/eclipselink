@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,25 +37,23 @@ public class XmlPathsTestCases extends JAXBWithJSONTestCases{
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
      */
     public XmlPathsTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
     }
 
 
     /**
      * Return the control Employee.
      *
-     * @return
      */
+    @Override
     public Employee getControlObject() {
         Employee emp = new Employee();
-        emp.thing = new Integer(INT_VAL);
+        emp.thing = Integer.valueOf(INT_VAL);
         return emp;
     }
 
@@ -80,7 +78,7 @@ public class XmlPathsTestCases extends JAXBWithJSONTestCases{
 
     public void testInvalidXmlPaths() {
         try {
-            JAXBContext jaxbCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { InvalidEmployee.class }, null);
+            JAXBContext jaxbCtx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { InvalidEmployee.class }, null);
         } catch (JAXBException e) {
             //e.printStackTrace();
             return;

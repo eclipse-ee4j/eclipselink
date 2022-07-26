@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,10 +27,11 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
- * Tests inheritance configuration via XmlDiscriminatorNode & XmlDiscriminatorValue.
+ * Tests inheritance configuration via XmlDiscriminatorNode &amp; XmlDiscriminatorValue.
  *
  */
 public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
@@ -41,7 +42,6 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlDiscriminatorTestCases(String name)throws Exception {
         super(name);
@@ -49,9 +49,10 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[] { Car.class, Vehicle.class });
+        setClasses(new Class<?>[] { Car.class, Vehicle.class });
     }
 
+    @Override
     public Object getReadControlObject() {
           Car car = new Car();
           car.numberOfDoors = 2;
@@ -62,6 +63,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
           return car;
 }
 
+    @Override
     public Object getControlObject() {
         Car car = new Car();
         car.numberOfDoors = 2;
@@ -73,13 +75,14 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmldiscriminator/vehicle-oxm.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -93,6 +96,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         super.testSchemaGen(controlSchemas);
     }
 
+    @Override
     public void testRoundTrip(){};
 
 }

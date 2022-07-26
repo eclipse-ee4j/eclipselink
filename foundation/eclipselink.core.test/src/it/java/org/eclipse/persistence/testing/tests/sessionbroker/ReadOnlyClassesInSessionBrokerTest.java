@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class ReadOnlyClassesInSessionBrokerTest extends AutoVerifyTestCase {
         setDescription("The test for DefaultReadOnlyClasses size in session broker");
     }
 
+    @Override
     public void setup() {
         ServerSession serverSession;
         Project project = new org.eclipse.persistence.testing.models.readonly.ReadOnlyProject();
@@ -50,6 +51,7 @@ public class ReadOnlyClassesInSessionBrokerTest extends AutoVerifyTestCase {
         this.sessionBroker.login();
     }
 
+    @Override
     public void test() {
         for (int i = 0; i < 10; i++) {
             vectorSize = getDefaultReadOnlyClassSize();
@@ -65,6 +67,7 @@ public class ReadOnlyClassesInSessionBrokerTest extends AutoVerifyTestCase {
         return size;
     }
 
+    @Override
     public void verify() {
         if (vectorSize < 2 || vectorSize > 2) {
             throw new TestErrorException("DefaultReadOnlyClasses size should be 2, but " + vectorSize +
@@ -72,6 +75,7 @@ public class ReadOnlyClassesInSessionBrokerTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         this.sessionBroker.logout();
     }

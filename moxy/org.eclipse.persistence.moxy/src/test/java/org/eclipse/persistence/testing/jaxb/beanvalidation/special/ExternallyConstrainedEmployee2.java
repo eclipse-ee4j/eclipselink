@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
  * "Warning
  * A given entity can only be configured once across all configuration files. The same applies for constraint
  * definitions for a given constraint annotation. It can only occur in one mapping file. If these rules are violated a
- * ValidationException is thrown." -> we need multiple classes if we wish to test multiple configuration files.
+ * ValidationException is thrown." -{@literal >} we need multiple classes if we wish to test multiple configuration files.
  */
 @XmlRootElement
 public class ExternallyConstrainedEmployee2 {

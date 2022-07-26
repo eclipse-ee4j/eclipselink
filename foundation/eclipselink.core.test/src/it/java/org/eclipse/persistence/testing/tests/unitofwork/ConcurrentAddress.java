@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee
  * <p><b>Description</b>: Held in a private 1:1 relationship from Employee
- * @see Employee
+ * @see ConcurrentPerson
  */
 public class ConcurrentAddress implements Serializable, Cloneable {
     public BigDecimal id;
@@ -57,6 +57,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         this.country = "";
     }
 
+    @Override
     public Object clone() {
         ConcurrentAddress result = new ConcurrentAddress();
         result.id = this.id;
@@ -311,7 +312,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         DirectToFieldMapping cityMapping = new DirectToFieldMapping();
         cityMapping.setAttributeName("city");
         cityMapping.setFieldName("CONCURRENT_ADDRESS.CITY");
-        cityMapping.setWeight(new Integer(10));
+        cityMapping.setWeight(10);
         descriptor.addMapping(cityMapping);
 
         DirectToFieldMapping countryMapping = new DirectToFieldMapping();
@@ -319,7 +320,7 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         countryMapping.setFieldName("CONCURRENT_ADDRESS.COUNTRY");
         countryMapping.setSetMethodName("setCountry");
         countryMapping.setGetMethodName("getCountry");
-        countryMapping.setWeight(new Integer(9));
+        countryMapping.setWeight(9);
         descriptor.addMapping(countryMapping);
 
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
@@ -327,13 +328,13 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         idMapping.setFieldName("CONCURRENT_ADDRESS.ADDRESS_ID");
         idMapping.setSetMethodName("setId");
         idMapping.setGetMethodName("getId");
-        idMapping.setWeight(new Integer(8));
+        idMapping.setWeight(8);
         descriptor.addMapping(idMapping);
 
         DirectToFieldMapping postalCodeMapping = new DirectToFieldMapping();
         postalCodeMapping.setAttributeName("postalCode");
         postalCodeMapping.setFieldName("CONCURRENT_ADDRESS.P_CODE");
-        postalCodeMapping.setWeight(new Integer(7));
+        postalCodeMapping.setWeight(7);
         descriptor.addMapping(postalCodeMapping);
 
         DirectToFieldMapping provinceMapping = new DirectToFieldMapping();
@@ -341,13 +342,13 @@ public class ConcurrentAddress implements Serializable, Cloneable {
         provinceMapping.setFieldName("CONCURRENT_ADDRESS.PROVINCE");
         provinceMapping.setSetMethodName("setProvince");
         provinceMapping.setGetMethodName("getProvince");
-        provinceMapping.setWeight(new Integer(6));
+        provinceMapping.setWeight(6);
         descriptor.addMapping(provinceMapping);
 
         DirectToFieldMapping streetMapping = new DirectToFieldMapping();
         streetMapping.setAttributeName("street");
         streetMapping.setFieldName("CONCURRENT_ADDRESS.STREET");
-        streetMapping.setWeight(new Integer(5));
+        streetMapping.setWeight(5);
         descriptor.addMapping(streetMapping);
 
         return descriptor;

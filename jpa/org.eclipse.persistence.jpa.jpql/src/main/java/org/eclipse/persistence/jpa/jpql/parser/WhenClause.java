@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,9 +25,9 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * A <b>WHEN</b> predicate is used to calculate a condition and when it's true, its <b>THEN</b> will
  * be executed.
  *
- * <div><b>BNF:</b> <code>when_clause ::= WHEN conditional_expression THEN scalar_expression</code><p></div>
+ * <div><b>BNF:</b> <code>when_clause ::= WHEN conditional_expression THEN scalar_expression</code></div>
  * or
- * <div><b>BNF:</b> <code>simple_when_clause ::= WHEN scalar_expression THEN scalar_expression</code><p></div>
+ * <div><b>BNF:</b> <code>simple_when_clause ::= WHEN scalar_expression THEN scalar_expression</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -79,35 +79,23 @@ public final class WhenClause extends AbstractExpression {
         super(parent, WHEN);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getWhenExpression().accept(visitor);
         getThenExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getWhenExpression());
         children.add(getThenExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -150,21 +138,18 @@ public final class WhenClause extends AbstractExpression {
      */
     public CollectionExpression buildWhenCollectionExpression() {
 
-        List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+        List<AbstractExpression> children = new ArrayList<>(1);
         children.add(getWhenExpression());
 
-        List<Boolean> commas = new ArrayList<Boolean>(1);
+        List<Boolean> commas = new ArrayList<>(1);
         commas.add(Boolean.FALSE);
 
-        List<Boolean> spaces = new ArrayList<Boolean>(1);
+        List<Boolean> spaces = new ArrayList<>(1);
         spaces.add(hasSpaceAfterWhenExpression);
 
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -199,9 +184,6 @@ public final class WhenClause extends AbstractExpression {
         return whenIdentifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(WhenClauseBNF.ID);
@@ -290,9 +272,6 @@ public final class WhenClause extends AbstractExpression {
               !whenExpression.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return word.equalsIgnoreCase(WHEN) ||
@@ -302,9 +281,6 @@ public final class WhenClause extends AbstractExpression {
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -326,9 +302,6 @@ public final class WhenClause extends AbstractExpression {
         thenExpression = parse(wordParser, ScalarExpressionBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

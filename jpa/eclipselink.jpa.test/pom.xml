@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,8 +26,8 @@
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.test.server.parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
-        <relativePath>../../pom_test_server.xml</relativePath>
+        <version>4.0.0-SNAPSHOT</version>
+        <relativePath>../../testing/server/pom.xml</relativePath>
     </parent>
 
     <properties>
@@ -147,18 +147,8 @@
         </dependency>
         <!--Other libraries-->
         <dependency>
-            <groupId>org.glassfish.corba</groupId>
-            <artifactId>glassfish-corba-omgapi</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.corba</groupId>
-            <artifactId>glassfish-corba-orb</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.json</artifactId>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -225,7 +215,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--Required due filtering applied to org.eclipse.persistence.testing.framework.server.TestRunnerBean java class.-->
+            <!--Required due filtering applied to org.eclipse.persistence.testing.framework.jpa.server.TestRunnerBean java class.-->
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
                 <artifactId>replacer</artifactId>
@@ -237,8 +227,8 @@
                             <goal>replace</goal>
                         </goals>
                         <configuration>
-                            <file>${project.basedir}/${integration.test.directory}/java-templates/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java</file>
-                            <outputFile>${project.build.directory}/generated-test-sources/jpa-runner-src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java</outputFile>
+                            <file>${project.basedir}/${integration.test.directory}/java-templates/org/eclipse/persistence/testing/framework/jpa/server/TestRunnerBean.java</file>
+                            <outputFile>${project.build.directory}/generated-test-sources/jpa-runner-src/org/eclipse/persistence/testing/framework/jpa/server/TestRunnerBean.java</outputFile>
                             <replacements>
                                 <replacement>
                                     <token>@puName@</token>
@@ -293,20 +283,6 @@
                             </includes>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>generate-jpa-metamodel-classes</id>
-                        <goals>
-                            <goal>process-test</goal>
-                        </goals>
-                        <phase>generate-test-sources</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/generated-test-sources/jpa-metamodel-src</outputDirectory>
-                            <compilerArguments>-Aeclipselink.persistencexml=${project.basedir}/${integration.test.resources.directory}/eclipselink-metamodel-model/persistence.xml</compilerArguments>
-                            <includes>
-                                <include>org/eclipse/persistence/testing/models/jpa/metamodel/*.java</include>
-                            </includes>
-                        </configuration>
-                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>
@@ -332,41 +308,17 @@
                             <items>
                                 <item>eclipselink-annotation-model</item>
                                 <item>eclipselink-xml-only-model</item>
-                                <item>eclipselink-advanced-properties</item>
-                                <item>eclipselink-pu with spaces</item>
-                                <item>eclipselink-validation-failed-model</item>
                                 <item>eclipselink-xml-merge-model</item>
-                                <item>eclipselink-advanced-field-access-model</item>
-                                <item>eclipselink-cascade-deletes-model</item>
                                 <item>eclipselink-cacheable-model</item>
                                 <item>eclipselink-ddl-generation-model</item>
-                                <item>eclipselink-delimited-model</item>
-                                <item>eclipselink-extensibility-model</item>
-                                <item>eclipselink-composite-advanced-model</item>
-                                <item>eclipselink-composite-advanced-model-member_1</item>
-                                <item>eclipselink-composite-advanced-model-member_2</item>
-                                <item>eclipselink-composite-advanced-model-member_3</item>
                                 <item>eclipselink-jpa21-model</item>
-                                <item>eclipselink-metamodel-model</item>
-                                <item>eclipselink-partitioned-model</item>
-                                <item>eclipselink-xml-composite-advanced-model</item>
-                                <item>eclipselink-xml-composite-advanced-model-member_1</item>
-                                <item>eclipselink-xml-composite-advanced-model-member_2</item>
-                                <item>eclipselink-xml-composite-advanced-model-member_3</item>
                                 <item>eclipselink-xml-mapping-metadata-complete</item>
                                 <!--Additional for LRG-->
                                 <item>eclipselink-plsql-model</item>
-                                <item>eclipselink-remote</item>
                                 <item>jpa-performance</item>
                                 <item>jpa-performance2</item>
-                                <item>eclipselink-beanvalidation-model</item>
-                                <item>eclipselink-beanvalidation-dynamic-model</item>
                                 <item>eclipselink-identity-model</item>
                                 <item>eclipselink-jpa22-model</item>
-                                <item>eclipselink-xml-extended-composite-advanced-model</item>
-                                <item>eclipselink-xml-extended-composite-advanced-model-member_1</item>
-                                <item>eclipselink-xml-extended-composite-advanced-model-member_2</item>
-                                <item>eclipselink-xml-extended-composite-advanced-model-member_3</item>
                                 <item>eclipselink-xml-extended-model</item>
                             </items>
                             <pluginExecutors>
@@ -487,25 +439,11 @@
                             <items>
                                 <item>eclipselink-annotation-model</item>
                                 <item>eclipselink-ddl-generation-model</item>
-                                <item>eclipselink-validation-failed-model</item>
                                 <item>eclipselink-cacheable-model</item>
-                                <item>eclipselink-advanced-field-access-model</item>
-                                <item>eclipselink-advanced-properties</item>
-                                <item>eclipselink-pu with spaces</item>
-                                <item>eclipselink-partitioned-model</item>
                                 <item>eclipselink-plsql-model</item>
-                                <item>eclipselink-cascade-deletes-model</item>
                                 <item>jpa-performance</item>
-                                <item>eclipselink-metamodel-model</item>
-                                <item>eclipselink-delimited-model</item>
-                                <item>eclipselink-extensibility-model</item>
-                                <item>eclipselink-beanvalidation-model</item>
-                                <item>eclipselink-beanvalidation-dynamic-model</item>
                                 <item>eclipselink-xml-mapping-metadata-complete</item>
-                                <item>eclipselink-xml-composite-advanced-model-member_1</item>
                                 <item>eclipselink-xml-extended-model</item>
-                                <item>eclipselink-xml-extended-composite-advanced-model-member_1</item>
-                                <item>eclipselink-remote</item>
                             </items>
                             <pluginExecutors>
                                 <pluginExecutor>
@@ -530,27 +468,10 @@
                                         <additionalClasspathElements>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-field-access-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                                         </additionalClasspathElements>
                                         <arguments>
@@ -586,48 +507,6 @@
                                         <item.persistenceinfo>${project.build.directory}/eclipselink-annotation-model.jar</item.persistenceinfo>
                                     </properties>
                                 </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>eclipselink-composite-advanced-model-member_1</name>
-                                    <properties>
-                                        <item.persistenceinfo>${project.build.directory}/eclipselink-composite-advanced-model.jar</item.persistenceinfo>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>eclipselink-composite-advanced-model-member_2</name>
-                                    <properties>
-                                        <item.persistenceinfo>${project.build.directory}/eclipselink-composite-advanced-model.jar</item.persistenceinfo>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>eclipselink-composite-advanced-model-member_3</name>
-                                    <properties>
-                                        <item.persistenceinfo>${project.build.directory}/eclipselink-composite-advanced-model.jar</item.persistenceinfo>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>eclipselink-xml-composite-advanced-model-member_2</name>
-                                    <properties>
-                                        <item.persistenceinfo>${project.build.directory}/eclipselink-xml-composite-advanced-model.jar</item.persistenceinfo>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>eclipselink-xml-composite-advanced-model-member_3</name>
-                                    <properties>
-                                        <item.persistenceinfo>${project.build.directory}/eclipselink-xml-composite-advanced-model.jar</item.persistenceinfo>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>eclipselink-xml-extended-composite-advanced-model-member_2</name>
-                                    <properties>
-                                        <item.persistenceinfo>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model.jar</item.persistenceinfo>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>eclipselink-xml-extended-composite-advanced-model-member_3</name>
-                                    <properties>
-                                        <item.persistenceinfo>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model.jar</item.persistenceinfo>
-                                    </properties>
-                                </itemWithProperty>
                             </itemsWithProperties>
                             <pluginExecutors>
                                 <pluginExecutor>
@@ -642,32 +521,11 @@
                                         <additionalClasspathElements>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-field-access-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                         </additionalClasspathElements>
                                         <arguments>
                                             <!-- Weaving persistence info -->
@@ -696,22 +554,14 @@
                             <skip>${skip-server-test-jpa-lrg1}</skip>
                             <items>
                                 <item>server-test-jpa-advanced</item>
-                                <item>server-test-jpa-advanced-multitenant</item>
                                 <item>server-test-jpa-cacheable</item>
                                 <item>server-test-jpa-criteria</item>
                                 <item>server-test-jpa-datatypes</item>
-                                <item>server-test-jpa-datetime</item>
                                 <item>server-test-jpa-ddlgeneration</item>
-                                <item>server-test-jpa-extensibility</item>
                                 <item>server-test-jpa-fetchgroups</item>
                                 <item>server-test-jpa-inheritance</item>
                                 <item>server-test-jpa-inherited</item>
                                 <item>server-test-jpa-jpql</item>
-                                <!--<item>server-test-jpa-lob</item>-->
-                                <item>server-test-jpa-metamodel</item>
-                                <item>server-test-jpa-orphanremoval</item>
-                                <item>server-test-jpa-privateowned</item>
-                                <item>server-test-jpa-relationships</item>
                             </items>
                             <baseDirectory>${project.basedir}</baseDirectory>
                             <goals>
@@ -753,63 +603,9 @@
                                     </properties>
                                 </itemWithProperty>
                                 <itemWithProperty>
-                                    <name>server-test-jpa-beanvalidation</name>
-                                    <properties>
-                                        <puName>beanvalidation</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-cascadedeletes</name>
-                                    <properties>
-                                        <puName>cascade-deletes</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-delimited</name>
-                                    <properties>
-                                        <puName>delimited</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-fieldaccess-advanced</name>
-                                    <properties>
-                                        <puName>fieldaccess</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-fieldaccess-fetchgroups</name>
-                                    <properties>
-                                        <puName>fieldaccess</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-fieldaccess-relationships</name>
-                                    <properties>
-                                        <puName>fieldaccess</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
                                     <name>server-test-jpa-plsql</name>
                                     <properties>
                                         <puName>plsql</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-jpaadvancedproperties</name>
-                                    <properties>
-                                        <puName>JPAADVProperties</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-nativeapitest</name>
-                                    <properties>
-                                        <puName>nativeapitest</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-sessionbean</name>
-                                    <properties>
-                                        <puName>sessionbean</puName>
                                     </properties>
                                 </itemWithProperty>
                                 <itemWithProperty>
@@ -932,9 +728,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -959,9 +752,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <!-- Special model jars for LRG 22_1 test.-->
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
@@ -987,16 +777,7 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <!-- Special model jars for LRG 22_2 test.-->
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-plsql-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_3.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -1020,8 +801,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                <!-- Special model jars for LRG 22_3 test.-->
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-field-access-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -1046,14 +825,7 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <!-- Special model jars for LRG 22_4 test.-->
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
@@ -1078,10 +850,6 @@
                             </systemPropertyVariables>
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_3.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -1169,10 +937,6 @@
                             </systemPropertyVariables>
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_3.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.jpa.dynamic.AllTests</include>
@@ -1214,33 +978,12 @@
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-validation-failed-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-advanced-field-access-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-delimited-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-extensibility-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-jpa22-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-partitioned-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model-member_3.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model-member_3.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -1270,29 +1013,9 @@
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-validation-failed-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-advanced-field-access-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-advanced-properties.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-pu with spaces.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-partitioned-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-plsql-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-cascade-deletes-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-cacheable-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}jpa-performance.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-metamodel-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-delimited-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-extensibility-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-beanvalidation-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-beanvalidation-dynamic-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-composite-advanced-model-member_3.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-composite-advanced-model-member_3.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-remote.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
@@ -1319,10 +1042,6 @@
                             </systemPropertyVariables>
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-extended-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-composite-advanced-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-extended-composite-advanced-model-member_1.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-extended-composite-advanced-model-member_2.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-extended-composite-advanced-model-member_3.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -1441,7 +1160,7 @@
             <!--Start selected JEE server configure there datasource and deploy test application-->
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
+                <artifactId>cargo-maven3-plugin</artifactId>
                 <configuration>
                     <skip>${skip-server-test-jpa}</skip>
                     <deployables>
@@ -1608,19 +1327,6 @@
             </properties>
         </profile>
         <profile>
-            <id>server-test-jpa-advanced-multitenant</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-advanced-model</modelname>
-                <extra-model>eclipselink-advanced-multitenant-model-extra</extra-model>
-                <packageName>advanced</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
             <id>server-test-jpa-jpa21-advanced</id>
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
@@ -1647,46 +1353,6 @@
             </properties>
         </profile>
         <profile>
-            <id>server-test-jpa-beanvalidation</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>beanvalidation</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-beanvalidation-model</modelname>
-                <extra-model>eclipselink-beanvalidation-model</extra-model>
-                <packageName>beanvalidation</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-advanced-multitenantEMF</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-advanced-model</modelname>
-                <extra-model>eclipselink-advanced-multitenant-projectcache-model-extra</extra-model>
-                <packageName>advanced</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantSharedEMFJunitTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-advanced-multitenant123</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-advanced-model</modelname>
-                <extra-model>eclipselink-advanced-multitenant-projectcache-model-extra</extra-model>
-                <packageName>advanced</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenant123JunitTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
             <id>server-test-jpa-cacheable</id>
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
@@ -1697,20 +1363,6 @@
                 <extra-model>eclipselink-cacheable-model-extra</extra-model>
                 <packageName>cacheable</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-cascadedeletes</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>cascade-deletes</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-cascade-deletes-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>cascadedeletes</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite</test-client-class>
             </properties>
         </profile>
         <profile>
@@ -1740,19 +1392,6 @@
             </properties>
         </profile>
         <profile>
-            <id>server-test-jpa-datetime</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-datetime-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>datetime</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.datetime.NullBindingJUnitTestCase</test-client-class>
-            </properties>
-        </profile>
-        <profile>
             <id>server-test-jpa-ddlgeneration</id>
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
@@ -1766,33 +1405,6 @@
             </properties>
         </profile>
         <profile>
-            <id>server-test-jpa-delimited</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>delimited</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-delimited-model</modelname>
-                <extra-model>eclipselink-delimited-model-extra</extra-model>
-                <packageName>delimited</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-extensibility</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-extensibility-model</modelname>
-                <extra-model>eclipselink-extensibility-model</extra-model>
-                <packageName>extensibility</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.extensibility.ExtensibilityTests</test-client-class>
-            </properties>
-        </profile>
-        <profile>
             <id>server-test-jpa-fetchgroups</id>
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
@@ -1803,48 +1415,6 @@
                 <extra-model>common-server-generic</extra-model>
                 <packageName>fetchgroups</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupsServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-fieldaccess-advanced</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>fieldaccess</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-advanced-field-access-model</modelname>
-                <extra-model>eclipselink-advanced-field-access-model</extra-model>
-                <packageName>fieldaccess/advanced</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-fieldaccess-fetchgroups</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>fieldaccess</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-fetchgroups-field-access-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>fieldaccess/fetchgroups</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.FAServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-fieldaccess-relationships</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>fieldaccess</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-relationships-field-access-model</modelname>
-                <extra-model>eclipselink-relationships-field-access-model</extra-model>
-                <packageName>fieldaccess/relationships</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.FRServerTestSuite</test-client-class>
             </properties>
         </profile>
         <profile>
@@ -1888,20 +1458,6 @@
             </properties>
         </profile>
         <profile>
-            <id>server-test-jpa-jpaadvancedproperties</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>JPAADVProperties</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-advanced-properties</modelname>
-                <extra-model>eclipselink-advanced-properties</extra-model>
-                <packageName>jpaadvancedproperties</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.JPAAdvPropertiesJUnitTestCase</test-client-class>
-            </properties>
-        </profile>
-        <profile>
             <id>server-test-jpa-jpql</id>
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
@@ -1912,168 +1468,6 @@
                 <extra-model>eclipselink-jpql-model</extra-model>
                 <packageName>jpql</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.jpql.JPQLServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-lob</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-lob-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>lob</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-metamodel</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-metamodel-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>metamodel</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelMetamodelTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-nativeapitest</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>nativeapitest</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-nativeapitest-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>nativeapitest</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.nativeapitest.NativeAPITests</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-orphanremoval</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-orphanremoval-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>orphanremoval</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.orphanremoval.OrphanRemovalJUnitTestCase</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-privateowned</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-privateowned-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>privateowned</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.privateowned.PrivateOwnedJUnitTestCase</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-relationships</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-relationships-model</modelname>
-                <extra-model>eclipselink-relationships-model</extra-model>
-                <packageName>relationships</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.relationships.RelationshipsServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-sessionbean</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>sessionbean</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-sessionbean-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>sessionbean</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanTests</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-sessionbean-ha</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>sessionbean</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-sessionbean-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>sessionbean</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanHATests</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa21-sessionbean</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>jpa21-sessionbean</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-jpa21-sessionbean-model</modelname>
-                <extra-model>eclipselink-jpa21-sessionbean-model</extra-model>
-                <packageName>jpa21/sessionbean</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa21.sessionbean.EntityListenerInjectionTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa22-sessionbean-entity-listener</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>jpa22-sessionbean</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-jpa22-sessionbean-model</modelname>
-                <extra-model>eclipselink-jpa22-sessionbean-model</extra-model>
-                <packageName>jpa22/sessionbean</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa22.sessionbean.EntityListenerInjectionTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa22-sessionbean-attribute-converter</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>jpa22-sessionbean</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-jpa22-sessionbean-model</modelname>
-                <extra-model>eclipselink-jpa22-sessionbean-model</extra-model>
-                <packageName>jpa22/sessionbean</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa22.sessionbean.AttributeConverterInjectionTest</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-validation</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-validation-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>validation</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.validation.CMP3ValidationTestModel</test-client-class>
             </properties>
         </profile>
         <profile>

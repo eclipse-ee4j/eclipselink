@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ public abstract class Unmarshaller<
     protected CONTEXT context;
     private UNMARSHALLER_LISTENER unmarshalListener;
 
-    public Unmarshaller(CONTEXT context) {
+    protected Unmarshaller(CONTEXT context) {
         this.context = context;
     }
 
@@ -56,7 +56,7 @@ public abstract class Unmarshaller<
     /**
      * INTERNAL
      */
-    public abstract UnmarshalRecord createRootUnmarshalRecord(Class clazz);
+    public abstract UnmarshalRecord createRootUnmarshalRecord(Class<?> clazz);
 
     /**
      * INTERNAL
@@ -68,7 +68,6 @@ public abstract class Unmarshaller<
     /**
      * Value that will be used to prefix attributes.
      * Ignored unmarshalling XML.
-     * @return
      */
     public abstract String getAttributePrefix();
 
@@ -117,8 +116,6 @@ public abstract class Unmarshaller<
     /**
      * Return the property for a given key, if one exists.
      *
-     * @param key
-     * @return
      */
     public abstract Object getProperty(Object key);
 
@@ -134,7 +131,7 @@ public abstract class Unmarshaller<
      * Get the class that will be instantiated to handled unmapped content
      * Class must implement the org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler interface
      */
-    public abstract Class getUnmappedContentHandlerClass();
+    public abstract Class<?> getUnmappedContentHandlerClass();
 
     /**
      * INTERNAL:
@@ -184,7 +181,6 @@ public abstract class Unmarshaller<
     /**
      * Determine if the @XMLRootElement should be marshalled when present.
      * Ignored unmarshalling XML.
-     * @return
      */
     public abstract boolean isIncludeRoot();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class UpdateAnyObjectIsolatedConcurrentTest extends IsolatedConcurrentTes
     /**
      * Load all employees.
      */
+    @Override
     public void setup() {
         super.setup();
         this.allObjects = new ArrayList(getServerSession().acquireClientSession().readAllObjects(Employee.class));
@@ -51,6 +52,7 @@ public class UpdateAnyObjectIsolatedConcurrentTest extends IsolatedConcurrentTes
     /**
      * Update an object.
      */
+    @Override
     public void runTask() throws Exception {
         int currentIndex = incrementIndex();
         Employee employee = (Employee)this.allObjects.get(currentIndex);

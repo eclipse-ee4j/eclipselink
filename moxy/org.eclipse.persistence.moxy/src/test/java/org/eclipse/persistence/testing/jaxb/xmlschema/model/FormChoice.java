@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,15 +23,15 @@ import jakarta.xml.bind.annotation.XmlType;
  * <p>Java class for formChoice.
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
- * <pre>
- * &lt;simpleType name="formChoice">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN">
- *     &lt;enumeration value="qualified"/>
- *     &lt;enumeration value="unqualified"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
- * </pre>
+ * <br>
+ * <pre>{@code
+ * <simpleType name="formChoice">
+ *   <restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN">
+ *     <enumeration value="qualified"/>
+ *     <enumeration value="unqualified"/>
+ *   </restriction>
+ * </simpleType>
+ * }</pre>
  *
  */
 @XmlType(name = "formChoice")

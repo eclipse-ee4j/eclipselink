@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class XmlPathWithMultipleEqualsCharactersTestCases extends TestCase {
     private final static String BINDINGS_DOC = "org/eclipse/persistence/testing/jaxb/xmlpath/atom-bindings.xml";
 
     public void testOneEntry() throws Exception {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { AtomEntriesOne.class }, getProperties());
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { AtomEntriesOne.class }, getProperties());
         Unmarshaller u = ctx.createUnmarshaller();
         InputStream is = ClassLoader.getSystemResourceAsStream(INSTANCE_DOC);
         AtomEntriesOne o = (AtomEntriesOne) u.unmarshal(is);
@@ -39,7 +39,7 @@ public class XmlPathWithMultipleEqualsCharactersTestCases extends TestCase {
     }
 
     public void testTwoEntries() throws Exception {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { AtomEntriesTwo.class }, getProperties());
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { AtomEntriesTwo.class }, getProperties());
         Unmarshaller u = ctx.createUnmarshaller();
         InputStream is = ClassLoader.getSystemResourceAsStream(INSTANCE_DOC);
         AtomEntriesTwo o = (AtomEntriesTwo) u.unmarshal(is);
@@ -47,7 +47,7 @@ public class XmlPathWithMultipleEqualsCharactersTestCases extends TestCase {
     }
 
     public void testThreeEntries() throws Exception {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { AtomEntriesThree.class }, getProperties());
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { AtomEntriesThree.class }, getProperties());
         Unmarshaller u = ctx.createUnmarshaller();
         InputStream is = ClassLoader.getSystemResourceAsStream(INSTANCE_DOC);
         AtomEntriesThree o = (AtomEntriesThree) u.unmarshal(is);
@@ -58,6 +58,7 @@ public class XmlPathWithMultipleEqualsCharactersTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "XmlPathWithMultipleEqualsCharactersTestCases: " + super.getName();
     }

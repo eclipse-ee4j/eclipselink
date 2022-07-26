@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,7 @@ public class FieldOffice implements ChangeTracker {
     }
 
     public void setId(int newId) {
-        propertyChange("id", new Integer(this.id), new Integer(newId));
+        propertyChange("id", this.id, newId);
         id = newId;
     }
 
@@ -83,6 +83,7 @@ public class FieldOffice implements ChangeTracker {
      * PUBLIC:
      * Return the PropertyChangeListener for the object.
      */
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return this.topLinkListener;
     }
@@ -91,6 +92,7 @@ public class FieldOffice implements ChangeTracker {
      * PUBLIC:
      * Set the PropertyChangeListener for the object.
      */
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.topLinkListener = listener;
     }

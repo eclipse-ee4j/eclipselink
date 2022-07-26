@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,22 +59,23 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
     /**
      * Direct calls
      */
+    @Override
     public void test() throws Exception {
         String className = "org.eclipse.persistence.Version";
         String fieldName = "buildNumber";
         String fieldValue = "TopLink Blah";
         String methodName = "setProduct";
 
-        Class clazz = null;
+        Class<?> clazz = null;
         Version version = null;
         Method method = null;
         try {
             clazz = Class.forName(className);
-            Class[] methodParameterTypes = { Class.forName("java.lang.String") };
+            Class<?>[] methodParameterTypes = { Class.forName("java.lang.String") };
             ClassLoader clazzloader = clazz.getClassLoader();
             ClassLoader classloader = Thread.currentThread().getContextClassLoader();
             Class.forName(className, true, clazzloader);
-            version = (Version)clazz.newInstance();
+            version = (Version)clazz.getConstructor().newInstance();
 
             Field[] fields = clazz.getFields();
             Field field = getDeclaredField(clazz, fieldName, true);
@@ -96,9 +97,9 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
             Object[] parameters = { "TopLink Blah." };
             method.invoke(version, parameters);
 
-            Constructor constructor = clazz.getConstructor((Class[])null);
+            Constructor constructor = clazz.getConstructor((Class<?>[])null);
             constructor.setAccessible(true);
-            Constructor declaredConstructor = clazz.getDeclaredConstructor((Class[])null);
+            Constructor declaredConstructor = clazz.getDeclaredConstructor((Class<?>[])null);
             declaredConstructor.setAccessible(true);
             constructor.newInstance((Object[])null);
 
@@ -113,6 +114,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
      */
     public void addDoPrivilegedTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 testDoPrivileged();
             }
@@ -127,6 +129,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
      */
     public void addBypassDoPrivilegedTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 testDoPrivileged();
             }
@@ -142,21 +145,21 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
         String fieldValue = "TopLink Blah";
         String methodName = "setProduct";
 
-        Class clazz = null;
+        Class<?> clazz = null;
         Version version = null;
         Method method = null;
         try {
-            clazz = AccessController.doPrivileged(new PrivilegedClassForName(className));
-            Class[] methodParameterTypes = { AccessController.doPrivileged(new PrivilegedClassForName("java.lang.String")) };
+            clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(className));
+            Class<?>[] methodParameterTypes = { AccessController.doPrivileged(new PrivilegedClassForName<>("java.lang.String")) };
             ClassLoader clazzloader = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
             ClassLoader classloader = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-            AccessController.doPrivileged(new PrivilegedClassForName(className, true, clazzloader));
-            version = (Version)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(clazz));
+            AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, clazzloader));
+            version = (Version)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(clazz));
 
             Field[] fields = AccessController.doPrivileged(new PrivilegedGetFields(clazz));
             Field field = AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, true));
             try {
-                int intValueFromField = ((Integer)AccessController.doPrivileged(new PrivilegedGetValueFromField(field, version))).intValue();
+                int intValueFromField = (Integer) AccessController.doPrivileged(new PrivilegedGetValueFromField(field, version));
             } catch (Exception e) {
             }
             AccessController.doPrivileged(new PrivilegedGetValueFromField(field, version));
@@ -173,7 +176,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
             Object[] parameters = { "TopLink Blah." };
             AccessController.doPrivileged(new PrivilegedMethodInvoker(method, version, parameters));
 
-            Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(clazz, null, true));
+            Constructor<?> constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(clazz, null, true));
             Constructor declaredConstructor = AccessController.doPrivileged(new PrivilegedGetDeclaredConstructorFor(clazz, null, true));
             AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, null));
 
@@ -183,7 +186,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
         }
     }
 
-    public Field getDeclaredField(final Class javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
+    public Field getDeclaredField(final Class<?> javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = findDeclaredField(javaClass, fieldName);
         if (shouldSetAccessible) {
             field.setAccessible(true);
@@ -191,7 +194,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
         return field;
     }
 
-    public Method getDeclaredMethod(final Class javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
+    public Method getDeclaredMethod(final Class<?> javaClass, final String methodName, final Class<?>[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Method method = findDeclaredMethod(javaClass, methodName, methodParameterTypes);
         if (shouldSetAccessible) {
             method.setAccessible(true);
@@ -204,11 +207,11 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
      * find the field.  This method is called by the public getDeclaredField() method and does a recursive
      * search for the named field in the given classes or it's superclasses.
      */
-    private Field findDeclaredField(Class javaClass, String fieldName) throws NoSuchFieldException {
+    private Field findDeclaredField(Class<?> javaClass, String fieldName) throws NoSuchFieldException {
         try {
             return javaClass.getDeclaredField(fieldName);
         } catch (NoSuchFieldException ex) {
-            Class superclass = javaClass.getSuperclass();
+            Class<?> superclass = javaClass.getSuperclass();
             if (superclass == null) {
                 throw ex;
             } else {
@@ -222,11 +225,11 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
      * find the method.  This method is called by the public getDeclaredMethod() method and does a recursive
      * search for the named method in the given classes or it's superclasses.
      */
-    private Method findDeclaredMethod(Class javaClass, String methodName, Class[] methodParameterTypes) throws NoSuchMethodException {
+    private Method findDeclaredMethod(Class<?> javaClass, String methodName, Class<?>[] methodParameterTypes) throws NoSuchMethodException {
         try {
             return javaClass.getDeclaredMethod(methodName, methodParameterTypes);
         } catch (NoSuchMethodException ex) {
-            Class superclass = javaClass.getSuperclass();
+            Class<?> superclass = javaClass.getSuperclass();
             if (superclass == null) {
                 throw ex;
             } else {

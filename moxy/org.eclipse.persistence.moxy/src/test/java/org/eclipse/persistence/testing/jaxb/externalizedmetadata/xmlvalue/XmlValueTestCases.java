@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapter.MyValueClass;
@@ -42,30 +43,31 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlValueTestCases(String name) throws Exception{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { MyValueClass.class });
+        setClasses(new Class<?>[] { MyValueClass.class });
     }
 
-    public Map getProperties(){
+    @Override
+    public Map<String, Object> getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(ADAPTER_OXM_DOC);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapter", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
 
 
+    @Override
     public Object getControlObject() {
         MyValueClass mvc = new MyValueClass();
-        mvc.blah = new Boolean("true");
+        mvc.blah = Boolean.valueOf("true");
         return mvc;
     }
 
@@ -82,15 +84,15 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         boolean exceptionOccurred = false;
 
         try {
-            JAXBContextFactory.createContext(new Class[] { InternationalPriceNoAnnotation.class }, properties, getClass().getClassLoader());
+            JAXBContextFactory.createContext(new Class<?>[] { InternationalPriceNoAnnotation.class }, properties, getClass().getClassLoader());
         } catch (Exception x) {
             exceptionOccurred = true;
         }
@@ -112,15 +114,15 @@ public class XmlValueTestCases extends JAXBWithJSONTestCases {
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         boolean exceptionOccurred = false;
 
         try {
-            JAXBContextFactory.createContext(new Class[] { InternationalPriceNoAnnotation.class }, properties, getClass().getClassLoader());
+            JAXBContextFactory.createContext(new Class<?>[] { InternationalPriceNoAnnotation.class }, properties, getClass().getClassLoader());
         } catch (Exception x) {
             exceptionOccurred = true;
         }

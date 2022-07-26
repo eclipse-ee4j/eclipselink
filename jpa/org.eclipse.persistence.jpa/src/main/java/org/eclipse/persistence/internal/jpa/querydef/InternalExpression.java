@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@
  * <b>Description</b>: Expressions are expression nodes that can not be joined from
  * and may or not be the result of a Path expression.  The SubQuery is a special type of expression that
  * requires certain methods but can not extend ExpressionImpl.  This interface provide a common API.
- * <p>
  *
  * @see jakarta.persistence.criteria Expression
  *
@@ -45,19 +44,19 @@
 // @since EclipseLink 1.2
 public interface InternalExpression{
 
-    public boolean isPredicate();
+    boolean isPredicate();
 
-    public boolean isCompoundExpression();
+    boolean isCompoundExpression();
 
-    public boolean isExpression();
+    boolean isExpression();
 
-    public boolean isLiteral();
+    boolean isLiteral();
 
-    public boolean isParameter();
+    boolean isParameter();
 
-    public boolean isSubquery();
+    boolean isSubquery();
 
     //conjunction or disjunction
-    public boolean isJunction();
+    boolean isJunction();
 
 }

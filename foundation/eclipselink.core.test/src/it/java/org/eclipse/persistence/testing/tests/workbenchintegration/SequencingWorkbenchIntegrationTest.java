@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,6 +59,7 @@ public class SequencingWorkbenchIntegrationTest extends AutoVerifyTestCase {
     }
 
     static class EmployeeProjectAmended extends EmployeeProject {
+        @Override
         public void applyLogin() {
             super.applyLogin();
             DatabaseLogin login = getLogin();
@@ -69,6 +70,7 @@ public class SequencingWorkbenchIntegrationTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void setup() throws Exception {
         originalProject = new EmployeeProjectAmended();
         if (mode == PROJECT_XML) {
@@ -80,6 +82,7 @@ public class SequencingWorkbenchIntegrationTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         DatabaseLogin originalLogin = originalProject.getLogin();
         DatabaseLogin login = project.getLogin();

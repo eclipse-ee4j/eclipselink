@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class MarshallerFragmentTestCases extends OXTestCase {
-    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xml";
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xml";
     protected final static String CONTROL_EMPLOYEE_NAME = "Jane Doe";
     protected Marshaller marshaller;
     protected Employee controlObject;
@@ -36,6 +36,7 @@ public class MarshallerFragmentTestCases extends OXTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         //set up XMLMarshaller
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -48,7 +49,7 @@ public class MarshallerFragmentTestCases extends OXTestCase {
         marshaller = jaxbContext.createMarshaller();
 
         originalSetting = (Boolean)marshaller.getProperty(XMLConstants.JAXB_FRAGMENT);
-        marshaller.setProperty(XMLConstants.JAXB_FRAGMENT, new Boolean(true));
+        marshaller.setProperty(XMLConstants.JAXB_FRAGMENT, Boolean.TRUE);
 
         //set up controlObject
         controlObject = new Employee();
@@ -61,6 +62,7 @@ public class MarshallerFragmentTestCases extends OXTestCase {
         removeCopyrightNode(controlDocument);
     }
 
+    @Override
     public void tearDown() {
         try {
             marshaller.setProperty(XMLConstants.JAXB_FRAGMENT, originalSetting);

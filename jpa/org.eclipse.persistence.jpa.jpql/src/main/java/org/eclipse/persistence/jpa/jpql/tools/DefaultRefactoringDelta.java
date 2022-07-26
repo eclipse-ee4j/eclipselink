@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,9 +89,6 @@ public class DefaultRefactoringDelta implements RefactoringDelta {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String applyChanges() {
 
@@ -137,9 +134,6 @@ public class DefaultRefactoringDelta implements RefactoringDelta {
         return position;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasTextEdits() {
         return !textEdits.isEmpty();
@@ -155,28 +149,19 @@ public class DefaultRefactoringDelta implements RefactoringDelta {
     protected void initialize(CharSequence jpqlQuery) {
         Assert.isNotNull(jpqlQuery, "The JPQL query cannot be null");
         this.jpqlQuery = jpqlQuery;
-        this.textEdits = new LinkedList<TextEdit>();
+        this.textEdits = new LinkedList<>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int size() {
         return textEdits.size();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<TextEdit> textEdits() {
-        return new SnapshotCloneListIterable<TextEdit>(textEdits);
+        return new SnapshotCloneListIterable<>(textEdits);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return textEdits.toString();

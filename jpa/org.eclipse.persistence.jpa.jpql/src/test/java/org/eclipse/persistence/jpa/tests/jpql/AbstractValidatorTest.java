@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -122,9 +122,6 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
         return ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setUpClass() throws Exception {
         super.setUpClass();
@@ -137,9 +134,6 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
         validator = buildValidator();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void tearDown() throws Exception {
         if (validator != null) {
@@ -148,9 +142,6 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
         super.tearDown();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void tearDownClass() throws Exception {
         jpqlGrammar    = null;
@@ -209,8 +200,8 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
                                                   int[] startPositions,
                                                   int[] endPositions) {
 
-        List<String> problemsNotFound = new ArrayList<String>();
-        List<String> extraProblems = new ArrayList<String>();
+        List<String> problemsNotFound = new ArrayList<>();
+        List<String> extraProblems = new ArrayList<>();
 
         for (String messageKey : messageKeys) {
             problemsNotFound.add(messageKey);
@@ -278,7 +269,7 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
                                          int[] startPositions,
                                          int[] endPositions) {
 
-        List<String> problemsNotFound = new ArrayList<String>();
+        List<String> problemsNotFound = new ArrayList<>();
 
         for (String messageKey : messageKeys) {
             problemsNotFound.add(messageKey);
@@ -361,7 +352,7 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
      * JPQLQueryProblem problems}
      */
     protected List<JPQLQueryProblem> validate(String jpqlQuery, JPQLExpression jpqlExpression) throws Exception {
-        List<JPQLQueryProblem> problems = new ArrayList<JPQLQueryProblem>();
+        List<JPQLQueryProblem> problems = new ArrayList<>();
         validator.setProblems(problems);
         jpqlExpression.accept(validator);
         return problems;

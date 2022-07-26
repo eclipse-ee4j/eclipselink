@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class Scenario1_9a extends ReportQueryTestCase {
         setDescription("COUNT aggregate function");
     }
 
+    @Override
     protected void buildExpectedResults() {
         Vector employees = getSession().readAllObjects(Employee.class);
 
@@ -34,6 +35,7 @@ public class Scenario1_9a extends ReportQueryTestCase {
         result[0] = new java.math.BigDecimal(employees.size());
         addResult(result, null);
     }
+@Override
 protected void setup()  throws Exception
 {
         super.setup();
@@ -43,12 +45,13 @@ protected void setup()  throws Exception
         reportQuery.addCount("id");
     }
 
+    @Override
     protected void verify() {
         if (results.size() != expectedResults.size()) {
             throw new TestErrorException("ReportQuery test failed: The result size are different");
         }
         BigDecimal expected = (BigDecimal)((ReportQueryResult)expectedResults.firstElement()).getByIndex(0);
-        BigDecimal result = (BigDecimal)ConversionManager.getDefaultManager().convertObject(((ReportQueryResult)results.firstElement()).getByIndex(0), BigDecimal.class);
+        BigDecimal result = ConversionManager.getDefaultManager().convertObject(((ReportQueryResult)results.firstElement()).getByIndex(0), BigDecimal.class);
         if (!Helper.compareBigDecimals(expected, result)) {
             throw new TestErrorException("ReportQuery test failed: The results did not match (" + expected + ", " + result + ")");
         }

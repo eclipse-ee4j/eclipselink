@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
+
+import java.util.Objects;
 
 @NamedQueries({
     @NamedQuery(
@@ -123,7 +125,7 @@ public class StaticUser {
     }
 
     public boolean equals(Object object){
-        if (object == null || !(object instanceof StaticUser)){
+        if (!(object instanceof StaticUser)){
             return false;
         }
         StaticUser user = (StaticUser)object;
@@ -136,5 +138,8 @@ public class StaticUser {
         return id == user.getId() && name.equals(user.getName()) && (address == null || address.getId() == user.getAddress().getId());
     }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, address);
+    }
 }

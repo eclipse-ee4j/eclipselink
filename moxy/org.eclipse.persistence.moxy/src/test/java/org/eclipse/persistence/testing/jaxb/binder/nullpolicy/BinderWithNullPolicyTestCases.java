@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,12 @@
 //     Matt MacIvor - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.binder.nullpolicy;
 
-import java.io.File;
 import java.io.StringReader;
 
 import jakarta.xml.bind.Binder;
 import jakarta.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -42,78 +39,82 @@ public class BinderWithNullPolicyTestCases extends TestCase{
     }
 
     public void testAbsentNode() throws Exception {
-        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
+        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address><gender>MALE</gender></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/absentnode.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeA.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeA.class}, null);
 
-        Binder binder = ctx.createBinder();
+        Binder<Node> binder = ctx.createBinder();
 
         EmployeeA emp = (EmployeeA)binder.unmarshal(parser.parse(new StringReader(xml)));
 
         emp.setName(null);
+        emp.setGender(null);
 
         binder.updateXML(emp);
 
         JAXBXMLComparer comparer = new JAXBXMLComparer();
-        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
+        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, binder.getXMLNode(emp).getOwnerDocument()));
     }
 
     public void testXsiNilNullMarshal() throws Exception {
-        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
+        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address><gender>MALE</gender></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/xsinil.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeB.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeB.class}, null);
 
-        Binder binder = ctx.createBinder();
+        Binder<Node> binder = ctx.createBinder();
 
         EmployeeB emp = (EmployeeB)binder.unmarshal(parser.parse(new StringReader(xml)));
 
         emp.setName(null);
+        emp.setGender(null);
 
         binder.updateXML(emp);
 
         JAXBXMLComparer comparer = new JAXBXMLComparer();
-        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
+        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, binder.getXMLNode(emp).getOwnerDocument()));
     }
 
     public void testXsiNilUnmarshalMarshalValue() throws Exception {
-        String xml = "<employee><!-- Comment 1 --><name xmlns:xsi=\"" + javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI + "\" xsi:nil=\"true\">Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
+        String xml = "<employee><!-- Comment 1 --><name xmlns:xsi=\"" + javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI + "\" xsi:nil=\"true\">Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address><gender xmlns:xsi=\"" + javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI + "\" xsi:nil=\"true\">MALE</gender></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/nilwithvalue.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeB.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeB.class}, null);
 
-        Binder binder = ctx.createBinder();
+        Binder<Node> binder = ctx.createBinder();
 
         EmployeeB emp = (EmployeeB)binder.unmarshal(parser.parse(new StringReader(xml)));
 
         emp.setName("Matt");
+        emp.setGender(Gender.MALE);
 
         binder.updateXML(emp);
 
         JAXBXMLComparer comparer = new JAXBXMLComparer();
-        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
+        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, binder.getXMLNode(emp).getOwnerDocument()));
     }
 
     public void testEmptyNode() throws Exception {
-        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
+        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address><gender>MALE</gender></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/emptynode.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeC.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeC.class}, null);
 
-        Binder binder = ctx.createBinder();
+        Binder<Node> binder = ctx.createBinder();
 
         EmployeeC emp = (EmployeeC)binder.unmarshal(parser.parse(new StringReader(xml)));
 
         emp.setName(null);
+        emp.setGender(null);
 
         binder.updateXML(emp);
 
         JAXBXMLComparer comparer = new JAXBXMLComparer();
-        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
+        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, binder.getXMLNode(emp).getOwnerDocument()));
     }
 }

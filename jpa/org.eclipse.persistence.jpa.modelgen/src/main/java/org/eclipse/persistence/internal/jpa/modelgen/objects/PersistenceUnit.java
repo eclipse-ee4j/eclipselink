@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,8 @@
 //       - 494610: Session Properties map should be Map<String, Object>
 //     10/09/2017-2.7 Lukas Jungmann
 //       - 521954: Eclipselink 2.7 is not able to parse ORM XML files using the 2.2 schema
+//     02/10/2022-4.0 Oracle
+//       - JPA 3.1 UUID Support
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
@@ -281,19 +283,29 @@ public class PersistenceUnit {
             addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getEclipseLinkOrmProject());
         } catch (XMLMarshalException e) {
             try {
-                // Try JPA 2.2 project
-                addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_2Project());
-            } catch (XMLMarshalException xme) {
+                // Try Persistence 3.1 project
+                addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm3_1Project());
+            } catch (XMLMarshalException e31) {
                 try {
-                    // Try JPA 2.1 project
-                    addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_1Project());
-                } catch (XMLMarshalException ee) {
+                    // Try Persistence 3.0 project
+                    addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm3_0Project());
+                } catch (XMLMarshalException e30) {
                     try {
-                        // Try JPA 2.0 project
-                        addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_0Project());
-                    } catch (XMLMarshalException eee) {
-                        // Try JPA 1.0 project (don't catch exceptions at this point)
-                        addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm1_0Project());
+                        // Try JPA 2.2 project
+                        addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_2Project());
+                    } catch (XMLMarshalException e22) {
+                        try {
+                            // Try JPA 2.1 project
+                            addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_1Project());
+                        } catch (XMLMarshalException e21) {
+                            try {
+                                // Try JPA 2.0 project
+                                addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_0Project());
+                            } catch (XMLMarshalException e20) {
+                                // Try JPA 1.0 project (don't catch exceptions at this point)
+                                addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm1_0Project());
+                            }
+                        }
                     }
                 }
             }
@@ -367,7 +379,7 @@ public class PersistenceUnit {
     public String getPersistenceUnitProperty(final String name) {
         Object objVal = persistenceUnitProperties.get(name);
         if (objVal instanceof String) {
-            return String.class.cast(objVal);
+            return (String) objVal;
         } else {
             return objVal != null ? objVal.toString() : null;
         }
@@ -377,7 +389,7 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     public void initPersistenceUnitProperties() {
-        persistenceUnitProperties = new HashMap<String, Object>();
+        persistenceUnitProperties = new HashMap<>();
 
         // Determine how much validation we want to do. For now, last one
         // in wins (in the case of multiple settings) and we ignore null
@@ -402,7 +414,7 @@ public class PersistenceUnit {
      * INTERNAL:
      */
     protected void initXMLEntityMappings() {
-        xmlEntityMappings = new ArrayList<XMLEntityMappings>();
+        xmlEntityMappings = new ArrayList<>();
 
         // Load the orm.xml if it exists.
         addXMLEntityMappings(MetadataHelper.JPA_ORM_FILE);
@@ -440,8 +452,8 @@ public class PersistenceUnit {
         // 2 - Iterate through the classes that are defined in the <mapping>
         // files and add them to the map. This will merge the accessors where
         // necessary.
-        HashMap<String, EntityAccessor> entities = new HashMap<String, EntityAccessor>();
-        HashMap<String, EmbeddableAccessor> embeddables = new HashMap<String, EmbeddableAccessor>();
+        HashMap<String, EntityAccessor> entities = new HashMap<>();
+        HashMap<String, EmbeddableAccessor> embeddables = new HashMap<>();
 
         for (XMLEntityMappings entityMappings : xmlEntityMappings) {
             entityMappings.initPersistenceUnitClasses(entities, embeddables);

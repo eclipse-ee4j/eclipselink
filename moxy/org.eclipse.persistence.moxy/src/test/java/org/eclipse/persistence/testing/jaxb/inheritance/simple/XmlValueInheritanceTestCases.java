@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,11 +26,12 @@ public class XmlValueInheritanceTestCases extends JAXBWithJSONTestCases{
 
     public XmlValueInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Simple.class, Complex.class});
+        setClasses(new Class<?>[] { Simple.class, Complex.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/simple/xmlvalue.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/simple/xmlvalue.json");
     }
 
+    @Override
     public Object getControlObject() {
         Complex complex = new Complex();
         complex.foo = "aaa";

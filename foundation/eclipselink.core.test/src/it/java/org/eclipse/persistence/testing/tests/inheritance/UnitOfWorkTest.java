@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,8 @@ import org.eclipse.persistence.testing.models.inheritance.Company;
  *                                <li>    <i>Bicycle added to vehicles</i>, 2L inheritance from vehicle, on same table
  *                                <li> <i>Car added to vehicles</i>, 2L inheritance from vehicle, has own table
  *                                <li>    <i>Bus added to vehicles</i>, 2L inheritance from vehicle, has own table
- *                                <li>    <i>Vehicle deleted<i>, deletion with inheritance
+ *                                <li>    <i>Vehicle deleted</i>, deletion with inheritance
+ *                                </ul>
  *
  * */
 public class UnitOfWorkTest extends WriteObjectTest {
@@ -66,15 +67,15 @@ public class UnitOfWorkTest extends WriteObjectTest {
 
     protected void changeUnitOfWorkWorkingCopy() {
         Company company = (Company)this.unitOfWorkWorkingCopy;
-        Vector vehicles = (Vector)company.getVehicles().getValue();
+        Vector<Vehicle> vehicles = company.getVehicles().getValue();
 
         //delete a vehicle
         //    vehicles.removeElement(vehicles.firstElement());
         Car car = Car.example2();
         car.setOwner(company);
 
-        for (Enumeration enumtr = vehicles.elements(); enumtr.hasMoreElements();) {
-            ((Vehicle)enumtr.nextElement()).change();
+        for (Enumeration<Vehicle> enumtr = vehicles.elements(); enumtr.hasMoreElements();) {
+            enumtr.nextElement().change();
 
         }
 
@@ -85,10 +86,12 @@ public class UnitOfWorkTest extends WriteObjectTest {
         vehicles.addElement(Bus.example2(company));
     }
 
+    @Override
     protected void setup() {
         super.setup();
     }
 
+    @Override
     protected void test() {
         {
             // Acquire first unit of work
@@ -115,6 +118,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         try {
             if (!(((AbstractSession)getSession()).compareObjects(this.unitOfWorkWorkingCopy, this.objectToBeWritten))) {

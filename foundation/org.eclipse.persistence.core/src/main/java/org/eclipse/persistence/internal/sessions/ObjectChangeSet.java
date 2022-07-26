@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -39,10 +40,10 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 /**
  * <p>
  * <b>Purpose</b>: Hold the Records of change for a particular instance of an object.
- * <p>
+ * </p><p>
  * <b>Description</b>: This class uses the Primary Keys of the Object it represents,
  * and the class.
- * <p>
+ * </p>
  */
 public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet>, org.eclipse.persistence.sessions.changesets.ObjectChangeSet {
     /** Allow change sets to be compared by changes for batching. */
@@ -63,7 +64,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             // Sort by changes to keep same SQL together for batching.
             if ((left.changes != null) && right.changes != null) {
                 int size = left.changes.size();
-                List otherChanges = right.changes;
+                List<org.eclipse.persistence.sessions.changesets.ChangeRecord> otherChanges = right.changes;
                 int otherSize = otherChanges.size();
                 if (size > otherSize) {
                     return 1;
@@ -88,7 +89,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     protected transient Map<String, ChangeRecord> attributesToChanges;
     protected boolean shouldBeDeleted;
     protected Object id;
-    protected transient Class classType;
+    protected transient Class<?> classType;
     protected String className;
     protected boolean isNew;
     protected boolean isAggregate;
@@ -192,7 +193,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         }
         String attributeName = changeRecord.getAttribute();
         Map attributeToChanges = getAttributesToChanges();
-        List changes = getChanges();
+        List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changes = getChanges();
         ChangeRecord existingChangeRecord = (ChangeRecord)attributeToChanges.get(attributeName);
         // change tracking may add a change to an existing attribute fix that here.
         if (existingChangeRecord != null) {
@@ -334,7 +335,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * The class type must be initialized, before this method is called.
      * @return java.lang.Class or null if the class type isn't initialized.
      */
-    public Class getClassType() {
+    public Class<?> getClassType() {
         return classType;
     }
 
@@ -344,9 +345,9 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * This requires the session to reload the class on serialization.
      */
     @Override
-    public Class getClassType(org.eclipse.persistence.sessions.Session session) {
+    public Class<?> getClassType(org.eclipse.persistence.sessions.Session session) {
         if (classType == null) {
-            classType = (Class) session.getDatasourcePlatform().getConversionManager().convertObject(getClassName(), ClassConstants.CLASS);
+            classType = session.getDatasourcePlatform().getConversionManager().convertObject(getClassName(), ClassConstants.CLASS);
         }
         return classType;
     }
@@ -638,7 +639,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      */
     public void setShouldModifyVersionField(Boolean shouldModifyVersionField) {
         this.shouldModifyVersionField = shouldModifyVersionField;
-        if(shouldModifyVersionField != null && shouldModifyVersionField.booleanValue()) {
+        if(shouldModifyVersionField != null && shouldModifyVersionField) {
             // mark the version number as 'dirty'
             // Note that at this point there is no newWriteLockValue - it will be set later.
             // This flag is set to indicate that the change set WILL have changes.
@@ -781,7 +782,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 }
             }
         }
-        List changesToMerge = changeSetToMergeFrom.getChanges();
+        List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changesToMerge = changeSetToMergeFrom.getChanges();
         int size = changesToMerge.size();
         for (int index = 0; index < size; ++index) {
             ChangeRecord record = (ChangeRecord)changesToMerge.get(index);
@@ -876,7 +877,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /**
      * Set the class type.
      */
-    public void setClassType(Class newValue) {
+    public void setClassType(Class<?> newValue) {
         this.classType = newValue;
     }
 
@@ -1186,8 +1187,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      */
     protected void rebuildWriteLockValueFromUserFormat(ClassDescriptor descriptor, AbstractSession session) {
         if (descriptor.getOptimisticLockingPolicy() instanceof TimestampLockingPolicy) {
-            this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, ClassConstants.JavaSqlTimestamp_Class);
-            this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, ClassConstants.JavaSqlTimestamp_Class);
+            this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, CoreClassConstants.TIMESTAMP);
+            this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, CoreClassConstants.TIMESTAMP);
         } else if (descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy) {
             this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, ClassConstants.BIGDECIMAL);
             this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, ClassConstants.BIGDECIMAL);
@@ -1282,7 +1283,6 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /**
      * ADVANCED
      * Returns true if this ObjectChangeSet should be recalculated after changes in event
-     * @return
      */
     @Override
     public boolean shouldRecalculateAfterUpdateEvent() {

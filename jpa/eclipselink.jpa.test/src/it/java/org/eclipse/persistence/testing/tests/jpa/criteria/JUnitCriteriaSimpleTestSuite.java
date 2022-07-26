@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 
 import jakarta.persistence.EntityManager;
@@ -134,6 +134,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitCriteriaSimpleTestSuiteBa
     /**
      * Tests 1=1 returns correct result.
      */
+    @Override
     public void testParameterEqualsParameter() throws Exception {
         DatabasePlatform databasePlatform = JUnitTestCase.getServerSession().getPlatform();
 
@@ -159,7 +160,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitCriteriaSimpleTestSuiteBa
             int numRead = emps.size();
 
             // "SELECT e FROM Employee e WHERE :arg1=:arg2");
-            CriteriaQuery cq = qb.createQuery(Employee.class);
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             cq.where(qb.equal(qb.parameter(Integer.class, "arg1"), qb.parameter(Integer.class, "arg2")));
             query = em.createQuery(cq);
 
@@ -191,7 +192,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitCriteriaSimpleTestSuiteBa
             int numRead = emps.size();
 
             // "SELECT e FROM Employee e WHERE 1=1");
-            CriteriaQuery cq = qb.createQuery(Employee.class);
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             cq.where(qb.equal(qb.literal(1), 1));
             emps = em.createQuery(cq).getResultList();
 
@@ -220,8 +221,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitCriteriaSimpleTestSuiteBa
         CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
 
         Root<Employee> emp = criteria.from(Employee.class);
-        Path unusedTupleElement = emp.get("normalHours"); // Receives IllegalArgumentException if metamodel is used
-        Path lastName = emp.get("lastName");
+        Path<Object> unusedTupleElement = emp.get("normalHours"); // Receives IllegalArgumentException if metamodel is used
+        Path<Object> lastName = emp.get("lastName");
         criteria.multiselect(lastName, emp.get("firstName"));
 
         TypedQuery<Tuple> query = em.createQuery(criteria);

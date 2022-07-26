@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -244,6 +245,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on the session if a descriptor is missing for a class being persisted.
      * This can be used to lazy register the descriptor or set of descriptors.
      */
+    @Override
     public void missingDescriptor(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -256,6 +258,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on the session after read object query detected more than a single row back from the database.
      * The "result" of the event will be the call.  Some applications may want to interpret this as an error or warning condition.
      */
+    @Override
     public void moreRowsDetected(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -268,6 +271,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on the session after update or delete SQL has been sent to the database
      * but a row count of zero was returned.
      */
+    @Override
     public void noRowsModified(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -282,6 +286,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event mechanism allows for a listener to be registered before the proc is call to process the output values.
      * The event "result" will contain a Record of the output values, and property "call" will be the StoredProcedureCall.
      */
+    @Override
     public void outputParametersDetected(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -293,6 +298,7 @@ public class SessionEventTracker implements SessionEventListener {
      * PUBLIC:
      * This event is raised on the client session after creation/acquiring.
      */
+    @Override
     public void postAcquireClientSession(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -305,6 +311,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on when using the server/client sessions.
      * This event is raised after a connection is acquired from a connection pool.
      */
+    @Override
     public void postAcquireConnection(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -319,6 +326,7 @@ public class SessionEventTracker implements SessionEventListener {
      * is being acquired.  Users can set properties within the ConnectionPolicy
      * of that ClientSession for access within this event.
      */
+    @Override
     public void postAcquireExclusiveConnection(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -331,6 +339,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on the unit of work after creation/acquiring.
      * This will be raised on nest units of work.
      */
+    @Override
     public void postAcquireUnitOfWork(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -343,6 +352,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised after a database transaction is started.
      * It is not raised for nested transactions.
      */
+    @Override
     public void postBeginTransaction(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -355,6 +365,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised after the commit has begun on the UnitOfWork but before
      * the changes are calculated.
      */
+    @Override
     public void preCalculateUnitOfWorkChangeSet(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -370,6 +381,7 @@ public class SessionEventTracker implements SessionEventListener {
      * IdentityField type primary keys.  These will be updated after the insert, or
      * update, of the object
      */
+    @Override
     public void postCalculateUnitOfWorkChangeSet(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -382,6 +394,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised after a database transaction is commited.
      * It is not raised for nested transactions.
      */
+    @Override
     public void postCommitTransaction(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -394,6 +407,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on the unit of work after commit.
      * This will be raised on nest units of work.
      */
+    @Override
     public void postCommitUnitOfWork(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -406,6 +420,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised after the session connects to the database.
      * In a server session this event is raised on every new connection established.
      */
+    @Override
     public void postConnect(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -418,6 +433,20 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised after the execution of every query against the session.
      * The event contains the query and query result.
      */
+    @Override
+    public void postExecuteCall(SessionEvent event) {
+        if (!isTrackingEvent(event)) {
+            return;
+        }
+        log(event);
+    }
+
+    /**
+     * PUBLIC:
+     * This event is raised after the execution of every query against the session.
+     * The event contains the query and query result.
+     */
+    @Override
     public void postExecuteQuery(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -429,6 +458,7 @@ public class SessionEventTracker implements SessionEventListener {
      * PUBLIC:
      * This event is raised on the client session after releasing.
      */
+    @Override
     public void postReleaseClientSession(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -441,6 +471,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on the unit of work after release.
      * This will be raised on nest units of work.
      */
+    @Override
     public void postReleaseUnitOfWork(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -453,6 +484,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on the unit of work after resuming.
      * This occurs after pre/postCommit.
      */
+    @Override
     public void postResumeUnitOfWork(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -465,6 +497,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised after a database transaction is rolledback.
      * It is not raised for nested transactions.
      */
+    @Override
     public void postRollbackTransaction(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -477,6 +510,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This even will be raised after a UnitOfWorkChangeSet has been merged
      * When that changeSet has been received from a distributed session
      */
+    @Override
     public void postDistributedMergeUnitOfWorkChangeSet(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -488,6 +522,7 @@ public class SessionEventTracker implements SessionEventListener {
      * PUBLIC:
      * This even will be raised after a UnitOfWorkChangeSet has been merged
      */
+    @Override
     public void postMergeUnitOfWorkChangeSet(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -500,6 +535,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised before a database transaction is started.
      * It is not raised for nested transactions.
      */
+    @Override
     public void preBeginTransaction(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -512,6 +548,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised before a database transaction is commited.
      * It is not raised for nested transactions.
      */
+    @Override
     public void preCommitTransaction(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -524,6 +561,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on the unit of work before commit.
      * This will be raised on nest units of work.
      */
+    @Override
     public void preCommitUnitOfWork(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -536,6 +574,20 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised before the execution of every query against the session.
      * The event contains the query to be executed.
      */
+    @Override
+    public void preExecuteCall(SessionEvent event) {
+        if (!isTrackingEvent(event)) {
+            return;
+        }
+        log(event);
+    }
+
+    /**
+     * PUBLIC:
+     * This event is raised before the execution of every query against the session.
+     * The event contains the query to be executed.
+     */
+    @Override
     public void preExecuteQuery(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -548,6 +600,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on the unit of work after the SQL has been flushed, but the commit transaction has not been executed.
      * It is similar to the JTS prepare phase.
      */
+    @Override
     public void prepareUnitOfWork(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -559,6 +612,7 @@ public class SessionEventTracker implements SessionEventListener {
      * PUBLIC:
      * This event is raised on the client session before releasing.
      */
+    @Override
     public void preReleaseClientSession(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -571,6 +625,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on when using the server/client sessions.
      * This event is raised before a connection is released into a connection pool.
      */
+    @Override
     public void preReleaseConnection(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -583,6 +638,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is fired just before a Client Session, with isolated data,
      * releases its Exclusive Connection
      */
+    @Override
     public void preReleaseExclusiveConnection(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -595,6 +651,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised on the unit of work before release.
      * This will be raised on nest units of work.
      */
+    @Override
     public void preReleaseUnitOfWork(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -607,6 +664,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised before a database transaction is rolledback.
      * It is not raised for nested transactions.
      */
+    @Override
     public void preRollbackTransaction(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -619,6 +677,7 @@ public class SessionEventTracker implements SessionEventListener {
      * This even will be raised before a UnitOfWorkChangeSet has been merged
      * When that changeSet has been received from a distributed session
      */
+    @Override
     public void preDistributedMergeUnitOfWorkChangeSet(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -630,6 +689,7 @@ public class SessionEventTracker implements SessionEventListener {
      * PUBLIC:
      * This even will be raised before a UnitOfWorkChangeSet has been merged
      */
+    @Override
     public void preMergeUnitOfWorkChangeSet(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -641,6 +701,7 @@ public class SessionEventTracker implements SessionEventListener {
      * PUBLIC:
      * This Event is raised before the session logs in.
      */
+    @Override
     public void preLogin(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -655,6 +716,7 @@ public class SessionEventTracker implements SessionEventListener {
      * PUBLIC:
      * This Event is raised after the session logs out.
      */
+    @Override
     public void preLogout(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -666,6 +728,7 @@ public class SessionEventTracker implements SessionEventListener {
      * PUBLIC:
      * This Event is raised after the session logs out.
      */
+    @Override
     public void postLogout(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -677,6 +740,7 @@ public class SessionEventTracker implements SessionEventListener {
      * PUBLIC:
      * This Event is raised after the session logs in.
      */
+    @Override
     public void postLogin(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;

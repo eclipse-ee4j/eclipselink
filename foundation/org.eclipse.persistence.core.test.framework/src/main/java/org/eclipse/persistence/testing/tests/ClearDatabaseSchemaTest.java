@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,10 +45,10 @@ public class ClearDatabaseSchemaTest extends TestCase {
     @Override
     public void test() {
         //TODO: add missing platforms, currently supported are:
-        //MySQL, Oracle DB, Derby, HSQLDB, PostgreSQL, MSSQL
+        //MySQL, MariaDB, Oracle DB, Derby, HSQLDB, PostgreSQL, MSSQL
         AbstractSession session = (AbstractSession) getSession();
         Platform platform = session.getDatasourcePlatform();
-        if (platform.isMySQL()) {
+        if (platform.isMySQL() || platform.isMariaDB()) {
             resetMySQL(session);
         } else if (platform.isOracle()) {
             resetOracle(session);
@@ -133,7 +133,7 @@ public class ClearDatabaseSchemaTest extends TestCase {
     }
 
     private void resetDerby(AbstractSession session) {
-        Vector<ArrayRecord> result = session.executeSQL("SELECT 'ALTER TABLE '||S.SCHEMANAME||'.'||T.TABLENAME||' DROP CONSTRAINT '||C.CONSTRAINTNAME\n"
+        Vector<ArrayRecord> result = session.executeSQL("SELECT 'ALTER TABLE '||S.SCHEMANAME||'.'||T.TABLENAME||' DROP CONSTRAINT \"'||C.CONSTRAINTNAME||'\"'\n"
                 + "FROM SYS.SYSCONSTRAINTS C, SYS.SYSSCHEMAS S, SYS.SYSTABLES T\n"
                 + "WHERE C.SCHEMAID = S.SCHEMAID AND C.TABLEID = T.TABLEID AND S.SCHEMANAME = CURRENT SCHEMA ORDER BY C.REFERENCECOUNT DESC");
         List<String> toRetry = execStatements(session, result);

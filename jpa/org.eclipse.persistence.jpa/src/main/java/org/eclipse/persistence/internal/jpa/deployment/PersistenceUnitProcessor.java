@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -110,6 +110,12 @@ public class PersistenceUnitProcessor {
     private static final int WEBINF_CLASSES_LEN = WEBINF_CLASSES_STR.length();
 
     /**
+     * Default constructor.
+     */
+    protected PersistenceUnitProcessor() {
+    }
+
+    /**
      * Entries in a zip file are directory entries using slashes to separate
      * them. Build a class name using '.' instead of slash and removing the
      * '.class' extension.
@@ -131,9 +137,9 @@ public class PersistenceUnitProcessor {
         Set<String> set = new HashSet<String>();
         set.addAll(persistenceUnitInfo.getManagedClassNames());
         ClassLoader loader = persistenceUnitInfo.getClassLoader();
-        Iterator i = persistenceUnitInfo.getJarFileUrls().iterator();
+        Iterator<URL> i = persistenceUnitInfo.getJarFileUrls().iterator();
         while (i.hasNext()) {
-            set.addAll(getClassNamesFromURL((URL)i.next(), loader, properties));
+            set.addAll(getClassNamesFromURL(i.next(), loader, properties));
         }
         if (!persistenceUnitInfo.excludeUnlistedClasses()){
             set.addAll(getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), loader, properties));
@@ -165,7 +171,6 @@ public class PersistenceUnitProcessor {
      * {@code descriptorLocation} via {@code Classloader.getResource(String)}).
      * @param descriptorLocation - the name of the resource.
      * @return The URL of the PU root containing the resource.
-     * @throws IOException
      * @throws ValidationException if the resolved root doesn't conform to the
      * JPA specification (8.2)
      */
@@ -415,7 +420,7 @@ public class PersistenceUnitProcessor {
             descriptorPath = PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
         }
         Set<Archive> archives = findPersistenceArchives(loader, descriptorPath, jarFileUrls, m);
-        Set<SEPersistenceUnitInfo> puInfos = new HashSet();
+        Set<SEPersistenceUnitInfo> puInfos = new HashSet<>();
         try {
             for(Archive archive : archives) {
                 List<SEPersistenceUnitInfo> puInfosFromArchive = getPersistenceUnits(archive, loader);
@@ -455,7 +460,7 @@ public class PersistenceUnitProcessor {
         } else {
             try {
                 if (loader != null) {
-                    Class archiveClass = loader.loadClass(factoryClassName);
+                    Class<?> archiveClass = loader.loadClass(factoryClassName);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
                             factory = (ArchiveFactory)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(archiveClass));
@@ -588,8 +593,8 @@ public class PersistenceUnitProcessor {
     /**
      * Load the given class name with the given class loader.
      */
-    public static Class loadClass(String className, ClassLoader loader, boolean throwExceptionIfNotFound, MetadataProject project) {
-        Class candidateClass = null;
+    public static Class<?> loadClass(String className, ClassLoader loader, boolean throwExceptionIfNotFound, MetadataProject project) {
+        Class<?> candidateClass = null;
 
         try {
             candidateClass = loader.loadClass(className);
@@ -714,8 +719,6 @@ public class PersistenceUnitProcessor {
     /**
      * Build the unique persistence name by concatenating the decoded URL with the persistence unit name.
      * A decoded URL is required while persisting on a multi-bytes OS.
-     * @param url
-     * @param puName
      * @return String
      */
    public static String buildPersistenceUnitName(URL url, String puName){
@@ -750,7 +753,7 @@ public class PersistenceUnitProcessor {
             // archive, and file is the URL of that archive. Since
             // the innermost archive has to be a JAR (according to JPA Spec),
             // this case is handled by the previous branch.
-            return rootEntry.equals(WEBINF_CLASSES_STR);
+            return rootEntry.equals(WEBINF_CLASSES_STR) || rootEntry.isEmpty();
         } else {
             return false;
         }

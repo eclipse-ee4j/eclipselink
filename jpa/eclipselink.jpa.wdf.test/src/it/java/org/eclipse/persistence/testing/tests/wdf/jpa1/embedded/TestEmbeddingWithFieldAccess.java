@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -43,14 +43,14 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
             em.persist(obj);
             env.commitTransactionAndClear(em);
             verify(true, "no Exception");
-            obj = em.find(EmbeddingFieldAccess.class, new Integer(0));
+            obj = em.find(EmbeddingFieldAccess.class, 0);
         } finally {
             closeEntityManager(em);
         }
     }
 
     private EmbeddingFieldAccess find(EntityManager em, int id) {
-        return em.find(EmbeddingFieldAccess.class, new Integer(id));
+        return em.find(EmbeddingFieldAccess.class, id);
     }
 
     private void validateMutable(final int id, MutableValidator validator, String fieldName) {
@@ -145,6 +145,7 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
                         + ") in embedded field");
             }
 
+            @Override
             public void mutate(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.getFieldAccess());
@@ -155,12 +156,14 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
                 obj.getFieldAccess().changeTime(-CHANGED);
             }
 
+            @Override
             public boolean isNull(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.getFieldAccess());
                 return obj.getFieldAccess().retrieveDate() == null && obj.getFieldAccess().retrieveTime() == 0L;
             }
 
+            @Override
             public void setNull(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.getFieldAccess());
@@ -168,6 +171,7 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
                 obj.getFieldAccess().changeTime(0L);
             }
 
+            @Override
             public void set(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.getFieldAccess());
@@ -175,6 +179,7 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
                 obj.getFieldAccess().changeTime(-UNCHANGED);
             }
 
+            @Override
             public void change(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.getFieldAccess());
@@ -182,6 +187,7 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
                 obj.getFieldAccess().changeTime(-CHANGED);
             }
 
+            @Override
             public boolean isChanged(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.getFieldAccess());
@@ -218,6 +224,7 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
                         + ") in embedded field");
             }
 
+            @Override
             public void mutate(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.propertyAccess);
@@ -225,12 +232,14 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
                 obj.propertyAccess.setTime(-CHANGED);
             }
 
+            @Override
             public boolean isNull(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.propertyAccess);
                 return obj.propertyAccess.getDate() == null && obj.propertyAccess.getTime() == 0L;
             }
 
+            @Override
             public void setNull(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.propertyAccess);
@@ -238,6 +247,7 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
                 obj.propertyAccess.setTime(0L);
             }
 
+            @Override
             public void set(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.propertyAccess);
@@ -245,6 +255,7 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
                 obj.propertyAccess.setTime(-UNCHANGED);
             }
 
+            @Override
             public void change(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.propertyAccess);
@@ -252,6 +263,7 @@ public class TestEmbeddingWithFieldAccess extends JPA1Base {
                 obj.propertyAccess.setTime(-CHANGED);
             }
 
+            @Override
             public boolean isChanged(EmbeddingFieldAccess obj) {
                 initEmbedded(obj);
                 verifyConsistency(obj.propertyAccess);

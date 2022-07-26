@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -142,7 +143,7 @@ public class SDODataObjectGetDateConversionWithPathTest extends SDODataObjectCon
 
         dataObject_c.setLong(property_c, l);// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
     }
 
     //9. purpose: getDate with Undefined Boolean Property
@@ -195,7 +196,7 @@ public class SDODataObjectGetDateConversionWithPathTest extends SDODataObjectCon
 
         dataObject_a.setString(propertyPath_a_b_c, "2001-01-01");// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
     }
 
     //12. purpose: getDate with Undefined string Property
@@ -252,7 +253,7 @@ public class SDODataObjectGetDateConversionWithPathTest extends SDODataObjectCon
         property_c.setType(SDOConstants.SDO_INTEGER);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-        Integer value = new Integer(3);
+        Integer value = 3;
         dataObject_c.set(property_c, value);
         try {
             dataObject_a.getDate(propertyPath_a_b_c);
@@ -274,7 +275,7 @@ public class SDODataObjectGetDateConversionWithPathTest extends SDODataObjectCon
         Date d = new Date(l);
         dataObject_a.setDate(propertyPath_a_b_c, d);// add it to instance list
 
-        this.assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
+        assertEquals(d, dataObject_a.getDate(propertyPath_a_b_c));
     }
 
     //12. purpose: getDate with Undefined string Property

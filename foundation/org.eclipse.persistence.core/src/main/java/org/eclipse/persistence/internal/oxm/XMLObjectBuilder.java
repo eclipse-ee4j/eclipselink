@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -251,7 +251,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if (concreteDescriptor.hasInheritance() && (parent == null)) {
             // look for an xsi:type attribute in the xml document
             InheritancePolicy inheritancePolicy = concreteDescriptor.getInheritancePolicy();
-            Class classValue = inheritancePolicy.classFromRow(databaseRow, query.getSession());
+            Class<?> classValue = inheritancePolicy.classFromRow(databaseRow, query.getSession());
             if ((classValue == null) && isXmlDescriptor()) {
                 // no xsi:type attribute - look for type indicator on the
                 // default root element
@@ -493,13 +493,12 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Indicates if the object builder's descriptor is an XMLDescriptor.
      * The value is lazily initialized.
      *
-     * @return
      */
     protected boolean isXmlDescriptor() {
         if (isXMLDescriptor == null) {
             isXMLDescriptor = getDescriptor() instanceof Descriptor;
         }
-        return isXMLDescriptor.booleanValue();
+        return isXMLDescriptor;
     }
 
     /**
@@ -548,9 +547,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
             relationshipMappings.clear();
         }
 
-        for (Enumeration mappings = this.descriptor.getMappings().elements();
-                 mappings.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+        for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
+             mappings.hasMoreElements();) {
+            DatabaseMapping mapping = mappings.nextElement();
 
             // Add attribute to mapping association
             if (!mapping.isWriteOnly()) {
@@ -578,7 +577,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
                 if (mapping.isReadOnly()) {
                     if(null != readOnlyMappingsByField) {
-                        List readOnlyMappings = getReadOnlyMappingsByField().get(field);
+                        List<DatabaseMapping> readOnlyMappings = getReadOnlyMappingsByField().get(field);
 
                         if (readOnlyMappings == null) {
                             readOnlyMappings = new ArrayList();
@@ -597,7 +596,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                         DatabaseMapping aggregatedFieldMapping = aggregateObjectBuilder.getMappingForField(field);
 
                         if (aggregatedFieldMapping == null) { // mapping must be read-only
-                            List readOnlyMappings = getReadOnlyMappingsByField().get(field);
+                            List<DatabaseMapping> readOnlyMappings = getReadOnlyMappingsByField().get(field);
 
                             if (readOnlyMappings == null) {
                                 readOnlyMappings = new ArrayList();

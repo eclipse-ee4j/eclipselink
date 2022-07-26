@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,13 +32,13 @@ public class GenericsClassHelper {
      * generic interface type.
      */
     private static class DeclaringClassInterfacePair {
-        public final Class concreteClass;
+        public final Class<?> concreteClass;
 
-        public final Class declaringClass;
+        public final Class<?> declaringClass;
 
         public final Type genericInterface;
 
-        private DeclaringClassInterfacePair(Class concreteClass, Class declaringClass, Type genericInteface) {
+        private DeclaringClassInterfacePair(Class<?> concreteClass, Class<?> declaringClass, Type genericInteface) {
             this.concreteClass = concreteClass;
             this.declaringClass = declaringClass;
             this.genericInterface = genericInteface;
@@ -55,7 +55,7 @@ public class GenericsClassHelper {
      * @return the parameterized type arguments, or null if the generic
      * interface type is not a parameterized type.
      */
-    public static Type[] getParameterizedTypeArguments(Class concrete, Class classOrIface) {
+    public static Type[] getParameterizedTypeArguments(Class<?> concrete, Class<?> classOrIface) {
         DeclaringClassInterfacePair declaringClassInterfacePair = getClass(concrete, classOrIface);
         if (null != declaringClassInterfacePair) {
             return getParameterizedTypeArguments(declaringClassInterfacePair);
@@ -106,11 +106,11 @@ public class GenericsClassHelper {
      * @return the tuple of the declaring class and the generic interface or class
      * type.
      */
-    private static DeclaringClassInterfacePair getClass(Class concrete, Class classOrIface) {
+    private static DeclaringClassInterfacePair getClass(Class<?> concrete, Class<?> classOrIface) {
         return getClass(concrete, classOrIface, concrete);
     }
 
-    private static DeclaringClassInterfacePair getClass(Class concrete, Class classOrIface, Class c) {
+    private static DeclaringClassInterfacePair getClass(Class<?> concrete, Class<?> classOrIface, Class<?> c) {
         Type[] gis = null;
 
         if (null != c.getGenericSuperclass()) {
@@ -132,7 +132,7 @@ public class GenericsClassHelper {
         return getClass(concrete, classOrIface, c);
     }
 
-    private static DeclaringClassInterfacePair getType(Class concrete, Class classOrIface, Class c, Type[] ts) {
+    private static DeclaringClassInterfacePair getType(Class<?> concrete, Class<?> classOrIface, Class<?> c, Type[] ts) {
         for (Type t : ts) {
             DeclaringClassInterfacePair p = getType(concrete, classOrIface, c, t);
             if (p != null)
@@ -141,7 +141,7 @@ public class GenericsClassHelper {
         return null;
     }
 
-    private static DeclaringClassInterfacePair getType(Class concrete, Class classOrIface, Class c, Type t) {
+    private static DeclaringClassInterfacePair getType(Class<?> concrete, Class<?> classOrIface, Class<?> c, Type t) {
         if (t instanceof Class) {
             if (t == classOrIface) {
                 return new DeclaringClassInterfacePair(concrete, c, t);
@@ -169,11 +169,11 @@ public class GenericsClassHelper {
          */
         public final Type t;
 
-        public ClassTypePair(Class c) {
+        public ClassTypePair(Class<?> c) {
             this(c, c);
         }
 
-        public ClassTypePair(Class c, Type t) {
+        public ClassTypePair(Class<?> c, Type t) {
             this.t = t;
         }
     }
@@ -187,11 +187,11 @@ public class GenericsClassHelper {
      * @return the resolved Java class and type, otherwise null if the type variable
      * could not be resolved
      */
-    private static ClassTypePair resolveTypeVariable(Class c, Class dc, TypeVariable tv) {
+    private static ClassTypePair resolveTypeVariable(Class<?> c, Class<?> dc, TypeVariable tv) {
         return resolveTypeVariable(c, dc, tv, new HashMap<TypeVariable, Type>());
     }
 
-    private static ClassTypePair resolveTypeVariable(Class c, Class dc, TypeVariable tv,
+    private static ClassTypePair resolveTypeVariable(Class<?> c, Class<?> dc, TypeVariable tv,
                                                      Map<TypeVariable, Type> map) {
         Type[] gis = c.getGenericInterfaces();
         for (Type gi : gis) {
@@ -215,7 +215,7 @@ public class GenericsClassHelper {
         return null;
     }
 
-    private static ClassTypePair resolveTypeVariable(ParameterizedType pt, Class c, Class dc, TypeVariable tv,
+    private static ClassTypePair resolveTypeVariable(ParameterizedType pt, Class<?> c, Class<?> dc, TypeVariable tv,
                                                      Map<TypeVariable, Type> map) {
         Type[] typeArguments = pt.getActualTypeArguments();
 
@@ -274,7 +274,7 @@ public class GenericsClassHelper {
         }
     }
 
-    protected static Class getClassOfType(Type type) {
+    protected static Class<?> getClassOfType(Type type) {
         if (type instanceof Class) {
             return (Class) type;
         } else if (type instanceof GenericArrayType) {
@@ -299,7 +299,7 @@ public class GenericsClassHelper {
      * @param c the component class of the array
      * @return the array class.
      */
-    private static Class getArrayClass(Class c) {
+    private static Class<?> getArrayClass(Class<?> c) {
         try {
             Object o = Array.newInstance(c, 0);
             return o.getClass();

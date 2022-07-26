@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -193,7 +194,7 @@ public class RelationExpression extends CompoundExpression {
             return performSelector(false);
         }
 
-        Class javaClass = leftValue.getClass();
+        Class<?> javaClass = leftValue.getClass();
         if (javaClass != rightValue.getClass()) {
             return performSelector(false);
         }
@@ -502,10 +503,10 @@ public class RelationExpression extends CompoundExpression {
                     if ((mapping != null) && (mapping.isDirectCollectionMapping()) && !(this.secondChild.isMapEntryExpression())) {
                         this.isObjectComparisonExpression = Boolean.FALSE;
                     } else {
-                        this.isObjectComparisonExpression = Boolean.valueOf(this.firstChild.isObjectExpression()
+                        this.isObjectComparisonExpression = this.firstChild.isObjectExpression()
                                 || this.firstChild.isValueExpression()
                                 || this.firstChild.isSubSelectExpression()
-                                || (this.firstChild.isFunctionExpression() && ((FunctionExpression)this.firstChild).operator.isAnyOrAll()));
+                                || (this.firstChild.isFunctionExpression() && ((FunctionExpression) this.firstChild).operator.isAnyOrAll());
                     }
                 } else {
                     this.isObjectComparisonExpression = Boolean.FALSE;
@@ -515,14 +516,14 @@ public class RelationExpression extends CompoundExpression {
                 if ((mapping != null) && (mapping.isDirectCollectionMapping()) && !(this.firstChild.isMapEntryExpression())) {
                     this.isObjectComparisonExpression = Boolean.FALSE;
                 } else {
-                    this.isObjectComparisonExpression = Boolean.valueOf(this.secondChild.isObjectExpression()
+                    this.isObjectComparisonExpression = this.secondChild.isObjectExpression()
                             || this.secondChild.isValueExpression()
                             || this.secondChild.isSubSelectExpression()
-                            || (this.secondChild.isFunctionExpression() && ((FunctionExpression)this.secondChild).operator.isAnyOrAll()));
+                            || (this.secondChild.isFunctionExpression() && ((FunctionExpression) this.secondChild).operator.isAnyOrAll());
                 }
             }
         }
-        return this.isObjectComparisonExpression.booleanValue();
+        return this.isObjectComparisonExpression;
     }
 
     /**
@@ -623,8 +624,8 @@ public class RelationExpression extends CompoundExpression {
                 descriptor = mapping.getReferenceDescriptor();
                 left = left.normalize(normalizer);
                 Map<DatabaseField, DatabaseField> targetToSourceKeyFields = ((OneToOneMapping)mapping).getTargetToSourceKeyFields();
-                sourceFields = new ArrayList(targetToSourceKeyFields.size());
-                targetFields = new ArrayList(targetToSourceKeyFields.size());
+                sourceFields = new ArrayList<>(targetToSourceKeyFields.size());
+                targetFields = new ArrayList<>(targetToSourceKeyFields.size());
                 for (Map.Entry<DatabaseField, DatabaseField> entry : targetToSourceKeyFields.entrySet()) {
                     sourceFields.add(entry.getValue());
                     targetFields.add(entry.getKey());
@@ -642,11 +643,11 @@ public class RelationExpression extends CompoundExpression {
             Expression newLeft = null;
             if (composite) {
                 // For composite ids an array comparison is used, this only works on some databases.
-                List fieldExpressions = new ArrayList();
+                List<Expression> fieldExpressions = new ArrayList<>();
                 for (DatabaseField field : sourceFields) {
                     fieldExpressions.add(left.getField(field));
                 }
-                newLeft = getBuilder().value(sourceFields);
+                newLeft = getBuilder().value(fieldExpressions);
             } else {
                newLeft = left.getField(sourceField);
             }
@@ -657,12 +658,12 @@ public class RelationExpression extends CompoundExpression {
                 ConstantExpression constant = (ConstantExpression)right;
                 if (constant.getValue() instanceof Collection) {
                     Collection objects = (Collection)constant.getValue();
-                    List newObjects = new ArrayList(objects.size());
+                    List<Object> newObjects = new ArrayList<>(objects.size());
                     for (Object object : objects) {
                         if (object instanceof Expression) {
                             if (composite) {
                                 // For composite ids an array comparison is used, this only works on some databases.
-                                List values = new ArrayList();
+                                List<Expression> values = new ArrayList<>();
                                 for (DatabaseField field : targetFields) {
                                     values.add(((Expression)object).getField(field));
                                 }
@@ -673,7 +674,7 @@ public class RelationExpression extends CompoundExpression {
                         } else if (descriptor.getJavaClass().isInstance(object)) {
                             if (composite) {
                                 // For composite ids an array comparison is used, this only works on some databases.
-                                List values = new ArrayList();
+                                List<Object> values = new ArrayList<>();
                                 for (DatabaseField field : targetFields) {
                                     values.add(descriptor.getObjectBuilder().extractValueFromObjectForField(object, field, normalizer.getSession()));
                                 }
@@ -717,7 +718,7 @@ public class RelationExpression extends CompoundExpression {
 
                 // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
                 subQuery.getItems().clear();
-                subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
+                subQuery.addItem("one", new ConstantExpression(1, subQuery.getExpressionBuilder()));
 
                 Expression subSelectCriteria = subQuery.getSelectionCriteria();
                 ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
@@ -752,7 +753,7 @@ public class RelationExpression extends CompoundExpression {
 
             // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
             subQuery.getItems().clear();
-            subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
+            subQuery.addItem("one", new ConstantExpression(1, subQuery.getExpressionBuilder()));
 
             Expression subSelectCriteria = subQuery.getSelectionCriteria();
             ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
@@ -800,7 +801,7 @@ public class RelationExpression extends CompoundExpression {
 
             // If FK joins go in the WHERE clause, want to get hold of it and
             // not put it in normalizer.additionalExpressions.
-            List<Expression> foreignKeyJoinPointer = new ArrayList(1);
+            List<Expression> foreignKeyJoinPointer = new ArrayList<>(1);
             QueryKeyExpression queryKey = (QueryKeyExpression)second;
 
             // If inside an OR the foreign key join must be on both sides.
@@ -901,10 +902,16 @@ public class RelationExpression extends CompoundExpression {
      */
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
-        // If both sides are parameters, some databases don't allow binding.
+        /*
+         * If the platform doesn't support binding for functions and both sides are parameters/constants, 
+         * then disable binding for the whole query
+         * 
+         * DatabasePlatform classes should instead override DatasourcePlatform.initializePlatformOperators()
+         *      @see ExpressionOperator.setIsBindingSupported(boolean isBindingSupported)
+         * In this way, platforms can define their own supported binding behaviors for individual functions
+         */
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions()
-                && ((this.firstChild.isParameterExpression() || this.firstChild.isConstantExpression())
-                        && (this.secondChild.isParameterExpression() || this.secondChild.isConstantExpression()))) {
+                && (this.firstChild.isValueExpression() && this.secondChild.isValueExpression())) {
             printer.getCall().setUsesBinding(false);
         }
         if (isEqualNull(printer)) {

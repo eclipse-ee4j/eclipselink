@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,14 +47,14 @@ public class JAXBElementTestCases extends TestCase {
 
         mListener = new MarshalListenerImpl();
 
-        JAXBContext context = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
+        JAXBContext context = JAXBContextFactory.createContext(new Class<?>[] { Employee.class }, null);
 
         marshaller = context.createMarshaller();
         marshaller.setListener(mListener);
     }
 
     private Object getControlObjectUnmapped() {
-        return new JAXBElement<Integer>(new QName("year"), Integer.class, new Integer(1942));
+        return new JAXBElement<Integer>(new QName("year"), Integer.class, 1942);
     }
 
     private Object getControlObjectMapped() {
@@ -113,12 +113,12 @@ public class JAXBElementTestCases extends TestCase {
     // ========================================================================
 
     private class MarshalListenerImpl extends Marshaller.Listener {
-        public List<Class> beforeClasses;
-        public List<Class> afterClasses;
+        public List<Class<?>> beforeClasses;
+        public List<Class<?>> afterClasses;
 
         public MarshalListenerImpl(){
-            beforeClasses = new ArrayList<Class>();
-            afterClasses = new ArrayList<Class>();
+            beforeClasses = new ArrayList<Class<?>>();
+            afterClasses = new ArrayList<Class<?>>();
         }
 
         @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,10 +23,12 @@ public class ConversionManagerOracleTestModel extends TestModel {
         setDescription("This suite tests Oracle-specific conversions through direct field mapping.");
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         addForcedRequiredSystem(new ConversionManagerSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getSupportedTypesTestSuite());
     }
@@ -38,20 +40,20 @@ public class ConversionManagerOracleTestModel extends TestModel {
 
 
         try{
-            Class testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedFromAClassTest");
-            junit.framework.Test testCase = (junit.framework.Test)testCaseClass.newInstance();
+            Class<?> testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedFromAClassTest");
+            junit.framework.Test testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
 
             testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedToAClassTest");
-            testCase = (junit.framework.Test)testCaseClass.newInstance();
+            testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
 
             testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedFromAClassForOracle9Test");
-            testCase = (junit.framework.Test)testCaseClass.newInstance();
+            testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
 
             testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.conversion.DataTypesConvertedToAClassForOracle9Test");
-            testCase = (junit.framework.Test)testCaseClass.newInstance();
+            testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
         } catch (Exception e){
             getSession().logMessage("Unable to load Oracle-specific conversion tests.  This usually occurs when the tests were compiled " +

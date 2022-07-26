@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.oxm.sequenced.Setting;
 public class Reference {
     protected Mapping mapping;        // mapping associated with this reference
     protected Object sourceObject;        // the source object instance
-    protected Class targetClass;        // the reference class
+    protected Class<?> targetClass;        // the reference class
     protected Object primaryKey;        // primary key values for cache lookup - used in single case
     protected HashMap primaryKeyMap;    // map of primary key values for cache lookup - used in collection case
     private Setting setting;
@@ -38,7 +38,6 @@ public class Reference {
 
     /**
      * Get the container this reference should be added to if it was from a collection mapping
-     * @return
      */
     public Object getContainer() {
         return container;
@@ -55,7 +54,7 @@ public class Reference {
     /**
      * Constructor typically used in the collection case.
      */
-    public Reference(Mapping mapping, Object source, Class target, HashMap primaryKeyMap, Object container) {
+    public Reference(Mapping mapping, Object source, Class<?> target, HashMap primaryKeyMap, Object container) {
         this.mapping = mapping;
         sourceObject = source;
         targetClass = target;
@@ -66,7 +65,7 @@ public class Reference {
     /**
      * Constructor typically used in the single case.
      */
-    public Reference(Mapping mapping, Object source, Class target, Object primaryKey) {
+    public Reference(Mapping mapping, Object source, Class<?> target, Object primaryKey) {
         this.mapping = mapping;
         sourceObject = source;
         targetClass = target;
@@ -76,7 +75,6 @@ public class Reference {
     /**
      * Return the XMLMapping associated with this reference.
      *
-     * @return
      */
     public Mapping getMapping() {
         return mapping;
@@ -86,7 +84,6 @@ public class Reference {
      * Return the map of primary key/values required to lookup
      * the reference class in the cache.
      *
-     * @return
      */
     public HashMap getPrimaryKeyMap() {
         return primaryKeyMap;
@@ -96,7 +93,6 @@ public class Reference {
      * Return the list of primary key values required to lookup
      * the reference class in the cache.
      *
-     * @return
      */
     public Object getPrimaryKey() {
         return primaryKey;
@@ -105,7 +101,6 @@ public class Reference {
     /**
      * Return the source object for this reference.
      *
-     * @return
      */
     public Object getSourceObject() {
         return sourceObject;
@@ -114,9 +109,8 @@ public class Reference {
     /**
      * Return the target (reference) class for this reference.
      *
-     * @return
      */
-    public Class getTargetClass() {
+    public Class<?> getTargetClass() {
         return targetClass;
     }
 

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +19,7 @@ import java.util.ListIterator;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
@@ -42,7 +44,7 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     /**
      * Defines the Java class that the complex type maps to.
      */
-    protected Class javaType;
+    protected Class<?> javaType;
     protected String javaTypeName;
 
     public boolean isRecord() {
@@ -110,7 +112,7 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
      * Set the Java class that the complex type maps to.
      * The mapped class for a Record type, and collection class for Collection type.
      */
-    public void setJavaType(Class javaType) {
+    public void setJavaType(Class<?> javaType) {
         this.javaType = javaType;
         if (javaType != null) {
             javaTypeName = javaType.getName();
@@ -120,7 +122,7 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     /**
      * Return the Java class that the complex type maps to.
      */
-    public Class getJavaType() {
+    public Class<?> getJavaType() {
         return javaType;
     }
 
@@ -189,17 +191,17 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
 
     @Override
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
-        String sql2PlName = call.getSQL2PlName(this);
-        if (sql2PlName == null) {
+        String conversionRoutine = ((this.getTypeName().equals(this.getCompatibleType()))) ? call.getPl2SQLName(this) : call.getSQL2PlName(this);
+        if (conversionRoutine == null) {
             // TODO exception
-            throw new NullPointerException("no SQL2Pl conversion routine for " + typeName);
+            throw new NullPointerException("no SQL2Pl or Pl2SQL conversion routine for " + typeName);
         }
         String target = databaseTypeHelper.buildTarget(arg);
         String compat = databaseTypeHelper.buildCompatible(arg);
         sb.append("  ");
         sb.append(target);
         sb.append(" := ");
-        sb.append(sql2PlName);
+        sb.append(conversionRoutine);
         sb.append("(");
         sb.append(compat);
         sb.append(");");
@@ -242,7 +244,7 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     }
 
     @Override
-    public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+    public void logParameter(StringBuilder sb, ParameterType direction, PLSQLargument arg,
             AbstractRecord translationRow, DatabasePlatform platform) {
         databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
     }

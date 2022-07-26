@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.jpa.returninsert;
 
-import java.time.Instant;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import jakarta.persistence.EntityManager;
@@ -22,16 +23,14 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
 
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.returninsert.model.*;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * TestSuite to test entities, that has a @ReturnInsert and @ReturnUpdate annotations.
@@ -64,6 +63,8 @@ public class TestReturnInsert {
         testFindUpdate();
         testQuery();
         testCreateJoined();
+        testUpdateMasterDetailJoined();
+        testUpdateDetailJoined();
         emf.close();
     }
 
@@ -106,7 +107,9 @@ public class TestReturnInsert {
                         "    COL4     VARCHAR (15) NOT NULL," +
                         "    COL4_VIRTUAL VARCHAR (100) AS ( COL4 || '_col4' ) VIRTUAL," +
                         "    COL5     VARCHAR (15) NOT NULL," +
-                        "    COL5_VIRTUAL VARCHAR (100) AS ( COL5 || '_col5' ) VIRTUAL)");
+                        "    COL5_VIRTUAL VARCHAR (100) AS ( COL5 || '_col5' ) VIRTUAL," +
+                        "    COL6     VARCHAR (15) NOT NULL," +
+                        "    COL6_VIRTUAL VARCHAR (100) AS ( COL6 || '_col6' ) VIRTUAL)");
                 session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_DETAIL ADD CONSTRAINT PKJPA22_RETURNINSERT_DETAIL PRIMARY KEY ( ID_VIRTUAL, ID, COL1, COL2 )");
                 session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_DETAIL ADD CONSTRAINT FKJPA22_RETURNINSERT_MASTER_DETAIL FOREIGN KEY ( ID_VIRTUAL, ID, COL1 ) REFERENCES JPA22_RETURNINSERT_MASTER ( ID_VIRTUAL, ID, COL1 ) NOT DEFERRABLE");
                 session.executeNonSelectingSQL("CREATE TABLE JPA22_RETURNINSERT_MASTER_JOINED  (" +
@@ -114,7 +117,8 @@ public class TestReturnInsert {
                         "    TYPE   VARCHAR2(50) NOT NULL)");
                 session.executeNonSelectingSQL("CREATE TABLE JPA22_RETURNINSERT_DETAIL_JOINED  (" +
                         "    ID          NUMBER(15) PRIMARY KEY ," +
-                        "    DETAIL_NR   NUMBER(15) AS ( ID * 10 ) VIRTUAL)");
+                        "    DETAIL_NR           NUMBER(15)," +
+                        "    DETAIL_NR_VIRTUAL   NUMBER(15) AS ( DETAIL_NR * 10 ) VIRTUAL)");
             } catch (Exception ignore) {
             }
         } finally {
@@ -141,6 +145,8 @@ public class TestReturnInsert {
             returnInsertDetail = insertReturnInsertDetail(em, returnInsertMaster);
 
         em.getTransaction().commit();
+        } catch (Exception e) {
+            fail(e.getMessage());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -165,10 +171,12 @@ public class TestReturnInsert {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            returnInsertDetailJoined = new ReturnInsertDetailJoined(1L, "TYPE_A");
+            returnInsertDetailJoined = new ReturnInsertDetailJoined(1L, 1L, "TYPE_A");
             returnInsertDetailJoined = em.merge(returnInsertDetailJoined);
 
             em.getTransaction().commit();
+        } catch (Exception e) {
+            fail(e.getMessage());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -179,9 +187,61 @@ public class TestReturnInsert {
         }
         assertEquals(Long.valueOf(1L), returnInsertDetailJoined.getId());
         assertEquals("TYPE_A", returnInsertDetailJoined.getType());
-        assertEquals(Long.valueOf(10L), returnInsertDetailJoined.getDetailNumber());
+        assertEquals(Long.valueOf(10L), returnInsertDetailJoined.getDetailNumberVirtual());
     }
 
+    private void testUpdateMasterDetailJoined() {
+        ReturnInsertDetailJoined returnInsertDetailJoined = null;
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            returnInsertDetailJoined = em.find(ReturnInsertDetailJoined.class, 1L);
+            returnInsertDetailJoined.setType("TYPE_B");
+            returnInsertDetailJoined.setDetailNumber(22L);
+            returnInsertDetailJoined = em.merge(returnInsertDetailJoined);
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if (em.isOpen()) {
+                em.close();
+            }
+        }
+        assertEquals(Long.valueOf(1L), returnInsertDetailJoined.getId());
+        assertEquals("TYPE_B", returnInsertDetailJoined.getType());
+        assertEquals(Long.valueOf(220L), returnInsertDetailJoined.getDetailNumberVirtual());
+    }
+
+    private void testUpdateDetailJoined() {
+        ReturnInsertDetailJoined returnInsertDetailJoined = null;
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            returnInsertDetailJoined = em.find(ReturnInsertDetailJoined.class, 1L);
+            returnInsertDetailJoined.setDetailNumber(33L);
+            returnInsertDetailJoined = em.merge(returnInsertDetailJoined);
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if (em.isOpen()) {
+                em.close();
+            }
+        }
+        assertEquals(Long.valueOf(1L), returnInsertDetailJoined.getId());
+        assertEquals("TYPE_B", returnInsertDetailJoined.getType());
+        assertEquals(Long.valueOf(330L), returnInsertDetailJoined.getDetailNumberVirtual());
+    }
 
     private void testFindUpdate() {
         //Test find and update
@@ -202,9 +262,12 @@ public class TestReturnInsert {
             assertEquals("abc_col2", returnInsertDetailFindResult.getReturnInsertDetailEmbedded().getCol2Virtual());
             //Test update
             returnInsertDetailFindResult.getReturnInsertDetailEmbedded().setCol3("ijk");
+            returnInsertDetailFindResult.setCol6("rst");
             returnInsertDetailMerge = em.merge(returnInsertDetailFindResult);
 
             em.getTransaction().commit();
+        } catch (Exception e) {
+            fail(e.getMessage());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -214,6 +277,7 @@ public class TestReturnInsert {
             }
         }
         assertEquals("ijk_col3", returnInsertDetailMerge.getReturnInsertDetailEmbedded().getCol3Virtual());
+        assertEquals("rst_col6", returnInsertDetailMerge.getCol6Virtual());
     }
 
     private void testQuery() {
@@ -228,6 +292,8 @@ public class TestReturnInsert {
             Query query  = em.createQuery("select t from ReturnInsertDetail t where t.id = :returnInsertDetailId");
             query.setParameter("returnInsertDetailId", returnInsertDetailPK);
             returnInsertDetailQueryResult = (ReturnInsertDetail) query.getSingleResult();
+        } catch (Exception e) {
+            fail(e.getMessage());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -257,7 +323,13 @@ public class TestReturnInsert {
     //Prepare primary key for ReturnInsertMaster
     private ReturnInsertMasterPK createReturnInsertMasterPK() {
         ReturnInsertMasterPK ReturnInsertMasterPK = new ReturnInsertMasterPK();
-        ReturnInsertMasterPK.setId(Date.from(Instant.ofEpochMilli(0)));
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+            Date date = dateFormat.parse("1970-01-01 00:00:00.0");
+            ReturnInsertMasterPK.setId(date);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
         ReturnInsertMasterPK.setCol1(1L);
         return ReturnInsertMasterPK;
     }
@@ -284,6 +356,8 @@ public class TestReturnInsert {
         //Inherited field
         returnInsertDetail.setCol4("opq");
 
+        returnInsertDetail.setCol6("rst");
+
         em.persist(returnInsertDetail);
         return returnInsertDetail;
     }
@@ -291,7 +365,13 @@ public class TestReturnInsert {
     //Prepare primary key for ReturnInsertDetail
     private ReturnInsertDetailPK createReturnInsertDetailPK() {
         ReturnInsertDetailPK returnInsertDetailPK = new ReturnInsertDetailPK();
-        returnInsertDetailPK.setId(Date.from(Instant.ofEpochMilli(0)));
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+            Date date = dateFormat.parse("1970-01-01 00:00:00.0");
+            returnInsertDetailPK.setId(date);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
         returnInsertDetailPK.setCol1(1L);
         returnInsertDetailPK.setCol2("abc");
         return returnInsertDetailPK;

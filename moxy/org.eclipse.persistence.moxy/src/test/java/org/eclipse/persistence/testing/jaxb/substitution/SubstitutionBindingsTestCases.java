@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class SubstitutionBindingsTestCases extends JAXBWithJSONTestCases {
@@ -32,7 +33,7 @@ public class SubstitutionBindingsTestCases extends JAXBWithJSONTestCases {
 
     public SubstitutionBindingsTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = Person2.class;
         classes[1] = ObjectFactory2.class;
         setClasses(classes);
@@ -61,7 +62,7 @@ public class SubstitutionBindingsTestCases extends JAXBWithJSONTestCases {
         InputStream iStream = classLoader.getResourceAsStream(XML_BINDINGS);
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
         return properties;
     }

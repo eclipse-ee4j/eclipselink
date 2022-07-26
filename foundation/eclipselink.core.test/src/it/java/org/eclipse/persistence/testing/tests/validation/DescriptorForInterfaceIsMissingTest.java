@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,22 +33,25 @@ public class DescriptorForInterfaceIsMissingTest extends ExceptionTest {
         setDescription("This tests Descriptor For Interface Is Missing (TL-ERROR 40) " + "");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.descriptorForInterfaceIsMissing(null);
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Project.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Project.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Project.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Project.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)
             getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         try {
             getSession().setIntegrityChecker(new IntegrityChecker());

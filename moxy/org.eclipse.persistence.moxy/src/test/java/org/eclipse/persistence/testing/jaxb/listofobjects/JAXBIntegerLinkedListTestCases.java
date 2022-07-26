@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
         initXsiType();
     }
 
+    @Override
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -52,17 +53,19 @@ public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
         setTypes(types);
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = ListofObjects.class.getField("integerLinkedList");
         return fld.getGenericType();
     }
 
+    @Override
     protected Object getControlObject() {
         LinkedList<Integer> integers = new LinkedList<Integer>();
-        integers.add(new Integer("10"));
-        integers.add(new Integer("20"));
-        integers.add(new Integer("30"));
-        integers.add(new Integer("40"));
+        integers.add(Integer.valueOf("10"));
+        integers.add(Integer.valueOf("20"));
+        integers.add(Integer.valueOf("30"));
+        integers.add(Integer.valueOf("40"));
 
         QName qname = new QName("examplenamespace", "root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
@@ -71,6 +74,7 @@ public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
         return jaxbElement;
     }
 
+    @Override
     public  List<InputStream> getControlSchemaFiles(){
 
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/linkedListInteger.xsd");
@@ -81,6 +85,7 @@ public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
         }
 
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

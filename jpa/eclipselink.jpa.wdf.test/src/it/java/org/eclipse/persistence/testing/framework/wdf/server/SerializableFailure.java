@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -35,7 +35,7 @@ public class SerializableFailure implements Serializable {
 
     /**
      * Create a SerializableFailure object from an org.junit.runner.notification.Failure object.
-     * @param the failure object to be converted
+     * @param failure failure object to be converted
      * @return a SerializableFailure object converted from an org.junit.runner.notification.Failure object
      */
     public static SerializableFailure create(Failure failure) {

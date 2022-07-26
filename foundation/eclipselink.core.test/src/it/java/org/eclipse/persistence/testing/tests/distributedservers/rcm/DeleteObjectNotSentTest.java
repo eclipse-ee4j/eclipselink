@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,9 +37,10 @@ public class DeleteObjectNotSentTest extends ConfigurableCacheSyncDistributedTes
 
     public DeleteObjectNotSentTest() {
         super();
-        cacheSyncConfigValues.put(Employee.class, new Integer(ClassDescriptor.DO_NOT_SEND_CHANGES));
+        cacheSyncConfigValues.put(Employee.class, ClassDescriptor.DO_NOT_SEND_CHANGES);
     }
 
+    @Override
     public void setup() {
         super.setup();
         // Create an Employee
@@ -62,6 +63,7 @@ public class DeleteObjectNotSentTest extends ConfigurableCacheSyncDistributedTes
     /**
      * Create a new employee and commit.
      */
+    @Override
     public void test() {
         // Delete the employee and commit
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -70,6 +72,7 @@ public class DeleteObjectNotSentTest extends ConfigurableCacheSyncDistributedTes
         uow.commit();
     }
 
+    @Override
     public void verify() {
         // The employee should exist in the distributed cache because the cache synchronization
         // setting did not allow the delete to be passed.

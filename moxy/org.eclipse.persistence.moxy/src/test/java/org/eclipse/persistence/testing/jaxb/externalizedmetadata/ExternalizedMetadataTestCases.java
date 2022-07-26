@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
@@ -77,12 +78,12 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public ExternalizedMetadataTestCases(String name) {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
@@ -96,7 +97,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
      *
      * Assumes a prior call to generateSchema has been made.
      *
-     * @return
      */
     public JAXBContext getJAXBContext() {
         return jaxbContext;
@@ -106,10 +106,8 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * Generate the schema(s) for a given set of classes.  Any eclipselink-oxm.xml file(s)
      * found in the package(s) will be applied by default.
      *
-     * @param classes
-     * @param expectedSchemaCount
      */
-    public MySchemaOutputResolver generateSchema(Class[] classes, int expectedSchemaCount) {
+    public MySchemaOutputResolver generateSchema(Class<?>[] classes, int expectedSchemaCount) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
@@ -126,8 +124,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Generate the schema using the CONTEXT_PATH.
      *
-     * @param contextPath
-     * @param expectedSchemaCount
      */
     public MySchemaOutputResolver generateSchema(String contextPath, int expectedSchemaCount) {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
@@ -145,9 +141,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Generate the schema using the CONTEXT_PATH.
      *
-     * @param contextPath
-     * @param expectedSchemaCount
-     * @param resolver
      */
     public void generateSchema(String contextPath, int expectedSchemaCount, MyStreamSchemaOutputResolver outputResolver) {
         try {
@@ -164,11 +157,8 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * Generate the schema(s) for a given context path, and apply the eclipselink-oxm.xml
      * file(s) in the properties map.
      *
-     * @param contextPath
-     * @param properties
-     * @param expectedSchemaCount
      */
-    public MySchemaOutputResolver generateSchema(String contextPath, Map<String, Map<String, Source>> properties, int expectedSchemaCount) {
+    public MySchemaOutputResolver generateSchema(String contextPath, Map<String, Object> properties, int expectedSchemaCount) {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
             generateSchema(contextPath, outputResolver, properties);
@@ -188,14 +178,13 @@ public class ExternalizedMetadataTestCases extends TestCase {
      *
      * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
      * @param iStream eclipselink-oxm.xml file as a stream
-     * @param expectedSchemaCount
      */
     private MySchemaOutputResolver generateSchema(String contextPath, InputStream iStream, int expectedSchemaCount) {
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         validateBindingsFileAgainstSchema(iStream);
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         return generateSchema(contextPath, properties, expectedSchemaCount);
     }
 
@@ -206,7 +195,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
      *
      * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
      * @param path eclipselink-oxm.xml file will be searched for on this path
-     * @param expectedSchemaCount
      */
     public MySchemaOutputResolver generateSchema(String contextPath, String path, int expectedSchemaCount) {
         String metadataFile = path + "eclipselink-oxm.xml";
@@ -220,10 +208,10 @@ public class ExternalizedMetadataTestCases extends TestCase {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
         validateBindingsFileAgainstSchema(iStreamCopy);
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         return generateSchema(contextPath, properties, expectedSchemaCount);
     }
 
@@ -232,16 +220,14 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * file found on the path.  The eclipselink-oxm.xml will be stored in the property map
      * using the contextPath as a key (maps package name to xml metadata file).
      *
-     * @param classes
      * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
      * @param iStream eclipselink-oxm.xml file as a stream
-     * @param expectedSchemaCount
      */
-    private MySchemaOutputResolver generateSchema(Class[] classes, String contextPath, InputStream iStream, int expectedSchemaCount) {
+    private MySchemaOutputResolver generateSchema(Class<?>[] classes, String contextPath, InputStream iStream, int expectedSchemaCount) {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
             generateSchema(classes, properties, outputResolver, loader);
@@ -259,17 +245,15 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * file found on the path.  The eclipselink-oxm.xml will be stored in the property map
      * using the contextPath as a key (maps package name to xml metadata file).
      *
-     * @param classes
      * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
      * @param path eclipselink-oxm.xml file will be searched for on this path
-     * @param expectedSchemaCount
      */
-    public MySchemaOutputResolver generateSchema(Class[] classes, String contextPath, String path, int expectedSchemaCount) {
+    public MySchemaOutputResolver generateSchema(Class<?>[] classes, String contextPath, String path, int expectedSchemaCount) {
         String metadataFile = path + "eclipselink-oxm.xml";
         return generateSchemaWithFileName(classes, contextPath, metadataFile, expectedSchemaCount);
     }
 
-    public void generateSchemaWithFileName(Class[] classes, String contextPath, String metadataFile, int expectedSchemaCount, MyStreamSchemaOutputResolver outputResolver) {
+    public void generateSchemaWithFileName(Class<?>[] classes, String contextPath, String metadataFile, int expectedSchemaCount, MyStreamSchemaOutputResolver outputResolver) {
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         InputStream iStreamCopy = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
@@ -278,7 +262,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         validateBindingsFileAgainstSchema(iStreamCopy);
 
@@ -294,7 +278,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         assertTrue("Expected schema generation count to be ["+expectedSchemaCount+"], but was [" + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == expectedSchemaCount);
     }
 
-    public MySchemaOutputResolver generateSchemaWithFileName(Class[] classes, String contextPath, String metadataFile, int expectedSchemaCount) {
+    public MySchemaOutputResolver generateSchemaWithFileName(Class<?>[] classes, String contextPath, String metadataFile, int expectedSchemaCount) {
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         InputStream iStreamCopy = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
@@ -303,7 +287,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
 
         validateBindingsFileAgainstSchema(iStreamCopy);
@@ -326,10 +310,8 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * file found on the path.  The eclipselink-oxm.xml will be stored in the property map
      * using the contextPath as a key (maps package name to xml metadata file).
      *
-     * @param types
      * @param contextPath used as key for storing eclipselink-oxm.xml file Source in properties map
      * @param path eclipselink-oxm.xml file will be searched for on this path
-     * @param expectedSchemaCount
      */
     public MySchemaOutputResolver generateSchema(Type[] types, String contextPath, String path, int expectedSchemaCount) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -345,7 +327,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
         try {
             generateSchema(types, properties, outputResolver, classLoader);
@@ -361,10 +343,8 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Generate one or more schemas from a context path.
      *
-     * @param contextPath
-     * @param outputResolver
      */
-    protected void generateSchema(String contextPath, SchemaOutputResolver outputResolver, Map<String, Map<String, Source>> properties) throws Exception {
+    protected void generateSchema(String contextPath, SchemaOutputResolver outputResolver, Map<String, Object> properties) throws Exception {
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(contextPath, loader, properties);
             jaxbContext.generateSchema(outputResolver);
@@ -376,8 +356,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Generate one or more schemas from a context path.
      *
-     * @param contextPath
-     * @param outputResolver
      */
     protected void generateSchema(String contextPath, SchemaOutputResolver outputResolver) throws Exception {
         try {
@@ -392,12 +370,8 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * Generate one or more schemas from an array of classes and a Map containing zero or more
      * eclipselink-oxm.xml entries.
      *
-     * @param classesToBeBound
-     * @param properties
-     * @param outputResolver
-     * @param classLoader
      */
-    protected void generateSchema(Class[] classesToBeBound, java.util.Map properties, SchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
+    protected void generateSchema(Class<?>[] classesToBeBound, java.util.Map properties, SchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classesToBeBound, properties, classLoader);
             jaxbContext.generateSchema(outputResolver);
@@ -410,10 +384,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * Generate one or more schemas from an array of types and a Map containing zero or more
      * eclipselink-oxm.xml entries.
      *
-     * @param typesToBeBound
-     * @param properties
-     * @param outputResolver
-     * @param classLoader
      */
     protected void generateSchema(Type[] typesToBeBound, java.util.Map properties, SchemaOutputResolver outputResolver, ClassLoader classLoader) throws Exception {
         try {
@@ -427,8 +397,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Validates a given instance doc against the generated schema.
      *
-     * @param src
-     * @param schemaIndex index in output resolver's list of generated schemas
+     * @param namespace index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against
      */
     protected String validateAgainstSchema(String src, String namespace, MySchemaOutputResolver outputResolver) {
@@ -452,8 +421,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Validates a given instance doc against the generated schema.
      *
-     * @param src
-     * @param schemaIndex index in output resolver's list of generated schemas
+     * @param namespace index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against
      */
     protected String validateAgainstSchema(InputStream src, String namespace, MySchemaOutputResolver outputResolver) {
@@ -477,8 +445,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Validates a given instance doc against a given schema.
      *
-     * @param src
-     * @param schema
      */
     protected String validateAgainstSchema(String src, String schema) {
         SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -501,8 +467,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Validates a given instance doc against the generated schema.
      *
-     * @param src
-     * @param schemaIndex index in output resolver's list of generated schemas
+     * @param namespace index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against
      */
     protected String validateAgainstSchema(String src, String namespace, MyStreamSchemaOutputResolver outputResolver) {
@@ -536,6 +501,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         public ResourceResolver(MyStreamSchemaOutputResolver resolver) {
             oResolver = resolver;
         }
+        @Override
         public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseUri) {
             return new MyLSInput(namespaceURI, oResolver);
         }
@@ -554,30 +520,45 @@ public class ExternalizedMetadataTestCases extends TestCase {
             sValue = value;
             oResolver = resolver;
         }
+        @Override
         public void setSystemId(String arg0) {}
+        @Override
         public void setStringData(String arg0) {}
+        @Override
         public void setPublicId(String arg0) {}
+        @Override
         public void setEncoding(String arg0) {}
+        @Override
         public void setCharacterStream(Reader arg0) {}
+        @Override
         public void setCertifiedText(boolean arg0) {}
+        @Override
         public void setByteStream(InputStream arg0) {}
+        @Override
         public void setBaseURI(String arg0) {}
+        @Override
         public String getSystemId() {return null;}
+        @Override
         public String getStringData() {
             return oResolver.schemaFiles.get(sValue).toString();
         }
+        @Override
         public String getPublicId() {return null;}
+        @Override
         public String getEncoding() {return null;}
+        @Override
         public Reader getCharacterStream() {return null;}
+        @Override
         public boolean getCertifiedText() {return false;}
+        @Override
         public InputStream getByteStream() {return null;}
+        @Override
         public String getBaseURI() {return null;}
     }
 
     /**
      * Validates a given bindings file against the eclipselink oxm schema.
      *
-     * @param src
      */
     protected void validateBindingsFileAgainstSchema(InputStream src) {
         String result = null;
@@ -610,8 +591,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Compare two schemas for equality.
      *
-     * @param testSchema
-     * @param controlSchema
      */
     public static void compareSchemas(File testSchema, File controlSchema) {
         if (testSchema == null || controlSchema == null) {
@@ -638,8 +617,6 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Compare two schemas for equality.
      *
-     * @param testSchema
-     * @param controlSchema
      */
     public static void compareSchemas(String testSchema, File controlSchema) {
         if (testSchema == null || controlSchema == null) {
@@ -704,6 +681,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
             schemaFiles = new HashMap<String, File>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
             if (namespaceURI == null) {
@@ -729,6 +707,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
             schemaFiles = new HashMap<String, Writer>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
             if (namespaceURI == null) {
@@ -746,10 +725,8 @@ public class ExternalizedMetadataTestCases extends TestCase {
     /**
      * Convenience method that returns a newly created XMLContext based on an array of classes.
      *
-     * @param classes
-     * @return
      */
-    protected XMLContext createXmlContext(Class[] classes) {
+    protected XMLContext createXmlContext(Class<?>[] classes) {
         try {
             ClassLoader classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
             Generator generator = new Generator(new JavaModelInputImpl(classes, new JavaModelImpl(classLoader)));
@@ -781,22 +758,18 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * Convenience method for creating a JAXBContext.  The XML document is
      * validated against the metadata schema.
      *
-     * @param classes
-     * @param contextPath
-     * @param metadataFile
-     * @return
      */
-    public JAXBContext createContext(Class[] classes, String contextPath, String metadataFile) throws JAXBException {
+    public JAXBContext createContext(Class<?>[] classes, String contextPath, String metadataFile) throws JAXBException {
         // validate instance document against the metadata schema
         InputStream iStream = loader.getResourceAsStream(metadataFile);
         InputStream iStreamCopy = loader.getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(contextPath, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
 
         validateBindingsFileAgainstSchema(iStreamCopy);

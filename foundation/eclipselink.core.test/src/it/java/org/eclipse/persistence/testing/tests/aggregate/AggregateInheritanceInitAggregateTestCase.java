@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.models.aggregate.Transport;
 public class AggregateInheritanceInitAggregateTestCase extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     protected Transport workingCopy;
 
+    @Override
     public void reset() {
         // Remove the transport added for this test
         DatabaseSession session = (DatabaseSession)getSession();
@@ -38,9 +39,11 @@ public class AggregateInheritanceInitAggregateTestCase extends org.eclipse.persi
         uow.commit();
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         DatabaseSession session = (DatabaseSession)getSession();
 
@@ -53,6 +56,7 @@ public class AggregateInheritanceInitAggregateTestCase extends org.eclipse.persi
         uow.commit();
     }
 
+    @Override
     public void verify() {
         DatabaseSession session = (DatabaseSession)getSession();
         ExpressionBuilder transport = new ExpressionBuilder();

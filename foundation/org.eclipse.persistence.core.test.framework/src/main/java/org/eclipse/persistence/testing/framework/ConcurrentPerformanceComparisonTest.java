@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,7 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
      * Reset the iteration count.
      * This is maintained by the test to allow concurrent tests to manage the count.
      */
+    @Override
     public synchronized void resetIterations() {
         this.iterations = 0;
     }
@@ -60,6 +61,7 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
     /**
      * Start 1 thread test.
      */
+    @Override
     public void startTest() {
         startTest(1);
     }
@@ -79,6 +81,7 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
     /**
      * Allows any test specific setup before starting the test run.
      */
+    @Override
     public void endTest() {
         // Suspend the worker threads,
         // suspend all no matter what number of threads was to even out performance.
@@ -103,6 +106,7 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
     /**
      * Start the worker threads.
      */
+    @Override
     public void setup() {
         int threads = this.minThreads;
         while (threads <= getMaxThreads()) {
@@ -120,6 +124,7 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
     /**
      * Count REPEATS runs of the run method with 1 thread.
      */
+    @Override
     public void test() throws Exception {
         test(1);
     }
@@ -137,6 +142,7 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
     /**
      * Stop the worker threads.
      */
+    @Override
     public void reset() {
         // Stop the worker threads.
         for (int index = 0; index < getWorkerThreads().size(); index++) {
@@ -152,6 +158,7 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
      * Verify the multi-threaded results are NUMBER_OF_CPU times better
      * than the single thread, allowing for the allowableDecrease.
      */
+    @Override
     public void verify() {
         PerformanceComparisonTestResult result = (PerformanceComparisonTestResult)getTestResult();
         for (int index = 0; index < result.percentageDifferences.size(); index++) {
@@ -175,14 +182,17 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
      */
     public void addThreadTest(final int numberOfThreads) {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                @Override
                 public void startTest() {
                     ConcurrentPerformanceComparisonTest.this.startTest(numberOfThreads);
                 }
 
+                @Override
                 public void test() throws Exception {
                     ConcurrentPerformanceComparisonTest.this.test(numberOfThreads);
                 }
 
+                @Override
                 public void endTest() {
                     ConcurrentPerformanceComparisonTest.this.endTest();
                 }
@@ -241,6 +251,7 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
         /**
          * Run the test run method in a loop until killed.
          */
+        @Override
         public synchronized void run() {
             try {
                 while (!isDead) {

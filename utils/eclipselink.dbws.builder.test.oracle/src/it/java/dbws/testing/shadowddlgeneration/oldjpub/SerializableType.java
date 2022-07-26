@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package dbws.testing.shadowddlgeneration.oldjpub;
 
 /**
- * Instances of the class </code>SerializableType</code> represent Java serializable types.
+ * Instances of the class <code>SerializableType</code> represent Java serializable types.
  */
 public class SerializableType extends SqlType {
     /**
@@ -40,24 +40,27 @@ public class SerializableType extends SqlType {
     /**
      * Returns the fully-qualified name of the type represented by this Type object, as a String.
      */
+    @Override
     public String getName() { // BLOB
         // return m_name.getSimpleName();
         return SqlReflector.BLOB_TYPE.getSqlName().getSimpleName();
     }
 
+    @Override
     public String getTargetTypeName() {
         return getName();
     }
 
+    @Override
     public String getTypeName() {
         return getName();
     }
 
     public String getFullDeclClass() {
         // MySerializableObject
-        String pkg = ((SqlName)m_name).getDeclPackage();
+        String pkg = m_name.getDeclPackage();
         pkg = (pkg == null || pkg.equals("")) ? "" : pkg + ".";
-        return pkg + ((SqlName)m_name).getDeclClass();
+        return pkg + m_name.getDeclClass();
     }
 
     public String getJdbcType(Typemap map) {
@@ -70,6 +73,7 @@ public class SerializableType extends SqlType {
         return "oracle.sql.BLOB";
     }
 
+    @Override
     public boolean isArray() {
         return m_arrayDim > 0;
     }

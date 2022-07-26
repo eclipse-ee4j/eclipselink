@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,11 +36,11 @@ import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
  * <p>
  * <b>Purpose</b>: Provide an abstract class that offers a common API to handling
  * remote command connections.
- * <p>
+ * </p><p>
  * <b>Description</b>: This class manages the remote connections to other RCM service
  * instances and posts the local connection to this service instance in a name
  * service so that other RCM service instances can connect to it.
- * <p>
+ * </p>
  * @author Steven Vo
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */
@@ -65,7 +65,7 @@ public abstract class TransportManager {
     protected boolean shouldRemoveConnectionOnError;
 
     /** Connections to other services */
-    protected Hashtable connectionsToExternalServices;
+    protected Hashtable<String, RemoteConnection> connectionsToExternalServices;
 
     /** Security util that is used to decrypt and encrypt password */
     protected SecurableObjectHolder securableObjectHolder;
@@ -88,6 +88,12 @@ public abstract class TransportManager {
     public static final String DEFAULT_DEDICATED_CONNECTION_KEY = "dedicated.connection";
     public static final String DEFAULT_DEDICATED_CONNECTION_VALUE = "true";
     public static final String DEFAULT_USER_NAME = "admin";
+
+    /**
+     * Default constructor.
+     */
+    protected TransportManager() {
+    }
 
     /**
      * INTERNAL:
@@ -336,11 +342,11 @@ public abstract class TransportManager {
      */
     public void removeAllConnectionsToExternalServices() {
         synchronized (this) {
-            Enumeration connections = connectionsToExternalServices.elements();
+            Enumeration<RemoteConnection> connections = connectionsToExternalServices.elements();
             connectionsToExternalServices = new Hashtable(3);
 
             while (connections.hasMoreElements()) {
-                ((RemoteConnection)connections.nextElement()).close();
+                connections.nextElement().close();
             }
         }
     }
@@ -357,7 +363,7 @@ public abstract class TransportManager {
      * Returns clone of the original map.
      */
     public Map<String, RemoteConnection> getConnectionsToExternalServicesForCommandPropagation() {
-        return (Map)connectionsToExternalServices.clone();
+        return (Map<String, RemoteConnection>) connectionsToExternalServices.clone();
     }
 
     /**
@@ -498,15 +504,15 @@ public abstract class TransportManager {
      * @param rcm cache coordination manager
      * @return new instance of RMI transport manager implementation
      */
-    public static TransportManager newSunCORBATransportManager(final RemoteCommandManager rcm) {
+    public static TransportManager newTransportManager(final String transportManagerClassName, final RemoteCommandManager rcm) {
         try {
             return (TransportManager) PrivilegedAccessHelper.invokeConstructor(
                     PrivilegedAccessHelper.getConstructorFor(
-                            Class.forName("org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager"),
+                            Class.forName(transportManagerClassName),
                             new Class<?>[] { RemoteCommandManager.class }, false),
                     new Object[] { rcm });
         } catch (ReflectiveOperationException e) {
-            throw RemoteCommandManagerException.errorInitCorba("org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager", e);
+            throw RemoteCommandManagerException.errorInitCorba(transportManagerClassName, e);
         }
     }
 

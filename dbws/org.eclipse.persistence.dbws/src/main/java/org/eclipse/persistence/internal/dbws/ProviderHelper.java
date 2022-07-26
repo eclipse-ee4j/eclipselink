@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,7 +99,6 @@ import org.w3c.dom.NodeList;
 /**
  * <p>
  * <b>INTERNAL:</b> ProviderHelper bridges between {@link DBWSAdapter}'s and JAX-WS {@link Provider}'s
- * <p>
  *
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.1
@@ -184,7 +183,7 @@ public class ProviderHelper extends XRServiceFactory {
     }
 
     protected InputStream initXRSchemaStream(ClassLoader parentClassLoader, ServletContext sc) {
-        InputStream xrSchemaStream = null;
+        InputStream xrSchemaStream;
         String path = WSDL_DIR + DBWS_SCHEMA_XML;
         if (sc != null) {
             path = "/" + WEB_INF_DIR + path;
@@ -201,7 +200,7 @@ public class ProviderHelper extends XRServiceFactory {
     }
 
     protected InputStream initWSDLInputStream(ClassLoader parentClassLoader, ServletContext sc) {
-        InputStream wsdlInputStream = null;
+        InputStream wsdlInputStream;
         String path = WSDL_DIR + DBWS_WSDL;
         if (sc != null) {
             path = "/" + WEB_INF_DIR + path;
@@ -431,11 +430,11 @@ public class ProviderHelper extends XRServiceFactory {
         if (mtomEnabled) {
             attachments = (Map<String, DataHandler>)mc.get(INBOUND_MESSAGE_ATTACHMENTS);
         }
-        SOAPMessage response = null;
-        boolean usesSOAP12 = false;
+        SOAPMessage response;
+        boolean usesSOAP12;
         DBWSAdapter dbwsAdapter = (DBWSAdapter)xrService;
 
-        SOAPEnvelope envelope = null;
+        SOAPEnvelope envelope;
         try {
             envelope = request.getSOAPPart().getEnvelope();
         }
@@ -455,15 +454,15 @@ public class ProviderHelper extends XRServiceFactory {
         }
 
         if (body == null) {
-            SOAPFault soapFault = null;
+            SOAPFault soapFault;
             try {
-                SOAPFactory soapFactory = null;
+                SOAPFactory soapFactory;
                 if (usesSOAP12) {
                     soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
                 } else {
                     soapFactory = SOAPFactory.newInstance();
                 }
-                QName faultCodeQName = null;
+                QName faultCodeQName;
                 if (usesSOAP12) {
                     faultCodeQName = SENDER_QNAME;
                 } else {
@@ -476,7 +475,7 @@ public class ProviderHelper extends XRServiceFactory {
             throw new SOAPFaultException(soapFault);
         }
 
-        XMLRoot xmlRoot = null;
+        XMLRoot xmlRoot;
         try {
             XMLContext xmlContext = dbwsAdapter.getXMLContext();
             XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
@@ -530,15 +529,15 @@ public class ProviderHelper extends XRServiceFactory {
             xmlRoot = (XMLRoot)unmarshaller.unmarshal(body, Invocation.class);
         }
         catch (Exception e) {
-            SOAPFault soapFault = null;
+            SOAPFault soapFault;
             try {
-                SOAPFactory soapFactory = null;
+                SOAPFactory soapFactory;
                 if (usesSOAP12) {
                     soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
                 } else {
                     soapFactory = SOAPFactory.newInstance();
                 }
-                QName faultCodeQName = null;
+                QName faultCodeQName;
                 if (usesSOAP12) {
                     faultCodeQName = SENDER_QNAME;
                 } else {
@@ -565,8 +564,7 @@ public class ProviderHelper extends XRServiceFactory {
          * binary objects, we must convert
          */
         org.eclipse.persistence.internal.oxm.schema.model.Element invocationElement =
-          (org.eclipse.persistence.internal.oxm.schema.model.Element)
-           dbwsAdapter.getExtendedSchema().getTopLevelElements().get(invocation.getName());
+                dbwsAdapter.getExtendedSchema().getTopLevelElements().get(invocation.getName());
         String typeName = invocationElement.getType();
         int idx = typeName.indexOf(':');
         if (idx != -1) {
@@ -574,7 +572,7 @@ public class ProviderHelper extends XRServiceFactory {
           typeName = typeName.substring(idx+1);
         }
         ComplexType complexType =
-          (ComplexType)dbwsAdapter.getExtendedSchema().getTopLevelComplexTypes().get(typeName);
+                dbwsAdapter.getExtendedSchema().getTopLevelComplexTypes().get(typeName);
         if (complexType.getSequence() != null) {
             // for each operation, there is a corresponding top-level Request type
             // which has the arguments to the operation
@@ -607,7 +605,7 @@ public class ProviderHelper extends XRServiceFactory {
               // incoming attachments ?
             }
         }
-        Object result = null;
+        Object result;
         try {
             result = op.invoke(dbwsAdapter, invocation);
             if (result instanceof ValueObject) {
@@ -623,15 +621,15 @@ public class ProviderHelper extends XRServiceFactory {
                 response = responseWriter.generateResponse(op, usesSOAP12, e);
             }
             catch (SOAPException soape1) {
-                SOAPFault soapFault = null;
+                SOAPFault soapFault;
                 try {
-                    SOAPFactory soapFactory = null;
+                    SOAPFactory soapFactory;
                     if (usesSOAP12) {
                         soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
                     } else {
                         soapFactory = SOAPFactory.newInstance();
                     }
-                    QName faultCodeQName = null;
+                    QName faultCodeQName;
                     if (usesSOAP12) {
                         faultCodeQName = RECEIVER_QNAME;
                     } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.framework.*;
 
 public class RemoteConnectionExceptionsTest extends TestCase {
 
-    public RemoteConnectionExceptionsTest(int mode, Class remoteConnectionClass) {
+    public RemoteConnectionExceptionsTest(int mode, Class<?> remoteConnectionClass) {
         this.remoteConnectionClass = remoteConnectionClass;
         generator = new TransporterGenerator(mode);
         setNameAndCheckMode();
@@ -39,7 +39,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         this(mode, Class.forName(remoteConnectionClassName));
     }
 
-    protected Class remoteConnectionClass;
+    protected Class<?> remoteConnectionClass;
     private RemoteConnection remoteConnection;
     protected TransporterGenerator generator;
     protected Object[] results;
@@ -51,7 +51,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
     protected Vector args;
 
     protected void setRemoteConnection(RemoteConnection remoteConnection) {
-        Class cls = remoteConnection.getClass();
+        Class<? extends RemoteConnection> cls = remoteConnection.getClass();
         if (!remoteConnectionClass.equals(cls)) {
             throw new TestProblemException("remoteConnection's type is different from the type used to create the test");
         }
@@ -107,10 +107,10 @@ public class RemoteConnectionExceptionsTest extends TestCase {
             }
             methods.add(method);
 
-            Class[] types = method.getParameterTypes();
+            Class<?>[] types = method.getParameterTypes();
             Object[] params = new Object[types.length];
             for (int j = 0; j < types.length; j++) {
-                Class type = types[j];
+                Class<?> type = types[j];
                 if (type.isPrimitive()) {
                     params[j] = getWrapperClassInstance(type);
                 }
@@ -155,7 +155,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
             if (!ok) {
                 if (((Method)methods.elementAt(i)).getName().equals("isConnected")) {
                     if (Boolean.class.isInstance(results[i])) {
-                        ok = !((Boolean)results[i]).booleanValue();
+                        ok = !(Boolean) results[i];
                     }
                 }
             }
@@ -164,7 +164,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
             if (ok) {
                 ok = TestException.class.isInstance(exception);
                 if (ok) {
-                    ok = ((TestException)exception).getMessage().endsWith(generator.getMessage());
+                    ok = exception.getMessage().endsWith(generator.getMessage());
                 }
             }
         } else {
@@ -173,6 +173,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         return ok;
     }
 
+    @Override
     public void test() throws Exception {
         results = new Object[methods.size()];
         exceptions = new Throwable[methods.size()];
@@ -191,6 +192,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         boolean errorHasOccured = false;
         String errorMessage = new String("Wrong exception/result thrown/returned by methods:");
@@ -220,25 +222,25 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         }
     }
 
-    public static Object getWrapperClassInstance(Class cls) {
+    public static Object getWrapperClassInstance(Class<?> cls) {
         if (Integer.TYPE.equals(cls)) {
-            return new Integer(0);
+            return 0;
         } else if (Boolean.TYPE.equals(cls)) {
-            return new Boolean(false);
+            return Boolean.FALSE;
         } else if (Character.TYPE.equals(cls)) {
-            return new Character(' ');
+            return ' ';
         } else if (Byte.TYPE.equals(cls)) {
             byte b = 0;
-            return new Byte(b);
+            return b;
         } else if (Short.TYPE.equals(cls)) {
             short s = 0;
-            return new Short(s);
+            return s;
         } else if (Long.TYPE.equals(cls)) {
-            return new Long(0);
+            return 0L;
         } else if (Float.TYPE.equals(cls)) {
-            return new Float(0);
+            return (float) 0;
         } else if (Double.TYPE.equals(cls)) {
-            return new Double(0);
+            return (double) 0;
         } else {
             return null;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date February 25, 2004
  */
 public class SessionsXMLServerSessionSchemaTest extends AutoVerifyTestCase {
     ServerSession serverSession;
@@ -37,6 +36,7 @@ public class SessionsXMLServerSessionSchemaTest extends AutoVerifyTestCase {
         setDescription("Test loading of a session xml with a server session against the XML Schema");
     }
 
+    @Override
     public void reset() {
         if (serverSession != null && serverSession.isConnected()) {
             serverSession.logout(); // If session is logged in, log it out
@@ -45,6 +45,7 @@ public class SessionsXMLServerSessionSchemaTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaServerSession.xml");
 
@@ -52,6 +53,7 @@ public class SessionsXMLServerSessionSchemaTest extends AutoVerifyTestCase {
             serverSession = (ServerSession)SessionManager.getManager().getSession(loader, "ServerSession", getClass().getClassLoader(), false, true); // don't refresh the session
     }
 
+    @Override
     protected void verify() {
         if (serverSession == null) {
             throw new TestErrorException("Server session is null");

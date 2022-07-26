@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,6 @@ public class JPAClassLoaderHolder {
         /**
          * INTERNAL:
          * Create an instance of JPAClassLoaderHolder that wraps aClassLoader that is an original call to get*ClassLoader().
-         * @param aClassLoader
          */
         public JPAClassLoaderHolder(ClassLoader aClassLoader) {
             this(aClassLoader, true);
@@ -38,8 +37,6 @@ public class JPAClassLoaderHolder {
         /**
          * INTERNAL:
          * Create an instance of JPAClassLoaderHolder that wraps aClassLoader and the inUse boolean.
-         * @param aClassLoader
-         * @param isThisTempClassLoader
          */
         public JPAClassLoaderHolder(ClassLoader aClassLoader, boolean isThisTempClassLoader) {
             classLoader = aClassLoader;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,10 +24,11 @@ import org.eclipse.persistence.expressions.*;
  * and comparing the contents to a normal query read.
  */
 public class CursoredStreamWithUselessConformTest extends CursoredStreamTest {
-    public CursoredStreamWithUselessConformTest(Class referenceClass, Expression expression) {
+    public CursoredStreamWithUselessConformTest(Class<?> referenceClass, Expression expression) {
         super(referenceClass, expression);
     }
 
+    @Override
     public void test() {
 
         ReadAllQuery query = new ReadAllQuery();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.w3c.dom.Document;
@@ -33,6 +34,7 @@ public class FullTestCasesNS extends FullTestCases{
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public Map getProperties(){
           Map overrides = new HashMap();
             String overridesString =
@@ -61,7 +63,7 @@ public class FullTestCasesNS extends FullTestCases{
             overrides.put("org.eclipse.persistence.testing.jaxb.xmlelement.model", src);
 
             Map props = new HashMap();
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return props;
     }
 }

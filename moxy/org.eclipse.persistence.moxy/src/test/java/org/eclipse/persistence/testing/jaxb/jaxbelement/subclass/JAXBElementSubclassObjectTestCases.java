@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ public class JAXBElementSubclassObjectTestCases extends JAXBWithJSONTestCases {
 
     public JAXBElementSubclassObjectTestCases(String name) throws Exception {
         super(name);
-        this.setClasses(new Class[] {Foo.class, ObjectFactoryFoo.class});
+        this.setClasses(new Class<?>[] {Foo.class, ObjectFactoryFoo.class});
         this.setControlDocument(XML_RESOURCE);
         this.setControlJSON(JSON_RESOURCE);
     }

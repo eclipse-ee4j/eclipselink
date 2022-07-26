@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,16 +17,14 @@ package org.eclipse.persistence.jaxb.dynamic;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
+
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -38,7 +36,6 @@ import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.dynamic.metadata.Metadata;
 import org.eclipse.persistence.jaxb.dynamic.metadata.OXMMetadata;
@@ -213,46 +210,30 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
     // ========================================================================
 
     static abstract class DynamicJAXBContextInput extends org.eclipse.persistence.jaxb.JAXBContext.JAXBContextInput {
+
         public DynamicJAXBContextInput(Map properties, ClassLoader classLoader) {
             super(properties, classLoader);
-
-            DynamicClassLoader dClassLoader = null;
-
             if (classLoader == null) {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    try {
-                        classLoader =  AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
-                    } catch (PrivilegedActionException pae) {
-                        //should not be thrown but make sure that when it does, it's properly reported
-                        throw new RuntimeException(pae);
-                    }
-                } else {
-                    classLoader = PrivilegedAccessHelper.getContextClassLoader(Thread.currentThread());
-                }
+                classLoader = PrivilegedAccessHelper.callDoPrivileged(
+                        () -> PrivilegedAccessHelper.getContextClassLoader(Thread.currentThread())
+                );
             }
+            final DynamicClassLoader dClassLoader;
             if (classLoader instanceof DynamicClassLoader) {
                dClassLoader = (DynamicClassLoader) classLoader;
             } else {
                 final ClassLoader parent = classLoader;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    dClassLoader = AccessController.doPrivileged(new PrivilegedAction<DynamicClassLoader>() {
-                        @Override
-                        public DynamicClassLoader run() {
-                            return new DynamicClassLoader(new JaxbClassLoader(parent));
-                        }
-                    });
-                } else {
-                    ClassLoader jaxbLoader = new JaxbClassLoader(parent);
-                    dClassLoader = new DynamicClassLoader(jaxbLoader);
-                }
+                dClassLoader = PrivilegedAccessHelper.callDoPrivileged(
+                        () -> new DynamicClassLoader(new JaxbClassLoader(parent))
+                );
             }
-
             this.classLoader = dClassLoader;
         }
 
         public DynamicClassLoader getClassLoader() {
             return (DynamicClassLoader) this.classLoader;
         }
+
     }
 
     static class MetadataContextInput extends DynamicJAXBContextInput {
@@ -330,7 +311,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 Class<?> schemaMetadataClass = PrivilegedAccessHelper.getClassForName(SCHEMAMETADATA_CLASS_NAME);
                 Class<?>[] constructorClassArgs = {DynamicClassLoader.class, Map.class, constructorArg.getClass(), EntityResolver.class};
                 Constructor<?> constructor = PrivilegedAccessHelper.getConstructorFor(schemaMetadataClass, constructorClassArgs, true);
-                Object[] contructorObjectArgs = {(DynamicClassLoader) classLoader, properties, constructorArg, entityResolver};
+                Object[] contructorObjectArgs = {classLoader, properties, constructorArg, entityResolver};
                 schemaMetadata = (Metadata) PrivilegedAccessHelper.invokeConstructor(constructor, contructorObjectArgs);
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();

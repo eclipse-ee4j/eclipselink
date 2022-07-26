@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ public class XmlElementsJoinNodeTestCases extends JAXBWithJSONTestCases {
 
     public XmlElementsJoinNodeTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ Root.class });
+        setClasses(new Class<?>[]{ Root.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "value");
@@ -35,6 +35,7 @@ public class XmlElementsJoinNodeTestCases extends JAXBWithJSONTestCases {
 
     }
 
+    @Override
     public Object getControlObject() {
         Address address1 = new Address("a100", "123 Some Street", "shipping");
         Address address2 = new Address("a101", "66 Dead End Rd.", "home");

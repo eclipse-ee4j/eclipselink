@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,9 +61,6 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
     /**
      * INTERNAL:
      * Create an Attribute instance with a passed in validation flag (usually set to true only during Metamodel initialization)
-     * @param managedType
-     * @param mapping
-     * @param validationEnabled
      */
     protected PluralAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
         super(managedType, mapping);
@@ -77,7 +74,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
             this.elementType = getMetamodel().getType(elementDesc.getJavaClass());
         } else {
             // See CollectionContainerPolicy
-            Class attributeClass = null;
+            Class<?> attributeClass = null;
             // TODO: handle AggregateCollectionMapping and verify isAbstractDirectMapping
             if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping()
                     || mapping.isDirectCollectionMapping()) {
@@ -118,7 +115,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                 attributeClass = mapping.getReferenceClass();
             } else if (mapping.isAggregateCollectionMapping()) {
                 // get reference class and check if managedType is a MappedSuperclass
-                attributeClass = ((AggregateCollectionMapping)mapping).getReferenceClass();
+                attributeClass = mapping.getReferenceClass();
             }
 
             // TODO: refactor exception handling
@@ -126,7 +123,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
                 attributeClass = Object.class;
                 AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
             }
-            this.elementType = getMetamodel().getType(attributeClass);
+            this.elementType = (Type<V>) getMetamodel().getType(attributeClass);
         }
     }
 
@@ -157,7 +154,6 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
     /**
      * INTERNAL:
      * Return the mapping associated with this PluralAttribute.
-     * @return
      */
     public CollectionMapping getCollectionMapping() {
         return (CollectionMapping) getMapping();

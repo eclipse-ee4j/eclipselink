@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -46,9 +46,6 @@ public abstract class QueryTest extends JPA1Base {
     }
 
     /**
-     * @param queryString
-     * @param parameters
-     * @param em
      */
     private void executeQueryWithParameters(String queryString, Set<InputParameterHolder> parameters, EntityManager em) {
         Query query = em.createQuery(queryString);
@@ -59,8 +56,6 @@ public abstract class QueryTest extends JPA1Base {
     }
 
     /**
-     * @param query
-     * @param holder
      */
     private void setParameterHolder(Query query, InputParameterHolder holder) {
         if (holder.isTemporal()) {
@@ -205,7 +200,7 @@ public abstract class QueryTest extends JPA1Base {
     }
 
     protected void assertValidQueryExecution(String queryString) {
-        assertValidQueryExecutionWithArgs(queryString, new Object[0]);
+        assertValidQueryExecutionWithArgs(queryString);
     }
 
     private boolean isUtilDateLike(Object arg) {

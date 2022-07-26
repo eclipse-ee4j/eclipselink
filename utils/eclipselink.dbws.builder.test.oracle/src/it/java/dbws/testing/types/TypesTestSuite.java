@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -450,7 +450,7 @@ public class TypesTestSuite extends DBWSTestSuite {
     @Test
     public void echoInteger() {
         Invocation invocation = new Invocation("echoInteger");
-        invocation.setParameter("PINTEGER", Integer.valueOf(128));
+        invocation.setParameter("PINTEGER", 128);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -471,7 +471,7 @@ public class TypesTestSuite extends DBWSTestSuite {
     @Test
     public void echoSmallint() {
         Invocation invocation = new Invocation("echoSmallint");
-        invocation.setParameter("PSMALLINT", Integer.valueOf(7));
+        invocation.setParameter("PSMALLINT", 7);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -731,7 +731,7 @@ public class TypesTestSuite extends DBWSTestSuite {
     @Test
     public void echoReal() {
         Invocation invocation = new Invocation("echoReal");
-        invocation.setParameter("PREAL", new Float("3.14159"));
+        invocation.setParameter("PREAL", Float.valueOf("3.14159"));
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -753,7 +753,7 @@ public class TypesTestSuite extends DBWSTestSuite {
     @Test
     public void echoFloat() {
         Invocation invocation = new Invocation("echoFloat");
-        invocation.setParameter("PINPUTFLOAT", new Float("31415.926"));
+        invocation.setParameter("PINPUTFLOAT", Float.valueOf("31415.926"));
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -775,7 +775,7 @@ public class TypesTestSuite extends DBWSTestSuite {
     @Test
     public void echoDouble() {
         Invocation invocation = new Invocation("echoDouble");
-        invocation.setParameter("PDOUBLE", new Double("314.15926"));
+        invocation.setParameter("PDOUBLE", Double.valueOf("314.15926"));
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);

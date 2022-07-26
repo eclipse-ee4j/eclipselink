@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,6 @@ import org.eclipse.persistence.testing.models.directmap.DirectMapMappings;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date July 26, 2005
  */
 public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
     private NullPointerException m_exception;
@@ -37,23 +36,26 @@ public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
         setDescription("Tests that nulls are properly supported for DirectMapMappings that use a HashMap.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     public void setup() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
     }
 
+    @Override
     public void test() throws Exception {
         // Create a hashmap with a null in it.
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings maps = (DirectMapMappings)uow.registerObject(new DirectMapMappings());
-        maps.directHashMap.put(new Integer(1), "item1");
-        maps.directHashMap.put(new Integer(2), "item2");
-        maps.directHashMap.put(new Integer(3), null);
+        maps.directHashMap.put(1, "item1");
+        maps.directHashMap.put(2, "item2");
+        maps.directHashMap.put(3, null);
 
         try {
             uow.commit();
@@ -68,6 +70,7 @@ public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
         queryResult = (DirectMapMappings)getSession().executeQuery(new ReadObjectQuery(DirectMapMappings.class));
     }
 
+    @Override
     public void verify() throws Exception {
         if (m_exception != null) {
             throw new TestErrorException("Null pointer exception was caught.");
@@ -77,7 +80,7 @@ public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
             throw new TestErrorException("Incorrect amount of items in the hashmap.");
         }
 
-        if (queryResult.directHashMap.get(new Integer(3)) != null) {
+        if (queryResult.directHashMap.get(3) != null) {
             throw new TestErrorException("The null value was not read back in correctly.");
         }
     }

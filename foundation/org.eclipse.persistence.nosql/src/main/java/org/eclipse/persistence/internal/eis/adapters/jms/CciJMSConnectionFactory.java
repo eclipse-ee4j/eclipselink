@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,6 @@ public class CciJMSConnectionFactory implements jakarta.resource.cci.ConnectionF
      * Return the connection.
      *
      * @return the CCI connection
-     * @throws EISException
      */
     @Override
     public jakarta.resource.cci.Connection getConnection() throws EISException {
@@ -51,13 +50,12 @@ public class CciJMSConnectionFactory implements jakarta.resource.cci.ConnectionF
      * Return the connection.
      *
      * @return the CCI connection
-     * @throws EISException
      */
     @Override
     public jakarta.resource.cci.Connection getConnection(ConnectionSpec spec) throws EISException {
         CciJMSConnectionSpec jmsSpec = null;
         Session session = null;
-        jakarta.jms.Connection conn = null;
+        QueueConnection conn = null;
         jakarta.jms.ConnectionFactory factory;
 
         try {
@@ -86,7 +84,7 @@ public class CciJMSConnectionFactory implements jakarta.resource.cci.ConnectionF
             // 'AUTO_ACKNOWLEDGE' - session automatically acknowledges a client's receipt of a message either:
             //   - when the session has successfully returned from a call to receive
             //   - when the listener the session has called to process the message successfully returns
-            session = ((QueueConnection)conn).createQueueSession(true, Session.AUTO_ACKNOWLEDGE);
+            session = conn.createQueueSession(true, Session.AUTO_ACKNOWLEDGE);
         } catch (Exception e) {
             throw EISException.createException(e);
         }
@@ -127,7 +125,6 @@ public class CciJMSConnectionFactory implements jakarta.resource.cci.ConnectionF
     /**
      * Does nothing - for interface implementation
      *
-     * @param reference
      */
     @Override
     public void setReference(Reference reference) {

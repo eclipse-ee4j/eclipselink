@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,15 +41,17 @@ public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
 
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
         setClasses(classes);
     }
 
+    @Override
     public void testRoundTrip(){
 
     }
 
+    @Override
     protected Object getControlObject() {
         ArrayList responsibilities = new ArrayList();
         responsibilities.add(CONTROL_RESPONSIBILITY1);
@@ -74,6 +76,7 @@ public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
         return employee;
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
@@ -84,6 +87,7 @@ public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
     }
 
     // Bug #283424 needs to be fixed then this test can be added
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
@@ -93,6 +97,7 @@ public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
         this.xmlToObjectTest(obj);
     }
 
+    @Override
     public void testObjectToXMLStreamWriter() throws Exception {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();

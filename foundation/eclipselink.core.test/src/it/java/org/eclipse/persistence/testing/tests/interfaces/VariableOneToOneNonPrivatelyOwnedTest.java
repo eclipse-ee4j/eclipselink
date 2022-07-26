@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class VariableOneToOneNonPrivatelyOwnedTest extends TransactionalTestCase
     public Contact contact;
     public ContactHolder origional;
 
+    @Override
     public void test() {
         List<Phone> phones = getSession().readAllObjects(Phone.class);
         for (Phone phone : phones) {
@@ -47,6 +48,7 @@ public class VariableOneToOneNonPrivatelyOwnedTest extends TransactionalTestCase
 
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         this.contact = (Contact)getSession().readObject(this.contact);

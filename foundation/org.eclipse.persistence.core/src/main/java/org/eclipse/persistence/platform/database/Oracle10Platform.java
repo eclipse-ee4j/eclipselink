@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -31,9 +31,8 @@ public class Oracle10Platform extends Oracle9Platform {
      * Build the hint string used for first rows.
      * 
      * Allows it to be overridden
-     * @param max
-     * @return
      */
+    @Override
     protected String buildFirstRowsHint(int max){
         //bug 374136: override setting the FIRST_ROWS hint as this is not needed on Oracle10g
         return "";

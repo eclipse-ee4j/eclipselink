@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 public class WriteChanges_RevertAndResume_TestCase extends AutoVerifyTestCase {
     protected Exception exception;
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         try {
@@ -38,6 +39,7 @@ public class WriteChanges_RevertAndResume_TestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception == null) {
             throw new TestErrorException("Exception not thrown attempting to revertAndResume after writeChanges.");
@@ -51,6 +53,7 @@ public class WriteChanges_RevertAndResume_TestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         exception = null;
     }

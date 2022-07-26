@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,10 +46,10 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 
 public class XMLBinaryDataHelper {
     protected static XMLBinaryDataHelper binaryDataHelper;
-    public Class DATA_HANDLER;
-    public Class IMAGE;
-    public Class SOURCE;
-    public Class MULTIPART;
+    public Class<?> DATA_HANDLER;
+    public Class<?> IMAGE;
+    public Class<?> SOURCE;
+    public Class<?> MULTIPART;
 
     public XMLBinaryDataHelper() {
         if (DATA_HANDLER == null) {
@@ -76,7 +76,7 @@ public class XMLBinaryDataHelper {
         MULTIPART = jakarta.mail.internet.MimeMultipart.class;
     }
 
-    public Object convertObject(Object obj, Class classification, CoreAbstractSession session, CoreContainerPolicy cp) {
+    public Object convertObject(Object obj, Class<?> classification, CoreAbstractSession session, CoreContainerPolicy cp) {
         if( obj instanceof List && cp != null){
             List theList = (List)obj;
             Object container = cp.containerInstance(theList.size());
@@ -89,7 +89,7 @@ public class XMLBinaryDataHelper {
         return convertSingleObject(obj, classification, session);
 
     }
-    public Object convertSingleObject(Object obj, Class classification, CoreAbstractSession session) {
+    public Object convertSingleObject(Object obj, Class<?> classification, CoreAbstractSession session) {
         if (classification == DATA_HANDLER) {
             return convertObjectToDataHandler(obj, session);
         } else if (classification == IMAGE) {
@@ -180,7 +180,7 @@ public class XMLBinaryDataHelper {
     public EncodedData getBytesFromByteObjectArray(Byte[] bytes, String mimeType) {
         byte[] data = new byte[bytes.length];
         for (int i = 0; i < data.length; i++) {
-            data[i] = bytes[i].byteValue();
+            data[i] = bytes[i];
         }
         return new EncodedData(data, mimeType);
     }
@@ -191,9 +191,9 @@ public class XMLBinaryDataHelper {
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            Iterator itr = ImageIO.getImageWritersByMIMEType(mimeType);
+            Iterator<ImageWriter> itr = ImageIO.getImageWritersByMIMEType(mimeType);
             if (itr.hasNext()) {
-                ImageWriter w = (ImageWriter) itr.next();
+                ImageWriter w = itr.next();
                 w.setOutput(ImageIO.createImageOutputStream(outputStream));
                 w.write(convertToBufferedImage(image));
                 w.dispose();
@@ -258,7 +258,7 @@ public class XMLBinaryDataHelper {
             Byte[] objectBytes = (Byte[]) obj;
             byte[] bytes = new byte[objectBytes.length];
             for (int i = 0; i < objectBytes.length; i++) {
-                bytes[i] = objectBytes[i].byteValue();
+                bytes[i] = objectBytes[i];
             }
             try {
                 return new MimeMultipart(new ByteArrayDataSource(bytes, "multipart/mixed"));
@@ -295,7 +295,7 @@ public class XMLBinaryDataHelper {
             Byte[] objectBytes = (Byte[]) obj;
             byte[] bytes = new byte[objectBytes.length];
             for (int i = 0; i < objectBytes.length; i++) {
-                bytes[i] = objectBytes[i].byteValue();
+                bytes[i] = objectBytes[i];
             }
             ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
             try {
@@ -311,7 +311,7 @@ public class XMLBinaryDataHelper {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             source.writeTo(output);
-            return (String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(output.toByteArray(), String.class, schemaTypeQName);
+            return ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(output.toByteArray(), String.class, schemaTypeQName);
         } catch (Exception ex) {
             throw ConversionException.couldNotBeConverted(source, CoreClassConstants.STRING, ex);
         }
@@ -325,9 +325,9 @@ public class XMLBinaryDataHelper {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             String mimeType = "image/png";
-            Iterator itr = ImageIO.getImageWritersByMIMEType(mimeType);
+            Iterator<ImageWriter> itr = ImageIO.getImageWritersByMIMEType(mimeType);
             if (itr.hasNext()) {
-                ImageWriter w = (ImageWriter) itr.next();
+                ImageWriter w = itr.next();
                 w.setOutput(ImageIO.createImageOutputStream(outputStream));
                 w.write(convertToBufferedImage(image));
                 w.dispose();
@@ -405,7 +405,7 @@ public class XMLBinaryDataHelper {
             Byte[] objectBytes = (Byte[]) obj;
             byte[] bytes = new byte[objectBytes.length];
             for (int i = 0; i < objectBytes.length; i++) {
-                bytes[i] = objectBytes[i].byteValue();
+                bytes[i] = objectBytes[i];
             }
             return new ByteArraySource(bytes);
         } else if(obj instanceof InputStream) {

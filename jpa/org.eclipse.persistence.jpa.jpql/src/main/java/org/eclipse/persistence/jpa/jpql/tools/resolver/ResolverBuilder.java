@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,15 +12,20 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
 package org.eclipse.persistence.jpa.jpql.tools.resolver;
 
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
@@ -71,8 +76,12 @@ import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LocalDateTime;
+import org.eclipse.persistence.jpa.jpql.parser.LocalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathDoubleExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MathSingleExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
@@ -175,8 +184,6 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.5.1
- * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
@@ -383,9 +390,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         return resolver;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbsExpression expression) {
 
@@ -397,9 +401,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         resolver = new AbsFunctionResolver(resolver);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AbstractSchemaName expression) {
 
@@ -421,33 +422,21 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AdditionExpression expression) {
         visitArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AllOrAnyExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AndExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ArithmeticFactor expression) {
 
@@ -459,33 +448,21 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         resolver = new NumericResolver(parent, resolver);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AvgFunction expression) {
         resolver = buildClassResolver(Double.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(BadExpression expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(BetweenExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CaseExpression expression) {
         visitCollectionEquivalentExpression(
@@ -494,41 +471,26 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CoalesceExpression expression) {
         visitCollectionEquivalentExpression(expression.getExpression(), null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionExpression expression) {
         expression.acceptChildren(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberDeclaration expression) {
         expression.getCollectionValuedPathExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionMemberExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionValuedPathExpression expression) {
 
@@ -562,25 +524,16 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ComparisonExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConcatExpression expression) {
         resolver = buildClassResolver(String.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConstructorExpression expression) {
 
@@ -594,17 +547,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CountFunction expression) {
         resolver = buildClassResolver(Long.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DateTime expression) {
 
@@ -635,41 +582,26 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteClause expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DeleteStatement expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DivisionExpression expression) {
         visitArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EmptyCollectionComparisonExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntityTypeLiteral expression) {
 
@@ -684,115 +616,73 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(EntryExpression expression) {
         resolver = buildClassResolver(Map.Entry.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExistsExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FromClause expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FunctionExpression expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(GroupByClause expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HavingClause expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariable expression) {
         DeclarationResolver parent = getDeclarationResolver(expression);
         resolver = parent.getResolver(expression.getVariableName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariableDeclaration expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IndexExpression expression) {
         resolver = buildClassResolver(Integer.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(InputParameter expression) {
         resolver = buildClassNameResolver(IType.UNRESOLVABLE_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(Join expression) {
         expression.getJoinAssociationPath().accept(this);
         resolver.setNullAllowed(expression.isLeftJoin());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(JPQLExpression expression) {
         expression.getQueryStatement().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeyExpression expression) {
 
@@ -804,9 +694,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         resolver = new KeyResolver(resolver);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(KeywordExpression expression) {
 
@@ -822,107 +709,135 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LengthExpression expression) {
         resolver = buildClassResolver(Integer.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LikeExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public void visit(LocalExpression expression) {
+        expression.getDateType().accept(this);
+    }
+
+    @Override
+    public void visit(LocalDateTime expression) {
+        resolver = expression.getValueByType(
+                () -> buildClassResolver(LocalDate.class),
+                () -> buildClassResolver(LocalTime.class),
+                () -> buildClassResolver(LocalDateTime.class)
+        );
+    }
+
     @Override
     public void visit(LocateExpression expression) {
         resolver = buildClassResolver(Integer.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(LowerExpression expression) {
         resolver = buildClassResolver(String.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public void visit(MathDoubleExpression.Power expression) {
+        resolver = buildClassResolver(Double.class);
+    }
+
+    @Override
+    public void visit(MathDoubleExpression.Round expression) {
+
+        // Visit the 1st child expression in order to create the resolver
+        expression.getFirstExpression().accept(this);
+
+        // Wrap the Resolver used to determine the type of the state field
+        // path expression so we can return the actual type
+        resolver = new MathFunctionResolver.Round(resolver);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ceiling expression) {
+
+        // Visit the child expression in order to create the resolver
+        expression.getExpression().accept(this);
+
+        // Wrap the Resolver used to determine the type of the state field
+        // path expression so we can return the actual type
+        resolver = new MathFunctionResolver.Ceiling(resolver);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Exp expression) {
+        resolver = buildClassResolver(Double.class);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Floor expression) {
+
+        // Visit the child expression in order to create the resolver
+        expression.getExpression().accept(this);
+
+        // Wrap the Resolver used to determine the type of the state field
+        // path expression so we can return the actual type
+        resolver = new MathFunctionResolver.Floor(resolver);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Ln expression) {
+        resolver = buildClassResolver(Double.class);
+    }
+
+    @Override
+    public void visit(MathSingleExpression.Sign expression) {
+        resolver = buildClassResolver(Integer.class);
+    }
+
     @Override
     public void visit(MaxFunction expression) {
         // Visit the state field path expression in order to create the resolver
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MinFunction expression) {
         // Visit the state field path expression in order to create the resolver
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ModExpression expression) {
         resolver = buildClassResolver(Integer.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(MultiplicationExpression expression) {
         visitArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NotExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullComparisonExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullExpression expression) {
         resolver = buildClassNameResolver(IType.UNRESOLVABLE_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NullIfExpression expression) {
         expression.getFirstExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(NumericLiteral expression) {
 
@@ -957,65 +872,41 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ObjectExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OnClause expression) {
         expression.getConditionalExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderByClause expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderByItem expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrExpression expression) {
         resolver = buildClassResolver(Boolean.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RangeVariableDeclaration expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ResultVariable expression) {
         expression.getSelectExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectClause expression) {
 
@@ -1033,33 +924,21 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectStatement expression) {
         expression.getSelectClause().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleFromClause expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectClause expression) {
         expression.getSelectExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectStatement expression) {
         queryContext.newSubqueryContext(expression);
@@ -1071,25 +950,16 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SizeExpression expression) {
         resolver = buildClassResolver(Integer.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SqrtExpression expression) {
         resolver = buildClassResolver(Double.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StateFieldPathExpression expression) {
 
@@ -1118,41 +988,26 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StringLiteral expression) {
         resolver = buildClassResolver(String.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubstringExpression expression) {
         resolver = buildClassResolver(String.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SubtractionExpression expression) {
         visitArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SumFunction expression) {
 
@@ -1164,9 +1019,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         resolver = new SumFunctionResolver(resolver);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TreatExpression expression) {
 
@@ -1183,65 +1035,41 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         resolver = new TreatResolver(resolver, entityTypeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TrimExpression expression) {
         resolver = buildClassResolver(String.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TypeExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnknownExpression expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateClause expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateItem expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpdateStatement expression) {
         resolver = buildClassResolver(Object.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UpperExpression expression) {
         resolver = buildClassResolver(String.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ValueExpression expression) {
 
@@ -1253,17 +1081,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         resolver = new ValueResolver(resolver);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(WhenClause expression) {
         expression.getThenExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(WhereClause expression) {
         expression.getConditionalExpression().accept(this);
@@ -1276,7 +1098,7 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
      */
     protected void visitArithmeticExpression(ArithmeticExpression expression) {
 
-        List<Resolver> resolvers = new ArrayList<Resolver>(2);
+        List<Resolver> resolvers = new ArrayList<>(2);
 
         // Visit the first expression
         expression.getLeftExpression().accept(this);
@@ -1303,7 +1125,7 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     protected void visitCollectionEquivalentExpression(Expression expression,
                                                        Expression extraExpression) {
 
-        List<Resolver> resolvers = new ArrayList<Resolver>();
+        List<Resolver> resolvers = new ArrayList<>();
         CollectionExpression collectionExpression = getCollectionExpression(expression);
 
         // Gather the resolver for all children
@@ -1346,9 +1168,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
             super();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             this.expression = expression;

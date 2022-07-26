@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,6 @@
 package org.eclipse.persistence.sessions.coordination.rmi;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.rmi.Naming;
 import java.rmi.NoSuchObjectException;
@@ -25,7 +23,6 @@ import java.rmi.server.UnicastRemoteObject;
 import javax.naming.Context;
 
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection;
 import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnectionImpl;
@@ -37,18 +34,15 @@ import org.eclipse.persistence.sessions.coordination.TransportManager;
 /**
  * <p>
  * <b>Purpose</b>: Provide an RMI transport implementation for RCM.
- * <p>
+ * </p><p>
  * <b>Description</b>: This class manages the RMI remote connections to other
  * RCM service instances and posts the local RMI connection to this service instance
  * in a name service so that other RCM service instances can connect to it.
- * <p>
+ * </p>
  * @author Steven Vo
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */
 public class RMITransportManager extends TransportManager {
-
-    private Method narrow;
-    private Constructor constructor;
 
     public RMITransportManager(RemoteCommandManager rcm) {
         this.rcm = rcm;
@@ -84,15 +78,7 @@ public class RMITransportManager extends TransportManager {
         rcm.logDebug("looking_up_remote_conn_in_jndi", args);
         try {
             Context context = getRemoteHostContext(hostURL);
-
-            //Use JNDI lookup(), rather than the RMI version,
-            //AND replace the Java remote interface cast with a call to javax.rmi.PortableRemoteObject.narrow():
-            if (narrow != null) {
-                return new RMIRemoteConnection((RMIRemoteCommandConnection) narrow.invoke(
-                        null, context.lookup(remoteObjectIdentifier), RMIRemoteCommandConnection.class));
-            } else {
-                return new RMIRemoteConnection((RMIRemoteCommandConnection)context.lookup(remoteObjectIdentifier));
-            }
+            return new RMIRemoteConnection((RMIRemoteCommandConnection)context.lookup(remoteObjectIdentifier));
         } catch (Exception e) {
             try {
                 rcm.handleException(RemoteCommandManagerException.errorLookingUpRemoteConnection(remoteObjectIdentifier, hostURL, e));
@@ -150,26 +136,7 @@ public class RMITransportManager extends TransportManager {
     protected void createLocalConnectionInJNDI() {
         try {
             // Register the remote connection in JNDI naming service
-            RMIRemoteCommandConnection remoteConnectionObject;
-            if (narrow != null) {
-                if (constructor == null) {
-                    try {
-                        constructor = PrivilegedAccessHelper.getConstructorFor(
-                            Class.forName("org.eclipse.persistence.internal.sessions.coordination.rmi.iiop.RMIRemoteCommandConnectionImpl"),
-                            new Class[] {RemoteCommandManager.class}, false);
-                    } catch (ReflectiveOperationException e) {
-                        throw RemoteCommandManagerException.errorInitCorba("javax.rmi.PortableRemoteObject", e);
-                    }
-                }
-                try {
-                    remoteConnectionObject = (RMIRemoteCommandConnection) PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {rcm});
-                } catch (ReflectiveOperationException e) {
-                    // TODO Auto-generated catch block
-                    throw RemoteCommandManagerException.errorInitCorba("javax.rmi.PortableRemoteObject", e);
-                }
-            } else {
-                remoteConnectionObject = new RMIRemoteCommandConnectionImpl(rcm);
-            }
+            RMIRemoteCommandConnection remoteConnectionObject = new RMIRemoteCommandConnectionImpl(rcm);
             Object[] args = { rcm.getServiceId().getId() };
             rcm.logDebug("register_local_connection_in_jndi", args);
             getLocalHostContext().rebind(rcm.getServiceId().getId(), remoteConnectionObject);
@@ -231,11 +198,7 @@ public class RMITransportManager extends TransportManager {
         try {
             // Look up the local host name and paste it in a default URL
             String localHost = InetAddress.getLocalHost().getHostName();
-            if (narrow != null) {
-                return DEFAULT_IIOP_URL_PROTOCOL + "::" + localHost + ":" + DEFAULT_IIOP_URL_PORT;
-            } else {
-                return DEFAULT_URL_PROTOCOL + "://" + localHost + ":" + DEFAULT_URL_PORT;
-            }
+            return DEFAULT_URL_PROTOCOL + "://" + localHost + ":" + DEFAULT_URL_PORT;
         } catch (IOException exception) {
             throw RemoteCommandManagerException.errorGettingHostName(exception);
         }
@@ -291,19 +254,5 @@ public class RMITransportManager extends TransportManager {
                 this.localConnection = null;
             }
         }
-    }
-
-    public void setIsRMIOverIIOP(boolean b) {
-        if (b) {
-            try {
-                narrow = PrivilegedAccessHelper.getDeclaredMethod(Class.forName("javax.rmi.PortableRemoteObject"), "narrow", new Class[] {Object.class, Class.class});
-            } catch (ReflectiveOperationException e) {
-                // TODO Auto-generated catch block
-                throw RemoteCommandManagerException.errorInitCorba("javax.rmi.PortableRemoteObject", e);
-            }
-        } else {
-            narrow = null;
-        }
-
     }
 }

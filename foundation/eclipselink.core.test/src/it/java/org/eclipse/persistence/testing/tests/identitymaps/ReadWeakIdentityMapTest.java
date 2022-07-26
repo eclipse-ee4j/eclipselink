@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,12 +23,12 @@ import org.eclipse.persistence.testing.framework.*;
  * Read objects into the cache, force garbage collection, see that the cache is empty.
  */
 public class ReadWeakIdentityMapTest extends TestCase {
-    protected Class identityMapClass;
-    protected Class originalIdentityMapClass;
+    protected Class<? extends IdentityMap> identityMapClass;
+    protected Class<? extends IdentityMap> originalIdentityMapClass;
     protected int originalIdentityMapSize;
     protected int querySize;
 
-    public ReadWeakIdentityMapTest(Class mapClass) {
+    public ReadWeakIdentityMapTest(Class<? extends IdentityMap> mapClass) {
         identityMapClass = mapClass;
     }
 
@@ -39,12 +39,14 @@ public class ReadWeakIdentityMapTest extends TestCase {
         return (WeakIdentityMap)getAbstractSession().getIdentityMapAccessorInstance().getIdentityMap(Employee.class);
     }
 
+    @Override
     public void reset() {
         getSession().getDescriptor(Employee.class).setIdentityMapClass(originalIdentityMapClass);
         getSession().getDescriptor(Employee.class).setIdentityMapSize(originalIdentityMapSize);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void setup() {
         originalIdentityMapClass = getSession().getDescriptor(Employee.class).getIdentityMapClass();
         originalIdentityMapSize = getSession().getDescriptor(Employee.class).getIdentityMapSize();
@@ -58,6 +60,7 @@ public class ReadWeakIdentityMapTest extends TestCase {
         getSession().logMessage(getIdentityMap().getSize() + " are left in the cache.");
     }
 
+    @Override
     public void test() {
         if (getIdentityMap().getSize() == 0) {
             throw new TestWarningException("We did not fill the cache, the test is invalid.");
@@ -76,10 +79,10 @@ public class ReadWeakIdentityMapTest extends TestCase {
 
             // Ensure that some ref have garbage collected,
             // if not all through warning as different VM have different gc behavior.
-            Map cache = getIdentityMap().getCacheKeys();
+            Map<Object, CacheKey> cache = getIdentityMap().getCacheKeys();
             numObjects = 0;
-            for (Iterator iterator = cache.values().iterator(); iterator.hasNext();) {
-                CacheKey key = (CacheKey)iterator.next();
+            for (Iterator<CacheKey> iterator = cache.values().iterator(); iterator.hasNext();) {
+                CacheKey key = iterator.next();
                 if (key.getObject() != null) {
                     numObjects++;
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import java.util.ListResourceBundle;
  * INTERNAL:
  * <b>Purpose:</b><p>English ResourceBundle for DBWSException.</p>
  */
-public class DBWSExceptionResource extends ListResourceBundle {
+public final class DBWSExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
         {"47000", "Could not locate file [{0}]"},
         {"47001", "Could not locate descriptor [{0}] for operation [{1}] in the O-R project"},
@@ -36,6 +36,13 @@ public class DBWSExceptionResource extends ListResourceBundle {
         {"47011", "Could not locate O-X session for service [{0}]"},
         {"47012", "Could not parse DBWS file"},
     };
+
+    /**
+     * Default constructor.
+     */
+    public DBWSExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

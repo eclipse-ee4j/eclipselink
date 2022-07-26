@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,11 +48,9 @@ import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.OBJECT;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.SQLDATE;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
-import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlDate_Class;
-import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlTime_Class;
-import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlTimestamp_Class;
-import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.internal.helper.ClassConstants.SHORT;
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Void_Class;
@@ -64,6 +62,8 @@ import java.sql.Struct;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
@@ -79,7 +79,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @author  Mike Norman - michael.norman@oracle.com
  * @since  Oracle TopLink 11.x.x
  */
-@SuppressWarnings("unchecked")
 public enum JDBCTypes implements JDBCType {
 
         ARRAY_TYPE(ARRAY, "ARRAY"),
@@ -300,7 +299,7 @@ public enum JDBCTypes implements JDBCType {
         }
 
         @Override
-        public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+        public void logParameter(StringBuilder sb, ParameterType direction, PLSQLargument arg,
                 AbstractRecord translationRow, DatabasePlatform platform) {
             databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
         }
@@ -437,16 +436,16 @@ public enum JDBCTypes implements JDBCType {
                 case JAVA_OBJECT :
                 case OTHER :
                 case REF :
-                    clz = Object_Class;
+                    clz = OBJECT;
                     break;
                 case NULL :
                     clz = Void_Class;
                     break;
                 case DATE :
-                    clz = JavaSqlDate_Class;
+                    clz = SQLDATE;
                     break;
                 case TIMESTAMP :
-                    clz = JavaSqlTimestamp_Class;
+                    clz = CoreClassConstants.TIMESTAMP;
                     break;
                 case DOUBLE :
                     clz = ClassConstants.DOUBLE;
@@ -467,7 +466,7 @@ public enum JDBCTypes implements JDBCType {
                     clz = Struct.class;
                     break;
                 case TIME :
-                    clz = JavaSqlTime_Class;
+                    clz = CoreClassConstants.TIME;
                     break;
                 default:
                     clz = STRING;

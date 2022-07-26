@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-// Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
 
 package org.eclipse.persistence.testing.tests.plsqlrecord;
 
@@ -95,7 +95,7 @@ public class PLSQLrecordWithCompatibleTypeOutTestSet  {
 
         project.getDescriptor(PLSQLEmployeeType.class).getQueryManager().
             addQuery("PLSQLrecordWithCompatibleTypeOut", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);
@@ -249,9 +249,9 @@ public class PLSQLrecordWithCompatibleTypeOutTestSet  {
 
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         boolean worked = false;
         String msg = null;
         PLSQLEmployeeType result = null;
@@ -269,9 +269,9 @@ public class PLSQLrecordWithCompatibleTypeOutTestSet  {
         assertTrue("incorrect ENAME" , result.name.equals("GOOFY"));
         assertTrue("incorrect JOB" , result.job.equals("ACTOR"));
         assertNull("MGR is supposed to be null",  result.manager);
-        assertTrue("incorrect SAL" , result.salary.equals(new Float(6000)));
+        assertTrue("incorrect SAL" , result.salary.equals(6000F));
         assertNull("COMM is supposed to be null", result.commission);
         assertTrue("incorrect DEPTNO" , result.department.equals(new BigDecimal(20)));
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

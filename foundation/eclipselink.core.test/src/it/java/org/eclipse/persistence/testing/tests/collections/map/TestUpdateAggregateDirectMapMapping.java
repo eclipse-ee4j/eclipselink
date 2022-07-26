@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import org.eclipse.persistence.testing.models.collections.map.AggregateDirectMap
 
 public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirectMapMapping {
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(AggregateDirectMapHolder.class, holderExp);
@@ -30,7 +31,7 @@ public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirect
         holder.removeAggregateToDirectMapItem(mapKey);
         mapKey = new AggregateMapKey();
         mapKey.setKey(3);
-        holder.addAggregateToDirectMapItem(mapKey, new Integer(3));
+        holder.addAggregateToDirectMapItem(mapKey, 3);
         uow.commit();
         Object holderForComparison = uow.readObject(holder);
         if (!compareObjects(holder, holderForComparison)){
@@ -39,6 +40,7 @@ public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirect
 
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object changedHolder = holders.get(0);
@@ -55,7 +57,7 @@ public class TestUpdateAggregateDirectMapMapping extends TestReadAggregateDirect
         mapKey = new AggregateMapKey();
         mapKey.setKey(3);
         Integer value = (Integer)holder.getAggregateToDirectMap().get(mapKey);
-        if (value.intValue() != 3){
+        if (value != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }
     }

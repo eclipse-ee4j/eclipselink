@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class JPA2ComplexUpdateEmployeePerformanceComparisonTest extends Performa
     /**
      * Get an employee id.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         this.originalEmployee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
@@ -44,10 +45,11 @@ public class JPA2ComplexUpdateEmployeePerformanceComparisonTest extends Performa
     /**
      * Update employee.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Employee employee = manager.find(Employee.class, new Long(originalEmployee.getId()));
+        Employee employee = manager.find(Employee.class, originalEmployee.getId());
         count++;
         employee.setFirstName(originalEmployee.getFirstName() + count);
         employee.setLastName(originalEmployee.getLastName() + count);
@@ -100,7 +102,7 @@ public class JPA2ComplexUpdateEmployeePerformanceComparisonTest extends Performa
             manager.getTransaction().commit();
         } catch (Exception exception) {
             // Cache can get stale from TopLink run, so force refresh.
-            employee = manager.getReference(Employee.class, new Long(originalEmployee.getId()));
+            employee = manager.getReference(Employee.class, originalEmployee.getId());
             manager.refresh(employee);
             employee.getPhoneNumbers();
         }

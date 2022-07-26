@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,17 +60,15 @@ public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
     /**
      * Creates
      *
-     * @return
+     * @return mapping builder
      */
     protected abstract IMappingBuilder<Member> buildMappingBuilder();
 
-    /**
-     * {@inheritDoc}
-     */
-    public IORMConfiguration getORMConfiguration(String ormXmlFileName) throws Exception {
+    @Override
+    public IORMConfiguration getORMConfiguration(String ormXmlFileName) {
 
         if (ormConfigurations == null) {
-            ormConfigurations = new HashMap<String, IORMConfiguration>();
+            ormConfigurations = new HashMap<>();
         }
 
         IORMConfiguration ormConfiguration = ormConfigurations.get(ormXmlFileName);
@@ -83,10 +81,8 @@ public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
         return ormConfiguration;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public IManagedTypeProvider getPersistenceUnit() throws Exception {
+    @Override
+    public IManagedTypeProvider getPersistenceUnit() {
         if (persistenceUnit == null) {
             persistenceUnit = new JavaManagedTypeProvider(buildMappingBuilder());
             initializeManagedTypeProvider();
@@ -114,27 +110,19 @@ public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
         persistenceUnit.addEmbeddable(ZipCode.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void setUp() throws Exception {
+    @Override
+    public void setUp() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void setUpBefore() throws Exception {
+    @Override
+    public void setUpBefore() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void tearDown() throws Exception {
+    @Override
+    public void tearDown() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void tearDownAfter() throws Exception {
+    @Override
+    public void tearDownAfter() {
     }
 }

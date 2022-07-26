@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -35,7 +37,7 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
 
     //1. purpose: getBigInteger with boolean property
     public void testGetIntegerFromBoolean() {
-        SDOProperty prop =((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BOOLEAN);
         dataObject_c.set(prop, true);
 
@@ -48,7 +50,7 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
 
     //2. purpose: getBigInteger with byte property
     public void testGetIntegerFromByte() {
-        SDOProperty prop =((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BYTE);
         byte theByte = 10;
         dataObject_c.set(prop, theByte);
@@ -65,7 +67,7 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
     //3. purpose: getBigInteger with character property
     public void testGetIntegerFromCharacter() {
 
-        SDOProperty prop =((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_CHARACTER);
         dataObject_c.set(prop, 'e');
 
@@ -79,14 +81,14 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
     //5. purpose: getBigInteger with Defined Double Property
     public void testGetIntegerConversionFromDefinedDoubleProperty() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DOUBLE);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DOUBLE);
 
         double db = 12;
         int il = (int)db;
         BigInteger bd = new BigInteger(String.valueOf(il));
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigInteger(property));
+        assertEquals(bd, dataObject_a.getBigInteger(property));
     }
 
     //6. purpose: getBigInteger with Undefined Double Property
@@ -103,46 +105,46 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
     //7. purpose: getBigInteger with Defined float Property
     public void testGetIntegerConversionFromDefinedFloatProperty() {
         // dataObject's type add float property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_FLOAT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_FLOAT);
 
         float fl = 12;
         int il = (int)fl;
         BigInteger bd = new BigInteger(String.valueOf(il));
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigInteger(property));
+        assertEquals(bd, dataObject_a.getBigInteger(property));
     }
 
 
     //9. purpose: getBigInteger with Defined int Property
     public void testGetIntegerConversionFromDefinedIntProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_INT);
 
         int in = 12;
         BigInteger bd = new BigInteger(String.valueOf(in));
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
     }
 
 
     //11. purpose: getBigInteger with Defined long Property
     public void testGetIntegerConversionFromDefinedLongProperty() {
         // dataObject's type add short property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_LONG);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_LONG);
 
         long lg = 12;
         BigInteger bd = new BigInteger(String.valueOf(lg));
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
     }
 
 
     //13. purpose: getBigInteger with Undefined short Property
     public void testGetIntegerConversionFromUnDefinedShortProperty() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_SHORT);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_SHORT);
 
         try {
             BigInteger value = dataObject_a.getBigInteger(propertyPath_a_b_c);
@@ -155,13 +157,13 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
     //14. purpose: getBigInteger with Defined String Property
     public void testGetgetIntegerConversionFromDefinedStringProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_STRING);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
 
         String str = "12";
         BigInteger bd = new BigInteger(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
+        assertEquals(bd, dataObject_a.getBigInteger(propertyPath_a_b_c));
     }
 
 
@@ -186,14 +188,14 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
     //18. purpose: getBigInteger with Defined Decimal Property
     public void testGetIntegerConversionFromDefinedDecimalProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_DECIMAL);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_DECIMAL);
 
         int db = 12;
         BigDecimal bd = new BigDecimal(db);
         BigInteger bd_ = new BigInteger(String.valueOf(bd));
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd_, dataObject_a.getBigInteger(property));
+        assertEquals(bd_, dataObject_a.getBigInteger(property));
     }
 
 
@@ -201,19 +203,19 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
     //20. purpose: getBigInteger with Defined integer Property
     public void testGetIntegerConversionFromDefinedIntegerProperty() {
         // dataObject's type add int property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INTEGER);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_INTEGER);
 
         BigInteger bi = new BigInteger("12");
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi, dataObject_a.getBigInteger(propertyPath_a_b_c));
+        assertEquals(bi, dataObject_a.getBigInteger(propertyPath_a_b_c));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INTEGER);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_INTEGER);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         BigInteger bi = new BigInteger("12");
         List b = new ArrayList();
@@ -222,15 +224,15 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBigInteger(property3, bi);
 
-        this.assertEquals(bi, dataObject_a.getBigInteger(property3));
+        assertEquals(bi, dataObject_a.getBigInteger(property3));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyDotPositionalSet() {
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INTEGER);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_INTEGER);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         BigInteger bi = new BigInteger("12");
         List b = new ArrayList();
@@ -238,19 +240,19 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBigInteger(property + ".0", bi);
 
-        this.assertEquals(bi, dataObject_a.getBigInteger(property + ".0"));
+        assertEquals(bi, dataObject_a.getBigInteger(property + ".0"));
 
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_INTEGER);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_INTEGER);
 
         BigInteger bi = new BigInteger("12");
 
         dataObject_a.setBigInteger(property1, bi);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(bi, dataObject_a.getBigInteger(property1));
+        assertEquals(bi, dataObject_a.getBigInteger(property1));
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -275,7 +277,7 @@ public class SDODataObjectGetIntegerByPositionalPathTest extends SDODataObjectGe
     //22. purpose: getBigInteger with date property
     public void testGetIntegerFromDate() {
 
-        SDOProperty prop =((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C));
+        SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_DATE);
         dataObject_c.set(prop, Calendar.getInstance().getTime());
         try {

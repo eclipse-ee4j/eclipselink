@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,6 +59,7 @@ public class ConcurrentRefreshOnCloneTest extends AutoVerifyTestCase {
         this.toClone = toClone;
     }
 
+    @Override
     public void setup() {
         if (getSession().isDistributedSession()) {
             throw new TestWarningException("Test unavailable on Remote UnitOfWork because of timing issues");
@@ -83,6 +84,7 @@ public class ConcurrentRefreshOnCloneTest extends AutoVerifyTestCase {
         getSession().getLogin().setCacheTransactionIsolation(org.eclipse.persistence.sessions.DatasourceLogin.SYNCHRONIZED_READ_ON_WRITE);
     }
 
+    @Override
     public void test() {
         ConcurrentRefreshOnCloneTest.lock.city = "Some Large City";
         ConcurrentRefreshOnCloneTest.lock.country = "Some Small Country";
@@ -124,6 +126,7 @@ public class ConcurrentRefreshOnCloneTest extends AutoVerifyTestCase {
 
     public Runnable runnable() {
         return new Runnable() {
+                @Override
                 public void run() {
                     if (ConcurrentRefreshOnCloneTest.this.toClone) {
                         UnitOfWork uow = ConcurrentRefreshOnCloneTest.session.acquireUnitOfWork();
@@ -153,6 +156,7 @@ public class ConcurrentRefreshOnCloneTest extends AutoVerifyTestCase {
             };
     }
 
+    @Override
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteObject(ConcurrentRefreshOnCloneTest.original);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
@@ -170,11 +170,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
             Root<Company> root = cq.from(Company.class);
-            Join vehicleJoin = root.join("vehicles");
-            Join boatJoin = qb.treat(vehicleJoin, Boat.class);
+            Join<Object, Object> vehicleJoin = root.join("vehicles");
+            Join<Object, Boat> boatJoin = qb.treat(vehicleJoin, Boat.class);
             cq.where(qb.equal(boatJoin.get("model"), "speed"));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Company> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned, expected 1 but returned "+resultList.size(), resultList.size() == 1);
         } finally {
@@ -226,11 +226,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
             Root<Company> root = cq.from(Company.class);
-            Join vehicleJoin = root.join("vehicles");
-            Join nonFueledJoin = qb.treat(vehicleJoin, NonFueledVehicle.class);
+            Join<Object, Object> vehicleJoin = root.join("vehicles");
+            Join<Object, NonFueledVehicle> nonFueledJoin = qb.treat(vehicleJoin, NonFueledVehicle.class);
             cq.where(qb.equal(nonFueledJoin.get("color"), "Blue"));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Company> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
@@ -280,11 +280,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = cq.from(Employee.class);
-            Join projectsJoin = root.join("projects");
-            Join largeProjectJoin = qb.treat(projectsJoin, LargeProject.class);
+            Join<Object, Object> projectsJoin = root.join("projects");
+            Join<Object, LargeProject> largeProjectJoin = qb.treat(projectsJoin, LargeProject.class);
             cq.where(qb.gt(largeProjectJoin.get("budget"), 100));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Employee> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
@@ -332,10 +332,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Vehicle> cq = qb.createQuery(Vehicle.class);
             Root<Vehicle> root = cq.from(Vehicle.class);
-            Root boatRoot = qb.treat(root, Boat.class);
+            Root<Boat> boatRoot = qb.treat(root, Boat.class);
             cq.where(qb.equal(boatRoot.get("model"), "speed"));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Vehicle> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
@@ -391,7 +391,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Root<NonFueledVehicle> nonFueledVehicleRoot = qb.treat(root, NonFueledVehicle.class);
             cq.where(qb.equal(nonFueledVehicleRoot.get("color"), "Blue"));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Vehicle> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
@@ -441,10 +441,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Project> cq = qb.createQuery(Project.class);
             Root<Project> root = cq.from(Project.class);
-            Root largeProjectRoot = qb.treat(root, LargeProject.class);
+            Root<LargeProject> largeProjectRoot = qb.treat(root, LargeProject.class);
             cq.where(qb.gt(largeProjectRoot.get("budget"), 100));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Project> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
@@ -477,10 +477,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Project> cq = qb.createQuery(Project.class);
             Root<Project> root = cq.from(Project.class);
-            Root largeProjectRoot = qb.treat(root, LargeProject.class);
+            Root<LargeProject> largeProjectRoot = qb.treat(root, LargeProject.class);
             cq.select(largeProjectRoot.get("budget"));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Project> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
@@ -536,10 +536,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<BeerConsumer> cq = qb.createQuery(BeerConsumer.class);
             Root<BeerConsumer> root = cq.from(BeerConsumer.class);
-            Join blueLightJoin = qb.treat((Join<Object, Object>) root.join("blueBeersToConsume"), BlueLight.class);
+            Join<Object, BlueLight> blueLightJoin = qb.treat(root.join("blueBeersToConsume"), BlueLight.class);
             cq.where(qb.equal(blueLightJoin.get("discount"), 10));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<BeerConsumer> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
@@ -587,10 +587,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
             Root<Company> root = cq.from(Company.class);
-            Join boatJoin = qb.treat((Join<Object, Object>) root.join("vehicles"), Boat.class);
+            Join<Object, Boat> boatJoin = qb.treat(root.join("vehicles"), Boat.class);
             cq.where(qb.or(qb.equal(boatJoin.get("model"), "speed"), qb.equal(boatJoin.get("model"), "fishing")));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Company> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
@@ -638,11 +638,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
             Root<Company> root = cq.from(Company.class);
-            Join b = qb.treat((Join<Object, Object>) root.join("vehicles", JoinType.LEFT), Boat.class);
-            Join f = qb.treat((Join<Object, Object>) root.join("vehicles", JoinType.LEFT), FueledVehicle.class);
+            Join<Object, Boat> b = qb.treat(root.join("vehicles", JoinType.LEFT), Boat.class);
+            Join<Object, FueledVehicle> f = qb.treat(root.join("vehicles", JoinType.LEFT), FueledVehicle.class);
             cq.where(qb.or(qb.equal(b.get("model"), "fishing"), qb.equal(f.get("fuelType"), "unleaded")));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Company> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
@@ -702,10 +702,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaQuery<Company> cq = qb.createQuery(Company.class);
             cq.distinct(true);
             Root<Company> root = cq.from(Company.class);
-            Join b = qb.treat((Join<Object, Object>) root.join("vehicles", JoinType.LEFT), Bus.class);
+            Join<Object, Bus> b = qb.treat(root.join("vehicles", JoinType.LEFT), Bus.class);
             cq.where(qb.equal(b.get("busDriver").get("name"), "Driver"));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Company> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
@@ -751,11 +751,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             cq.distinct(true);
             Root<Person> root = cq.from(Person.class);
-            Join s = qb.treat((Join<Object, Object>) root.join("car", JoinType.LEFT), SportsCar.class);
-            Join j = qb.treat((Join<Object, Object>) root.join("car", JoinType.LEFT), Jalopy.class);
+            Join<Object, SportsCar> s = qb.treat(root.join("car", JoinType.LEFT), SportsCar.class);
+            Join<Object, Jalopy> j = qb.treat(root.join("car", JoinType.LEFT), Jalopy.class);
             cq.where(qb.or(qb.equal(s.get("maxSpeed"), 200), qb.equal(j.get("percentRust"), 20)));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Person> resultList = em.createQuery(cq).getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
             if (this.isTransactionActive(em)){
@@ -803,10 +803,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Number> cq = qb.createQuery(Number.class);
             Root<Employee> root = cq.from(Employee.class);
-            Join l = qb.treat((Join<Object, Object>) root.join("projects"), LargeProject.class);
+            Join<Object, LargeProject> l = qb.treat(root.join("projects"), LargeProject.class);
             cq.select(qb.max(l.get("budget")));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Number> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect result size returned", resultList.size() == 1);
             assertTrue("Incorrect results returned", (Double)resultList.get(0) == 1000);
@@ -860,11 +860,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Root<Employee> root = cq.from(Employee.class);
             Subquery<Number> sq = cq.subquery(Number.class);
             Root<Employee> sRoot = sq.from(Employee.class);
-            Join l = qb.treat((Join<Object, Object>) root.join("projects"), LargeProject.class);
+            Join<Object, LargeProject> l = qb.treat(root.join("projects"), LargeProject.class);
             sq.select(qb.max(l.get("budget")));
             cq.where(qb.gt(root.<Number>get("salary"), sq));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Employee> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect result size returned", resultList.size() == 1);
         } finally {
@@ -907,11 +907,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             Root<Person> root = cq.from(Person.class);
             root.fetch("car");
-            Join s = qb.treat((Join<Object, Object>) root.join("car"), SportsCar.class);
+            Join<Object, SportsCar> s = qb.treat(root.join("car"), SportsCar.class);
             cq.where(qb.equal(s.get("maxSpeed"), 200));
 
-            List resultList = em.createQuery(cq).getResultList();
-            Person person = (Person)resultList.get(0);
+            List<Person> resultList = em.createQuery(cq).getResultList();
+            Person person = resultList.get(0);
             assertTrue("Incorrect result size returned", resultList.size() == 1);
             assertNotNull("The car was not fetched.", person.car);
         } finally {
@@ -957,7 +957,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Root<Car> root = cq.from(Car.class);
             cq.where(qb.or(qb.equal( qb.treat(root, SportsCar.class).get("maxSpeed"), 200), qb.equal( qb.treat(root, Jalopy.class).get("percentRust"), 20)));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Car> resultList = em.createQuery(cq).getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
             if (this.isTransactionActive(em)){
@@ -997,7 +997,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Root<TireInfo> root = cq.from(TireInfo.class);
             cq.where(qb.or(qb.equal( qb.treat(root, PerformanceTireInfo.class).get("speedRating"), 110), qb.equal( qb.treat(root, PassengerPerformanceTireInfo.class).get("speedRating"), 120)));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<TireInfo> resultList = em.createQuery(cq).getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
             if (this.isTransactionActive(em)){
@@ -1044,10 +1044,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             Root<Person> root = cq.from(Person.class);
-            Join s = qb.treat((Join<Object, Object>) root.join("car"), SportsCar.class);
+            Join<Object, SportsCar> s = qb.treat(root.join("car"), SportsCar.class);
             cq.select(s.get("maxSpeed"));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Person> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
@@ -1092,10 +1092,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Bus> cq = qb.createQuery(Bus.class);
             Root<Bus> root = cq.from(Bus.class);
-            Join b = qb.treat((Join<Object, Object>) root.join("tires"), PerformanceTireInfo.class);
+            Join<Object, PerformanceTireInfo> b = qb.treat(root.join("tires"), PerformanceTireInfo.class);
             cq.select(b.get("speedRating"));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Bus> resultList = em.createQuery(cq).getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
             if (this.isTransactionActive(em)){
@@ -1144,7 +1144,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Root<Person> root = cq.from(Person.class);
             cq.where(qb.equal(qb.treat(root.get("car"), SportsCar.class).get("maxSpeed"), 200));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Person> resultList = em.createQuery(cq).getResultList();
 
             assertTrue("Incorrect results returned", resultList.size() == 1);
         } finally {
@@ -1189,10 +1189,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Bus> cq = qb.createQuery(Bus.class);
             Root<Bus> root = cq.from(Bus.class);
-            Join b = qb.treat((Join<Object, Object>) root.join("tires"), PerformanceTireInfo.class);
+            Join<Object, PerformanceTireInfo> b = qb.treat(root.join("tires"), PerformanceTireInfo.class);
             cq.where(qb.greaterThan(qb.treat(root.get("tires"), PerformanceTireInfo.class).<Integer>get("speedRating"), 100));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Bus> resultList = em.createQuery(cq).getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
             if (this.isTransactionActive(em)){
@@ -1248,14 +1248,14 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             Root<Person> root = cq.from(Person.class);
-            Join c = root.join("car");
+            Join<Object, Object> c = root.join("car");
             cq.where(qb.and( qb.equal(c.get("color"), "Red"),
                              qb.or( qb.equal(qb.treat(c, SportsCar.class).get("maxSpeed"), 200),
                                      qb.equal(qb.treat(c, Jalopy.class).get("percentRust"), 20)
                                    )
                             ));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Person> resultList = em.createQuery(cq).getResultList();
             assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
@@ -1298,14 +1298,14 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Bus> cq = qb.createQuery(Bus.class);
             Root<Bus> root = cq.from(Bus.class);
-            Join t = root.join("tires");
+            Join<Object, Object> t = root.join("tires");
             cq.where(qb.and( qb.gt(t.get("pressure"), 0),
                              qb.or( qb.equal(qb.treat(t, PassengerPerformanceTireInfo.class).get("maxSpeed"), 200),
                                      qb.equal(qb.treat(t, OffRoadTireInfo.class).get("name"), "doesNotExist")
                                    )
                             ));
 
-            List resultList = em.createQuery(cq).getResultList();
+            List<Bus> resultList = em.createQuery(cq).getResultList();
             assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
@@ -1353,7 +1353,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Person> cq = qb.createQuery(Person.class);
             Root<Person> root = cq.from(Person.class);
-            Join b = qb.treat((Join<Object, Object>) root.join("car"), SportsCar.class);
+            Join b = qb.treat(root.join("car"), SportsCar.class);
             Join u = b.join("user");
             cq.select(u);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,10 +24,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jaxb.*;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
@@ -47,7 +44,7 @@ public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[] { Employee.class });
+        setClasses(new Class<?>[] { Employee.class });
 
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("http://www.example.com/other", "ns0");
@@ -55,6 +52,7 @@ public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
     }
 
 
+      @Override
       public JAXBMarshaller getJSONMarshaller() throws Exception{
             JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
             jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
@@ -65,13 +63,14 @@ public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
             return jsonMarshaller;
 
         }
+     @Override
      public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/read-only-employee-oxm.xml");
 
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute", new StreamSource(inputStream));
             Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             return properties;
         }
@@ -79,6 +78,7 @@ public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
        /**
          * Create the control Employee.
          */
+        @Override
         public Object getControlObject() {
               Employee ctrlEmp = new Employee();
               HashMap stuff = new HashMap();
@@ -96,6 +96,7 @@ public class AnyAttributeReadOnlyMappingTestCases extends JAXBWithJSONTestCases{
 
                super.testSchemaGen(controlSchemas);
         }
+        @Override
         public void testRoundTrip(){
             //not applicable with write only mappings
         }

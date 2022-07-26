@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,13 +27,14 @@ public class XmlElementsWrapperIdRefTestCases extends JAXBWithJSONTestCases {
 
     public XmlElementsWrapperIdRefTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Foo.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         Foo foo = new Foo();
 
@@ -56,6 +57,7 @@ public class XmlElementsWrapperIdRefTestCases extends JAXBWithJSONTestCases {
         return foo;
     }
 
+    @Override
     protected Object getJSONReadControlObject() {
         Foo foo = (Foo)getControlObject();
         Attribute removed = foo.attributes.remove(1);

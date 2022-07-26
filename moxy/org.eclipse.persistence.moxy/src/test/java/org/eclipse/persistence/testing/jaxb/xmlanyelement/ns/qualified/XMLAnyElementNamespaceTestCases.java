@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public class XMLAnyElementNamespaceTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Customer.class;
         setClasses(classes);
         Map<String, String> namespaces = new HashMap<String, String>();
@@ -54,6 +54,7 @@ public class XMLAnyElementNamespaceTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    @Override
     protected JAXBMarshaller getJSONMarshaller() throws Exception {
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("namespace", "ns1");
@@ -64,6 +65,7 @@ public class XMLAnyElementNamespaceTestCases extends JAXBWithJSONTestCases {
         return jsonMarshaller;
     }
 
+    @Override
     protected Object getControlObject() {
         Customer cust = new Customer();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -87,7 +89,7 @@ public class XMLAnyElementNamespaceTestCases extends JAXBWithJSONTestCases {
         // Test for bug 410482
         final String XML = "<root xmlns='http://www.oracle.com'><elem attr='value'/></root>";
 
-        JAXBContext context = JAXBContextFactory.createContext(new Class[] { Root.class }, null);
+        JAXBContext context = JAXBContextFactory.createContext(new Class<?>[] { Root.class }, null);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         Root root = (Root) unmarshaller.unmarshal(new StringReader(XML));
         Attr attr = root.element.getAttributeNodeNS(null, "attr");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -264,13 +264,13 @@ public class BasicTypesFieldAccess {
         primitiveFloat = 1.5f;
         primitiveDouble = 2.5;
         wrapperBoolean = Boolean.TRUE;
-        wrapperByte = new Byte((byte) 1);
-        wrapperCharacter = new Character('A');
-        wrapperShort = new Short((short) 2);
-        wrapperInteger = new Integer(3);
-        wrapperLong = new Long(4);
-        wrapperFloat = new Float(1.5f);
-        wrapperDouble = new Double(2.5);
+        wrapperByte = (byte) 1;
+        wrapperCharacter = 'A';
+        wrapperShort = (short) 2;
+        wrapperInteger = 3;
+        wrapperLong = 4L;
+        wrapperFloat = 1.5f;
+        wrapperDouble = 2.5;
         string2Varchar = "VARCHAR";
         string2Clob = "CLOB";
         bigDecimal = new BigDecimal("42.42");
@@ -291,26 +291,26 @@ public class BasicTypesFieldAccess {
             primitiveByteArray2Blob[i] = (byte) i;
         }
 
-        wrapperByteArray2Binary = new Byte[] { new Byte((byte) 0), new Byte((byte) 1), new Byte((byte) 2), new Byte((byte) 3),
-                new Byte((byte) 4), new Byte((byte) 5), new Byte((byte) 6), new Byte((byte) 7) };
+        wrapperByteArray2Binary = new Byte[] {(byte) 0, (byte) 1, (byte) 2, (byte) 3,
+                (byte) 4, (byte) 5, (byte) 6, (byte) 7};
 
         wrapperByteArray2Longvarbinary = new Byte[1111];
         for (int i = 0; i < wrapperByteArray2Longvarbinary.length; i++) {
-            wrapperByteArray2Longvarbinary[i] = new Byte((byte) i);
+            wrapperByteArray2Longvarbinary[i] = (byte) i;
         }
 
         wrapperByteArray2Blob = new Byte[3333];
         for (int i = 0; i < wrapperByteArray2Blob.length; i++) {
-            wrapperByteArray2Blob[i] = new Byte((byte) i);
+            wrapperByteArray2Blob[i] = (byte) i;
         }
 
         primitiveCharArray2Varchar = new char[] { 'V', 'A', 'R', 'C', 'A', 'R' };
         primitiveCharArray2Clob = new char[] { 'C', 'L', 'O', 'B' };
 
-        wrapperCharacterArray2Varchar = new Character[] { new Character('V'), new Character('A'), new Character('R'),
-                new Character('C'), new Character('H'), new Character('A'), new Character('R') };
-        wrapperCharacterArray2Clob = new Character[] { new Character('C'), new Character('L'), new Character('O'),
-                new Character('B') };
+        wrapperCharacterArray2Varchar = new Character[] {'V', 'A', 'R',
+                'C', 'H', 'A', 'R'};
+        wrapperCharacterArray2Clob = new Character[] {'C', 'L', 'O',
+                'B'};
         serializable = new UserDefinedSerializable("REGEN"); // BLOB
 
         setEnumOrdinal(UserDefinedEnum.EMIL);

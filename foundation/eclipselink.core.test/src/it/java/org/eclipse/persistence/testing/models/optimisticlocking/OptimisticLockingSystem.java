@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 public class OptimisticLockingSystem extends TestSystem {
+    @Override
     public void addDescriptors(DatabaseSession session) {
         Vector descriptors = new Vector();
         descriptors.addElement(LockInCache.descriptor());
@@ -41,6 +42,7 @@ public class OptimisticLockingSystem extends TestSystem {
         session.addDescriptors(new GamesConsoleProject());
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
 
@@ -59,6 +61,7 @@ public class OptimisticLockingSystem extends TestSystem {
         new GamesConsoleTableCreator().replaceTables(session);
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         Object instance;
         PopulationManager manager = PopulationManager.getDefaultManager();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,9 +42,15 @@ public class MissingDescriptorListener extends SessionEventAdapter {
     protected static final String XML_BINARY_MAPPING_CLASS = "org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping";
     protected static final String XML_BINARY_COLLECTION_MAPPING_CLASS = "org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping";
 
+    /**
+     * Default constructor.
+     */
+    public MissingDescriptorListener() {
+    }
+
     @Override
     public void missingDescriptor(SessionEvent event) {
-        String name = ((Class)event.getResult()).getName();
+        String name = ((Class<?>)event.getResult()).getName();
         DatabaseSession session = (DatabaseSession) ((AbstractSession) event.getSession()).getRootSession(null);
         Project project = session.getProject();
         String namespaceXPath = "";
@@ -64,10 +70,10 @@ public class MissingDescriptorListener extends SessionEventAdapter {
 
         if (name.equals(EIS_DESCRIPTOR_CLASS) || name.equals(XML_INTERACTION_CLASS) || name.equals(EIS_LOGIN_CLASS)) {
             try {
-                Class javaClass = null;
+                Class<?> javaClass;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try{
-                        javaClass = AccessController.doPrivileged(new PrivilegedClassForName(XML_INTERACTION_CLASS));
+                        javaClass = AccessController.doPrivileged(new PrivilegedClassForName<>(XML_INTERACTION_CLASS));
                     }catch (PrivilegedActionException ex){
                         if (ex.getCause() instanceof ClassNotFoundException){
                             throw (ClassNotFoundException) ex.getCause();

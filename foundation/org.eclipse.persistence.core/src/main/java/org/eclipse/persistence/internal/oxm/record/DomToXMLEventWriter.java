@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 public class DomToXMLEventWriter{
-    private XMLEventFactory xmlEventFactory;
+    private final XMLEventFactory xmlEventFactory;
 
     public DomToXMLEventWriter() {
         this.xmlEventFactory = XMLEventFactory.newInstance();
@@ -62,7 +61,7 @@ public class DomToXMLEventWriter{
                 }
             }
         } else if(currentNode.getNodeType() == Node.TEXT_NODE) {
-                xew.add(xmlEventFactory.createCharacters(((Text)currentNode).getNodeValue()));
+                xew.add(xmlEventFactory.createCharacters(currentNode.getNodeValue()));
         }
         if(dom.getNodeType() == Node.DOCUMENT_NODE) {
             xew.add(xmlEventFactory.createEndDocument());
@@ -128,7 +127,6 @@ public class DomToXMLEventWriter{
         for(int i = 0; i < attrs.getLength(); i++) {
             Attr next = (Attr)attrs.item(i);
             if(next.getNodeType() == Node.ATTRIBUTE_NODE) {
-                Attr attribute = next;
                 if(next.getPrefix() != null && next.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                     String currentUri = xew.getNamespaceContext().getNamespaceURI(next.getLocalName());
                     if(currentUri == null || !currentUri.equals(next.getValue())) {
@@ -140,7 +138,7 @@ public class DomToXMLEventWriter{
                         xew.add(xmlEventFactory.createNamespace(next.getValue()));
                         needToAddDefaultNS = false;
                     }else{
-                        nonNamespaceDeclAttrs.add(attribute);
+                        nonNamespaceDeclAttrs.add(next);
                     }
                 }
             }
@@ -160,7 +158,7 @@ public class DomToXMLEventWriter{
         for(int i = 0; i < childNodes.getLength(); i++) {
             Node next = childNodes.item(i);
             if(next.getNodeType() == Node.TEXT_NODE) {
-                xew.add(xmlEventFactory.createCharacters(((Text)next).getNodeValue()));
+                xew.add(xmlEventFactory.createCharacters(next.getNodeValue()));
             } else if(next.getNodeType() == Node.CDATA_SECTION_NODE) {
                 xew.add(xmlEventFactory.createCData(next.getNodeValue()));
             } else if(next.getNodeType() == Node.COMMENT_NODE) {

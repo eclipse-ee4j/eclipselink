@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,7 +58,7 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 public class SOAPResponseWriter {
 
     protected DBWSAdapter dbwsAdapter;
-    protected Map<String, XMLDescriptor> resultDescriptors = new HashMap<String, XMLDescriptor>();
+    protected Map<String, XMLDescriptor> resultDescriptors = new HashMap<>();
     public static final QName RECEIVER_QNAME = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Receiver");
     public static final QName SERVER_QNAME = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
 
@@ -206,11 +206,11 @@ public class SOAPResponseWriter {
         XMLDescriptor descriptor = resultDescriptors.get(op.getName());
         SOAPResponse response = null;
         try {
-            response = (SOAPResponse) descriptor.getJavaClass().newInstance();
-        } catch (InstantiationException ie) {
+            @SuppressWarnings({"unchecked"})
+            Class<? extends SOAPResponse> cls = descriptor.getJavaClass();
+            response = cls.getConstructor().newInstance();
+        } catch (ReflectiveOperationException ie) {
             throw new SOAPException(ie);
-        } catch (IllegalAccessException iae) {
-            throw new SOAPException(iae);
         }
         response.setResult(result);
 

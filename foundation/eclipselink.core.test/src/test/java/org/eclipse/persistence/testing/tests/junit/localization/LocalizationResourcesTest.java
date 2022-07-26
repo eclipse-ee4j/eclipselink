@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -70,15 +70,15 @@ public class LocalizationResourcesTest {
      * Test {@code getContents()} method of specified resource bundle class for duplicate keys.
      * @param c Logging resource bundle class being tested.
      */
-    private static void verifyBundle(final Class c) {
+    private static void verifyBundle(final Class<?> c) {
         final List<String> nonStringKeys = new LinkedList<>();
         final List<String> duplicateKeys = new LinkedList<>();
         final String bundleName = c.getSimpleName();
         final Set<String> keys = new HashSet<>();
         Object[][] bundle;
         try {
-            Object instance = ReflectionHelper.getInstance(c, new Class[] {}, new Object[] {});
-            bundle = (Object[][])ReflectionHelper.invokeMethod("getContents", instance, new Class[] {}, new Object[] {});
+            Object instance = ReflectionHelper.getInstance(c, new Class<?>[] {});
+            bundle = (Object[][])ReflectionHelper.invokeMethod("getContents", instance, new Class<?>[] {}, new Object[] {});
         } catch (ReflectiveOperationException | SecurityException e) {
             Assert.fail("Could not access " + bundleName + "#getContents()");
             bundle = null;

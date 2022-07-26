@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,15 +35,17 @@ public class JAXBContextByClassArrayWithIndexTestCases extends JAXBWithJSONTestC
             super(name);
         }
 
+        @Override
         public void setUp() throws Exception {
             setControlDocument(XML_RESOURCE);
             setControlJSON(JSON_RESOURCE);
             super.setUp();
-            Class[] classes = new Class[]{ClassA.class};
+            Class<?>[] classes = new Class<?>[]{ClassA.class};
             setTypes(classes);
             initXsiType();
         }
 
+        @Override
         protected Object getControlObject() {
             ClassA classA = new ClassA();
             classA.setTheValue("someValue");

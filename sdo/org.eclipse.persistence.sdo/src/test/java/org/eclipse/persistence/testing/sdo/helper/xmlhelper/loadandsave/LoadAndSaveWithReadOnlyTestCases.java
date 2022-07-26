@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,33 +37,40 @@ public class LoadAndSaveWithReadOnlyTestCases extends LoadAndSaveTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/readonly.xml";
     }
 
+    @Override
     protected String getSchemaName() {
         return "org/eclipse/persistence/testing/sdo/schemas/ReadOnly.xsd";
     }
 
+    @Override
     protected String getControlRootURI() {
         return "myns";
     }
 
+    @Override
     protected String getControlRootName() {
         return "employee";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "EmployeeType";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("myns");
         return packages;
     }
 
+    @Override
     protected void registerTypes() {
         Type stringType = SDOConstants.SDO_STRING;
         SDOType propertyType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.PROPERTY);

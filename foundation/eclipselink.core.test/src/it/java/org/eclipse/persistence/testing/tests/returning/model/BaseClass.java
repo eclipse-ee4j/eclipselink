@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.tests.returning.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.eclipse.persistence.sessions.*;
 
@@ -56,12 +57,12 @@ public abstract class BaseClass implements Cloneable {
             a_plus_minus_b_BigDecimal[1] = null;
         }
         if (a != null) {
-            a_Integer = new Integer(a.intValue());
+            a_Integer = a.intValue();
         } else {
             a_Integer = null;
         }
         if (b != null) {
-            b_Integer = new Integer(b.intValue());
+            b_Integer = b.intValue();
         } else {
             b_Integer = null;
         }
@@ -70,17 +71,17 @@ public abstract class BaseClass implements Cloneable {
     protected void setC(BigDecimal c) {
         if (c != null) {
             c_BigDecimal = c;
-            c_Integer = new Integer(c_BigDecimal.intValue());
+            c_Integer = c_BigDecimal.intValue();
         } else {
             c_BigDecimal = null;
             c_Integer = null;
         }
     }
 
-    public BigDecimal[] build_a_plus_minus_b_BigDecimal(org.eclipse.persistence.sessions.Record row, Session session) {
+    public BigDecimal[] build_a_plus_minus_b_BigDecimal(DataRecord row, Session session) {
         BigDecimal[] a_plus_minus_b_BigDecimal = new BigDecimal[2];
-        BigDecimal a = (BigDecimal)session.getDatasourcePlatform().convertObject(row.get(getFieldAName()), BigDecimal.class);
-        BigDecimal b = (BigDecimal)session.getDatasourcePlatform().convertObject(row.get(getFieldBName()), BigDecimal.class);
+        BigDecimal a = session.getDatasourcePlatform().convertObject(row.get(getFieldAName()), BigDecimal.class);
+        BigDecimal b = session.getDatasourcePlatform().convertObject(row.get(getFieldBName()), BigDecimal.class);
         if (a == null || b == null) {
             a_plus_minus_b_BigDecimal[0] = null;
             a_plus_minus_b_BigDecimal[1] = null;
@@ -102,8 +103,8 @@ public abstract class BaseClass implements Cloneable {
         } else {
             BigDecimal a_plus_b = a.add(b);
             BigDecimal a_minus_b = a.subtract(b);
-            a_plus_minus_b_Integer[0] = new Integer(a_plus_b.intValue());
-            a_plus_minus_b_Integer[1] = new Integer(a_minus_b.intValue());
+            a_plus_minus_b_Integer[0] = Integer.valueOf(a_plus_b.intValue());
+            a_plus_minus_b_Integer[1] = Integer.valueOf(a_minus_b.intValue());
         }
         return a_plus_minus_b_Integer;
     }*/
@@ -113,7 +114,7 @@ public abstract class BaseClass implements Cloneable {
             return null;
         }
         BigDecimal a2 = a_plus_minus_b_BigDecimal[0].add(a_plus_minus_b_BigDecimal[1]);
-        BigDecimal a = a2.divide(new BigDecimal(2), BigDecimal.ROUND_UNNECESSARY);
+        BigDecimal a = a2.divide(new BigDecimal(2), RoundingMode.UNNECESSARY);
         return a;
     }
 
@@ -122,7 +123,7 @@ public abstract class BaseClass implements Cloneable {
             return null;
         }
         BigDecimal b2 = a_plus_minus_b_BigDecimal[0].subtract(a_plus_minus_b_BigDecimal[1]);
-        BigDecimal b = b2.divide(new BigDecimal(2), BigDecimal.ROUND_UNNECESSARY);
+        BigDecimal b = b2.divide(new BigDecimal(2), RoundingMode.UNNECESSARY);
         return b;
     }
 
@@ -224,13 +225,13 @@ public abstract class BaseClass implements Cloneable {
                 return false;
             }
             BigDecimal a2 = a_plus_minus_b_BigDecimal[0].add(a_plus_minus_b_BigDecimal[1]);
-            BigDecimal a = a2.divide(new BigDecimal(2), BigDecimal.ROUND_UNNECESSARY);
+            BigDecimal a = a2.divide(new BigDecimal(2), RoundingMode.UNNECESSARY);
             BigDecimal b2 = a_plus_minus_b_BigDecimal[0].subtract(a_plus_minus_b_BigDecimal[1]);
-            BigDecimal b = b2.divide(new BigDecimal(2), BigDecimal.ROUND_UNNECESSARY);
-            if (a_Integer.intValue() != a.intValue()) {
+            BigDecimal b = b2.divide(new BigDecimal(2), RoundingMode.UNNECESSARY);
+            if (a_Integer != a.intValue()) {
                 return false;
             }
-            if (b_Integer.intValue() != b.intValue()) {
+            if (b_Integer != b.intValue()) {
                 return false;
             }
         }
@@ -242,7 +243,7 @@ public abstract class BaseClass implements Cloneable {
             if (c_Integer == null) {
                 return false;
             }
-            if (c_BigDecimal.intValue() != c_Integer.intValue()) {
+            if (c_BigDecimal.intValue() != c_Integer) {
                 return false;
             }
         }
@@ -263,6 +264,7 @@ public abstract class BaseClass implements Cloneable {
         }
     }
 
+    @Override
     public Object clone() {
         try {
             BaseClass clone = (BaseClass)super.clone();

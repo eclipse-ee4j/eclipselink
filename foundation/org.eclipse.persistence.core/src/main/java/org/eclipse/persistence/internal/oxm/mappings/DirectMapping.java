@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public interface DirectMapping<
      * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
      * the instance variable value to that data type
      */
-    void setAttributeClassification(Class attributeClassification);
+    void setAttributeClassification(Class<?> attributeClassification);
 
 
     /**
@@ -84,7 +84,6 @@ public interface DirectMapping<
      * Indicates that this mapping should collapse all string values before setting them
      * in the object on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
      * any sequence of whitepsace characters with a single space.
-     * @param collapse
      */
     void setCollapsingStringValues(boolean collapse);
 
@@ -110,7 +109,6 @@ public interface DirectMapping<
      * Indicates that this mapping should normalize all string values before setting them
      * in the object on unmarshal. Normalize replaces any CR, LF or Tab characters with a
      * single space character.
-     * @param normalize
      */
     void setNormalizingStringValues(boolean normalize);
 
@@ -118,7 +116,6 @@ public interface DirectMapping<
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
      *
-     * @param aNullPolicy
      */
     void setNullPolicy(AbstractNullPolicy aNullPolicy);
 

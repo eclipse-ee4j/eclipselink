@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,7 +99,7 @@ public interface SessionProfiler {
      *
      * @return the execution result of the query.
      */
-    Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session);
+    Object profileExecutionOfQuery(DatabaseQuery query, DataRecord row, AbstractSession session);
 
     /**
      * INTERNAL:

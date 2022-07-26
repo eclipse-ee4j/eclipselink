@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,9 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * JPA 1.0, 2.0:
  * <div><b>BNF:</b> <code>expression ::= LENGTH(string_primary)</code></div>
- * <p>
+ * <br>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= LENGTH(string_expression)</code></div>
- * <p>
  *
  * @version 2.5
  * @since 2.3
@@ -40,25 +39,16 @@ public final class LengthExpression extends AbstractSingleEncapsulatedExpression
         super(parent, LENGTH);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getEncapsulatedExpressionQueryBNFId() {
         return InternalLengthExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningNumericsBNF.ID);

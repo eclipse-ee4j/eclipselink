@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.descriptors.changetracking.*;
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee
  * <p><b>Description</b>: Held in a private 1:1 relationship from Employee
- * @see Employee
+ * @see IsolatedEmployee
  */
 public class IsolatedAddress implements Serializable, ChangeTracker {
     // implements ChangeTracker for testing
@@ -41,10 +41,12 @@ public class IsolatedAddress implements Serializable, ChangeTracker {
     public boolean isWorkingCopy;
     public PropertyChangeListener listener;
 
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return listener;
     }
 
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.listener = listener;
     }

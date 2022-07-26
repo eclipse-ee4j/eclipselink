@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class LargeRowFetchTest extends PerformanceComparisonTestCase {
         addSetRowFetch();
     }
 
+    @Override
     public void setup() throws Exception {
         connection = (Connection)((AbstractSession)getSession()).getAccessor().getDatasourceConnection();
 
@@ -42,6 +43,7 @@ public class LargeRowFetchTest extends PerformanceComparisonTestCase {
     /**
      * Default row fetch (10).
      */
+    @Override
     public void test() throws Exception {
         PreparedStatement statement = connection.prepareStatement(sql);
         ResultSet result = statement.executeQuery();
@@ -63,6 +65,7 @@ public class LargeRowFetchTest extends PerformanceComparisonTestCase {
      */
     public void addSetRowFetch() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() throws Exception {
                 PreparedStatement statement = connection.prepareStatement(sql);
                 statement.setFetchSize(50);

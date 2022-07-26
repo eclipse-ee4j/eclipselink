@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import jakarta.persistence.EntityManager;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa22.advanced.enums.Health;
 import org.eclipse.persistence.testing.models.jpa22.advanced.enums.Level;
@@ -100,7 +100,7 @@ public class XMLConverterTestSuite extends JUnitTestCase {
             organizer.setRace(race);
 
             Responsibility responsibility = new Responsibility();
-            responsibility.setUniqueIdentifier(new Long(System.currentTimeMillis()));
+            responsibility.setUniqueIdentifier(System.currentTimeMillis());
             responsibility.setDescription("Raise funds");
 
             race.addOrganizer(organizer, responsibility);

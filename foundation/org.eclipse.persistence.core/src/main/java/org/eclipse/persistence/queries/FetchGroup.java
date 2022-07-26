@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -213,7 +213,7 @@ public class FetchGroup extends AttributeGroup {
      * populated. All subsequent attributes added to this group that create a
      * nested group will have this value applied to them.
      *
-     * @see #setShouldLoadAll(boolean) to configure {@link #shouldLoad()} on
+     * @see #setShouldLoadAll(boolean) to configure #shouldLoad() on
      *      nested groups
      */
     public void setShouldLoad(boolean shouldLoad) {
@@ -228,7 +228,7 @@ public class FetchGroup extends AttributeGroup {
     /**
      * passes should load to subclasses.
      *
-     * @see #setShouldLoadAll(boolean) to configure {@link #shouldLoad()} on
+     * @see #setShouldLoadAll(boolean) to configure #shouldLoad() on
      *      nested groups
      */
     protected void setSubclassShouldLoad(boolean shouldLoad) {
@@ -293,7 +293,7 @@ public class FetchGroup extends AttributeGroup {
      * LoadGroup created with all member groups with shouldLoad set to false dropped.
      */
     public LoadGroup toLoadGroupLoadOnly() {
-        return this.toLoadGroup(new HashMap<AttributeGroup, LoadGroup>(), true);
+        return this.toLoadGroup(new HashMap<>(), true);
     }
 
     @Override

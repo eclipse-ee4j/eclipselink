@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * more Java instances. The specified class is not required to be an entity or to be mapped to the
  * database. The constructor name must be fully qualified.
  *
- * <div><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name(constructor_item {, constructor_item}*)</code><p></div>
+ * <div><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name(constructor_item {, constructor_item}*)</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -79,33 +79,21 @@ public final class ConstructorExpression extends AbstractExpression {
         super(parent, NEW);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getConstructorItems().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getConstructorItems());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -147,21 +135,18 @@ public final class ConstructorExpression extends AbstractExpression {
      */
     public CollectionExpression buildCollectionExpression() {
 
-        List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+        List<AbstractExpression> children = new ArrayList<>(1);
         children.add((AbstractExpression) getConstructorItems());
 
-        List<Boolean> commas = new ArrayList<Boolean>(1);
+        List<Boolean> commas = new ArrayList<>(1);
         commas.add(Boolean.FALSE);
 
-        List<Boolean> spaces = new ArrayList<Boolean>(1);
+        List<Boolean> spaces = new ArrayList<>(1);
         spaces.add(Boolean.FALSE);
 
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -204,9 +189,6 @@ public final class ConstructorExpression extends AbstractExpression {
         return constructorItems;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ConstructorExpressionBNF.ID);
@@ -253,18 +235,12 @@ public final class ConstructorExpression extends AbstractExpression {
         return hasSpaceAfterNew;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return wordParser.character() == RIGHT_PARENTHESIS ||
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -315,17 +291,11 @@ public final class ConstructorExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldSkipLiteral(AbstractExpression expression) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

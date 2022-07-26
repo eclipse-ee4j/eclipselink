@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 
 public class VirtualAttributeAccessor extends MethodAttributeAccessor {
 
-    private Class valueType = ClassConstants.OBJECT;
+    private Class<?> valueType = ClassConstants.OBJECT;
 
     /**
      * Gets the value of an instance variable in the object.
@@ -35,7 +35,7 @@ public class VirtualAttributeAccessor extends MethodAttributeAccessor {
      * currently must be Object.class.
      */
     @Override
-    public Class getGetMethodReturnType() {
+    public Class<?> getGetMethodReturnType() {
         return valueType;
     }
 
@@ -45,7 +45,7 @@ public class VirtualAttributeAccessor extends MethodAttributeAccessor {
      * check and return a different index from the parameter types.
      */
     @Override
-    public Class getSetMethodParameterType() {
+    public Class<?> getSetMethodParameterType() {
         return getSetMethodParameterType(1);
     }
 
@@ -53,8 +53,8 @@ public class VirtualAttributeAccessor extends MethodAttributeAccessor {
      * Return the set method parameter types.
      */
     @Override
-    protected Class[] getSetMethodParameterTypes() {
-        return new Class[] {String.class, getGetMethodReturnType()};
+    protected Class<?>[] getSetMethodParameterTypes() {
+        return new Class<?>[] {String.class, getGetMethodReturnType()};
     }
 
     /**
@@ -62,8 +62,8 @@ public class VirtualAttributeAccessor extends MethodAttributeAccessor {
      * get and set method names
      */
     @Override
-    public void initializeAttributes(Class theJavaClass) throws DescriptorException {
-        initializeAttributes(theJavaClass, new Class[] { String.class });
+    public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
+        initializeAttributes(theJavaClass, new Class<?>[] { String.class });
     }
 
     @Override
@@ -83,7 +83,7 @@ public class VirtualAttributeAccessor extends MethodAttributeAccessor {
      * Override the class of the values being stored.
      * @since EclipseLink 2.3
      */
-    public void setValueType(Class value) {
+    public void setValueType(Class<?> value) {
         valueType = value;
     }
 

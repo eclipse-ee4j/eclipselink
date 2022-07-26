@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,8 @@ import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
 
 /**
  * <p><b>Purpose</b>: Container class for storing objects in an IdentityMap.
@@ -30,6 +30,11 @@ import org.eclipse.persistence.sessions.Record;
  * @since TOPLink/Java 1.0
  */
 public class CacheKey extends ConcurrencyManager implements Cloneable {
+
+    //These constants are used in extended cache logging to compare cache item creation thread and thread which picking item from the cache
+    public final long CREATION_THREAD_ID = Thread.currentThread().getId();
+    public final String CREATION_THREAD_NAME = String.copyValueOf(Thread.currentThread().getName().toCharArray());
+    public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
 
     /** The key holds the vector of primary key values for the object. */
     protected Object key;
@@ -48,7 +53,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     protected Object wrapper;
 
     /** This is used for Document Preservation to cache the record that this object was built from */
-    protected Record record;
+    protected DataRecord dataRecord;
 
     /** This attribute is the system time in milli seconds that the object was last refreshed on */
 
@@ -390,8 +395,8 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         return readTime;
     }
 
-    public Record getRecord() {
-        return record;
+    public DataRecord getRecord() {
+        return dataRecord;
     }
 
     public Object getWrapper() {
@@ -400,7 +405,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
 
     /**
      * If a Wrapper subclasses this CacheKey this method will be used to unwrap the cache key.
-     * @return
      */
     public CacheKey getWrappedCacheKey(){
         return this;
@@ -554,8 +558,8 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         invalidationState = CHECK_INVALIDATION_POLICY;
     }
 
-    public void setRecord(Record newRecord) {
-        this.record = newRecord;
+    public void setRecord(DataRecord newDataRecord) {
+        this.dataRecord = newDataRecord;
     }
 
     public void setWrapper(Object wrapper) {

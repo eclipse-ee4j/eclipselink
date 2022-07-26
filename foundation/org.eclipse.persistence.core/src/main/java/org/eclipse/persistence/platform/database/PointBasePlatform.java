@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,13 @@ import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
  * Support the Pointbase database.
  */
 public class PointBasePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+
+    /**
+     * Default constructor.
+     */
+    public PointBasePlatform() {
+        super();
+    }
 
     /**
      * Appends a Boolean value as true/false instead of 0/1
@@ -58,8 +65,8 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
-    protected Map<String, Class> buildClassTypes() {
-        Map<String, Class> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildClassTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
 
         classTypeMapping.put("FLOAT", Double.class);
         classTypeMapping.put("DOUBLE PRECISION", Double.class);
@@ -72,10 +79,8 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
-
-        fieldTypeMapping = super.buildFieldTypes();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = super.buildFieldTypes();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BOOLEAN"));
 
         fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMERIC", 19));

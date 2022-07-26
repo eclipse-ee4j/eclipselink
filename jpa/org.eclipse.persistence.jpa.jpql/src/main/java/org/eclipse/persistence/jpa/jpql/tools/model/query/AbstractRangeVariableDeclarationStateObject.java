@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,9 +108,6 @@ public abstract class AbstractRangeVariableDeclarationStateObject extends Abstra
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -118,9 +115,6 @@ public abstract class AbstractRangeVariableDeclarationStateObject extends Abstra
         children.add(identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addProblems(List<Problem> problems) {
         super.addProblems(problems);
@@ -133,9 +127,6 @@ public abstract class AbstractRangeVariableDeclarationStateObject extends Abstra
 
     protected abstract StateObject buildRootStateObject();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RangeVariableDeclaration getExpression() {
         return (RangeVariableDeclaration) super.getExpression();
@@ -194,17 +185,11 @@ public abstract class AbstractRangeVariableDeclarationStateObject extends Abstra
         return identificationVariable.hasText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<IdentificationVariableStateObject> identificationVariables() {
-        return new SingleElementListIterable<IdentificationVariableStateObject>(identificationVariable);
+        return new SingleElementListIterable<>(identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
@@ -212,9 +197,6 @@ public abstract class AbstractRangeVariableDeclarationStateObject extends Abstra
         identificationVariable = new IdentificationVariableStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -314,9 +296,6 @@ public abstract class AbstractRangeVariableDeclarationStateObject extends Abstra
         setAs(!hasAs());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

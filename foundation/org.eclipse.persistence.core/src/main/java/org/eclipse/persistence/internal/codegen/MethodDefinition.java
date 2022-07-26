@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,16 +27,16 @@ public abstract class MethodDefinition extends CodeDefinition {
     protected boolean isAbstract;
     protected boolean isConstructor;
     protected String returnType;
-    protected Vector argumentNames;
-    protected Vector lines;
-    protected Vector exceptions;
+    protected Vector<String> argumentNames;
+    protected Vector<String> lines;
+    protected Vector<String> exceptions;
     protected StringBuffer storedBuffer;
 
-    public MethodDefinition() {
+    protected MethodDefinition() {
         this.isConstructor = false;
         this.returnType = "void";
-        this.lines = new Vector();
-        this.exceptions = new Vector();
+        this.lines = new Vector<>();
+        this.exceptions = new Vector<>();
         this.storedBuffer = new StringBuffer();
     }
 
@@ -57,9 +57,9 @@ public abstract class MethodDefinition extends CodeDefinition {
         this.storedBuffer.append(partOfLine);
     }
 
-    private void adjustExceptions(Map typeNameMap) {
-        for (Iterator i = new Vector(getExceptions()).iterator(); i.hasNext();) {
-            String exceptionName = (String)i.next();
+    private void adjustExceptions(Map<String, Set<String>> typeNameMap) {
+        for (Iterator<String> i = new Vector<>(getExceptions()).iterator(); i.hasNext();) {
+            String exceptionName = i.next();
             String adjustedExceptionName = adjustTypeName(exceptionName, typeNameMap);
 
             if (!exceptionName.equals(adjustedExceptionName)) {
@@ -73,12 +73,12 @@ public abstract class MethodDefinition extends CodeDefinition {
      * (and adding the appropriate import) if the type is
      * unambiguous.
      */
-    private void adjustLine(String line, Map typeNameMap) {
-        StringBuffer lineInProgress = new StringBuffer(line);
-        Set typeNames = parseForTypeNames(lineInProgress.toString());
+    private void adjustLine(String line, Map<String, Set<String>> typeNameMap) {
+        StringBuilder lineInProgress = new StringBuilder(line);
+        Set<String> typeNames = parseForTypeNames(lineInProgress.toString());
 
-        for (Iterator i = typeNames.iterator(); i.hasNext();) {
-            String typeName = (String)i.next();
+        for (Iterator<String> i = typeNames.iterator(); i.hasNext();) {
+            String typeName = i.next();
             String adjustedTypeName = adjustTypeName(typeName, typeNameMap);
 
             if (!typeName.equals(adjustedTypeName)) {
@@ -94,13 +94,13 @@ public abstract class MethodDefinition extends CodeDefinition {
         replaceLine(line, lineInProgress.toString());
     }
 
-    private void adjustLines(Map typeNameMap) {
-        for (Iterator i = new Vector(getLines()).iterator(); i.hasNext();) {
-            adjustLine((String)i.next(), typeNameMap);
+    private void adjustLines(Map<String, Set<String>> typeNameMap) {
+        for (Iterator<String> i = new Vector<>(getLines()).iterator(); i.hasNext();) {
+            adjustLine(i.next(), typeNameMap);
         }
     }
 
-    private void adjustReturnType(Map typeNameMap) {
+    private void adjustReturnType(Map<String, Set<String>> typeNameMap) {
         String adjustedReturnType = adjustTypeName(getReturnType(), typeNameMap);
 
         if (!getReturnType().equals(adjustedReturnType)) {
@@ -108,7 +108,7 @@ public abstract class MethodDefinition extends CodeDefinition {
         }
     }
 
-    protected void adjustTypeNames(Map typeNameMap) {
+    protected void adjustTypeNames(Map<String, Set<String>> typeNameMap) {
         adjustReturnType(typeNameMap);
         adjustExceptions(typeNameMap);
         adjustLines(typeNameMap);
@@ -168,18 +168,18 @@ public abstract class MethodDefinition extends CodeDefinition {
         return false;
     }
 
-    protected Vector getArgumentNames() {
+    protected Vector<String> getArgumentNames() {
         if (this.argumentNames == null) {
-            this.argumentNames = new Vector(5);
+            this.argumentNames = new Vector<>(5);
         }
         return argumentNames;
     }
 
     public String getArgumentName(int index) {
-        return (String)getArgumentNames().get(index);
+        return getArgumentNames().get(index);
     }
 
-    public Iterator argumentNames() {
+    public Iterator<String> argumentNames() {
         return getArgumentNames().iterator();
     }
 
@@ -187,15 +187,15 @@ public abstract class MethodDefinition extends CodeDefinition {
         return getArgumentNames().size();
     }
 
-    protected abstract Vector getArgumentTypeNames();
+    protected abstract Vector<String> getArgumentTypeNames();
 
-    protected abstract Vector getArgumentTypes();
+    protected abstract Vector<String> getArgumentTypes();
 
-    public Vector getLines() {
+    public Vector<String> getLines() {
         return lines;
     }
 
-    protected Vector getExceptions() {
+    protected Vector<String> getExceptions() {
         return this.exceptions;
     }
 
@@ -233,15 +233,15 @@ public abstract class MethodDefinition extends CodeDefinition {
     /**
      * Used for calculating imports.  @see org.eclipse.persistence.internal.codegen.ClassDefinition#calculateImports()
      */
-    protected void putTypeNamesInMap(Map typeNameMap) {
+    protected void putTypeNamesInMap(Map<String, Set<String>> typeNameMap) {
         putTypeNameInMap(getReturnType(), typeNameMap);
 
-        for (Iterator i = getExceptions().iterator(); i.hasNext();) {
-            putTypeNameInMap((String)i.next(), typeNameMap);
+        for (Iterator<String> i = getExceptions().iterator(); i.hasNext();) {
+            putTypeNameInMap(i.next(), typeNameMap);
         }
 
-        for (Iterator i = getArgumentTypeNames().iterator(); i.hasNext();) {
-            putTypeNameInMap((String)i.next(), typeNameMap);
+        for (Iterator<String> i = getArgumentTypeNames().iterator(); i.hasNext();) {
+            putTypeNameInMap(i.next(), typeNameMap);
         }
     }
 
@@ -296,7 +296,7 @@ public abstract class MethodDefinition extends CodeDefinition {
 
             generator.cr();
 
-            for (Enumeration linesEnum = getLines().elements(); linesEnum.hasMoreElements();) {
+            for (Enumeration<String> linesEnum = getLines().elements(); linesEnum.hasMoreElements();) {
                 generator.tab();
                 generator.writeln(linesEnum.nextElement());
             }
@@ -310,7 +310,7 @@ public abstract class MethodDefinition extends CodeDefinition {
     protected void writeThrowsClause(CodeGenerator generator) {
         generator.write(" throws ");
 
-        for (Iterator exceptionIterator = this.exceptions.iterator(); exceptionIterator.hasNext();) {
+        for (Iterator<String> exceptionIterator = this.exceptions.iterator(); exceptionIterator.hasNext();) {
             generator.write(exceptionIterator.next());
 
             if (exceptionIterator.hasNext()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.w3c.dom.Document;
@@ -41,9 +42,10 @@ public class XmlPathOverrideTestCases extends JAXBTestCases {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        setTypes(new Class[]{Employee.class, Address.class, Root.class, PhoneNumber.class});
+        setTypes(new Class<?>[]{Employee.class, Address.class, Root.class, PhoneNumber.class});
     }
 
+    @Override
     public Object getControlObject() {
         Employee emp = new Employee();
         emp.id = 101;
@@ -78,6 +80,7 @@ public class XmlPathOverrideTestCases extends JAXBTestCases {
         return root;
     }
 
+    @Override
     protected Map getProperties() throws JAXBException{
 
         String bindings =
@@ -106,7 +109,7 @@ public class XmlPathOverrideTestCases extends JAXBTestCases {
         HashMap<String, Source> overrides = new HashMap<String, Source>();
         overrides.put("org.eclipse.persistence.testing.jaxb.annotations.xmlpath", src);
         HashMap properties = new HashMap();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 

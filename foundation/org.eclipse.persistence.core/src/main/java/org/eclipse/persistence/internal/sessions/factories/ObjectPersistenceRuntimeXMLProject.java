@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -307,7 +307,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         addDescriptor(buildDirectToFieldMappingDescriptor());
         addDescriptor(buildXMLDirectMappingDescriptor());
         try {
-            Class typesafeenumClass = new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
+            Class<Object> typesafeenumClass = new PrivilegedClassForName<>("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
             addDescriptor(buildTypesafeEnumConverterDescriptor(typesafeenumClass));
         }
         catch (ClassNotFoundException cnfe) {
@@ -450,9 +450,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
-                List sourceFields = mapping.getSourceKeyFields();
-                List targetFields = mapping.getTargetForeignKeyFields();
-                List associations = new ArrayList(sourceFields.size());
+                List<DatabaseField> sourceFields = mapping.getSourceKeyFields();
+                List<DatabaseField> targetFields = mapping.getTargetForeignKeyFields();
+                List<Association> associations = new ArrayList<>(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(targetFields.get(index), sourceFields.get(index)));
                 }
@@ -462,12 +462,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 AggregateCollectionMapping mapping = (AggregateCollectionMapping)object;
-                List associations = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>) value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setTargetForeignKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator iterator = associations.iterator();
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
                     mapping.getTargetForeignKeyFields().add((DatabaseField)association.getKey());
                 }
@@ -579,10 +580,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                  * changed getAggregateToSourceFieldAssociations to hold String->DatabaseField associations
                  */
                 AggregateObjectMapping mapping = (AggregateObjectMapping)object;
-                Vector associations = mapping.getAggregateToSourceFieldAssociations();
-                Vector translations = new Vector(associations.size());
+                List<Association> associations = mapping.getAggregateToSourceFieldAssociations();
+                Vector<FieldTranslation> translations = new Vector<>(associations.size());
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     FieldTranslation translation = new FieldTranslation();
                     translation.setKey(new DatabaseField((String)association.getKey()));
                     translation.setValue(association.getValue());
@@ -594,9 +595,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 AggregateObjectMapping mapping = (AggregateObjectMapping)object;
-                Vector associations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                Vector<Association> associations = (Vector<Association>)value;
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                 }
 
@@ -728,8 +730,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         platformMapping.setGetMethodName("getDatasourcePlatform");
         platformMapping.setSetMethodName("usePlatform");
         platformMapping.setConverter(new Converter() {
-            protected DatabaseMapping mapping;
-            private Map platformList;
+            private Map<String, String> platformList;
             private String oldPrefix = "oracle.toplink.";
             private String newPrefix = "org.eclipse.persistence.";
             private String oldOxmPrefix = oldPrefix + "ox.";
@@ -756,17 +757,17 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                     }
                 }
                 // convert deprecated platforms to new platforms
-                Object result = platformList.get(fieldValue);
+                String result = platformList.get(fieldValue);
                 if (result != null) {
                     fieldValue = result;
                 }
 
                 Object attributeValue;
-                Class attributeClass = (Class) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+                Class<?> attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            attributeValue = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeClass));
+                            attributeValue = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(attributeClass));
                         }
                         catch (PrivilegedActionException exception) {
                             throw ConversionException.couldNotBeConverted(fieldValue, attributeClass, exception.getException());
@@ -790,7 +791,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
 
             @Override
             public void initialize(DatabaseMapping mapping, Session session) {
-                this.platformList = new HashMap();
+                this.platformList = new HashMap<>();
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.AccessPlatform", "org.eclipse.persistence.platform.database.AccessPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.AttunityPlatform", "org.eclipse.persistence.platform.database.AttunityPlatform");
                 this.platformList.put("org.eclipse.persistence.internal.databaseaccess.CloudscapePlatform", "org.eclipse.persistence.platform.database.CloudscapePlatform");
@@ -808,10 +809,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 this.platformList.put("org.eclipse.persistence.oraclespecific.Oracle8Platform", "org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
                 this.platformList.put("org.eclipse.persistence.oraclespecific.Oracle9Platform", "org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
                 this.platformList.put("org.eclipse.persistence.platform.database.SQLAnyWherePlatform", "org.eclipse.persistence.platform.database.SQLAnywherePlatform");
-                this.mapping = mapping;
                 // CR#... Mapping must also have the field classification.
-                if (this.mapping.isDirectToFieldMapping()) {
-                    AbstractDirectMapping directMapping = (AbstractDirectMapping)this.mapping;
+                if (mapping.isDirectToFieldMapping()) {
+                    AbstractDirectMapping directMapping = (AbstractDirectMapping) mapping;
 
                     // Allow user to specify field type to override computed value. (i.e. blob, nchar)
                     if (directMapping.getFieldClassification() == null) {
@@ -933,7 +933,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         stringBindingSizeMapping.setGetMethodName("getStringBindingSize");
         stringBindingSizeMapping.setSetMethodName("setStringBindingSize");
         stringBindingSizeMapping.setXPath(getPrimaryNamespaceXPath() + "string-binding-size/text()");
-        stringBindingSizeMapping.setNullValue(Integer.valueOf(255));
+        stringBindingSizeMapping.setNullValue(255);
         descriptor.addMapping(stringBindingSizeMapping);
 
         XMLDirectMapping usesStreamsForBindingMapping = new XMLDirectMapping();
@@ -1033,8 +1033,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
         ObjectTypeConverter operatorConverter = new ObjectTypeConverter();
-        operatorConverter.addConversionValue("and", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.And)));
-        operatorConverter.addConversionValue("or", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Or)));
+        operatorConverter.addConversionValue("and", Expression.getOperator(ExpressionOperator.And));
+        operatorConverter.addConversionValue("or", Expression.getOperator(ExpressionOperator.Or));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@operator");
         descriptor.addMapping(operatorMapping);
@@ -1085,14 +1085,14 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
         ObjectTypeConverter operatorConverter = new ObjectTypeConverter();
-        operatorConverter.addConversionValue("equal", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Equal)));
-        operatorConverter.addConversionValue("notEqual", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotEqual)));
-        operatorConverter.addConversionValue("like", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Like)));
-        operatorConverter.addConversionValue("notLike", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotLike)));
-        operatorConverter.addConversionValue("greaterThan", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.GreaterThan)));
-        operatorConverter.addConversionValue("greaterThanEqual", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.GreaterThanEqual)));
-        operatorConverter.addConversionValue("lessThan", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.LessThan)));
-        operatorConverter.addConversionValue("lessThanEqual", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.LessThanEqual)));
+        operatorConverter.addConversionValue("equal", Expression.getOperator(ExpressionOperator.Equal));
+        operatorConverter.addConversionValue("notEqual", Expression.getOperator(ExpressionOperator.NotEqual));
+        operatorConverter.addConversionValue("like", Expression.getOperator(ExpressionOperator.Like));
+        operatorConverter.addConversionValue("notLike", Expression.getOperator(ExpressionOperator.NotLike));
+        operatorConverter.addConversionValue("greaterThan", Expression.getOperator(ExpressionOperator.GreaterThan));
+        operatorConverter.addConversionValue("greaterThanEqual", Expression.getOperator(ExpressionOperator.GreaterThanEqual));
+        operatorConverter.addConversionValue("lessThan", Expression.getOperator(ExpressionOperator.LessThan));
+        operatorConverter.addConversionValue("lessThanEqual", Expression.getOperator(ExpressionOperator.LessThanEqual));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@operator");
         descriptor.addMapping(operatorMapping);
@@ -1253,26 +1253,26 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         XMLDirectMapping operatorMapping = new XMLDirectMapping();
         operatorMapping.setAttributeName("operator");
         ExpressionOperatorConverter operatorConverter = new ExpressionOperatorConverter();
-        operatorConverter.addConversionValue("like", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Like)));
-        operatorConverter.addConversionValue("notLike", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotLike)));
-        operatorConverter.addConversionValue("not", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Not)));
-        operatorConverter.addConversionValue("isNull", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.IsNull)));
-        operatorConverter.addConversionValue("notNull", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotNull)));
-        operatorConverter.addConversionValue("ascending", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Ascending)));
-        operatorConverter.addConversionValue("descending", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Descending)));
+        operatorConverter.addConversionValue("like", Expression.getOperator(ExpressionOperator.Like));
+        operatorConverter.addConversionValue("notLike", Expression.getOperator(ExpressionOperator.NotLike));
+        operatorConverter.addConversionValue("not", Expression.getOperator(ExpressionOperator.Not));
+        operatorConverter.addConversionValue("isNull", Expression.getOperator(ExpressionOperator.IsNull));
+        operatorConverter.addConversionValue("notNull", Expression.getOperator(ExpressionOperator.NotNull));
+        operatorConverter.addConversionValue("ascending", Expression.getOperator(ExpressionOperator.Ascending));
+        operatorConverter.addConversionValue("descending", Expression.getOperator(ExpressionOperator.Descending));
         // These are platform specific so not on operator.
-        operatorConverter.addConversionValue("upper", new ExpressionOperator(ExpressionOperator.ToUpperCase, NonSynchronizedVector.newInstance(0)));
-        operatorConverter.addConversionValue("lower", new ExpressionOperator(ExpressionOperator.ToLowerCase, NonSynchronizedVector.newInstance(0)));
+        operatorConverter.addConversionValue("upper", new ExpressionOperator(ExpressionOperator.ToUpperCase, new ArrayList<>(0)));
+        operatorConverter.addConversionValue("lower", new ExpressionOperator(ExpressionOperator.ToLowerCase, new ArrayList<>(0)));
         // Aggregate functions
-        operatorConverter.addConversionValue("count", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Count)));
-        operatorConverter.addConversionValue("sum", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Sum)));
-        operatorConverter.addConversionValue("average", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Average)));
-        operatorConverter.addConversionValue("maximum", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Maximum)));
-        operatorConverter.addConversionValue("minimum", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Minimum)));
+        operatorConverter.addConversionValue("count", Expression.getOperator(ExpressionOperator.Count));
+        operatorConverter.addConversionValue("sum", Expression.getOperator(ExpressionOperator.Sum));
+        operatorConverter.addConversionValue("average", Expression.getOperator(ExpressionOperator.Average));
+        operatorConverter.addConversionValue("maximum", Expression.getOperator(ExpressionOperator.Maximum));
+        operatorConverter.addConversionValue("minimum", Expression.getOperator(ExpressionOperator.Minimum));
         // standardDeviation is platform specific.
-        operatorConverter.addConversionValue("standardDeviation", new ExpressionOperator(ExpressionOperator.StandardDeviation, NonSynchronizedVector.newInstance(0)));
-        operatorConverter.addConversionValue("variance", new ExpressionOperator(ExpressionOperator.Variance, NonSynchronizedVector.newInstance(0)));
-        operatorConverter.addConversionValue("distinct", ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Distinct)));
+        operatorConverter.addConversionValue("standardDeviation", new ExpressionOperator(ExpressionOperator.StandardDeviation, new ArrayList<>(0)));
+        operatorConverter.addConversionValue("variance", new ExpressionOperator(ExpressionOperator.Variance, new ArrayList<>(0)));
+        operatorConverter.addConversionValue("distinct", Expression.getOperator(ExpressionOperator.Distinct));
         operatorMapping.setConverter(operatorConverter);
         operatorMapping.setXPath("@function");
         descriptor.addMapping(operatorMapping);
@@ -1350,7 +1350,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 List<String> arguments = query.getArguments();
                 List<String> types = query.getArgumentTypeNames();
                 List<Object> values = query.getArgumentValues();
-                Vector queryArguments = new Vector(arguments.size());
+                Vector<QueryArgument> queryArguments = new Vector<>(arguments.size());
                 for (int index = 0; index < arguments.size(); index++) {
                     QueryArgument queryArgument = new QueryArgument();
                     queryArgument.setKey(arguments.get(index));
@@ -1372,12 +1372,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 DatabaseQuery query = (DatabaseQuery)object;
-                List queryArguments = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<QueryArgument> queryArguments = (List<QueryArgument>)value;
                 List<String> arguments = new ArrayList<>(queryArguments.size());
-                List<Class> types = new ArrayList<>(queryArguments.size());
+                List<Class<?>> types = new ArrayList<>(queryArguments.size());
                 List<Object> values = new ArrayList<>(queryArguments.size());
                 for (int index = 0; index < queryArguments.size(); index++) {
-                    QueryArgument queryArgument = (QueryArgument)queryArguments.get(index);
+                    QueryArgument queryArgument = queryArguments.get(index);
                     arguments.add((String)queryArgument.getKey());
                     if (queryArgument.getValue() != null) {
                         values.add(queryArgument.getValue());
@@ -1426,7 +1427,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         queryTimeoutMapping.setGetMethodName("getQueryTimeout");
         queryTimeoutMapping.setSetMethodName("setQueryTimeout");
         queryTimeoutMapping.setXPath(getPrimaryNamespaceXPath() + "timeout/text()");
-        queryTimeoutMapping.setNullValue(Integer.valueOf(DescriptorQueryManager.DefaultTimeout));
+        queryTimeoutMapping.setNullValue(DescriptorQueryManager.DefaultTimeout);
         descriptor.addMapping(queryTimeoutMapping);
 
         // feaure 2297
@@ -1471,7 +1472,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         maximumCachedResultsMapping.setGetMethodName("getMaximumCachedResults");
         maximumCachedResultsMapping.setSetMethodName("setMaximumCachedResults");
         maximumCachedResultsMapping.setXPath(getPrimaryNamespaceXPath() + "maximum-cached-results/text()");
-        maximumCachedResultsMapping.setNullValue(Integer.valueOf(100));
+        maximumCachedResultsMapping.setNullValue(100);
         descriptor.addMapping(maximumCachedResultsMapping);
 
         return descriptor;
@@ -1552,7 +1553,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         maxRowsMapping.setGetMethodName("getMaxRows");
         maxRowsMapping.setSetMethodName("setMaxRows");
         maxRowsMapping.setXPath(getPrimaryNamespaceXPath() + "max-rows/text()");
-        maxRowsMapping.setNullValue(Integer.valueOf(0));
+        maxRowsMapping.setNullValue(0);
         descriptor.addMapping(maxRowsMapping);
 
         XMLDirectMapping firstResultMapping = new XMLDirectMapping();
@@ -1560,14 +1561,14 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         firstResultMapping.setGetMethodName("getFirstResult");
         firstResultMapping.setSetMethodName("setFirstResult");
         firstResultMapping.setXPath(getPrimaryNamespaceXPath() + "first-result/text()");
-        firstResultMapping.setNullValue(Integer.valueOf(0));
+        firstResultMapping.setNullValue(0);
         descriptor.addMapping(firstResultMapping);
         XMLDirectMapping fetchSizeMapping = new XMLDirectMapping();
         fetchSizeMapping.setAttributeName("fetchSize");
         fetchSizeMapping.setGetMethodName("getFetchSize");
         fetchSizeMapping.setSetMethodName("setFetchSize");
         fetchSizeMapping.setXPath(getPrimaryNamespaceXPath() + "fetch-size/text()");
-        fetchSizeMapping.setNullValue(Integer.valueOf(0));
+        fetchSizeMapping.setNullValue(0);
         descriptor.addMapping(fetchSizeMapping);
 
         XMLCompositeObjectMapping queryResultCachingPolicyMapping = new XMLCompositeObjectMapping();
@@ -1612,11 +1613,11 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         cascadePolicyMapping.setGetMethodName("getCascadePolicy");
         cascadePolicyMapping.setSetMethodName("setCascadePolicy");
         ObjectTypeConverter cascadePolicyConverter = new ObjectTypeConverter();
-        cascadePolicyConverter.addConversionValue("none", Integer.valueOf(DatabaseQuery.NoCascading));
-        cascadePolicyConverter.addConversionValue("all", Integer.valueOf(DatabaseQuery.CascadeAllParts));
-        cascadePolicyConverter.addConversionValue("private", Integer.valueOf(DatabaseQuery.CascadePrivateParts));
+        cascadePolicyConverter.addConversionValue("none", DatabaseQuery.NoCascading);
+        cascadePolicyConverter.addConversionValue("all", DatabaseQuery.CascadeAllParts);
+        cascadePolicyConverter.addConversionValue("private", DatabaseQuery.CascadePrivateParts);
         cascadePolicyMapping.setConverter(cascadePolicyConverter);
-        cascadePolicyMapping.setNullValue(Integer.valueOf(DatabaseQuery.NoCascading));
+        cascadePolicyMapping.setNullValue(DatabaseQuery.NoCascading);
         cascadePolicyMapping.setXPath(getPrimaryNamespaceXPath() + "cascade-policy/text()");
         descriptor.addMapping(cascadePolicyMapping);
 
@@ -1626,15 +1627,15 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         cacheUsageMapping.setSetMethodName("setCacheUsage");
         cacheUsageMapping.setXPath(getPrimaryNamespaceXPath() + "cache-usage/text()");
         ObjectTypeConverter cacheUsageConverter = new ObjectTypeConverter();
-        cacheUsageConverter.addConversionValue("exact-primary-key", Integer.valueOf(ObjectLevelReadQuery.CheckCacheByExactPrimaryKey));
-        cacheUsageConverter.addConversionValue("primary-key", Integer.valueOf(ObjectLevelReadQuery.CheckCacheByPrimaryKey));
-        cacheUsageConverter.addConversionValue("cache-only", Integer.valueOf(ObjectLevelReadQuery.CheckCacheOnly));
-        cacheUsageConverter.addConversionValue("cache-then-database", Integer.valueOf(ObjectLevelReadQuery.CheckCacheThenDatabase));
-        cacheUsageConverter.addConversionValue("conform", Integer.valueOf(ObjectLevelReadQuery.ConformResultsInUnitOfWork));
-        cacheUsageConverter.addConversionValue("none", Integer.valueOf(ObjectLevelReadQuery.DoNotCheckCache));
-        cacheUsageConverter.addConversionValue("use-descriptor-setting", Integer.valueOf(ObjectLevelReadQuery.UseDescriptorSetting));
+        cacheUsageConverter.addConversionValue("exact-primary-key", ObjectLevelReadQuery.CheckCacheByExactPrimaryKey);
+        cacheUsageConverter.addConversionValue("primary-key", ObjectLevelReadQuery.CheckCacheByPrimaryKey);
+        cacheUsageConverter.addConversionValue("cache-only", ObjectLevelReadQuery.CheckCacheOnly);
+        cacheUsageConverter.addConversionValue("cache-then-database", ObjectLevelReadQuery.CheckCacheThenDatabase);
+        cacheUsageConverter.addConversionValue("conform", ObjectLevelReadQuery.ConformResultsInUnitOfWork);
+        cacheUsageConverter.addConversionValue("none", ObjectLevelReadQuery.DoNotCheckCache);
+        cacheUsageConverter.addConversionValue("use-descriptor-setting", ObjectLevelReadQuery.UseDescriptorSetting);
         cacheUsageMapping.setConverter(cacheUsageConverter);
-        cacheUsageMapping.setNullValue(Integer.valueOf(ObjectLevelReadQuery.UseDescriptorSetting));
+        cacheUsageMapping.setNullValue(ObjectLevelReadQuery.UseDescriptorSetting);
         descriptor.addMapping(cacheUsageMapping);
 
         XMLDirectMapping lockModeMapping = new XMLDirectMapping();
@@ -1643,12 +1644,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         lockModeMapping.setSetMethodName("setLockMode");
         lockModeMapping.setXPath(getPrimaryNamespaceXPath() + "lock-mode/text()");
         ObjectTypeConverter lockModeConverter = new ObjectTypeConverter();
-        lockModeConverter.addConversionValue("default", Short.valueOf(ObjectLevelReadQuery.DEFAULT_LOCK_MODE));
-        lockModeConverter.addConversionValue("lock", Short.valueOf(ObjectLevelReadQuery.LOCK));
-        lockModeConverter.addConversionValue("lock-no-wait", Short.valueOf(ObjectLevelReadQuery.LOCK_NOWAIT));
-        lockModeConverter.addConversionValue("none", Short.valueOf(ObjectLevelReadQuery.NO_LOCK));
+        lockModeConverter.addConversionValue("default", ObjectLevelReadQuery.DEFAULT_LOCK_MODE);
+        lockModeConverter.addConversionValue("lock", ObjectLevelReadQuery.LOCK);
+        lockModeConverter.addConversionValue("lock-no-wait", ObjectLevelReadQuery.LOCK_NOWAIT);
+        lockModeConverter.addConversionValue("none", ObjectLevelReadQuery.NO_LOCK);
         lockModeMapping.setConverter(lockModeConverter);
-        lockModeMapping.setNullValue(Short.valueOf(ObjectLevelReadQuery.DEFAULT_LOCK_MODE));
+        lockModeMapping.setNullValue(ObjectLevelReadQuery.DEFAULT_LOCK_MODE);
         descriptor.addMapping(lockModeMapping);
 
         XMLDirectMapping distinctStateMapping = new XMLDirectMapping();
@@ -1657,11 +1658,11 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         distinctStateMapping.setSetMethodName("setDistinctState");
         distinctStateMapping.setXPath(getPrimaryNamespaceXPath() + "distinct-state/text()");
         ObjectTypeConverter distinctStateConverter = new ObjectTypeConverter();
-        distinctStateConverter.addConversionValue("dont-use-distinct", Short.valueOf(ObjectLevelReadQuery.DONT_USE_DISTINCT));
-        distinctStateConverter.addConversionValue("none", Short.valueOf(ObjectLevelReadQuery.UNCOMPUTED_DISTINCT));
-        distinctStateConverter.addConversionValue("use-distinct", Short.valueOf(ObjectLevelReadQuery.USE_DISTINCT));
+        distinctStateConverter.addConversionValue("dont-use-distinct", ObjectLevelReadQuery.DONT_USE_DISTINCT);
+        distinctStateConverter.addConversionValue("none", ObjectLevelReadQuery.UNCOMPUTED_DISTINCT);
+        distinctStateConverter.addConversionValue("use-distinct", ObjectLevelReadQuery.USE_DISTINCT);
         distinctStateMapping.setConverter(distinctStateConverter);
-        distinctStateMapping.setNullValue(Short.valueOf(ObjectLevelReadQuery.UNCOMPUTED_DISTINCT));
+        distinctStateMapping.setNullValue(ObjectLevelReadQuery.UNCOMPUTED_DISTINCT);
         descriptor.addMapping(distinctStateMapping);
 
         XMLCompositeObjectMapping inMemoryQueryIndirectionPolicyMapping = new XMLCompositeObjectMapping();
@@ -1803,12 +1804,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         existenceCheckMapping.setSetMethodName("setExistencePolicy");
         existenceCheckMapping.setXPath(getPrimaryNamespaceXPath() + "existence-check/text()");
         ObjectTypeConverter existenceCheckConverter = new ObjectTypeConverter();
-        existenceCheckConverter.addConversionValue("check-cache", Integer.valueOf(DoesExistQuery.CheckCache));
-        existenceCheckConverter.addConversionValue("check-database", Integer.valueOf(DoesExistQuery.CheckDatabase));
-        existenceCheckConverter.addConversionValue("assume-existence", Integer.valueOf(DoesExistQuery.AssumeExistence));
-        existenceCheckConverter.addConversionValue("assume-non-existence", Integer.valueOf(DoesExistQuery.AssumeNonExistence));
+        existenceCheckConverter.addConversionValue("check-cache", DoesExistQuery.CheckCache);
+        existenceCheckConverter.addConversionValue("check-database", DoesExistQuery.CheckDatabase);
+        existenceCheckConverter.addConversionValue("assume-existence", DoesExistQuery.AssumeExistence);
+        existenceCheckConverter.addConversionValue("assume-non-existence", DoesExistQuery.AssumeNonExistence);
         existenceCheckMapping.setConverter(existenceCheckConverter);
-        existenceCheckMapping.setNullValue(Integer.valueOf(DoesExistQuery.CheckCache));
+        existenceCheckMapping.setNullValue(DoesExistQuery.CheckCache);
         descriptor.addMapping(existenceCheckMapping);
 
         return descriptor;
@@ -1871,22 +1872,22 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         returnChoiceMapping.setAttributeName("returnChoice");
         returnChoiceMapping.setXPath(getPrimaryNamespaceXPath() + "return-choice/text()");
         ObjectTypeConverter returnChoiceConverter = new ObjectTypeConverter();
-        returnChoiceConverter.addConversionValue("return-single-result", Integer.valueOf(ReportQuery.ShouldReturnSingleResult));
-        returnChoiceConverter.addConversionValue("return-single-value", Integer.valueOf(ReportQuery.ShouldReturnSingleValue));
-        returnChoiceConverter.addConversionValue("return-single-attribute", Integer.valueOf(ReportQuery.ShouldReturnSingleAttribute));
+        returnChoiceConverter.addConversionValue("return-single-result", ReportQuery.ShouldReturnSingleResult);
+        returnChoiceConverter.addConversionValue("return-single-value", ReportQuery.ShouldReturnSingleValue);
+        returnChoiceConverter.addConversionValue("return-single-attribute", ReportQuery.ShouldReturnSingleAttribute);
         returnChoiceMapping.setConverter(returnChoiceConverter);
-        returnChoiceMapping.setNullValue(Integer.valueOf(0));
+        returnChoiceMapping.setNullValue(0);
         descriptor.addMapping(returnChoiceMapping);
 
         XMLDirectMapping retrievePrimaryKeysMapping = new XMLDirectMapping();
         retrievePrimaryKeysMapping.setAttributeName("shouldRetrievePrimaryKeys");
         retrievePrimaryKeysMapping.setXPath(getPrimaryNamespaceXPath() + "retrieve-primary-keys/text()");
         ObjectTypeConverter retrievePrimaryKeysConverter = new ObjectTypeConverter();
-        retrievePrimaryKeysConverter.addConversionValue("full-primary-key", Integer.valueOf(ReportQuery.FULL_PRIMARY_KEY));
-        retrievePrimaryKeysConverter.addConversionValue("first-primary-key", Integer.valueOf(ReportQuery.FIRST_PRIMARY_KEY));
-        retrievePrimaryKeysConverter.addConversionValue("no-primary-key", Integer.valueOf(ReportQuery.NO_PRIMARY_KEY));
+        retrievePrimaryKeysConverter.addConversionValue("full-primary-key", ReportQuery.FULL_PRIMARY_KEY);
+        retrievePrimaryKeysConverter.addConversionValue("first-primary-key", ReportQuery.FIRST_PRIMARY_KEY);
+        retrievePrimaryKeysConverter.addConversionValue("no-primary-key", ReportQuery.NO_PRIMARY_KEY);
         retrievePrimaryKeysMapping.setConverter(retrievePrimaryKeysConverter);
-        returnChoiceMapping.setNullValue(Integer.valueOf(ReportQuery.NO_PRIMARY_KEY));
+        returnChoiceMapping.setNullValue(ReportQuery.NO_PRIMARY_KEY);
         descriptor.addMapping(retrievePrimaryKeysMapping);
 
         XMLCompositeCollectionMapping reportItemsMapping = new XMLCompositeCollectionMapping();
@@ -1957,12 +1958,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         policyMapping.setSetMethodName("setPolicy");
         policyMapping.setXPath(getPrimaryNamespaceXPath() + "policy/text()");
         ObjectTypeConverter policyConverter = new ObjectTypeConverter();
-        policyConverter.addConversionValue("ignore-exceptions-return-conformed", Integer.valueOf(InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED));
-        policyConverter.addConversionValue("ignore-exceptions-returned-not-conformed", Integer.valueOf(InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED));
-        policyConverter.addConversionValue("trigger-indirection", Integer.valueOf(InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION));
-        policyConverter.addConversionValue("throw-indirection-exception", Integer.valueOf(InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION));
+        policyConverter.addConversionValue("ignore-exceptions-return-conformed", InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED);
+        policyConverter.addConversionValue("ignore-exceptions-returned-not-conformed", InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED);
+        policyConverter.addConversionValue("trigger-indirection", InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION);
+        policyConverter.addConversionValue("throw-indirection-exception", InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION);
         policyMapping.setConverter(policyConverter);
-        policyMapping.setNullValue(Integer.valueOf(InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION));
+        policyMapping.setNullValue(InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION);
         descriptor.addMapping(policyMapping);
         return descriptor;
     }
@@ -2045,9 +2046,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 DatabaseMapping mapping = (DatabaseMapping)object;
-                Vector propertyAssociations = new NonSynchronizedVector();
-                for (Iterator i = mapping.getProperties().entrySet().iterator(); i.hasNext();) {
-                    Map.Entry me = (Map.Entry)i.next();
+                List<PropertyAssociation> propertyAssociations = new ArrayList<>();
+                for (Iterator<Map.Entry<?, ?>> i = mapping.getProperties().entrySet().iterator(); i.hasNext();) {
+                    Map.Entry<?, ?> me = i.next();
                     PropertyAssociation propertyAssociation = new PropertyAssociation();
                     propertyAssociation.setKey(me.getKey());
                     propertyAssociation.setValue(me.getValue());
@@ -2059,9 +2060,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 DatabaseMapping mapping = (DatabaseMapping)object;
-                Vector propertyAssociations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                List<PropertyAssociation> propertyAssociations = (List<PropertyAssociation>) value;
                 for (int i = 0; i < propertyAssociations.size(); i++) {
-                    PropertyAssociation propertyAssociation = (PropertyAssociation)propertyAssociations.get(i);
+                    PropertyAssociation propertyAssociation = propertyAssociations.get(i);
                     mapping.getProperties().put(propertyAssociation.getKey(), propertyAssociation.getValue());
                 }
             }
@@ -2234,7 +2236,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         identityMapSizeMapping.setGetMethodName("getIdentityMapSize");
         identityMapSizeMapping.setSetMethodName("setIdentityMapSize");
         identityMapSizeMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "cache-size/text()");
-        identityMapSizeMapping.setNullValue(Integer.valueOf(100));
+        identityMapSizeMapping.setNullValue(100);
         descriptor.addMapping(identityMapSizeMapping);
 
         XMLDirectMapping remoteIdentityMapSizeMapping = new XMLDirectMapping();
@@ -2242,7 +2244,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         remoteIdentityMapSizeMapping.setGetMethodName("getRemoteIdentityMapSize");
         remoteIdentityMapSizeMapping.setSetMethodName("setRemoteIdentityMapSize");
         remoteIdentityMapSizeMapping.setXPath(getPrimaryNamespaceXPath() + "remote-caching/" + getPrimaryNamespaceXPath() + "cache-size/text()");
-        remoteIdentityMapSizeMapping.setNullValue(Integer.valueOf(100));
+        remoteIdentityMapSizeMapping.setNullValue(100);
         descriptor.addMapping(remoteIdentityMapSizeMapping);
 
         XMLDirectMapping shouldAlwaysRefreshCacheMapping = new XMLDirectMapping();
@@ -2311,12 +2313,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         unitOfWorkCacheIsolationLevelMapping.setSetMethodName("setUnitOfWorkCacheIsolationLevel");
         unitOfWorkCacheIsolationLevelMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "unitofwork-isolation-level/text()");
         ObjectTypeConverter unitOfWorkCacheIsolationLevelConverter = new ObjectTypeConverter();
-        unitOfWorkCacheIsolationLevelConverter.addConversionValue("use-session-cache-after-transaction", Integer.valueOf(ClassDescriptor.USE_SESSION_CACHE_AFTER_TRANSACTION));
-        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-new-data-after-transaction", Integer.valueOf(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION));
-        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-cache-after-transaction", Integer.valueOf(ClassDescriptor.ISOLATE_CACHE_AFTER_TRANSACTION));
-        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-cache-always", Integer.valueOf(ClassDescriptor.ISOLATE_CACHE_ALWAYS));
+        unitOfWorkCacheIsolationLevelConverter.addConversionValue("use-session-cache-after-transaction", ClassDescriptor.USE_SESSION_CACHE_AFTER_TRANSACTION);
+        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-new-data-after-transaction", ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-cache-after-transaction", ClassDescriptor.ISOLATE_CACHE_AFTER_TRANSACTION);
+        unitOfWorkCacheIsolationLevelConverter.addConversionValue("isolate-cache-always", ClassDescriptor.ISOLATE_CACHE_ALWAYS);
         unitOfWorkCacheIsolationLevelMapping.setConverter(unitOfWorkCacheIsolationLevelConverter);
-        unitOfWorkCacheIsolationLevelMapping.setNullValue(Integer.valueOf(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION));
+        unitOfWorkCacheIsolationLevelMapping.setNullValue(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
         descriptor.addMapping(unitOfWorkCacheIsolationLevelMapping);
 
         XMLCompositeObjectMapping cacheInvalidationPolicyMapping = new XMLCompositeObjectMapping();
@@ -2331,12 +2333,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         cacheSyncTypeMapping.setSetMethodName("setCacheSynchronizationType");
         cacheSyncTypeMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "cache-sync-type/text()");
         ObjectTypeConverter cacheSyncTypeConverter = new ObjectTypeConverter();
-        cacheSyncTypeConverter.addConversionValue("invalidation", Integer.valueOf(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
-        cacheSyncTypeConverter.addConversionValue("no-changes", Integer.valueOf(ClassDescriptor.DO_NOT_SEND_CHANGES));
-        cacheSyncTypeConverter.addConversionValue("change-set-with-new-objects", Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
-        cacheSyncTypeConverter.addConversionValue("change-set", Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
+        cacheSyncTypeConverter.addConversionValue("invalidation", ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
+        cacheSyncTypeConverter.addConversionValue("no-changes", ClassDescriptor.DO_NOT_SEND_CHANGES);
+        cacheSyncTypeConverter.addConversionValue("change-set-with-new-objects", ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
+        cacheSyncTypeConverter.addConversionValue("change-set", ClassDescriptor.SEND_OBJECT_CHANGES);
         cacheSyncTypeMapping.setConverter(cacheSyncTypeConverter);
-        cacheSyncTypeMapping.setNullValue(Integer.valueOf(ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR));
+        cacheSyncTypeMapping.setNullValue(ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR);
         descriptor.addMapping(cacheSyncTypeMapping);
 
         XMLCompositeObjectMapping historyPolicyMapping = new XMLCompositeObjectMapping();
@@ -2423,9 +2425,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor desc = (ClassDescriptor)object;
-                Vector propertyAssociations = new NonSynchronizedVector();
-                for (Iterator i = desc.getProperties().entrySet().iterator(); i.hasNext();) {
-                    Map.Entry me = (Map.Entry)i.next();
+                List<PropertyAssociation> propertyAssociations = new ArrayList<>();
+                for (Iterator<Map.Entry<?, ?>> i = desc.getProperties().entrySet().iterator(); i.hasNext();) {
+                    Map.Entry<?, ?> me = i.next();
                     PropertyAssociation propertyAssociation = new PropertyAssociation();
                     propertyAssociation.setKey(me.getKey());
                     propertyAssociation.setValue(me.getValue());
@@ -2437,9 +2439,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ClassDescriptor desc = (ClassDescriptor)object;
-                Vector propertyAssociations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                List<PropertyAssociation> propertyAssociations = (List<PropertyAssociation>) value;
                 for (int i = 0; i < propertyAssociations.size(); i++) {
-                    PropertyAssociation propertyAssociation = (PropertyAssociation)propertyAssociations.get(i);
+                    PropertyAssociation propertyAssociation = propertyAssociations.get(i);
                     desc.getProperties().put(propertyAssociation.getKey(), propertyAssociation.getValue());
                 }
             }
@@ -2469,9 +2472,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
-                Vector associations = mapping.getMultipleTablePrimaryKeyAssociations();
+                List<Association> associations = mapping.getMultipleTablePrimaryKeyAssociations();
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(new DatabaseField((String)association.getKey()));
                     association.setValue(new DatabaseField((String)association.getValue()));
                 }
@@ -2481,9 +2484,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
-                Vector associations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>) value;
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                     association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
                 }
@@ -2502,9 +2506,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
-                Vector associations = mapping.getMultipleTableForeignKeyAssociations();
+                List<Association> associations = mapping.getMultipleTableForeignKeyAssociations();
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(new DatabaseField((String)association.getKey()));
                     association.setValue(new DatabaseField((String)association.getValue()));
                 }
@@ -2514,9 +2518,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ClassDescriptor mapping = (ClassDescriptor)object;
-                Vector associations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>) value;
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                     association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
                 }
@@ -2608,9 +2613,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToReferenceKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             @Override
             public Object getAttributeValueFromObject(Object object) {
-                List sourceFields = ((DirectCollectionMapping)object).getSourceKeyFields();
-                List referenceFields = ((DirectCollectionMapping)object).getReferenceKeyFields();
-                List associations = new ArrayList(sourceFields.size());
+                List<DatabaseField> sourceFields = ((DirectCollectionMapping)object).getSourceKeyFields();
+                List<DatabaseField> referenceFields = ((DirectCollectionMapping)object).getReferenceKeyFields();
+                List<Association> associations = new ArrayList<>(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(referenceFields.get(index), sourceFields.get(index)));
                 }
@@ -2620,12 +2625,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 DirectCollectionMapping mapping = (DirectCollectionMapping)object;
-                List associations = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>)value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setReferenceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator iterator = associations.iterator();
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
                     mapping.getReferenceKeyFields().add((DatabaseField)association.getKey());
                 }
@@ -3112,7 +3118,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         descriptor.getInheritancePolicy().addClassIndicator(TypeConversionConverter.class, getPrimaryNamespaceXPath() + "type-conversion-converter");
         descriptor.getInheritancePolicy().addClassIndicator(SerializedObjectConverter.class, getPrimaryNamespaceXPath() + "serialized-object-converter");
         try {
-            Class typesafeenumClass = new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
+            Class<Object> typesafeenumClass = new PrivilegedClassForName<>("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
             descriptor.getInheritancePolicy().addClassIndicator(typesafeenumClass, getPrimaryNamespaceXPath() + "typesafe-enumeration-converter");
         }
         catch (ClassNotFoundException cnfe) {
@@ -3219,9 +3225,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToRelationKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             @Override
             public Object getAttributeValueFromObject(Object object) {
-                List sourceFields = ((ManyToManyMapping)object).getSourceKeyFields();
-                List relationFields = ((ManyToManyMapping)object).getSourceRelationKeyFields();
-                List associations = new ArrayList(sourceFields.size());
+                List<DatabaseField> sourceFields = ((ManyToManyMapping)object).getSourceKeyFields();
+                List<DatabaseField> relationFields = ((ManyToManyMapping)object).getSourceRelationKeyFields();
+                List<Association> associations = new ArrayList<>(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(relationFields.get(index), sourceFields.get(index)));
                 }
@@ -3231,12 +3237,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ManyToManyMapping mapping = (ManyToManyMapping)object;
-                List associations = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>)value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setSourceRelationKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator iterator = associations.iterator();
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
                     mapping.getSourceRelationKeyFields().add((DatabaseField)association.getKey());
                 }
@@ -3252,9 +3259,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         targetToRelationKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             @Override
             public Object getAttributeValueFromObject(Object object) {
-                List targetFields = ((ManyToManyMapping)object).getTargetKeyFields();
-                List relationFields = ((ManyToManyMapping)object).getTargetRelationKeyFields();
-                List associations = new ArrayList(targetFields.size());
+                List<DatabaseField> targetFields = ((ManyToManyMapping)object).getTargetKeyFields();
+                List<DatabaseField> relationFields = ((ManyToManyMapping)object).getTargetRelationKeyFields();
+                List<Association> associations = new ArrayList<>(targetFields.size());
                 for (int index = 0; index < targetFields.size(); index++) {
                     associations.add(new Association(relationFields.get(index), targetFields.get(index)));
                 }
@@ -3264,12 +3271,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 ManyToManyMapping mapping = (ManyToManyMapping)object;
-                List associations = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>)value;
                 mapping.setTargetKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setTargetRelationKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator iterator = associations.iterator();
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getTargetKeyFields().add((DatabaseField)association.getValue());
                     mapping.getTargetRelationKeyFields().add((DatabaseField)association.getKey());
                 }
@@ -3505,9 +3513,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             @Override
             public Object getAttributeValueFromObject(Object object) {
-                List sourceFields = ((OneToManyMapping)object).getSourceKeyFields();
-                List targetFields = ((OneToManyMapping)object).getTargetForeignKeyFields();
-                List associations = new ArrayList(sourceFields.size());
+                List<DatabaseField> sourceFields = ((OneToManyMapping)object).getSourceKeyFields();
+                List<DatabaseField> targetFields = ((OneToManyMapping)object).getTargetForeignKeyFields();
+                List<Association> associations = new ArrayList<>(sourceFields.size());
                 for (int index = 0; index < sourceFields.size(); index++) {
                     associations.add(new Association(targetFields.get(index), sourceFields.get(index)));
                 }
@@ -3517,12 +3525,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 OneToManyMapping mapping = (OneToManyMapping)object;
-                List associations = (List)value;
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>)value;
                 mapping.setSourceKeyFields(NonSynchronizedVector.newInstance(associations.size()));
                 mapping.setTargetForeignKeyFields(NonSynchronizedVector.newInstance(associations.size()));
-                Iterator iterator = associations.iterator();
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getSourceKeyFields().add((DatabaseField)association.getValue());
                     mapping.getTargetForeignKeyFields().add((DatabaseField)association.getKey());
                 }
@@ -3605,11 +3614,11 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
             @Override
             public Object getAttributeValueFromObject(Object object) {
-                Map sourceToTargetKeyFields = ((OneToOneMapping)object).getSourceToTargetKeyFields();
-                List associations = new ArrayList(sourceToTargetKeyFields.size());
-                Iterator iterator = sourceToTargetKeyFields.entrySet().iterator();
+                Map<DatabaseField, DatabaseField> sourceToTargetKeyFields = ((OneToOneMapping)object).getSourceToTargetKeyFields();
+                List<Association> associations = new ArrayList<>(sourceToTargetKeyFields.size());
+                Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
                 while (iterator.hasNext()) {
-                    Map.Entry entry = (Map.Entry)iterator.next();
+                    Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
                     associations.add(new Association(entry.getKey(), entry.getValue()));
                 }
                 return associations;
@@ -3618,12 +3627,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 OneToOneMapping mapping = (OneToOneMapping)object;
-                List associations = (List)value;
-                mapping.setSourceToTargetKeyFields(new HashMap(associations.size() + 1));
-                mapping.setTargetToSourceKeyFields(new HashMap(associations.size() + 1));
-                Iterator iterator = associations.iterator();
+                @SuppressWarnings({"unchecked"})
+                List<Association> associations = (List<Association>)value;
+                mapping.setSourceToTargetKeyFields(new HashMap<>(associations.size() + 1));
+                mapping.setTargetToSourceKeyFields(new HashMap<>(associations.size() + 1));
+                Iterator<Association> iterator = associations.iterator();
                 while (iterator.hasNext()) {
-                    Association association = (Association)iterator.next();
+                    Association association = iterator.next();
                     mapping.getSourceToTargetKeyFields().put((DatabaseField)association.getKey(), (DatabaseField)association.getValue());
                     mapping.getTargetToSourceKeyFields().put((DatabaseField)association.getValue(), (DatabaseField)association.getKey());
                 }
@@ -3662,8 +3672,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("true", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("false", Integer.valueOf(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("true", ForeignReferenceMapping.INNER_JOIN);
+        joinFetchConverter.addConversionValue("false", ForeignReferenceMapping.NONE);
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -4067,7 +4077,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         queryTimeoutMapping.setGetMethodName("getQueryTimeout");
         queryTimeoutMapping.setSetMethodName("setQueryTimeout");
         queryTimeoutMapping.setXPath(getPrimaryNamespaceXPath() + "timeout/text()");
-        queryTimeoutMapping.setNullValue(Integer.valueOf(DescriptorQueryManager.DefaultTimeout));
+        queryTimeoutMapping.setNullValue(DescriptorQueryManager.DefaultTimeout);
         descriptor.addMapping(queryTimeoutMapping);
 
         XMLCompositeObjectMapping insertQueryMapping = new XMLCompositeObjectMapping();
@@ -4555,7 +4565,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         return descriptor;
     }
 
-    protected ClassDescriptor buildTypesafeEnumConverterDescriptor(Class jaxbTypesafeEnumConverter) {
+    protected ClassDescriptor buildTypesafeEnumConverterDescriptor(Class<?> jaxbTypesafeEnumConverter) {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(jaxbTypesafeEnumConverter);
 
@@ -4670,10 +4680,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public Object getAttributeValueFromObject(Object object) {
                 VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
-                Vector associations = mapping.getSourceToTargetQueryKeyFieldAssociations();
-                Vector queryKeyReferences = new Vector(associations.size());
+                List<Association> associations = mapping.getSourceToTargetQueryKeyFieldAssociations();
+                Vector<QueryKeyReference> queryKeyReferences = new Vector<>(associations.size());
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     QueryKeyReference reference = new QueryKeyReference();
                     reference.setKey(new DatabaseField((String)association.getKey()));
                     reference.setValue(association.getValue());
@@ -4685,9 +4695,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 VariableOneToOneMapping mapping = (VariableOneToOneMapping)object;
-                Vector associations = (Vector)value;
+                @SuppressWarnings({"unchecked"})
+                Vector<Association> associations = (Vector<Association>)value;
                 for (int index = 0; index < associations.size(); index++) {
-                    Association association = (Association)associations.get(index);
+                    Association association = associations.get(index);
                     association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                 }
                 mapping.setSourceToTargetQueryKeyFieldAssociations(associations);
@@ -4902,10 +4913,10 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         nodeTypeMapping.setXPath(getPrimaryNamespaceXPath() + "node-type/text()");
 
         ObjectTypeConverter nodeTypeConverter = new ObjectTypeConverter();
-        nodeTypeConverter.addConversionValue("element", Integer.valueOf(XMLSchemaReference.ELEMENT));
-        nodeTypeConverter.addConversionValue("simple-type", Integer.valueOf(XMLSchemaReference.SIMPLE_TYPE));
-        nodeTypeConverter.addConversionValue("complex-type", Integer.valueOf(XMLSchemaReference.COMPLEX_TYPE));
-        nodeTypeConverter.addConversionValue("group", Integer.valueOf(XMLSchemaReference.GROUP));
+        nodeTypeConverter.addConversionValue("element", XMLSchemaReference.ELEMENT);
+        nodeTypeConverter.addConversionValue("simple-type", XMLSchemaReference.SIMPLE_TYPE);
+        nodeTypeConverter.addConversionValue("complex-type", XMLSchemaReference.COMPLEX_TYPE);
+        nodeTypeConverter.addConversionValue("group", XMLSchemaReference.GROUP);
         nodeTypeMapping.setConverter(nodeTypeConverter);
 
         descriptor.addMapping(nodeTypeMapping);
@@ -5120,12 +5131,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         modificationDeferralLevelMapping.setGetMethodName("getDeferModificationsUntilCommit");
         modificationDeferralLevelMapping.setSetMethodName("setDeferModificationsUntilCommit");
         ObjectTypeConverter modificationDeferralLevelConverter = new ObjectTypeConverter();
-        modificationDeferralLevelConverter.addConversionValue("all-modifications", Integer.valueOf(CMPPolicy.ALL_MODIFICATIONS));
-        modificationDeferralLevelConverter.addConversionValue("update-modifications", Integer.valueOf(CMPPolicy.UPDATE_MODIFICATIONS));
-        modificationDeferralLevelConverter.addConversionValue("none", Integer.valueOf(CMPPolicy.NONE));
+        modificationDeferralLevelConverter.addConversionValue("all-modifications", CMPPolicy.ALL_MODIFICATIONS);
+        modificationDeferralLevelConverter.addConversionValue("update-modifications", CMPPolicy.UPDATE_MODIFICATIONS);
+        modificationDeferralLevelConverter.addConversionValue("none", CMPPolicy.NONE);
         modificationDeferralLevelMapping.setConverter(modificationDeferralLevelConverter);
         modificationDeferralLevelMapping.setXPath(getPrimaryNamespaceXPath() + "defer-until-commit/text()");
-        modificationDeferralLevelMapping.setNullValue(Integer.valueOf(CMPPolicy.ALL_MODIFICATIONS));
+        modificationDeferralLevelMapping.setNullValue(CMPPolicy.ALL_MODIFICATIONS);
         descriptor.addMapping(modificationDeferralLevelMapping);
 
         XMLDirectMapping nonDeferredCreateTimeMapping = new XMLDirectMapping();
@@ -5133,12 +5144,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         nonDeferredCreateTimeMapping.setGetMethodName("getNonDeferredCreateTime");
         nonDeferredCreateTimeMapping.setSetMethodName("setNonDeferredCreateTime");
         ObjectTypeConverter nonDeferredCreateTimeConverter = new ObjectTypeConverter();
-        nonDeferredCreateTimeConverter.addConversionValue("after-ejbcreate", Integer.valueOf(CMPPolicy.AFTER_EJBCREATE));
-        nonDeferredCreateTimeConverter.addConversionValue("after-ejbpostcreate", Integer.valueOf(CMPPolicy.AFTER_EJBPOSTCREATE));
-        nonDeferredCreateTimeConverter.addConversionValue("undefined", Integer.valueOf(CMPPolicy.UNDEFINED));
+        nonDeferredCreateTimeConverter.addConversionValue("after-ejbcreate", CMPPolicy.AFTER_EJBCREATE);
+        nonDeferredCreateTimeConverter.addConversionValue("after-ejbpostcreate", CMPPolicy.AFTER_EJBPOSTCREATE);
+        nonDeferredCreateTimeConverter.addConversionValue("undefined", CMPPolicy.UNDEFINED);
         nonDeferredCreateTimeMapping.setConverter(nonDeferredCreateTimeConverter);
         nonDeferredCreateTimeMapping.setXPath(getPrimaryNamespaceXPath() + "non-deferred-create-time/text()");
-        nonDeferredCreateTimeMapping.setNullValue(Integer.valueOf(CMPPolicy.UNDEFINED));
+        nonDeferredCreateTimeMapping.setNullValue(CMPPolicy.UNDEFINED);
         descriptor.addMapping(nonDeferredCreateTimeMapping);
 
         XMLCompositeObjectMapping pessimisticLockingPolicyMapping = new XMLCompositeObjectMapping();
@@ -5163,8 +5174,8 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         lockingModeMapping.setGetMethodName("getLockingMode");
         lockingModeMapping.setSetMethodName("setLockingMode");
         ObjectTypeConverter lockingModeConverter = new ObjectTypeConverter();
-        lockingModeConverter.addConversionValue("wait", Short.valueOf(ObjectLevelReadQuery.LOCK));
-        lockingModeConverter.addConversionValue("no-wait", Short.valueOf(ObjectLevelReadQuery.LOCK_NOWAIT));
+        lockingModeConverter.addConversionValue("wait", ObjectLevelReadQuery.LOCK);
+        lockingModeConverter.addConversionValue("no-wait", ObjectLevelReadQuery.LOCK_NOWAIT);
         lockingModeMapping.setConverter(lockingModeConverter);
         descriptor.addMapping(lockingModeMapping);
 
@@ -5199,7 +5210,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         preallocationSizeMapping.setGetMethodName("getPreallocationSize");
         preallocationSizeMapping.setSetMethodName("setPreallocationSize");
         preallocationSizeMapping.setXPath(getPrimaryNamespaceXPath() + "preallocation-size/text()");
-        preallocationSizeMapping.setNullValue(Integer.valueOf(50));
+        preallocationSizeMapping.setNullValue(50);
         descriptor.addMapping(preallocationSizeMapping);
 
         return descriptor;

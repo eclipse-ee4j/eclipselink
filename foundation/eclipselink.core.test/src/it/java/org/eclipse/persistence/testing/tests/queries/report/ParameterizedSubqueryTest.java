@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,6 +52,7 @@ public class ParameterizedSubqueryTest extends TestCase {
         setDescription("Test using a Parameterized Subquery in a Report Query");
     }
 
+    @Override
     public void setup() {
         if (getSession().isRemoteSession()) {
             throwWarning("Report queries with objects are not supported on remote session.");
@@ -92,9 +93,10 @@ public class ParameterizedSubqueryTest extends TestCase {
         queryToExecute = reportQuery;
     }
 
+    @Override
     public void test() {
         try {
-            List arguments = new ArrayList<Object>();
+            List<Object> arguments = new ArrayList<>();
             arguments.add(employeeId);
             arguments.add(projectName);
 
@@ -104,6 +106,7 @@ public class ParameterizedSubqueryTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception != null) {
             throw new TestErrorException("An exception occurred executing a ReportQuery with a parameterized subquery", exception);

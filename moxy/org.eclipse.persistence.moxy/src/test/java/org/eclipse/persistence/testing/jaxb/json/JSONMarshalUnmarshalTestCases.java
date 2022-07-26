@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,10 +41,11 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
         super(name);
     }
 
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return null;
     }
 
+    @Override
     protected void compareStringToControlFile(String testName, String testString) {
         String expectedString = loadFileToString(getWriteControlJSON());
         compareStrings(testName, testString, expectedString, true);
@@ -145,7 +146,7 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
     public void generateJSONSchema(List<InputStream> controlSchemas) throws Exception {
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
 
-        Class theClass = getWriteControlObject().getClass();
+        Class<? extends Object> theClass = getWriteControlObject().getClass();
         if(theClass == JAXBElement.class){
              theClass = ((JAXBElement) getWriteControlObject()).getValue().getClass();
         }

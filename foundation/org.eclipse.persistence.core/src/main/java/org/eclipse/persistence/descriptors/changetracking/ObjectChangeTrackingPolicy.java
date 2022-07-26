@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,11 +147,11 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
             // Must also ensure the listener has been set on collections and aggregates.
             FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
             boolean isPartialObject = (fetchGroupManager != null) && fetchGroupManager.isPartialObject(clone);
-            List mappings = builder.getRelationshipMappings();
+            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
             int size = mappings.size();
             // Only cascade fetched mappings.
             for (int index = 0; index < size; index++) {
-                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                DatabaseMapping mapping = mappings.get(index);
                 if (!isPartialObject || fetchGroupManager.isAttributeFetched(clone, mapping.getAttributeName())) {
                     mapping.setChangeListener(clone, listener, uow);
                 }
@@ -168,7 +168,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
     public void initialize(AbstractSession session, ClassDescriptor descriptor) {
         //3934266 If changePolicy is ObjectChangeTrackingPolicy or AttributeChangeTrackingPolicy, the class represented
         //by the descriptor must implement ChangeTracker interface.  Otherwise throw an exception.
-        Class javaClass = descriptor.getJavaClass();
+        Class<?> javaClass = descriptor.getJavaClass();
         if (!ChangeTracker.class.isAssignableFrom(javaClass)) {
             session.getIntegrityChecker().handleError(DescriptorException.needToImplementChangeTracker(descriptor));
         }

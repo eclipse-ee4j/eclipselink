@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,6 @@ public class Parameter {
     }
     /**
      * Set name of bound argument
-     * @param name
      */
     public void setName(String name) {
         this.name = name;
@@ -59,7 +58,6 @@ public class Parameter {
     }
     /**
      * Set type of bound argument
-     * @param type
      */
     public void setType(QName type) {
         this.type = type;
@@ -73,7 +71,6 @@ public class Parameter {
     }
     /**
      * Set the optional indicator
-     * @param optional
      */
     public void setOptional(boolean optional) {
         this.optional = optional;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors;
 
-import java.lang.reflect.*;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.internal.security.*;
 
 /**
  * <p><b>Purpose</b>:
@@ -92,7 +93,7 @@ public class MethodClassExtractor extends ClassExtractor {
     @Override
     public void initialize(ClassDescriptor descriptor, Session session) throws DescriptorException {
         setDescriptor(descriptor);
-        Class[] declarationParameters = new Class[1];
+        Class<?>[] declarationParameters = new Class<?>[1];
         declarationParameters[0] = ClassConstants.DatabaseRow_Class;
 
         try {
@@ -123,33 +124,21 @@ public class MethodClassExtractor extends ClassExtractor {
      * the value is the database value.
      */
     @Override
-    public Class extractClassFromRow(Record row, org.eclipse.persistence.sessions.Session session) {
-        Class classForRow;
-
-        try {
-            Object[] arguments = new Object[1];
-            arguments[0] = row;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    classForRow = (Class)AccessController.doPrivileged(new PrivilegedMethodInvoker(getClassExtractionMethod(), null, arguments));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileInvokingRowExtractionMethod((AbstractRecord)row, getClassExtractionMethod(), getDescriptor(), throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileInvokingRowExtractionMethod((AbstractRecord)row, getClassExtractionMethod(), getDescriptor(), throwableException);
+    @SuppressWarnings({"unchecked"})
+    public <T> Class<T> extractClassFromRow(DataRecord row, org.eclipse.persistence.sessions.Session session) {
+        return (Class<T>) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(getClassExtractionMethod(), null, new Object[] {row}),
+                (ex) -> {
+                    if (ex instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileInvokingRowExtractionMethod(
+                                (AbstractRecord) row, getClassExtractionMethod(), getDescriptor(), ex);
+                    } else if (ex instanceof InvocationTargetException) {
+                        return DescriptorException.targetInvocationWhileInvokingRowExtractionMethod(
+                                (AbstractRecord) row, getClassExtractionMethod(), getDescriptor(), ex);
                     }
+                    throw new RuntimeException(String.format("Invocation of %s method failed", getClassExtractionMethod().getName()), ex);
                 }
-            } else {
-                classForRow = (Class)PrivilegedAccessHelper.invokeMethod(getClassExtractionMethod(), null, arguments);
-            }
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileInvokingRowExtractionMethod((AbstractRecord)row, getClassExtractionMethod(), getDescriptor(), exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileInvokingRowExtractionMethod((AbstractRecord)row, getClassExtractionMethod(), getDescriptor(), exception);
-        }
-
-        return classForRow;
+        );
     }
 
     /**

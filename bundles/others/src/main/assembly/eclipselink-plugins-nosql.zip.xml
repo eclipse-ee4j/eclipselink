@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,10 +21,22 @@
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-    <componentDescriptors>
-        <componentDescriptor>src/main/assembly/common-license.xml</componentDescriptor>
-    </componentDescriptors>
     <dependencySets>
+        <!--License files-->
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <scope>provided</scope>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>${project.groupId}:org.eclipse.persistence.parent:zip:common-license</include>
+            </includes>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <includes>
+                    <include>*.html</include>
+                </includes>
+            </unpackOptions>
+        </dependencySet>
         <dependencySet>
             <includes>
                 <include>org.eclipse.persistence:org.eclipse.persistence.nosql</include>
@@ -36,11 +48,11 @@
             </includes>
         </dependencySet>
     </dependencySets>
-    <files>
+<!--    <files>
         <file>
             <source>${project.build.directory}/nosql-javadoc.jar</source>
             <outputDirectory>.</outputDirectory>
         </file>
-    </files>
+    </files>-->
 
 </assembly>

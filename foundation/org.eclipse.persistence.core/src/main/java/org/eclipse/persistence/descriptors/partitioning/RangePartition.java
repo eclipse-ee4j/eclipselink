@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,15 +16,8 @@
 //       - 354678: Temp classloader is still being used during metadata processing
 package org.eclipse.persistence.descriptors.partitioning;
 
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 
 /**
  * PUBLIC:
@@ -39,7 +32,7 @@ public class RangePartition  {
     protected String partitionValueTypeName;
     protected String connectionPool;
 
-    protected Class partitionValueType;
+    protected Class<?> partitionValueType;
     protected Comparable startValue;
     protected Comparable endValue;
 
@@ -78,21 +71,11 @@ public class RangePartition  {
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         if (partitionValueType == null && partitionValueTypeName != null) {
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        partitionValueType = AccessController.doPrivileged(new PrivilegedClassForName(partitionValueTypeName, true, classLoader));
-                    } catch (PrivilegedActionException e) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, e.getException());
-                    }
-                } else {
-                    partitionValueType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(partitionValueTypeName, true, classLoader);
-                }
-            } catch (Exception exception) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, exception);
-            }
+            partitionValueType = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getClassForName(partitionValueTypeName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, ex)
+            );
         }
-
         // Once we know we have a partition value type we can convert our partition ranges.
         if (partitionValueType != null) {
             if (startValueName != null) {
@@ -117,24 +100,18 @@ public class RangePartition  {
      * INTERNAL:
      * TODO: clean up the exception handling.
      */
-    protected Object initObject(Class type, String value) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
-                return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
-            } catch (PrivilegedActionException exception) {
-                //throwInitObjectException(exception, type, value, isData);
-            }
-        } else {
-            try {
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
-                return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
-            } catch (Exception exception) {
-                //throwInitObjectException(exception, type, value, isData);
-            }
+    @SuppressWarnings({"unchecked"})
+    protected <T> T initObject(Class<T> type, String value) {
+        try {
+            return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.invokeConstructor(
+                            PrivilegedAccessHelper.getConstructorFor(
+                                    type, new Class<?>[]{String.class}, false), new Object[]{value})
+            );
+        } catch (Exception exception) {
+            // Do nothing
         }
-
-        return value;
+        return (T) value;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class ProjectWithSpacesDeleteTest extends DeleteObjectTest {
         super(originalObject);
     }
 
+    @Override
     protected void setup() {
         if (getSession().getPlatform().isSymfoware()) {
             throwWarning("Test system EmployeeWithSpacesSystem is not supported on Symfoware, "
@@ -47,8 +48,8 @@ public class ProjectWithSpacesDeleteTest extends DeleteObjectTest {
         if (appendString.length() != 0) {
             appendString = appendString + ".";
         }
-        String startQuoteChar = ((DatasourcePlatform)getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class)).getStartDelimiter();
-        String endQuoteChar = ((DatasourcePlatform)getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class)).getEndDelimiter();
+        String startQuoteChar = getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class).getStartDelimiter();
+        String endQuoteChar = getAbstractSession().getPlatform(org.eclipse.persistence.testing.models.employee.domain.Project.class).getEndDelimiter();
 
         // Must drop references first to appease constraints.
         Session session = getAbstractSession().getSessionForClass(org.eclipse.persistence.testing.models.employee.domain.Project.class);

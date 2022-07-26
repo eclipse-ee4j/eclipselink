@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,8 +39,10 @@ import org.junit.Test;
 public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
 
     private static final URL CUSTOMER_FILE_URL = Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/casesensitivity/customer.xml");
-    private static final Class[] CAMEL_CASE_CUSTOMER = new Class[]{CustomerImpl.class};
-    private static final Class[] UPPER_CASE_CUSTOMER = new Class[]{org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl.class};
+    @SuppressWarnings({"unchecked"})
+    private static final Class<Customer>[] CAMEL_CASE_CUSTOMER = (Class<Customer>[]) new Class<?>[]{CustomerImpl.class};
+    @SuppressWarnings({"unchecked"})
+    private static final Class<Customer>[] UPPER_CASE_CUSTOMER = (Class<Customer>[]) new Class<?>[]{org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl.class};
     private static final boolean DEBUG = false;
 
     private CustomerImpl baseCustomer;
@@ -101,6 +103,7 @@ public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
         return otherCaseCustomer;
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         baseCustomer = new CustomerImpl();
@@ -110,7 +113,7 @@ public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
         baseCustomer.setPersonalName("cafeBabe");
 
         /* Create and assign case-insensitive unmarshallers */
-        Map<String, Boolean> properties = new HashMap<String, Boolean>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(JAXBContextProperties.UNMARSHALLING_CASE_INSENSITIVE, Boolean.TRUE);
         JAXBContext ctxCorrectCaseInsensitive = JAXBContextFactory.createContext(CAMEL_CASE_CUSTOMER, properties);
         JAXBContext ctxOtherCaseInsensitive = JAXBContextFactory.createContext(UPPER_CASE_CUSTOMER, null); /* we set CI by setProperty() */
@@ -129,6 +132,7 @@ public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
         unmarshallerCorrectCaseSensitive = ctxCorrectCaseSensitive.createUnmarshaller();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         baseCustomer = null;

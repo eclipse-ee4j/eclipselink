@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         setDescription("Tests a large number of inserts using Batch Writing, verifies that statement cacheing is used");
     }
 
+    @Override
     public void setup() {
         super.setup();
         this.shouldCacheStatements = getSession().getPlatform().shouldCacheAllStatements();
@@ -46,6 +47,7 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         ((DatabaseAccessor)getAbstractSession().getAccessor()).clearStatementCache((AbstractSession)getSession());
     }
 
+    @Override
     public void reset() {
         super.reset();
         getSession().getPlatform().setShouldCacheAllStatements(this.shouldCacheStatements);
@@ -53,6 +55,7 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         ((DatabaseAccessor)getAbstractSession().getAccessor()).clearStatementCache((AbstractSession)getSession());
     }
 
+    @Override
     public void test() {
         Address address;
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -71,9 +74,9 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         Map statementCache = null;
         String sql = getSession().getDescriptor(Address.class).getQueryManager().getInsertQuery().getSQLString();
         try {
-            Method method = uow.getParent().getAccessor().getClass().getDeclaredMethod("getStatementCache", new Class[] { });
+            Method method = uow.getParent().getAccessor().getClass().getDeclaredMethod("getStatementCache");
             method.setAccessible(true);
-            statementCache = (Map)method.invoke((DatabaseAccessor)uow.getParent().getAccessor(), new Object[] { });
+            statementCache = (Map)method.invoke(uow.getParent().getAccessor(), new Object[] { });
             statement =  (PreparedStatement)statementCache.get(sql);
         } catch (Exception ex) {
             throw new TestErrorException("Failed to run test. Check java.policy file \"SupressAccessChecks\" perission required :" +

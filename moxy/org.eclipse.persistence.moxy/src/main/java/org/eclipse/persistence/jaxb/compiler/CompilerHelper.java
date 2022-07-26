@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlList;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
@@ -61,22 +62,22 @@ public class CompilerHelper {
     private static final String INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.internal.bind.XmlAccessorFactory";
     private static final String METADATA_MODEL_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
 
-    public static Class ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
+    public static Class<?> ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
     public static Method ACCESSOR_FACTORY_VALUE_METHOD = null;
-    public static Class OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
+    public static Class<?> OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
     public static Method OLD_ACCESSOR_FACTORY_VALUE_METHOD = null;
-    public static Class INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
+    public static Class<?> INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
     public static Method INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD = null;
-    public static Class XML_LOCATION_ANNOTATION_CLASS = null;
-    public static Class OLD_XML_LOCATION_ANNOTATION_CLASS = null;
-    public static Class INTERNAL_XML_LOCATION_ANNOTATION_CLASS = null;
+    public static Class<?> XML_LOCATION_ANNOTATION_CLASS = null;
+    public static Class<?> OLD_XML_LOCATION_ANNOTATION_CLASS = null;
+    public static Class<?> INTERNAL_XML_LOCATION_ANNOTATION_CLASS = null;
 
     private static JAXBContext xmlBindingsModelContext;
 
     static {
         try {
             ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(XML_ACCESSOR_FACTORY_ANNOTATION_NAME, true, CompilerHelper.class.getClassLoader());
-            ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
+            ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class<?>[]{});
         } catch (Exception ex) {
         }
 
@@ -92,13 +93,13 @@ public class CompilerHelper {
 
         try{
             OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(OLD_ACCESSOR_FACTORY_ANNOTATION_NAME);
-            OLD_ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
+            OLD_ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class<?>[]{});
         } catch (Exception ex) {
         }
 
         try{
             INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME);
-            INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
+            INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class<?>[]{});
         } catch (Exception ex) {
         }
 
@@ -115,11 +116,11 @@ public class CompilerHelper {
      * therefore complex type) then return the existing class otherwise return
      * null.
      */
-    static Class getExisitingGeneratedClass(TypeMappingInfo tmi, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClasses, Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses, ClassLoader loader) {
+    static Class<?> getExisitingGeneratedClass(TypeMappingInfo tmi, Map<TypeMappingInfo, Class<?>> typeMappingInfoToGeneratedClasses, Map<TypeMappingInfo, Class<?>> typeMappingInfoToAdapterClasses, ClassLoader loader) {
 
-        Iterator<Map.Entry<TypeMappingInfo, Class>> iter = typeMappingInfoToGeneratedClasses.entrySet().iterator();
+        Iterator<Map.Entry<TypeMappingInfo, Class<?>>> iter = typeMappingInfoToGeneratedClasses.entrySet().iterator();
         while (iter.hasNext()) {
-            Map.Entry<TypeMappingInfo, Class> next = iter.next();
+            Map.Entry<TypeMappingInfo, Class<?>> next = iter.next();
             TypeMappingInfo nextTMI = next.getKey();
             if (CompilerHelper.generatesSameComplexType(tmi, nextTMI, loader)) {
                 return next.getValue();
@@ -186,7 +187,7 @@ public class CompilerHelper {
             return false;
         } else if (type1 == null && type2 != null) {
             return false;
-        } else if (type1 instanceof Class && type2 instanceof Class){
+        } else if (type1 instanceof Class<?> && type2 instanceof Class){
 
             String typeName1 = ((Class)type1).getName();
             String typeName2 = ((Class)type2).getName();
@@ -313,9 +314,6 @@ public class CompilerHelper {
      * unmarshal the Element. This assumes that the Element represents an
      * xml-element to be unmarshalled.
      *
-     * @param xmlElementNode
-     * @param classLoader
-     * @return
      */
     static org.eclipse.persistence.jaxb.xmlmodel.XmlElement getXmlElement(org.w3c.dom.Element xmlElementNode, ClassLoader classLoader) {
         try {
@@ -332,15 +330,15 @@ public class CompilerHelper {
      * returns something other than Object on the adapter class return the
      * return type of that method Otherwise return Object.class
      */
-    static Class getTypeFromAdapterClass(Class adapterClass) {
+    static Class<?> getTypeFromAdapterClass(Class<?> adapterClass) {
         if (adapterClass != null) {
-            Class declJavaType = Object.class;
+            Class<Object> declJavaType = Object.class;
             // look for marshal method
             Method[] tacMethods = PrivilegedAccessHelper.getMethods(adapterClass);
             for (int i = 0; i < tacMethods.length; i++) {
                 Method method = tacMethods[i];
                 if (method.getName().equals("marshal")) {
-                    Class returnType = PrivilegedAccessHelper.getMethodReturnType(method);
+                    Class<Object> returnType = PrivilegedAccessHelper.getMethodReturnType(method);
                     if (!(returnType == declJavaType)) {
                         declJavaType = returnType;
                         return declJavaType;
@@ -411,18 +409,18 @@ public class CompilerHelper {
                         java.lang.annotation.Annotation nextAnnotation = tmi.getAnnotations()[i];
                         if (nextAnnotation != null) {
                             if (nextAnnotation instanceof XmlJavaTypeAdapter) {
-                                Class typeClass = ((XmlJavaTypeAdapter) nextAnnotation).type();
+                                Class<?> typeClass = ((XmlJavaTypeAdapter) nextAnnotation).type();
                                 if (typeClass.getName().equals("jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter$DEFAULT")) {
-                                    Class adapterClass = ((XmlJavaTypeAdapter) nextAnnotation).value();
+                                    Class<? extends XmlAdapter> adapterClass = ((XmlJavaTypeAdapter) nextAnnotation).value();
                                     return getTypeFromAdapterClass(adapterClass);
                                 }
                                 return typeClass;
                             } else if (nextAnnotation instanceof XmlElement) {
-                                Class typeClass = ((XmlElement) nextAnnotation).type();
+                                Class<?> typeClass = ((XmlElement) nextAnnotation).type();
                                 if (!typeClass.getName().equals("jakarta.xml.bind.annotation.XmlElement.DEFAULT")) {
                                     final Type tmiType = tmi.getType();
                                     if (isCollectionType(tmiType)) {
-                                        final Class itemType = typeClass;
+                                        final Class<?> itemType = typeClass;
                                         Type parameterizedType = new ParameterizedType() {
                                             Type[] typeArgs = { itemType };
 
@@ -462,7 +460,7 @@ public class CompilerHelper {
                         return PrivilegedAccessHelper.getClassForName(actualType);
                     } else {
                         String adapterClassName = element.getXmlJavaTypeAdapter().getValue();
-                        Class adapterClass = PrivilegedAccessHelper.getClassForName(adapterClassName);
+                        Class<Object> adapterClass = PrivilegedAccessHelper.getClassForName(adapterClassName);
                         return getTypeFromAdapterClass(adapterClass);
                     }
                 }
@@ -472,7 +470,7 @@ public class CompilerHelper {
 
                     final Type tmiType = tmi.getType();
                     if (isCollectionType(tmiType)) {
-                        final Class itemType = PrivilegedAccessHelper.getClassForName(actualType);
+                        final Class<Object> itemType = PrivilegedAccessHelper.getClassForName(actualType);
                         Type parameterizedType = new ParameterizedType() {
                             Type[] typeArgs = { itemType };
 
@@ -538,7 +536,7 @@ public class CompilerHelper {
     public static void addClassToClassLoader(JavaClass cls, ClassLoader loader) {
 
         if(loader.getClass() == JaxbClassLoader.class && cls.getClass() == JavaClassImpl.class) {
-            Class wrappedClass = ((JavaClassImpl)cls).getJavaClass();
+            Class<?> wrappedClass = ((JavaClassImpl)cls).getJavaClass();
             ((JaxbClassLoader)loader).putClass(wrappedClass.getName(), wrappedClass);
         }
     }
@@ -567,18 +565,18 @@ public class CompilerHelper {
         if(!(jClass.getClass() == JavaClassImpl.class)) {
             return null;
         }
-        Class beanClass = ((JavaClassImpl)jClass).getJavaClass();
+        Class<?> beanClass = ((JavaClassImpl)jClass).getJavaClass();
         if(property.isMethodProperty()) {
             try {
                 Method getMethod = null;
                 Method setMethod = null;
                 if(property.getGetMethodName() != null) {
-                    getMethod = PrivilegedAccessHelper.getMethod(beanClass, property.getGetMethodName(), new Class[]{}, true);
+                    getMethod = PrivilegedAccessHelper.getMethod(beanClass, property.getGetMethodName(), new Class<?>[]{}, true);
                 }
                 if(property.getSetMethodName() != null) {
                     String setMethodParamTypeName = property.getType().getName();
                     JavaClassImpl paramType = (JavaClassImpl)helper.getJavaClass(setMethodParamTypeName);
-                    Class[] setMethodParams = new Class[]{paramType.getJavaClass()};
+                    Class<?>[] setMethodParams = new Class<?>[]{paramType.getJavaClass()};
                     setMethod = PrivilegedAccessHelper.getMethod(beanClass, property.getSetMethodName(), setMethodParams, true);
                 }
                 return accessorFactory.createPropertyAccessor(beanClass, getMethod, setMethod);

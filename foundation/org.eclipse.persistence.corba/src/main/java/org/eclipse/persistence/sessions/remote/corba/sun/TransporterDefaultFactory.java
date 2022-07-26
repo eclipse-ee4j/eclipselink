@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,13 @@ import org.eclipse.persistence.internal.sessions.remote.Transporter;
 * Thursday, May 3, 2001 1:36:59 PM EDT
 */
 public class TransporterDefaultFactory implements org.omg.CORBA.portable.ValueFactory {
+
+    /**
+     * Default constructor.
+     */
+    public TransporterDefaultFactory() {
+    }
+
     @Override
     public java.io.Serializable read_value(org.omg.CORBA_2_3.portable.InputStream is) {
         return is.read_value(new Transporter());

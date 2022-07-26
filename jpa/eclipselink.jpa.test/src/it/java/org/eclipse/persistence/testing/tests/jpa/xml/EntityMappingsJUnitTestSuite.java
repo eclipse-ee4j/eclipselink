@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,6 @@ import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsAdvancedJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsDynamicAdvancedJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsMultitenantJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.compositepk.AdvancedCompositePKJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.fetchgroup.EntityMappingsFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.xml.complexaggregate.EntityMappingsComplexAggregateJUnitTestCase;
@@ -65,13 +64,10 @@ public class EntityMappingsJUnitTestSuite extends TestCase {
             suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());
             suite.addTest(EntityMappingsFetchGroupJunitTest.suite());
             suite.addTest(EntityMappingsDynamicAdvancedJUnitTestCase.suite());
-            suite.addTest(EntityMappingsMultitenantJUnitTestCase.suite());
         }
 
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
-
-        suite.addTest(org.eclipse.persistence.testing.tests.jpa.xml.composite.advanced.EntityMappingsAdvancedJUnitTestCase.suite());
 
         return suite;
     }

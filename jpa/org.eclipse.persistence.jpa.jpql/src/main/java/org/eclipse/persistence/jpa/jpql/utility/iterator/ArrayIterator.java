@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,8 @@ public class ArrayIterator<E> implements Iterator<E> {
      *
      * @param array The object containing the items to iterate over
      */
+    @SafeVarargs
+    @SuppressWarnings({"varargs"})
     public <T extends E> ArrayIterator(T... array) {
         this(array, 0, array.length);
     }
@@ -77,17 +79,11 @@ public class ArrayIterator<E> implements Iterator<E> {
         this.maxIndex  = start + length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasNext() {
         return nextIndex < maxIndex;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public E next() {
 
@@ -98,17 +94,11 @@ public class ArrayIterator<E> implements Iterator<E> {
         throw new NoSuchElementException("No more elements can be retrieved.");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void remove() {
         throw new UnsupportedOperationException("An ArrayIterator is read-only.");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -163,7 +163,7 @@ public class DoesExistQuery extends DatabaseQuery {
             }
 
             CacheKey cacheKey;
-            Class objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             AbstractSession tempSession = session;
             if (tempSession.isUnitOfWork()){
                 cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, objectClass, descriptor);
@@ -245,7 +245,7 @@ public class DoesExistQuery extends DatabaseQuery {
         AbstractRecord databaseRow = getQueryMechanism().selectRowForDoesExist(field);
 
         // Null means no row was returned.
-        return Boolean.valueOf(databaseRow != null);
+        return databaseRow != null;
     }
 
     /**
@@ -284,7 +284,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * Return the domain class associated with this query.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         if (getObject() == null) {
             return null;
         }
@@ -427,7 +427,6 @@ public class DoesExistQuery extends DatabaseQuery {
      * INTERNAL:
      * Sets checkCacheFirst flag.  If true, existence check will first go to the
      * cache.  It will then check other options if it is not found in the cache
-     * @param checkCacheFirst
      */
     public void setCheckCacheFirst(boolean checkCacheFirst){
         this.checkCacheFirst = checkCacheFirst;
@@ -444,7 +443,6 @@ public class DoesExistQuery extends DatabaseQuery {
      * Sets checkDatabaseIfInvalid flag.  If true, query will go to the
      * database when it finds the object in the cache and it is invalid.
      * This is only valid when it checks the cache, and is true by default
-     * @param checkCacheFirst
      */
     public void setCheckDatabaseIfInvalid(boolean checkCacheFirst){
         this.checkCacheFirst = checkCacheFirst;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,8 +49,6 @@ public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, List<V>, V> 
 
     /**
      * INTERNAL:
-     * @param managedType
-     * @param mapping
      */
     protected ListAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
         super(managedType, mapping, false);
@@ -58,9 +56,6 @@ public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, List<V>, V> 
 
     /**
      *
-     * @param managedType
-     * @param mapping
-     * @param validationEnabled
      */
     protected ListAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping, boolean validationEnabled) {
         super(managedType, mapping, validationEnabled);
@@ -80,6 +75,7 @@ public class ListAttributeImpl<X, V> extends PluralAttributeImpl<X, List<V>, V> 
      *  @return Java type
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public Class getJavaType() {
         return List.class;
     }

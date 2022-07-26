@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -120,11 +120,11 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
             jsonGenerator.write(keyName, (String)value);
         }else{
             ConversionManager conversionManager = getConversionManager();
-            String convertedValue = (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
-            Class theClass = conversionManager.javaType(schemaType);
+            String convertedValue = conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
+            Class<Object> theClass = conversionManager.javaType(schemaType);
             if((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))){
                 //if it's still a number and falls through the cracks we dont want "" around the value
-                    BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
+                    BigDecimal convertedNumberValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType);
                     jsonGenerator.write(keyName, convertedNumberValue);
             }else{
                 jsonGenerator.write(keyName, convertedValue);
@@ -157,11 +157,11 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
             jsonGenerator.write((String)value);
         }else{
             ConversionManager conversionManager = getConversionManager();
-            String convertedValue = (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
-            Class theClass = conversionManager.javaType(schemaType);
+            String convertedValue = conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
+            Class<Object> theClass = conversionManager.javaType(schemaType);
             if((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))){
                 //if it's still a number and falls through the cracks we dont want "" around the value
-                    BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
+                    BigDecimal convertedNumberValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType);
                     jsonGenerator.write(convertedNumberValue);
 
             }else{

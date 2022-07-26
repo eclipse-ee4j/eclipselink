@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -196,16 +196,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     protected Boolean shouldOuterJoinSubclasses;
 
     /** Allow concrete subclasses calls to be prepared and cached for inheritance queries. */
-    protected Map<Class, DatabaseCall> concreteSubclassCalls;
+    protected Map<Class<?>, DatabaseCall> concreteSubclassCalls;
 
     /** Allow concrete subclasses queries to be prepared and cached for inheritance queries. */
-    protected Map<Class, DatabaseQuery> concreteSubclassQueries;
+    protected Map<Class<?>, DatabaseQuery> concreteSubclassQueries;
 
     /** Allow aggregate queries to be prepared and cached. */
     protected Map<DatabaseMapping, ObjectLevelReadQuery> aggregateQueries;
 
     /** Allow concrete subclasses joined mapping indexes to be prepared and cached for inheritance queries. */
-    protected Map<Class, Map<DatabaseMapping, Object>> concreteSubclassJoinedMappingIndexes;
+    protected Map<Class<?>, Map<DatabaseMapping, Object>> concreteSubclassJoinedMappingIndexes;
 
     /** Used when specifying a lock mode for the query */
     protected String lockModeType;
@@ -247,7 +247,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Initialize the state of the query
      */
-    public ObjectLevelReadQuery() {
+    protected ObjectLevelReadQuery() {
         this.shouldRefreshIdentityMapResult = false;
         this.distinctState = UNCOMPUTED_DISTINCT;
         this.cacheUsage = UseDescriptorSetting;
@@ -358,8 +358,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if (!query.hasJoining()) {
                 return false;
             }
-            List joinedAttributes = getJoinedAttributeManager().getJoinedAttributeExpressions();
-            List otherJoinedAttributes = query.getJoinedAttributeManager().getJoinedAttributeExpressions();
+            List<Expression> joinedAttributes = getJoinedAttributeManager().getJoinedAttributeExpressions();
+            List<Expression> otherJoinedAttributes = query.getJoinedAttributeManager().getJoinedAttributeExpressions();
             int size = joinedAttributes.size();
             if (size != otherJoinedAttributes.size()) {
                 return false;
@@ -376,8 +376,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if (!query.hasOrderByExpressions()) {
                 return false;
             }
-            List orderBys = getOrderByExpressions();
-            List otherOrderBys = query.getOrderByExpressions();
+            List<Expression> orderBys = getOrderByExpressions();
+            List<Expression> otherOrderBys = query.getOrderByExpressions();
             int size = orderBys.size();
             if (size != otherOrderBys.size()) {
                 return false;
@@ -507,7 +507,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         final Boolean useCustomQuery = checkCustomQueryFlag(session, translationRow);
         checkDescriptor(session);
         ObjectLevelReadQuery customQuery;
-        if (useCustomQuery != null && useCustomQuery.booleanValue()) {
+        if (useCustomQuery != null && useCustomQuery) {
             customQuery = getReadQuery();
             if (this.accessors != null) {
                 customQuery = (ObjectLevelReadQuery) customQuery.clone();
@@ -1579,7 +1579,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the reference class of the query.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -1644,8 +1644,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
 
         //Add attribute fields
-        for(Iterator it = getPartialAttributeExpressions().iterator();it.hasNext();){
-            Expression expression = (Expression)it.next();
+        for(Iterator<Expression> it = getPartialAttributeExpressions().iterator(); it.hasNext();){
+            Expression expression = it.next();
             if (expression.isQueryKeyExpression()) {
                 expression.getBuilder().setSession(session.getRootSession(null));
                 expression.getBuilder().setQueryClass(getDescriptor().getJavaClass());
@@ -1682,8 +1682,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         //Build fields in same order as the fields of the descriptor to ensure field and join indexes match.
         Vector selectionFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        for (Iterator iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
-            DatabaseField field = (DatabaseField)iterator.next();
+        for (Iterator<DatabaseField> iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
             if (localFields.contains(field)) {
                 selectionFields.add(field);
             } else {
@@ -1724,8 +1724,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
         // Add specified fields.
-        for (Iterator iterator = getExecutionFetchGroup().getAttributeNames().iterator(); iterator.hasNext();) {
-            String attribute = (String)iterator.next();
+        for (Iterator<String> iterator = getExecutionFetchGroup().getAttributeNames().iterator(); iterator.hasNext();) {
+            String attribute = iterator.next();
             DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(attribute);
             if (mapping == null) {
                 throw QueryException.fetchGroupAttributeNotMapped(attribute);
@@ -1759,8 +1759,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
         // Build field list in the same order as descriptor's fields so that the fields printed in the usual order in SELECT clause.
         List<DatabaseField> fields = new ArrayList(fetchedFields.size());
-        for (Iterator iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
-            DatabaseField field = (DatabaseField)iterator.next();
+        for (Iterator<DatabaseField> iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
             if (fetchedFields.contains(field)) {
                 fields.add(field);
             }
@@ -2194,7 +2194,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 if (timeout == null) {
                     setLockMode(ObjectBuildingQuery.LOCK);
                 } else {
-                    if (timeout.intValue() == 0) {
+                    if (timeout == 0) {
                         setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);
                     } else {
                         convertedTimeout = TimeUnit.SECONDS.convert(timeout, timeoutUnit);
@@ -2660,7 +2660,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Set the reference class for the query.
      */
     @Override
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         if (referenceClass != aClass) {
             setIsPreparedKeepingSubclassData(false);
         }
@@ -2770,7 +2770,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (shouldOuterJoinSubclasses == null) {
             return false;
         }
-        return shouldOuterJoinSubclasses.booleanValue();
+        return shouldOuterJoinSubclasses;
     }
 
     /**
@@ -2780,7 +2780,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * a root or branch inheritance class that has subclasses that span multiple tables.
      */
     public void setShouldOuterJoinSubclasses(boolean shouldOuterJoinSubclasses) {
-        this.shouldOuterJoinSubclasses = Boolean.valueOf(shouldOuterJoinSubclasses);
+        this.shouldOuterJoinSubclasses = shouldOuterJoinSubclasses;
         setIsPrepared(false);
     }
 
@@ -2843,9 +2843,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     protected boolean isReferenceClassLocked() {
         if (isReferenceClassLocked == null) {
-            isReferenceClassLocked = Boolean.valueOf(isLockQuery() && lockingClause.isReferenceClassLocked());
+            isReferenceClassLocked = isLockQuery() && lockingClause.isReferenceClassLocked();
         }
-        return isReferenceClassLocked.booleanValue();
+        return isReferenceClassLocked;
     }
 
     /**
@@ -2944,7 +2944,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Set if the query should be optimized to build directly from the result set.
      */
     public void setIsResultSetAccessOptimizedQuery(boolean isResultSetAccessOptimizedQuery) {
-        if (this.isResultSetAccessOptimizedQuery == null || this.isResultSetAccessOptimizedQuery.booleanValue() != isResultSetOptimizedQuery) {
+        if (this.isResultSetAccessOptimizedQuery == null || this.isResultSetAccessOptimizedQuery != isResultSetOptimizedQuery) {
             this.isResultSetAccessOptimizedQuery = isResultSetAccessOptimizedQuery;
             this.usesResultSetAccessOptimization = null;
         }
@@ -3114,7 +3114,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the cache of concrete subclass calls.
      * This allow concrete subclasses calls to be prepared and cached for inheritance queries.
      */
-    public Map<Class, DatabaseCall> getConcreteSubclassCalls() {
+    public Map<Class<?>, DatabaseCall> getConcreteSubclassCalls() {
         if (concreteSubclassCalls == null) {
             concreteSubclassCalls = new ConcurrentHashMap(8);
         }
@@ -3126,7 +3126,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the cache of concrete subclass queries.
      * This allow concrete subclasses calls to be prepared and cached for table per class inheritance and interface queries.
      */
-    public Map<Class, DatabaseQuery> getConcreteSubclassQueries() {
+    public Map<Class<?>, DatabaseQuery> getConcreteSubclassQueries() {
         if (concreteSubclassQueries == null) {
             concreteSubclassQueries = new ConcurrentHashMap(8);
         }
@@ -3169,7 +3169,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return the cache of concrete subclass joined mapping indexes.
      * This allow concrete subclasses calls to be prepared and cached for inheritance queries.
      */
-    public Map<Class, Map<DatabaseMapping, Object>> getConcreteSubclassJoinedMappingIndexes() {
+    public Map<Class<?>, Map<DatabaseMapping, Object>> getConcreteSubclassJoinedMappingIndexes() {
         if (concreteSubclassJoinedMappingIndexes == null) {
             concreteSubclassJoinedMappingIndexes = new ConcurrentHashMap(8);
         }
@@ -3488,7 +3488,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if(this.descriptor != null && this.descriptor.hasFetchGroupManager()) {
                 FetchGroup defaultFetchGroup = descriptor.getFetchGroupManager().getDefaultFetchGroup();
                 if(defaultFetchGroup != null) {
-                    str += '\n' + "Default " + defaultFetchGroup.toString();
+                    str += '\n' + "Default " + defaultFetchGroup;
                 }
             }
         }

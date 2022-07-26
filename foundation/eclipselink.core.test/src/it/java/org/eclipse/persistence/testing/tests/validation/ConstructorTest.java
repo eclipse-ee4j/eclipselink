@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,12 +28,14 @@ public class ConstructorTest extends ExceptionTest {
     protected EclipseLinkException secondExpectedException;
     protected EclipseLinkException thirdExpectedException;
 
+    @Override
     public void setup() {
         this.expectedException = DescriptorException.illegalAccessWhileConstructorInstantiation(null, null);
         this.secondExpectedException = DescriptorException.noSuchMethodWhileConstructorInstantiation(null, null);
         this.thirdExpectedException = DescriptorException.noSuchMethodWhileInitializingInstantiationPolicy(null, null, null);
     }
 
+    @Override
     public void test() {
         org.eclipse.persistence.sessions.DatabaseSession testSession = null;
         try {
@@ -56,6 +58,7 @@ public class ConstructorTest extends ExceptionTest {
         }
     }
 
+    @Override
     protected void verify() {
         if (caughtException == null) {
             throwError("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "caught exception was null! " + org.eclipse.persistence.internal.helper.Helper.cr() + org.eclipse.persistence.internal.helper.Helper.cr() + "[EXPECTING] " + expectedException + " or " + secondExpectedException);

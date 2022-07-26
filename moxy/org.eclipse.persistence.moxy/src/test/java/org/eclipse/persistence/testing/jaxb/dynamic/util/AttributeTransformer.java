@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,16 @@
 package org.eclipse.persistence.testing.jaxb.dynamic.util;
 
 import org.eclipse.persistence.mappings.transformers.AttributeTransformerAdapter;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class AttributeTransformer extends AttributeTransformerAdapter {
 
-    public Object buildAttributeValue(Record record, Object instance, Session session) {
+    @Override
+    public Object buildAttributeValue(DataRecord dataRecord, Object instance, Session session) {
         String[] objectValue = new String[2];
-        objectValue[0] = (String) record.get("transform/first-val/text()");
-        objectValue[1] = (String) record.get("transform/second-val/text()");
+        objectValue[0] = (String) dataRecord.get("transform/first-val/text()");
+        objectValue[1] = (String) dataRecord.get("transform/second-val/text()");
         return objectValue;
     }
 

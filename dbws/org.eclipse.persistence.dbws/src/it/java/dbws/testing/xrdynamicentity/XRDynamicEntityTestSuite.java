@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class XRDynamicEntityTestSuite {
     @BeforeClass
     public static void setUp() throws NoSuchFieldException, IllegalArgumentException,
         IllegalAccessException {
-        Set<String> propertyNames = new HashSet<String>();
+        Set<String> propertyNames = new HashSet<>();
         propertyNames.add(FIELD_1);
         propertyNames.add(FIELD_2);
         XRCustomer.DPM.setPropertyNames(propertyNames);
@@ -88,20 +88,19 @@ public class XRDynamicEntityTestSuite {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void buildTestEntity() throws InstantiationException, IllegalAccessException,
-        NoSuchFieldException {
+    public void buildTestEntity() throws ReflectiveOperationException {
         XRDynamicClassLoader xrdcl =
             new XRDynamicClassLoader(XRDynamicEntityTestSuite.class.getClassLoader());
         Class<XRDynamicEntity> testClass =
             (Class<XRDynamicEntity>)xrdcl.createDynamicClass(TEST_CLASSNAME);
-        XRDynamicEntity newInstance = testClass.newInstance();
+        XRDynamicEntity newInstance = testClass.getConstructor().newInstance();
         XRDynamicPropertiesManager xrDPM = newInstance.fetchPropertiesManager();
-        Set<String> propertyNames = new HashSet<String>();
+        Set<String> propertyNames = new HashSet<>();
         propertyNames.add(FIELD_1);
         propertyNames.add(FIELD_2);
         xrDPM.setPropertyNames(propertyNames);
         //build instance
-        XRDynamicEntity newInstance2 = testClass.newInstance();
+        XRDynamicEntity newInstance2 = testClass.getConstructor().newInstance();
         assertNotNull(newInstance2);
     }
 
@@ -125,7 +124,7 @@ public class XRDynamicEntityTestSuite {
         // test #2
         DynamicEntity e = entity1.set(FIELD_1, TEST_STRING);
         assertSame(e, entity1);
-        e = entity1.set(FIELD_2, Integer.valueOf(17));
+        e = entity1.set(FIELD_2, 17);
         assertSame(e, entity1);
         // test #3
         String test = entity1.<String>get(FIELD_1);

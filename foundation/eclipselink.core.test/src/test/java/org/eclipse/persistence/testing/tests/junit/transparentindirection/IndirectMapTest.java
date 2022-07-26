@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Test a simple IndirectMap.
- * @author: Big Country
+ * @author Big Country
  */
 @RunWith(Parameterized.class)
 public class IndirectMapTest {
@@ -125,8 +125,8 @@ public class IndirectMapTest {
             testMap = IndirectCollectionsFactory.createIndirectMap();
         } else {
             try {
-                testMap = cls.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                testMap = cls.getConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -533,10 +533,10 @@ public class IndirectMapTest {
         map.putAll(temp);
         testMap.putAll(temp);
         assertEquals(map, testMap);
-        for (Enumeration stream = temp.keys(); stream.hasMoreElements();) {
+        for (Enumeration<String> stream = temp.keys(); stream.hasMoreElements();) {
             assertTrue(testMap.containsKey(stream.nextElement()));
         }
-        for (Enumeration stream = temp.elements(); stream.hasMoreElements();) {
+        for (Enumeration<String> stream = temp.elements(); stream.hasMoreElements();) {
             assertTrue(testMap.contains(stream.nextElement()));
         }
         assertAddEvents(2);
@@ -564,7 +564,7 @@ public class IndirectMapTest {
     public void testValues() {
         assertEquals(map.size(), testMap.values().size());
 
-        for (Iterator stream = testMap.values().iterator(); stream.hasNext();) {
+        for (Iterator<String> stream = testMap.values().iterator(); stream.hasNext();) {
             assertTrue(map.contains(stream.next()));
         }
         map.values().removeAll(testMap.values());

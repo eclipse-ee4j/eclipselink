@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,10 +35,12 @@ public class InheritanceTestModel extends TestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new InheritanceSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getDuplicateFieldTestSuite());
         addTest(getReadObjectTestSuite());
@@ -59,6 +61,7 @@ public class InheritanceTestModel extends TestModel {
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
+    @Override
     public void addSRGTests() {
         addTest(getSRGDuplicateFieldTestSuite());
         addTest(getSRGReadObjectTestSuite());
@@ -372,8 +375,8 @@ public class InheritanceTestModel extends TestModel {
         suite.setName("InheritanceUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the inheritance model.");
 
-        Class companyClass = Company.class;
-        Class personClass = Person.class;
+        Class<Company> companyClass = Company.class;
+        Class<Person> personClass = Person.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(Cat.class, "catExample1")));

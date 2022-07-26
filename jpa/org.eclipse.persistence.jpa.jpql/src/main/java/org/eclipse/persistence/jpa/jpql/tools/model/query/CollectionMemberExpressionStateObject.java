@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * the collection member expression is <b>NULL</b> or unknown, the value of the collection member
  * expression is unknown.
  *
- * <div><b>BNF:</b> <code>collection_member_expression ::= entity_or_value_expression [NOT] MEMBER [OF] collection_valued_path_expression</code><p></div>
+ * <div><p><b>BNF:</b> <code>collection_member_expression ::= entity_or_value_expression [NOT] MEMBER [OF] collection_valued_path_expression</code></p></div>
  *
  * @see CollectionMemberExpression
  *
@@ -89,11 +89,8 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
      * Creates a new <code>CollectionMemberExpressionStateObject</code>.
      *
      * @param parent The parent of this state object, which cannot be <code>null</code>
-     * @param entityStateObject
      * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
      * or not
-     * @param of
-     * @param collectionValuedPath
      * @exception NullPointerException The given parent cannot be <code>null</code>
      */
     public CollectionMemberExpressionStateObject(StateObject parent,
@@ -113,8 +110,6 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
      * Creates a new <code>CollectionMemberExpressionStateObject</code>.
      *
      * @param parent The parent of this state object, which cannot be <code>null</code>
-     * @param entityStateObject
-     * @param collectionValuedPath
      * @exception NullPointerException The given parent cannot be <code>null</code>
      */
     public CollectionMemberExpressionStateObject(StateObject parent,
@@ -124,17 +119,11 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
         this(parent, entityStateObject, false, false, collectionValuedPath);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -178,9 +167,6 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
         return entityStateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CollectionMemberExpression getExpression() {
         return (CollectionMemberExpression) super.getExpression();
@@ -204,18 +190,12 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
         return of;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         collectionValuedPath = new CollectionValuedPathExpressionStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -251,7 +231,6 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
     /**
      * Sets
      *
-     * @param entityStateObject
      */
     public void setEntityStateObject(StateObject entityStateObject) {
         StateObject oldEntityStateObject = entityStateObject;
@@ -303,9 +282,6 @@ public class CollectionMemberExpressionStateObject extends AbstractStateObject {
         setOf(!of);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -223,9 +223,9 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
      */
     public static final String versionString(final int major, final int minor) {
         StringBuilder sb = new StringBuilder(4);
-        sb.append(Integer.toString(major));
+        sb.append(major);
         sb.append(JavaVersion.SEPARATOR);
-        sb.append(Integer.toString(minor));
+        sb.append(minor);
         return sb.toString();
     }
 

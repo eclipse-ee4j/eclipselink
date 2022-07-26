@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,13 +26,14 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
     private static final String JSON_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/annotations/xmldiscriminator/vehicle-write.json";
     public XmlDiscriminatorTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ Car.class, Vehicle.class });
+        setClasses(new Class<?>[]{ Car.class, Vehicle.class });
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_WRITE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_RESOURCE_WRITE);
     }
 
+    @Override
     public Object getControlObject() {
         Car car = new Car();
         car.numberOfDoors = 2;
@@ -43,6 +44,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         return new JAXBElement(new QName("vehicle-data"), Vehicle.class, car);
     }
 
+    @Override
     public Object getReadControlObject() {
            Car car = new Car();
            car.numberOfDoors = 2;
@@ -52,6 +54,7 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
            car.topSpeed = 354;
            return car;
     }
+    @Override
     public void testRoundTrip() throws Exception{}
 
 }

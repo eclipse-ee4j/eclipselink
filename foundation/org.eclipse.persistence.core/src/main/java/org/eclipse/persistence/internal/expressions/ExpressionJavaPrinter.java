@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
-import java.math.*;
 import java.util.Calendar;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -144,26 +143,26 @@ public class ExpressionJavaPrinter {
             printString("}");
         } else if (object.getClass() == ClassConstants.BIGDECIMAL) {
             printString("new java.math.BigDecimal(\"");
-            printString(((BigDecimal)object).toString());
+            printString(object.toString());
             printString("\")");
         } else if (object.getClass() == ClassConstants.BIGINTEGER) {
             printString("new java.math.BigInteger(\"");
-            printString(((BigInteger)object).toString());
+            printString(object.toString());
             printString("\")");
         } else {
-            printString((String)ConversionManager.getDefaultManager().convertObject(object, String.class));
+            printString(ConversionManager.getDefaultManager().convertObject(object, String.class));
         }
 
     }
 
     public void printByte(Byte aByte) {
-            printString("new Byte((byte)");
+            printString("Byte.valueOf((byte)");
             printString((aByte).toString());
             printString(")");
     }
 
     public void printCharacter(Character aCharacter) {
-            printString("new Character('");
+            printString("Character.valueOf('");
             printString((aCharacter).toString());
             printString("')");
     }

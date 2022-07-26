@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,11 +36,13 @@ public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {
     public UpdateAllQueryExpressionMathTest() {
     }
 
+    @Override
     public void reset() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     protected void setup() {
         m_session = getSession();
         beginTransaction();
@@ -48,14 +50,16 @@ public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {
         m_originalClaims = getClaims();
     }
 
+    @Override
     public void test() {
         ExpressionBuilder eb = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(org.eclipse.persistence.testing.models.insurance.Claim.class);
         updateQuery.setSelectionCriteria(eb.get("amount").greaterThan(1000));
-        updateQuery.addUpdate(eb.get("amount"), ExpressionMath.multiply(eb.get("amount"), new Double(1.10)));
+        updateQuery.addUpdate(eb.get("amount"), ExpressionMath.multiply(eb.get("amount"), 1.10));
         m_session.executeQuery(updateQuery);
     }
 
+    @Override
     protected void verify() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();// Ensure we read from the database
         m_updatedClaims = getClaims();
@@ -67,12 +71,12 @@ public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {
             Float original = (Float)m_originalClaims.get(id);
             Float updated = (Float)m_updatedClaims.get(id);
 
-            if (original.compareTo(new Float(1001)) < 0) {// Ensure it was not updated
+            if (original.compareTo(1001F) < 0) {// Ensure it was not updated
                 if (updated.compareTo(original) != 0) {
                     throw new TestErrorException("Claim amount was updated when it shouldn't have been");
                 }
             } else {// Ensure it was properly updated
-                if (updated.compareTo(new Float(original.floatValue() * 1.10)) != 0) {
+                if (updated.compareTo(original * 1.10f) != 0) {
                     throw new TestErrorException("Claim amount (" + original + ") was NOT properly updated. Value = " + updated);
                 }
             }
@@ -86,7 +90,7 @@ public class UpdateAllQueryExpressionMathTest extends AutoVerifyTestCase {
 
         while (e.hasMoreElements()) {
             Claim claim = (Claim)e.nextElement();
-            claimsToReturn.put(new Long(claim.getId()), new Float(claim.getAmount()));
+            claimsToReturn.put(claim.getId(), claim.getAmount());
         }
 
         return claimsToReturn;

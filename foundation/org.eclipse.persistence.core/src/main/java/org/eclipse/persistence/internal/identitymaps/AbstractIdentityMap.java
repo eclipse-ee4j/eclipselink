@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     /** Session that the map is on */
     protected AbstractSession session;
 
-    public AbstractIdentityMap(){
+    protected AbstractIdentityMap(){
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * <b>NOTE</b>: Subclasses may provide different behavior for maxSize.
      * @param size is the maximum size to be allocated for the receiver.
      */
-    public AbstractIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
+    protected AbstractIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
         this.maxSize = size;
         this.descriptor = descriptor;
         this.isIsolated = isolated;
@@ -282,7 +282,6 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     @Override
     public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
@@ -305,7 +304,6 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     @Override
     public Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
@@ -356,7 +354,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     /**
      * Returns the class which should be used as an identity map in a descriptor by default.
      */
-    public static Class getDefaultIdentityMapClass() {
+    public static Class<? extends IdentityMap> getDefaultIdentityMapClass() {
         return ClassConstants.SoftCacheWeakIdentityMap_Class;
     }
 
@@ -383,7 +381,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Recurse = true will include subclasses of myClass in the count.
      */
     @Override
-    public abstract int getSize(Class myClass, boolean recurse);
+    public abstract int getSize(Class<?> myClass, boolean recurse);
 
     /**
      * Get the wrapper object from the cache key associated with the given primary key,
@@ -487,7 +485,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Return the class that this is the map for.
      */
     @Override
-    public Class getDescriptorClass() {
+    public Class<?> getDescriptorClass() {
         if (descriptor == null) {
             return null;
         }

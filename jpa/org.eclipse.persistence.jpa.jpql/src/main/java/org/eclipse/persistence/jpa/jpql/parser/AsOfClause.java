@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,17 +21,17 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * An <code><b>AS OF</b></code> clause is part of a flashback query, which provides ways to view
+ * <p>An <code><b>AS OF</b></code> clause is part of a flashback query, which provides ways to view
  * past states of database objects, or to return database objects to a previous state, without using
  * traditional point-in-time recovery.
- * <p>
+ * </p><p>
  * Specify <code><b>AS OF</b></code> to retrieve the single version of the rows returned by the
  * query at a particular change number (SCN) or timestamp. If you specify SCN, then the expression
  * must evaluate to a number. If you specify <code><b>TIMESTAMP</b></code>, then the expression must
  * evaluate to a timestamp value. Oracle Database returns rows as they existed at the specified
  * system change number or time.
- *
- * <div><b>BNF:</b> <code>asof_clause ::= AS OF { SCN | TIMESTAMP } scalar_expression</code></div><p>
+ * </p>
+ * <div><b>BNF:</b> <code>asof_clause ::= AS OF { SCN | TIMESTAMP } scalar_expression</code></div>
  *
  * @version 2.5
  * @since 2.5
@@ -45,13 +45,13 @@ public final class AsOfClause extends AbstractExpression {
     private AbstractExpression expression;
 
     /**
-     * Determines whether a whitespace was found after either <code><b>SCN</b><code> or
+     * Determines whether a whitespace was found after either <code><b>SCN</b></code> or
      * <code><b>TIMESTAMP</b></code>.
      */
     private boolean hasSpaceAfterCategory;
 
     /**
-     * Determines whether a whitespace was found after <code><b>AS OF</b><code>.
+     * Determines whether a whitespace was found after <code><b>AS OF</b></code>.
      */
     private boolean hasSpaceAfterIdentifier;
 
@@ -81,33 +81,21 @@ public final class AsOfClause extends AbstractExpression {
         super(parent, AS_OF);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -137,9 +125,6 @@ public final class AsOfClause extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -193,9 +178,6 @@ public final class AsOfClause extends AbstractExpression {
         return expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(AsOfClauseBNF.ID);
@@ -249,9 +231,6 @@ public final class AsOfClause extends AbstractExpression {
         return timestampIdentifier != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -274,9 +253,6 @@ public final class AsOfClause extends AbstractExpression {
         expression = parse(wordParser, ScalarExpressionBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

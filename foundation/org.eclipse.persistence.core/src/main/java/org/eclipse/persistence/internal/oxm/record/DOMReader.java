@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,13 +29,11 @@ import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPoli
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
-import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.Locator2;
@@ -108,7 +106,6 @@ public class DOMReader extends XMLReaderAdapter {
      * attribute.  Using a stack ensures that the parent nodes are
      * processed top down.
      *
-     * @param element
      */
     protected void processParentNamespaces(Element element) throws SAXException {
         Node parent = element.getParentNode();
@@ -123,7 +120,7 @@ public class DOMReader extends XMLReaderAdapter {
             parent = parent.getParentNode();
         }
         // Pop off each node and call startPrefixMapping for each XMLNS attribute
-        for (Iterator stackIt = parentElements.iterator(); stackIt.hasNext(); ) {
+        for (Iterator<Node> stackIt = parentElements.iterator(); stackIt.hasNext(); ) {
             NamedNodeMap attrs = parentElements.remove(parentElements.size() - 1).getAttributes();
             if (attrs != null) {
                 for (int i=0, length = attrs.getLength(); i < length; i++) {
@@ -283,10 +280,10 @@ public class DOMReader extends XMLReaderAdapter {
         }
         while(nextChild != null) {
             if(nextChild.getNodeType() == Node.TEXT_NODE) {
-                char[] value = ((Text)nextChild).getNodeValue().toCharArray();
+                char[] value = nextChild.getNodeValue().toCharArray();
                 contentHandler.characters(value, 0, value.length);
             } else if(nextChild.getNodeType() == Node.COMMENT_NODE) {
-                char[] value = ((Comment)nextChild).getNodeValue().toCharArray();
+                char[] value = nextChild.getNodeValue().toCharArray();
                 if (lexicalHandler != null) {
                     lexicalHandler.comment(value, 0, value.length);
                 }

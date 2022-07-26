@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class XRDynamicPropertiesManager extends DynamicPropertiesManager {
 
     @Override
     public List<String> getPropertyNames() {
-        List<String> tmp = new ArrayList<String>();
+        List<String> tmp = new ArrayList<>();
         if (propertyNames != null) {
             for (String propertyName : propertyNames) {
                 tmp.add(propertyName);

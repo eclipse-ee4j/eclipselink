@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,13 +31,13 @@ public class ExceptionTestSaveSecurityManager extends ExceptionTest {
     private SecurityManager orgSecurityManager;
     private IntegrityChecker orgIntegrityChecker;
     private boolean orgDefaultUseDoPrivilegedValue;
-    private Class cls;
+    private Class<?> cls;
     private RelationalDescriptor descriptor;
 
     public ExceptionTestSaveSecurityManager() {
     }
 
-    public ExceptionTestSaveSecurityManager(String description, Class cls) {
+    public ExceptionTestSaveSecurityManager(String description, Class<?> cls) {
         super();
         if (cls != null) {
             StringBuilder sb = new StringBuilder();
@@ -51,7 +51,7 @@ public class ExceptionTestSaveSecurityManager extends ExceptionTest {
         this.cls = cls;
     }
 
-    protected Class getTestClass() {
+    protected Class<?> getTestClass() {
         return cls;
     }
 
@@ -59,6 +59,7 @@ public class ExceptionTestSaveSecurityManager extends ExceptionTest {
         return descriptor;
     }
 
+    @Override
     protected void setup() {
         orgIntegrityChecker = getSession().getIntegrityChecker();
         getSession().setIntegrityChecker(new IntegrityChecker()); //moved into setup
@@ -71,6 +72,7 @@ public class ExceptionTestSaveSecurityManager extends ExceptionTest {
         descriptor.setJavaClass(getTestClass());
     }
 
+    @Override
     public void reset() {
         getSession().setIntegrityChecker(orgIntegrityChecker); //security java.policy must allow full access
         System.setSecurityManager(orgSecurityManager);

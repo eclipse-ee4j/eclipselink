@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -13,15 +13,14 @@
 #  N/A
 
 echo '-[ EclipseLink Tests LRG ]-----------------------------------------------------------'
-. /etc/profile
 
 if [ ${CONTINUOUS_BUILD} = "true" ]; then
     echo '-[ EclipseLink SRG Tests ]-----------------------------------------------------------'
-    mvn verify
+    mvn -B -V verify -Pstaging
 else
     echo '-[ EclipseLink LRG Tests ]-----------------------------------------------------------'
     /opt/bin/mysql-start.sh
-    mvn verify -Pmysql,test-lrg
+    mvn -B -V verify -Pstaging,mysql,test-lrg
     /opt/bin/mysql-stop.sh
 fi
 

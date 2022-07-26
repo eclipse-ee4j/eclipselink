@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,6 +55,7 @@ public class ConcurrentRefreshOnUpdateTest extends AutoVerifyTestCase {
         this.session = session;
     }
 
+    @Override
     public void setup() {
         if (getSession().isDistributedSession()) {
             throw new TestWarningException("Test unavailable on Remote UnitOfWork because of timing issues");
@@ -63,6 +64,7 @@ public class ConcurrentRefreshOnUpdateTest extends AutoVerifyTestCase {
         getSession().getDescriptor(Employee.class).getEventManager().addListener(this.adaptor);
     }
 
+    @Override
     public void test() {
         ConcurrentRefreshOnUpdateTest.lock = (Employee)getSession().readObject(Employee.class);
         Object primaryKey = ConcurrentRefreshOnUpdateTest.lock.getId();
@@ -105,6 +107,7 @@ public class ConcurrentRefreshOnUpdateTest extends AutoVerifyTestCase {
 
     public Runnable runnable() {
         return new Runnable() {
+                @Override
                 public void run() {
                     if (writer) {
                         UnitOfWork uow = session.acquireUnitOfWork();
@@ -167,6 +170,7 @@ public class ConcurrentRefreshOnUpdateTest extends AutoVerifyTestCase {
             };
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         getSession().getDescriptor(Employee.class).getEventManager().removeListener(this.adaptor);

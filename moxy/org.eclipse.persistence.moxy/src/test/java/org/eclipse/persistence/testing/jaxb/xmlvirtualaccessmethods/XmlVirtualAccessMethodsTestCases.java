@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ import javax.xml.validation.Validator;
 
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.oxm.XMLTestCase;
 import org.w3c.dom.*;
@@ -52,6 +53,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "XML Virtual Access Methods: " + super.getName();
     }
@@ -61,7 +63,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/basic-eclipselink-oxm.xml");
 
         Map<String, Object> ctxProperties = new HashMap<String, Object>();
-        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        ctxProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
         /**
          * Employee extensions:
@@ -75,7 +77,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
          *      - forwards (LinkedList of PhoneNumber)
          */
 
-        ctx = JAXBContextFactory.createContext(new Class[] {Employee.class, PhoneNumber.class}, ctxProperties);
+        ctx = JAXBContextFactory.createContext(new Class<?>[] {Employee.class, PhoneNumber.class}, ctxProperties);
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 
@@ -111,7 +113,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/eclipselink-oxm.xml");
 
         Map<String, Object> ctxProperties = new HashMap<String, Object>();
-        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        ctxProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
         /**
          * Extensions:
@@ -128,7 +130,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
          *       - myStringArray
          */
 
-        ctx = JAXBContextFactory.createContext(new Class[] {ExtObjectRoot.class, ExtObjectA.class,
+        ctx = JAXBContextFactory.createContext(new Class<?>[] {ExtObjectRoot.class, ExtObjectA.class,
                 ExtObjectB.class, ExtObjectC.class}, ctxProperties);
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
@@ -190,9 +192,9 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/basic-eclipselink-oxm.xml");
 
         Map<String, Object> ctxProperties = new HashMap<String, Object>();
-        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        ctxProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
-        ctx = JAXBContextFactory.createContext(new Class[] {Employee.class, PhoneNumber.class}, ctxProperties);
+        ctx = JAXBContextFactory.createContext(new Class<?>[] {Employee.class, PhoneNumber.class}, ctxProperties);
 
         validateAgainstSchema(ctx, getControlObjectBasic());
     }
@@ -202,9 +204,9 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/eclipselink-oxm.xml");
 
         Map<String, Object> ctxProperties = new HashMap<String, Object>();
-        ctxProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        ctxProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
-        ctx = JAXBContextFactory.createContext(new Class[] {ExtObjectRoot.class, ExtObjectA.class,
+        ctx = JAXBContextFactory.createContext(new Class<?>[] {ExtObjectRoot.class, ExtObjectA.class,
                 ExtObjectB.class, ExtObjectC.class}, ctxProperties);
 
         validateAgainstSchema(ctx, getControlObjectComplete());
@@ -364,6 +366,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
     private class LogErrorHandler implements ErrorHandler {
         private int errorCount = 0;
 
+        @Override
         public void warning(SAXParseException exception) throws SAXException {
             errorCount++;
             if (DEBUG) {
@@ -373,6 +376,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             if (THROW_VALIDATION_ERRORS) throw exception;
         }
 
+        @Override
         public void error(SAXParseException exception) throws SAXException {
             errorCount++;
             if (DEBUG) {
@@ -382,6 +386,7 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
             if (THROW_VALIDATION_ERRORS) throw exception;
         }
 
+        @Override
         public void fatalError(SAXParseException exception) throws SAXException {
             errorCount++;
             if (DEBUG) {

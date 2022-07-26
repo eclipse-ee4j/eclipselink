@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,11 +49,13 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
         init();
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         getXMLComparer().setIgnoreOrder(true);
     }
 
+    @Override
     public void tearDown(){
         super.tearDown();
         getXMLComparer().setIgnoreOrder(false);
@@ -62,12 +64,13 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_NO_XSI_TYPE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = ListofObjects.class;
         classes[1] = Employee.class;
         setClasses(classes);
     }
 
+       @Override
        public  List<InputStream> getControlSchemaFiles(){
 
            InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/listofobjects.xsd");
@@ -77,22 +80,23 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
             return controlSchema;
         }
 
+    @Override
     protected Object getControlObject() {
         ListofObjects listofObjects = new ListofObjects();
 
         Vector<Integer> integers = new Vector<Integer>();
-        integers.add(new Integer("10"));
-        integers.add(new Integer("20"));
-        integers.add(new Integer("30"));
-        integers.add(new Integer("40"));
+        integers.add(Integer.valueOf("10"));
+        integers.add(Integer.valueOf("20"));
+        integers.add(Integer.valueOf("30"));
+        integers.add(Integer.valueOf("40"));
 
         listofObjects.setIntegerList(integers);
 
 
         TreeSet<Integer> integerSet = new TreeSet<Integer>();
-        integerSet.add(new Integer("20"));
-        integerSet.add(new Integer("40"));
-        integerSet.add(new Integer("60"));
+        integerSet.add(Integer.valueOf("20"));
+        integerSet.add(Integer.valueOf("40"));
+        integerSet.add(Integer.valueOf("60"));
         listofObjects.setIntegerSet(integerSet);
 
         Integer[] integerArray = new Integer[4];
@@ -118,28 +122,28 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
         listofObjects.setEmpList(empList);
 
         boolean[] booleans = new boolean[4];
-        booleans[0] = Boolean.TRUE.booleanValue();
-        booleans[1] = Boolean.TRUE.booleanValue();
-        booleans[2] = Boolean.FALSE.booleanValue();
-        booleans[3] = Boolean.FALSE.booleanValue();
+        booleans[0] = true;
+        booleans[1] = true;
+        booleans[2] = false;
+        booleans[3] = false;
         listofObjects.setBooleanArray(booleans);
 
         HashMap<String, Integer> stringIntegerMap = new HashMap<String, Integer>();
-        stringIntegerMap.put("string1", new Integer(10));
-        stringIntegerMap.put("string2", new Integer(20));
-        stringIntegerMap.put("string3", new Integer(30));
+        stringIntegerMap.put("string1", 10);
+        stringIntegerMap.put("string2", 20);
+        stringIntegerMap.put("string3", 30);
         listofObjects.setStringIntegerHashMap(stringIntegerMap);
 
         ConcurrentHashMap<String, Integer> stringIntegerConcurrentMap = new ConcurrentHashMap<String, Integer>();
-        stringIntegerConcurrentMap.put("string1", new Integer(10));
-        stringIntegerConcurrentMap.put("string2", new Integer(20));
-        stringIntegerConcurrentMap.put("string3", new Integer(30));
+        stringIntegerConcurrentMap.put("string1", 10);
+        stringIntegerConcurrentMap.put("string2", 20);
+        stringIntegerConcurrentMap.put("string3", 30);
         listofObjects.setStringIntegerConcurrentMap(stringIntegerConcurrentMap);
 
         LinkedList<Integer> integersLinkedList = new LinkedList<Integer>();
-        integersLinkedList.add(new Integer(5));
-        integersLinkedList.add(new Integer(15));
-        integersLinkedList.add(new Integer(25));
+        integersLinkedList.add(5);
+        integersLinkedList.add(15);
+        integersLinkedList.add(25);
         listofObjects.setIntegerLinkedList(integersLinkedList);
 
         Hashtable<String, Employee> stringEmployeeTable = new Hashtable<String, Employee>();
@@ -158,7 +162,7 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
         test.add("ccc");
         listofObjects.setStringMyList(test);
 
-        LinkedList stringQueue = new LinkedList<String>();
+        LinkedList<String> stringQueue = new LinkedList<String>();
         stringQueue.add("ddd");
         stringQueue.add("eee");
         listofObjects.setStringQueue(stringQueue);
@@ -169,6 +173,7 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
         return jaxbElement;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() {
         return ListofObjects.class;
     }
@@ -210,6 +215,7 @@ public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTe
 
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

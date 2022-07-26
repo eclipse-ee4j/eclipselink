@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,17 +15,18 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
-import junit.framework.*;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.cascadepersist.CascadePersistTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.cascadepersist.EntityX;
 import org.eclipse.persistence.testing.models.jpa.advanced.cascadepersist.EntityY;
 import org.eclipse.persistence.testing.models.jpa.advanced.cascadepersist.EntityZ;
+import org.junit.Assert;
 
 public class CascadePersistJUnitTestSuite extends JUnitTestCase {
 
@@ -66,7 +67,7 @@ public class CascadePersistJUnitTestSuite extends JUnitTestCase {
 
         String errorMsg = new String();
         if (!errorList.isEmpty()) {
-            errorMsg = ((Throwable)errorList.get(0)).getMessage();
+            errorMsg = errorList.get(0).getMessage();
         }
 
         Assert.assertTrue(errorList.size() + " tests failed out of 10 tests with exception " + errorMsg, errorList.size() == 0);

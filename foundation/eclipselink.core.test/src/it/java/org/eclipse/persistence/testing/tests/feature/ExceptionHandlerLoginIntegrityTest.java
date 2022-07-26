@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.models.employee.relational.*;
 import org.eclipse.persistence.mappings.*;
 
+import java.util.Map;
+
 /**
  * To test the functionality of ExceptionHandler.
  * ExceptionHandler can catch errors that occur on queries or during database access.
@@ -37,6 +39,7 @@ public class ExceptionHandlerLoginIntegrityTest extends org.eclipse.persistence.
         setDescription("To test if login IntegrityExceptions are passed to the ExceptionHandler");
     }
 
+    @Override
     public void test() {
         try {
             session = project.createDatabaseSession();
@@ -50,20 +53,22 @@ public class ExceptionHandlerLoginIntegrityTest extends org.eclipse.persistence.
         }
     }
 
+    @Override
     public void verify() throws Exception {
         if (caughtException != null) {
             throw new TestErrorException("Test to see if IntegrityExceptions caused at boot time are passed " + "to the exceptionHandler failed.\n " + "----- ExceptionHandlerTest3 -----\n" + caughtException.getMessage());
         }
     }
 
+    @Override
     public void setup() {
         login = getSession().getLogin();
         project = new EmployeeProject();
         project.setLogin(login);
-        java.util.Map descriptors = project.getDescriptors();
+        Map<Class<?>, ClassDescriptor> descriptors = project.getDescriptors();
 
         //java.util.Enumeration e =ht.elements();(Descriptor)e.nextElement();
-        ClassDescriptor descriptor = (ClassDescriptor)descriptors.get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        ClassDescriptor descriptor = descriptors.get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
 
         //add a non existent mapping so loggin will throw an integrity exception
         DirectToFieldMapping NonExistentFieldMapping = new DirectToFieldMapping();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.tests.history;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.history.*;
@@ -40,12 +41,13 @@ public class IsolatedSessionHistoricalTest extends AutoVerifyTestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
             descriptors.addElement(iterator.next());
         }
         this.server.addDescriptors(descriptors);
     }
 
+    @Override
     public void reset() {
         try {
             this.server.logout();
@@ -56,7 +58,7 @@ public class IsolatedSessionHistoricalTest extends AutoVerifyTestCase {
             String schemaName =
                 ((AbstractSession)getSession()).getAccessor().getConnection().getMetaData().getUserName();
             String histName =
-                (String)getSession().getDescriptor(Employee.class).getHistoryPolicy().getHistoryTableNames().get(0);
+                    getSession().getDescriptor(Employee.class).getHistoryPolicy().getHistoryTableNames().get(0);
             getSession().executeNonSelectingCall(new SQLCall("CALL DBMS_RLS.DROP_POLICY ('" + schemaName + "', '" +
                                                              histName + "', 'testing_policy')"));
             getSession().executeNonSelectingCall(new SQLCall("DROP CONTEXT testing_ctx"));
@@ -68,6 +70,7 @@ public class IsolatedSessionHistoricalTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("This test supports Oracle DB only.");
@@ -79,7 +82,7 @@ public class IsolatedSessionHistoricalTest extends AutoVerifyTestCase {
             String schemaName =
                 ((AbstractSession)getSession()).getAccessor().getConnection().getMetaData().getUserName();
             String histName =
-                (String)getSession().getDescriptor(Employee.class).getHistoryPolicy().getHistoryTableNames().get(0);
+                    getSession().getDescriptor(Employee.class).getHistoryPolicy().getHistoryTableNames().get(0);
             getSession().executeNonSelectingCall(new SQLCall("CREATE OR REPLACE PACKAGE " + schemaName +
                                                              ".init AS PROCEDURE set_emp_id(e_id NUMBER, identifier NUMBER); END init;"));
             getSession().executeNonSelectingCall(new SQLCall("CREATE OR REPLACE PACKAGE BODY " + schemaName +
@@ -114,6 +117,7 @@ public class IsolatedSessionHistoricalTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         Session client1 = this.server.acquireClientSession();
         this.eventAdaptor.setSession_Id(1);
@@ -135,6 +139,7 @@ public class IsolatedSessionHistoricalTest extends AutoVerifyTestCase {
         client1.release();
     }
 
+    @Override
     public void verify() {
     }
 

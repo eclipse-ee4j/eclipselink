@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,7 @@
 
 // Contributors:
 //     James Sutherland - initial API and implementation
-package org.eclipse.persistence.testing.framework.server;
+package org.eclipse.persistence.testing.framework.jpa.server;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +20,7 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
+import org.eclipse.persistence.testing.framework.jpa.server.ServerPlatform;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -41,6 +42,7 @@ public class SpringPlatform implements ServerPlatform {
      * otherwise weaving will not work.
      * TODO: Spring needs to fix this or something.
      */
+    @Override
     public void initialize() {
         getContext("default");
         getContext("fieldaccess");
@@ -49,6 +51,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Return if the Spring transaction is active.
      */
+    @Override
     public boolean isTransactionActive() {
         return (this.status != null);
     }
@@ -56,6 +59,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Return if the Spring transaction is roll back only.
      */
+    @Override
     public boolean getRollbackOnly() {
         return (this.status != null) && (this.status.isRollbackOnly());
     }
@@ -63,6 +67,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Start a new Spring transaction.
      */
+    @Override
     public void beginTransaction() {
         if (this.status != null) {
             rollbackTransaction();
@@ -74,6 +79,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Commit the existing Spring transaction.
      */
+    @Override
     public void commitTransaction() {
         try {
             getTransactionManager().commit(this.status);
@@ -85,6 +91,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Roll back the existing Spring transaction.
      */
+    @Override
     public void rollbackTransaction() {
         try {
             getTransactionManager().rollback(this.status);
@@ -100,6 +107,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Mark the existing Spring transaction for rollback.
      */
+    @Override
     public void setTransactionForRollback() {
         if (this.status != null) {
             this.status.setRollbackOnly();
@@ -107,15 +115,9 @@ public class SpringPlatform implements ServerPlatform {
     }
 
     /**
-     * Is the platform Oracle?
-     */
-    public boolean isOc4j() {
-        return false;
-    }
-
-    /**
      * Is the platform Weblogic?
      */
+    @Override
     public boolean isWeblogic() {
         return false;
     }
@@ -123,6 +125,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Is the platform JBoss?
      */
+    @Override
     public boolean isJBoss() {
         return false;
     }
@@ -130,6 +133,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Is the platform clustered?
      */
+    @Override
     public boolean isClustered() {
         return false;
     }
@@ -137,6 +141,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Is the platform Spring?
      */
+    @Override
     public boolean isSpring() {
         return true;
     }
@@ -144,12 +149,14 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Managed entity managers do not need to be closed.
      */
+    @Override
     public void closeEntityManager(EntityManager entityManager) {
     }
 
     /**
      * Return the managed EntityManager for the persistence unit.
      */
+    @Override
     public EntityManager getEntityManager(String persistenceUnit) {
         this.persistenceUnit = persistenceUnit;
         return (EntityManager)getContext().getBean("entityManager");
@@ -160,6 +167,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Return the managed EntityManagerFactory for the persistence unit.
      */
+    @Override
     public EntityManagerFactory getEntityManagerFactory(String persistenceUnit) {
         this.persistenceUnit = persistenceUnit;
         return (EntityManagerFactory)getContext().getBean("entityManagerFactory");
@@ -187,6 +195,7 @@ public class SpringPlatform implements ServerPlatform {
     /**
      * Join the transaction if required
      */
+    @Override
     public void joinTransaction(EntityManager em) {
         //bug 405308:a shared EM will throw an exception if joinTransaction is called on it.
     }

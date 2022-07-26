@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
- * Copyright (c) 2012, 2019 SAP. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2022 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,9 +32,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
@@ -45,7 +46,6 @@ import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -134,8 +134,8 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        final Hashtable<Class, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        final Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT", false)); // TODO
                                                                                          // boolean
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE", false));
@@ -204,7 +204,7 @@ public final class HANAPlatform extends DatabasePlatform {
         this.addOperator(HANAPlatform.createLocateOperator());
         this.addOperator(HANAPlatform.createLocate2Operator());
         this.addOperator(HANAPlatform.createVarianceOperator());
-        this.addNonBindingOperator(HANAPlatform.createNullValueOperator());
+        this.addOperator(HANAPlatform.createNullValueOperator());
     }
 
     private static ExpressionOperator createConcatExpressionOperator() {
@@ -262,9 +262,9 @@ public final class HANAPlatform extends DatabasePlatform {
     private static ExpressionOperator createLogOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Log);
-        Vector v = NonSynchronizedVector.newInstance(2);
-        v.addElement("LOG(10,");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(2);
+        v.add("LOG(10,");
+        v.add(")");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(FunctionExpression.class);
@@ -305,11 +305,11 @@ public final class HANAPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.NullIf);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(4);
-        v.addElement(" (CASE WHEN ");
-        v.addElement(" = ");
-        v.addElement(" THEN NULL ELSE ");
-        v.addElement(" END) ");
+        List<String> v = new ArrayList<>(4);
+        v.add(" (CASE WHEN ");
+        v.add(" = ");
+        v.add(" THEN NULL ELSE ");
+        v.add(" END) ");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         int[] indices = { 0, 1, 0 };
@@ -319,7 +319,9 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     private static ExpressionOperator createNullValueOperator() {
-        return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "IFNULL");
+        ExpressionOperator exOperator = ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "IFNULL");
+        exOperator.setIsBindingSupported(false);
+        return exOperator;
     }
 
     @Override
@@ -364,11 +366,6 @@ public final class HANAPlatform extends DatabasePlatform {
     @Override
     public boolean shouldOptimizeDataConversion() {
         return true; // TODO is this needed? (seems to default to true)
-    }
-
-    private void addNonBindingOperator(ExpressionOperator operator) {
-        operator.setIsBindingSupported(false);
-        addOperator(operator);
     }
 
     @Override

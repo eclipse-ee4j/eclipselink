@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -336,7 +336,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         portQName = new QName(MTOM_SERVICE_NAMESPACE, MTOM_PORT);
         testService = Service.create(serviceQName);
         testService.addPort(portQName, SOAP11HTTP_BINDING, ENDPOINT_ADDRESS);
-        dispatch = testService.createDispatch(portQName, SOAPMessage.class, MESSAGE, new WebServiceFeature[]{new MTOMFeature(100)});
+        dispatch = testService.createDispatch(portQName, SOAPMessage.class, MESSAGE, new MTOMFeature(100));
     }
 
     @AfterClass
@@ -349,6 +349,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         }
     }
 
+    @Override
     @PreDestroy
     public void destroy() {
         super.destroy();
@@ -474,7 +475,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
             MessageFactory factory = ((SOAPBinding)dispatch.getBinding()).getMessageFactory();
             DataHandler dataHandler = new DataHandler(new ByteArrayDataSource(LOREM_IPSUM.getBytes(), "application/octet-stream"));
             for (int i = 1; i <= NUM_CREATE; i ++) {
-                dispatch = testService.createDispatch(portQName, SOAPMessage.class, MESSAGE, new WebServiceFeature[]{new MTOMFeature(100)});
+                dispatch = testService.createDispatch(portQName, SOAPMessage.class, MESSAGE, new MTOMFeature(100));
                 SOAPMessage request = factory.createMessage();
                 SOAPPart part = request.getSOAPPart();
                 DOMSource domSource = new DOMSource(getDocumentBuilder().parse(new InputSource(new StringReader(SOAP_CREATE_REQUEST_ID + i + SOAP_CREATE_REQUEST_END))));
@@ -499,7 +500,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
             part.setContent(domSource);
             SOAPMessage response = null;
             response = dispatch.invoke(request);
-            AttachmentPart aPart = (AttachmentPart)response.getAttachments().next();
+            AttachmentPart aPart = response.getAttachments().next();
             DataHandler dh = aPart.getDataHandler();
             InputStream inputStream = dh.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

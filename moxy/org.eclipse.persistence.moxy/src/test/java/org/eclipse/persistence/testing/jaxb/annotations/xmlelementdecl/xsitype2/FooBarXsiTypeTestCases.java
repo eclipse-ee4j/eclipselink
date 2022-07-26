@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ public class FooBarXsiTypeTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[] {Foo.class, Bar.class, ObjectFactory.class});
+        setClasses(new Class<?>[] {Foo.class, Bar.class, ObjectFactory.class});
     }
 
     @Override
@@ -52,7 +52,7 @@ public class FooBarXsiTypeTestCases extends JAXBWithJSONTestCases {
     }
 
     public void testRi() throws Exception{
-        JAXBContext riContext = JAXBContext.newInstance(new Class[]{Foo.class, Bar.class, ObjectFactory.class});
+        JAXBContext riContext = JAXBContext.newInstance(Foo.class, Bar.class, ObjectFactory.class);
         InputStream is = getClass().getClassLoader().getResourceAsStream(XML_RESOURCE);
         Object unmarshalled = riContext.createUnmarshaller().unmarshal(is);
         System.out.println(unmarshalled.getClass());
@@ -63,6 +63,7 @@ public class FooBarXsiTypeTestCases extends JAXBWithJSONTestCases {
         m.marshal(getControlObject(), System.out);
     }
 
+    @Override
     public void testRoundTrip(){
 
     }

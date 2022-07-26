@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         Type stringType = SDOConstants.SDO_STRING;
@@ -116,7 +117,7 @@ public class SDODataObjectOpenContentBug6011530TestCases extends SDOTestCase {
 
     public void testSetDefineOpenContentManySimpleProperty() throws Exception {
         List value = new ArrayList();
-        value.add(new Integer(4));
+        value.add(4);
         rootDataObject.set("addressOpenContent", value);
         Property openProp = rootDataObject.getInstanceProperty("addressOpenContent");
         assertNotNull(openProp);

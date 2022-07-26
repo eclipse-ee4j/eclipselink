@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.server.*;
 
 /**
- * This test verifies if a transaction is committed while using read & write
+ * This test verifies if a transaction is committed while using read &amp; write
  * connections in same client session with cursored stream used in read.
  */
 public class CursoredStreamReadWriteClientSessionTest extends TestCase {
@@ -35,20 +35,22 @@ public class CursoredStreamReadWriteClientSessionTest extends TestCase {
      * CursoredStreamReadWriteClientSessionTest constructor.
      */
     public CursoredStreamReadWriteClientSessionTest() {
-        setDescription("Verifies if a transaction is committed while using read & write connections in same client session with cursored stream used in read.");
+        setDescription("Verifies if a transaction is committed while using read &amp; write connections in same client session with cursored stream used in read.");
     }
 
+    @Override
     public void reset() {
         this.clientSession.release();
         this.serverSession.logout();
     }
 
+    @Override
     public void setup() {
         org.eclipse.persistence.sessions.Project proj =
             new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
         proj.setDatasourceLogin(getSession().getDatasourceLogin().clone());
 
-        // Set initial & min size of connection in pool to ZERO.
+        // Set initial &amp; min size of connection in pool to ZERO.
         this.serverSession = proj.createServerSession(0, 0, 1);
         this.serverSession.setSessionLog(getSession().getSessionLog());
         this.serverSession.login();
@@ -59,6 +61,7 @@ public class CursoredStreamReadWriteClientSessionTest extends TestCase {
         this.addressId = emp.getAddress().getId().intValue();
     }
 
+    @Override
     public void test() {
         clientSession.beginTransaction();
         try {
@@ -100,6 +103,7 @@ public class CursoredStreamReadWriteClientSessionTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (caughtException == null) {
             return;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,9 +29,9 @@ public class TypeConversionConverterDataClassIsArrayTest extends ProjectClassGen
 
     protected ClassDescriptor descriptor;
     protected DirectToFieldMapping mapping;
-    protected Class classType;
+    protected Class<?> classType;
 
-    public TypeConversionConverterDataClassIsArrayTest(Class classType) {
+    public TypeConversionConverterDataClassIsArrayTest(Class<?> classType) {
         super(new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject());
         setDescription("Test addTypeConversionConverterLines method -> setDataClassName() generates legal array code");
         setName(getName() + "[" + classType.getName() + "]");
@@ -44,6 +44,7 @@ public class TypeConversionConverterDataClassIsArrayTest extends ProjectClassGen
         this.testString = "someDataMappingConverter.setDataClass(" + expectedName + "[].class);";
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         descriptor = project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
@@ -59,6 +60,7 @@ public class TypeConversionConverterDataClassIsArrayTest extends ProjectClassGen
         descriptor.addMapping(mapping);
     }
 
+    @Override
     public void reset() {
         if (descriptor != null) {
             descriptor.getMappings().remove(mapping);

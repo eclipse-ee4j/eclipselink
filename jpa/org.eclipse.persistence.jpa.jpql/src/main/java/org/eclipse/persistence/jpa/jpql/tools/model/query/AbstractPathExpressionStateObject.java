@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -127,9 +127,6 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
         setPath(path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
 
@@ -142,27 +139,17 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    @SuppressWarnings("unchecked")
-    public String addItem(String item) {
+    public <S extends String> S addItem(S item) {
         getChangeSupport().addItem(this, paths, PATHS_LIST, item);
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addItems(List<? extends String> items) {
         getChangeSupport().addItems(this, paths, PATHS_LIST, items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addListChangeListener(String listName, IListChangeListener<String> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
@@ -225,21 +212,15 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
             }
         }
 
-        ListChangeEvent<String> event = new ListChangeEvent<String>(this, paths, EventType.CHANGED, PATHS_LIST, paths, startIndex, itemsSize());
+        ListChangeEvent<String> event = new ListChangeEvent<>(this, paths, EventType.CHANGED, PATHS_LIST, paths, startIndex, itemsSize());
         getChangeSupport().fireListChangeEvent(event);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canMoveDown(String item) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canMoveUp(String item) {
         return false;
@@ -257,9 +238,6 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
         typeDeclaration = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractPathExpression getExpression() {
         return (AbstractPathExpression) super.getExpression();
@@ -279,9 +257,6 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
         return identificationVariable;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getItem(int index) {
         return paths.get(index);
@@ -290,7 +265,6 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * Returns
      *
-     * @return
      */
     public IManagedType getManagedType() {
         if (managedType == null) {
@@ -302,7 +276,6 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * Returns
      *
-     * @return
      */
     public IMapping getMapping() {
         resolveMappings();
@@ -365,27 +338,18 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
         return getIdentificationVariable() != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasItems() {
         return !paths.isEmpty();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
-        paths    = new ArrayList<String>();
-        mappings = new ArrayList<IMapping>();
+        paths    = new ArrayList<>();
+        mappings = new ArrayList<>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -419,33 +383,21 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<String> items() {
-        return new SnapshotCloneListIterable<String>(paths);
+        return new SnapshotCloneListIterable<>(paths);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int itemsSize() {
         return paths.size();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String moveDown(String item) {
         throw new RuntimeException(getClass().getName() + " does not support moveDown(String).");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String moveUp(String item) {
         throw new RuntimeException(getClass().getName() + " does not support moveUp(String).");
@@ -464,25 +416,16 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
         removeItem(getItem(index));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeItem(String item) {
         getChangeSupport().removeItem(this, paths, PATHS_LIST, item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeItems(Collection<String> items) {
         getChangeSupport().removeItems(this, this.paths, PATHS_LIST, items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeListChangeListener(String listName, IListChangeListener<String> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);
@@ -491,7 +434,6 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
     /**
      * Resolves
      *
-     * @return
      */
     protected abstract IManagedType resolveManagedType();
 
@@ -595,7 +537,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
      */
     public void setPath(CharSequence path) {
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
 
         for (StringTokenizer tokenizer = new StringTokenizer(path.toString(), ".", true); tokenizer.hasMoreTokens(); ) {
             String token = tokenizer.nextToken();
@@ -659,9 +601,6 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
         setPaths(Arrays.asList(paths));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -139,7 +139,6 @@ public class XMLUnmarshaller extends org.eclipse.persistence.internal.oxm.XMLUnm
      * Set the MediaType for this xmlUnmarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
      * @since 2.4
-     * @param mediaType
      */
     @Override
     public void setMediaType(MediaType mediaType) {

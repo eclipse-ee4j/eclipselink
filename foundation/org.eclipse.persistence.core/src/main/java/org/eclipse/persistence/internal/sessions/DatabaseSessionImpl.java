@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.PropertiesUtils;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -327,8 +328,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * INTERNAL:
      * If sequencing is connected then initializes sequences referenced by the passed descriptors,
      * otherwise connects sequencing.
+     * @param descriptors class descriptors
      */
-    public void addDescriptorsToSequencing(Collection descriptors) {
+    public void addDescriptorsToSequencing(Collection<ClassDescriptor> descriptors) {
         getSequencingHome().onAddDescriptors(descriptors);
     }
 
@@ -573,7 +575,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * The platform is used for database specific behavior.
      */
     @Override
-    public Platform getPlatform(Class domainClass) {
+    public Platform getPlatform(Class<?> domainClass) {
         // PERF: Cache the platform.
         if (platform == null) {
             if(isLoggedIn) {
@@ -862,6 +864,13 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * is connected to.
      */
     protected void postConnectDatasource(){
+        // Initialize the Platform properties now that the datasource is connected and the Platform should be initialized
+        if((getDatasourcePlatform() instanceof DatabasePlatform)) {
+            final Platform platform = getDatasourcePlatform();
+            String dbProperties = (String) getProperties().get(PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES);
+            PropertiesUtils.set(platform, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, dbProperties);
+        }
+
         if (!hasBroker()) {
             initializeDescriptors();
 
@@ -878,7 +887,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         // in a persitence.xml or passed into the create EMF call).
         if (getProperties().containsKey(PersistenceUnitProperties.MULTITENANT_SHARED_EMF)) {
             String value = (String) getProperties().get(PersistenceUnitProperties.MULTITENANT_SHARED_EMF);
-            if (!Boolean.valueOf(value)) {
+            if (!Boolean.parseBoolean(value)) {
                 for (String property : getMultitenantContextProperties()) {
                     if (! getProperties().containsKey(property)) {
                         throw ValidationException.multitenantContextPropertyForNonSharedEMFNotSpecified(property);
@@ -1084,7 +1093,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 // database error.
                 try {
                     // Give the failover time to recover.
-                    Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                    Thread.sleep(getLogin().getDelayBetweenConnectionAttempts());
                     Object[] args = new Object[1];
                     args[0] = ex;
                     log(SessionLog.INFO, SessionLog.QUERY, "communication_failure_attempting_query_retry", args, null);

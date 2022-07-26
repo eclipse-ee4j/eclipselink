@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -40,7 +40,7 @@ import org.junit.Test;
 public class TestUnidirectionalOneToMany extends JPA1Base {
 
     private static final int EMP_ID_VALUE = 4;
-    private static final Integer EMP_ID = new Integer(EMP_ID_VALUE);
+    private static final Integer EMP_ID = EMP_ID_VALUE;
     private static final Set<Pair> SEED_SET = new HashSet<Pair>();
     static {
         SEED_SET.add(new Pair(EMP_ID_VALUE, 1));
@@ -160,11 +160,11 @@ public class TestUnidirectionalOneToMany extends JPA1Base {
             env.beginTransaction(em);
             Employee emp = em.find(Employee.class, EMP_ID);
             verify(emp != null, "employee not found");
-            Set reviews = emp.getReviews();
+            Set<Review> reviews = emp.getReviews();
             verify(reviews != null, "reviews are null");
             verify(reviews.size() == 3, "not exactly 3 reviews but " + reviews.size());
-            Iterator iter = reviews.iterator();
-            Review review = (Review) iter.next();
+            Iterator<Review> iter = reviews.iterator();
+            Review review = iter.next();
             int removedId = review.getId();
             // there are no managed relationships -> we have to remove the reviews on both sides
             em.remove(review);
@@ -179,7 +179,7 @@ public class TestUnidirectionalOneToMany extends JPA1Base {
             emp = em.find(Employee.class, EMP_ID);
             reviews = emp.getReviews();
             verify(reviews.size() == 2, "not exactly 2 reviews but " + reviews.size());
-            Object object = em.find(Review.class, new Integer(removedId));
+            Object object = em.find(Review.class, removedId);
             verify(object == null, "review found");
             env.rollbackTransactionAndClear(em);
         } finally {
@@ -224,8 +224,8 @@ public class TestUnidirectionalOneToMany extends JPA1Base {
             Employee emp = em.find(Employee.class, EMP_ID);
             verify(emp != null, "employee not found");
             Set<Review> reviews = emp.getReviews();
-            Iterator iter = reviews.iterator();
-            Review review = (Review) iter.next();
+            Iterator<Review> iter = reviews.iterator();
+            Review review = iter.next();
             int removedId = review.getId();
             // there are no managed relationships -> we have to remove the reviews on both sides
             em.remove(review);
@@ -273,7 +273,7 @@ public class TestUnidirectionalOneToMany extends JPA1Base {
             expected.add(new Pair(newId, 3));
             checkJoinTable(expected);
             env.beginTransaction(em);
-            emp = em.find(Employee.class, Integer.valueOf(newId));
+            emp = em.find(Employee.class, newId);
             reviews = emp.getReviews();
             verify(reviews.size() == 3, "not exactly 3 reviews but " + reviews.size());
             env.rollbackTransactionAndClear(em);

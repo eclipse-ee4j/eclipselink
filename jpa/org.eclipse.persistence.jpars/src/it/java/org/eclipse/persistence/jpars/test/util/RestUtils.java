@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,12 +17,11 @@
 package org.eclipse.persistence.jpars.test.util;
 
 import jakarta.ws.rs.client.Client;
-import org.eclipse.persistence.jpa.rs.MatrixParameters;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
-import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
+import org.eclipse.persistence.jpa.rs.util.list.PageableCollection;
 import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 
@@ -40,14 +39,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.fail;
 
@@ -58,7 +56,6 @@ import static org.junit.Assert.fail;
  *          Dmitry Kornilov - JAXRS 2.x, Jersey 2.x
  */
 public class RestUtils {
-    public static final String JPA_RS_VERSION_STRING = "jpars.version.string";
 
     private static final String APPLICATION_LOCATION = "/eclipselink.jpars.test/persistence/";
     private static final String SERVER_URI_BASE = "server.uri.base";
@@ -67,7 +64,6 @@ public class RestUtils {
     private static final String XML_REST_MESSAGE_FOLDER = "org/eclipse/persistence/jpars/test/restmessage/xml/";
     private static final String IMAGE_FOLDER = "org/eclipse/persistence/jpars/test/image/";
 
-    private static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars.test.server");
     private static final Client client = ClientBuilder.newClient();
 
     /**
@@ -101,7 +97,7 @@ public class RestUtils {
      * @return string containing XML or JSON representation of given object
      */
     public static String marshal(PersistenceContext context, Object object, MediaType mediaType)
-            throws JAXBException, UnsupportedEncodingException {
+            throws JAXBException {
         return marshal(context, object, mediaType, true);
     }
 
@@ -116,10 +112,10 @@ public class RestUtils {
      * @return string containing XML or JSON representation of given object
      */
     public static String marshal(PersistenceContext context, Object object, MediaType mediaType, boolean sendRelationships)
-            throws JAXBException, UnsupportedEncodingException {
+            throws JAXBException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         context.marshall(object, mediaType, os, sendRelationships);
-        return os.toString("UTF-8");
+        return os.toString(StandardCharsets.UTF_8);
     }
 
     /**
@@ -197,9 +193,9 @@ public class RestUtils {
      * @param tenantId tenantId or null if no tenant
      * @return XML or JSON representation of retrieved object
      */
-    public static String restRead(PersistenceContext context,
+    public static <T> String restRead(PersistenceContext context,
                                   Object id,
-                                  Class resultClass,
+                                  Class<T> resultClass,
                                   MediaType outputMediaType,
                                   Map<String, String> tenantId) throws RestCallFailedException, URISyntaxException {
         final String uri = new UriBuilder(context).addTenantInfo(tenantId).addEntity(resultClass.getSimpleName(), id).toString();
@@ -216,7 +212,7 @@ public class RestUtils {
      * @param outputMediaType media type to use (XML or JSON)
      * @return XML or JSON representation of retrieved object
      */
-    public static String restRead(PersistenceContext context, Object id, Class resultClass, MediaType outputMediaType)
+    public static <T> String restRead(PersistenceContext context, Object id, Class<T> resultClass, MediaType outputMediaType)
             throws RestCallFailedException, URISyntaxException {
         return restRead(context, id, resultClass, outputMediaType, null);
     }
@@ -229,7 +225,7 @@ public class RestUtils {
      * @param resultClass type of the object to retrieve
      * @return XML or JSON representation of retrieved object
      */
-    public static String restRead(PersistenceContext context, Object id, Class resultClass)
+    public static <T> String restRead(PersistenceContext context, Object id, Class<T> resultClass)
             throws RestCallFailedException, URISyntaxException {
         return restRead(context, id, resultClass, MediaType.APPLICATION_JSON_TYPE);
     }
@@ -242,7 +238,6 @@ public class RestUtils {
      * @param resultClass type of the object to retrieve
      * @return retrieved object
      */
-    @SuppressWarnings("unchecked")
     public static <T> T restReadByHref(PersistenceContext context, String href, Class<T> resultClass)
             throws RestCallFailedException, JAXBException {
         final Response response = doGet(context, href, MediaType.APPLICATION_JSON_TYPE);
@@ -282,14 +277,13 @@ public class RestUtils {
      * @param sendLinks if true links will be marshalled
      * @return updated object
      */
-    @SuppressWarnings("unchecked")
     public static <T> T restUpdate(PersistenceContext context,
                                    Object object,
                                    Class<T> resultClass,
                                    Map<String, String> tenantId,
                                    MediaType mediaType,
                                    boolean sendLinks)
-            throws RestCallFailedException, URISyntaxException, JAXBException, UnsupportedEncodingException {
+            throws RestCallFailedException, URISyntaxException, JAXBException {
         String marshalledObj = marshal(context, object, mediaType, sendLinks);
         String uri = new UriBuilder(context).addTenantInfo(tenantId).addEntity(resultClass.getSimpleName()).toString();
         Response response = doPost(context, uri, Entity.entity(marshalledObj, mediaType), mediaType);
@@ -305,7 +299,7 @@ public class RestUtils {
      * @return updated object
      */
     public static <T> T restUpdate(PersistenceContext context, Object object, Class<T> resultClass)
-            throws RestCallFailedException, URISyntaxException, JAXBException, UnsupportedEncodingException {
+            throws RestCallFailedException, URISyntaxException, JAXBException {
         return restUpdate(context, object, resultClass, null, MediaType.APPLICATION_JSON_TYPE, true);
     }
 
@@ -319,7 +313,7 @@ public class RestUtils {
      * @return updated object
      */
     public static <T> T restUpdate(PersistenceContext context, Object object, Class<T> resultClass, boolean sendLinks)
-            throws RestCallFailedException, URISyntaxException, JAXBException, UnsupportedEncodingException {
+            throws RestCallFailedException, URISyntaxException, JAXBException {
         return restUpdate(context, object, resultClass, null, MediaType.APPLICATION_JSON_TYPE, sendLinks);
     }
 
@@ -333,9 +327,9 @@ public class RestUtils {
      * @param mediaType media type to use (XML or JSON)
      * @return updated object in XMK or JSON depending on passed media type
      */
-    public static String restUpdateStr(PersistenceContext context,
+    public static <T> String restUpdateStr(PersistenceContext context,
                                        String message,
-                                       Class resultClass,
+                                       Class<T> resultClass,
                                        Map<String, String> tenantId,
                                        MediaType mediaType) throws RestCallFailedException, URISyntaxException {
         final String uri = new UriBuilder(context).addTenantInfo(tenantId).addEntity(resultClass.getSimpleName()).toString();
@@ -355,13 +349,12 @@ public class RestUtils {
      *                  the actual objects in the relationships
      * @return created object
      */
-    @SuppressWarnings("unchecked")
     public static <T> T restCreate(PersistenceContext context,
                                    Object object,
                                    Class<T> resultClass,
                                    Map<String, String> tenantId,
                                    MediaType mediaType, boolean sendLinks)
-            throws RestCallFailedException, URISyntaxException, JAXBException, UnsupportedEncodingException {
+            throws RestCallFailedException, URISyntaxException, JAXBException {
         final String marshalledObj = marshal(context, object, mediaType, sendLinks);
         final String uri = new UriBuilder(context).addTenantInfo(tenantId).addEntity(resultClass.getSimpleName()).toString();
         final Response response = doPut(context, uri, Entity.entity(marshalledObj, mediaType), mediaType);
@@ -381,7 +374,7 @@ public class RestUtils {
                                    Object object,
                                    Class<T> resultClass,
                                    MediaType mediaType)
-            throws RestCallFailedException, URISyntaxException, JAXBException, UnsupportedEncodingException {
+            throws RestCallFailedException, URISyntaxException, JAXBException {
         return restCreate(context, object, resultClass, null, mediaType, false);
     }
 
@@ -394,7 +387,7 @@ public class RestUtils {
      * @return created object
      */
     public static <T> T restCreate(PersistenceContext context, Object object, Class<T> resultClass)
-            throws RestCallFailedException, URISyntaxException, JAXBException, UnsupportedEncodingException {
+            throws RestCallFailedException, URISyntaxException, JAXBException {
         return restCreate(context, object, resultClass, MediaType.APPLICATION_JSON_TYPE);
     }
 
@@ -407,7 +400,6 @@ public class RestUtils {
      * @param mediaType media type to use (XML or JSON)
      * @return created object
      */
-    @SuppressWarnings("unchecked")
     public static <T> T restCreateStr(PersistenceContext context,
                                       String msg,
                                       Class<T> resultClass,
@@ -425,9 +417,9 @@ public class RestUtils {
      * @param resultClass the result object type
      * @param mediaType media type to use (XML or JSON)
      */
-    public static void restCreateWithSequence(PersistenceContext context,
+    public static <T> void restCreateWithSequence(PersistenceContext context,
                                               String msg,
-                                              Class resultClass,
+                                              Class<T> resultClass,
                                               MediaType mediaType) throws URISyntaxException {
         final String uri = new UriBuilder(context).addEntity(resultClass.getSimpleName()).toString();
         doPut(context, uri, Entity.entity(msg, mediaType), mediaType);
@@ -442,9 +434,9 @@ public class RestUtils {
      * @param tenantId the tenant id
      * @param mediaType media type to use (XML or JSON)
      */
-    public static void restDelete(PersistenceContext context,
+    public static <T> void restDelete(PersistenceContext context,
                                   Object id,
-                                  Class resultClass,
+                                  Class<T> resultClass,
                                   Map<String, String> tenantId,
                                   MediaType mediaType) throws RestCallFailedException, URISyntaxException {
         final String uri = new UriBuilder(context).addTenantInfo(tenantId).addEntity(resultClass.getSimpleName(), id).toString();
@@ -459,9 +451,9 @@ public class RestUtils {
      * @param resultClass the result object type
      * @param mediaType media type to use (XML or JSON)
      */
-    public static void restDelete(PersistenceContext context,
+    public static <T> void restDelete(PersistenceContext context,
                                   Object id,
-                                  Class resultClass,
+                                  Class<T> resultClass,
                                   MediaType mediaType) throws RestCallFailedException, URISyntaxException {
         restDelete(context, id, resultClass, null, mediaType);
     }
@@ -473,7 +465,7 @@ public class RestUtils {
      * @param id ID of object to delete
      * @param resultClass the result object type
      */
-    public static void restDelete(PersistenceContext context, Object id, Class resultClass)
+    public static <T> void restDelete(PersistenceContext context, Object id, Class<T> resultClass)
             throws RestCallFailedException, URISyntaxException {
         restDelete(context, id, resultClass, null, MediaType.APPLICATION_JSON_TYPE);
     }
@@ -521,9 +513,9 @@ public class RestUtils {
         if (context.getServiceVersion().compareTo(ServiceVersion.VERSION_2_0) >= 0) {
             // 2.0 or higher
             final Object obj = context.unmarshalEntity("ReadAllQueryResultCollection", mediaType, new ByteArrayInputStream(result.getBytes()));
-            if (obj instanceof ReadAllQueryResultCollection) {
-                final ReadAllQueryResultCollection c = (ReadAllQueryResultCollection) obj;
-                return (List<T>)c.getItems();
+            if (obj instanceof PageableCollection) {
+                final PageableCollection<T> c = (PageableCollection<T>) obj;
+                return c.getItems();
             } else {
                 return Collections.emptyList();
             }
@@ -667,14 +659,13 @@ public class RestUtils {
      * @param mediaType media type to use (XML or JSON)
      * @return updated object
      */
-    @SuppressWarnings("unchecked")
     public static <T> T restUpdateRelationship(PersistenceContext context,
                                                String objectId,
                                                String relationshipName,
                                                Object newValue,
                                                Class<T> resultClass,
                                                MediaType mediaType)
-            throws RestCallFailedException, URISyntaxException, JAXBException, UnsupportedEncodingException {
+            throws RestCallFailedException, URISyntaxException, JAXBException {
         final String newValueStr = marshal(context, newValue, mediaType);
         final String uri = new UriBuilder(context).addEntity(resultClass.getSimpleName(), objectId, relationshipName).toString();
         final Response response = doPost(context, uri, Entity.entity(newValueStr, mediaType), mediaType);
@@ -695,19 +686,19 @@ public class RestUtils {
      *                  the actual objects in the relationships
      * @return the string
      */
-    public static String restUpdateBidirectionalRelationship(PersistenceContext context,
+    public static <T> String restUpdateBidirectionalRelationship(PersistenceContext context,
                                                              String objectId,
-                                                             Class objectType,
+                                                             Class<T> objectType,
                                                              String relationshipName,
                                                              Object newValue,
                                                              MediaType mediaType,
                                                              String partner,
                                                              boolean sendLinks)
-            throws RestCallFailedException, URISyntaxException, JAXBException, UnsupportedEncodingException {
+            throws RestCallFailedException, URISyntaxException, JAXBException {
         // Construct parameters
         final Map<String, Object> params = new HashMap<>(1);
         if (partner != null) {
-            params.put(MatrixParameters.JPARS_RELATIONSHIP_PARTNER, partner);
+            params.put(QueryParameters.JPARS_RELATIONSHIP_PARTNER, partner);
         }
 
         final String newValueStr = marshal(context, newValue, mediaType, sendLinks);
@@ -728,14 +719,14 @@ public class RestUtils {
      * @param listItemId the list item id
      * @return the string
      */
-    public static String restRemoveBidirectionalRelationship(PersistenceContext context,
+    public static <T> String restRemoveBidirectionalRelationship(PersistenceContext context,
                                                              String objectId,
-                                                             Class objectType,
+                                                             Class<T> objectType,
                                                              String relationshipName,
                                                              MediaType mediaType,
                                                              String partner,
                                                              String listItemId)
-            throws RestCallFailedException, URISyntaxException, JAXBException {
+            throws RestCallFailedException, URISyntaxException {
         // Construct hints
         final Map<String, String> hints = new HashMap<>();
         if (partner != null) {
@@ -781,6 +772,9 @@ public class RestUtils {
      */
     public static byte[] convertImageToByteArray(String imageName) throws IOException {
         final InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(IMAGE_FOLDER + imageName);
+        if (is == null) {
+            throw new IOException("Cannot find " + IMAGE_FOLDER + imageName);
+        }
         final BufferedImage originalImage = ImageIO.read(is);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(originalImage, getExtension(new File(imageName)), baos);
@@ -797,9 +791,9 @@ public class RestUtils {
      * @param outputMediaType the output media type
      * @return attribute
      */
-    public static String restFindAttribute(PersistenceContext context,
+    public static <T> String restFindAttribute(PersistenceContext context,
                                            Object id,
-                                           Class objectType,
+                                           Class<T> objectType,
                                            String attribute,
                                            MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         final String uri = new UriBuilder(context).addEntity(objectType.getSimpleName(), id, attribute).toString();
@@ -819,9 +813,9 @@ public class RestUtils {
      * @param outputMediaType the output media type
      * @return attribute
      */
-    public static String restFindAttribute(PersistenceContext context,
+    public static <T> String restFindAttribute(PersistenceContext context,
                                            Object id,
-                                           Class objectType,
+                                           Class<T> objectType,
                                            String attribute,
                                            Map<String, Object> parameters,
                                            Map<String, String> hints,
@@ -874,7 +868,7 @@ public class RestUtils {
      * @param outputMediaType media type to use
      * @return response
      */
-    public static Response doPost(PersistenceContext context, String uri, Entity entity, MediaType outputMediaType) {
+    public static Response doPost(PersistenceContext context, String uri, Entity<String> entity, MediaType outputMediaType) {
         final Response response = client.target(uri).request(outputMediaType).accept(outputMediaType).post(entity);
         checkResponse(Response.Status.OK, context, outputMediaType, response);
         return response;
@@ -889,7 +883,7 @@ public class RestUtils {
      * @param outputMediaType media type to use
      * @return response
      */
-    public static Response doPut(PersistenceContext context, String uri, Entity entity, MediaType outputMediaType) {
+    public static Response doPut(PersistenceContext context, String uri, Entity<String> entity, MediaType outputMediaType) {
         final Response response = client.target(uri).request(outputMediaType).put(entity);
         checkResponse(Response.Status.CREATED, context, outputMediaType, response);
         return response;

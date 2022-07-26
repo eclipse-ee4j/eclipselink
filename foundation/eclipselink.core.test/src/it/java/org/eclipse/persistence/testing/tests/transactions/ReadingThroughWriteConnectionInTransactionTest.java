@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 package org.eclipse.persistence.testing.tests.transactions;
 
 import java.util.*;
+
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
@@ -22,11 +24,12 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.mapping.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.testing.tests.clientserver.ClientServerTest;
 
 /**
  * Tests using the client's write connection when in transaction to
  * maintain the proper isolation levels, even for reads.
- * @see CR#4334, SAM
+ * (see CR#4334, SAM)
  */
 public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     protected boolean multipleClients = false;
@@ -281,16 +284,18 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
         if (getBackupReadConnections() != null) {
             return;
         }
-        List readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
+        List<Accessor> readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
         setBackupReadConnections(new Vector(readConnections));
         readConnections.clear();
         readConnections.add(null);
     }
 
+    @Override
     public Server getServerSession() {
         return serverSession;
     }
 
+    @Override
     public void reset() {
         try {
             getServerSession().logout();
@@ -309,8 +314,8 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
             // as the result the write connection pool is not shutdown and the connections are leaked.
             // Let's close these connections here.
             try {
-                for (Iterator poolsEnum = ((ServerSession)getServerSession()).getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
-                    ((ConnectionPool)poolsEnum.next()).shutDown();
+                for (Iterator<ConnectionPool> poolsEnum = ((ServerSession)getServerSession()).getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
+                    poolsEnum.next().shutDown();
                 }
             } catch (Exception ex) {
                 // ignore
@@ -337,7 +342,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
      */
     private void restoreServerReadConnections() {
         if (getBackupReadConnections() != null) {
-            List readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
+            List<Accessor> readConnections = getServerSession().getReadConnectionPool().getConnectionsAvailable();
             readConnections.clear();
             readConnections.addAll(getBackupReadConnections());
             setBackupReadConnections(null);
@@ -350,8 +355,9 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
 
     /**
      * Creates a new server session with same login and descriptors as test session.
-     * @see ClientServerTest setup()
+     * @see ClientServerTest#setup()
      */
+    @Override
     public void setup() {
         exception = null;
         try {
@@ -373,9 +379,10 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
      * Executes one of fourteen different tests, depending on how the receiver was
      * initialized.
      */
+    @Override
     public void test() {
         ClientSession client = getServerSession().acquireClientSession();
-        UnitOfWork uow = null;
+        UnitOfWorkImpl uow = null;
         UnitOfWork uow2 = null;
         Session session = null;
 
@@ -436,7 +443,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
 
             // Now do some post transaction testing.
             if (shouldUseUnitOfWork()) {
-                ((org.eclipse.persistence.internal.sessions.UnitOfWorkImpl)uow).rollbackTransaction();
+                uow.rollbackTransaction();
             } else {
                 client.rollbackTransaction();
             }
@@ -463,6 +470,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
         }
     }
 
+    @Override
     public void verify() {
         if (getException() != null) {
             if (getNotSupportedExplanation() != null) {

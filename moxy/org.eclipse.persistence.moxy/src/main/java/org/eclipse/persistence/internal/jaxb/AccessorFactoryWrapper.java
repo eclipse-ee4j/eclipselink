@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  * The instance can be from either the internal or public package. This class will
  * reflectively invoke the createFieldAccessor and createPropertyAccessor methods
  * on the underlying AccessorFactory to create Accessor instances.
- * <p>
+ *
  * @author mmacivor
  * @since EclipseLink 2.4
  *
@@ -41,16 +41,16 @@ public class AccessorFactoryWrapper {
 
     public AccessorFactoryWrapper(Object factory) {
         this.accessorFactory = factory;
-        Class accessorClass = factory.getClass();
+        Class<? extends Object> accessorClass = factory.getClass();
         try {
-            createPropertyAccessorMethod = PrivilegedAccessHelper.getDeclaredMethod(accessorClass, ACCESSOR_FACTORY_CREATE_PROPERTY_ACCESSOR, new Class[]{Class.class, Method.class, Method.class});
-            createFieldAccessorMethod = PrivilegedAccessHelper.getDeclaredMethod(accessorClass, ACCESSOR_FACTORY_CREATE_FIELD_ACCESSOR, new Class[]{Class.class, Field.class, boolean.class});
+            createPropertyAccessorMethod = PrivilegedAccessHelper.getDeclaredMethod(accessorClass, ACCESSOR_FACTORY_CREATE_PROPERTY_ACCESSOR, new Class<?>[]{Class.class, Method.class, Method.class});
+            createFieldAccessorMethod = PrivilegedAccessHelper.getDeclaredMethod(accessorClass, ACCESSOR_FACTORY_CREATE_FIELD_ACCESSOR, new Class<?>[]{Class.class, Field.class, boolean.class});
         } catch(Exception ex) {
             throw JAXBException.invalidAccessorFactory(accessorClass, ex);
         }
     }
 
-    public Object createFieldAccessor(Class beanClass, Field field, boolean isReadOnly) {
+    public Object createFieldAccessor(Class<?> beanClass, Field field, boolean isReadOnly) {
         try {
             return PrivilegedAccessHelper.invokeMethod(createFieldAccessorMethod, accessorFactory, new Object[]{beanClass, field, isReadOnly});
         } catch(Exception ex) {
@@ -58,7 +58,7 @@ public class AccessorFactoryWrapper {
         }
     }
 
-    public Object createPropertyAccessor(Class beanClass, Method getMethod, Method setMethod) {
+    public Object createPropertyAccessor(Class<?> beanClass, Method getMethod, Method setMethod) {
         try {
             return PrivilegedAccessHelper.invokeMethod(createPropertyAccessorMethod, accessorFactory, new Object[]{beanClass, getMethod, setMethod});
         } catch(Exception ex) {

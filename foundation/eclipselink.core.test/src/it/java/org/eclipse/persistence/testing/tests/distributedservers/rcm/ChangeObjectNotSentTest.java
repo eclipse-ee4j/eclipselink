@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,9 +36,10 @@ public class ChangeObjectNotSentTest extends ConfigurableCacheSyncDistributedTes
 
     public ChangeObjectNotSentTest() {
         super();
-        cacheSyncConfigValues.put(Employee.class, new Integer(ClassDescriptor.DO_NOT_SEND_CHANGES));
+        cacheSyncConfigValues.put(Employee.class, ClassDescriptor.DO_NOT_SEND_CHANGES);
     }
 
+    @Override
     public void setup() {
         super.setup();
         // Create an Employee
@@ -58,6 +59,7 @@ public class ChangeObjectNotSentTest extends ConfigurableCacheSyncDistributedTes
         Object result = server.getDistributedSession().readObject(Employee.class, expression);
     }
 
+    @Override
     public void test() {
         // Change the employee and commit
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -66,6 +68,7 @@ public class ChangeObjectNotSentTest extends ConfigurableCacheSyncDistributedTes
         uow.commit();
     }
 
+    @Override
     public void verify() {
         // The employee should not changed in the distributed cache because the cache synchronization
         // setting did not allow the change to be passed.

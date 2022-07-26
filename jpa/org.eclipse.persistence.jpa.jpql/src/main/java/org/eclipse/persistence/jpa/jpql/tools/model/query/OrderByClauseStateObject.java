@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * The <code><b>ORDER BY</b></code> clause allows the objects or values that are returned by the
  * query to be ordered.
  *
- * <div><b>BNF:</b> <code>orderby_clause ::= <b>ORDER BY</b> {@link OrderByItemStateObject orderby_item} {, {@link OrderByItemStateObject orderby_item}}*</code><p></div>
+ * <div><p><b>BNF:</b> <code>orderby_clause ::= <b>ORDER BY</b> {@link OrderByItemStateObject orderby_item} {, {@link OrderByItemStateObject orderby_item}}*</code></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.OrderByClause OrderByClause
  *
@@ -53,9 +53,6 @@ public class OrderByClauseStateObject extends AbstractListHolderStateObject<Orde
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -151,34 +148,22 @@ public class OrderByClauseStateObject extends AbstractListHolderStateObject<Orde
         return updateItem;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public OrderByClause getExpression() {
         return (OrderByClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SelectStatementStateObject getParent() {
         return (SelectStatementStateObject) super.getParent();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
         return super.isEquivalent(stateObject) &&
                areChildrenEquivalent((OrderByClauseStateObject) stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return ORDER_BY_ITEMS_LIST;
@@ -207,9 +192,6 @@ public class OrderByClauseStateObject extends AbstractListHolderStateObject<Orde
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         writer.append(ORDER_BY);

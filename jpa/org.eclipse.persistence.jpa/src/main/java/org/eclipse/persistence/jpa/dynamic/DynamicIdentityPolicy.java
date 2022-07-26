@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class DynamicIdentityPolicy extends CMP3Policy {
 
+    /**
+     * Default constructor;
+     */
+    public DynamicIdentityPolicy() {
+        super();
+    }
+
     @Override
     public Object createPrimaryKeyFromId(Object key, AbstractSession session) {
         if (key instanceof Object[]) {
@@ -43,7 +50,7 @@ public class DynamicIdentityPolicy extends CMP3Policy {
     }
 
     @Override
-    protected KeyElementAccessor[] initializePrimaryKeyFields(Class keyClass, AbstractSession session) {
+    protected KeyElementAccessor[] initializePrimaryKeyFields(Class<?> keyClass, AbstractSession session) {
         if (keyClass == null && getDescriptor().getPrimaryKeyFields().size() > 1) {
             KeyElementAccessor[] result = super.initializePrimaryKeyFields(null, session);
             this.pkClass = Object[].class;

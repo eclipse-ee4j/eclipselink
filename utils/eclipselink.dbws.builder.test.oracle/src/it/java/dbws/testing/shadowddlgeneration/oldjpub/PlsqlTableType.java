@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -164,20 +164,8 @@ public class PlsqlTableType extends SqlCollectionType {
      * Create a PL/SQL table type. If -plsqlindexbytable is set and whenever possible, the method
      * will return predefined scalar index-by table types, which will be mapped into Java arrays.
      *
-     * @param sqlName
-     * @param typeCode
-     * @param elemInfo
-     * @param elemType
-     * @param details
-     * @param generateMe
-     * @param parentType
-     * @param isGrandparent
-     * @param options
-     * @param reflector
      * @return either a newly defined PL/SQL Table type or a predefined scalar PL/SQL index-by table
      *         type
-     * @throws SQLException
-     * @throws PublisherException
      */
 
     public static SqlType newInstance(SqlName sqlName, int typeCode, ElemInfo elemInfo,

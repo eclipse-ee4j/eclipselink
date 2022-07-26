@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,33 +60,21 @@ public final class DefaultProblem implements Problem {
         this.arguments   = arguments;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String[] getMessageArguments() {
         return arguments;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getMessageKey() {
         return messageKey;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject getStateObject() {
         return stateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

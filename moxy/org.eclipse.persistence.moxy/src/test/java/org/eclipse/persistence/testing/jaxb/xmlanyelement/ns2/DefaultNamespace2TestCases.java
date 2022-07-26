@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Root.class;
         setClasses(classes);
     }
@@ -60,6 +60,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
         return root;
     }
 
+       @Override
        public Root getReadControlObject() {
            Root root = new Root();
 
@@ -88,7 +89,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(true));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE);
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -128,7 +129,7 @@ public class DefaultNamespace2TestCases extends JAXBWithJSONTestCases {
                StringWriter writer = new StringWriter();
 
                XMLOutputFactory factory = XMLOutputFactory.newInstance();
-               factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(true));
+               factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE);
                XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
                Object objectToWrite = getWriteControlObject();

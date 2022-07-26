@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,9 @@
 package org.eclipse.persistence.testing.tests.jpa.datatypes;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 public class DoesRelationConformTest extends JUnitTestCase {
 

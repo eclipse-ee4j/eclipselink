@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,8 +44,6 @@ package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -101,11 +99,9 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.MappingCompare;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedChangeTracking;
@@ -140,6 +136,7 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
@@ -154,7 +151,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * @see org.eclipse.persistence.oxm.XMLDescriptor
  */
 public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEventManager, DatabaseField, InheritancePolicy, InstantiationPolicy, Vector, ObjectBuilder> implements Cloneable, Serializable {
-    protected Class javaClass;
+    protected Class<?> javaClass;
     protected String javaClassName;
     protected Vector<DatabaseTable> tables;
     protected transient DatabaseTable defaultTable;
@@ -191,7 +188,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected transient String sessionName;
     protected transient Vector constraintDependencies;
     protected transient String amendmentMethodName;
-    protected transient Class amendmentClass;
+    protected transient Class<?> amendmentClass;
     protected String amendmentClassName;
     protected String alias;
     protected boolean shouldBeReadOnly;
@@ -368,12 +365,12 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // Properties
         this.tables = NonSynchronizedVector.newInstance(3);
         this.mappings = NonSynchronizedVector.newInstance();
-        this.primaryKeyFields = new ArrayList(2);
+        this.primaryKeyFields = new ArrayList<>(2);
         this.fields = NonSynchronizedVector.newInstance();
         this.allFields = NonSynchronizedVector.newInstance();
         this.constraintDependencies = NonSynchronizedVector.newInstance(2);
-        this.multipleTableForeignKeys = new HashMap(5);
-        this.queryKeys = new HashMap(5);
+        this.multipleTableForeignKeys = new HashMap<>(5);
+        this.queryKeys = new HashMap<>(5);
         this.initializationStage = UNINITIALIZED;
         this.interfaceInitializationStage = UNINITIALIZED;
         this.descriptorType = NORMAL;
@@ -382,7 +379,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         this.shouldAlwaysConformResultsInUnitOfWork = false;
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
-        this.derivesIdMappings = new HashMap(5);
+        this.derivesIdMappings = new HashMap<>(5);
 
         this.referencingClasses = new HashSet<>();
 
@@ -390,7 +387,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         this.objectBuilder = new ObjectBuilder(this);
         this.cachePolicy = new CachePolicy();
 
-        this.additionalWritableMapKeyFields = new ArrayList(2);
+        this.additionalWritableMapKeyFields = new ArrayList<>(2);
         this.foreignKeyValuesForCaching = new HashSet<>();
     }
 
@@ -445,7 +442,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * this defines that this descriptor has a foreign key constraint to another class and must be inserted after
      * instances of the other class.
      */
-    public void addConstraintDependencies(Class dependencies) {
+    public void addConstraintDependencies(Class<?> dependencies) {
         addConstraintDependency(dependencies);
     }
 
@@ -456,7 +453,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * this defines that this descriptor has a foreign key constraint to another class and must be inserted after
      * instances of the other class.
      */
-    public void addConstraintDependency(Class dependencies) {
+    public void addConstraintDependency(Class<?> dependencies) {
         getConstraintDependencies().add(dependencies);
     }
 
@@ -793,7 +790,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         Method method = null;
-        Class[] argTypes = new Class[1];
+        Class<?>[] argTypes = new Class<?>[1];
 
         // BUG#2669585
         // Class argument type must be consistent, descriptor, i.e. instance may be a subclass.
@@ -813,15 +810,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         Object[] args = new Object[1];
         args[0] = this;
 
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                AccessController.doPrivileged(new PrivilegedMethodInvoker(method, null, args));
-            } else {
-                PrivilegedAccessHelper.invokeMethod(method, null, args);
-            }
-        } catch (Exception exception) {
-            throw DescriptorException.errorOccuredInAmendmentMethod(getAmendmentClass(), getAmendmentMethodName(), exception, this);
-        }
+        final Method lambdaMethod = method;
+        PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(lambdaMethod, null, args),
+                (ex) -> DescriptorException.errorOccuredInAmendmentMethod(getAmendmentClass(), getAmendmentMethodName(), ex, this)
+        );
     }
 
     /**
@@ -1007,18 +1000,18 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     protected void checkDatabase(AbstractSession session) {
         if (session.getIntegrityChecker().shouldCheckDatabase()) {
-            for (Iterator iterator = getTables().iterator(); iterator.hasNext();) {
-                DatabaseTable table = (DatabaseTable)iterator.next();
+            for (Iterator<DatabaseTable> iterator = getTables().iterator(); iterator.hasNext();) {
+                DatabaseTable table = iterator.next();
                 if (session.getIntegrityChecker().checkTable(table, session)) {
                     // To load the fields of database into a vector
                     List databaseFields = new ArrayList();
-                    List result = session.getAccessor().getColumnInfo(null, null, table.getName(), null, session);
+                    List<AbstractRecord> result = session.getAccessor().getColumnInfo(null, null, table.getName(), null, session);
                     // Table name may need to be lowercase.
                     if (result.isEmpty() && session.getPlatform().shouldForceFieldNamesToUpperCase()) {
                         result = session.getAccessor().getColumnInfo(null, null, table.getName().toLowerCase(), null, session);
                     }
-                    for (Iterator resultIterator = result.iterator(); resultIterator.hasNext();) {
-                        AbstractRecord row = (AbstractRecord)resultIterator.next();
+                    for (Iterator<AbstractRecord> resultIterator = result.iterator(); resultIterator.hasNext();) {
+                        AbstractRecord row = resultIterator.next();
                         if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
                             databaseFields.add(((String)row.get("COLUMN_NAME")).toUpperCase());
                         } else {
@@ -1050,7 +1043,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         if (this.isChildDescriptor()) {
-            Class parentClass = this.getInheritancePolicy().getParentClass();
+            Class<?> parentClass = this.getInheritancePolicy().getParentClass();
             if (parentClass == this.getJavaClass()) {
                 throw DescriptorException.parentClassIsSelf(this);
             }
@@ -1336,10 +1329,10 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         Vector mappingsVector = NonSynchronizedVector.newInstance();
 
         // All the mappings
-        for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
+        for (Enumeration<DatabaseMapping> mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
             DatabaseMapping mapping;
 
-            mapping = (DatabaseMapping)((DatabaseMapping)mappingsEnum.nextElement()).clone();
+            mapping = (DatabaseMapping) mappingsEnum.nextElement().clone();
             mapping.setDescriptor(clonedDescriptor);
             mappingsVector.addElement(mapping);
         }
@@ -1357,9 +1350,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
         // PrimaryKeyFields
         List primaryKeyVector = new ArrayList(getPrimaryKeyFields().size());
-        List primaryKeyFields = getPrimaryKeyFields();
+        List<DatabaseField> primaryKeyFields = getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
-            DatabaseField primaryKey = ((DatabaseField)primaryKeyFields.get(index)).clone();
+            DatabaseField primaryKey = primaryKeyFields.get(index).clone();
             primaryKeyVector.add(primaryKey);
         }
         clonedDescriptor.setPrimaryKeyFields(primaryKeyVector);
@@ -1368,7 +1361,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         clonedDescriptor.setFields(NonSynchronizedVector.newInstance());
 
         // Referencing classes
-        referencingClasses = new HashSet<>();
+        clonedDescriptor.referencingClasses = new HashSet<>(referencingClasses);
 
         // Post-calculate changes
         if (this.mappingsPostCalculateChanges != null) {
@@ -1478,280 +1471,132 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
-        Class redirectorClass = null;
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        //Class<?> redirectorClass = null;
 
-        if (getJavaClassName() != null){
-            Class descriptorClass = null;
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        descriptorClass = AccessController.doPrivileged(new PrivilegedClassForName(getJavaClassName(), true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), exception.getException());
-                    }
-                } else {
-                    descriptorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getJavaClassName(), true, classLoader);
-                }
-            } catch (ClassNotFoundException exc){
-                throw ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), exc);
-            }
+        if (getJavaClassName() != null) {
+            final Class<?> descriptorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getJavaClassName(), true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), ex)
+            );
             setJavaClass(descriptorClass);
         }
 
         if (getAmendmentClassName() != null) {
-            Class amendmentClass = null;
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        amendmentClass = AccessController.doPrivileged(new PrivilegedClassForName(getAmendmentClassName(), true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), exception.getException());
-                    }
-                } else {
-                    amendmentClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getAmendmentClassName(), true, classLoader);
-                }
-            } catch (ClassNotFoundException exc){
-                throw ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), exc);
-            }
+            final Class<?> amendmentClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getAmendmentClassName(), true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), ex)
+            );
             setAmendmentClass(amendmentClass);
         }
 
-        if (copyPolicy == null && getCopyPolicyClassName() != null){
-            Class copyPolicyClass = null;
-            CopyPolicy newCopyPolicy = null;
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        copyPolicyClass = AccessController.doPrivileged(new PrivilegedClassForName(getCopyPolicyClassName(), true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exception.getException());
-                    }
-                    try {
-                        newCopyPolicy = (CopyPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(copyPolicyClass));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), exception.getException());
-                    }
-                } else {
-                    copyPolicyClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getCopyPolicyClassName(), true, classLoader);
-                    newCopyPolicy = (CopyPolicy)org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(copyPolicyClass);
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exc);
-            } catch (IllegalAccessException ex){
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), ex);
-            } catch (InstantiationException e){
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), e);
-            }
+        if (copyPolicy == null && getCopyPolicyClassName() != null) {
+            final Class<?> copyPolicyClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getCopyPolicyClassName(), true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), ex)
+            );
+            final CopyPolicy newCopyPolicy = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> (CopyPolicy) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(copyPolicyClass),
+                    (ex) -> ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), ex)
+            );
             setCopyPolicy(newCopyPolicy);
         }
 
         if (this.serializedObjectPolicy != null && this.serializedObjectPolicy instanceof SerializedObjectPolicyWrapper) {
-            String serializedObjectPolicyClassName = ((SerializedObjectPolicyWrapper)this.serializedObjectPolicy).getSerializedObjectPolicyClassName();
-            Class serializedObjectPolicyClass = null;
-            SerializedObjectPolicy newSerializedObjectPolicy = null;
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        serializedObjectPolicyClass = AccessController.doPrivileged(new PrivilegedClassForName(serializedObjectPolicyClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, exception.getException());
-                    }
-                    try {
-                        newSerializedObjectPolicy = (SerializedObjectPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(serializedObjectPolicyClass));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, exception.getException());
-                    }
-                } else {
-                    serializedObjectPolicyClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(serializedObjectPolicyClassName, true, classLoader);
-                    newSerializedObjectPolicy = (SerializedObjectPolicy)org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(serializedObjectPolicyClass);
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, exc);
-            } catch (IllegalAccessException ex){
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, ex);
-            } catch (InstantiationException e){
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, e);
-            }
+            final String serializedObjectPolicyClassName = ((SerializedObjectPolicyWrapper)this.serializedObjectPolicy).getSerializedObjectPolicyClassName();
+            final Class<?> serializedObjectPolicyClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(serializedObjectPolicyClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, ex)
+            );
+            final SerializedObjectPolicy newSerializedObjectPolicy = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> (SerializedObjectPolicy)org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(serializedObjectPolicyClass),
+                    (ex) -> ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, ex)
+            );
             newSerializedObjectPolicy.setField(this.serializedObjectPolicy.getField());
             setSerializedObjectPolicy(newSerializedObjectPolicy);
         }
 
         //Create and set default QueryRedirector instances
-        if (this.defaultQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultQueryRedirectorClassName, true, classLoader);
-                    setDefaultQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, e);
-            }
+        if (this.defaultQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, ex)
+            );
+            setDefaultQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, ex)
+            ));
         }
 
-        if (this.defaultReadObjectQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultReadObjectQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultReadObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReadObjectQueryRedirectorClassName, true, classLoader);
-                    setDefaultReadObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, e);
-            }
+        if (this.defaultReadObjectQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReadObjectQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, ex)
+            );
+            setDefaultReadObjectQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, ex)
+            ));
         }
-        if (this.defaultReadAllQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultReadAllQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultReadAllQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReadAllQueryRedirectorClassName, true, classLoader);
-                    setDefaultReadAllQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, e);
-            }
+        if (this.defaultReadAllQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReadAllQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, ex)
+            );
+            setDefaultReadAllQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, ex)
+            ));
         }
-        if (this.defaultReportQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultReportQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultReportQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReportQueryRedirectorClassName, true, classLoader);
-                    setDefaultReportQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, e);
-            }
+
+        if (this.defaultReportQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultReportQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, ex)
+            );
+            setDefaultReportQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, ex)
+            ));
         }
-        if (this.defaultInsertObjectQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultInsertObjectQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultInsertObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultInsertObjectQueryRedirectorClassName, true, classLoader);
-                    setDefaultInsertObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, e);
-            }
+
+        if (this.defaultInsertObjectQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultInsertObjectQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, ex)
+            );
+            setDefaultInsertObjectQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, ex)
+            ));
         }
-        if (this.defaultUpdateObjectQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultUpdateObjectQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultUpdateObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultUpdateObjectQueryRedirectorClassName, true, classLoader);
-                    setDefaultUpdateObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, e);
-            }
+
+        if (this.defaultUpdateObjectQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultUpdateObjectQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, ex)
+            );
+            setDefaultUpdateObjectQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, ex)
+            ));
         }
-        if (this.defaultDeleteObjectQueryRedirectorClassName != null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultDeleteObjectQueryRedirectorClassName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exception.getException());
-                    }
-                    try {
-                        setDefaultDeleteObjectQueryRedirector((QueryRedirector) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(redirectorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exception.getException());
-                    }
-                } else {
-                    redirectorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultDeleteObjectQueryRedirectorClassName, true, classLoader);
-                    setDefaultDeleteObjectQueryRedirector((QueryRedirector) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass));
-                }
-            } catch (ClassNotFoundException exc) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exc);
-            } catch (Exception e) {
-                // Catches IllegalAccessException and InstantiationException
-                throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, e);
-            }
+
+        if (this.defaultDeleteObjectQueryRedirectorClassName != null) {
+            final Class<?> redirectorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(defaultDeleteObjectQueryRedirectorClassName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, ex)
+            );
+            setDefaultDeleteObjectQueryRedirector((QueryRedirector) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(redirectorClass),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, ex)
+            ));
         }
-        Iterator mappings = getMappings().iterator();
+
+        Iterator<DatabaseMapping> mappings = getMappings().iterator();
         while (mappings.hasNext()){
-            ((DatabaseMapping)mappings.next()).convertClassNamesToClasses(classLoader);
+            mappings.next().convertClassNamesToClasses(classLoader);
         }
         if (this.inheritancePolicy != null){
             this.inheritancePolicy.convertClassNamesToClasses(classLoader);
@@ -1777,25 +1622,15 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 List<String> valuePair = getUnconvertedProperties().get(propertyName);
                 String value = valuePair.get(0);
                 String valueTypeName = valuePair.get(1);
-                Class valueType = String.class;
+                Class<String> valueType = String.class;
 
                 if (valueTypeName != null) {
                     // Have to initialize the valueType now
-                    try {
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                            try {
-                                valueType = AccessController.doPrivileged(new PrivilegedClassForName(valueTypeName, true, classLoader));
-                            } catch (PrivilegedActionException exception) {
-                                throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception.getException());
-                            }
-                        } else {
-                            valueType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(valueTypeName, true, classLoader);
-                        }
-                    } catch (ClassNotFoundException exc){
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exc);
-                    }
+                    valueType = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                            () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(valueTypeName, true, classLoader),
+                            (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, ex)
+                    );
                 }
-
                 // Add the converted property. If the value type is the same
                 // as the source (value) type, no conversion is made.
                 getProperties().put(propertyName, ConversionManager.getDefaultManager().convertObject(value, valueType));
@@ -1992,7 +1827,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * additionalAggregateCollectionKeyFields are used by aggregate descriptors to hold additional fields needed when they are stored in an AggregatateCollection
      * These fields are generally foreign key fields that are required in addition to the fields in the descriptor's
      *  mappings to uniquely identify the Aggregate
-     * @return
      */
     public List<DatabaseField> getAdditionalAggregateCollectionKeyFields(){
         if (additionalAggregateCollectionKeyFields == null){
@@ -2016,7 +1850,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * INTERNAL:
      * Return a list of fields that are written by map keys
      * Used to determine if there is a multiple writable mappings issue
-     * @return
      */
     public List<DatabaseField> getAdditionalWritableMapKeyFields() {
         if (additionalWritableMapKeyFields == null) {
@@ -2109,7 +1942,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * The amendment method will be called on the class before initialization to allow for it to initialize the descriptor.
      * The method must be a public static method on the class.
      */
-    public Class getAmendmentClass() {
+    public Class<?> getAmendmentClass() {
         return amendmentClass;
     }
 
@@ -2224,7 +2057,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
-    public Class getCacheInterceptorClass() {
+    public Class<? extends CacheInterceptor> getCacheInterceptorClass() {
         return getCachePolicy().getCacheInterceptorClass();
     }
 
@@ -2430,7 +2263,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return the class of identity map to be used by this descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
      */
-    public Class getIdentityMapClass() {
+    public <T extends IdentityMap> Class<T> getIdentityMapClass() {
         return getCachePolicy().getIdentityMapClass();
     }
 
@@ -2518,8 +2351,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return the java class.
      */
     @Override
-    public Class getJavaClass() {
-        return javaClass;
+    @SuppressWarnings({"unchecked"})
+    public <T> Class<T> getJavaClass() {
+        return (Class<T>) javaClass;
     }
 
     /**
@@ -2538,7 +2372,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public List<DatabaseMapping> getLockableMappings() {
         if (this.lockableMappings == null) {
-            this.lockableMappings = new ArrayList();
+            this.lockableMappings = new ArrayList<>();
         }
         return this.lockableMappings;
     }
@@ -2550,8 +2384,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public DatabaseMapping getMappingForAttributeName(String attributeName) {
         // ** Don't use this internally, just for amendments, see getMappingForAttributeName on ObjectBuilder.
-        for (Enumeration mappingsNum = mappings.elements(); mappingsNum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappingsNum.nextElement();
+        for (Enumeration<DatabaseMapping> mappingsNum = mappings.elements(); mappingsNum.hasMoreElements();) {
+            DatabaseMapping mapping = mappingsNum.nextElement();
             if ((mapping.getAttributeName() != null) && mapping.getAttributeName().equals(attributeName)) {
                 return mapping;
             }
@@ -2587,16 +2421,16 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Vector getMultipleTableForeignKeyAssociations() {
         Vector associations = new Vector(getAdditionalTablePrimaryKeyFields().size() * 2);
-        Iterator tablesHashtable = getAdditionalTablePrimaryKeyFields().values().iterator();
+        Iterator<Map<DatabaseField, DatabaseField>> tablesHashtable = getAdditionalTablePrimaryKeyFields().values().iterator();
         while (tablesHashtable.hasNext()) {
-            Map tableHash = (Map)tablesHashtable.next();
-            Iterator fieldEnumeration = tableHash.keySet().iterator();
+            Map<DatabaseField, DatabaseField> tableHash = tablesHashtable.next();
+            Iterator<DatabaseField> fieldEnumeration = tableHash.keySet().iterator();
             while (fieldEnumeration.hasNext()) {
-                DatabaseField keyField = (DatabaseField)fieldEnumeration.next();
+                DatabaseField keyField = fieldEnumeration.next();
 
                 //PRS#36802(CR#2057) contains() is changed to containsKey()
                 if (getMultipleTableForeignKeys().containsKey(keyField.getTable())) {
-                    Association association = new Association(keyField.getQualifiedName(), ((DatabaseField)tableHash.get(keyField)).getQualifiedName());
+                    Association association = new Association(keyField.getQualifiedName(), tableHash.get(keyField).getQualifiedName());
                     associations.addElement(association);
                 }
             }
@@ -2614,7 +2448,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Map<DatabaseTable, Set<DatabaseTable>> getMultipleTableForeignKeys() {
         if (multipleTableForeignKeys == null) {
-            multipleTableForeignKeys = new HashMap(5);
+            multipleTableForeignKeys = new HashMap<>(5);
         }
         return multipleTableForeignKeys;
     }
@@ -2637,16 +2471,16 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Vector getMultipleTablePrimaryKeyAssociations() {
         Vector associations = new Vector(getAdditionalTablePrimaryKeyFields().size() * 2);
-        Iterator tablesHashtable = getAdditionalTablePrimaryKeyFields().values().iterator();
+        Iterator<Map<DatabaseField, DatabaseField>> tablesHashtable = getAdditionalTablePrimaryKeyFields().values().iterator();
         while (tablesHashtable.hasNext()) {
-            Map tableHash = (Map)tablesHashtable.next();
-            Iterator fieldEnumeration = tableHash.keySet().iterator();
+            Map<DatabaseField, DatabaseField> tableHash = tablesHashtable.next();
+            Iterator<DatabaseField> fieldEnumeration = tableHash.keySet().iterator();
             while (fieldEnumeration.hasNext()) {
-                DatabaseField keyField = (DatabaseField)fieldEnumeration.next();
+                DatabaseField keyField = fieldEnumeration.next();
 
                 //PRS#36802(CR#2057) contains() is changed to containsKey()
                 if (!getMultipleTableForeignKeys().containsKey(keyField.getTable())) {
-                    Association association = new Association(keyField.getQualifiedName(), ((DatabaseField)tableHash.get(keyField)).getQualifiedName());
+                    Association association = new Association(keyField.getQualifiedName(), tableHash.get(keyField).getQualifiedName());
                     associations.addElement(association);
                 }
             }
@@ -2707,9 +2541,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     @Override
     public Vector<String> getPrimaryKeyFieldNames() {
         Vector<String> result = new Vector(getPrimaryKeyFields().size());
-        List primaryKeyFields = getPrimaryKeyFields();
+        List<DatabaseField> primaryKeyFields = getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
-            result.addElement(((DatabaseField)primaryKeyFields.get(index)).getQualifiedName());
+            result.addElement(primaryKeyFields.get(index).getQualifiedName());
         }
 
         return result;
@@ -2788,7 +2622,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return the class of identity map to be used by this descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
      */
-    public Class getRemoteIdentityMapClass() {
+    public <T extends IdentityMap> Class<T> getRemoteIdentityMapClass() {
         return getCachePolicy().getRemoteIdentityMapClass();
     }
 
@@ -2881,8 +2715,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             return null;// Assume aggregate descriptor.
         }
 
-        for (Enumeration tables = getTables().elements(); tables.hasMoreElements();) {
-            DatabaseTable table = (DatabaseTable)tables.nextElement();
+        for (Enumeration<DatabaseTable> tables = getTables().elements(); tables.hasMoreElements();) {
+            DatabaseTable table = tables.nextElement();
 
             if(tableName.indexOf(' ') != -1) {
                 //if looking for a table with a ' ' character, the name will have
@@ -2922,8 +2756,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Vector getTableNames() {
         Vector tableNames = new Vector(getTables().size());
-        for (Enumeration fieldsEnum = getTables().elements(); fieldsEnum.hasMoreElements();) {
-            tableNames.addElement(((DatabaseTable)fieldsEnum.nextElement()).getQualifiedName());
+        for (Enumeration<DatabaseTable> fieldsEnum = getTables().elements(); fieldsEnum.hasMoreElements();) {
+            tableNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return tableNames;
@@ -3097,8 +2931,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Checks if the class has any private owned parts are not
      */
     public boolean hasPrivatelyOwnedParts() {
-        for (Enumeration mappings = getMappings().elements(); mappings.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+        for (Enumeration<DatabaseMapping> mappings = getMappings().elements(); mappings.hasMoreElements();) {
+            DatabaseMapping mapping = mappings.nextElement();
             if (mapping.isPrivateOwned()) {
                 return true;
             }
@@ -3118,7 +2952,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     /**
      * INTERNAL:
      *  return whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates
-     * @return
      */
     public boolean hasRelationships() {
         return hasRelationships;
@@ -3130,8 +2963,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * an object aside from the one described by descriptor or more than one ForeignReferenceMapping
      * to descriptor.  (i.e. It determines if there is any mapping aside from a backpointer to a mapping
      * defined in descriptor)
-     * @param descriptor
-     * @return
      */
     public boolean hasRelationshipsExceptBackpointer(ClassDescriptor descriptor){
         Iterator<DatabaseMapping> i = mappings.iterator();
@@ -3238,8 +3069,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // Sorting the mappings to ensure that all DirectToFields get merged before all other mappings
         // This prevents null key errors when merging maps
         if (shouldOrderMappings()) {
-            Vector mappings = getMappings();
-            Object[] mappingsArray = new Object[mappings.size()];
+            Vector<DatabaseMapping> mappings = getMappings();
+            DatabaseMapping[] mappingsArray = new DatabaseMapping[mappings.size()];
             for (int index = 0; index < mappings.size(); index++) {
                 mappingsArray[index] = mappings.get(index);
             }
@@ -3313,8 +3144,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         // All the query keys should be initialized.
-        for (Iterator queryKeys = getQueryKeys().values().iterator(); queryKeys.hasNext();) {
-            QueryKey queryKey = (QueryKey)queryKeys.next();
+        for (Iterator<QueryKey> queryKeys = getQueryKeys().values().iterator(); queryKeys.hasNext();) {
+            QueryKey queryKey = queryKeys.next();
             queryKey.initialize(this);
         }
 
@@ -3358,8 +3189,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // This prevents null key errors when merging maps
         // This resort will change the previous sort order, only do it if has inheritance.
         if (hasInheritance() && shouldOrderMappings()) {
-            Vector mappings = getMappings();
-            Object[] mappingsArray = new Object[mappings.size()];
+            Vector<DatabaseMapping> mappings = getMappings();
+            DatabaseMapping[] mappingsArray = new DatabaseMapping[mappings.size()];
             for (int index = 0; index < mappings.size(); index++) {
                 mappingsArray[index] = mappings.get(index);
             }
@@ -3648,9 +3479,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         setInterfaceInitializationStage(INITIALIZED);
 
         if (isInterfaceChildDescriptor()) {
-            for (Iterator<Class> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
+            for (Iterator<Class<?>> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
                      interfaces.hasNext();) {
-                Class parentInterface = interfaces.next();
+                Class<?> parentInterface = interfaces.next();
                 ClassDescriptor parentDescriptor = session.getDescriptor(parentInterface);
                 parentDescriptor.interfaceInitialization(session);
 
@@ -3658,9 +3489,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     setQueryKeys(Helper.concatenateMaps(getQueryKeys(), parentDescriptor.getQueryKeys()));
                 } else {
                     //ClassDescriptor is a class, not an interface
-                    for (Iterator parentKeys = parentDescriptor.getQueryKeys().keySet().iterator();
-                             parentKeys.hasNext();) {
-                        String queryKeyName = (String)parentKeys.next();
+                    for (Iterator<String> parentKeys = parentDescriptor.getQueryKeys().keySet().iterator();
+                         parentKeys.hasNext();) {
+                        String queryKeyName = parentKeys.next();
                         if (!hasQueryKeyOrMapping(queryKeyName)) {
                             //the parent descriptor has a query key not defined in the child
                             session.getIntegrityChecker().handleError(DescriptorException.childDoesNotDefineAbstractQueryKeyOfParent(this, parentDescriptor, queryKeyName));
@@ -4026,7 +3857,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             if ((getPrimaryKeyFields().size() > 1) || getObjectBuilder().isXMLObjectBuilder()) {
                 setCacheKeyType(CacheKeyType.CACHE_ID);
             } else if ((getPrimaryKeyFields().size() == 1) && (getObjectBuilder().getPrimaryKeyClassifications().size() == 1)) {
-                Class type = getObjectBuilder().getPrimaryKeyClassifications().get(0);
+                Class<?> type = getObjectBuilder().getPrimaryKeyClassifications().get(0);
                 if ((type == null) || type.isArray()) {
                     getCachePolicy().setCacheKeyType(CacheKeyType.CACHE_ID);
                 } else {
@@ -4086,11 +3917,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     }
 
     private void prepareReturnFields(List<ReturningPolicy> returningPolicies) {
-        Vector<DatabaseField> returnFieldsInsert = new NonSynchronizedVector();
-        Vector<DatabaseField> returnFieldsUpdate = new NonSynchronizedVector();
+        Vector<DatabaseField> returnFieldsInsert = new NonSynchronizedVector<>();
+        Vector<DatabaseField> returnFieldsUpdate = new NonSynchronizedVector<>();
         List<DatabaseField> returnFieldsToMergeInsert = new ArrayList<>();
         List<DatabaseField> returnFieldsToMergeUpdate = new ArrayList<>();
-        Collection tmpFields;
+        Collection<DatabaseField> tmpFields;
         for (ReturningPolicy returningPolicy: returningPolicies) {
             tmpFields = returningPolicy.getFieldsToGenerateInsert(this.defaultTable);
             if (tmpFields != null) {
@@ -4162,8 +3993,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             // Cloning is only auto set for field access, as method access
             // may not have simple fields, same with empty new and reflection get/set.
             boolean isMethodAccess = false;
-            for (Iterator iterator = getMappings().iterator(); iterator.hasNext(); ) {
-                DatabaseMapping mapping = (DatabaseMapping)iterator.next();
+            for (Iterator<DatabaseMapping> iterator = getMappings().iterator(); iterator.hasNext(); ) {
+                DatabaseMapping mapping = iterator.next();
                 if (mapping.isUsingMethodAccess()) {
                     // Ok for lazy 1-1s
                     if (!mapping.isOneToOneMapping() || !((ForeignReferenceMapping)mapping).usesIndirection()) {
@@ -4181,7 +4012,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 if (!isAbstract()) {
                     try {
                         if (this.instantiationPolicy == null) {
-                            setInstantiationPolicy(new PersistenceObjectInstantiationPolicy((PersistenceObject)getJavaClass().newInstance()));
+                            setInstantiationPolicy(new PersistenceObjectInstantiationPolicy((PersistenceObject)getJavaClass().getConstructor().newInstance()));
                         }
                     } catch (Exception ignore) { }
                 }
@@ -4189,9 +4020,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         // 4924665 Check for spaces in table names, and add the appropriate quote character
-        Iterator tables = this.getTables().iterator();
+        Iterator<DatabaseTable> tables = this.getTables().iterator();
         while(tables.hasNext()) {
-            DatabaseTable next = (DatabaseTable)tables.next();
+            DatabaseTable next = tables.next();
             if(next.getName().indexOf(' ') != -1) {
                 // EL Bug 382420 - set use delimiters to true if table name contains a space
                 next.setUseDelimiters(true);
@@ -4296,9 +4127,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         assignDefaultValues(session);
 
         if (isInterfaceChildDescriptor()) {
-            for (Iterator<Class> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
+            for (Iterator<Class<?>> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
                      interfaces.hasNext();) {
-                Class parentInterface = interfaces.next();
+                Class<?> parentInterface = interfaces.next();
                 ClassDescriptor parentDescriptor = session.getDescriptor(parentInterface);
                 if ((parentDescriptor == null) || (parentDescriptor.getJavaClass() == getJavaClass()) || parentDescriptor.getInterfacePolicy().usesImplementorDescriptor()) {
                     session.getProject().getDescriptors().put(parentInterface, this);
@@ -4323,8 +4154,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void rehashFieldDependancies(AbstractSession session) {
         getObjectBuilder().rehashFieldDependancies(session);
 
-        for (Enumeration enumtr = getMappings().elements(); enumtr.hasMoreElements();) {
-            ((DatabaseMapping)enumtr.nextElement()).rehashFieldDependancies(session);
+        for (Enumeration<DatabaseMapping> enumtr = getMappings().elements(); enumtr.hasMoreElements();) {
+            enumtr.nextElement().rehashFieldDependancies(session);
         }
     }
 
@@ -4457,7 +4288,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
         }
 
-        if ((getIdentityMapClass() == ClassConstants.NoIdentityMap_Class) && (getQueryManager().getDoesExistQuery().shouldCheckCacheForDoesExist())) {
+        if ((ClassConstants.NoIdentityMap_Class.equals(getIdentityMapClass())) && (getQueryManager().getDoesExistQuery().shouldCheckCacheForDoesExist())) {
             session.getIntegrityChecker().handleError(DescriptorException.identityMapNotSpecified(this));
         }
 
@@ -4472,7 +4303,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * descriptor.
      */
     protected void setAdditionalTablePrimaryKeyFields(DatabaseTable table, DatabaseField field1, DatabaseField field2) {
-        Map tableAdditionalPKFields = getAdditionalTablePrimaryKeyFields().get(table);
+        Map<DatabaseField, DatabaseField> tableAdditionalPKFields = getAdditionalTablePrimaryKeyFields().get(table);
 
         if (tableAdditionalPKFields == null) {
             tableAdditionalPKFields = new HashMap(2);
@@ -4572,7 +4403,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * The amendment method will be called on the class before initialization to allow for it to initialize the descriptor.
      * The method must be a public static method on the class.
      */
-    public void setAmendmentClass(Class amendmentClass) {
+    public void setAmendmentClass(Class<?> amendmentClass) {
         this.amendmentClass = amendmentClass;
     }
 
@@ -4648,7 +4479,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * As with IdentityMaps an entire class inheritance hierarchy will share the same interceptor.
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor
      */
-    public void setCacheInterceptorClass(Class cacheInterceptorClass) {
+    public void setCacheInterceptorClass(Class<? extends CacheInterceptor> cacheInterceptorClass) {
         getCachePolicy().setCacheInterceptorClass(cacheInterceptorClass);
     }
 
@@ -4794,11 +4625,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * INTERNAL:
      * This method is used by the  XML Deployment ClassDescriptor to read and write these mappings
      */
-    public void setForeignKeyFieldNamesForMultipleTable(Vector associations) throws DescriptorException {
-        Enumeration foreignKeys = associations.elements();
-
-        while (foreignKeys.hasMoreElements()) {
-            Association association = (Association) foreignKeys.nextElement();
+    public void setForeignKeyFieldNamesForMultipleTable(List<Association> associations) throws DescriptorException {
+        for (Association association: associations) {
             addForeignKeyFieldNameForMultipleTable((String) association.getKey(), (String) association.getValue());
         }
     }
@@ -4815,7 +4643,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Set the class of identity map to be used by this descriptor.
      * The default is the "FullIdentityMap".
      */
-    public void setIdentityMapClass(Class theIdentityMapClass) {
+    public void setIdentityMapClass(Class<? extends IdentityMap> theIdentityMapClass) {
         getCachePolicy().setIdentityMapClass(theIdentityMapClass);
     }
 
@@ -5030,7 +4858,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     /**
      * INTERNAL:
      * set whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates
-     * @param hasRelationships
      */
     public void setHasRelationships(boolean hasRelationships) {
         this.hasRelationships = hasRelationships;
@@ -5042,7 +4869,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     * Every descriptor maps one and only one class.
     */
     @Override
-    public void setJavaClass(Class theJavaClass) {
+    public void setJavaClass(Class<?> theJavaClass) {
         javaClass = theJavaClass;
     }
 
@@ -5067,7 +4894,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * descriptor should not be defined for it and relationships should be to the implementor class not the interface,
      * in this case the implementor class can add the interface through its interface policy to map queries on the interface to it.
      */
-    public void setJavaInterface(Class theJavaInterface) {
+    public void setJavaInterface(Class<?> theJavaInterface) {
         javaClass = theJavaInterface;
         descriptorIsForInterface();
     }
@@ -5097,8 +4924,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public void setMappings(Vector<DatabaseMapping> mappings) {
         // This is used from XML reader so must ensure that all mapping's descriptor has been set.
-        for (Enumeration mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
+        for (Enumeration<DatabaseMapping> mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
+            DatabaseMapping mapping = mappingsEnum.nextElement();
 
             // For CR#2646, if the mapping already points to the parent descriptor then leave it.
             if (mapping.getDescriptor() == null) {
@@ -5253,7 +5080,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Set the class of identity map to be used by this descriptor.
      * The default is the "FullIdentityMap".
      */
-    public void setRemoteIdentityMapClass(Class theIdentityMapClass) {
+    public void setRemoteIdentityMapClass(Class<? extends IdentityMap> theIdentityMapClass) {
         getCachePolicy().setRemoteIdentityMapClass(theIdentityMapClass);
     }
 
@@ -5518,8 +5345,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * all tables in this descriptor
      */
     public void setTableQualifier(String tableQualifier) {
-        for (Enumeration enumtr = getTables().elements(); enumtr.hasMoreElements();) {
-            DatabaseTable table = (DatabaseTable)enumtr.nextElement();
+        for (Enumeration<DatabaseTable> enumtr = getTables().elements(); enumtr.hasMoreElements();) {
+            DatabaseTable table = enumtr.nextElement();
             table.setTableQualifier(tableQualifier);
         }
     }
@@ -5691,7 +5518,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using CacheIdentityMap
      */
     public boolean shouldUseCacheIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.CacheIdentityMap_Class);
+        return ClassConstants.CacheIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5699,7 +5526,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using FullIdentityMap
      */
     public boolean shouldUseFullIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.FullIdentityMap_Class);
+        return ClassConstants.FullIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5707,7 +5534,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using SoftIdentityMap
      */
     public boolean shouldUseSoftIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.SoftIdentityMap_Class);
+        return ClassConstants.SoftIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5715,7 +5542,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using SoftIdentityMap
      */
     public boolean shouldUseRemoteSoftIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.SoftIdentityMap_Class);
+        return ClassConstants.SoftIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5723,7 +5550,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using HardCacheWeakIdentityMap.
      */
     public boolean shouldUseHardCacheWeakIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.HardCacheWeakIdentityMap_Class);
+        return ClassConstants.HardCacheWeakIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5731,7 +5558,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using NoIdentityMap
      */
     public boolean shouldUseNoIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.NoIdentityMap_Class);
+        return ClassConstants.NoIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5758,7 +5585,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using CacheIdentityMap
      */
     public boolean shouldUseRemoteCacheIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.CacheIdentityMap_Class);
+        return ClassConstants.CacheIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5766,7 +5593,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using FullIdentityMap
      */
     public boolean shouldUseRemoteFullIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.FullIdentityMap_Class);
+        return ClassConstants.FullIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5774,7 +5601,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using HardCacheWeakIdentityMap
      */
     public boolean shouldUseRemoteHardCacheWeakIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.HardCacheWeakIdentityMap_Class);
+        return ClassConstants.HardCacheWeakIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5782,7 +5609,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using NoIdentityMap
      */
     public boolean shouldUseRemoteNoIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.NoIdentityMap_Class);
+        return ClassConstants.NoIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5790,7 +5617,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using SoftCacheWeakIdentityMap
      */
     public boolean shouldUseRemoteSoftCacheWeakIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.SoftCacheWeakIdentityMap_Class);
+        return ClassConstants.SoftCacheWeakIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5798,7 +5625,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using WeakIdentityMap
      */
     public boolean shouldUseRemoteWeakIdentityMap() {
-        return (getRemoteIdentityMapClass() == ClassConstants.WeakIdentityMap_Class);
+        return ClassConstants.WeakIdentityMap_Class.equals(getRemoteIdentityMapClass());
     }
 
     /**
@@ -5806,7 +5633,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using SoftCacheWeakIdentityMap.
      */
     public boolean shouldUseSoftCacheWeakIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.SoftCacheWeakIdentityMap_Class);
+        return ClassConstants.SoftCacheWeakIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5814,7 +5641,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return true if this descriptor is using WeakIdentityMap
      */
     public boolean shouldUseWeakIdentityMap() {
-        return (getIdentityMapClass() == ClassConstants.WeakIdentityMap_Class);
+        return ClassConstants.WeakIdentityMap_Class.equals(getIdentityMapClass());
     }
 
     /**
@@ -5826,12 +5653,12 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // Check the descriptor: if field-locking is used, cannot do
         // change tracking because field-locking requires backup clone.
         OptimisticLockingPolicy lockingPolicy = getOptimisticLockingPolicy();
-        if (lockingPolicy != null && (lockingPolicy instanceof FieldsLockingPolicy)) {
+        if (lockingPolicy instanceof FieldsLockingPolicy) {
             return false;
         }
-        Vector mappings = getMappings();
-        for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
-            DatabaseMapping mapping = (DatabaseMapping)iterator.next();
+        Vector<DatabaseMapping> mappings = getMappings();
+        for (Iterator<DatabaseMapping> iterator = mappings.iterator(); iterator.hasNext();) {
+            DatabaseMapping mapping = iterator.next();
             if (!mapping.isChangeTrackingSupported(project) ) {
                 return false;
             }
@@ -5963,7 +5790,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * @see #useFactoryInstantiationPolicy(Class, String, String)
      * @see #useFactoryInstantiationPolicy(Object, String)
      */
-    public void useFactoryInstantiationPolicy(Class factoryClass, String methodName) {
+    public void useFactoryInstantiationPolicy(Class<?> factoryClass, String methodName) {
         getInstantiationPolicy().useFactoryInstantiationPolicy(factoryClass, methodName);
     }
 
@@ -5988,7 +5815,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * @see #useFactoryInstantiationPolicy(Object, String)
      * @see #useMethodInstantiationPolicy(String)
      */
-    public void useFactoryInstantiationPolicy(Class factoryClass, String methodName, String factoryMethodName) {
+    public void useFactoryInstantiationPolicy(Class<?> factoryClass, String methodName, String factoryMethodName) {
         getInstantiationPolicy().useFactoryInstantiationPolicy(factoryClass, methodName, factoryMethodName);
     }
 

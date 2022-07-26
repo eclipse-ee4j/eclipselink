@@ -1,15 +1,15 @@
-/*******************************************************************************
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
 package org.eclipse.persistence.internal.helper.type;
 
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
@@ -42,14 +42,30 @@ public class ConcurrencyManagerState {
     private final Map<Thread, Set<ConcurrencyManager>> unifiedMapOfThreadsStuckTryingToAcquireWriteLock;
 
     /**
+     * Name of the method that go stuck waiting to acquire resource and created the trace.
+     */
+    private final Map<Thread, String> unifiedMapOfThreadsStuckTryingToAcquireWriteLockMethodName;
+
+    /**
      * information about threads that are waiting to acquire READ locks
      */
     private final Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireReadLockClone;
 
     /**
+     * Name of the method that go stuck waiting to acquire resource and created the trace.
+     */
+    private final Map<Thread, String> mapThreadToWaitOnAcquireReadLockCloneMethodName;
+
+    /**
      * information about threads that are waiting for object building to finish that have acquired deferred locks
      */
     private final Set<Thread> setThreadWaitingToReleaseDeferredLocksClone;
+
+    /**
+     * Stores an explanation created by the isBuildObjectComplete from the currency manager to be returning false, that
+     * build object is not yet complete.
+     */
+    private final Map<Thread, String> mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone;
 
     /**
      * information about cache keys and their relationship to threads.
@@ -69,28 +85,27 @@ public class ConcurrencyManagerState {
     /**
      * Create a new ConcurrencyManagerState.
      *
-     * @param readLockManagerMapClone
-     * @param deferredLockManagerMapClone
-     * @param unifiedMapOfThreadsStuckTryingToAcquireWriteLock
-     * @param mapThreadToWaitOnAcquireReadLockClone
-     * @param setThreadWaitingToReleaseDeferredLocksClone
-     * @param mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey
-     * @param mapThreadToObjectIdWithWriteLockManagerChangesClone
      */
     public ConcurrencyManagerState(
             Map<Thread, ReadLockManager> readLockManagerMapClone,
             Map<Thread, DeferredLockManager> deferredLockManagerMapClone,
             Map<Thread, Set<ConcurrencyManager>> unifiedMapOfThreadsStuckTryingToAcquireWriteLock,
+            Map<Thread, String> unifiedMapOfThreadsStuckTryingToAcquireWriteLockMethodName,
             Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireReadLockClone,
+            Map<Thread, String> mapThreadToWaitOnAcquireReadLockCloneMethodName,
             Set<Thread> setThreadWaitingToReleaseDeferredLocksClone,
+            Map<Thread, String> mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone,
             Map<ConcurrencyManager, CacheKeyToThreadRelationships> mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey,
             Map<Thread, Set<Object>> mapThreadToObjectIdWithWriteLockManagerChangesClone) {
         super();
         this.readLockManagerMapClone = readLockManagerMapClone;
         this.deferredLockManagerMapClone = deferredLockManagerMapClone;
         this.unifiedMapOfThreadsStuckTryingToAcquireWriteLock = unifiedMapOfThreadsStuckTryingToAcquireWriteLock;
+        this.unifiedMapOfThreadsStuckTryingToAcquireWriteLockMethodName = unifiedMapOfThreadsStuckTryingToAcquireWriteLockMethodName;
         this.mapThreadToWaitOnAcquireReadLockClone = mapThreadToWaitOnAcquireReadLockClone;
+        this.mapThreadToWaitOnAcquireReadLockCloneMethodName = mapThreadToWaitOnAcquireReadLockCloneMethodName;
         this.setThreadWaitingToReleaseDeferredLocksClone = setThreadWaitingToReleaseDeferredLocksClone;
+        this.mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone = mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone;
         this.mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey = mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey;
         this.mapThreadToObjectIdWithWriteLockManagerChangesClone = mapThreadToObjectIdWithWriteLockManagerChangesClone;
     }
@@ -120,6 +135,11 @@ public class ConcurrencyManagerState {
         return unmodifiableSet(setThreadWaitingToReleaseDeferredLocksClone);
     }
 
+    /** Getter for {@link #mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone} */
+    public Map<Thread, String> getMapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone() {
+        return unmodifiableMap(mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone);
+    }
+
     /** Getter for {@link #mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey} */
     public Map<ConcurrencyManager, CacheKeyToThreadRelationships> getMapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey() {
         return unmodifiableMap(mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey);
@@ -128,5 +148,15 @@ public class ConcurrencyManagerState {
     /** Getter for {@link #mapThreadToObjectIdWithWriteLockManagerChangesClone} */
     public Map<Thread, Set<Object>> getMapThreadToObjectIdWithWriteLockManagerChangesClone() {
         return unmodifiableMap(mapThreadToObjectIdWithWriteLockManagerChangesClone);
+    }
+
+    /** Getter for {@link #unifiedMapOfThreadsStuckTryingToAcquireWriteLockMethodName} */
+    public Map<Thread, String> getUnifiedMapOfThreadsStuckTryingToAcquireWriteLockMethodName() {
+        return unmodifiableMap(unifiedMapOfThreadsStuckTryingToAcquireWriteLockMethodName);
+    }
+
+    /** Getter for {@link #mapThreadToWaitOnAcquireReadLockCloneMethodName} */
+    public Map<Thread, String> getMapThreadToWaitOnAcquireReadLockCloneMethodName() {
+        return unmodifiableMap(mapThreadToWaitOnAcquireReadLockCloneMethodName);
     }
 }

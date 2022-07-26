@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
+import org.eclipse.persistence.expressions.Expression;
+
 /**
  * INTERNAL
  * <p><b>Purpose</b>: Superclass for Aggregate Nodes
@@ -23,9 +25,6 @@ package org.eclipse.persistence.internal.jpa.parsing;
  *    @author Jon Driscoll
  *    @since TopLink 5.0
  */
-
-import org.eclipse.persistence.expressions.Expression;
-
 public abstract class AggregateNode extends Node implements AliasableNode {
 
     private boolean distinct = false;
@@ -36,14 +35,14 @@ public abstract class AggregateNode extends Node implements AliasableNode {
     @Override
     public String resolveAttribute() {
         Node arg = getLeft();
-        return arg.isDotNode() ? ((DotNode)arg).resolveAttribute() : null;
+        return arg.isDotNode() ? arg.resolveAttribute() : null;
     }
 
     /**
      * resolveClass: Answer the class associated with my left node.
      */
     @Override
-    public Class resolveClass(GenerationContext context) {
+    public Class<?> resolveClass(GenerationContext context) {
         return getLeft().resolveClass(context);
     }
 

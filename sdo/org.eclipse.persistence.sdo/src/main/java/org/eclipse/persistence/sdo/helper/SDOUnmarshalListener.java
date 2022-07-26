@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -144,7 +144,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                     List unsetValueList = new ArrayList();
                     if ((unsetValue != null) && (unsetValue.length() > 0)) {
                         XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
-                        unsetValueList = (List)xmlConversionManager.convertObject(unsetValue, List.class);
+                        unsetValueList = xmlConversionManager.convertObject(unsetValue, List.class);
                     }
                     if (nextModifiedDO != null) {
                         nextModifiedDO._setModified(true);
@@ -217,7 +217,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                         //after this loop, lw will have the entire list when logging was turned on
                                         nextCS.pauseLogging();
                                         for (int m = 0; m < indexsToDeleteSize; m++) {
-                                            int toDeleteIndex = ((Integer)indexsToDelete.get(m)).intValue();
+                                            int toDeleteIndex = (Integer) indexsToDelete.get(m);
                                             SDODataObject nextToDelete = (SDODataObject)toDelete.get(m);
                                             lw.add(toDeleteIndex, nextToDelete);
                                         }
@@ -226,7 +226,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                         nextCS.resumeLogging();
                                         nextModifiedDO._setModified(true);
                                         for (int m = indexsToDeleteSize - 1; m >= 0; m--) {
-                                            int toDeleteIndex = ((Integer)indexsToDelete.get(m)).intValue();
+                                            int toDeleteIndex = (Integer) indexsToDelete.get(m);
                                             SDODataObject nextToDelete = (SDODataObject)toDelete.get(m);
                                             if(nextSeq != null){
                                                nextSeq.addSettingWithoutModifyingDataObject(-1, nextProp, nextToDelete);

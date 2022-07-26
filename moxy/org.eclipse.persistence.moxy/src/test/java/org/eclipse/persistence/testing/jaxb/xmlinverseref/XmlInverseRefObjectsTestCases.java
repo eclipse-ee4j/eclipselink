@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public class XmlInverseRefObjectsTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlJSON(JSON_RESOURCE);
         setControlDocument(XML_RESOURCE);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
     }
 
     @Override
@@ -49,6 +49,7 @@ public class XmlInverseRefObjectsTestCases extends JAXBWithJSONTestCases{
         return p;
     }
 
+     @Override
      public void xmlToObjectTest(Object testObject) throws Exception {
             log("\n**xmlToObjectTest**");
             log("Expected:");
@@ -68,6 +69,7 @@ public class XmlInverseRefObjectsTestCases extends JAXBWithJSONTestCases{
             compareObject(testObject);
         }
 
+       @Override
        public void jsonToObjectTest(Object testObject, Object controlObject) throws Exception {
             if(controlObject == null){
                 assertNull(testObject);

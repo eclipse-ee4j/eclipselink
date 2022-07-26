@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,10 +33,10 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  * @see ValueHolderInterface
  * @author    Dorin Sandu
  */
-public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderInterface, Cloneable, Serializable {
+public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHolderInterface<T>, Cloneable, Serializable {
 
     /** Stores the object after it is read from the database. */
-    protected volatile Object value;
+    protected volatile T value;
 
     /** Indicates whether the object has been read from the database or not. */
     protected volatile boolean isInstantiated;
@@ -55,6 +55,12 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * Set internally in EclipseLink when the state of coordination between a weaved valueholder and the underlying property is known
      */
     protected boolean isCoordinatedWithProperty = false;
+
+    /**
+     * Default constructor.
+     */
+    protected DatabaseValueHolder() {
+    }
 
     @Override
     public Object clone() {
@@ -79,7 +85,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
         return session;
     }
 
-    public ValueHolderInterface getWrappedValueHolder() {
+    public ValueHolderInterface<?> getWrappedValueHolder() {
         return null;
     }
 
@@ -87,7 +93,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * Return the object.
      */
     @Override
-    public Object getValue() {
+    public T getValue() {
         boolean instantiated = this.isInstantiated;
         if (!instantiated) {
             synchronized (this) {
@@ -108,7 +114,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * Process against the UOW and attempt to load a local copy before going to the shared cache
      * If null is returned then the calling UOW will instantiate as normal.
      */
-    public Object getValue(UnitOfWorkImpl uow) {
+    public T getValue(UnitOfWorkImpl uow) {
         //This method simply returns null as this will cause the UOWVH to trigger
         //the relationship normally.
         return null;
@@ -117,7 +123,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
     /**
      * Instantiate the object.
      */
-    protected abstract Object instantiate() throws DatabaseException;
+    protected abstract T instantiate() throws DatabaseException;
 
     /**
      * Triggers UnitOfWork valueholders directly without triggering the wrapped
@@ -131,7 +137,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * Note: Implementations of this method are not necessarily thread-safe.  They must
      * be used in a synchronized manner
      */
-    public abstract Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder);
+    public abstract T instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder<T> unitOfWorkValueHolder);
 
     /**
      * This method is used as part of the implementation of WeavedAttributeValueHolderInterface
@@ -218,7 +224,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
     /**
      * Set the object. This is used only by the privileged methods. One must be very careful in using this method.
      */
-    public void privilegedSetValue(Object value) {
+    public void privilegedSetValue(T value) {
         this.value = value;
         isCoordinatedWithProperty = false;
     }
@@ -299,7 +305,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * Set the object.
      */
     @Override
-    public void setValue(Object value) {
+    public void setValue(T value) {
         this.value = value;
         setInstantiated();
     }

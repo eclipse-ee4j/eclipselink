@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,16 +37,19 @@ QueryByExampleInUOWTest extends TestCase {
     public QueryByExampleInUOWTest() {
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         getAbstractSession().rollbackTransaction();
     }
 
+    @Override
     protected void setup() {
         getAbstractSession().beginTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(Employee.class);
@@ -64,6 +67,7 @@ QueryByExampleInUOWTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         if (m_empToCheck != null && m_empToCheck.getId().doubleValue() == 75 &&
             m_empToCheck.getFirstName().equals("Guy") && m_empToCheck.getLastName().equals("Pelletier")) {

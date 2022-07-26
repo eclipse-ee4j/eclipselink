@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases{
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee[].class;
         setClasses(classes);
         initXsiType();
@@ -65,6 +65,7 @@ public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases{
         return namespaces;
     }
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeeArray.xsd");
 
@@ -73,6 +74,7 @@ public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases{
         return controlSchema;
     }
 
+    @Override
     protected Object getControlObject() {
         ArrayList responsibilities = new ArrayList();
         responsibilities.add(CONTROL_RESPONSIBILITY1);
@@ -114,10 +116,12 @@ public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases{
         return jaxbElement;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         return Employee[].class;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

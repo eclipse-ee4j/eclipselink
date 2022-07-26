@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 
@@ -40,19 +39,20 @@ public class CollectionMappingIsMapPolicyTest extends ProjectClassGeneratorResul
         setDescription("Test addForeignReferenceMappingLines method ->   isMapPolicy is true");
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         descriptorToModify = project.getDescriptors().get(Employee.class);
         policy = new MapContainerPolicy();
-        for (Enumeration mappingsEnum = (descriptorToModify.getMappings()).elements();
+        for (Enumeration<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).elements();
              mappingsEnum.hasMoreElements(); ) {
-            mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();
+            mappingToModify = mappingsEnum.nextElement();
 
             if (mappingToModify.isForeignReferenceMapping()) {
-                if (((ForeignReferenceMapping)mappingToModify).isCollectionMapping()) {
+                if (mappingToModify.isCollectionMapping()) {
                     CollectionMapping collectionMapping =
-                        (CollectionMapping)(((ForeignReferenceMapping)mappingToModify));
+                        (CollectionMapping) mappingToModify;
                     collectionMapping.setContainerPolicy(policy);
                     policy.setKeyName("testMethod");
                     collectionMapping.getContainerPolicy().setContainerClass(Vector.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class InheritanceWithMultiplePackagesNSTestCases extends InheritanceWithM
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootComplex.class});
+        setClasses(new Class<?>[] {RootComplex.class});
 
         Map namespaces = new HashMap();
         namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.SCHEMA_PREFIX);
@@ -52,6 +52,7 @@ public class InheritanceWithMultiplePackagesNSTestCases extends InheritanceWithM
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, true);
     }
 
+    @Override
     protected Object getControlObject() {
         RootComplex root = new RootComplex();
         SubType subType = new SubType();
@@ -73,7 +74,7 @@ public class InheritanceWithMultiplePackagesNSTestCases extends InheritanceWithM
 
         List objectList = new ArrayList(baseTypes);
         objectList.add(new String("string test"));
-        objectList.add(new Integer(500));
+        objectList.add(500);
         root.objectList = objectList;
 
         List anyObjectList = new ArrayList(baseTypes);
@@ -83,7 +84,7 @@ public class InheritanceWithMultiplePackagesNSTestCases extends InheritanceWithM
         choiceList.add(anotherPackageSubType);
         choiceList.add(subTypeLevel2);
         choiceList.add(new String("choice string test"));
-        choiceList.add(new Integer(500));
+        choiceList.add(500);
         root.choiceList = choiceList;
         return root;
     }

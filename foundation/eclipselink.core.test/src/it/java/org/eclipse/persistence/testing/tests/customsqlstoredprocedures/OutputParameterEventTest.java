@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class OutputParameterEventTest extends TestCase {
         this.events = new Vector();
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         if (getAbstractSession().isInTransaction()) {
@@ -40,6 +41,7 @@ public class OutputParameterEventTest extends TestCase {
         }
     }
 
+    @Override
     public void setup() {
         // right now only the stored procedure is set up in SQLServer
         if (!(getSession().getPlatform().isSQLServer() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLAnywhere())) {
@@ -49,6 +51,7 @@ public class OutputParameterEventTest extends TestCase {
         this.events = new Vector();
     }
 
+    @Override
     public void test() {
         DatabaseSession session = (DatabaseSession)getSession();
         session.getEventManager().addListener(new StoredProcedureOutputListener(this.events));
@@ -59,6 +62,7 @@ public class OutputParameterEventTest extends TestCase {
      * This verify method presumes that the stored procedure in EmployeeCustomSQLSystem.buildSQLInsertProcedure
      * has not changed and still returns an output parameter VERSION with value 952
      */
+    @Override
     public void verify() {
         if (this.events.isEmpty()) {
             throw new TestErrorException("No session events were thrown and some were expected");

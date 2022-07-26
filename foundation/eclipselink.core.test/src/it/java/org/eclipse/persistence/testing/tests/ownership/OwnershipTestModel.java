@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,10 +26,12 @@ public class OwnershipTestModel extends TestModel {
         setDescription("This model tests reading/writing/deleting of the complex ownership model.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new OwnershipSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getReadAllTestSuite());
@@ -44,7 +46,7 @@ public class OwnershipTestModel extends TestModel {
         suite.setName("OwnershipDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the ownership model.");
 
-        Class objectAClass = ObjectA.class;
+        Class<ObjectA> objectAClass = ObjectA.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new DeleteObjectTest(manager.getObject(objectAClass, "example1")));
@@ -85,7 +87,7 @@ public class OwnershipTestModel extends TestModel {
         suite.setName("OwnershipReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the ownership model.");
 
-        Class objectAClass = ObjectA.class;
+        Class<ObjectA> objectAClass = ObjectA.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(objectAClass, "example1")));
@@ -100,7 +102,7 @@ public class OwnershipTestModel extends TestModel {
         suite.setName("OwnershipUnitOfWorkTestSuite");
         suite.setDescription("This suite verifies that UOW works in the ownership model");
 
-        Class objectAClass = ObjectA.class;
+        Class<ObjectA> objectAClass = ObjectA.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new UnitOfWorkTest(manager.getObject(objectAClass, "example1")));
@@ -115,7 +117,7 @@ public class OwnershipTestModel extends TestModel {
         suite.setName("OwnershipUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the ownership model.");
 
-        Class objectAClass = ObjectA.class;
+        Class<ObjectA> objectAClass = ObjectA.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(objectAClass, "example1")));

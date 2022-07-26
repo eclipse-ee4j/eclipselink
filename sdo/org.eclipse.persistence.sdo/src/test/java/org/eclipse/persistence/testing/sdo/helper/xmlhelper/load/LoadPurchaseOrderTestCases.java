@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,14 +22,17 @@ public class LoadPurchaseOrderTestCases extends SDOXMLHelperLoadTestCases {
         super(name);
     }
 
+    @Override
     protected String getFileNameToLoad() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/purchaseOrderNS.xml");
     }
 
+    @Override
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrder.xsd";
     }
 
+    @Override
     protected void verifyDocument(XMLDocument document) {
         super.verifyDocument(document);
         assertEquals("purchaseOrder", document.getRootElementName());
@@ -73,6 +76,7 @@ public class LoadPurchaseOrderTestCases extends SDOXMLHelperLoadTestCases {
         }
     }
 
+    @Override
     protected void createTypes() {
     }
 }

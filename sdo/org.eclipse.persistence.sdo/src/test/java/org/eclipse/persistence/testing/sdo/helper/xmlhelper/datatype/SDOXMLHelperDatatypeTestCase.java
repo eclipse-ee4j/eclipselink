@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,22 +18,17 @@ package org.eclipse.persistence.testing.sdo.helper.xmlhelper.datatype;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.StringReader;
-import java.util.ArrayList;
 
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.SDOXMLDocument;
-import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
-import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegator;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import commonj.sdo.DataObject;
-import commonj.sdo.Property;
 import commonj.sdo.helper.XMLDocument;
 
 public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
@@ -44,7 +39,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
 
     // === METHODS TO OVERRIDE ==========================
 
-    protected abstract Class getDatatypeJavaClass();
+    protected abstract Class<?> getDatatypeJavaClass();
 
     protected abstract SDOType getValueType();
 
@@ -125,7 +120,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
 
         assertNull(document.getRootObject().getType().getInstanceClass());
 
-        Class instanceClassFromDocument = document.getRootObject().get("value").getClass();
+        Class<? extends Object> instanceClassFromDocument = document.getRootObject().get("value").getClass();
         assertEquals(getDatatypeJavaClass(), instanceClassFromDocument);
     }
 
@@ -137,7 +132,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
 
         assertNull(document.getRootObject().getType().getInstanceClass());
 
-        Class instanceClassFromDocument = document.getRootObject().get("value").getClass();
+        Class<? extends Object> instanceClassFromDocument = document.getRootObject().get("value").getClass();
         assertEquals(getDatatypeJavaClass(), instanceClassFromDocument);
     }
 
@@ -151,7 +146,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
-        ((SDOXMLHelper) xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
 
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);
@@ -169,7 +164,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
-        ((SDOXMLHelper) xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
 
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);
@@ -187,7 +182,7 @@ public abstract class SDOXMLHelperDatatypeTestCase extends SDOTestCase {
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
 
         StreamResult result = new StreamResult(outstream);
-        ((SDOXMLHelper) xmlHelper).save(document, result, null);
+        xmlHelper.save(document, result, null);
 
         // Uncomment to print out document during test
         //((SDOXMLHelper) xmlHelper).save(document, System.out, null);

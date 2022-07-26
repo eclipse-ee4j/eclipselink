@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,11 +17,12 @@ package org.eclipse.persistence.testing.tests.jpql;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 public class SimpleSqrtTest extends org.eclipse.persistence.testing.tests.jpql.SqrtTestCase {
+    @Override
     public void setup() {
         setTestEmployees(getExtraEmployees());
         Employee emp = (Employee)getTestEmployees().firstElement();
 
-        double salarySquareRoot = Math.sqrt((new Double(emp.getSalary()).doubleValue()));
+        double salarySquareRoot = Math.sqrt(emp.getSalary());
         String ejbqlString;
 
         ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,14 +22,14 @@ import org.w3c.dom.NodeList;
  * Implementation of the org.w3c.dom.NodeList interface
  */
 public class XMLNodeList implements NodeList {
-    private ArrayList nodes;
+    private ArrayList<Node> nodes;
 
     public XMLNodeList() {
-        nodes = new ArrayList();
+        nodes = new ArrayList<>();
     }
 
     public XMLNodeList(int size) {
-        nodes = new ArrayList(size);
+        nodes = new ArrayList<>(size);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class XMLNodeList implements NodeList {
 
     @Override
     public Node item(int i) {
-        return (Node)nodes.get(i);
+        return nodes.get(i);
     }
 
     public void add(Node node) {

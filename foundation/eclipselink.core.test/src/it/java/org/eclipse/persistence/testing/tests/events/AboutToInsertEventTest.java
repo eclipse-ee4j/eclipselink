@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,7 @@ public abstract class AboutToInsertEventTest extends TestCase {
      */
     public abstract String getSQLVerificationString();
 
+    @Override
     public void setup() {
         // Both subclasses of this test check objectToInsert.getId(), but it is null in case
         // pk assigned to the object after INSERT
@@ -63,6 +64,7 @@ public abstract class AboutToInsertEventTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         // Insert an object
         // An event listener will be triggered
@@ -71,6 +73,7 @@ public abstract class AboutToInsertEventTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         DataReadQuery query = new DataReadQuery(getSQLVerificationString());
 
@@ -85,6 +88,7 @@ public abstract class AboutToInsertEventTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         if (getAbstractSession().isInTransaction()) {
             rollbackTransaction();

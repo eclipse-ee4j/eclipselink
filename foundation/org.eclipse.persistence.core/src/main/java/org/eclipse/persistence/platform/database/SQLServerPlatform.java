@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
@@ -65,6 +69,16 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         super();
         this.pingSQL = "SELECT 1";
         this.storedProcedureTerminationToken = " go";
+        this.supportsReturnGeneratedKeys = true;
+    }
+
+    @Override
+    public Map<Object, Object> connectionProperties() {
+        // All MS SQL Server properties must be of String type.
+        Map<String, String> connectionProperties = new HashMap<>();
+        // Send Time values as TIME type.
+        connectionProperties.put("sendTimeAsDatetime", Boolean.FALSE.toString());
+        return Collections.unmodifiableMap(connectionProperties);
     }
 
     @Override
@@ -196,10 +210,15 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
+    protected Map<String, Class<?>> buildClassTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
+        classTypeMapping.put("DATETIME2", java.sql.Timestamp.class);
+        return classTypeMapping;
+    }
 
-        fieldTypeMapping = new Hashtable();
+    @Override
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT default 0", false));
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
@@ -227,9 +246,14 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("IMAGE", false));
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATETIME", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("DATETIME", false));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME2", false));
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE", false));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME", false));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("DATETIME2", false));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("DATETIME2", false));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("DATETIME2", false));
 
         return fieldTypeMapping;
     }
@@ -443,8 +467,10 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         // ExpressionOperator.currentDate and ExpressionOperator.currentTime
         // However, there is no known function on sql server that returns just
         // the date or just the time.
-        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.CurrentDate, "GETDATE"));
-        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.CurrentTime, "GETDATE"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "CONVERT(DATE, GETDATE())"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentTime, "CONVERT(TIME, GETDATE())"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalDate, "CONVERT(DATE, GETDATE())"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "CONVERT(TIME, GETDATE())"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "CHAR_LENGTH"));
         addOperator(ExpressionOperator.simpleThreeArgumentFunction(ExpressionOperator.Substring, "SUBSTRING"));
         addOperator(singleArgumentSubstringOperator());
@@ -459,17 +485,18 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         addOperator(ExpressionOperator.replicate());
         addOperator(ExpressionOperator.right());
         addOperator(ExpressionOperator.cot());
-        addOperator(ExpressionOperator.sybaseAtan2Operator());
-        addOperator(ExpressionOperator.sybaseAddMonthsOperator());
-        addOperator(ExpressionOperator.sybaseInStringOperator());
+        addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATN2"));
+        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Ln, "LOG"));
+        addOperator(addMonthsOperator());
+        addOperator(inStringOperator());
         // bug 3061144
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "ISNULL"));
         // CR### TO_NUMBER, TO_CHAR, TO_DATE is CONVERT(type, ?)
-        addOperator(ExpressionOperator.sybaseToNumberOperator());
-        addOperator(ExpressionOperator.sybaseToDateToStringOperator());
-        addOperator(ExpressionOperator.sybaseToDateOperator());
-        addOperator(ExpressionOperator.sybaseToCharOperator());
-        addOperator(ExpressionOperator.sybaseLocateOperator());
+        addOperator(toNumberOperator());
+        addOperator(toDateToStringOperator());
+        addOperator(toDateOperator());
+        addOperator(toCharOperator());
+        addOperator(locateOperator());
         addOperator(locate2Operator());
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Ceil, "CEILING"));
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "LEN"));
@@ -477,19 +504,81 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         addOperator(ExpressionOperator.simpleAggregate(ExpressionOperator.StandardDeviation, "STDEV", "standardDeviation"));
         addOperator(trimOperator());
         addOperator(trim2Operator());
-        addOperator(extractOperator());
+        addOperator(mssqlExtractOperator());
     }
 
     /**
      * INTERNAL:
-     * Derby does not support EXTRACT, but does have DATEPART.
+     * MS SQL does not support EXTRACT, but does have DATEPART.
+     * ISO_WEEK should be used instead of WEEK.
      */
-    public static ExpressionOperator extractOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
+    protected static ExpressionOperator mssqlExtractOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator() {
+
+            // WEEK replacement: ISO_WEEK
+            private final String[] WEEK_STRINGS = new String[] {"DATEPART(ISO_WEEK,", ")"};
+
+            private void printWeekSQL(final Expression first, final ExpressionSQLPrinter printer) {
+                printer.printString(WEEK_STRINGS[0]);
+                first.printSQL(printer);
+                printer.printString(WEEK_STRINGS[1]);
+            }
+
+            private void printWeekJava(final Expression first, final ExpressionJavaPrinter printer) {
+                printer.printString(WEEK_STRINGS[0]);
+                first.printJava(printer);
+                printer.printString(WEEK_STRINGS[1]);
+            }
+
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                    printWeekSQL(first, printer);
+                } else {
+                    super.printDuo(first, second, printer);
+                }
+            }
+
+            @Override
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+                if (items.size() == 2) {
+                    Expression first = items.get(0);
+                    Expression second = items.get(1);
+                    if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                        printWeekSQL(first, printer);
+                        return;
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                    printWeekJava(first, printer);
+                } else {
+                    super.printJavaDuo(first, second, printer);
+                }
+            }
+
+            @Override
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
+                if (items.size() == 2) {
+                    Expression first = items.get(0);
+                    Expression second = items.get(1);
+                    if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
+                        printWeekJava(first, printer);
+                        return;
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Extract);
         exOperator.setName("EXTRACT");
-        Vector v = NonSynchronizedVector.newInstance(5);
+        List<String> v = new ArrayList<>(5);
         v.add("DATEPART(");
         v.add(",");
         v.add(")");
@@ -507,11 +596,11 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Use RTRIM(LTRIM(?)) function for trim.
      */
-    public static ExpressionOperator trimOperator() {
+    protected static ExpressionOperator trimOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Trim);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add("RTRIM(LTRIM(");
         v.add("))");
         exOperator.printsAs(v);
@@ -524,11 +613,11 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Build Trim operator.
      */
-    public static ExpressionOperator trim2Operator() {
+    protected static ExpressionOperator trim2Operator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Trim2);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        List<String> v = new ArrayList<>(5);
         v.add("RTRIM(");
         v.add(" FROM LTRIM(");
         v.add(" FROM ");
@@ -544,34 +633,19 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     /**
-     * INTERNAL:
-     * Return true if output parameters can be built with result sets.
-     */
-    @Override
-    public boolean isOutputAllowWithResultSet() {
-        return false;
-    }
-
-    @Override
-    public boolean isSQLServer() {
-        return true;
-    }
-
-    /**
      *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable maximumNumericValues() {
-        Hashtable values = new Hashtable();
-
-        values.put(Integer.class, Integer.valueOf(Integer.MAX_VALUE));
-        values.put(Long.class, Long.valueOf(Long.MAX_VALUE));
-        values.put(Double.class, Double.valueOf(0));
-        values.put(Short.class, Short.valueOf(Short.MAX_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MAX_VALUE));
-        values.put(Float.class, Float.valueOf(0));
+    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+        values.put(Integer.class, Integer.MAX_VALUE);
+        values.put(Long.class, Long.MAX_VALUE);
+        values.put(Double.class, (double) 0);
+        values.put(Short.class, Short.MAX_VALUE);
+        values.put(Byte.class, Byte.MAX_VALUE);
+        values.put(Float.class, (float) 0);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("9999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("999999999.9999999999999999999"));
         return values;
@@ -583,15 +657,14 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable minimumNumericValues() {
-        Hashtable values = new Hashtable();
-
-        values.put(Integer.class, Integer.valueOf(Integer.MIN_VALUE));
-        values.put(Long.class, Long.valueOf(Long.MIN_VALUE));
-        values.put(Double.class, Double.valueOf(-9));
-        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
-        values.put(Float.class, Float.valueOf(-9));
+    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+        values.put(Integer.class, Integer.MIN_VALUE);
+        values.put(Long.class, Long.MIN_VALUE);
+        values.put(Double.class, (double) -9);
+        values.put(Short.class, Short.MIN_VALUE);
+        values.put(Byte.class, Byte.MIN_VALUE);
+        values.put(Float.class, (float) -9);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-9999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-999999999.9999999999999999999"));
         return values;
@@ -600,11 +673,11 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * Override the default MOD operator.
      */
-    public ExpressionOperator modOperator() {
+    protected ExpressionOperator modOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Mod);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        v.addElement(" % ");
+        List<String> v = new ArrayList<>();
+        v.add(" % ");
         result.printsAs(v);
         result.bePostfix();
         result.setNodeClass(org.eclipse.persistence.internal.expressions.FunctionExpression.class);
@@ -614,15 +687,15 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /**
      * Override the default SubstringSingleArg operator.
      */
-    public ExpressionOperator singleArgumentSubstringOperator() {
+    protected static ExpressionOperator singleArgumentSubstringOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.SubstringSingleArg);
         result.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        v.addElement("SUBSTRING(");
-        v.addElement(",");
-        v.addElement(", LEN(");
-        v.addElement("))");
+        List<String> v = new ArrayList<>();
+        v.add("SUBSTRING(");
+        v.add(",");
+        v.add(", LEN(");
+        v.add("))");
         result.printsAs(v);
         int[] indices = new int[3];
         indices[0] = 0;
@@ -638,11 +711,11 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     /*
      *  Create the outer join operator for this platform
      */
-    protected ExpressionOperator operatorOuterJoin() {
+    protected static ExpressionOperator operatorOuterJoin() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.EqualOuterJoin);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        v.addElement(" =* ");
+        List<String> v = new ArrayList<>();
+        v.add(" =* ");
         result.printsAs(v);
         result.bePostfix();
         result.setNodeClass(RelationExpression.class);
@@ -653,7 +726,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * create the Locate2 Operator for this platform
      */
-    public static ExpressionOperator locate2Operator() {
+    protected static ExpressionOperator locate2Operator() {
         ExpressionOperator result = ExpressionOperator.simpleThreeArgumentFunction(ExpressionOperator.Locate2, "CHARINDEX");
         int[] argumentIndices = new int[3];
         argumentIndices[0] = 1;
@@ -664,6 +737,140 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
 
+
+    /**
+     * INTERNAL:
+     * Function, to add months to a date.
+     */
+    protected static ExpressionOperator addMonthsOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.AddMonths);
+        List<String> v = new ArrayList<>(3);
+        v.add("DATEADD(month, ");
+        v.add(", ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 1, 0 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build instring operator
+     */
+    protected static ExpressionOperator inStringOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Instring);
+        List<String> v = new ArrayList<>(3);
+        v.add("CHARINDEX(");
+        v.add(", ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 1, 0 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_NUMBER.
+     */
+    protected static ExpressionOperator toNumberOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.ToNumber);
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(NUMERIC, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_CHAR.
+     */
+    protected static ExpressionOperator toDateToStringOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.DateToString);
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(CHAR, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_DATE.
+     */
+    protected static ExpressionOperator toDateOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.ToDate);
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(DATETIME, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build Sybase equivalent to TO_CHAR.
+     */
+    protected static ExpressionOperator toCharOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.ToChar);
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(CHAR, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build the Sybase equivalent to Locate
+     */
+    protected static ExpressionOperator locateOperator() {
+        ExpressionOperator result = ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Locate, "CHARINDEX");
+        int[] argumentIndices = new int[2];
+        argumentIndices[0] = 1;
+        argumentIndices[1] = 0;
+        result.setArgumentIndices(argumentIndices);
+        return result;
+    }
+
+    /**
+     * INTERNAL:
+     * Return true if output parameters can be built with result sets.
+     */
+    @Override
+    public boolean isOutputAllowWithResultSet() {
+        return false;
+    }
+
+    public boolean isSQLServer() {
+        return true;
+    }
 
     /**
      * INTERNAL:
@@ -782,8 +989,8 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      */
     @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
-                                                    Collection pkFields,
-                                                    Collection assignedFields) throws IOException
+                                                    Collection<DatabaseField> pkFields,
+                                                    Collection<DatabaseField> assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
@@ -852,26 +1059,44 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
-    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index,
-            AbstractSession session) throws SQLException {
-        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
-            // avoid default logic, which loses offset when converting to java.sql.Timestamp
-            statement.setObject(index, parameter);
+    public void setParameterValueInDatabaseCall(
+            Object parameter, PreparedStatement statement, int index, AbstractSession session
+    ) throws SQLException {
+        // Pass date/time instance directly when JDBC driver supports it
+        if (driverSupportsOffsetDateTime) {
+            if (parameter instanceof OffsetDateTime || parameter instanceof OffsetTime
+                    || parameter instanceof LocalTime || parameter instanceof LocalDate || parameter instanceof LocalDateTime) {
+                statement.setObject(index, parameter);
+                return;
+            }
+        // Default platform is using statement.setTimestamp(index, ...) for LocalTime and it causes cast exceptions in SQL statements
+        } else if (parameter instanceof LocalTime) {
+            statement.setTime(
+                    index, java.sql.Time.valueOf((LocalTime) parameter));
             return;
         }
-
         super.setParameterValueInDatabaseCall(parameter, statement, index, session);
     }
 
     @Override
-    public void setParameterValueInDatabaseCall(Object parameter, CallableStatement statement, String name,
-            AbstractSession session) throws SQLException {
-        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
-            // avoid default logic, which loses offset when converting to java.sql.Timestamp
-            statement.setObject(name, parameter);
+    public void setParameterValueInDatabaseCall(
+            Object parameter, CallableStatement statement, String name, AbstractSession session
+    ) throws SQLException {
+        // Pass date/time instance directly when JDBC driver supports it
+        if (driverSupportsOffsetDateTime) {
+            if (parameter instanceof OffsetDateTime || parameter instanceof OffsetTime
+                    || parameter instanceof LocalTime || parameter instanceof LocalDate || parameter instanceof LocalDateTime) {
+                statement.setObject(name, parameter);
+                return;
+            }
+        // Default platform is using statement.setTimestamp(index, ...) for LocalTime and it causes cast exceptions in SQL statements
+        } else if (parameter instanceof LocalTime) {
+            statement.setTime(
+                    name, java.sql.Time.valueOf((LocalTime) parameter));
             return;
         }
 
         super.setParameterValueInDatabaseCall(parameter, statement, name, session);
     }
+
 }

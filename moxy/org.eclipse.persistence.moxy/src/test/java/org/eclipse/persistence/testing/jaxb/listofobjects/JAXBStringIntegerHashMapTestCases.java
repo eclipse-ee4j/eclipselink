@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,27 +44,31 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsNoJSONTe
         setTypes(types);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         getXMLComparer().setIgnoreOrder(true);
     }
 
+    @Override
     public void tearDown(){
         super.tearDown();
         getXMLComparer().setIgnoreOrder(false);
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = getClass().getField("test");
 
         return fld.getGenericType();
     }
 
+    @Override
     protected Object getControlObject() {
         HashMap<String, Integer> theMap = new HashMap<String, Integer>();
-        theMap.put("thekey", new Integer(10));
-        theMap.put("thekey2", new Integer(20));
-        theMap.put("thekey3", new Integer(30));
+        theMap.put("thekey", 10);
+        theMap.put("thekey2", 20);
+        theMap.put("thekey3", 30);
 
         QName qname = new QName("examplenamespace", "root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
@@ -73,6 +77,7 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsNoJSONTe
         return jaxbElement;
     }
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
        InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/stringIntegerHashMap.xsd");
 
@@ -81,6 +86,7 @@ public class JAXBStringIntegerHashMapTestCases extends JAXBListOfObjectsNoJSONTe
         return controlSchema;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

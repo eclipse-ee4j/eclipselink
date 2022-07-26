@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -173,8 +173,8 @@ public class LoadBuildSystem {
         UnitOfWork uow = session.acquireUnitOfWork();
         while (summaries.hasNext()) {
             LoadBuildSummary summary = (LoadBuildSummary)summaries.next();
-            for (Iterator iterator = summary.getSummaries().iterator(); iterator.hasNext(); ) {
-                ((TestResultsSummary)iterator.next()).getResults();
+            for (Iterator<TestResultsSummary> iterator = summary.getSummaries().iterator(); iterator.hasNext(); ) {
+                iterator.next().getResults();
             }
             //for (int index = 0; index < 10; index++) {
                 CopyGroup group = new CopyGroup();

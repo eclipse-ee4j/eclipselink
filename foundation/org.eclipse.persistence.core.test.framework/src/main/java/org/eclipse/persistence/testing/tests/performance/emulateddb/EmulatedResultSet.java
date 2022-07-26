@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -130,7 +130,7 @@ public class EmulatedResultSet implements ResultSet {
      */
     @Override
     public boolean getBoolean(int columnIndex) throws SQLException {
-        return ((Boolean)getObject(columnIndex)).booleanValue();
+        return (Boolean) getObject(columnIndex);
     }
 
     /**
@@ -256,6 +256,7 @@ public class EmulatedResultSet implements ResultSet {
      * @deprecated
      */
     @Override
+    @Deprecated
     public BigDecimal getBigDecimal(int columnIndex, int scale)throws SQLException {
         return (BigDecimal)getObject(columnIndex);
     }
@@ -383,6 +384,7 @@ public class EmulatedResultSet implements ResultSet {
      *              <code>getUnicodeStream</code>
      */
     @Override
+    @Deprecated
     public java.io.InputStream getUnicodeStream(int columnIndex) throws SQLException {
         return (java.io.InputStream)getObject(columnIndex);
     }
@@ -444,7 +446,7 @@ public class EmulatedResultSet implements ResultSet {
      */
     @Override
     public boolean getBoolean(String columnName) throws SQLException {
-        return ((Boolean)getObject(columnName)).booleanValue();
+        return (Boolean) getObject(columnName);
     }
 
     /**
@@ -570,6 +572,7 @@ public class EmulatedResultSet implements ResultSet {
      * @deprecated
      */
     @Override
+    @Deprecated
     public BigDecimal getBigDecimal(String columnName, int scale) throws SQLException {
         return (BigDecimal)getObject(columnName);
     }
@@ -695,6 +698,7 @@ public class EmulatedResultSet implements ResultSet {
      * @deprecated use <code>getCharacterStream</code> instead
      */
     @Override
+    @Deprecated
     public java.io.InputStream getUnicodeStream(String columnName) throws SQLException {
         return (java.io.InputStream)getObject(columnName);
     }

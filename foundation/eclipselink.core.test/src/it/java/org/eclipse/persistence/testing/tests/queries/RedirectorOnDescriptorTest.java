@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class RedirectorOnDescriptorTest extends TestCase {
 
     protected ClassDescriptor descriptor = null;
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         getAbstractSession().beginTransaction();
@@ -88,6 +89,7 @@ public class RedirectorOnDescriptorTest extends TestCase {
         descriptor.getQueryManager().setUpdateQuery(uoq);
     }
 
+    @Override
     public void test() {
         // test readAll
         getSession().readAllObjects(Employee.class);
@@ -121,6 +123,7 @@ public class RedirectorOnDescriptorTest extends TestCase {
 
     }
 
+    @Override
     public void verify() {
         if (!redirectedReadObject) {
             throw new TestErrorException("ReadObjectQuery was not properly redirected when redirection was set on the Descriptor.");
@@ -139,6 +142,7 @@ public class RedirectorOnDescriptorTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
@@ -159,27 +163,27 @@ public class RedirectorOnDescriptorTest extends TestCase {
      */
     public static
 
-    Object deleteObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    Object deleteObject(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         redirectedDeleteObject = true;
         return null;
     }
 
-    public static Object insertObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object insertObject(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         redirectedInsert = true;
         return null;
     }
 
-    public static Object readAll(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object readAll(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         redirectedReadAll = true;
         return null;
     }
 
-    public static Object readObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object readObject(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         redirectedReadObject = true;
         return null;
     }
 
-    public static Object updateObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object updateObject(DatabaseQuery query, DataRecord row, org.eclipse.persistence.sessions.Session session) {
         redirectedUpdate = true;
         return null;
     }

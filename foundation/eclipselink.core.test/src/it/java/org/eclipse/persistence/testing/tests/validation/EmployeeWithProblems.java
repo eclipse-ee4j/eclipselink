@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.validation;
+
+import org.eclipse.persistence.sessions.DataRecord;
 
 import java.sql.Time;
 
@@ -59,11 +61,11 @@ public class EmployeeWithProblems extends org.eclipse.persistence.testing.models
     }
 
     public String getIllegalAccess() throws java.lang.IllegalAccessException {
-        throw new java.lang.IllegalAccessException();
+        throw new IllegalAccessException();
     }
 
     public void setIllegalAccess(String input) throws java.lang.IllegalAccessException {
-        throw new java.lang.IllegalAccessException();
+        throw new IllegalAccessException();
     }
 
     public EmployeeWithProblems() {
@@ -76,12 +78,12 @@ public class EmployeeWithProblems extends org.eclipse.persistence.testing.models
     }
     //this method returns void (instead of Time[]) to produce the error (TL-ERROR 81)
 
-    public void buildNormalHours2(org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) { //used in test class org.eclipse.persistence.testing.tests.validation.ReturnTypeInGetAttributeAccessorTest
+    public void buildNormalHours2(DataRecord row, org.eclipse.persistence.sessions.Session session) { //used in test class org.eclipse.persistence.testing.tests.validation.ReturnTypeInGetAttributeAccessorTest
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
-        hours[0] = (Time)session.getPlatform().convertObject(row.get("START_TIME"), java.sql.Time.class);
-        hours[1] = (Time)session.getPlatform().convertObject(row.get("END_TIME"), java.sql.Time.class);
+        hours[0] = session.getPlatform().convertObject(row.get("START_TIME"), Time.class);
+        hours[1] = session.getPlatform().convertObject(row.get("END_TIME"), Time.class);
         //    return hours;
     }
 

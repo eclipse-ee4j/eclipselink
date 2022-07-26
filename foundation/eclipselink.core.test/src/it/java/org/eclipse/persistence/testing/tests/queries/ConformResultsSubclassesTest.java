@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class ConformResultsSubclassesTest extends org.eclipse.persistence.testin
         setDescription("Test that ReadAllQuery and ReadObjectQuery don't return subclasses when conforming and don't read subclasses indicated.");
     }
 
+    @Override
     public void setup() {
         uow = getSession().acquireUnitOfWork();
         Engineer engineer = new Engineer();
@@ -48,6 +49,7 @@ public class ConformResultsSubclassesTest extends org.eclipse.persistence.testin
         uow.registerNewObject(person);
     }
 
+    @Override
     public void test() {
         // test ReadAllQuery
         ReadAllQuery raq = new ReadAllQuery(Person.class);
@@ -66,6 +68,7 @@ public class ConformResultsSubclassesTest extends org.eclipse.persistence.testin
 
     }
 
+    @Override
     public void verify() {
         // verify ReadAllQuery
         for( int i = 0; i < people.size(); i++ ) {

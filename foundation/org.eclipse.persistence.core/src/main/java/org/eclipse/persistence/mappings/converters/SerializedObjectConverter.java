@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,19 +89,18 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
      * This method is implemented by subclasses as necessary.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         try{
             if (this.serializerClassName != null) {
-                Class serializerClass = null;
+                Class<?> serializerClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    serializerClass = AccessController.doPrivileged(new PrivilegedClassForName(this.serializerClassName, true, classLoader));
+                    serializerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(this.serializerClassName, true, classLoader));
                 } else {
                     serializerClass = PrivilegedAccessHelper.getClassForName(this.serializerClassName, true, classLoader);
                 }
-                this.serializer = (Serializer)serializerClass.newInstance();
+                this.serializer = (Serializer)serializerClass.getConstructor().newInstance();
             }
         } catch (Exception exception){
             throw ValidationException.classNotFoundWhileConvertingClassNames(this.serializerClassName, exception);
@@ -134,7 +133,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
         } else if (this.serializer.getType() == ClassConstants.STRING) {
             String text;
             try {
-                text = (String) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.STRING);
+                text = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.STRING);
             } catch (ConversionException exception) {
                 throw ConversionException.couldNotBeConverted(this.mapping, this.mapping.getDescriptor(), exception);
             }

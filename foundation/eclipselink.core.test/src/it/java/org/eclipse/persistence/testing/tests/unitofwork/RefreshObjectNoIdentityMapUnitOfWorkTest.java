@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class RefreshObjectNoIdentityMapUnitOfWorkTest extends org.eclipse.persis
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void setup() {
         uow = getSession().acquireUnitOfWork();
 
@@ -42,6 +43,7 @@ public class RefreshObjectNoIdentityMapUnitOfWorkTest extends org.eclipse.persis
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void test() {
         try {
             uowObject = (Weather)uow.refreshObject(uowObject);
@@ -58,6 +60,7 @@ public class RefreshObjectNoIdentityMapUnitOfWorkTest extends org.eclipse.persis
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void verify() {
         //let's compare the object refreshed in the UnitOfWork with the original object
         if (objectToBeWritten.getStormPattern().equals(uowObject.getStormPattern())) {

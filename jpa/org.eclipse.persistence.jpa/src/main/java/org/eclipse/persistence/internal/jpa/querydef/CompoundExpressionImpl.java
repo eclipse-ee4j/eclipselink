@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  * <p>
  * <b>Description</b>: The predicate forms the least specific expression node.  Predicates
  * result in boolean expressions that are combined to form the final expression.
- * <p>
  *
  * @see jakarta.persistence.criteria Predicate
  *
@@ -43,11 +42,11 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     protected boolean isNegated = false;
 
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
-        super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode, compoundExpressions);
+        super(metamodel, ClassConstants.BOOLEAN, expressionNode, compoundExpressions);
     }
 
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
-        super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode, compoundExpressions, operator);
+        super(metamodel, ClassConstants.BOOLEAN, expressionNode, compoundExpressions, operator);
     }
 
     /**
@@ -98,7 +97,7 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
      */
     @Override
     public Predicate not(){
-        List<Expression<?>> list = new ArrayList();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         CompoundExpressionImpl expr = new CompoundExpressionImpl(this.metamodel, this.currentNode.not(), list, "not");
         expr.setIsNegated(true);

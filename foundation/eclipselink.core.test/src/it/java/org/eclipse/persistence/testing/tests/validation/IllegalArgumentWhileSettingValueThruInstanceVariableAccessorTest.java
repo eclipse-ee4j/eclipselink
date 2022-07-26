@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,18 +37,20 @@ public class IllegalArgumentWhileSettingValueThruInstanceVariableAccessorTest ex
         setDescription("This tests Illegal Argument While Setting Value Thru Instance Variable Accessor (TL-ERROR 32)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.illegalArgumentWhileSettingValueThruInstanceVariableAccessor(null, null, null, null);
         getAbstractSession().beginTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.tests.validation.PersonInstanceAccess.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.tests.validation.PersonInstanceAccess.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.PersonInstanceAccess.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.PersonInstanceAccess.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)
@@ -58,6 +60,7 @@ public class IllegalArgumentWhileSettingValueThruInstanceVariableAccessorTest ex
     }
 
 
+    @Override
     public void test() {
         org.eclipse.persistence.testing.tests.validation.PersonInstanceAccess person = new org.eclipse.persistence.testing.tests.validation.PersonInstanceAccess();
         person.setName("Person");
@@ -67,16 +70,16 @@ public class IllegalArgumentWhileSettingValueThruInstanceVariableAccessorTest ex
             getSession().getIntegrityChecker().dontCatchExceptions();
             ((DatabaseSession)getSession()).addDescriptor(descriptor());
             //((DatabaseSession) getSession()).login();
-            UnitOfWork uow = ((DatabaseSession)getSession()).acquireUnitOfWork();
+            UnitOfWork uow = getSession().acquireUnitOfWork();
             uow.registerObject(person);
             uow.commit();
 
             DatabaseMapping dMapping = descriptor().getMappingForAttributeName("p_name");
             DatabaseMapping idMapping = descriptor().getMappingForAttributeName("p_id");
-            ((InstanceVariableAttributeAccessor)dMapping.getAttributeAccessor()).initializeAttributes(PersonInstanceAccess.class);
-            ((InstanceVariableAttributeAccessor)idMapping.getAttributeAccessor()).initializeAttributes(PersonInstanceAccess.class);
+            dMapping.getAttributeAccessor().initializeAttributes(PersonInstanceAccess.class);
+            idMapping.getAttributeAccessor().initializeAttributes(PersonInstanceAccess.class);
             //((InstanceVariableAttributeAccessor)idMapping.getAttributeAccessor()).setGetMethodName("Vesna");
-            ((InstanceVariableAttributeAccessor)dMapping.getAttributeAccessor()).setAttributeValueInObject(address, dMapping.getAttributeValueFromObject(person));
+            dMapping.getAttributeAccessor().setAttributeValueInObject(address, dMapping.getAttributeValueFromObject(person));
 
             //((DatabaseSession) getSession()).logout();
         } catch (EclipseLinkException exception) {

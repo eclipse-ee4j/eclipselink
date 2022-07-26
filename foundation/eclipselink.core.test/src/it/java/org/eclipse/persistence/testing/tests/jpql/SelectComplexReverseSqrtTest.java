@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,14 +17,15 @@ package org.eclipse.persistence.testing.tests.jpql;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 public class SelectComplexReverseSqrtTest extends org.eclipse.persistence.testing.tests.jpql.SqrtTestCase {
+    @Override
     public void setup() {
         setTestEmployees(getExtraEmployees());
         Employee emp1 = (Employee)getTestEmployees().firstElement();
         Employee emp2 = (Employee)getTestEmployees().lastElement();
 
         String ejbqlString;
-        double salarySquareRoot1 = Math.sqrt((new Double(emp1.getSalary()).doubleValue()));
-        double salarySquareRoot2 = Math.sqrt((new Double(emp2.getSalary()).doubleValue()));
+        double salarySquareRoot1 = Math.sqrt(emp1.getSalary());
+        double salarySquareRoot2 = Math.sqrt(emp2.getSalary());
 
         ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + salarySquareRoot1;

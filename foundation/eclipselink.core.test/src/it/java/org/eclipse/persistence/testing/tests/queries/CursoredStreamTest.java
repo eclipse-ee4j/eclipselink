@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,10 @@ CursoredStreamTest extends AutoVerifyTestCase {
     protected int size;
     protected Vector normalQueryObjects;
     protected Vector cursoredQueryObjects;
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected Expression joinExpression;
 
-    public CursoredStreamTest(Class referenceClass, Expression expression) {
+    public CursoredStreamTest(Class<?> referenceClass, Expression expression) {
         setReferenceClass(referenceClass);
         setName(getName() + "(" + referenceClass + ")");
         setDescription("This test verifies that the number of objects read in using a cursored stream" +
@@ -50,7 +50,7 @@ CursoredStreamTest extends AutoVerifyTestCase {
         return normalQueryObjects;
     }
 
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -66,7 +66,7 @@ CursoredStreamTest extends AutoVerifyTestCase {
         normalQueryObjects = objects;
     }
 
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         referenceClass = aClass;
     }
 
@@ -74,11 +74,13 @@ CursoredStreamTest extends AutoVerifyTestCase {
         size = aSize;
     }
 
+    @Override
     protected void setup() {
         setNormalQueryObjects(getSession().readAllObjects(getReferenceClass(), joinExpression));
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
 
         ReadAllQuery query = new ReadAllQuery();
@@ -117,6 +119,7 @@ CursoredStreamTest extends AutoVerifyTestCase {
     /**
      * Verify if number of query objects matches number of cursor objects
      */
+    @Override
     protected void verify() {
         if (getNormalQueryObjects().size() != getCursoredQueryObjects().size()) {
             throw new TestErrorException("The number of streamed objects does not match the number of objects stored on the database.  Expected: " +

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,9 +26,10 @@ public class NilElementsUsageTestCases extends JSONMarshalUnmarshalTestCases{
         super(name);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_RESOURCE_WRITE);
-        setClasses(new Class[]{MaskFormat.class, MaskFormatEntry.class});
+        setClasses(new Class<?>[]{MaskFormat.class, MaskFormatEntry.class});
     }
 
+    @Override
     protected Object getControlObject() {
         MaskFormat maskFormat = new MaskFormat();
 

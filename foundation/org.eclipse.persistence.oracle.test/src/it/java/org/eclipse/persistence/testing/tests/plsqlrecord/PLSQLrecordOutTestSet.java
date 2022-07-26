@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-// Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
 
 package org.eclipse.persistence.testing.tests.plsqlrecord;
 
@@ -92,7 +92,7 @@ public class PLSQLrecordOutTestSet  {
         query.setCall(call);
 
         project.getDescriptor(PLSQLEmployeeType.class).getQueryManager().addQuery("PLSQLrecordOut", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);
@@ -242,9 +242,9 @@ public class PLSQLrecordOutTestSet  {
 
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         OutputRowSessionEventAdapter outputParametersDetected
             = new OutputRowSessionEventAdapter();
         s.getEventManager().addListener(outputParametersDetected);
@@ -272,10 +272,10 @@ public class PLSQLrecordOutTestSet  {
         assertNull("MGR is supposed to be null",  record.get("MGR"));
         assertNull("HIREDATE is supposed to be null",  record.get("HIREDATE"));
         assertTrue("incorrect SAL" ,
-            record.get("SAL").equals(new Double(6000.0)));
+            record.get("SAL").equals(6000.0));
         assertNull("COMM is supposed to be null",  record.get("COMM"));
         assertTrue("incorrect DEPTNO" ,
             record.get("DEPTNO").equals(new BigDecimal(20)));
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

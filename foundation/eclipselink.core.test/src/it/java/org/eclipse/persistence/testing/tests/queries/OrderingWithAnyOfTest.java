@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,10 +24,12 @@ import org.eclipse.persistence.sessions.*;
  * Test the ordering feature.
  */
 public class OrderingWithAnyOfTest extends OrderingTest {
+    @Override
     protected void setup() {
         customSQLRows = getSession().executeSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT DISTINCT t3.*, t1.* FROM ADDRESS t3, SALARY t2, EMPLOYEE t1, PHONE t0 WHERE ((((t0.AREA_CODE = '613') AND (t1.EMP_ID = t2.EMP_ID)) AND (t0.EMP_ID = t1.EMP_ID)) AND (t3.ADDRESS_ID = t1.ADDR_ID)) ORDER BY t3.CITY DESC , t1.F_NAME"));
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
@@ -40,9 +42,10 @@ public class OrderingWithAnyOfTest extends OrderingTest {
 
     }
 
+    @Override
     protected void verify() {
         for (int i = 0; i < orderedQueryObjects.size(); i++) {
-            org.eclipse.persistence.sessions.Record row = (org.eclipse.persistence.sessions.Record)customSQLRows.elementAt(i);
+            DataRecord row = (DataRecord)customSQLRows.elementAt(i);
             Employee employee = (Employee)orderedQueryObjects.elementAt(i);
             String city = (String)row.get("CITY");
             String name = (String)row.get("F_NAME");

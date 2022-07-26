@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class UpdateAllQueryTest extends AutoVerifyTestCase {
     public UpdateAllQueryTest() {
     }
 
+    @Override
     protected void setup() {
         m_session = getSession();
         if (m_session.getDatasourcePlatform().isSymfoware()) {
@@ -44,11 +45,13 @@ public class UpdateAllQueryTest extends AutoVerifyTestCase {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     public void test() {
         Employee emp = (Employee)m_session.readObject(Employee.class);
         m_firstName = emp.getFirstName();// Store a first name (any first name will do)
@@ -60,6 +63,7 @@ public class UpdateAllQueryTest extends AutoVerifyTestCase {
         m_session.executeQuery(updateQuery);
     }
 
+    @Override
     protected void verify() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();// Ensure we read from the database
         Vector emps = m_session.readAllObjects(Employee.class, new ExpressionBuilder().get("firstName").equal(m_firstName));

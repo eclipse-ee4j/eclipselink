@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,9 +24,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * The <code><b>CONCAT</b></code> function returns a string that is a concatenation of its arguments.
  * <p>
  * JPA 1.0:
- * <div><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary)</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary)</code></p></div>
  * JPA 2.0
- * <div><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary {, string_primary}*)</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary {, string_primary}*)</code></p></div>
  *
  * @see ConcatExpression
  *
@@ -73,34 +73,22 @@ public class ConcatExpressionStateObject extends AbstractListHolderStateObject<S
         super(parent, stateObjects);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ConcatExpression getExpression() {
         return (ConcatExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
         return super.isEquivalent(stateObject) &&
                areChildrenEquivalent((ConcatExpressionStateObject) stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return STRING_PRIMARY_STATE_OBJECT_LIST;
@@ -118,9 +106,6 @@ public class ConcatExpressionStateObject extends AbstractListHolderStateObject<S
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         writer.append(CONCAT);

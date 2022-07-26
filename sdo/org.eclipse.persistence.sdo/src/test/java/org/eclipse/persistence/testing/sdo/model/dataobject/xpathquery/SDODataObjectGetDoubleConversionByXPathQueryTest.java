@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_DOUBLE);
 
         double bb = 12.0;
@@ -41,17 +41,17 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
 
     // purpose: opencontent properties
     public void testGetBooleanConversionFromDefinedPropertyWithPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_DOUBLE);
         List objects = new ArrayList();
-        Double b = new Double(12);
-        Double bb = new Double(11);
+        Double b = 12.0;
+        Double bb = 11.0;
         objects.add(b);
         objects.add(bb);
         dataObject_c1.set(property_c1_object, objects);
 
         //dataObject_c1.set("PName-a0/PName-b0[number='1']/PName-c1", objects);// add it to instance list
-        assertEquals("testGetBooleanConversionFromDefinedPropertyWithPath failed", bb.doubleValue(), dataObject_a.getDouble("PName-a0/PName-b0[number='1']/PName-c1.1"), (float)0.0);
+        assertEquals("testGetBooleanConversionFromDefinedPropertyWithPath failed", bb, dataObject_a.getDouble("PName-a0/PName-b0[number='1']/PName-c1.1"), (float)0.0);
     }
 
     //2. purpose: getDataObject with property value is not dataobject
@@ -100,10 +100,10 @@ public class SDODataObjectGetDoubleConversionByXPathQueryTest extends SDODataObj
            property_c1_object.setType(SDOConstants.SDO_DOUBLE);
 
            type_c0.addDeclaredProperty(property_c1_object);*/
-        Double b = new Double(12);
+        Double b = 12.0;
 
-        dataObject_a.setDouble("PName-a0/PName-b0[number='1']/PName-c1.0", b.doubleValue());
+        dataObject_a.setDouble("PName-a0/PName-b0[number='1']/PName-c1.0", b);
 
-        assertEquals("testSetGetDataObjectWithQueryPath failed", b.doubleValue(), dataObject_a.getDouble("PName-a0/PName-b0[number='1']/PName-c1.0"), (float)0.0);
+        assertEquals("testSetGetDataObjectWithQueryPath failed", b, dataObject_a.getDouble("PName-a0/PName-b0[number='1']/PName-c1.0"), (float)0.0);
     }
 }

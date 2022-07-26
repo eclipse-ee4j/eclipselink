@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Matt MacIvor - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.binder.nullpolicy;
 
-import java.io.File;
 import java.io.StringReader;
 
 import jakarta.xml.bind.Binder;
@@ -45,9 +44,9 @@ public class BinderWithNullPolicyCompositeTestCases extends TestCase {
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/emptynodecomposite.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeCompositeA.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeCompositeA.class}, null);
 
-        Binder binder = ctx.createBinder();
+        Binder<Node> binder = ctx.createBinder();
 
         EmployeeCompositeA emp = (EmployeeCompositeA)binder.unmarshal(parser.parse(new StringReader(xml)));
 
@@ -60,9 +59,9 @@ public class BinderWithNullPolicyCompositeTestCases extends TestCase {
         XMLTransformer transformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
         transformer.transform(controlDocument, System.out);
 
-        transformer.transform((Node)binder.getXMLNode(emp), System.out);
+        transformer.transform(binder.getXMLNode(emp), System.out);
 
         JAXBXMLComparer comparer = new JAXBXMLComparer();
-        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, ((Node)binder.getXMLNode(emp)).getOwnerDocument()));
+        assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDocument, binder.getXMLNode(emp).getOwnerDocument()));
     }
 }

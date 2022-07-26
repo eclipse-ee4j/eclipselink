@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,12 +28,12 @@ public class WithoutXmlRootElementJAXBElementTestCases extends JSONMarshalUnmars
 
     public WithoutXmlRootElementJAXBElementTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {WithoutXmlRootElementRoot.class});
+        setClasses(new Class<?>[] {WithoutXmlRootElementRoot.class});
         setControlJSON(CONTROL_JSON);
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return WithoutXmlRootElementRoot.class;
     }
 

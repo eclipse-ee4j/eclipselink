@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,13 @@ public class MetadataAnnotation {
     protected boolean isMeta = false;
 
     /** Map of attribute names and values. */
-    protected Map<String, Object> m_attributes = new HashMap<String, Object>();
+    protected Map<String, Object> m_attributes = new HashMap<>();
+
+    /**
+     * Default constructor.
+     */
+    public MetadataAnnotation() {
+    }
 
     /**
      * INTERNAL:
@@ -52,13 +58,13 @@ public class MetadataAnnotation {
      * private method and callers should use one of the more specific
      * getAttribute calls. (and build one if necessary)
      *
-     * @see getAttributeAnnotation
-     * @see getAttributeArray
-     * @see getAttributeInteger
-     * @see getAttributeString
-     * @see getAttributeBoolean
-     * @see getAttributeBooleanDefaultFalse
-     * @see getAttributeBooleanDefaultTrue
+     * @see #getAttributeAnnotation(String)
+     * @see #getAttributeArray(String)
+     * @see #getAttributeInteger(String)
+     * @see #getAttributeString(String)
+     * @see #getAttributeBoolean(String, Boolean)
+     * @see #getAttributeBooleanDefaultFalse(String)
+     * @see #getAttributeBooleanDefaultTrue(String)
      */
     private Object getAttribute(String name) {
         return m_attributes.get(name);
@@ -113,7 +119,7 @@ public class MetadataAnnotation {
      * INTERNAL:
      * Return the Class attribute value, or the default provided.
      */
-    public String getAttributeClass(String name, Class defaultClass) {
+    public String getAttributeClass(String name, Class<?> defaultClass) {
         Object value = getAttribute(name);
         return (value == null) ? defaultClass.getName() : (String) value;
     }

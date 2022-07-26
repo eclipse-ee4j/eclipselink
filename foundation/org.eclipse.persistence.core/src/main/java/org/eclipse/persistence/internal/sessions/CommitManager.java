@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ import org.eclipse.persistence.sessions.UnitOfWork.CommitOrderType;
  */
 public class CommitManager {
     /** Order based on mapping foreign key constraints on how to insert objects by class. */
-    protected List<Class> commitOrder;
+    protected List<Class<?>> commitOrder;
 
     /**
      * This tracks the commit state for the objects, PENDING, PRE, POST, COMPLETE.
@@ -58,13 +58,13 @@ public class CommitManager {
     protected Map<Object, Integer> commitState;
 
     /** The commit is in progress, but the row has not been written. */
-    protected static final Integer PRE = Integer.valueOf(1);
+    protected static final Integer PRE = 1;
     /** The commit is in progress, and the row has been written. */
-    protected static final Integer POST = Integer.valueOf(2);
+    protected static final Integer POST = 2;
     /** The commit is complete for the object. */
-    protected static final Integer COMPLETE = Integer.valueOf(3);
+    protected static final Integer COMPLETE = 3;
     /** This object should be ignored. */
-    protected static final Integer IGNORE = Integer.valueOf(4);
+    protected static final Integer IGNORE = 4;
 
     /** Set of objects that had partial row written to resolve constraints. */
     protected Map shallowCommits;
@@ -141,22 +141,22 @@ public class CommitManager {
             // PERF: if the number of classes in the project is large this loop can be a perf issue.
             // If only one class types changed, then avoid loop.
             if ((uowChangeSet.getObjectChanges().size() + uowChangeSet.getNewObjectChangeSets().size()) <= 1) {
-                Iterator<Class> classes = uowChangeSet.getNewObjectChangeSets().keySet().iterator();
+                Iterator<Class<?>> classes = uowChangeSet.getNewObjectChangeSets().keySet().iterator();
                 if (classes.hasNext()) {
-                    Class theClass = classes.next();
+                    Class<?> theClass = classes.next();
                     commitNewObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
                 classes = uowChangeSet.getObjectChanges().keySet().iterator();
                 if (classes.hasNext()) {
-                    Class theClass = classes.next();
+                    Class<?> theClass = classes.next();
                     commitChangedObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
             } else {
                 // The commit order is all of the classes ordered by dependencies, this is done for deadlock avoidance.
-                List commitOrder = getCommitOrder();
+                List<Class<?>> commitOrder = getCommitOrder();
                 int size = commitOrder.size();
                 for (int index = 0; index < size; index++) {
-                    Class theClass = (Class)commitOrder.get(index);
+                    Class<?> theClass = commitOrder.get(index);
                     commitAllObjectsForClassWithChangeSet(uowChangeSet, theClass);
                 }
             }
@@ -208,7 +208,7 @@ public class CommitManager {
      * Commit all of the objects of the class type in the change set.
      * This allows for the order of the classes to be processed optimally.
      */
-    protected void commitAllObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
+    protected void commitAllObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class<?> theClass) {
         // Although new objects should be first, there is an issue that new objects get added to non-new after the insert,
         // so the object would be written twice.
         commitChangedObjectsForClassWithChangeSet(uowChangeSet, theClass);
@@ -219,7 +219,7 @@ public class CommitManager {
      * Commit all of the objects of the class type in the change set.
      * This allows for the order of the classes to be processed optimally.
      */
-    protected void commitNewObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
+    protected void commitNewObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class<?> theClass) {
         Map<ObjectChangeSet, ObjectChangeSet> newObjectChangesList = uowChangeSet.getNewObjectChangeSets().get(theClass);
         if (newObjectChangesList != null) { // may be no changes for that class type.
             AbstractSession session = getSession();
@@ -256,7 +256,7 @@ public class CommitManager {
      * Commit changed of the objects of the class type in the change set.
      * This allows for the order of the classes to be processed optimally.
      */
-    protected void commitChangedObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
+    protected void commitChangedObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class<?> theClass) {
         Map<ObjectChangeSet, ObjectChangeSet> objectChangesList = uowChangeSet.getObjectChanges().get(theClass);
         if (objectChangesList != null) {// may be no changes for that class type.
             ClassDescriptor descriptor = null;
@@ -311,9 +311,9 @@ public class CommitManager {
             if (objects.size() == 1) {
                 deleteAllObjects(objects.get(0).getClass(), objects, session);
             } else {
-                List commitOrder = getCommitOrder();
+                List<Class<?>> commitOrder = getCommitOrder();
                 for (int orderIndex = commitOrder.size() - 1; orderIndex >= 0; orderIndex--) {
-                    Class theClass = (Class)commitOrder.get(orderIndex);
+                    Class<?> theClass = commitOrder.get(orderIndex);
                     deleteAllObjects(theClass, objects, session);
                 }
             }
@@ -334,7 +334,7 @@ public class CommitManager {
     /**
      * Delete all of the objects with the matching class.
      */
-    public void deleteAllObjects(Class theClass, List objects, AbstractSession session) {
+    public void deleteAllObjects(Class<?> theClass, List objects, AbstractSession session) {
         ClassDescriptor descriptor = null;
 
         if (((UnitOfWorkImpl)session).getCommitOrder() != CommitOrderType.NONE) {// bug 331064 - Sort the delete order
@@ -369,7 +369,7 @@ public class CommitManager {
      * Sort the objects based on PK.
      */
     // bug 331064 - Sort the delete order based on PKs.
-    private List sort (Class theClass, List objects) {
+    private List sort (Class<?> theClass, List objects) {
         ClassDescriptor descriptor = session.getDescriptor(theClass);
         org.eclipse.persistence.internal.descriptors.ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         int size = objects.size();
@@ -389,7 +389,7 @@ public class CommitManager {
      * The commit order is a vector of vectors,
      * where the first vector is all root level classes, the second is classes owned by roots and so on.
      */
-    public List<Class> getCommitOrder() {
+    public List<Class<?>> getCommitOrder() {
         if (this.commitOrder == null) {
             this.commitOrder = new ArrayList();
         }
@@ -479,16 +479,16 @@ public class CommitManager {
      * stack size, and acts as a deadlock avoidance mechanism.
      */
     public void initializeCommitOrder() {
-        Vector descriptors = Helper.buildVectorFromMapElements(getSession().getDescriptors());
+        Vector<ClassDescriptor> descriptors = Helper.buildVectorFromMapElements(getSession().getDescriptors());
 
         // Must ensure uniqueness, some descriptor my be register twice for interfaces.
-        descriptors = Helper.addAllUniqueToVector(new Vector(descriptors.size()), descriptors);
-        Object[] descriptorsArray = new Object[descriptors.size()];
+        descriptors = Helper.addAllUniqueToVector(new Vector<>(descriptors.size()), descriptors);
+        ClassDescriptor[] descriptorsArray = new ClassDescriptor[descriptors.size()];
         for (int index = 0; index < descriptors.size(); index++) {
             descriptorsArray[index] = descriptors.elementAt(index);
         }
         Arrays.sort(descriptorsArray, new DescriptorCompare());
-        descriptors = new Vector(descriptors.size());
+        descriptors = new Vector<>(descriptors.size());
         for (int index = 0; index < descriptorsArray.length; index++) {
             descriptors.addElement(descriptorsArray[index]);
         }
@@ -677,7 +677,7 @@ public class CommitManager {
      */
     @Override
     public String toString() {
-        Object[] args = { Integer.valueOf(this.commitDepth) };
+        Object[] args = {this.commitDepth};
         return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("commit_depth", args);
     }
 }

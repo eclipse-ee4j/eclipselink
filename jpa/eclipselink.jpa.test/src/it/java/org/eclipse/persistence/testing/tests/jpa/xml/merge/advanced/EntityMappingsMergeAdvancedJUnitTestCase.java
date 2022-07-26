@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.*;
 
 /**
@@ -62,7 +62,7 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
         if(!classIndicatorFieldName.equals("XML_MERGE_PROJ_TYPE")) {
             fail("Wrong classIndicatorField name '"+classIndicatorFieldName+"'");
         }
-        Class classIndicatorFieldType = classIndicatorField.getType();
+        Class<?> classIndicatorFieldType = classIndicatorField.getType();
         if(!classIndicatorFieldType.equals(String.class)) {
             fail("Wrong classIndicatorField type '"+classIndicatorFieldType.getName()+"'");
         }
@@ -92,24 +92,24 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
     // The test compares the mappings's types for each class with the corresponding class from packageToCompare.
     // The test should be altered accordingly in case the two classes are no longer use the same mappings types.
     public void testMappingsTypes() throws ClassNotFoundException {
-        Map descriptors = getServerSession().getDescriptors();
+        Map<Class<?>, ClassDescriptor> descriptors = getServerSession().getDescriptors();
         String errorMsg = "";
         for (int i=0; i<classNames.length; i++) {
             String classErrorMsg = "";
             String className = packageName + classNames[i];
             String classToCompareName = packageToCompareName + classNames[i];
-            Class cls = Class.forName(className);
-            Class clsToCompare = Class.forName(classToCompareName);
-            ClassDescriptor desc = (ClassDescriptor)descriptors.get(cls);
-            ClassDescriptor descToCompare = (ClassDescriptor)descriptors.get(clsToCompare);
-            Vector mappings = desc.getMappings();
-            Vector mappingsToCompare = descToCompare.getMappings();
+            Class<?> cls = Class.forName(className);
+            Class<?> clsToCompare = Class.forName(classToCompareName);
+            ClassDescriptor desc = descriptors.get(cls);
+            ClassDescriptor descToCompare = descriptors.get(clsToCompare);
+            Vector<DatabaseMapping> mappings = desc.getMappings();
+            Vector<DatabaseMapping> mappingsToCompare = descToCompare.getMappings();
             if(mappings.size() != mappingsToCompare.size()) {
                 classErrorMsg = classErrorMsg +  "Number of mappings is different; ";
                 continue;
             }
             for(int j=0; j<mappings.size(); j++) {
-                DatabaseMapping mapping = (DatabaseMapping)mappings.elementAt(j);
+                DatabaseMapping mapping = mappings.elementAt(j);
                 String attributeName = mapping.getAttributeName();
                 DatabaseMapping mappingToCompare = descToCompare.getMappingForAttributeName(attributeName);
                 if(!mapping.getClass().equals(mappingToCompare.getClass())) {
@@ -126,8 +126,8 @@ public class EntityMappingsMergeAdvancedJUnitTestCase extends JUnitTestCase {
     }
 
     public void testIgnoredTransientAnnotation(){
-        Map descriptors = getServerSession().getDescriptors();
-        ClassDescriptor descriptor = (ClassDescriptor)descriptors.get(Employee.class);
+        Map<Class<?>, ClassDescriptor> descriptors = getServerSession().getDescriptors();
+        ClassDescriptor descriptor = descriptors.get(Employee.class);
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
         assertTrue("No mapping for attribute that was set as @Transient, in a metadata complete entity.", mapping !=null);
         assertTrue("Incorrect mapping for attribute that was set as @Transient, in a metadata complete entity.", mapping.isDirectToFieldMapping());

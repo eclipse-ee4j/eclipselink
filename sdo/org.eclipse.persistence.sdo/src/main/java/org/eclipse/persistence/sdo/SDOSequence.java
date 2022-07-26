@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,7 @@ public class SDOSequence implements Sequence {
         return settings;
     }
 
-    protected Map<Key, Setting> getValuesToSettings() {
+    private Map<Key, Setting> getValuesToSettings() {
         return valuesToSettings;
     }
 
@@ -131,7 +131,7 @@ public class SDOSequence implements Sequence {
             return false;
         }
         // Disallow the addition of a read only Property
-        if (((SDOProperty)property).isReadOnly()) {
+        if (property.isReadOnly()) {
             return false;
         }
         // Disallow the addition of a Properties representing an XML attribute
@@ -635,7 +635,6 @@ public class SDOSequence implements Sequence {
      * return 2. Although B is at index 4 of the Settings list, it is at index 2
      * of the list of "letters" - [A, C, B, D].
      *
-     * @param property
      * @return index of the value's Setting in the list relative to a given
      *         property or -1 if not found.
      */

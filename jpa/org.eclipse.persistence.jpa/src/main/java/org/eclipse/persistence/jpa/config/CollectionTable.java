@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,13 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface CollectionTable {
 
-    public Index addIndex();
-    public JoinColumn addJoinColumn();
-    public UniqueConstraint addUniqueConstraint();
-    public CollectionTable setCatalog(String catalog);
-    public CollectionTable setCreationSuffix(String creationSuffix);
-    public ForeignKey setForeignKey();
-    public CollectionTable setName(String name);
-    public CollectionTable setSchema(String schema);
+    Index addIndex();
+    JoinColumn addJoinColumn();
+    UniqueConstraint addUniqueConstraint();
+    CollectionTable setCatalog(String catalog);
+    CollectionTable setCreationSuffix(String creationSuffix);
+    ForeignKey setForeignKey();
+    CollectionTable setName(String name);
+    CollectionTable setSchema(String schema);
 
 }

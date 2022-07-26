@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
 
     private String writeUser;
     class Listener extends SessionEventAdapter {
+        @Override
         public void outputParametersDetected(SessionEvent event) {
             writeUser = (String)((Map)event.getResult()).get("OUT");
         }
@@ -153,6 +154,7 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
         }
     }
 
+    @Override
     public void setup() {
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("Supports Oracle platform only");
@@ -180,6 +182,7 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
         return user;
     }
 
+    @Override
     public void test() {
         if(this.shouldUseDatabaseSession) {
             testDatabaseSession();
@@ -260,12 +263,14 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if(errorMsg.length() > 0) {
             throw new TestErrorException(errorMsg);
         }
     }
 
+    @Override
     public void reset() {
         getSession().getEventManager().removeListener(listener);
         getExecutor().setSession(exchanger.returnOriginalSession());

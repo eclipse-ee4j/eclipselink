@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public class JAXBIntArrayTestCases extends JAXBListOfObjectsTestCases {
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = int[].class;
         setClasses(classes);
         initXsiType();
@@ -54,6 +54,7 @@ public class JAXBIntArrayTestCases extends JAXBListOfObjectsTestCases {
         return namespaces;
     }
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/intArray.xsd");
 
@@ -62,10 +63,12 @@ public class JAXBIntArrayTestCases extends JAXBListOfObjectsTestCases {
         return controlSchema;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() {
         return int[].class;
     }
 
+    @Override
     protected Object getControlObject() {
         int[] ints = new int[4];
         ints[0] = 10;
@@ -92,6 +95,7 @@ public class JAXBIntArrayTestCases extends JAXBListOfObjectsTestCases {
         // fail("NEED TO COMPARE PRIMITIVE ARRAYS");
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

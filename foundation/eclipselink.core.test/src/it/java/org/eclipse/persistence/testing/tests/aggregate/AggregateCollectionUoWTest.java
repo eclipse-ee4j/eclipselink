@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public class AggregateCollectionUoWTest extends WriteObjectTest {
         House house2 = (House)houses.get(houses.size()-1);
         house2.setDescriptions("do not buy it, it collapses -:)");
         Oid newInsurancePolicyId = new Oid();
-        newInsurancePolicyId.setOid(new Integer(893453));
+        newInsurancePolicyId.setOid(893453);
         house2.setInsuranceId(newInsurancePolicyId);
         House newHouse = new House();
         newHouse.setLocation("123 Slater Street");
@@ -69,6 +69,7 @@ public class AggregateCollectionUoWTest extends WriteObjectTest {
         AgentBuilderHelper.addCustomer(object, newCustomer);
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -86,6 +87,7 @@ public class AggregateCollectionUoWTest extends WriteObjectTest {
         //    getSession().executeNonSelectingSQL("UPDATE HOUSE SET LOCATION = 'no where' WHERE (LOCATION = '33D King Edward Street')");
     }
 
+    @Override
     protected void test() {
         try {
             this.unitOfWork.commit();
@@ -94,6 +96,7 @@ public class AggregateCollectionUoWTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void verify() {
         // Using the original session for comparison verify that the changes were merged correctly
         if (!compareObjects(this.unitOfWorkWorkingCopy, this.objectToBeWritten)) {

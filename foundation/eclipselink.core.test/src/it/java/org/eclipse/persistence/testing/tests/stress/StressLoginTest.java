@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,19 +28,21 @@ public StressLoginTest(int stressLevel)
 {
     this.stressLevel = stressLevel;
 }
+@Override
 public void reset( )
 {
     ((DatabaseSession) getSession()).logout();
     ((DatabaseSession) getSession()).login();
 }
+@Override
 public void test( )
 {
     Vector sessions =  new Vector();
 
     try {
         for (int i = 0; i < stressLevel; i++) {
-            Session session = new Project(getSession().getDatasourceLogin().clone()).createDatabaseSession();
-            ((DatabaseSession) session).login();
+            DatabaseSession session = new Project(getSession().getDatasourceLogin().clone()).createDatabaseSession();
+            session.login();
             sessions.addElement(session);
         }
         getSession().readObject(Address.class);

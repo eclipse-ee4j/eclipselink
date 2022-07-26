@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,11 +47,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.TypeMappingInfo;
+import org.eclipse.persistence.jaxb.*;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -85,6 +81,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         setupParser();
         setupControlDocs();
@@ -99,6 +96,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         bindingsFileXSDSource = new StreamSource(bindingsFileXSDInputStream);
     }
 
+    @Override
     public void tearDown() throws Exception{
         super.tearDown();
         jaxbContext = null;
@@ -112,7 +110,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 
         Map props = getProperties();
         if(props != null){
-            Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            Map overrides = (Map) props.get(JAXBContextProperties.OXM_METADATA_SOURCE);
             if(overrides != null){
                 Iterator valuesIter = overrides.values().iterator();
                 while(valuesIter.hasNext()){
@@ -122,7 +120,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             }
         }
 
-        jaxbContext  = new org.eclipse.persistence.jaxb.JAXBContextFactory().createContext(newTypes, props, Thread.currentThread().getContextClassLoader());
+        jaxbContext  = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(newTypes, props, Thread.currentThread().getContextClassLoader());
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
      }
@@ -200,7 +198,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.FALSE);
             XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -233,7 +231,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             StringWriter writer = new StringWriter();
 
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.FALSE);
             XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -278,6 +276,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         testSchemaGen(getControlSchemaFiles());
     }
 
+     @Override
      protected void compareValues(Object controlValue, Object testValue){
          if(controlValue instanceof Node && testValue instanceof Node) {
              assertXMLIdentical(((Node)controlValue).getOwnerDocument(), ((Node)testValue).getOwnerDocument());
@@ -357,8 +356,6 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 
         /**
          * Override this function to implement different read/write control documents.
-         * @return
-         * @throws Exception
          */
         protected Document getWriteControlDocument() throws Exception {
             if(writeControlDocument != null){
@@ -374,8 +371,6 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         /**
          * Provide an alternative write version of the control document when rountrip is not enabled.
          * If this function is not called and getWriteControlDocument() is not overridden then the write and read control documents are the same.
-         * @param xmlResource
-         * @throws Exception
          */
         protected void setWriteControlDocument(String xmlResource) throws Exception {
             writeControlDocumentLocation = xmlResource;
@@ -407,6 +402,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             assertXMLIdentical(getWriteControlDocument(), testDocument);
         }
 
+        @Override
         public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
             assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
             assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());
@@ -518,9 +514,6 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
     /**
      * Return an Element for a given xml-element snippet.
      *
-     * @param xmlelement
-     * @return
-     * @throws Exception
      */
     protected Element getXmlElement(String xmlelement) throws Exception {
         StringReader str = new StringReader(xmlelement);
@@ -585,6 +578,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             schemaFiles = new HashMap<String, Writer>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
             if (namespaceURI == null) {

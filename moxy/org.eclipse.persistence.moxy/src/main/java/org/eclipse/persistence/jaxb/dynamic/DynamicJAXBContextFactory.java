@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.util.Map;
 
 import jakarta.xml.bind.JAXBException;
+
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
@@ -77,6 +79,12 @@ public class DynamicJAXBContextFactory {
     public static final String ENTITY_RESOLVER_KEY = "entity-resolver";
     public static final String EXTERNAL_BINDINGS_KEY = "external-bindings";
     public static final String SCHEMAMETADATA_CLASS_NAME = "org.eclipse.persistence.jaxb.dynamic.metadata.SchemaMetadata";
+
+    /**
+     * Creates an instance of {@code DynamicJAXBContextFactory}.
+     */
+    public DynamicJAXBContextFactory() {
+    }
 
     /**
      * Create a <code>DynamicJAXBContext</code>, using either an XML Schema, EclipseLink OXM file,
@@ -357,11 +365,11 @@ public class DynamicJAXBContextFactory {
     private static void fixDateTimeConversion(DynamicJAXBContext ctx) {
         XMLConversionManager conversionManager = (XMLConversionManager) ctx.getXMLContext().getSession().getDatasourcePlatform().getConversionManager();
 
-        Map defaultXmlTypes = conversionManager.getDefaultXMLTypes();
+        Map<QName, Class<?>> defaultXmlTypes = XMLConversionManager.getDefaultXMLTypes();
         defaultXmlTypes.remove(Constants.DATE_TIME_QNAME);
         defaultXmlTypes.put(Constants.DATE_TIME_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
 
-        Map defaultJavaTypes = conversionManager.getDefaultJavaTypes();
+        Map<Class<?>, QName> defaultJavaTypes = XMLConversionManager.getDefaultJavaTypes();
         defaultJavaTypes.remove(CoreClassConstants.CALENDAR);
         defaultJavaTypes.put(CoreClassConstants.XML_GREGORIAN_CALENDAR, Constants.DATE_TIME_QNAME);
     }

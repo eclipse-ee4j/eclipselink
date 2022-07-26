@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,6 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLNodeList;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -71,7 +70,6 @@ public class UnmarshalXPathEngine <
      * @param xmlField the field containing the XPath statement to be executed
      * @param xmlNamespaceResolver used to resolve namespace prefixes to the corresponding namespace URI
      * @return the first node located matching the XPath statement
-     * @throws XMLPlatformException
      */
     public Object selectSingleNode(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver, boolean checkForXsiNil) throws XMLMarshalException {
         try {
@@ -136,7 +134,6 @@ public class UnmarshalXPathEngine <
      * @param xmlField the field containing the XPath statement to be executed
      * @param xmlNamespaceResolver used to resolve namespace prefixes to the corresponding namespace URI
      * @return a list of nodes matching the XPath statement
-     * @throws XMLPlatformException
      */
     public NodeList selectNodes(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
         return this.selectNodes(contextNode, xmlField, xmlNamespaceResolver, null);

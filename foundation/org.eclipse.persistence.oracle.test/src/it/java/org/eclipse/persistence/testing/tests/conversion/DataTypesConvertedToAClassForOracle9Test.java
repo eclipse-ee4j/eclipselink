@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,8 +27,8 @@ import org.eclipse.persistence.testing.framework.TestWarningException;
 //calling getDataTypesConvertedTo() in Oracle9Platform.
 public class DataTypesConvertedToAClassForOracle9Test extends DataTypesConvertedToAClassTest {
 
-    protected Class[] convertedToClasses =
-        new Class[] { BigDecimal.class, BigInteger.class, Boolean.class, Byte.class, byte[].class, Byte[].class,
+    protected Class<?>[] convertedToClasses =
+        new Class<?>[] { BigDecimal.class, BigInteger.class, Boolean.class, Byte.class, byte[].class, Byte[].class,
                       Calendar.class, Character.class, Character[].class, char[].class, java.sql.Date.class, Double.class,
                       Float.class, Integer.class, Long.class, Number.class, Short.class, String.class, Timestamp.class,
                       Time.class, java.util.Date.class, oracle.sql.TIMESTAMP.class };
@@ -37,6 +37,7 @@ public class DataTypesConvertedToAClassForOracle9Test extends DataTypesConverted
         setDescription("Test getDataTypesConvertedTo() in Oracle9Platform.");
     }
 
+    @Override
     public void setup() {
         if(!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("This test requires Oracle database");
@@ -44,7 +45,8 @@ public class DataTypesConvertedToAClassForOracle9Test extends DataTypesConverted
         cm = getSession().getPlatform();
     }
 
-    protected boolean isChar(Class aClass) {
+    @Override
+    protected boolean isChar(Class<?> aClass) {
         return super.isChar(aClass) || aClass == Oracle9Platform.NCHAR || aClass == Oracle9Platform.NSTRING ||
             aClass == Oracle9Platform.NCLOB;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class ContainerIndirectionPolicySerializationTest extends TestCase {
         setDescription("Verifies that ContainerIndirectionPolicy could be serialized");
     }
 
+    @Override
     public void test() throws IOException, ClassNotFoundException {
         ContainerIndirectionPolicy policy = new ContainerIndirectionPolicy();
         policy.setContainerClass(IndirectList.class);

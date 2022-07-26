@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,7 @@ public class Dependant {
     /**
      * Insert the method's description here.
      * Creation date: (04/12/2000 9:51:54 AM)
-     * @param newName java.lang.String
+     * @param firstName java.lang.String
      */
     public void setFirstName(java.lang.String firstName) {
         this.firstName = firstName;

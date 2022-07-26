@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,23 +25,23 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 /**
- * <p><b>Purpose</b>:
+ * <p><b>Purpose</b>:</p>
  * Allows a class to be a <code>QueryRedirector</code> without implementing
  * {@link QueryRedirector QueryRedirector}.
  *
- * <p><b>Description</b>:
+ * <p><b>Description</b>:</p>
  * Normally to define a Redirector a Class must implement <code>QueryRedirector</code> and
  * the required {@link QueryRedirector#invokeQuery QueryRedirector.invokeQuery(DatabaseQuery, Record, Session)}.
  * <p>
  * To maintain transparency it is possible to instead only define a static
  * method that takes the same arguments as <code>invokeQuery</code>.
- * <p>
+ * </p>
  * An instance of <code>MethodBaseQueryRedirector</code> can be constructed, taking the name of that static
  * method and the <code>Class</code> in which it is defined as parameters.
  * <p>
  * Whenever <code>invokeQuery</code> is called on this instance reflection will
  * automatically be used to invoke the custom method instead.
- * <p>
+ * </p>
  * <b>Advantages</b>:
  * <ul>
  * <li> The Redirector class and method name can be specified dynamically.
@@ -56,7 +56,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * <li> An extra step is added as the real <code>invokeQuery</code> method is called
  * dynamically.
  * </ul>
- * <p><b>Example</b>:
+ * <p><b>Example</b>:</p>
  * <BLOCKQUOTE><PRE>
  * // First create a named query, define a redirector for it, and add the query
  * // to the query manager.
@@ -82,14 +82,14 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * ((ReadObjectQuery) query).setSelectionObject(arguments.get("employee"));
  * return session.executeQuery(query);
  * }
- * }</PRE></BLOCKQUOTE><p>
+ * }</PRE></BLOCKQUOTE>
  *
  * @see QueryRedirector
  * @author James Sutherland
  * @since TOPLink/Java 3.0
  */
 public class MethodBaseQueryRedirector implements QueryRedirector {
-    protected Class methodClass;
+    protected Class<?> methodClass;
     protected String methodClassName;
     protected String methodName;
     protected transient Method method;
@@ -105,7 +105,7 @@ public class MethodBaseQueryRedirector implements QueryRedirector {
      * PUBLIC:
      * Returns a new query redirector based on the static method in methodClass.
      */
-    public MethodBaseQueryRedirector(Class methodClass, String methodName) {
+    public MethodBaseQueryRedirector(Class<?> methodClass, String methodName) {
         this.methodClass = methodClass;
         this.methodName = methodName;
     }
@@ -122,7 +122,7 @@ public class MethodBaseQueryRedirector implements QueryRedirector {
      * PUBLIC:
      * Returns the class to execute the static method on.
      */
-    public Class getMethodClass() {
+    public Class<?> getMethodClass() {
         return methodClass;
     }
 
@@ -159,14 +159,14 @@ public class MethodBaseQueryRedirector implements QueryRedirector {
         // Must check 3 possible argument sets for backward compatibility.
         // The DatabaseQuery, Record, Session should be used, check last the throw correct exception.
         // Check Session, Vector.
-        Class[] arguments = new Class[2];
+        Class<?>[] arguments = new Class<?>[2];
         arguments[0] = ClassConstants.SessionsSession_Class;
         arguments[1] = ClassConstants.Vector_class;
         try {
             setMethod(Helper.getDeclaredMethod(getMethodClass(), getMethodName(), arguments));
         } catch (Exception ignore) {
             // Check DatabaseQuery, Record, Session.
-            arguments = new Class[3];
+            arguments = new Class<?>[3];
             arguments[0] = ClassConstants.DatabaseQuery_Class;
             arguments[1] = ClassConstants.Record_Class;
             arguments[2] = ClassConstants.SessionsSession_Class;
@@ -174,7 +174,7 @@ public class MethodBaseQueryRedirector implements QueryRedirector {
                 setMethod(Helper.getDeclaredMethod(getMethodClass(), getMethodName(), arguments));
             } catch (Exception ignoreAgain) {
                 // Check DatabaseQuery, Record, Session.
-                arguments = new Class[3];
+                arguments = new Class<?>[3];
                 arguments[0] = ClassConstants.DatabaseQuery_Class;
                 arguments[1] = ClassConstants.Record_Class;
                 arguments[2] = ClassConstants.SessionsSession_Class;
@@ -197,7 +197,7 @@ public class MethodBaseQueryRedirector implements QueryRedirector {
      * Call the static method to execute the query.
      */
     @Override
-    public Object invokeQuery(DatabaseQuery query, org.eclipse.persistence.sessions.Record arguments, Session session) {
+    public Object invokeQuery(DatabaseQuery query, DataRecord arguments, Session session) {
         if (getMethod() == null) {
             initializeMethod(query);
         }
@@ -249,7 +249,7 @@ public class MethodBaseQueryRedirector implements QueryRedirector {
      * PUBLIC:
      * Sets the class to execute the static method on.
      */
-    public void setMethodClass(Class newMethodClass) {
+    public void setMethodClass(Class<?> newMethodClass) {
         methodClass = newMethodClass;
     }
 

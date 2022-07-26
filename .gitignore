@@ -8,3 +8,4 @@ target/
 .idea/
 test_*.properties
 .sonar
+*~

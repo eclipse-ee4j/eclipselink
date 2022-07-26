@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,12 +18,11 @@
 //       - 263904: [PATCH] ExpressionOperator doesn't compare arrays correctly
 //     01/23/2018-2.7 Will Dazey
 //       - 530214: trim operation should not bind parameters
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.expressions;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,7 +45,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
  * <p>
@@ -59,18 +57,28 @@ public class ExpressionOperator implements Serializable {
     static final long serialVersionUID = -7066100204792043980L;
     protected int selector;
     protected String name;
-    protected String[] databaseStrings;
+
+    // ListExpressionOperator uses its own start/separator/terminator strings
+    private String[] databaseStrings;
+
     protected boolean isPrefix = false;
     protected boolean isRepeating = false;
-    protected Class nodeClass;
+    protected Class<?> nodeClass;
     protected int type;
     protected int[] argumentIndices = null;
+
+    /** Contains user defined operators */
     protected static Map<Integer, ExpressionOperator> allOperators = initializeOperators();
+    /** Contains internal defined operators meant as placeholders for platform operators */
+    protected static Map<Integer, ExpressionOperator> allInternalOperators = initializeInternalOperators();
+
     protected static final Map<String, Integer> platformOperatorSelectors = initializePlatformOperatorSelectors();
     protected static final Map<Integer, String> platformOperatorNames = initializePlatformOperatorNames();
     protected String[] javaStrings;
-    /** Allow operator to disable binding. */
-    protected boolean isBindingSupported = true;
+
+    /** Allow operator to disable/enable binding for the whole expression.
+     * Set to 'null' to enable `isArgumentBindingSupported` finer detail. */
+    protected Boolean isBindingSupported = true;
 
     /** Operator types */
     public static final int LogicalOperator = 1;
@@ -215,6 +223,10 @@ public class ExpressionOperator implements Serializable {
      */
     public static final int CurrentTime = 128;
 
+    public static final int LocalDate = 149;
+    public static final int LocalTime = 150;
+    public static final int LocalDateTime = 151;
+
     // Math
     public static final int Ceil = 55;
     public static final int Cos = 56;
@@ -293,7 +305,7 @@ public class ExpressionOperator implements Serializable {
      * PUBLIC:
      * Return if binding is compatible with this operator.
      */
-    public boolean isBindingSupported() {
+    public Boolean isBindingSupported() {
         return isBindingSupported;
     }
 
@@ -320,7 +332,7 @@ public class ExpressionOperator implements Serializable {
         }
         ExpressionOperator operator = (ExpressionOperator) object;
         if (getSelector() == 0) {
-            return Arrays.equals(getDatabaseStrings(), operator.getDatabaseStrings());
+            return Arrays.equals(getDatabaseStrings(0), operator.getDatabaseStrings(0));
         } else {
             return getSelector() == operator.getSelector();
         }
@@ -355,6 +367,14 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build operator.
      */
+    public static ExpressionOperator add() {
+        return ExpressionOperator.simpleMath(ExpressionOperator.Add, "+");
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
     public static ExpressionOperator addDate() {
         ExpressionOperator exOperator = simpleThreeArgumentFunction(AddDate, "DATEADD");
         int[] indices = new int[3];
@@ -376,10 +396,17 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * ADVANCED:
-     * Add an operator to the global list of operators.
+     * Add an operator to the user defined list of operators.
      */
     public static void addOperator(ExpressionOperator exOperator) {
-        allOperators.put(Integer.valueOf(exOperator.getSelector()), exOperator);
+        allOperators.put(exOperator.getSelector(), exOperator);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    private static void addOperator(Map<Integer, ExpressionOperator> map, ExpressionOperator exOperator) {
+        map.put(Integer.valueOf(exOperator.getSelector()), exOperator);
     }
 
     /**
@@ -426,49 +453,49 @@ public class ExpressionOperator implements Serializable {
             } else if (this.selector == Trim) {
                 return ((String)source).trim();
             } else if (this.selector == Length) {
-                return Integer.valueOf(((String)source).length());
+                return ((String) source).length();
             }
         } else if (source instanceof Number) {
             if (this.selector == Ceil) {
-                return Double.valueOf(Math.ceil(((Number)source).doubleValue()));
+                return Math.ceil(((Number) source).doubleValue());
             } else if (this.selector == Cos) {
-                return Double.valueOf(Math.cos(((Number)source).doubleValue()));
+                return Math.cos(((Number) source).doubleValue());
             } else if (this.selector == Abs) {
-                return Double.valueOf(Math.abs(((Number)source).doubleValue()));
+                return Math.abs(((Number) source).doubleValue());
             } else if (this.selector == Acos) {
-                return Double.valueOf(Math.acos(((Number)source).doubleValue()));
+                return Math.acos(((Number) source).doubleValue());
             } else if (this.selector == Asin) {
-                return Double.valueOf(Math.asin(((Number)source).doubleValue()));
+                return Math.asin(((Number) source).doubleValue());
             } else if (this.selector == Atan) {
-                return Double.valueOf(Math.atan(((Number)source).doubleValue()));
+                return Math.atan(((Number) source).doubleValue());
             } else if (this.selector == Exp) {
-                return Double.valueOf(Math.exp(((Number)source).doubleValue()));
+                return Math.exp(((Number) source).doubleValue());
             } else if (this.selector == Sqrt) {
-                return Double.valueOf(Math.sqrt(((Number)source).doubleValue()));
+                return Math.sqrt(((Number) source).doubleValue());
             } else if (this.selector == Floor) {
-                return Double.valueOf(Math.floor(((Number)source).doubleValue()));
+                return Math.floor(((Number) source).doubleValue());
             } else if (this.selector == Log) {
-                return Double.valueOf(Math.log(((Number)source).doubleValue()));
+                return Math.log(((Number) source).doubleValue());
             } else if ((this.selector == Power) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return Double.valueOf(Math.pow(((Number)source).doubleValue(), (((Number)arguments.get(0)).doubleValue())));
+                return Math.pow(((Number) source).doubleValue(), (((Number) arguments.get(0)).doubleValue()));
             } else if (this.selector == Round) {
-                return Double.valueOf(Math.round(((Number)source).doubleValue()));
+                return (double) Math.round(((Number) source).doubleValue());
             } else if (this.selector == Sin) {
-                return Double.valueOf(Math.sin(((Number)source).doubleValue()));
+                return Math.sin(((Number) source).doubleValue());
             } else if (this.selector == Tan) {
-                return Double.valueOf(Math.tan(((Number)source).doubleValue()));
+                return Math.tan(((Number) source).doubleValue());
             } else if ((this.selector == Greatest) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return Double.valueOf(Math.max(((Number)source).doubleValue(), (((Number)arguments.get(0)).doubleValue())));
+                return Math.max(((Number) source).doubleValue(), (((Number) arguments.get(0)).doubleValue()));
             } else if ((this.selector == Least) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return Double.valueOf(Math.min(((Number)source).doubleValue(), (((Number)arguments.get(0)).doubleValue())));
+                return Math.min(((Number) source).doubleValue(), (((Number) arguments.get(0)).doubleValue()));
             } else if ((this.selector == Add) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return Double.valueOf(((Number)source).doubleValue() + (((Number)arguments.get(0)).doubleValue()));
+                return ((Number) source).doubleValue() + (((Number) arguments.get(0)).doubleValue());
             } else if ((this.selector == Subtract) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return Double.valueOf(((Number)source).doubleValue() - (((Number)arguments.get(0)).doubleValue()));
+                return ((Number) source).doubleValue() - (((Number) arguments.get(0)).doubleValue());
             } else if ((this.selector == Divide) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return Double.valueOf(((Number)source).doubleValue() / (((Number)arguments.get(0)).doubleValue()));
+                return ((Number) source).doubleValue() / (((Number) arguments.get(0)).doubleValue());
             } else if ((this.selector == Multiply) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
-                return Double.valueOf(((Number)source).doubleValue() * (((Number)arguments.get(0)).doubleValue()));
+                return ((Number) source).doubleValue() * (((Number) arguments.get(0)).doubleValue());
             }
         }
 
@@ -592,6 +619,25 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
+     * Create the NOT BETWEEN operator
+     */
+    public static ExpressionOperator notBetween() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(NotBetween);
+        result.setType(ComparisonOperator);
+        List<String> v = new ArrayList<>();
+        v.add("(");
+        v.add(" NOT BETWEEN ");
+        v.add(" AND ");
+        v.add(")");;
+        result.printsAs(v);
+        result.bePrefix();
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return result;
+    }
+
+    /**
+     * INTERNAL:
      * Build operator.
      * Note: This operator works differently from other operators.
      * @see Expression#caseStatement(Map, Object)
@@ -704,9 +750,9 @@ public class ExpressionOperator implements Serializable {
         } else if ((left instanceof String) && (start instanceof String) && (end instanceof String)) {
             return ((((String)left).compareTo(((String)start)) > 0) || (((String)left).compareTo(((String)start)) == 0)) && ((((String)left).compareTo(((String)end)) < 0) || (((String)left).compareTo(((String)end)) == 0));
         } else if ((left instanceof java.util.Date) && (start instanceof java.util.Date) && (end instanceof java.util.Date)) {
-            return (((java.util.Date)left).after(((java.util.Date)start)) || ((java.util.Date)left).equals((start))) && (((java.util.Date)left).before(((java.util.Date)end)) || ((java.util.Date)left).equals((end)));
+            return (((java.util.Date)left).after(((java.util.Date)start)) || left.equals((start))) && (((java.util.Date)left).before(((java.util.Date)end)) || left.equals((end)));
         } else if ((left instanceof java.util.Calendar) && (start instanceof java.util.Calendar) && (end instanceof java.util.Calendar)) {
-            return (((java.util.Calendar)left).after(start) || ((java.util.Calendar)left).equals((start))) && (((java.util.Calendar)left).before(end) || ((java.util.Calendar)left).equals((end)));
+            return (((java.util.Calendar)left).after(start) || left.equals((start))) && (((java.util.Calendar)left).before(end) || left.equals((end)));
         }
 
         throw QueryException.cannotConformExpression();
@@ -716,7 +762,6 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Compare like in memory.
      * This only works for % not _.
-     * @author Christian Weeks aka ChristianLink
      */
     public boolean conformLike(Object left, Object right) {
         if ((right == null) && (left == null)) {
@@ -758,7 +803,16 @@ public class ExpressionOperator implements Serializable {
         return true;
     }
 
+    public ExpressionOperator clone(){
+        ExpressionOperator clone = new ExpressionOperator();
+        this.copyTo(clone);
+        return clone;
+    }
+
     public void copyTo(ExpressionOperator operator){
+        if(operator == null)
+            return;
+
         operator.selector = selector;
         operator.isPrefix = isPrefix;
         operator.isRepeating = isRepeating;
@@ -767,7 +821,7 @@ public class ExpressionOperator implements Serializable {
         operator.databaseStrings = databaseStrings == null ? null : Helper.copyStringArray(databaseStrings);
         operator.argumentIndices = argumentIndices == null ? null : Helper.copyIntArray(argumentIndices);
         operator.javaStrings = javaStrings == null ? null : Helper.copyStringArray(javaStrings);
-        operator.isBindingSupported = isBindingSupported;
+        operator.isBindingSupported = isBindingSupported == null ? null : new Boolean(isBindingSupported);
     }
 
     /**
@@ -816,26 +870,6 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator dateName() {
         return simpleTwoArgumentFunction(DateName, "DATENAME");
-    }
-
-    /**
-     * INTERNAL:
-     * Oracle equivalent to DATENAME is TO_CHAR.
-     */
-    public static ExpressionOperator oracleDateName() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(FunctionOperator);
-        exOperator.setSelector(DateName);
-        List<String> v = new ArrayList<>(3);
-        v.add("TO_CHAR(");
-        v.add(", '");
-        v.add("')");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        int[] indices = { 1, 0 };
-        exOperator.setArgumentIndices(indices);
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
     }
 
     /**
@@ -921,6 +955,14 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
+     * Create the DISTINCT operator.
+     */
+    public static ExpressionOperator divide() {
+        return ExpressionOperator.simpleMath(ExpressionOperator.Divide, "/");
+    }
+
+    /**
+     * INTERNAL:
      * Compare the values in memory.
      * Used for in-memory querying, all operators are not support.
      */
@@ -982,9 +1024,9 @@ public class ExpressionOperator implements Serializable {
                 int compareValue = ((String)left).compareTo(((String)right));
                 return (compareValue < 0) || (compareValue == 0);
             } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
-                return ((java.util.Date)left).equals((right)) || ((java.util.Date)left).before(((java.util.Date)right));
+                return left.equals((right)) || ((java.util.Date)left).before(((java.util.Date)right));
             } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
-                return ((java.util.Calendar)left).equals((right)) || ((java.util.Calendar)left).before(right);
+                return left.equals((right)) || ((java.util.Calendar)left).before(right);
             }
         } else if (this.selector == GreaterThan) {
             if ((left == null) || (right == null)) {
@@ -1012,9 +1054,9 @@ public class ExpressionOperator implements Serializable {
                 int compareValue = ((String)left).compareTo(((String)right));
                 return (compareValue > 0) || (compareValue == 0);
             } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
-                return ((java.util.Date)left).equals((right)) || ((java.util.Date)left).after(((java.util.Date)right));
+                return left.equals((right)) || ((java.util.Date)left).after(((java.util.Date)right));
             } else if ((left instanceof java.util.Calendar) && (right instanceof java.util.Calendar)) {
-                return ((java.util.Calendar)left).equals((right)) || ((java.util.Calendar)left).after(right);
+                return left.equals((right)) || ((java.util.Calendar)left).after(right);
             }
         }
         // Between
@@ -1034,7 +1076,7 @@ public class ExpressionOperator implements Serializable {
         else if (((this.selector == Like) || (this.selector == NotLike)) && (right instanceof Vector) && (((Vector)right).size() == 1)) {
             Boolean doesLikeConform = JavaPlatform.conformLike(left, ((Vector)right).get(0));
             if (doesLikeConform != null) {
-                if (doesLikeConform.booleanValue()) {
+                if (doesLikeConform) {
                     return this.selector == Like;// Negate for NotLike
                 } else {
                     return this.selector != Like;// Negate for NotLike
@@ -1045,11 +1087,15 @@ public class ExpressionOperator implements Serializable {
         else if ((this.selector == Regexp) && (right instanceof Vector) && (((Vector)right).size() == 1)) {
             Boolean doesConform = JavaPlatform.conformRegexp(left, ((Vector)right).get(0));
             if (doesConform != null) {
-                return doesConform.booleanValue();
+                return doesConform;
             }
         }
 
         throw QueryException.cannotConformExpression();
+    }
+
+    public static ExpressionOperator equal() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.Equal, "=", "equal");
     }
 
     /**
@@ -1073,8 +1119,8 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(Exists);
         List<String> v = new ArrayList<>(2);
-        v.add("EXISTS" + " ");
-        v.add(" ");
+        v.add("EXISTS ");
+        v.add("");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -1222,6 +1268,13 @@ public class ExpressionOperator implements Serializable {
         return allOperators;
     }
 
+    /**
+     * INTERNAL:
+     */
+    public static Map<Integer, ExpressionOperator> getAllInternalOperators() {
+        return allInternalOperators;
+    }
+
     public static Map<String, Integer> getPlatformOperatorSelectors() {
         return platformOperatorSelectors;
     }
@@ -1236,6 +1289,13 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL:
      */
+    public String[] getDatabaseStrings(int arguments) {
+        return databaseStrings;
+    }
+
+    /**
+     * INTERNAL:
+     */
     public String[] getJavaStrings() {
         return javaStrings;
     }
@@ -1243,16 +1303,26 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL:
      */
-    public Class getNodeClass() {
+    public Class<?> getNodeClass() {
         return nodeClass;
     }
 
     /**
      * INTERNAL:
      * Lookup the operator with the given id.
+     * <p>
+     * This will only check user defined operators. For operators defined internally, see {@link ExpressionOperator#getInternalOperator(Integer)}
      */
     public static ExpressionOperator getOperator(Integer selector) {
         return getAllOperators().get(selector);
+    }
+
+    /**
+     * INTERNAL:
+     * Lookup the internal operator with the given id.
+     */
+    public static ExpressionOperator getInternalOperator(Integer selector) {
+        return getAllInternalOperators().get(selector);
     }
 
     /**
@@ -1286,6 +1356,22 @@ public class ExpressionOperator implements Serializable {
      */
     public int getType() {
         return this.type;
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator greaterThan() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.GreaterThan, ">", "greaterThan");
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator greaterThanEqual() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.GreaterThanEqual, ">=", "greaterThanEqual");
     }
 
     /**
@@ -1355,52 +1441,145 @@ public class ExpressionOperator implements Serializable {
         addOperator(average());
         addOperator(minimum());
         addOperator(maximum());
-        addOperator(distinct());
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected static void initializeComparisonOperators() {
+        // Comparison Operators
+        addOperator(between());
+        addOperator(notBetween());
+        addOperator(isNull());
+        addOperator(notNull());
     }
 
     /**
      * INTERNAL:
      */
     protected static void initializeFunctionOperators() {
+        // Function Operators
+        addOperator(like());
+        addOperator(likeEscape());
+        addOperator(notLike());
+        addOperator(notLikeEscape());
+        addOperator(exists());
+        addOperator(notExists());
         addOperator(notOperator());
-        addOperator(ascending());
-        addOperator(descending());
         addOperator(as());
-        addOperator(nullsFirst());
-        addOperator(nullsLast());
         addOperator(any());
         addOperator(some());
         addOperator(all());
-        addOperator(in());
         addOperator(inSubQuery());
-        addOperator(notIn());
         addOperator(notInSubQuery());
         addOperator(coalesce());
         addOperator(caseStatement());
         addOperator(caseConditionStatement());
+        addOperator(distinct());
     }
 
     /**
      * INTERNAL:
      */
     protected static void initializeLogicalOperators() {
+        // Logical Operators
         addOperator(and());
         addOperator(or());
-        addOperator(isNull());
-        addOperator(notNull());
-
     }
 
     /**
      * INTERNAL:
      */
-    public static Map initializeOperators() {
+    protected static void initializeOrderOperators() {
+        // Order Operators
+        addOperator(ascending());
+        addOperator(descending());
+        addOperator(nullsFirst());
+        addOperator(nullsLast());
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected static void initializeRelationOperators() {
+        // Relation Operators
+        addOperator(equal());
+        addOperator(notEqual());
+        addOperator(lessThan());
+        addOperator(lessThanEqual());
+        addOperator(greaterThan());
+        addOperator(greaterThanEqual());
+        addOperator(in());
+        addOperator(notIn());
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public static Map<Integer, ExpressionOperator>  initializeOperators() {
         resetOperators();
-        initializeFunctionOperators();
-        initializeRelationOperators();
-        initializeLogicalOperators();
-        initializeAggregateFunctionOperators();
         return allOperators;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    private static Map<Integer, ExpressionOperator> initializeInternalOperators() {
+        Map<Integer, ExpressionOperator> allTempOperators = new HashMap<Integer, ExpressionOperator>();
+
+        // Aggregate Function Operators
+        addOperator(allTempOperators, count());
+        addOperator(allTempOperators, sum());
+        addOperator(allTempOperators, average());
+        addOperator(allTempOperators, minimum());
+        addOperator(allTempOperators, maximum());
+
+        // Comparison Operators
+        addOperator(allTempOperators, between());
+        addOperator(allTempOperators, notBetween());
+        addOperator(allTempOperators, isNull());
+        addOperator(allTempOperators, notNull());
+
+        // Function Operators
+        addOperator(allTempOperators, like());
+        addOperator(allTempOperators, likeEscape());
+        addOperator(allTempOperators, notLike());
+        addOperator(allTempOperators, notLikeEscape());
+        addOperator(allTempOperators, exists());
+        addOperator(allTempOperators, notExists());
+        addOperator(allTempOperators, notOperator());
+        addOperator(allTempOperators, as());
+        addOperator(allTempOperators, any());
+        addOperator(allTempOperators, some());
+        addOperator(allTempOperators, all());
+        addOperator(allTempOperators, inSubQuery());
+        addOperator(allTempOperators, notInSubQuery());
+        addOperator(allTempOperators, coalesce());
+        addOperator(allTempOperators, caseStatement());
+        addOperator(allTempOperators, caseConditionStatement());
+        addOperator(allTempOperators, distinct());
+
+        // Logical Operators
+        addOperator(allTempOperators, and());
+        addOperator(allTempOperators, or());
+
+        // Order Operators
+        addOperator(allTempOperators, ascending());
+        addOperator(allTempOperators, descending());
+        addOperator(allTempOperators, nullsFirst());
+        addOperator(allTempOperators, nullsLast());
+
+        // Relation Operators
+        addOperator(allTempOperators, equal());
+        addOperator(allTempOperators, notEqual());
+        addOperator(allTempOperators, lessThan());
+        addOperator(allTempOperators, lessThanEqual());
+        addOperator(allTempOperators, greaterThan());
+        addOperator(allTempOperators, greaterThanEqual());
+        addOperator(allTempOperators, in());
+        addOperator(allTempOperators, notIn());
+
+        return allTempOperators;
     }
 
     /**
@@ -1408,7 +1587,7 @@ public class ExpressionOperator implements Serializable {
      * Initialize a mapping to the platform operator names for usage with exceptions.
      */
     public static String getPlatformOperatorName(int operator) {
-        String name = (String)getPlatformOperatorNames().get(Integer.valueOf(operator));
+        String name = (String)getPlatformOperatorNames().get(operator);
         if (name == null) {
             name = String.valueOf(operator);
         }
@@ -1419,7 +1598,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Initialize a mapping to the platform operator names for usage with exceptions.
      */
-    public static Map getPlatformOperatorNames() {
+    public static Map<Integer, String> getPlatformOperatorNames() {
         return platformOperatorNames;
     }
 
@@ -1429,103 +1608,103 @@ public class ExpressionOperator implements Serializable {
      */
     public static Map<Integer, String> initializePlatformOperatorNames() {
         Map<Integer, String> platformOperatorNames = new HashMap<>();
-        platformOperatorNames.put(Integer.valueOf(ToUpperCase), "ToUpperCase");
-        platformOperatorNames.put(Integer.valueOf(ToLowerCase), "ToLowerCase");
-        platformOperatorNames.put(Integer.valueOf(Chr), "Chr");
-        platformOperatorNames.put(Integer.valueOf(Concat), "Concat");
-        platformOperatorNames.put(Integer.valueOf(Coalesce), "Coalesce");
-        platformOperatorNames.put(Integer.valueOf(Case), "Case");
-        platformOperatorNames.put(Integer.valueOf(CaseCondition), "Case(codition)");
-        platformOperatorNames.put(Integer.valueOf(HexToRaw), "HexToRaw");
-        platformOperatorNames.put(Integer.valueOf(Initcap), "Initcap");
-        platformOperatorNames.put(Integer.valueOf(Instring), "Instring");
-        platformOperatorNames.put(Integer.valueOf(Soundex), "Soundex");
-        platformOperatorNames.put(Integer.valueOf(LeftPad), "LeftPad");
-        platformOperatorNames.put(Integer.valueOf(LeftTrim), "LeftTrim");
-        platformOperatorNames.put(Integer.valueOf(RightPad), "RightPad");
-        platformOperatorNames.put(Integer.valueOf(RightTrim), "RightTrim");
-        platformOperatorNames.put(Integer.valueOf(Substring), "Substring");
-        platformOperatorNames.put(Integer.valueOf(SubstringSingleArg), "Substring");
-        platformOperatorNames.put(Integer.valueOf(Translate), "Translate");
-        platformOperatorNames.put(Integer.valueOf(Ascii), "Ascii");
-        platformOperatorNames.put(Integer.valueOf(Length), "Length");
-        platformOperatorNames.put(Integer.valueOf(CharIndex), "CharIndex");
-        platformOperatorNames.put(Integer.valueOf(CharLength), "CharLength");
-        platformOperatorNames.put(Integer.valueOf(Difference), "Difference");
-        platformOperatorNames.put(Integer.valueOf(Reverse), "Reverse");
-        platformOperatorNames.put(Integer.valueOf(Replicate), "Replicate");
-        platformOperatorNames.put(Integer.valueOf(Right), "Right");
-        platformOperatorNames.put(Integer.valueOf(Locate), "Locate");
-        platformOperatorNames.put(Integer.valueOf(Locate2), "Locate");
-        platformOperatorNames.put(Integer.valueOf(ToNumber), "ToNumber");
-        platformOperatorNames.put(Integer.valueOf(ToChar), "ToChar");
-        platformOperatorNames.put(Integer.valueOf(ToCharWithFormat), "ToChar");
-        platformOperatorNames.put(Integer.valueOf(AddMonths), "AddMonths");
-        platformOperatorNames.put(Integer.valueOf(DateToString), "DateToString");
-        platformOperatorNames.put(Integer.valueOf(MonthsBetween), "MonthsBetween");
-        platformOperatorNames.put(Integer.valueOf(NextDay), "NextDay");
-        platformOperatorNames.put(Integer.valueOf(RoundDate), "RoundDate");
-        platformOperatorNames.put(Integer.valueOf(AddDate), "AddDate");
-        platformOperatorNames.put(Integer.valueOf(DateName), "DateName");
-        platformOperatorNames.put(Integer.valueOf(DatePart), "DatePart");
-        platformOperatorNames.put(Integer.valueOf(DateDifference), "DateDifference");
-        platformOperatorNames.put(Integer.valueOf(TruncateDate), "TruncateDate");
-        platformOperatorNames.put(Integer.valueOf(Extract), "Extract");
-        platformOperatorNames.put(Integer.valueOf(Cast), "Cast");
-        platformOperatorNames.put(Integer.valueOf(NewTime), "NewTime");
-        platformOperatorNames.put(Integer.valueOf(Nvl), "Nvl");
-        platformOperatorNames.put(Integer.valueOf(NewTime), "NewTime");
-        platformOperatorNames.put(Integer.valueOf(Ceil), "Ceil");
-        platformOperatorNames.put(Integer.valueOf(Cos), "Cos");
-        platformOperatorNames.put(Integer.valueOf(Cosh), "Cosh");
-        platformOperatorNames.put(Integer.valueOf(Abs), "Abs");
-        platformOperatorNames.put(Integer.valueOf(Acos), "Acos");
-        platformOperatorNames.put(Integer.valueOf(Asin), "Asin");
-        platformOperatorNames.put(Integer.valueOf(Atan), "Atan");
-        platformOperatorNames.put(Integer.valueOf(Exp), "Exp");
-        platformOperatorNames.put(Integer.valueOf(Sqrt), "Sqrt");
-        platformOperatorNames.put(Integer.valueOf(Floor), "Floor");
-        platformOperatorNames.put(Integer.valueOf(Ln), "Ln");
-        platformOperatorNames.put(Integer.valueOf(Log), "Log");
-        platformOperatorNames.put(Integer.valueOf(Mod), "Mod");
-        platformOperatorNames.put(Integer.valueOf(Power), "Power");
-        platformOperatorNames.put(Integer.valueOf(Round), "Round");
-        platformOperatorNames.put(Integer.valueOf(Sign), "Sign");
-        platformOperatorNames.put(Integer.valueOf(Sin), "Sin");
-        platformOperatorNames.put(Integer.valueOf(Sinh), "Sinh");
-        platformOperatorNames.put(Integer.valueOf(Tan), "Tan");
-        platformOperatorNames.put(Integer.valueOf(Tanh), "Tanh");
-        platformOperatorNames.put(Integer.valueOf(Trunc), "Trunc");
-        platformOperatorNames.put(Integer.valueOf(Greatest), "Greatest");
-        platformOperatorNames.put(Integer.valueOf(Least), "Least");
-        platformOperatorNames.put(Integer.valueOf(Add), "Add");
-        platformOperatorNames.put(Integer.valueOf(Subtract), "Subtract");
-        platformOperatorNames.put(Integer.valueOf(Divide), "Divide");
-        platformOperatorNames.put(Integer.valueOf(Multiply), "Multiply");
-        platformOperatorNames.put(Integer.valueOf(Atan2), "Atan2");
-        platformOperatorNames.put(Integer.valueOf(Cot), "Cot");
-        platformOperatorNames.put(Integer.valueOf(Deref), "Deref");
-        platformOperatorNames.put(Integer.valueOf(Ref), "Ref");
-        platformOperatorNames.put(Integer.valueOf(RefToHex), "RefToHex");
-        platformOperatorNames.put(Integer.valueOf(Value), "Value");
-        platformOperatorNames.put(Integer.valueOf(ExtractXml), "ExtractXml");
-        platformOperatorNames.put(Integer.valueOf(ExtractValue), "ExtractValue");
-        platformOperatorNames.put(Integer.valueOf(ExistsNode), "ExistsNode");
-        platformOperatorNames.put(Integer.valueOf(GetStringVal), "GetStringVal");
-        platformOperatorNames.put(Integer.valueOf(GetNumberVal), "GetNumberVal");
-        platformOperatorNames.put(Integer.valueOf(IsFragment), "IsFragment");
-        platformOperatorNames.put(Integer.valueOf(SDO_WITHIN_DISTANCE), "MDSYS.SDO_WITHIN_DISTANCE");
-        platformOperatorNames.put(Integer.valueOf(SDO_RELATE), "MDSYS.SDO_RELATE");
-        platformOperatorNames.put(Integer.valueOf(SDO_FILTER), "MDSYS.SDO_FILTER");
-        platformOperatorNames.put(Integer.valueOf(SDO_NN), "MDSYS.SDO_NN");
-        platformOperatorNames.put(Integer.valueOf(NullIf), "NullIf");
-        platformOperatorNames.put(Integer.valueOf(Regexp), "REGEXP");
-        platformOperatorNames.put(Integer.valueOf(Union), "UNION");
-        platformOperatorNames.put(Integer.valueOf(UnionAll), "UNION ALL");
-        platformOperatorNames.put(Integer.valueOf(Intersect), "INTERSECT");
-        platformOperatorNames.put(Integer.valueOf(IntersectAll), "INTERSECT ALL");
-        platformOperatorNames.put(Integer.valueOf(Except), "EXCEPT");
-        platformOperatorNames.put(Integer.valueOf(ExceptAll), "EXCEPT ALL");
+        platformOperatorNames.put(ToUpperCase, "ToUpperCase");
+        platformOperatorNames.put(ToLowerCase, "ToLowerCase");
+        platformOperatorNames.put(Chr, "Chr");
+        platformOperatorNames.put(Concat, "Concat");
+        platformOperatorNames.put(Coalesce, "Coalesce");
+        platformOperatorNames.put(Case, "Case");
+        platformOperatorNames.put(CaseCondition, "Case(codition)");
+        platformOperatorNames.put(HexToRaw, "HexToRaw");
+        platformOperatorNames.put(Initcap, "Initcap");
+        platformOperatorNames.put(Instring, "Instring");
+        platformOperatorNames.put(Soundex, "Soundex");
+        platformOperatorNames.put(LeftPad, "LeftPad");
+        platformOperatorNames.put(LeftTrim, "LeftTrim");
+        platformOperatorNames.put(RightPad, "RightPad");
+        platformOperatorNames.put(RightTrim, "RightTrim");
+        platformOperatorNames.put(Substring, "Substring");
+        platformOperatorNames.put(SubstringSingleArg, "Substring");
+        platformOperatorNames.put(Translate, "Translate");
+        platformOperatorNames.put(Ascii, "Ascii");
+        platformOperatorNames.put(Length, "Length");
+        platformOperatorNames.put(CharIndex, "CharIndex");
+        platformOperatorNames.put(CharLength, "CharLength");
+        platformOperatorNames.put(Difference, "Difference");
+        platformOperatorNames.put(Reverse, "Reverse");
+        platformOperatorNames.put(Replicate, "Replicate");
+        platformOperatorNames.put(Right, "Right");
+        platformOperatorNames.put(Locate, "Locate");
+        platformOperatorNames.put(Locate2, "Locate");
+        platformOperatorNames.put(ToNumber, "ToNumber");
+        platformOperatorNames.put(ToChar, "ToChar");
+        platformOperatorNames.put(ToCharWithFormat, "ToChar");
+        platformOperatorNames.put(AddMonths, "AddMonths");
+        platformOperatorNames.put(DateToString, "DateToString");
+        platformOperatorNames.put(MonthsBetween, "MonthsBetween");
+        platformOperatorNames.put(NextDay, "NextDay");
+        platformOperatorNames.put(RoundDate, "RoundDate");
+        platformOperatorNames.put(AddDate, "AddDate");
+        platformOperatorNames.put(DateName, "DateName");
+        platformOperatorNames.put(DatePart, "DatePart");
+        platformOperatorNames.put(DateDifference, "DateDifference");
+        platformOperatorNames.put(TruncateDate, "TruncateDate");
+        platformOperatorNames.put(Extract, "Extract");
+        platformOperatorNames.put(Cast, "Cast");
+        platformOperatorNames.put(NewTime, "NewTime");
+        platformOperatorNames.put(Nvl, "Nvl");
+        platformOperatorNames.put(NewTime, "NewTime");
+        platformOperatorNames.put(Ceil, "Ceil");
+        platformOperatorNames.put(Cos, "Cos");
+        platformOperatorNames.put(Cosh, "Cosh");
+        platformOperatorNames.put(Abs, "Abs");
+        platformOperatorNames.put(Acos, "Acos");
+        platformOperatorNames.put(Asin, "Asin");
+        platformOperatorNames.put(Atan, "Atan");
+        platformOperatorNames.put(Exp, "Exp");
+        platformOperatorNames.put(Sqrt, "Sqrt");
+        platformOperatorNames.put(Floor, "Floor");
+        platformOperatorNames.put(Ln, "Ln");
+        platformOperatorNames.put(Log, "Log");
+        platformOperatorNames.put(Mod, "Mod");
+        platformOperatorNames.put(Power, "Power");
+        platformOperatorNames.put(Round, "Round");
+        platformOperatorNames.put(Sign, "Sign");
+        platformOperatorNames.put(Sin, "Sin");
+        platformOperatorNames.put(Sinh, "Sinh");
+        platformOperatorNames.put(Tan, "Tan");
+        platformOperatorNames.put(Tanh, "Tanh");
+        platformOperatorNames.put(Trunc, "Trunc");
+        platformOperatorNames.put(Greatest, "Greatest");
+        platformOperatorNames.put(Least, "Least");
+        platformOperatorNames.put(Add, "Add");
+        platformOperatorNames.put(Subtract, "Subtract");
+        platformOperatorNames.put(Divide, "Divide");
+        platformOperatorNames.put(Multiply, "Multiply");
+        platformOperatorNames.put(Atan2, "Atan2");
+        platformOperatorNames.put(Cot, "Cot");
+        platformOperatorNames.put(Deref, "Deref");
+        platformOperatorNames.put(Ref, "Ref");
+        platformOperatorNames.put(RefToHex, "RefToHex");
+        platformOperatorNames.put(Value, "Value");
+        platformOperatorNames.put(ExtractXml, "ExtractXml");
+        platformOperatorNames.put(ExtractValue, "ExtractValue");
+        platformOperatorNames.put(ExistsNode, "ExistsNode");
+        platformOperatorNames.put(GetStringVal, "GetStringVal");
+        platformOperatorNames.put(GetNumberVal, "GetNumberVal");
+        platformOperatorNames.put(IsFragment, "IsFragment");
+        platformOperatorNames.put(SDO_WITHIN_DISTANCE, "MDSYS.SDO_WITHIN_DISTANCE");
+        platformOperatorNames.put(SDO_RELATE, "MDSYS.SDO_RELATE");
+        platformOperatorNames.put(SDO_FILTER, "MDSYS.SDO_FILTER");
+        platformOperatorNames.put(SDO_NN, "MDSYS.SDO_NN");
+        platformOperatorNames.put(NullIf, "NullIf");
+        platformOperatorNames.put(Regexp, "REGEXP");
+        platformOperatorNames.put(Union, "UNION");
+        platformOperatorNames.put(UnionAll, "UNION ALL");
+        platformOperatorNames.put(Intersect, "INTERSECT");
+        platformOperatorNames.put(IntersectAll, "INTERSECT ALL");
+        platformOperatorNames.put(Except, "EXCEPT");
+        platformOperatorNames.put(ExceptAll, "EXCEPT ALL");
         return platformOperatorNames;
     }
 
@@ -1535,114 +1714,93 @@ public class ExpressionOperator implements Serializable {
      */
     public static Map<String, Integer> initializePlatformOperatorSelectors() {
         Map<String, Integer> platformOperatorNames = new HashMap<>();
-        platformOperatorNames.put("ToUpperCase", Integer.valueOf(ToUpperCase));
-        platformOperatorNames.put("ToLowerCase", Integer.valueOf(ToLowerCase));
-        platformOperatorNames.put("Chr", Integer.valueOf(Chr));
-        platformOperatorNames.put("Concat", Integer.valueOf(Concat));
-        platformOperatorNames.put("Coalesce", Integer.valueOf(Coalesce));
-        platformOperatorNames.put("Case", Integer.valueOf(Case));
-        platformOperatorNames.put("HexToRaw", Integer.valueOf(HexToRaw));
-        platformOperatorNames.put("Initcap", Integer.valueOf(Initcap));
-        platformOperatorNames.put("Instring", Integer.valueOf(Instring));
-        platformOperatorNames.put("Soundex", Integer.valueOf(Soundex));
-        platformOperatorNames.put("LeftPad", Integer.valueOf(LeftPad));
-        platformOperatorNames.put("LeftTrim", Integer.valueOf(LeftTrim));
-        platformOperatorNames.put("RightPad", Integer.valueOf(RightPad));
-        platformOperatorNames.put("RightTrim", Integer.valueOf(RightTrim));
-        platformOperatorNames.put("Substring", Integer.valueOf(Substring));
-        platformOperatorNames.put("Translate", Integer.valueOf(Translate));
-        platformOperatorNames.put("Ascii", Integer.valueOf(Ascii));
-        platformOperatorNames.put("Length", Integer.valueOf(Length));
-        platformOperatorNames.put("CharIndex", Integer.valueOf(CharIndex));
-        platformOperatorNames.put("CharLength", Integer.valueOf(CharLength));
-        platformOperatorNames.put("Difference", Integer.valueOf(Difference));
-        platformOperatorNames.put("Reverse", Integer.valueOf(Reverse));
-        platformOperatorNames.put("Replicate", Integer.valueOf(Replicate));
-        platformOperatorNames.put("Right", Integer.valueOf(Right));
-        platformOperatorNames.put("Locate", Integer.valueOf(Locate));
-        platformOperatorNames.put("ToNumber", Integer.valueOf(ToNumber));
-        platformOperatorNames.put("ToChar", Integer.valueOf(ToChar));
-        platformOperatorNames.put("AddMonths", Integer.valueOf(AddMonths));
-        platformOperatorNames.put("DateToString", Integer.valueOf(DateToString));
-        platformOperatorNames.put("MonthsBetween", Integer.valueOf(MonthsBetween));
-        platformOperatorNames.put("NextDay", Integer.valueOf(NextDay));
-        platformOperatorNames.put("RoundDate", Integer.valueOf(RoundDate));
-        platformOperatorNames.put("AddDate", Integer.valueOf(AddDate));
-        platformOperatorNames.put("DateName", Integer.valueOf(DateName));
-        platformOperatorNames.put("DatePart", Integer.valueOf(DatePart));
-        platformOperatorNames.put("DateDifference", Integer.valueOf(DateDifference));
-        platformOperatorNames.put("TruncateDate", Integer.valueOf(TruncateDate));
-        platformOperatorNames.put("NewTime", Integer.valueOf(NewTime));
-        platformOperatorNames.put("Nvl", Integer.valueOf(Nvl));
-        platformOperatorNames.put("NewTime", Integer.valueOf(NewTime));
-        platformOperatorNames.put("Ceil", Integer.valueOf(Ceil));
-        platformOperatorNames.put("Cos", Integer.valueOf(Cos));
-        platformOperatorNames.put("Cosh", Integer.valueOf(Cosh));
-        platformOperatorNames.put("Abs", Integer.valueOf(Abs));
-        platformOperatorNames.put("Acos", Integer.valueOf(Acos));
-        platformOperatorNames.put("Asin", Integer.valueOf(Asin));
-        platformOperatorNames.put("Atan", Integer.valueOf(Atan));
-        platformOperatorNames.put("Exp", Integer.valueOf(Exp));
-        platformOperatorNames.put("Sqrt", Integer.valueOf(Sqrt));
-        platformOperatorNames.put("Floor", Integer.valueOf(Floor));
-        platformOperatorNames.put("Ln", Integer.valueOf(Ln));
-        platformOperatorNames.put("Log", Integer.valueOf(Log));
-        platformOperatorNames.put("Mod", Integer.valueOf(Mod));
-        platformOperatorNames.put("Power", Integer.valueOf(Power));
-        platformOperatorNames.put("Round", Integer.valueOf(Round));
-        platformOperatorNames.put("Sign", Integer.valueOf(Sign));
-        platformOperatorNames.put("Sin", Integer.valueOf(Sin));
-        platformOperatorNames.put("Sinh", Integer.valueOf(Sinh));
-        platformOperatorNames.put("Tan", Integer.valueOf(Tan));
-        platformOperatorNames.put("Tanh", Integer.valueOf(Tanh));
-        platformOperatorNames.put("Trunc", Integer.valueOf(Trunc));
-        platformOperatorNames.put("Greatest", Integer.valueOf(Greatest));
-        platformOperatorNames.put("Least", Integer.valueOf(Least));
-        platformOperatorNames.put("Add", Integer.valueOf(Add));
-        platformOperatorNames.put("Subtract", Integer.valueOf(Subtract));
-        platformOperatorNames.put("Divide", Integer.valueOf(Divide));
-        platformOperatorNames.put("Multiply", Integer.valueOf(Multiply));
-        platformOperatorNames.put("Atan2", Integer.valueOf(Atan2));
-        platformOperatorNames.put("Cot", Integer.valueOf(Cot));
-        platformOperatorNames.put("Deref", Integer.valueOf(Deref));
-        platformOperatorNames.put("Ref", Integer.valueOf(Ref));
-        platformOperatorNames.put("RefToHex", Integer.valueOf(RefToHex));
-        platformOperatorNames.put("Value", Integer.valueOf(Value));
-        platformOperatorNames.put("Cast", Integer.valueOf(Cast));
-        platformOperatorNames.put("Extract", Integer.valueOf(Extract));
-        platformOperatorNames.put("ExtractXml", Integer.valueOf(ExtractXml));
-        platformOperatorNames.put("ExtractValue", Integer.valueOf(ExtractValue));
-        platformOperatorNames.put("ExistsNode", Integer.valueOf(ExistsNode));
-        platformOperatorNames.put("GetStringVal", Integer.valueOf(GetStringVal));
-        platformOperatorNames.put("GetNumberVal", Integer.valueOf(GetNumberVal));
-        platformOperatorNames.put("IsFragment", Integer.valueOf(IsFragment));
-        platformOperatorNames.put("SDO_WITHIN_DISTANCE", Integer.valueOf(SDO_WITHIN_DISTANCE));
-        platformOperatorNames.put("SDO_RELATE", Integer.valueOf(SDO_RELATE));
-        platformOperatorNames.put("SDO_FILTER", Integer.valueOf(SDO_FILTER));
-        platformOperatorNames.put("SDO_NN", Integer.valueOf(SDO_NN));
-        platformOperatorNames.put("NullIf", Integer.valueOf(NullIf));
+        platformOperatorNames.put("ToUpperCase", ToUpperCase);
+        platformOperatorNames.put("ToLowerCase", ToLowerCase);
+        platformOperatorNames.put("Chr", Chr);
+        platformOperatorNames.put("Concat", Concat);
+        platformOperatorNames.put("Coalesce", Coalesce);
+        platformOperatorNames.put("Case", Case);
+        platformOperatorNames.put("HexToRaw", HexToRaw);
+        platformOperatorNames.put("Initcap", Initcap);
+        platformOperatorNames.put("Instring", Instring);
+        platformOperatorNames.put("Soundex", Soundex);
+        platformOperatorNames.put("LeftPad", LeftPad);
+        platformOperatorNames.put("LeftTrim", LeftTrim);
+        platformOperatorNames.put("RightPad", RightPad);
+        platformOperatorNames.put("RightTrim", RightTrim);
+        platformOperatorNames.put("Substring", Substring);
+        platformOperatorNames.put("Translate", Translate);
+        platformOperatorNames.put("Ascii", Ascii);
+        platformOperatorNames.put("Length", Length);
+        platformOperatorNames.put("CharIndex", CharIndex);
+        platformOperatorNames.put("CharLength", CharLength);
+        platformOperatorNames.put("Difference", Difference);
+        platformOperatorNames.put("Reverse", Reverse);
+        platformOperatorNames.put("Replicate", Replicate);
+        platformOperatorNames.put("Right", Right);
+        platformOperatorNames.put("Locate", Locate);
+        platformOperatorNames.put("ToNumber", ToNumber);
+        platformOperatorNames.put("ToChar", ToChar);
+        platformOperatorNames.put("AddMonths", AddMonths);
+        platformOperatorNames.put("DateToString", DateToString);
+        platformOperatorNames.put("MonthsBetween", MonthsBetween);
+        platformOperatorNames.put("NextDay", NextDay);
+        platformOperatorNames.put("RoundDate", RoundDate);
+        platformOperatorNames.put("AddDate", AddDate);
+        platformOperatorNames.put("DateName", DateName);
+        platformOperatorNames.put("DatePart", DatePart);
+        platformOperatorNames.put("DateDifference", DateDifference);
+        platformOperatorNames.put("TruncateDate", TruncateDate);
+        platformOperatorNames.put("NewTime", NewTime);
+        platformOperatorNames.put("Nvl", Nvl);
+        platformOperatorNames.put("NewTime", NewTime);
+        platformOperatorNames.put("Ceil", Ceil);
+        platformOperatorNames.put("Cos", Cos);
+        platformOperatorNames.put("Cosh", Cosh);
+        platformOperatorNames.put("Abs", Abs);
+        platformOperatorNames.put("Acos", Acos);
+        platformOperatorNames.put("Asin", Asin);
+        platformOperatorNames.put("Atan", Atan);
+        platformOperatorNames.put("Exp", Exp);
+        platformOperatorNames.put("Sqrt", Sqrt);
+        platformOperatorNames.put("Floor", Floor);
+        platformOperatorNames.put("Ln", Ln);
+        platformOperatorNames.put("Log", Log);
+        platformOperatorNames.put("Mod", Mod);
+        platformOperatorNames.put("Power", Power);
+        platformOperatorNames.put("Round", Round);
+        platformOperatorNames.put("Sign", Sign);
+        platformOperatorNames.put("Sin", Sin);
+        platformOperatorNames.put("Sinh", Sinh);
+        platformOperatorNames.put("Tan", Tan);
+        platformOperatorNames.put("Tanh", Tanh);
+        platformOperatorNames.put("Trunc", Trunc);
+        platformOperatorNames.put("Greatest", Greatest);
+        platformOperatorNames.put("Least", Least);
+        platformOperatorNames.put("Add", Add);
+        platformOperatorNames.put("Subtract", Subtract);
+        platformOperatorNames.put("Divide", Divide);
+        platformOperatorNames.put("Multiply", Multiply);
+        platformOperatorNames.put("Atan2", Atan2);
+        platformOperatorNames.put("Cot", Cot);
+        platformOperatorNames.put("Deref", Deref);
+        platformOperatorNames.put("Ref", Ref);
+        platformOperatorNames.put("RefToHex", RefToHex);
+        platformOperatorNames.put("Value", Value);
+        platformOperatorNames.put("Cast", Cast);
+        platformOperatorNames.put("Extract", Extract);
+        platformOperatorNames.put("ExtractXml", ExtractXml);
+        platformOperatorNames.put("ExtractValue", ExtractValue);
+        platformOperatorNames.put("ExistsNode", ExistsNode);
+        platformOperatorNames.put("GetStringVal", GetStringVal);
+        platformOperatorNames.put("GetNumberVal", GetNumberVal);
+        platformOperatorNames.put("IsFragment", IsFragment);
+        platformOperatorNames.put("SDO_WITHIN_DISTANCE", SDO_WITHIN_DISTANCE);
+        platformOperatorNames.put("SDO_RELATE", SDO_RELATE);
+        platformOperatorNames.put("SDO_FILTER", SDO_FILTER);
+        platformOperatorNames.put("SDO_NN", SDO_NN);
+        platformOperatorNames.put("NullIf", NullIf);
         return platformOperatorNames;
-    }
-
-    /**
-     * INTERNAL:
-     */
-    protected static void initializeRelationOperators() {
-        addOperator(simpleRelation(Equal, "=", "equal"));
-        addOperator(simpleRelation(NotEqual, "<>", "notEqual"));
-        addOperator(simpleRelation(LessThan, "<", "lessThan"));
-        addOperator(simpleRelation(LessThanEqual, "<=", "lessThanEqual"));
-        addOperator(simpleRelation(GreaterThan, ">", "greaterThan"));
-        addOperator(simpleRelation(GreaterThanEqual, ">=", "greaterThanEqual"));
-
-        addOperator(like());
-        addOperator(likeEscape());
-        addOperator(notLike());
-        addOperator(notLikeEscape());
-        addOperator(between());
-
-        addOperator(exists());
-        addOperator(notExists());
     }
 
     /**
@@ -1761,7 +1919,8 @@ public class ExpressionOperator implements Serializable {
      * Build leftTrim operator that takes one parameter.
      */
     public static ExpressionOperator leftTrim2() {
-        return simpleTwoArgumentFunction(LeftTrim2, "LTRIM");
+        ExpressionOperator operator = simpleTwoArgumentFunction(LeftTrim2, "LTRIM");
+        return operator;
     }
 
     /**
@@ -1770,6 +1929,14 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator length() {
         return simpleFunction(Length, "LENGTH");
+    }
+
+    public static ExpressionOperator lessThan() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.LessThan, "<", "lessThan");
+    }
+
+    public static ExpressionOperator lessThanEqual() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.LessThanEqual, "<=", "lessThanEqual");
     }
 
     /**
@@ -1837,6 +2004,7 @@ public class ExpressionOperator implements Serializable {
         result.setIsBindingSupported(false);
         return result;
     }
+
     /**
      * INTERNAL:
      * Create the LIKE operator with ESCAPE.
@@ -1939,6 +2107,14 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator multiply() {
+        return ExpressionOperator.simpleMath(ExpressionOperator.Multiply, "*");
+    }
+
+    /**
+     * INTERNAL:
      * Create a new expression. Optimized for the single argument case.
      */
     public Expression newExpressionForArgument(Expression base, Object singleArgument) {
@@ -1971,21 +2147,11 @@ public class ExpressionOperator implements Serializable {
             return new LogicalExpression();
         }
         try {
-            Expression node = null;
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    node = (Expression)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getNodeClass()));
-                } catch (PrivilegedActionException exception) {
-                    return null;
-                }
-            } else {
-                node = (Expression)PrivilegedAccessHelper.newInstanceFromClass(getNodeClass());
-            }
-            return node;
-        } catch (InstantiationException exception) {
-            throw new InternalError(exception.toString());
-        } catch (IllegalAccessException exception) {
-            throw new InternalError(exception.toString());
+            return (Expression) PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.newInstanceFromClass(getNodeClass())
+            );
+        } catch (Exception ex) {
+            throw new InternalError(ex.toString());
         }
     }
 
@@ -2047,6 +2213,10 @@ public class ExpressionOperator implements Serializable {
         return simpleTwoArgumentFunction(NextDay, "NEXT_DAY");
     }
 
+    public static ExpressionOperator notEqual() {
+        return ExpressionOperator.simpleRelation(ExpressionOperator.NotEqual, "<>", "notEqual");
+    }
+
     /**
      * INTERNAL:
      * Create the NOT EXISTS operator.
@@ -2056,8 +2226,8 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(NotExists);
         List<String> v = new ArrayList<>(2);
-        v.add("NOT EXISTS" + " ");
-        v.add(" ");
+        v.add("NOT EXISTS ");
+        v.add("");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -2174,42 +2344,37 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL: Print the collection onto the SQL stream.
      */
-    public void printCollection(List items, ExpressionSQLPrinter printer) {
-        // Certain functions don't allow binding on some platforms.
-        if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
+    public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+        /*
+         * If this ExpressionOperator does not support binding, and the platform allows,
+         * then disable binding for the whole query
+         */
+        if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && Boolean.FALSE.equals(isBindingSupported())) {
             printer.getCall().setUsesBinding(false);
         }
+
         int dbStringIndex = 0;
-        try {
-            if (isPrefix()) {
-                printer.getWriter().write(getDatabaseStrings()[0]);
-                dbStringIndex = 1;
-            } else {
-                dbStringIndex = 0;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (isPrefix()) {
+            printer.printString(getDatabaseStrings()[0]);
+            dbStringIndex = 1;
         }
 
-        if (argumentIndices == null) {
-            argumentIndices = new int[items.size()];
-            for (int i = 0; i < argumentIndices.length; i++){
-                argumentIndices[i] = i;
-            }
-        }
+        int[] indices = getArgumentIndices(items.size());
+        String[] dbStrings = getDatabaseStrings(items.size());
+        for (int i = 0; i < indices.length; i++) {
+            final int index = indices[i];
+            Expression item = items.get(index);
 
-        for (final int index : argumentIndices) {
-            Expression item = (Expression)items.get(index);
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
-                DatabaseTable alias = ((ObjectExpression)item).aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
+                DatabaseTable alias = item.aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
                 printer.printString(alias.getNameDelimited(printer.getPlatform()));
             } else if ((this.selector == Count) && (item.isExpressionBuilder())) {
                 printer.printString("*");
             } else {
                 item.printSQL(printer);
             }
-            if (dbStringIndex < getDatabaseStrings().length) {
-                printer.printString(getDatabaseStrings()[dbStringIndex++]);
+            if (dbStringIndex < dbStrings.length) {
+                printer.printString(dbStrings[dbStringIndex++]);
             }
         }
     }
@@ -2217,11 +2382,11 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL: Print the collection onto the SQL stream.
      */
-    public void printJavaCollection(List items, ExpressionJavaPrinter printer) {
+    public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
         int javaStringIndex = 0;
 
         for (int i = 0; i < items.size(); i++) {
-            Expression item = (Expression)items.get(i);
+            Expression item = items.get(i);
             item.printJava(printer);
             if (javaStringIndex < getJavaStrings().length) {
                 printer.printString(getJavaStrings()[javaStringIndex++]);
@@ -2234,16 +2399,18 @@ public class ExpressionOperator implements Serializable {
      * For performance, special case printing two children, since it's by far the most common
      */
     public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-        // Certain functions don't allow binding on some platforms.
-        if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
+        /*
+         * If this ExpressionOperator does not support binding, and the platform allows,
+         * then disable binding for the whole query
+         */
+        if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && Boolean.FALSE.equals(isBindingSupported())) {
             printer.getCall().setUsesBinding(false);
         }
-        int dbStringIndex;
+
+        int dbStringIndex = 0;
         if (isPrefix()) {
             printer.printString(getDatabaseStrings()[0]);
             dbStringIndex = 1;
-        } else {
-            dbStringIndex = 0;
         }
 
         first.printSQL(printer);
@@ -2358,7 +2525,7 @@ public class ExpressionOperator implements Serializable {
      * Reset all the operators.
      */
     public static void resetOperators() {
-        allOperators = new HashMap();
+        allOperators = new HashMap<Integer, ExpressionOperator>();
     }
 
     /**
@@ -2399,7 +2566,8 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator rightTrim2() {
         // bug 2916893 rightTrim(substring) broken
-        return simpleTwoArgumentFunction(RightTrim2, "RTRIM");
+        ExpressionOperator operator = simpleTwoArgumentFunction(RightTrim2, "RTRIM");
+        return operator;
     }
 
     /**
@@ -2430,6 +2598,23 @@ public class ExpressionOperator implements Serializable {
     }
 
     /**
+     * Return the argumentIndices if set, otherwise initialize argumentIndices to the provided size
+     */
+    public int[] getArgumentIndices(int size) {
+        int[] indices = this.argumentIndices;
+        if (indices != null) {
+            return indices;
+        }
+
+        indices = new int[size];
+        for (int i = 0; i < indices.length; i++) {
+            indices[i] = i;
+        }
+        this.argumentIndices = indices;
+        return indices;
+    }
+
+    /**
      * ADVANCED:
      * Set the node class for this operator. For user-defined functions this is
      * set automatically but can be changed.
@@ -2441,7 +2626,7 @@ public class ExpressionOperator implements Serializable {
      * <p>FunctionOperator    RTRIM                 "
      * <p>Node classes given belong to org.eclipse.persistence.internal.expressions.
      */
-    public void setNodeClass(Class nodeClass) {
+    public void setNodeClass(Class<?> nodeClass) {
         this.nodeClass = nodeClass;
     }
 
@@ -2557,11 +2742,10 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
-     * Create an operator for a simple math operatin, i.e. +, -, *, /
+     * Create an operator for a simple math operation, i.e. +, -, *, /
      */
     public static ExpressionOperator simpleMath(int selector, String databaseName) {
         ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setIsBindingSupported(false);
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
         List<String> v = new ArrayList<>(3);
@@ -2571,6 +2755,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        exOperator.setIsBindingSupported(false);
         return exOperator;
     }
 
@@ -2737,197 +2922,18 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator subtract() {
+        return ExpressionOperator.simpleMath(ExpressionOperator.Subtract, "-");
+    }
+
+    /**
+     * INTERNAL:
      * Create the SUM operator.
      */
     public static ExpressionOperator sum() {
         return simpleAggregate(Sum, "SUM", "sum");
-    }
-
-    /**
-     * INTERNAL:
-     * Function, to add months to a date.
-     */
-    public static ExpressionOperator sybaseAddMonthsOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(FunctionOperator);
-        exOperator.setSelector(AddMonths);
-        List<String> v = new ArrayList<>(3);
-        v.add("DATEADD(month, ");
-        v.add(", ");
-        v.add(")");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        int[] indices = { 1, 0 };
-        exOperator.setArgumentIndices(indices);
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
-
-    }
-
-    /**
-     * INTERNAL:
-     * Build operator.
-     */
-    public static ExpressionOperator sybaseAtan2Operator() {
-        return ExpressionOperator.simpleTwoArgumentFunction(Atan2, "ATN2");
-    }
-
-    /**
-     * INTERNAL:
-     * Build instring operator
-     */
-    public static ExpressionOperator sybaseInStringOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(FunctionOperator);
-        exOperator.setSelector(Instring);
-        List<String> v = new ArrayList<>(3);
-        v.add("CHARINDEX(");
-        v.add(", ");
-        v.add(")");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        int[] indices = { 1, 0 };
-        exOperator.setArgumentIndices(indices);
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
-
-    }
-
-    /**
-     * INTERNAL:
-     * Build Sybase equivalent to TO_NUMBER.
-     */
-    public static ExpressionOperator sybaseToNumberOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(FunctionOperator);
-        exOperator.setSelector(ToNumber);
-        List<String> v = new ArrayList<>(2);
-        v.add("CONVERT(NUMERIC, ");
-        v.add(")");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
-    }
-
-    /**
-     * INTERNAL:
-     * Build Sybase equivalent to TO_CHAR.
-     */
-    public static ExpressionOperator sybaseToDateToStringOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(FunctionOperator);
-        exOperator.setSelector(DateToString);
-        List<String> v = new ArrayList<>(2);
-        v.add("CONVERT(CHAR, ");
-        v.add(")");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
-    }
-
-    /**
-     * INTERNAL:
-     * Build Sybase equivalent to TO_DATE.
-     */
-    public static ExpressionOperator sybaseToDateOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(FunctionOperator);
-        exOperator.setSelector(ToDate);
-        List<String> v = new ArrayList<>(2);
-        v.add("CONVERT(DATETIME, ");
-        v.add(")");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
-    }
-
-    /**
-     * INTERNAL:
-     * Build Sybase equivalent to TO_CHAR.
-     */
-    public static ExpressionOperator sybaseToCharOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(FunctionOperator);
-        exOperator.setSelector(ToChar);
-        List<String> v = new ArrayList<>(2);
-        v.add("CONVERT(CHAR, ");
-        v.add(")");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
-    }
-
-    /**
-     * INTERNAL:
-     * Build Sybase equivalent to TO_CHAR.
-     */
-    public static ExpressionOperator sybaseToCharWithFormatOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(FunctionOperator);
-        exOperator.setSelector(ToCharWithFormat);
-        List<String> v = new ArrayList<>(3);
-        v.add("CONVERT(CHAR, ");
-        v.add(",");
-        v.add(")");
-        exOperator.printsAs(v);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
-    }
-
-    /**
-     * INTERNAL:
-     * Build the Sybase equivalent to Locate
-     */
-    public static ExpressionOperator sybaseLocateOperator() {
-        ExpressionOperator result = simpleTwoArgumentFunction(ExpressionOperator.Locate, "CHARINDEX");
-        int[] argumentIndices = new int[2];
-        argumentIndices[0] = 1;
-        argumentIndices[1] = 0;
-        result.setArgumentIndices(argumentIndices);
-        return result;
-    }
-
-    /**
-     * INTERNAL:
-     * Build the Sybase equivalent to Locate with a start index.
-     * Sybase does not define this, so this gets a little complex...
-     */
-    public static ExpressionOperator sybaseLocate2Operator() {
-        ExpressionOperator result = new ExpressionOperator();
-        result.setSelector(ExpressionOperator.Locate2);
-        result.setType(ExpressionOperator.FunctionOperator);
-        List<String> v = new ArrayList<>();
-        v.add("CASE (CHARINDEX(");
-        v.add(", SUBSTRING(");
-        v.add(",");
-        v.add(", CHAR_LENGTH(");
-        v.add(")))) WHEN 0 THEN 0 ELSE (CHARINDEX(");
-        v.add(", SUBSTRING(");
-        v.add(",");
-        v.add(", CHAR_LENGTH(");
-        v.add("))) + ");
-        v.add(" - 1) END");
-        result.printsAs(v);
-        int[] indices = new int[9];
-        indices[0] = 1;
-        indices[1] = 0;
-        indices[2] = 2;
-        indices[3] = 0;
-        indices[4] = 1;
-        indices[5] = 0;
-        indices[6] = 2;
-        indices[7] = 0;
-        indices[8] = 2;
-
-        result.setArgumentIndices(indices);
-        result.setNodeClass(ClassConstants.FunctionExpression_Class);
-        result.bePrefix();
-        return result;
     }
 
 
@@ -2989,6 +2995,30 @@ public class ExpressionOperator implements Serializable {
 
     /**
      * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator localDate() {
+        return simpleFunctionNoParentheses(LocalDate,  "CURRENT_DATE");
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator localTime() {
+        return simpleFunctionNoParentheses(LocalTime, "CURRENT_TIME");
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator localDateTime() {
+        return simpleFunctionNoParentheses(LocalDateTime,  "CURRENT_TIMESTAMP");
+    }
+
+    /**
+     * INTERNAL:
      * Create the toLowerCase operator.
      */
     public static ExpressionOperator toLowerCase() {
@@ -3008,11 +3038,12 @@ public class ExpressionOperator implements Serializable {
      */
     @Override
     public String toString() {
-        if ((getDatabaseStrings() == null) || (getDatabaseStrings().length == 0)) {
+        String[] dbStrings = getDatabaseStrings();
+        if ((dbStrings == null) || (dbStrings.length == 0)) {
             //CR#... Print a useful name for the missing platform operator.
             return "platform operator - " + getPlatformOperatorName(this.selector);
         } else {
-            return "operator " + Arrays.asList(getDatabaseStrings());
+            return "operator " + Arrays.asList(dbStrings);
         }
     }
 
@@ -3056,6 +3087,9 @@ public class ExpressionOperator implements Serializable {
         v.add(")");
         exOperator.printsAs(v);
         exOperator.bePrefix();
+        // Bug 573094
+        int[] indices = { 1, 0 };
+        exOperator.setArgumentIndices(indices);
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         exOperator.setIsBindingSupported(false);
         return exOperator;

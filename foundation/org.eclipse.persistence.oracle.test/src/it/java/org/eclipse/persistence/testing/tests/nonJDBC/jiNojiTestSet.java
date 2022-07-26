@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,7 +89,7 @@ public class jiNojiTestSet {
         query.addArgument("Z", BigDecimal.class);
         query.setCall(call);
         project.getDescriptor(Empty.class).getQueryManager().addQuery("jiNoji", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);
@@ -179,13 +179,13 @@ public class jiNojiTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
-        queryArgs.add(Integer.valueOf(15));
+        queryArgs.add(15);
         boolean worked = false;
         String msg = null;
         try {
@@ -200,6 +200,6 @@ public class jiNojiTestSet {
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         BigDecimal y = (BigDecimal)record.get("Y");
         assertTrue("wrong y value", y.intValue() == 44);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

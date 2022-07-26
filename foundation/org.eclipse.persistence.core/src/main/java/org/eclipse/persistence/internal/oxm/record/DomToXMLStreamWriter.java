@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 public class DomToXMLStreamWriter{
 
@@ -53,7 +52,7 @@ public class DomToXMLStreamWriter{
                 }
             }
         } else if(currentNode.getNodeType() == Node.TEXT_NODE) {
-                xsw.writeCharacters(((Text)currentNode).getNodeValue());
+                xsw.writeCharacters(currentNode.getNodeValue());
         }
         if(dom.getNodeType() == Node.DOCUMENT_NODE) {
             xsw.writeEndDocument();
@@ -123,7 +122,6 @@ public class DomToXMLStreamWriter{
         for(int i = 0; i < attrs.getLength(); i++) {
             Attr next = (Attr)attrs.item(i);
             if(next.getNodeType() == Node.ATTRIBUTE_NODE) {
-                Attr attribute = next;
                 if(next.getPrefix() != null && next.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                     String currentUri = xsw.getNamespaceContext().getNamespaceURI(next.getLocalName());
                     if(currentUri == null || !currentUri.equals(next.getValue())) {
@@ -135,7 +133,7 @@ public class DomToXMLStreamWriter{
                         xsw.writeDefaultNamespace(next.getValue());
                         needToAddDefaultNS = false;
                     }else{
-                        nonNamespaceDeclAttrs.add(attribute);
+                        nonNamespaceDeclAttrs.add(next);
                     }
                 }
             }
@@ -155,7 +153,7 @@ public class DomToXMLStreamWriter{
         for(int i = 0; i < childNodes.getLength(); i++) {
             Node next = childNodes.item(i);
             if(next.getNodeType() == Node.TEXT_NODE) {
-                xsw.writeCharacters(((Text)next).getNodeValue());
+                xsw.writeCharacters(next.getNodeValue());
             } else if(next.getNodeType() == Node.CDATA_SECTION_NODE) {
                 xsw.writeCData(next.getNodeValue());
             } else if(next.getNodeType() == Node.COMMENT_NODE) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class CollectionReferenceWriteOnlyTestCases extends JAXBWithJSONTestCases{
@@ -36,7 +37,7 @@ public class CollectionReferenceWriteOnlyTestCases extends JAXBWithJSONTestCases
 
     public CollectionReferenceWriteOnlyTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Root.class });
+        setClasses(new Class<?>[] { Root.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
@@ -44,6 +45,7 @@ public class CollectionReferenceWriteOnlyTestCases extends JAXBWithJSONTestCases
      /**
      * Create the control write-only Root.
      */
+    @Override
     public Object getControlObject() {
         Root root = new Root();
         List<Employee> emps = new ArrayList<Employee>();
@@ -74,6 +76,7 @@ public class CollectionReferenceWriteOnlyTestCases extends JAXBWithJSONTestCases
     /**
      * Create the control Root.
      */
+    @Override
     public Object getWriteControlObject() {
         Root root = new Root();
         List<Employee> emps = new ArrayList<Employee>();
@@ -104,13 +107,14 @@ public class CollectionReferenceWriteOnlyTestCases extends JAXBWithJSONTestCases
         return root;
     }
 
+    @Override
     public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/collectionreference/write-only-oxm.xml");
 
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.collectionreference", new StreamSource(inputStream));
             Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             return properties;
         }
@@ -125,6 +129,7 @@ public class CollectionReferenceWriteOnlyTestCases extends JAXBWithJSONTestCases
                super.testSchemaGen(controlSchemas);
         }
 
+    @Override
     public void testRoundTrip(){
         //not applicable with write only mappings
     }

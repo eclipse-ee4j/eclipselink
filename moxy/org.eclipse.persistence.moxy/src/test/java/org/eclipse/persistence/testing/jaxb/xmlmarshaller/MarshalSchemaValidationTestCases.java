@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class MarshalSchemaValidationTestCases extends OXTestCase {
 
-    static String SCHEMA = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd";
+    static String SCHEMA = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd";
 
     private JAXBMarshaller marshaller;
     private Employee employee;
@@ -51,7 +51,7 @@ public class MarshalSchemaValidationTestCases extends OXTestCase {
 
     @Override
     protected void setUp() throws Exception {
-        Class[] classes = {Employee.class};
+        Class<?>[] classes = {Employee.class};
         JAXBContext jc = JAXBContextFactory.createContext(classes, null);
         marshaller = (JAXBMarshaller) jc.createMarshaller();
 

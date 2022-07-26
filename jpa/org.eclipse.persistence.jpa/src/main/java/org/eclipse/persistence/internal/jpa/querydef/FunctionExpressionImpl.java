@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import jakarta.persistence.metamodel.Metamodel;
  * <p>
  * <b>Description</b>: The predicate forms the least specific expression node.  Predicates
  * result in boolean expressions that are combined to form the final expression.
- * <p>
  *
  * @see jakarta.persistence.criteria Predicate
  *
@@ -45,7 +44,7 @@ public class FunctionExpressionImpl<X> extends ExpressionImpl<X>{
         if (compoundExpressions != null){
             this.expressions = compoundExpressions;
         }else{
-            this.expressions = new ArrayList();
+            this.expressions = new ArrayList<>();
         }
     }
 

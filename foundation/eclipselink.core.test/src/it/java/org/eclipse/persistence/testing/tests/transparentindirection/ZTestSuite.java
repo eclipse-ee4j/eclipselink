@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ public class ZTestSuite extends TestSuite {
         this("Unnamed Test Suite");
     }
 
-    public ZTestSuite(Class testCaseClass) {
+    public ZTestSuite(Class<?> testCaseClass) {
         this(testCaseClass.getName(), testCaseClass);
     }
 
@@ -35,12 +35,12 @@ public class ZTestSuite extends TestSuite {
         this.setName(name);
     }
 
-    public ZTestSuite(String name, Class testCaseClass) {
+    public ZTestSuite(String name, Class<?> testCaseClass) {
         this(name);
         this.add(testCaseClass);
     }
 
-    public void add(Class testCaseClass) {
+    public void add(Class<?> testCaseClass) {
         Constructor ctor = this.singleArgumentConstructorFor(testCaseClass);
         Object[] arguments = new Object[1];
 
@@ -62,9 +62,9 @@ public class ZTestSuite extends TestSuite {
     /**
      * Return an enumeration on all the method names for the
      * specified class that begin with "test", removing any duplicates.
-     * @param testCaseClass a subclass of <code>TestCase</code>
+     * @param testClass a subclass of <code>TestCase</code>
      */
-    public Enumeration methodNamesStartingWithTestFor(Class testClass) {
+    public Enumeration methodNamesStartingWithTestFor(Class<?> testClass) {
         Method[] methods = testClass.getMethods();
         Vector names = new Vector(methods.length);
         for (int i = 0; i < methods.length; i++) {
@@ -85,9 +85,9 @@ public class ZTestSuite extends TestSuite {
      * Return the required constructor for the specified class.
      * @param testCaseClass a subclass of <code>TestCase</code>
      */
-    private Constructor singleArgumentConstructorFor(Class testCaseClass) {
+    private Constructor singleArgumentConstructorFor(Class<?> testCaseClass) {
         try {
-            return testCaseClass.getConstructor(new Class[] { String.class });
+            return testCaseClass.getConstructor(String.class);
         } catch (NoSuchMethodException e) {
             String name = testCaseClass.getName();
             throw new RuntimeException("The class '" + name + "' must implement the constructor '" + name + "(String)'");

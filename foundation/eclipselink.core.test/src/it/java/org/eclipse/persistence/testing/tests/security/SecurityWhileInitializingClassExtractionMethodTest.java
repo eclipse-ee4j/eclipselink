@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 //Created by Ian Reid
 //Date: April 25, 2k3
@@ -28,10 +28,11 @@ public class SecurityWhileInitializingClassExtractionMethodTest extends Exceptio
 
     private InheritancePolicy policy;
 
-    public SecurityWhileInitializingClassExtractionMethodTest(Class c) {
+    public SecurityWhileInitializingClassExtractionMethodTest(Class<?> c) {
         super("This tests Security While Initializing Class Extraction Method (TL-ERROR 88)", c);
     }
 
+    @Override
     protected void setup() {
         super.setup();
         expectedException = DescriptorException.securityWhileInitializingClassExtractionMethod("Dummy_Method", new RelationalDescriptor(), new Exception());
@@ -45,6 +46,7 @@ public class SecurityWhileInitializingClassExtractionMethodTest extends Exceptio
         policy.setParentClass(null);
     }
 
+    @Override
     public void test() {
         try {
             policy.preInitialize((AbstractSession)getSession());
@@ -59,7 +61,7 @@ public class SecurityWhileInitializingClassExtractionMethodTest extends Exceptio
     }
 
     static class ExtractionRecord {
-        public static void dummy_Method(Record record) {
+        public static void dummy_Method(DataRecord dataRecord) {
         }
     }
 }

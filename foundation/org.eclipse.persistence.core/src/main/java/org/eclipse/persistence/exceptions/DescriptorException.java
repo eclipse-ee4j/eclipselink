@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -313,7 +313,7 @@ public class DescriptorException extends ValidationException {
         return exception;
     }
 
-    public static DescriptorException attributeAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, Class parameterType, String validTypeName) {
+    public static DescriptorException attributeAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, Class<?> parameterType, String validTypeName) {
         Object[] args = { mapping.getAttributeName(), parameterType, validTypeName };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, ATTRIBUTE_AND_MAPPING_WITH_TRANSPARENT_INDIRECTION_MISMATCH, args), mapping);
@@ -348,7 +348,7 @@ public class DescriptorException extends ValidationException {
 
     }
 
-    public static DescriptorException attributeTypeNotValid(CollectionMapping mapping, Class interfaceType) {
+    public static DescriptorException attributeTypeNotValid(CollectionMapping mapping, Class<?> interfaceType) {
         Object[] args = { mapping.getAttributeName(), interfaceType };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, ATTRIBUTE_TYPE_NOT_VALID, args), mapping);
@@ -372,7 +372,7 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException couldNotInstantiateIndirectContainerClass(Class containerClass, Exception exception) {
+    public static DescriptorException couldNotInstantiateIndirectContainerClass(Class<?> containerClass, Exception exception) {
         Object[] args = { containerClass, Helper.getShortClassName(containerClass) };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, COULD_NOT_INSTANTIATE_INDIRECT_CONTAINER_CLASS, args));
@@ -406,7 +406,7 @@ public class DescriptorException extends ValidationException {
     }
 
 
-    public static DescriptorException errorAccessingSetMethodOfEntity(Class aClass, String methodName, ClassDescriptor descriptor, Exception underlying) {
+    public static DescriptorException errorAccessingSetMethodOfEntity(Class<?> aClass, String methodName, ClassDescriptor descriptor, Exception underlying) {
         Object[] args = { aClass, methodName };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INTERNAL_ERROR_SET_METHOD, args), descriptor, underlying);
@@ -414,7 +414,7 @@ public class DescriptorException extends ValidationException {
     }
 
 
-    public static DescriptorException errorOccuredInAmendmentMethod(Class amendmentClass, String method, Exception exception, ClassDescriptor descriptor) {
+    public static DescriptorException errorOccuredInAmendmentMethod(Class<?> amendmentClass, String method, Exception exception, ClassDescriptor descriptor) {
         Object[] args = { amendmentClass, method };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, ERROR_OCCURED_IN_AMENDMENT_METHOD, args), descriptor, exception);
@@ -726,7 +726,7 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException incorrectCollectionPolicy(DatabaseMapping mapping, Class attributeClass, Class containerClass) {
+    public static DescriptorException incorrectCollectionPolicy(DatabaseMapping mapping, Class<?> attributeClass, Class<?> containerClass) {
         Object[] args = { attributeClass, containerClass };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INCORRECT_COLLECTION_POLICY, args), mapping);
@@ -758,7 +758,7 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException invalidAmendmentMethod(Class amendmentClass, String method, Exception exception, ClassDescriptor descriptor) {
+    public static DescriptorException invalidAmendmentMethod(Class<?> amendmentClass, String method, Exception exception, ClassDescriptor descriptor) {
         Object[] args = { amendmentClass, method, CR };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INVALID_AMENDMENT_METHOD, args), descriptor, exception);
@@ -766,7 +766,7 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException invalidAttributeTypeForProxyIndirection(Class attributeType, Class[] targetInterfaces, DatabaseMapping mapping) {
+    public static DescriptorException invalidAttributeTypeForProxyIndirection(Class<?> attributeType, Class<?>[] targetInterfaces, DatabaseMapping mapping) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < targetInterfaces.length; i++) {
             buffer.append(targetInterfaces[i].getName());
@@ -782,7 +782,7 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException invalidContainerPolicy(org.eclipse.persistence.internal.queries.ContainerPolicy containerPolicy, Class javaClass) {
+    public static DescriptorException invalidContainerPolicy(org.eclipse.persistence.internal.queries.ContainerPolicy containerPolicy, Class<?> javaClass) {
         Object[] args = { containerPolicy, javaClass };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INVALID_CONTAINER_POLICY, args));
@@ -815,14 +815,14 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException invalidDescriptorEventCode(DescriptorEvent event, ClassDescriptor descriptor) {
-        Object[] args = { Integer.valueOf(event.getEventCode()) };
+        Object[] args = {event.getEventCode()};
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INVALID_DESCRIPTOR_EVENT_CODE, args), descriptor);
         descriptorException.setErrorCode(INVALID_DESCRIPTOR_EVENT_CODE);
         return descriptorException;
     }
 
-    public static DescriptorException invalidGetMethodReturnTypeForProxyIndirection(Class attributeType, Class[] targetInterfaces, DatabaseMapping mapping) {
+    public static DescriptorException invalidGetMethodReturnTypeForProxyIndirection(Class<?> attributeType, Class<?>[] targetInterfaces, DatabaseMapping mapping) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < targetInterfaces.length; i++) {
             buffer.append(targetInterfaces[i].getName());
@@ -846,7 +846,7 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException invalidIndirectionContainerClass(org.eclipse.persistence.internal.indirection.ContainerIndirectionPolicy policy, Class containerClass) {
+    public static DescriptorException invalidIndirectionContainerClass(org.eclipse.persistence.internal.indirection.ContainerIndirectionPolicy policy, Class<?> containerClass) {
         Object[] args = { containerClass };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INVALID_INDIRECTION_CONTAINER_CLASS, args), policy.getMapping());
@@ -870,7 +870,7 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException invalidSetMethodParameterTypeForProxyIndirection(Class attributeType, Class[] targetInterfaces, DatabaseMapping mapping) {
+    public static DescriptorException invalidSetMethodParameterTypeForProxyIndirection(Class<?> attributeType, Class<?>[] targetInterfaces, DatabaseMapping mapping) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < targetInterfaces.length; i++) {
             buffer.append(targetInterfaces[i].getName());
@@ -972,7 +972,7 @@ public class DescriptorException extends ValidationException {
         return exception;
     }
 
-    public static DescriptorException missingIndirectContainerConstructor(Class containerClass) {
+    public static DescriptorException missingIndirectContainerConstructor(Class<?> containerClass) {
         Object[] args = { containerClass.getName(), containerClass.getName() + "()" };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, MISSING_INDIRECT_CONTAINER_CONSTRUCTOR, args));
@@ -1046,7 +1046,7 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException noConstructorIndirectionContainerClass(org.eclipse.persistence.internal.indirection.ContainerIndirectionPolicy policy, Class containerClass) {
+    public static DescriptorException noConstructorIndirectionContainerClass(org.eclipse.persistence.internal.indirection.ContainerIndirectionPolicy policy, Class<?> containerClass) {
         Object[] args = { containerClass };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, NO_CONSTRUCTOR_INDIRECT_COLLECTION_CLASS, args), policy.getMapping());
@@ -1119,7 +1119,7 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException noSubClassMatch(Class theClass, DatabaseMapping mapping) {
+    public static DescriptorException noSubClassMatch(Class<?> theClass, DatabaseMapping mapping) {
         Object[] args = { theClass };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, NO_SUB_CLASS_MATCH, args), mapping);
@@ -1260,7 +1260,6 @@ public class DescriptorException extends ValidationException {
 
     public static DescriptorException nullPointerWhileConstructorInstantiation(ClassDescriptor descriptor, Throwable exception) {
         Object[] args = {  };
-
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, NULL_POINTER_WHILE_CONSTRUCTOR_INSTANTIATION, args), descriptor, exception);
         descriptorException.setErrorCode(NULL_POINTER_WHILE_CONSTRUCTOR_INSTANTIATION);
         return descriptorException;
@@ -1360,7 +1359,7 @@ public class DescriptorException extends ValidationException {
         return exception;
     }
 
-    public static DescriptorException parameterAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, Class parameterType, String validTypeName) {
+    public static DescriptorException parameterAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, Class<?> parameterType, String validTypeName) {
         Object[] args = { mapping.getAttributeName(), parameterType, validTypeName };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, PARAMETER_AND_MAPPING_WITH_TRANSPARENT_INDIRECTION_MISMATCH, args), mapping);
@@ -1470,7 +1469,7 @@ public class DescriptorException extends ValidationException {
         return exception;
     }
 
-    public static DescriptorException returnAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, Class parameterType, String validTypeName) {
+    public static DescriptorException returnAndMappingWithTransparentIndirectionMismatch(DatabaseMapping mapping, Class<?> parameterType, String validTypeName) {
         Object[] args = { mapping.getAttributeName(), parameterType, validTypeName };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, RETURN_AND_MAPPING_WITH_TRANSPARENT_INDIRECTION_MISMATCH, args), mapping);
@@ -1926,7 +1925,7 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
-    public static DescriptorException needToImplementFetchGroupTracker(Class aClass, ClassDescriptor descriptor) {
+    public static DescriptorException needToImplementFetchGroupTracker(Class<?> aClass, ClassDescriptor descriptor) {
         Object[] args = { aClass };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, NEED_TO_IMPLEMENT_FETCHGROUPTRACKER, args), descriptor);

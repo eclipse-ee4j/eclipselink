@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import jakarta.xml.bind.annotation.XmlTransient;
 /**
  * This class serves as a bridge between {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl}
  * and {@link org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl}.
- * <p>Provides uniform bridged <i>equals()<i/> and <i>hashCode()<i/> methods.</p>
+ * <p>Provides uniform bridged <i>equals()</i> and <i>hashCode()</i> methods.</p>
  *
  * @author Marcel Valovy - marcel.valovy@oracle.com
  */
@@ -51,8 +51,8 @@ public abstract class Customer {
     public abstract String getNameBridge();
 
     /**
-     * Bridge for {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl#equals(Object)} and
-     * {@link org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl#equals(Object)}
+     * Bridge for {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl} and
+     * {@link org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl}
      *
      * @param o Employee object.
      * @return true if the Employee classes' attributes match the same values.
@@ -72,8 +72,8 @@ public abstract class Customer {
     }
 
     /**
-     * Bridge for {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl#hashCode()} and
-     * {@link org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl#hashCode()}
+     * Bridge for {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl} and
+     * {@link org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl}
      *
      * @return hashCode
      */

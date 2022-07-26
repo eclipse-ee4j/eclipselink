@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class SqlPackageType extends SqlTypeWithMethods {
     protected String[] m_executeNames;
     protected ParamInfoValues m_paramInfoValues;
 
+    @Override
     public boolean isPackage() {
         return true;
     }
@@ -63,6 +64,7 @@ public class SqlPackageType extends SqlTypeWithMethods {
         //initSecurityAttributes(sqlName);
     }
 
+    @Override
     protected List<FieldInfo> getFieldInfo() {
         return null;
     }
@@ -103,6 +105,7 @@ public class SqlPackageType extends SqlTypeWithMethods {
     }
     */
 
+    @Override
     protected MethodInfo[] getMethodInfo(String schema, String name) throws SQLException {
         /*
          * POSITION of Nth argument is N SEQUENCE of Nth argument is >= N POSITION of function
@@ -120,11 +123,11 @@ public class SqlPackageType extends SqlTypeWithMethods {
         if (m_methodFilter != null && m_methodFilter.isSingleMethod()) {
             keys = new String[]{OWNER, PACKAGE_NAME, OBJECT_NAME, DATA_LEVEL};
             values = new Object[]{schema, name, m_methodFilter.getSingleMethodName(),
-                Integer.valueOf(0)};
+                    0};
         }
         else {
             keys = new String[]{OWNER, Util.PACKAGE_NAME, Util.DATA_LEVEL};
-            values = new Object[]{schema, name, Integer.valueOf(0)};
+            values = new Object[]{schema, name, 0};
         }
         Iterator<ViewRow> iter = m_viewCache.getRows(ALL_ARGUMENTS, new String[0], keys, values,
             new String[0]);
@@ -132,8 +135,9 @@ public class SqlPackageType extends SqlTypeWithMethods {
         return minfo;
     }
 
+    @Override
     protected ResultInfo getResultInfo(String schema, String name, String methodName,
-        String methodNo) throws SQLException {
+                                       String methodNo) throws SQLException {
         if (m_resultInfoValues == null || !m_resultInfoValues.matches(schema, name)) {
             m_resultInfoValues = new ResultInfoValues(schema, name, m_methodFilter, m_viewCache);
         }
@@ -152,11 +156,11 @@ public class SqlPackageType extends SqlTypeWithMethods {
                 keys = new String[]{OWNER, PACKAGE_NAME, OBJECT_NAME,
                     DATA_LEVEL, POSITION};
                 values = new Object[]{schema, name, methodFilter.getSingleMethodName(),
-                    Integer.valueOf(0), Integer.valueOf(0)};
+                        0, 0};
             }
             else {
                 keys = new String[]{OWNER, PACKAGE_NAME, DATA_LEVEL, POSITION};
-                values = new Object[]{schema, name, Integer.valueOf(0), Integer.valueOf(0)};
+                values = new Object[]{schema, name, 0, 0};
             }
 
             Iterator<ViewRow> iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], keys, values,
@@ -180,8 +184,9 @@ public class SqlPackageType extends SqlTypeWithMethods {
         }
     }
 
+    @Override
     protected ParamInfo[] getParamInfo(String schema, String name, String methodName,
-        String methodNo) throws SQLException {
+                                       String methodNo) throws SQLException {
         if (m_paramInfoValues == null || !m_paramInfoValues.matches(schema, name)) {
             m_paramInfoValues = new ParamInfoValues(schema, name, m_methodFilter, m_viewCache);
         }
@@ -217,11 +222,11 @@ public class SqlPackageType extends SqlTypeWithMethods {
             if (methodFilter != null && methodFilter.isSingleMethod()) {
                 keys = new String[]{OWNER, PACKAGE_NAME, OBJECT_NAME, DATA_LEVEL};
                 values = new Object[]{schema, name, methodFilter.getSingleMethodName(),
-                    Integer.valueOf(0)};
+                        0};
             }
             else {
                 keys = new String[]{OWNER, PACKAGE_NAME, DATA_LEVEL};
-                values = new Object[]{schema, name, Integer.valueOf(0)};
+                values = new Object[]{schema, name, 0};
             }
             Iterator<ViewRow> iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], keys, values,
                 new String[0]);

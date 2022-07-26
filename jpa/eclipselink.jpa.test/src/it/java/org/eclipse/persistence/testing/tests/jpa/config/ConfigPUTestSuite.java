@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,10 +47,10 @@ import org.eclipse.persistence.jpa.config.ObjectTypeConverter;
 import org.eclipse.persistence.jpa.config.PersistenceUnit;
 import org.eclipse.persistence.jpa.config.RuntimeFactory;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -92,7 +92,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         PersistenceUnit pu = new PersistenceUnitImpl("ConfigPUTestSuite", Thread.currentThread().getContextClassLoader());
 
         // Need to get the user specified database properties.
-        Map properties = JUnitTestCaseHelper.getDatabaseProperties();
+        Map<String, String> properties = JUnitTestCaseHelper.getDatabaseProperties();
         pu.setProperty(JDBC_DRIVER, properties.get(JDBC_DRIVER));
         pu.setProperty(JDBC_URL, properties.get(JDBC_URL));
         pu.setProperty(JDBC_USER, properties.get(JDBC_USER));

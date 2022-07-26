@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import java.sql.Connection;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 
 public class TestServerPlatform extends ServerPlatformBase {
     public TestServerPlatform(DatabaseSession newDatabaseSession) {
@@ -31,21 +32,25 @@ public class TestServerPlatform extends ServerPlatformBase {
         this.disableJTA();
     }
 
+    @Override
     public String getServerNameAndVersion() {
         return null;
     }
 
-    public Class getExternalTransactionControllerClass() {
+    @Override
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         return null;
     }
 
     public void launchContainerThread(Thread thread) {
     }
 
+    @Override
     public org.eclipse.persistence.logging.SessionLog getServerLog() {
         return new DefaultSessionLog();
     }
 
+    @Override
     public java.sql.Connection unwrapConnection(java.sql.Connection connection){
         if(connection instanceof TestOracleConnection){
             Connection conn = ((TestOracleConnection)connection).getPhysicalConnection();

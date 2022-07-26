@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -27,32 +29,32 @@ public class SDODataObjectGetIntConversionByXPathQueryTest extends SDODataObject
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_INT);
-        Integer bb = new Integer(12);
+        Integer bb = 12;
 
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
-        dataObject_a.setInt(propertyTest + "test", bb.intValue());
+        dataObject_a.setInt(propertyTest + "test", bb);
 
-        this.assertEquals(bb.intValue(), dataObject_a.getInt(propertyTest + "test"));
+        assertEquals(bb.intValue(), dataObject_a.getInt(propertyTest + "test"));
     }
 
     // purpose: opencontent properties
     public void testGetIntConversionFromDefinedPropertyWithPath() {
-        SDOProperty property_c1_object = ((SDOProperty)dataObject_c1.getInstanceProperty("PName-c1"));
+        SDOProperty property_c1_object = dataObject_c1.getInstanceProperty("PName-c1");
         property_c1_object.setType(SDOConstants.SDO_INT);
 
         //type_c0.addDeclaredProperty(property_c1_object);
         List objects = new ArrayList();
-        Integer b = new Integer(12);
-        Integer bb = new Integer(2);
+        Integer b = 12;
+        Integer bb = 2;
         objects.add(b);
         objects.add(bb);
 
         dataObject_c1.set(property_c1_object, objects);// add it to instance list
 
-        this.assertEquals(bb.intValue(), dataObject_a.getInt("PName-a0/PName-b0[number='1']/PName-c1.1"));
+        assertEquals(bb.intValue(), dataObject_a.getInt("PName-a0/PName-b0[number='1']/PName-c1.1"));
     }
 
     //2. purpose: getDataObject with property value is not dataobject
@@ -79,7 +81,7 @@ public class SDODataObjectGetIntConversionByXPathQueryTest extends SDODataObject
     //3. purpose: getDataObject with property set to boolean value
     public void testGetDataObjectConversionFromProperty() {
         //try {
-        this.assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
+        assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
 
         //fail("IllegalArgumentException should be thrown.");
         //} catch (IllegalArgumentException e) {
@@ -89,7 +91,7 @@ public class SDODataObjectGetIntConversionByXPathQueryTest extends SDODataObject
     //purpose: getDataObject with nul value
     public void testGetDataObjectConversionWithNullArgument() {
         String p = null;
-        this.assertNull(dataObject_a.getDataObject(p));
+        assertNull(dataObject_a.getDataObject(p));
     }
 
     public void testSetGetDataObjectWithQueryPath() {
@@ -101,10 +103,10 @@ public class SDODataObjectGetIntConversionByXPathQueryTest extends SDODataObject
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Integer b = new Integer(12);
+        Integer b = 12;
 
-        dataObject_a.setInt("PName-a0/PName-b0[number='1']/PName-c1.0", b.intValue());
+        dataObject_a.setInt("PName-a0/PName-b0[number='1']/PName-c1.0", b);
 
-        this.assertEquals(b.intValue(), dataObject_a.getInt("PName-a0/PName-b0[number='1']/PName-c1.0"));
+        assertEquals(b.intValue(), dataObject_a.getInt("PName-a0/PName-b0[number='1']/PName-c1.0"));
     }
 }

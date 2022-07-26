@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,15 +33,15 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 public class CharacterEscapeHandlerWrapper implements CharacterEscapeHandler {
 
     private final static String ESCAPE_METHOD_NAME = "escape";
-    private final static Class[] PARAMS = new Class[] {
+    private final static Class<?>[] PARAMS = new Class<?>[] {
         CoreClassConstants.APCHAR, CoreClassConstants.PINT, CoreClassConstants.PINT, CoreClassConstants.PBOOLEAN, Writer.class };
 
-    private Object handler;
-    private Method escapeMethod;
+    private final Object handler;
+    private final Method escapeMethod;
 
     public CharacterEscapeHandlerWrapper(Object sunHandler) {
         this.handler = sunHandler;
-        Class handlerClass = sunHandler.getClass();
+        Class<?> handlerClass = sunHandler.getClass();
 
         try {
             this.escapeMethod = PrivilegedAccessHelper.getMethod(handlerClass, ESCAPE_METHOD_NAME, PARAMS, false);

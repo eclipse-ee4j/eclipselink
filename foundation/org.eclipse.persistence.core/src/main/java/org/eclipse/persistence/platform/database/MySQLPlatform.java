@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -29,13 +29,16 @@ package org.eclipse.persistence.platform.database;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -44,8 +47,10 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -82,6 +87,7 @@ public class MySQLPlatform extends DatabasePlatform {
         this.pingSQL = "SELECT 1";
         this.startDelimiter = "`";
         this.endDelimiter = "`";
+        this.supportsReturnGeneratedKeys = true;
     }
 
     @Override
@@ -165,10 +171,8 @@ public class MySQLPlatform extends DatabasePlatform {
      * Return the mapping of class types to database types for the schema framework.
      */
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
-
-        fieldTypeMapping = new Hashtable();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("TINYINT(1) default 0", false));
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
@@ -195,14 +199,17 @@ public class MySQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("LONGBLOB", false));
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONGTEXT", false));
 
+        // Mapping for JSON type.
+        getJsonPlatform().updateFieldTypes(fieldTypeMapping);
+
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         FieldTypeDefinition fd = new FieldTypeDefinition("TIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         }
         fieldTypeMapping.put(java.sql.Time.class, fd);
         fd = new FieldTypeDefinition("DATETIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         }
         fieldTypeMapping.put(java.sql.Timestamp.class, fd);
@@ -210,37 +217,37 @@ public class MySQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
 
         fd = new FieldTypeDefinition("DATETIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         } else {
-            fd.setDefaultSize(3);
+            fd.setDefaultSize(6);
             fd.setIsSizeRequired(true);
         }
         fieldTypeMapping.put(java.time.LocalDateTime.class,fd); //no timezone info
 
         fd = new FieldTypeDefinition("TIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         } else {
-            fd.setDefaultSize(3);
+            fd.setDefaultSize(6);
             fd.setIsSizeRequired(true);
         }
         fieldTypeMapping.put(java.time.LocalTime.class, fd);
 
         fd = new FieldTypeDefinition("DATETIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         } else {
-            fd.setDefaultSize(3);
+            fd.setDefaultSize(6);
             fd.setIsSizeRequired(true);
         }
         fieldTypeMapping.put(java.time.OffsetDateTime.class, fd); //no timezone info
 
         fd = new FieldTypeDefinition("TIME");
-        if (!isFractionalTimeSupported) {
+        if (!isFractionalTimeSupported()) {
             fd.setIsSizeAllowed(false);
         } else {
-            fd.setDefaultSize(3);
+            fd.setDefaultSize(6);
             fd.setIsSizeRequired(true);
         }
         fieldTypeMapping.put(java.time.OffsetTime.class, fd);
@@ -248,7 +255,7 @@ public class MySQLPlatform extends DatabasePlatform {
     }
 
     @Override
-    public int getJDBCType(Class javaType) {
+    public int getJDBCType(Class<?> javaType) {
         if (javaType == ClassConstants.TIME_ODATETIME) {
             return Types.TIMESTAMP;
         } else if (javaType == ClassConstants.TIME_OTIME) {
@@ -287,9 +294,6 @@ public class MySQLPlatform extends DatabasePlatform {
      * 2. MaxRows is the number of rows to be returned
      *
      * MySQL uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex
-     *
-     * @param firstResultIndex
-     * @param maxResults
      *
      * @see org.eclipse.persistence.platform.database.MySQLPlatform
      */
@@ -385,6 +389,11 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
+        addOperator(currentTimeStamp());
+        addOperator(today());
+        addOperator(currentTime());
+        addOperator(localTime());
+        addOperator(localDateTime());
         addOperator(logOperator());
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATAN2"));
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Concat, "CONCAT"));
@@ -400,14 +409,68 @@ public class MySQLPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
+     * MySQL specific {@code currentTimeStamp} operator.
+     *
+     * @return new {@link ExpressionOperator} instance with {@code currentTimeStamp}
+     */
+    public static ExpressionOperator currentTimeStamp() {
+        return ExpressionOperator.simpleFunctionNoParentheses(
+                ExpressionOperator.Today,  "CURRENT_TIMESTAMP(6)");
+    }
+
+    /**
+     * INTERNAL:
+     * MySQL specific {@code today} operator.
+     *
+     * @return new {@link ExpressionOperator} instance with {@code today}
+     */
+    public static ExpressionOperator today() {
+        return currentTimeStamp();
+    }
+
+    /**
+     * INTERNAL:
+     * MySQL specific {@code currentTime} operator.
+     *
+     * @return new {@link ExpressionOperator} instance with {@code currentTime}
+     */
+    public static ExpressionOperator currentTime() {
+        return ExpressionOperator.simpleFunctionNoParentheses(
+                ExpressionOperator.CurrentTime, "CURRENT_TIME(6)");
+    }
+
+    /**
+     * INTERNAL:
+     * MySQL specific {@code localTime} operator.
+     *
+     * @return new {@link ExpressionOperator} instance with {@code localTime}
+     */
+    public static ExpressionOperator localTime() {
+        return ExpressionOperator.simpleFunctionNoParentheses(
+                ExpressionOperator.LocalTime, "CURRENT_TIME(6)");
+    }
+
+    /**
+     * INTERNAL:
+     * MySQL specific {@code localDateTime} operator.
+     *
+     * @return new {@link ExpressionOperator} instance with {@code localDateTime}
+     */
+    public static ExpressionOperator localDateTime() {
+        return ExpressionOperator.simpleFunctionNoParentheses(
+                ExpressionOperator.LocalDateTime,  "CURRENT_TIMESTAMP(6)");
+    }
+
+    /**
+     * INTERNAL:
      * Create the 10 based log operator for this platform.
      */
     protected ExpressionOperator logOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Log);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("LOG(10, ");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(2);
+        v.add("LOG(10, ");
+        v.add(")");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(FunctionExpression.class);
@@ -423,9 +486,9 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.ToNumber);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("CONVERT(");
-        v.addElement(", SIGNED)");
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(");
+        v.add(", SIGNED)");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -440,9 +503,9 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.ToDate);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("CONVERT(");
-        v.addElement(", DATETIME)");
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(");
+        v.add(", DATETIME)");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -457,9 +520,9 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.ToChar);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("CONVERT(");
-        v.addElement(", CHAR)");
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(");
+        v.add(", CHAR)");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -474,9 +537,9 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.DateToString);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("CONVERT(");
-        v.addElement(", CHAR)");
+        List<String> v = new ArrayList<>(2);
+        v.add("CONVERT(");
+        v.add(", CHAR)");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -492,10 +555,10 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.LeftTrim2);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
-        v.addElement("TRIM(LEADING ");
-        v.addElement(" FROM ");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(5);
+        v.add("TRIM(LEADING ");
+        v.add(" FROM ");
+        v.add(")");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         int[] indices = {1, 0};
@@ -513,10 +576,10 @@ public class MySQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.RightTrim2);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
-        v.addElement("TRIM(TRAILING ");
-        v.addElement(" FROM ");
-        v.addElement(")");
+        List<String> v = new ArrayList<>(5);
+        v.add("TRIM(TRAILING ");
+        v.add(" FROM ");
+        v.add(")");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         int[] indices = {1, 0};
@@ -725,8 +788,8 @@ public class MySQLPlatform extends DatabasePlatform {
      */
     @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
-                                                    Collection pkFields,
-                                                    Collection assignedFields) throws IOException
+                                                    Collection<DatabaseField> pkFields,
+                                                    Collection<DatabaseField> assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
@@ -744,8 +807,8 @@ public class MySQLPlatform extends DatabasePlatform {
      */
     @Override
     public void writeDeleteFromTargetTableUsingTempTableSql(Writer writer, DatabaseTable table, DatabaseTable targetTable,
-            Collection pkFields,
-            Collection targetPkFields, DatasourcePlatform platform) throws IOException
+                                                            Collection<DatabaseField> pkFields,
+                                                            Collection<DatabaseField> targetPkFields, DatasourcePlatform platform) throws IOException
     {
         writer.write("DELETE FROM ");
         String targetTableName = targetTable.getQualifiedNameDelimited(this);
@@ -756,6 +819,22 @@ public class MySQLPlatform extends DatabasePlatform {
         String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         writer.write(tempTableName);
         writeJoinWhereClause(writer, targetTableName, tempTableName, targetPkFields, pkFields, this);
+    }
+
+    @Override
+    public void writeParameterMarker(Writer writer, ParameterExpression expression, AbstractRecord record, DatabaseCall call) throws IOException {
+        // JSON values need cast in SQL statement.
+        if (expression.getType() instanceof Type) {
+            final Type type = (Type) expression.getType();
+            switch (type.getTypeName()) {
+                case "jakarta.json.JsonValue":
+                case "jakarta.json.JsonArray":
+                case "jakarta.json.JsonObject":
+                    writer.write("CAST(? AS JSON)");
+                    return;
+            }
+        }
+        super.writeParameterMarker(writer, expression, record, call);
     }
 
     @Override
@@ -886,4 +965,18 @@ public class MySQLPlatform extends DatabasePlatform {
         return true;
     }
 
+    /**
+     * INTERNAL:
+     * This method returns the query to select the UUID
+     * from the server for MySQL.
+     */
+    @Override
+    public ValueReadQuery getUUIDQuery() {
+        if (uuidQuery == null) {
+            uuidQuery = new ValueReadQuery();
+            uuidQuery.setSQLString("SELECT UUID()");
+            uuidQuery.setAllowNativeSQLQuery(true);
+        }
+        return uuidQuery;
+    }
 }

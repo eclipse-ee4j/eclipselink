@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,17 +23,17 @@ import java.util.*;
 public interface CompositeObject {
 
     /** this method returns the name of the object */
-    public String getName();
+    String getName();
 
     /** this method returns a Vector of fields that the object contains */
-    public Vector getFields();
+    Vector<FieldMetaData> getFields();
 
     /** this method sets the fields to the new values */
-    public void setFields(Vector fields);
+    void setFields(Vector<FieldMetaData> fields);
 
     /** this method adds a field to the fields Vector */
-    public void addField(FieldMetaData field);
+    void addField(FieldMetaData field);
 
     /** this method returns a field, if such a field exists, by the given name */
-    public FieldMetaData getFieldNamed(String fieldName);
+    FieldMetaData getFieldNamed(String fieldName);
 }

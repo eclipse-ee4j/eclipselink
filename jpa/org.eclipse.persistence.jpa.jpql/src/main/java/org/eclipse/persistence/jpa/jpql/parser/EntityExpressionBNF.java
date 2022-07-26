@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,11 +20,11 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * JPA 1.0:
  * <div><b>BNF:</b> <code>entity_expression ::= single_valued_association_path_expression |
- *                                                     simple_entity_expression</code><p></div>
+ *                                                     simple_entity_expression</code></div>
  *
  * JPA 2.0:
  * <div><b>BNF:</b> <code>entity_expression ::= single_valued_object_path_expression |
- *                                                     simple_entity_expression</code><p></div>
+ *                                                     simple_entity_expression</code></div>
  *
  * @version 2.4
  * @since 2.3
@@ -45,9 +45,6 @@ public final class EntityExpressionBNF extends JPQLQueryBNF {
         super(ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

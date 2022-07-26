@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import jakarta.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -93,10 +93,10 @@ public class Employee implements Serializable {
     private static final String SCOTIABANK = "Scotiabank";
     private static final String TORONTO_DOMINION = "TorontoDominion";
 
-    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME & END_TIME),
+    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME &amp; END_TIME),
     this is stored into two different fields in the employee table. */
     private Time[] normalHours;
-    /** Transformation mapping, a two(2) element array holding the employee's overtime hours (OVERTIME_START_TIME & OVERTIME_END_TIME),
+    /** Transformation mapping, a two(2) element array holding the employee's overtime hours (OVERTIME_START_TIME &amp; OVERTIME_END_TIME),
     this is stored into two different fields in the employee table. */
     private Time[] overtimeHours;
 
@@ -125,11 +125,11 @@ public class Employee implements Serializable {
     }
 
     public void addAmex(long number) {
-        getCreditCards().put(AMEX, new Long(number));
+        getCreditCards().put(AMEX, number);
     }
 
     public void addCanadianImperialCreditLine(long number) {
-        getCreditLines().put(CANADIAN_IMPERIAL, new Long(number));
+        getCreditLines().put(CANADIAN_IMPERIAL, number);
     }
 
     public void addDealer(Dealer dealer) {
@@ -137,7 +137,7 @@ public class Employee implements Serializable {
     }
 
     public void addDinersClub(long number) {
-        getCreditCards().put(DINERS, new Long(number));
+        getCreditCards().put(DINERS, number);
     }
 
     public void addManagedEmployee(Employee emp) {
@@ -146,7 +146,7 @@ public class Employee implements Serializable {
     }
 
     public void addMastercard(long number) {
-        getCreditCards().put(MASTERCARD, new Long(number));
+        getCreditCards().put(MASTERCARD, number);
     }
 
     public void addPhoneNumber(PhoneNumber phone) {
@@ -163,19 +163,19 @@ public class Employee implements Serializable {
     }
 
     public void addRoyalBankCreditLine(long number) {
-        getCreditLines().put(ROYAL_BANK, new Long(number));
+        getCreditLines().put(ROYAL_BANK, number);
     }
 
     public void addScotiabankCreditLine(long number) {
-        getCreditLines().put(SCOTIABANK, new Long(number));
+        getCreditLines().put(SCOTIABANK, number);
     }
 
     public void addTorontoDominionCreditLine(long number) {
-        getCreditLines().put(TORONTO_DOMINION, new Long(number));
+        getCreditLines().put(TORONTO_DOMINION, number);
     }
 
     public void addVisa(long number) {
-        getCreditCards().put(VISA, new Long(number));
+        getCreditCards().put(VISA, number);
     }
 
     /**
@@ -183,12 +183,12 @@ public class Employee implements Serializable {
      * IMPORTANT: This method builds the value but does not set it.
      * The mapping will set it using method or direct access as defined in the descriptor.
      */
-    public Time[] buildNormalHours(Record row, Session session) {
+    public Time[] buildNormalHours(DataRecord row, Session session) {
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
-        hours[0] = (Time) session.getDatasourcePlatform().convertObject(row.get("START_TIME"), java.sql.Time.class);
-        hours[1] = (Time) session.getDatasourcePlatform().convertObject(row.get("END_TIME"), java.sql.Time.class);
+        hours[0] = session.getDatasourcePlatform().convertObject(row.get("START_TIME"), Time.class);
+        hours[1] = session.getDatasourcePlatform().convertObject(row.get("END_TIME"), Time.class);
         return hours;
     }
 
@@ -351,7 +351,7 @@ public class Employee implements Serializable {
         if (cardNumber == null) {
             return false;
         } else {
-            return cardNumber.longValue() == number;
+            return cardNumber == number;
         }
     }
 
@@ -359,7 +359,7 @@ public class Employee implements Serializable {
         if (creditLineNumber == null) {
             return false;
         } else {
-            return creditLineNumber.longValue() == number;
+            return creditLineNumber == number;
         }
     }
 

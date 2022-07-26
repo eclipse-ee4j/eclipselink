@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,15 +29,18 @@ public class RemoveFromIdentityMapReturnTest extends TestCase {
         setDescription("Ensure the returned object is returned from IdentityMapAccessor.removeFromIdentiytMap.");
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         employee = (Employee)getSession().readObject(Employee.class);
     }
 
+    @Override
     public void test() {
         returnedEmployee = (Employee)getSession().getIdentityMapAccessor().removeFromIdentityMap(employee);
     }
 
+    @Override
     public void verify() {
         if (returnedEmployee != employee) {
             throw new TestErrorException("The incorrect employee was returned from removeFromIdentityMap.");
@@ -47,6 +50,7 @@ public class RemoveFromIdentityMapReturnTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }

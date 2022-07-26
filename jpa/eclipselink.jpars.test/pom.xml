@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,8 +26,8 @@
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.test.server.parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
-        <relativePath>../../pom_test_server.xml</relativePath>
+        <version>4.0.0-SNAPSHOT</version>
+        <relativePath>../../testing/server/pom.xml</relativePath>
     </parent>
 
     <properties>
@@ -164,7 +164,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--Must be before cargo-maven2-plugin to start DB before JEE server and stop after.-->
+            <!--Must be before cargo-maven3-plugin to start DB before JEE server and stop after.-->
             <plugin>
                 <groupId>org.carlspring.maven</groupId>
                 <artifactId>derby-maven-plugin</artifactId>
@@ -188,7 +188,7 @@
             <!--Start selected JEE server configure there datasource and deploy test application-->
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
+                <artifactId>cargo-maven3-plugin</artifactId>
                 <configuration>
                     <skip>${test-skip-jpa-jpars-server}</skip>
                     <deployables>

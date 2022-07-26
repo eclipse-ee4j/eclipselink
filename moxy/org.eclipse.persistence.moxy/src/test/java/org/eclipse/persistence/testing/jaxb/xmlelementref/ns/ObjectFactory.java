@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public class ObjectFactory {
 
     @XmlElementDecl(namespace = "http://missing-uri.org/", name = "request", scope = EchoByteArray.class)
     public JAXBElement<byte[]> createEchoByteArrayRequest(byte[] value) {
-        return new JAXBElement<byte[]>(_EchoByteArrayRequest_QNAME, byte[].class, EchoByteArray.class, ((byte[]) value));
+        return new JAXBElement<byte[]>(_EchoByteArrayRequest_QNAME, byte[].class, EchoByteArray.class, value);
     }
 
 }

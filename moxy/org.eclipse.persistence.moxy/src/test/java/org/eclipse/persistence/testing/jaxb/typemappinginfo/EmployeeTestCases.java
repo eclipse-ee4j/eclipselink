@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.w3c.dom.Document;
@@ -40,6 +41,7 @@ public class EmployeeTestCases extends TypeMappingInfoWithJSONTestCases{
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         setTypeMappingInfos(getTypeMappingInfos());
@@ -59,6 +61,7 @@ public class EmployeeTestCases extends TypeMappingInfoWithJSONTestCases{
     }
 
 
+    @Override
     protected Object getControlObject() {
 
         QName qname = new QName("someUri", "testTagName");
@@ -72,6 +75,7 @@ public class EmployeeTestCases extends TypeMappingInfoWithJSONTestCases{
         return jaxbElement;
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/employee.xsd");
 
@@ -86,13 +90,14 @@ public class EmployeeTestCases extends TypeMappingInfoWithJSONTestCases{
 
 
 
+    @Override
     protected Map getProperties() {
             String pkg = "someUri";
 
             HashMap<String, Source> overrides = new HashMap<String, Source>();
             overrides.put("org.eclipse.persistence.testing.jaxb.typemappinginfo", getXmlSchemaOxm(pkg));
             Map<String, Object> properties = new HashMap<String, Object>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
             return properties;
         }
 

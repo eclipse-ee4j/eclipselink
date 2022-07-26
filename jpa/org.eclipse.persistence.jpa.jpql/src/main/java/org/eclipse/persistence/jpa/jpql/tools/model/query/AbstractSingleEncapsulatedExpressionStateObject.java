@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractSingleEncapsulatedExpress
  * This {@link StateObject} represents a JPQL expression that has a JPQL identifier followed by
  * an encapsulated expression with parenthesis.
  *
- * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.AbstractSingleEncapsulatedExpression AbstractSingleEncapsulatedExpression
  *
@@ -82,9 +82,6 @@ public abstract class AbstractSingleEncapsulatedExpressionStateObject extends Ab
         parse(jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -93,9 +90,6 @@ public abstract class AbstractSingleEncapsulatedExpressionStateObject extends Ab
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSingleEncapsulatedExpression getExpression() {
         return (AbstractSingleEncapsulatedExpression) super.getExpression();
@@ -129,9 +123,6 @@ public abstract class AbstractSingleEncapsulatedExpressionStateObject extends Ab
         return getStateObject() != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -165,9 +156,6 @@ public abstract class AbstractSingleEncapsulatedExpressionStateObject extends Ab
         firePropertyChanged(STATE_OBJECT_PROPERTY, oldStateObject, stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextEncapsulatedExpression(Appendable writer) throws IOException {
         if (stateObject != null) {

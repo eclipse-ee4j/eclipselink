@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject;
 import commonj.sdo.DataObject;
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -36,8 +38,8 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
 
     // purpose: pass a/b, to get dataObjcet c
     public void testGetDataObjectConversionFromDefinedProperty() {
-        this.assertEquals(dataObject_c, dataObject_a.getDataObject("PName-a/PName-b.0"));
-        this.assertEquals(dataObject_c, dataObject_a.getDataObject("PName-a/PName-b[1]"));
+        assertEquals(dataObject_c, dataObject_a.getDataObject("PName-a/PName-b.0"));
+        assertEquals(dataObject_c, dataObject_a.getDataObject("PName-a/PName-b[1]"));
     }
 
     // purpose: opencontent properties
@@ -67,7 +69,7 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
         dataObject_b.set(property, objects);// add it to instance list
         dataObject_a.setDataObject("PName-a/openTest[1]", b);
 
-        this.assertEquals(b, dataObject_a.getDataObject("PName-a/openTest[number=1]"));
+        assertEquals(b, dataObject_a.getDataObject("PName-a/openTest[number=1]"));
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -75,8 +77,8 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
 
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(dataObjectType);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(dataObjectType);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         SDODataObject bb = new SDODataObject();
         List b = new ArrayList();
@@ -85,7 +87,7 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDataObject(property3, bb);
 
-        this.assertEquals(bb, dataObject_a.getDataObject(property3));
+        assertEquals(bb, dataObject_a.getDataObject(property3));
 
     }
 
@@ -94,8 +96,8 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
 
         // dataObject's type add boolean property
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(dataObjectType);
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setMany(true);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(dataObjectType);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setMany(true);
 
         SDODataObject bb = new SDODataObject();
         List b = new ArrayList();
@@ -103,7 +105,7 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDataObject(property + ".0", bb);
 
-        this.assertEquals(bb, dataObject_a.getDataObject(property + ".0"));
+        assertEquals(bb, dataObject_a.getDataObject(property + ".0"));
 
     }
 
@@ -111,21 +113,21 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
     public void testGetDataObjectConversionWithPathFromDefinedBooleanPropertyBracketInPathMiddle() {
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
 
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(dataObjectType);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(dataObjectType);
 
         SDODataObject bb = new SDODataObject();
 
         dataObject_a.setDataObject(property1, bb);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(bb, dataObject_a.getDataObject(property1));
+        assertEquals(bb, dataObject_a.getDataObject(property1));
     }
 
     //2. purpose: getDataObject with property value is not dataobject
     public void testGetDataObjectConversionFromUndefinedProperty() {
-        ((SDOProperty)dataObject_c.getInstanceProperty(PROPERTY_NAME_C)).setType(SDOConstants.SDO_BOOLEAN);
+        dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_BOOLEAN);
 
         boolean c = true;
-        Boolean C = new Boolean(c);
+        Boolean C = c;
 
         dataObject_c.set(property_c, C);
 
@@ -139,7 +141,7 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
     //3. purpose: getDataObject with property set to boolean value
     public void testGetDataObjectConversionFromProperty() {
         //try {
-        this.assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
+        assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
 
         //fail("IllegalArgumentException should be thrown.");
         //} catch (IllegalArgumentException e) {
@@ -149,6 +151,6 @@ public class SDODataObjectGetDataObjectByPositionalPathTest extends SDODataObjec
     //purpose: getDataObject with nul value
     public void testGetDataObjectConversionWithNullArgument() {
         String p = null;
-        this.assertNull(dataObject_a.getDataObject(p));
+        assertNull(dataObject_a.getDataObject(p));
     }
 }

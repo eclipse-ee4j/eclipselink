@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 // mmacivor - April 25/2008 - 1.0M8 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.simpledocument;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import jakarta.xml.bind.JAXBElement;
@@ -32,14 +31,15 @@ public class SimpleDocumentByteArrayTestCases extends JAXBWithJSONTestCases {
             super(name);
             setControlDocument(XML_RESOURCE);
             setControlJSON(JSON_RESOURCE);
-            Class[] classes = new Class[1];
+            Class<?>[] classes = new Class<?>[1];
             classes[0] = ByteArrayObjectFactory.class;
             setClasses(classes);
         }
 
+        @Override
         protected Object getControlObject() {
-            JAXBElement value = new ByteArrayObjectFactory().createBase64Root();
-            value.setValue(new Byte[]{new Byte((byte)1), new Byte((byte)2), new Byte((byte)3), new Byte((byte)4), new Byte((byte)5), new Byte((byte)6), new Byte((byte)7)});
+            JAXBElement<Byte[]> value = new ByteArrayObjectFactory().createBase64Root();
+            value.setValue(new Byte[]{(byte) 1, (byte) 2, (byte) 3, (byte) 4, (byte) 5, (byte) 6, (byte) 7});
             return value;
         }
 

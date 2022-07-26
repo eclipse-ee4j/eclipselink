@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,7 +104,7 @@ public class TypePropertyCustomNameNamespaceTestCases extends junit.framework.Te
     private static String marshal(final JAXBElement<?> value) throws Exception {
         final StringWriter stringWriter = new StringWriter();
         final Class<?>[] types = new Class<?>[]{ObjectFactory.class, Tel.class, KooSuper.class, Koo1.class};
-        final Map<Object, Object> conf = new LinkedHashMap<>();
+        final Map<String, Object> conf = new LinkedHashMap<>();
         conf.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
         final JAXBContext innerCtx = JAXBContextFactory.createContext(types, conf);
         final Marshaller marshaller = innerCtx.createMarshaller();
@@ -115,7 +115,7 @@ public class TypePropertyCustomNameNamespaceTestCases extends junit.framework.Te
 
     private static JAXBElement<?> unmarshal(final String value) throws Exception {
         final Class<?>[] types = new Class<?>[]{ObjectFactory.class, Tel.class, KooSuper.class, Koo1.class};
-        final Map<Object, Object> conf = new LinkedHashMap<>();
+        final Map<String, Object> conf = new LinkedHashMap<>();
         conf.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
         final JAXBContext innerCtx = JAXBContextFactory.createContext(types, conf);
         final Unmarshaller unmarshaller = innerCtx.createUnmarshaller();

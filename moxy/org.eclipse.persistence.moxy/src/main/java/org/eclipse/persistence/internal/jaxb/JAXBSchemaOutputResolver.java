@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,6 @@ public class JAXBSchemaOutputResolver implements SchemaModelOutputResolver {
      * This constructor sets the underlying SchemaOutputResolver to be used
      * during createOutput operation.
      *
-     * @param outputResolver
      */
     public JAXBSchemaOutputResolver(SchemaOutputResolver outputResolver) {
         this.outputResolver = outputResolver;
@@ -43,10 +42,7 @@ public class JAXBSchemaOutputResolver implements SchemaModelOutputResolver {
      * Determines the location where a given schema file (of the given namespace URI)
      * will be generated, and return it as a Result object.
      *
-     * @param namespaceURI
-     * @param suggestedFileName
      * @return schema file as a Result object
-     * @throws java.io.IOException
      */
     @Override
     public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {

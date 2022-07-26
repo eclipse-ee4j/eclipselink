@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Object.class;
         setClasses(classes);
     }
@@ -64,6 +64,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
         return null;
     }
 
+    @Override
     protected Object getControlObject() {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
@@ -85,6 +86,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
         return jaxbElement;
     }
 
+    @Override
     protected Object getJSONReadControlObject() {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         Document doc = null;
@@ -107,10 +109,12 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
     protected Type getTypeToUnmarshalTo() throws Exception {
         return Object.class;
     }
-    public Class getUnmarshalClass(){
+    @Override
+    public Class<?> getUnmarshalClass(){
         return Object.class;
     }
 
+    @Override
     public Object getWriteControlObject() {
         return getControlObject();
     }
@@ -119,6 +123,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
         return XML_RESOURCE;
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -130,6 +135,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
         }
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         InputSource inputSource = new InputSource(instream);
@@ -139,6 +145,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReaderEx() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -154,6 +161,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
         }
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -163,12 +171,15 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
             xmlToObjectTest(testObject);
         }
     }
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
     }
 
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
+    @Override
     public void testRoundTrip() throws Exception{
         if(isUnmarshalTest()) {
             InputStream instream = null;
@@ -185,12 +196,14 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
         }
     }
 
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         Object testObject = jaxbUnmarshaller.unmarshal(new StreamSource(instream), Object.class);
         instream.close();
         xmlToObjectTest(testObject);
     }
+    @Override
     public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
         assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
         assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());

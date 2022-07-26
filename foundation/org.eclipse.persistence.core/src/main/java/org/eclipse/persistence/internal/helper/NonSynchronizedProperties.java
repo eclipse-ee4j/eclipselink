@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ public class NonSynchronizedProperties extends Properties {
 
     public NonSynchronizedProperties(int size) {
         super();
-        this.values = new HashMap(size);
+        this.values = new HashMap<>(size);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class NonSynchronizedProperties extends Properties {
 
     @Override
     public Enumeration<Object> elements() {
-        return new Hashtable(this.values).elements();
+        return new Hashtable<>(this.values).elements();
     }
 
     @Override
@@ -89,7 +89,7 @@ public class NonSynchronizedProperties extends Properties {
 
     @Override
     public Enumeration<Object> keys() {
-        return new Hashtable(this.values).keys();
+        return new Hashtable<>(this.values).keys();
     }
 
     @Override
@@ -107,7 +107,7 @@ public class NonSynchronizedProperties extends Properties {
     }
 
     @Override
-    public void putAll(Map<? extends Object, ? extends Object> t) {
+    public void putAll(Map<?, ?> t) {
         this.values.putAll(t);
     }
 

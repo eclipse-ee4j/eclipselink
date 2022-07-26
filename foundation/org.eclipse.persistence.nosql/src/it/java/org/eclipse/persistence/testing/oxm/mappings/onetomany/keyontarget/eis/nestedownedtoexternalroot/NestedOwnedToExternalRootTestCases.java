@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.oxm.mappings.onetomany.keyontarget.eis.n
 
 import java.util.ArrayList;
 import java.util.Vector;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.eis.interactions.XQueryInteraction;
 import org.eclipse.persistence.internal.eis.adapters.xmlfile.XMLFileInteractionSpec;
 import org.eclipse.persistence.testing.oxm.mappings.EISMappingTestCases;
@@ -39,6 +41,7 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
         setProject(new NestedOwnedToExternalRootProject());
     }
 
+    @Override
     protected Object getControlObject() {
         ArrayList objects = new ArrayList();
 
@@ -89,6 +92,7 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
         return objects;
     }
 
+    @Override
     protected ArrayList getRootClasses() {
         ArrayList classes = new ArrayList();
         classes.add(Company.class);
@@ -96,14 +100,17 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
         return classes;
     }
 
-    protected Class getSourceClass() {
+    @Override
+    protected Class<?> getSourceClass() {
         return Company.class;
     }
 
+    @Override
     protected String getTestDocument() {
         return XML_TEST_RESOURCE;
     }
 
+    @Override
     protected void createTables() {
         // Drop tables
         XQueryInteraction interaction = new XQueryInteraction();
@@ -126,6 +133,7 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
         session.executeNonSelectingCall(interaction);
     }
 
+    @Override
     public void testXMLDocumentToObject() throws Exception {
         updateProjectForReading();
 
@@ -138,11 +146,11 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
         log("****Expected:");
         log(getControlObject().toString());
         log("***Actual:");
-        this.assertTrue(objects.size() == 4);
+        assertTrue(objects.size() == 4);
         log(objects.toString());
-        this.assertTrue(((java.util.ArrayList)getControlObject()).size() == objects.size());
+        assertTrue(((java.util.ArrayList)getControlObject()).size() == objects.size());
         ArrayList control = (ArrayList)getControlObject();
-        this.assertEquals(control.get(0), objects.elementAt(0));
+        assertEquals(control.get(0), objects.elementAt(0));
         Company company = (Company)objects.get(0);
         Department dept = (Department)company.getDepartments().get(0);
         Vector emps = dept.getEmployees();

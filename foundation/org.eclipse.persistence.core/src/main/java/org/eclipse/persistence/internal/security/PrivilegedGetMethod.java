@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,17 +20,17 @@ import java.security.PrivilegedExceptionAction;
 
 public class PrivilegedGetMethod implements PrivilegedExceptionAction<Method> {
 
-    private final Class clazz;
+    private final Class<?> clazz;
     private final String methodName;
-    private final Class[] methodParameterTypes;
+    private final Class<?>[] methodParameterTypes;
     private final boolean shouldSetAccessible;
     private final boolean publicOnly;
 
-    public PrivilegedGetMethod(Class clazz, String methodName, Class[] methodParameterTypes, boolean shouldSetAccessible) {
+    public PrivilegedGetMethod(Class<?> clazz, String methodName, Class<?>[] methodParameterTypes, boolean shouldSetAccessible) {
         this(clazz, methodName, methodParameterTypes, shouldSetAccessible, false);
     }
 
-    public PrivilegedGetMethod(Class clazz, String methodName, Class[] methodParameterTypes, boolean shouldSetAccessible, boolean publicOnly) {
+    public PrivilegedGetMethod(Class<?> clazz, String methodName, Class<?>[] methodParameterTypes, boolean shouldSetAccessible, boolean publicOnly) {
         this.clazz = clazz;
         this.methodName = methodName;
         this.methodParameterTypes = methodParameterTypes;

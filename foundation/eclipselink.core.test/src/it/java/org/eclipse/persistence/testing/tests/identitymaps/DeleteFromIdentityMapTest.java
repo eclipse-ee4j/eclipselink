@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.identitymaps;
 import java.util.Vector;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.tests.employee.EmployeeDeleteTest;
@@ -27,21 +28,23 @@ import org.eclipse.persistence.testing.tests.employee.EmployeeDeleteTest;
  * For NoIdentityMap, the return value of the delete operation should be null.
  * For all other identity maps, the return value of the delete operation should be
  * identical to the original value. For all identity maps, the return value of the
- * subsequent get operation should be null. <p>
+ * subsequent get operation should be null.
  */
 public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
     protected Object deletionResult;
     protected Object retrievalAttempt;
     protected OptimisticLockingPolicy lockingPolicy;
 
-    public DeleteFromIdentityMapTest(Class mapClass) {
+    public DeleteFromIdentityMapTest(Class<? extends IdentityMap> mapClass) {
         super(mapClass);
     }
 
+    @Override
     public String getDescription() {
         return "This test verifies an object was properly retrieved from the identity map";
     }
 
+    @Override
     public void setup() {
         super.setup();
         beginTransaction();
@@ -52,6 +55,7 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
         getSession().getDescriptor(Employee.class).getQueryManager().setUpdateQuery(null);
     }
 
+    @Override
     public void reset() {
         super.reset();
         // Must reset queries in case they were build with an optimistic locking policy
@@ -62,6 +66,7 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
         rollbackTransaction();
     }
 
+    @Override
     public void test() {
         super.test();
         try {
@@ -74,6 +79,7 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
         }
     }
 
+    @Override
     public void verifyCacheIdentityMap() {
         Vector cache = (Vector)employees.clone();
         cache.setSize(11);
@@ -82,6 +88,7 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
         checkIdentityMap(cache);
     }
 
+    @Override
     public void verifyFullIdentityMap() {
         Vector cache = (Vector)employees.clone();
         cache.setSize(employees.size() - 1);

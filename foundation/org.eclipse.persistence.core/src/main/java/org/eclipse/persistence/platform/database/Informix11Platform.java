@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 Jenzabar, Inc. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2011, 2022 Jenzabar, Inc. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -121,12 +122,10 @@ public class Informix11Platform extends InformixPlatform {
    */
   @Override
   protected void initializePlatformOperators() {
-    final ExpressionOperator distinctOverride = ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Distinct));
-    assert distinctOverride != null;
-    distinctOverride.printsAs("DISTINCT "); // no parens, one space
     super.initializePlatformOperators();
     this.addOperator(this.currentDateOperator());
     this.addOperator(this.currentTimeOperator());
+    this.addOperator(this.distinctOperator());
   }
 
   /**
@@ -165,6 +164,25 @@ public class Informix11Platform extends InformixPlatform {
    */
   protected ExpressionOperator currentTimeOperator() {
     return ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "CURRENT YEAR TO FRACTION(3)");
+  }
+
+  /**
+   * Fixes <a
+   * href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=402600">EclipseLink
+   * bug 402600</a> by making sure that the {@link
+   * ExpressionOperator#distinct() Distinct} {@link
+   * ExpressionOperator} is set to {@linkplain
+   * ExpressionOperator#printsAs(String) print as} {@code
+   * DISTINCT&nbsp;} (no parentheses, one trailing space), and fixes
+   *
+   * @see <a
+   * href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=402600">EclipseLink
+   * bug 402600</a>
+   */
+  protected ExpressionOperator distinctOperator() {
+    ExpressionOperator operator = ExpressionOperator.distinct();
+    operator.printsAs("DISTINCT "); // no parens, one space
+    return operator;
   }
 
   /**
@@ -392,7 +410,7 @@ public class Informix11Platform extends InformixPlatform {
    * bug 402037</a>
    */
   @Override
-  public void writeUpdateOriginalFromTempTableSql(final Writer writer, final DatabaseTable table, final Collection pkFields, final Collection assignedFields) throws IOException {
+  public void writeUpdateOriginalFromTempTableSql(final Writer writer, final DatabaseTable table, final Collection<DatabaseField> pkFields, final Collection<DatabaseField> assignedFields) throws IOException {
     writer.write("UPDATE ");
     final String tableName = table.getQualifiedNameDelimited(this);
     writer.write(tableName);
@@ -412,7 +430,7 @@ public class Informix11Platform extends InformixPlatform {
     writer.write(tempTableName);
     writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
     writer.write(") WHERE EXISTS(SELECT ");
-    writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(this));
+    writer.write(pkFields.iterator().next().getNameDelimited(this));
     writer.write(" FROM ");
     writer.write(tempTableName);
     writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,7 +73,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitArray(List<? extends AnnotationValue> annotationValues, Object arg1) {
-        ArrayList<Object> values = new ArrayList<Object>();
+        ArrayList<Object> values = new ArrayList<>();
 
         for (AnnotationValue annotationValue : annotationValues) {
             values.add(annotationValue.accept(this, arg1));
@@ -88,7 +88,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitBoolean(boolean bool, Object arg1) {
-        return Boolean.valueOf(bool);
+        return bool;
     }
 
     /**
@@ -97,7 +97,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitByte(byte b, Object arg1) {
-        return Byte.valueOf(b);
+        return b;
     }
 
     /**
@@ -106,7 +106,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitChar(char c, Object arg1) {
-        return Character.valueOf(c);
+        return c;
     }
 
     /**
@@ -115,7 +115,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitDouble(double d, Object arg1) {
-        return Double.valueOf(d);
+        return d;
     }
 
     /**
@@ -133,7 +133,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitFloat(float f, Object arg1) {
-        return Float.valueOf(f);
+        return f;
     }
 
     /**
@@ -142,7 +142,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitInt(int i, Object arg1) {
-        return Integer.valueOf(i);
+        return i;
     }
 
     /**
@@ -151,7 +151,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitLong(long l, Object arg1) {
-        return Long.valueOf(l);
+        return l;
     }
 
     /**
@@ -160,7 +160,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitShort(short s, Object arg1) {
-        return Short.valueOf(s);
+        return s;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,6 +18,7 @@
 package org.eclipse.persistence.platform.server.was;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.was.WebSphereEJBEmbeddableTransactionController;
 
 public class WebSphere_EJBEmbeddable_Platform extends WebSphere_7_Platform {
@@ -40,7 +41,7 @@ public class WebSphere_EJBEmbeddable_Platform extends WebSphere_7_Platform {
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {
             externalTransactionControllerClass = WebSphereEJBEmbeddableTransactionController.class;
         }

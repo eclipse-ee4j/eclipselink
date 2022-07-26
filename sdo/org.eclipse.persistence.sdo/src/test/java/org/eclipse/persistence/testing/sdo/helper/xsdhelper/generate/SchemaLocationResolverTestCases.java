@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         TestRunner.main(arguments);
     }
 
+    @Override
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/customer.xsd";
     }
@@ -81,6 +82,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         return "org/eclipse/persistence/testing/sdo/schemas/customerBillToShipTo.xsd";
     }
 
+    @Override
     public java.util.Map getMap() {
         HashMap schemaLocationMap = new HashMap();
         schemaLocationMap.put(new QName("my.uri", "CustomerType"), "customer.xsd");
@@ -347,6 +349,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         return xsdHelper.define(is, null);
     }
 
+    @Override
     public List getTypesToGenerateFrom() {
         List types = new ArrayList();
         String uri = "my.uri";

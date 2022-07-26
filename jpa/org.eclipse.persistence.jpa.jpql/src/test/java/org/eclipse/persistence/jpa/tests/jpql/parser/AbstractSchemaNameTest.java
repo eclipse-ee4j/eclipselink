@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 public final class AbstractSchemaNameTest extends JPQLParserTest {
 
     @Test
-    public void test_JPQLQuery_01() throws Exception {
+    public void test_JPQLQuery_01() {
 
         String jpqlQuery = "SELECT e FROM Employee e";
 
@@ -44,7 +44,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_02() throws Exception {
+    public void test_JPQLQuery_02() {
 
         String jpqlQuery = "SELECT e FROM Employee e, Address a";
 
@@ -60,7 +60,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_03() throws Exception {
+    public void test_JPQLQuery_03() {
 
         String jpqlQuery = "select o from Order o";
 
@@ -73,7 +73,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_04() throws Exception {
+    public void test_JPQLQuery_04() {
 
         String jpqlQuery = "select o from Order o order by o.name";
 
@@ -87,7 +87,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_05() throws Exception {
+    public void test_JPQLQuery_05() {
 
         String jpqlQuery = "select o from Order o where o.age > 18";
 
@@ -101,7 +101,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_06() throws Exception {
+    public void test_JPQLQuery_06() {
 
         String jpqlQuery = "select g from Group g";
 
@@ -114,7 +114,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_07() throws Exception {
+    public void test_JPQLQuery_07() {
 
         String jpqlQuery = "select g from Group g where g.age > 18";
 

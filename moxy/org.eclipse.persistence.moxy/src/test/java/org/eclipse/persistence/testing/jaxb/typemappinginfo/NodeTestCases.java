@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,12 +64,14 @@ public class NodeTestCases extends TypeMappingInfoTestCases {
 
     }
 
+    @Override
     protected Object getControlObject() {
         QName qname = new QName(TNS, "root");
         JAXBElement jaxbElement = new JAXBElement(qname, Element.class, responseWrapper());
         return jaxbElement;
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles() {
         InputStream instream = ClassLoader.getSystemResourceAsStream(XSD_RESOURCE);
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();

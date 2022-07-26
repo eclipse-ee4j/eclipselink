@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -874,7 +874,7 @@ public class JPAMetadataGenerator {
         for (FieldType fld : fields) {
             DatabaseType enclosedType = fld.getEnclosedType();
             if (!enclosedType.isComposite() || enclosedType.isTYPEType()) {  // basic
-                String typeName = enclosedType.isTYPEType() ? ((TYPEType) enclosedType).getTypeName() : fld.getTypeName();
+                String typeName = enclosedType.isTYPEType() ? enclosedType.getTypeName() : fld.getTypeName();
                 BasicAccessor basic = generateBasicAccessor(fld.getFieldName().toLowerCase(), fld.getFieldName(), getClassNameFromJDBCTypeName(typeName, dbPlatform));
                 embeddable.getAttributes().getBasics().add(basic);
             } else if (enclosedType.isPLSQLType()) {  // record or collection
@@ -1054,7 +1054,6 @@ public class JPAMetadataGenerator {
      * If set to true, NamedNativeQueryMetadata for CRUD operations (create, findAll, findByPk,
      * update and delete) will be generated for each Entity.  The default is false.
      *
-     * @param generateCRUDOps
      */
     protected void setGenerateCRUDOps(boolean generateCRUDOps) {
         this.generateCRUDOps = generateCRUDOps;
@@ -1108,7 +1107,7 @@ public class JPAMetadataGenerator {
         Class<?> platformClass = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                platformClass = AccessController.doPrivileged(new PrivilegedClassForName(platformClassName));
+                platformClass = AccessController.doPrivileged(new PrivilegedClassForName<>(platformClassName));
             } else {
                 platformClass = PrivilegedAccessHelper.getClassForName(platformClassName);
             }
@@ -1116,7 +1115,7 @@ public class JPAMetadataGenerator {
         } catch (PrivilegedActionException | ClassNotFoundException | NullPointerException e) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    platformClass = AccessController.doPrivileged(new PrivilegedClassForName(DEFAULT_PLATFORM));
+                    platformClass = AccessController.doPrivileged(new PrivilegedClassForName<>(DEFAULT_PLATFORM));
                 } else {
                     platformClass = PrivilegedAccessHelper.getClassForName(DEFAULT_PLATFORM);
                 }

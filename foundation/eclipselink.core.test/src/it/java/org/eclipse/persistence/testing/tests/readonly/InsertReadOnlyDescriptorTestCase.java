@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,11 +38,13 @@ public class InsertReadOnlyDescriptorTestCase extends TestCase {
         super();
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
 
@@ -51,6 +53,7 @@ public class InsertReadOnlyDescriptorTestCase extends TestCase {
         uow.getDescriptor(Country.class).setReadOnly();
     }
 
+    @Override
     protected void test() {
         // Create a new Country.
         aCountry = new Country();
@@ -61,6 +64,7 @@ public class InsertReadOnlyDescriptorTestCase extends TestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         // Check to see whether aCountry was inserted into the database.
         ExpressionBuilder xBuilder = new ExpressionBuilder();

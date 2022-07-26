@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,26 +24,32 @@ public class ComputerImpl implements Computer {
         setDescription(new String());
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public String getSerialNumber() {
         return serialNumber;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public void setDescription(String aDescription) {
         description = aDescription;
     }
 
+    @Override
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }

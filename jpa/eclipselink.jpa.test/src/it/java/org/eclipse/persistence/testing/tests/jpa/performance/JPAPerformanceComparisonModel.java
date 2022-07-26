@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
         setDescription("Performance tests that compare JPA performance.");
     }
 
+    @Override
     public void addTests() {
         TestSuite suite = new TestSuite();
         suite.setName("ReadingSuite");
@@ -67,6 +68,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
     /**
      * Create/populate database.
      */
+    @Override
     public void setup() {
         /*
         // Setup DataSource for apples to apples comparison (otherwise we crush them).
@@ -151,7 +153,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
         String providerClass = "org.eclipse.persistence.jpa.PersistenceProvider";
         PersistenceProvider provider = null;
         try {
-            provider = (PersistenceProvider)Class.forName(providerClass).newInstance();
+            provider = (PersistenceProvider)Class.forName(providerClass).getConstructor().newInstance();
         } catch (Exception error) {
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
@@ -193,8 +195,8 @@ public class JPAPerformanceComparisonModel extends TestModel {
     }
 
     static class PerformanceComparisonTestCaseWithTargetClass extends PerformanceComparisonTestCase {
-        Class targetClass;
-        public PerformanceComparisonTestCaseWithTargetClass(Class targetClass) {
+        Class<?> targetClass;
+        public PerformanceComparisonTestCaseWithTargetClass(Class<?> targetClass) {
             super();
             this.targetClass = targetClass;
         }
@@ -202,12 +204,13 @@ public class JPAPerformanceComparisonModel extends TestModel {
     /**
      * Add a test to see if the provider is using change tracking.
      */
-    public TestCase buildReadAllVsReadAllResultSet(Class targetClass) {
+    public TestCase buildReadAllVsReadAllResultSet(Class<?> targetClass) {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCaseWithTargetClass(targetClass) {
             ReadAllQuery query;
             ReadAllQuery resultSetQuery;
             ReadAllQuery resultSetAccessQuery;
 
+            @Override
             public void setup() {
                 this.query = new ReadAllQuery(targetClass);
                 this.resultSetQuery = new ReadAllQuery(targetClass);
@@ -225,6 +228,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 if (isSimple) {
                     // Read from result set.
                     test = new PerformanceComparisonTestCase() {
+                        @Override
                         public void test() {
                             EntityManager em = createEntityManager();
                             ((JpaEntityManager)em).createQuery(resultSetQuery).getResultList();
@@ -237,6 +241,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
 
                 // Read with result set access optimization.
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         EntityManager em = createEntityManager();
                         ((JpaEntityManager)em).createQuery(resultSetAccessQuery).getResultList();
@@ -248,17 +253,20 @@ public class JPAPerformanceComparisonModel extends TestModel {
 
                 // Read, no cache.
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void startTest() {
                         EntityManager em = createEntityManager();
                         createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.ISOLATED);
                         createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
                         em.close();
                     }
+                    @Override
                     public void test() {
                         EntityManager em = createEntityManager();
                         ((JpaEntityManager)em).createQuery(query).getResultList();
                         em.close();
                     }
+                    @Override
                     public void endTest() {
                         EntityManager em = createEntityManager();
                         createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.SHARED);
@@ -272,17 +280,20 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 if (isSimple) {
                     // Read from result set, no cache.
                     test = new PerformanceComparisonTestCase() {
+                        @Override
                         public void startTest() {
                             EntityManager em = createEntityManager();
                             createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.ISOLATED);
                             createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
                             em.close();
                         }
+                        @Override
                         public void test() {
                             EntityManager em = createEntityManager();
                             ((JpaEntityManager)em).createQuery(resultSetQuery).getResultList();
                             em.close();
                         }
+                        @Override
                         public void endTest() {
                             EntityManager em = createEntityManager();
                             createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.SHARED);
@@ -296,17 +307,20 @@ public class JPAPerformanceComparisonModel extends TestModel {
 
                 // Read with result set access optimization, no cache.
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void startTest() {
                         EntityManager em = createEntityManager();
                         createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.ISOLATED);
                         createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
                         em.close();
                     }
+                    @Override
                     public void test() {
                         EntityManager em = createEntityManager();
                         ((JpaEntityManager)em).createQuery(resultSetAccessQuery).getResultList();
                         em.close();
                     }
+                    @Override
                     public void endTest() {
                         EntityManager em = createEntityManager();
                         createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.SHARED);
@@ -396,6 +410,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);*/
             }
 
+            @Override
             public void test() throws Exception {
                 EntityManager em = createEntityManager();
                 ((JpaEntityManager)em).createQuery(this.query).getResultList();
@@ -411,6 +426,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
      */
     public TestCase buildBatchFetchTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void setup() {
                 createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setCacheIsolation(CacheIsolationType.ISOLATED);
                 createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
@@ -423,6 +439,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 }
 
                 PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         testFetchQuery("findAllEmployeesBatch");
                     }
@@ -431,6 +448,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);
 
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         testFetchQuery("findAllEmployeesBatchEXISTS");
                     }
@@ -439,6 +457,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);
 
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         testFetchQuery("findAllEmployeesBatchIN");
                     }
@@ -447,6 +466,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);
 
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         testFetchQuery("findAllEmployeesJoin");
                     }
@@ -455,10 +475,12 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);
             }
 
+            @Override
             public void test() throws Exception {
                 testFetchQuery("findAllEmployees");
             }
 
+            @Override
             public void reset() {
                 createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setCacheIsolation(CacheIsolationType.SHARED);
                 createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
@@ -485,6 +507,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 }
 
                 PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         testQuery("findAllEmployeesLoad");
                         ((JpaCache)getExecutor().getEntityManagerFactory().getCache()).clear();
@@ -546,6 +569,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 ((JpaCache)getExecutor().getEntityManagerFactory().getCache()).clear();
             }
 
+            @Override
             public void reset() {
             }
 
@@ -595,6 +619,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
             int objects = 50;
             boolean originalCacheStatements;
 
+            @Override
             public void setup() {
                 originalCacheStatements = getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().shouldCacheAllStatements();
                 getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().cacheAllStatements();
@@ -604,6 +629,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 }
 
                 PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         EntityManager em = getExecutor().createEntityManager();
                         em.unwrap(ServerSession.class).getLogin().useBatchWriting();
@@ -621,6 +647,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);
 
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         EntityManager em = getExecutor().createEntityManager();
                         em.unwrap(ServerSession.class).getLogin().dontBindAllParameters();
@@ -638,6 +665,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);
 
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         EntityManager em = getExecutor().createEntityManager();
                         em.unwrap(ServerSession.class).getLogin().dontCacheAllStatements();
@@ -655,6 +683,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);
 
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         EntityManager em = getExecutor().createEntityManager();
                         em.unwrap(ServerSession.class).getLogin().useBatchWriting();
@@ -674,6 +703,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);
 
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         EntityManager em = getExecutor().createEntityManager();
                         em.unwrap(ServerSession.class).getLogin().useBatchWriting();
@@ -747,6 +777,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);*/
             }
 
+            @Override
             public void test() throws Exception {
                 EntityManager em = getExecutor().createEntityManager();
                 em.getTransaction().begin();
@@ -767,6 +798,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 }
             }
 
+            @Override
             public void reset() {
                 EntityManager em = getExecutor().createEntityManager();
                 em.getTransaction().begin();
@@ -791,6 +823,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             boolean originalCacheStatements;
 
+            @Override
             public void setup() {
                 originalCacheStatements = getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().shouldCacheAllStatements();
                 getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().cacheAllStatements();
@@ -800,6 +833,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 }
 
                 PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         EntityManager em = getExecutor().createEntityManager();
                         em.unwrap(ServerSession.class).getLogin().useBatchWriting();
@@ -814,6 +848,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);
 
                 test = new PerformanceComparisonTestCase() {
+                    @Override
                     public void test() {
                         EntityManager em = getExecutor().createEntityManager();
                         em.unwrap(ServerSession.class).getLogin().useBatchWriting();
@@ -871,6 +906,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 addTest(test);*/
             }
 
+            @Override
             public void test() throws Exception {
                 EntityManager em = getExecutor().createEntityManager();
                 em.getTransaction().begin();
@@ -890,6 +926,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 }
             }
 
+            @Override
             public void reset() {
                 if (!originalCacheStatements) {
                     getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().dontCacheAllStatements();
@@ -905,7 +942,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
      * Useful for side-by-side profiling regular vs ResultSet Access optimization.
      */
     static class ResultSetSideBySideTest extends TestCase {
-        Class targetClass;
+        Class<?> targetClass;
         boolean withCache;
         ReadAllQuery query;
         ReadAllQuery resultSetQuery;
@@ -914,7 +951,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
         long time1;
         long time0square;
         long time1square;
-        public ResultSetSideBySideTest(Class targetClass, boolean withCache) {
+        public ResultSetSideBySideTest(Class<?> targetClass, boolean withCache) {
             super();
             this.targetClass = targetClass;
             this.withCache = withCache;
@@ -953,21 +990,21 @@ public class JPAPerformanceComparisonModel extends TestModel {
             }
             System.out.println(getName());
             System.out.println("No optimization time:");
-            System.out.println(Long.toString(time0 / 1000000));
+            System.out.println(time0 / 1000000);
             System.out.println("Mean per test:");
-            System.out.println(Double.toString((double)time0 / (n*1000000)));
+            System.out.println((double) time0 / (n * 1000000));
             System.out.println("std dev:");
-            System.out.println(Double.toString(Math.sqrt((double)time0square/n - (double)(time0/n)*(time0/n))/1000000));
+            System.out.println(Math.sqrt((double) time0square / n - (double) (time0 / n) * (time0 / n)) / 1000000);
             System.out.println("zero time tests:");
             System.out.println("ResultSet optimization time:");
-            System.out.println(Long.toString(time1 / 1000000));
+            System.out.println(time1 / 1000000);
             System.out.println("Mean per test:");
-            System.out.println(Double.toString((double)time1 / (n*1000000)));
+            System.out.println((double) time1 / (n * 1000000));
             System.out.println("std dev:");
-            System.out.println(Double.toString(Math.sqrt((double)time1square/n - (double)(time1/n)*(time1/n))/1000000));
+            System.out.println(Math.sqrt((double) time1square / n - (double) (time1 / n) * (time1 / n)) / 1000000);
             System.out.println("zero time tests:");
             System.out.println("No Optimization - Optimization:");
-            System.out.println(Long.toString((time0 - time1)/1000000));
+            System.out.println((time0 - time1) / 1000000);
         }
 
         long test0() {

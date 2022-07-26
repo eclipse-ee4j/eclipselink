@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <p>
  * Returns the same type as the first expression.
  *
- * <div><b>BNF:</b> <code>nullif_expression::= NULLIF(scalar_expression, scalar_expression)</code><p></div>
+ * <div><p><b>BNF:</b> <code>nullif_expression::= NULLIF(scalar_expression, scalar_expression)</code></p></div>
  *
  * @see NullIfExpression
  *
@@ -81,41 +81,26 @@ public class NullIfExpressionStateObject extends AbstractDoubleEncapsulatedExpre
         super(parent, firstJpqlFragment, secondJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NullIfExpression getExpression() {
         return (NullIfExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getFirstQueryBNFId() {
         return ScalarExpressionBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return NULLIF;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getSecondQueryBNFId() {
         return ScalarExpressionBNF.ID;

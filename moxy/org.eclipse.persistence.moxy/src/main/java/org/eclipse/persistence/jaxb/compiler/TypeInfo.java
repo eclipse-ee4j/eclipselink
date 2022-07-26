@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,7 +137,6 @@ public class TypeInfo {
      * This constructor sets the Helper to be used throughout XML and Annotations
      * processing.  Other fields are initialized here as well.
      *
-     * @param helper
      */
     public TypeInfo(Helper helper, JavaClass javaClass) {
         propertyNames = new ArrayList<String>();
@@ -164,7 +163,6 @@ public class TypeInfo {
     /**
      * Set the XmlDescriptor on this TypeInfo.
      *
-     * @param desc
      */
     public void setDescriptor(Descriptor desc) {
         descriptor = desc;
@@ -257,7 +255,6 @@ public class TypeInfo {
      * Return the TypeProperty 'idProperty'. This method will typically be used in conjunction with
      * isIDSet method to determine if an @XmlID exists, and hence 'idProperty' is non-null.
      *
-     * @return
      */
     public Property getIDProperty() {
         return idProperty;
@@ -266,7 +263,6 @@ public class TypeInfo {
     /**
      * Return the Map of Properties for this TypeInfo.
      *
-     * @return
      */
     public HashMap<String, Property> getProperties() {
         return properties;
@@ -333,7 +329,6 @@ public class TypeInfo {
     /**
      * Set the Map of Properties for this TypeInfo.
      *
-     * @param properties
      */
     public void setProperties(ArrayList<Property> properties) {
         if (properties != null) {
@@ -373,7 +368,6 @@ public class TypeInfo {
      * Indicates if an @XmlID is set on a field/property. If so, the TypeProperty 'idProperty' will
      * be non-null.
      *
-     * @return
      */
     public boolean isIDSet() {
         return idProperty != null;
@@ -402,8 +396,6 @@ public class TypeInfo {
     /**
      * Return the xmladapter class for a given bound type class.
      *
-     * @param boundType
-     * @return
      */
     public JavaClass getPackageLevelAdapterClass(JavaClass boundType) {
         if(hasPackageLevelAdaptersByClass()) {
@@ -419,8 +411,6 @@ public class TypeInfo {
     /**
      * Return the xmladapter class for a given bound type class name.
      *
-     * @param boundTypeName
-     * @return
      */
     public JavaClass getPackageLevelAdapterClass(String boundTypeName) {
         if(hasPackageLevelAdaptersByClass()) {
@@ -432,7 +422,6 @@ public class TypeInfo {
     /**
      * Return the Map of XmlAdapters for this TypeInfo.
      *
-     * @return
      */
     public HashMap<String, JavaClass> getPackageLevelAdaptersByClass() {
         if(!hasPackageLevelAdaptersByClass()) {
@@ -448,8 +437,6 @@ public class TypeInfo {
     /**
      * Put a bound type class to adapter class entry in the Map.
      *
-     * @param adapterClass
-     * @param boundType
      */
     public void addPackageLevelAdapterClass(JavaClass adapterClass, JavaClass boundType) {
         getPackageLevelAdaptersByClass().put(boundType.getQualifiedName(), adapterClass);
@@ -462,7 +449,6 @@ public class TypeInfo {
     /**
      * Indicates if this TypeInfo contains an XmlElementRefs property.
      *
-     * @return
      */
     public boolean hasElementRefs() {
         return elementRefsPropertyName != null;
@@ -471,7 +457,6 @@ public class TypeInfo {
     /**
      * Return the XmlElementRefs property name, if one has been set.
      *
-     * @return
      */
     public String getElementRefsPropName() {
         return elementRefsPropertyName;
@@ -512,7 +497,6 @@ public class TypeInfo {
      * Indicates if an xmlValueProperty is set on this TypeInfo, i.e.
      * is non-null.
      *
-     * @return
      */
     public boolean isSetXmlValueProperty() {
         return xmlValueProperty != null;
@@ -529,7 +513,6 @@ public class TypeInfo {
     /**
      * Indicates if the class represented by this TypeInfo is marked XmlTransient.
      *
-     * @return
      */
     public boolean isTransient() {
         return isTransient;
@@ -546,7 +529,6 @@ public class TypeInfo {
     /**
      * Return all non-transient properties that exist in the propOrder array.
      *
-     * @return
      */
     public List<Property> getNonTransientPropertiesInPropOrder() {
         List<Property> propertiesInOrder = new ArrayList<Property>();
@@ -573,7 +555,7 @@ public class TypeInfo {
 
     /**
      * Convenience method that adds non-null, non-transient properties to a given
-     * List<Property>.  The propertyName parameter is used to lookup the Property.
+     * {@code List<Property>}.  The propertyName parameter is used to lookup the Property.
      * If propertyNamesCopy is non-null, the Property will be removed from that
      * List.  Any additional properties that exist for propertyName (as in the
      * case of multiple mappings to the same field) will be added as well.
@@ -603,7 +585,6 @@ public class TypeInfo {
     /**
      * Indicates if XmlTransient is set.
      *
-     * @return
      */
     public boolean isSetXmlTransient() {
         return isSetXmlTransient;
@@ -612,7 +593,6 @@ public class TypeInfo {
     /**
      * Set the XmlTransient for this TypeInfo.
      *
-     * @param isTransient
      */
     public void setXmlTransient(boolean isTransient) {
         isSetXmlTransient = true;
@@ -622,7 +602,6 @@ public class TypeInfo {
     /**
      * Indicates if XmlElementNillable is set.
      *
-     * @return
      */
     public boolean isXmlElementNillable() {
         return isXmlElementNillable;
@@ -631,7 +610,6 @@ public class TypeInfo {
     /**
      * Set the XmlElementNillable for this TypeInfo.
      *
-     * @param isXmlElementNillable
      */
     public void setXmlElementNillable(boolean isXmlElementNillable) {
         this.isXmlElementNillable = isXmlElementNillable;
@@ -649,7 +627,6 @@ public class TypeInfo {
     /**
      * Set the XmlNullPolicy for this TypeInfo.
      *
-     * @param xmlNullPolicy
      */
     public void setXmlNullPolicy(XmlNullPolicy xmlNullPolicy) {
         this.xmlNullPolicy = xmlNullPolicy;
@@ -667,7 +644,6 @@ public class TypeInfo {
     /**
      * Return the List of XmlSeeAlso class names for this TypeInfo.
      *
-     * @return
      */
     public List<String> getXmlSeeAlso() {
         return xmlSeeAlso;
@@ -676,7 +652,6 @@ public class TypeInfo {
     /**
      * Set the List of XmlSeeAlso class names for this TypeInfo.
      *
-     * @param xmlSeeAlso
      */
     public void setXmlSeeAlso(List<String> xmlSeeAlso) {
         this.xmlSeeAlso = xmlSeeAlso;
@@ -694,7 +669,6 @@ public class TypeInfo {
     /**
      * Return the xmlRootElement set on this TypeInfo.
      *
-     * @return
      */
     public XmlRootElement getXmlRootElement() {
         return xmlRootElement;
@@ -703,7 +677,6 @@ public class TypeInfo {
     /**
      * Set the xmlRootElement for this TypeInfo.
      *
-     * @param xmlRootElement
      */
     public void setXmlRootElement(XmlRootElement xmlRootElement) {
         this.xmlRootElement = xmlRootElement;
@@ -721,7 +694,6 @@ public class TypeInfo {
     /**
      * Return the xmlType set on this TypeInfo.
      *
-     * @return
      */
     public XmlType getXmlType() {
         return xmlType;
@@ -730,7 +702,6 @@ public class TypeInfo {
     /**
      * Set the xmlType for this TypeInfo.
      *
-     * @param xmlType
      */
     public void setXmlType(XmlType xmlType) {
         this.xmlType = xmlType;
@@ -748,7 +719,6 @@ public class TypeInfo {
     /**
      * Return the xmlAccessType for this TypeInfo.
      *
-     * @return
      */
     public XmlAccessType getXmlAccessType() {
         return xmlAccessType;
@@ -757,7 +727,6 @@ public class TypeInfo {
     /**
      * Set the xmlAccessType for this TypeInfo.
      *
-     * @param xmlAccessType
      */
     public void setXmlAccessType(XmlAccessType xmlAccessType) {
         this.xmlAccessType = xmlAccessType;
@@ -775,7 +744,6 @@ public class TypeInfo {
     /**
      * Return the xmlAccessOrder for this TypeInfo.
      *
-     * @return
      */
     public XmlAccessOrder getXmlAccessOrder() {
         return xmlAccessOrder;
@@ -784,7 +752,6 @@ public class TypeInfo {
     /**
      * Set the xmlAccessOrder for this TypeInfo.
      *
-     * @param xmlAccessOrder
      */
     public void setXmlAccessOrder(XmlAccessOrder xmlAccessOrder) {
         this.xmlAccessOrder = xmlAccessOrder;
@@ -854,7 +821,6 @@ public class TypeInfo {
     /**
      * Set an XmlJavaTypeAdapter on this Type.
      *
-     * @param xmlJavaTypeAdapter
      * @see XmlJavaTypeAdapter
      */
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter xmlJavaTypeAdapter) {
@@ -875,7 +841,6 @@ public class TypeInfo {
     /**
      * Sets the XmlCustomizer class name on this TypeInfo.
      *
-     * @param xmlCustomizerClassName
      * @see DescriptorCustomizer
      */
     public void setXmlCustomizer(String xmlCustomizerClassName) {
@@ -885,7 +850,6 @@ public class TypeInfo {
     /**
      * Indicates if the name of the XmlAnyElement property has been set.
      *
-     * @return
      */
     public boolean isSetAnyElementPropertyName() {
         return getAnyElementPropertyName() != null;
@@ -894,7 +858,6 @@ public class TypeInfo {
     /**
      * Return the name of the XmlAnyElement property, if one is set.
      *
-     * @return
      */
     public String getAnyElementPropertyName() {
         return anyElementPropertyName;
@@ -903,7 +866,6 @@ public class TypeInfo {
     /**
      * Set the name of the XmlAnyElement property
      *
-     * @param anyElementPropertyName
      */
     public void setAnyElementPropertyName(String anyElementPropertyName) {
         this.anyElementPropertyName = anyElementPropertyName;
@@ -912,7 +874,6 @@ public class TypeInfo {
     /**
      * Indicates if the name of the XmlAnyAttribute property has been set.
      *
-     * @return
      */
     public boolean isSetAnyAttributePropertyName() {
         return getAnyAttributePropertyName() != null;
@@ -921,7 +882,6 @@ public class TypeInfo {
     /**
      * Return the name of the XmlAnyAttribute property, if one is set.
      *
-     * @return
      */
     public String getAnyAttributePropertyName() {
         return anyAttributePropertyName;
@@ -930,7 +890,6 @@ public class TypeInfo {
     /**
      * Set the name of the XmlAnyAttribute property
      *
-     * @param anyAttributePropertyName
      */
     public void setAnyAttributePropertyName(String anyAttributePropertyName) {
         this.anyAttributePropertyName = anyAttributePropertyName;
@@ -939,7 +898,6 @@ public class TypeInfo {
     /**
      * Indicates if all binary data types are to be inlined for this class.
      *
-     * @return
      */
     public boolean isBinaryDataToBeInlined() {
         return isBinaryDataInlined;
@@ -949,7 +907,6 @@ public class TypeInfo {
      * Sets the flag that indicates if all binary data types are to
      * be inlined for this class.
      *
-     * @param isBinaryDataInlined
      */
     public void setInlineBinaryData(boolean isBinaryDataInlined) {
         this.isBinaryDataInlined = isBinaryDataInlined;
@@ -977,7 +934,6 @@ public class TypeInfo {
     /**
      * Set the ClassExtractor class name.
      *
-     * @param classExtractorName
      */
     public void setClassExtractorName(String classExtractorName) {
         this.classExtractorName = classExtractorName;
@@ -986,7 +942,6 @@ public class TypeInfo {
     /**
      * Return the Map of user-defined properties.
      *
-     * @return
      */
     public Map<Object, Object> getUserProperties() {
         return userProperties;
@@ -995,7 +950,6 @@ public class TypeInfo {
     /**
      * Set the Map of user-defined properties.
      *
-     * @param userProperties
      */
     public void setUserProperties(Map<Object, Object> userProperties) {
         this.userProperties = userProperties;
@@ -1004,7 +958,6 @@ public class TypeInfo {
     /**
      * Return the JavaClass name for this typeinfo.
      *
-     * @return
      */
     public String getJavaClassName() {
         return javaClassName;
@@ -1013,7 +966,6 @@ public class TypeInfo {
     /**
      * Set the JavaClass name for this typeinfo.
      *
-     * @param javaClassName
      */
     public void setJavaClassName(String javaClassName) {
         this.javaClassName = javaClassName;
@@ -1022,7 +974,6 @@ public class TypeInfo {
     /**
      * Return the class indicator field name for this type info.
      *
-     * @return
      */
     public String getXmlDiscriminatorNode() {
         return xmlDiscriminatorNode;
@@ -1031,7 +982,6 @@ public class TypeInfo {
     /**
      * Sets the class indicator field name (for use with inheritance).
      *
-     * @param xmlDiscriminatorNode
      */
     public void setXmlDiscriminatorNode(String xmlDiscriminatorNode) {
         this.xmlDiscriminatorNode = xmlDiscriminatorNode;
@@ -1050,7 +1000,6 @@ public class TypeInfo {
      * Return the value of the class indicator field for the java-type
      * associated with this type info.
      *
-     * @return
      */
     public String getXmlDiscriminatorValue() {
         return xmlDiscriminatorValue;
@@ -1060,7 +1009,6 @@ public class TypeInfo {
      * Set the value of the class indicator field for the java-type
      * associated with this type info.
      *
-     * @param xmlDiscriminatorValue
      */
     public void setXmlDiscriminatorValue(String xmlDiscriminatorValue) {
         this.xmlDiscriminatorValue = xmlDiscriminatorValue;
@@ -1080,7 +1028,6 @@ public class TypeInfo {
      * Add an XmlKey property to the list.  Each entry will be
      * set as a primary key on the owning descriptor.
      *
-     * @param xmlKeyProp
      */
     public void addXmlKeyProperty(Property xmlKeyProp) {
         if (xmlKeyProperties == null) {
@@ -1093,7 +1040,6 @@ public class TypeInfo {
      * Return the list of XmlKey property entries.  Each entry
      * will be set as a primary key on the owning descriptor.
      *
-     * @return
      */
     public List<Property> getXmlKeyProperties() {
         return xmlKeyProperties;
@@ -1103,7 +1049,6 @@ public class TypeInfo {
      * Indicates if the list of XmlKey property entries has
      * been set, i.e. is non-null.
      *
-     * @return
      */
     public boolean hasXmlKeyProperties() {
         return xmlKeyProperties != null;
@@ -1131,7 +1076,6 @@ public class TypeInfo {
      * properties were created during annotations processing, and have
      * not been modified since.
      *
-     * @return
      */
     public HashMap<String, Property> getOriginalProperties() {
         return originalProperties;
@@ -1148,7 +1092,6 @@ public class TypeInfo {
 
     /**
      * Return the XMLNameTransformer used when converting Java names to XML names
-     * @return
      */
     public XMLNameTransformer getXmlNameTransformer() {
         return xmlNameTransformer;
@@ -1156,7 +1099,6 @@ public class TypeInfo {
 
     /**
      * Set the XMLNameTransformer used when converting Java names to XML names
-     * @param xmlNameTransformer
      */
     public void setXmlNameTransformer(XMLNameTransformer xmlNameTransformer) {
         this.xmlNameTransformer = xmlNameTransformer;
@@ -1166,7 +1108,6 @@ public class TypeInfo {
     /**
      * INTERNAL:
      * Return the list of predicate properties. Lazy initializes the list.
-     * @return
      */
     public List<Property> getPredicateProperties() {
         if(predicateProperties == null) {
@@ -1193,7 +1134,6 @@ public class TypeInfo {
     /**
      * INTERNAL:
      * Return true if the list of predicate properties hasn't been initialized.
-     * @return
      */
     public boolean hasPredicateProperties() {
         return this.predicateProperties != null && this.predicateProperties.size() > 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,6 +68,7 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
     /**
      * DDL should be generated when creating factory.
      */
+    @Override
     public void testSetup() {
         clearCache();
         clearServerSessionCache();
@@ -82,21 +83,22 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
      * DDL should be generated when creating factory.
      */
     public void testTeardown() {
-        if (this.factory != null) {
-            this.factory.close();
-            this.factory = null;
+        if (factory != null) {
+            factory.close();
+            factory = null;
         }
     }
 
     /**
      * Use a custom factory to generate DDL.
      */
+    @Override
     public EntityManagerFactory getEntityManagerFactory() {
-        if (this.factory == null) {
+        if (factory == null) {
             // Only test DDL on Oracle, otherwise will have constraint issues.
             if (!getServerSession().getPlatform().isOracle()) {
-                this.factory = Persistence.createEntityManagerFactory(getPersistenceUnitName());
-                return this.factory;
+                factory = Persistence.createEntityManagerFactory(getPersistenceUnitName());
+                return factory;
             }
             // Ensure real one inits first.
             super.createEntityManager().close();
@@ -105,14 +107,15 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
             properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
             properties.put(PersistenceUnitProperties.DDL_GENERATION_MODE, PersistenceUnitProperties.DDL_DATABASE_GENERATION);
             properties.put(PersistenceUnitProperties.SESSION_NAME, "TablePerClassInheritanceDDLTest");
-            this.factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
         }
-        return this.factory;
+        return factory;
     }
 
     /**
      * Use a custom factory to generate DDL.
      */
+    @Override
     public EntityManager createEntityManager() {
         return getEntityManagerFactory().createEntityManager();
     }

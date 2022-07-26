@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,8 +89,9 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * Return the default timestamp locking filed java type, default is Timestamp.
      */
     @Override
-    protected Class getDefaultLockingFieldType() {
-        return ClassConstants.TIMESTAMP;
+    @SuppressWarnings({"unchecked"})
+    protected <T> Class<T> getDefaultLockingFieldType() {
+        return (Class<T>) ClassConstants.TIMESTAMP;
     }
 
     /**
@@ -98,8 +100,9 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * null in some situations.
      */
     @Override
-    public Object getBaseValue(){
-        return new Timestamp(0);
+    @SuppressWarnings({"unchecked"})
+    public <T> T getBaseValue(){
+        return (T) new Timestamp(0);
     }
 
     /**
@@ -107,9 +110,10 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * returns the initial locking value
      */
     @Override
-    protected Object getInitialWriteValue(AbstractSession session) {
+    @SuppressWarnings({"unchecked"})
+    protected <T> T getInitialWriteValue(AbstractSession session) {
         if (usesLocalTime()) {
-            return new Timestamp(System.currentTimeMillis());
+            return (T) new Timestamp(System.currentTimeMillis());
         }
         if (usesServerTime()) {
             AbstractSession readSession = session.getSessionForClass(getDescriptor().getJavaClass());
@@ -117,7 +121,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
                 readSession = readSession.getParent().getSessionForClass(getDescriptor().getJavaClass());
             }
 
-            return readSession.getDatasourceLogin().getDatasourcePlatform().getTimestampFromServer(session, readSession.getName());
+            return (T) readSession.getDatasourceLogin().getDatasourcePlatform().getTimestampFromServer(session, readSession.getName());
         }
         return null;
 
@@ -128,7 +132,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * Returns the new Timestamp value.
      */
     @Override
-    public Object getNewLockValue(ModifyQuery query) {
+    public <T> T getNewLockValue(ModifyQuery query) {
         return getInitialWriteValue(query.getSession());
     }
 
@@ -138,9 +142,10 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * is stored in the object, then return a null.
      */
     @Override
-    public Object getValueToPutInCache(AbstractRecord row, AbstractSession session) {
+    @SuppressWarnings({"unchecked"})
+    public <T> T getValueToPutInCache(AbstractRecord row, AbstractSession session) {
         if (isStoredInCache()) {
-            return session.getDatasourcePlatform().convertObject(row.get(getWriteLockField()), ClassConstants.TIMESTAMP);
+            return (T) session.getDatasourcePlatform().convertObject(row.get(getWriteLockField()), ClassConstants.TIMESTAMP);
         } else {
             return null;
         }
@@ -177,7 +182,8 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      * This method will return the optimistic lock value for the object.
      */
     @Override
-    public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
+    @SuppressWarnings({"unchecked"})
+    public <T> T getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         java.sql.Timestamp writeLockFieldValue = null;
         if (isStoredInCache()) {
             writeLockFieldValue = (java.sql.Timestamp)session.getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, domainObject.getClass(), getDescriptor());
@@ -192,7 +198,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
                 }
             }
         }
-        return writeLockFieldValue;
+        return (T) writeLockFieldValue;
     }
 
     /**
@@ -201,7 +207,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
      */
     @Override
     public Expression getWriteLockUpdateExpression(ExpressionBuilder builder, AbstractSession session) {
-        return builder.value(getInitialWriteValue(session));
+        return builder.currentTimeStamp();
     }
 
     /**
@@ -239,7 +245,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
     @Override
     public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, Object primaryKey, AbstractSession session) {
         java.sql.Timestamp writeLockFieldValue;
-        java.sql.Timestamp newWriteLockFieldValue = (java.sql.Timestamp)session.getDatasourcePlatform().convertObject(databaseRow.get(getWriteLockField()), ClassConstants.TIMESTAMP);
+        java.sql.Timestamp newWriteLockFieldValue = session.getDatasourcePlatform().convertObject(databaseRow.get(getWriteLockField()), ClassConstants.TIMESTAMP);
         if (isStoredInCache()) {
             writeLockFieldValue = (java.sql.Timestamp)session.getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, domainObject.getClass(), getDescriptor());
         } else {

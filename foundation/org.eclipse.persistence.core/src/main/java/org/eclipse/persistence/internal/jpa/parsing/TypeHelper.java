@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,146 +23,146 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 public interface TypeHelper {
 
     /** Returns the name of the specified type. */
-    public String getTypeName(Object type);
+    String getTypeName(Object type);
 
     /** Returns the class object of the specified type. */
-    public Class getJavaClass(Object type);
+    Class<?> getJavaClass(Object type);
 
     /** Returns a type representation for the specified type name or null if
      * there is no such type. */
-    public Object resolveTypeName(String typeName);
+    Object resolveTypeName(String typeName);
 
     /** Returns the type of the attribute with the specified name in the
      * specified owner class. */
-    public Object resolveAttribute(Object ownerClass, String attribute);
+    Object resolveAttribute(Object ownerClass, String attribute);
 
     /**
      * Returns a query key associated with the name of the attribute
      */
-    public QueryKey resolveQueryKey(Object ownerClass, String attribute);
+    QueryKey resolveQueryKey(Object ownerClass, String attribute);
 
     /** Returns the type of the map key for the mapping on ownerClass named attribute
      * Returns null if that mapping does not exist or does not contain a map key
      */
-    public Object resolveMapKey(Object ownerClass, String attribute);
+    Object resolveMapKey(Object ownerClass, String attribute);
 
     /** Returns the type of the class corresponding to the specified abstract
      * schema type. */
-    public Object resolveSchema(String schemaName);
+    Object resolveSchema(String schemaName);
 
     /** Returns the enum constant if the specified type denotes an enum type
      * and the specified constant denotes a constant of the enum type. */
-    public Object resolveEnumConstant(Object enumType, String constant);
+    Object resolveEnumConstant(Object enumType, String constant);
 
     /** Returns the type representation of class Object.*/
-    public Object getObjectType();
+    Object getObjectType();
 
     /** Returns the boolean type representation.*/
-    public Object getBooleanType();
+    Object getBooleanType();
 
     /** Returns the char type representation.*/
-    public Object getCharType();
+    Object getCharType();
 
     /** Returns the char type representation.*/
-    public Object getSQLDateType();
+    Object getSQLDateType();
 
     /** Returns the char type representation.*/
-    public Object getTimeType();
+    Object getTimeType();
 
     /** Returns the char type representation.*/
-    public Object getTimestampType();
+    Object getTimestampType();
 
     /** Returns the int type representation.*/
-    public Object getIntType();
+    Object getIntType();
 
     /** Returns the long type representation.*/
-    public Object getLongType();
+    Object getLongType();
 
     /** Returns the type representation of class Long.*/
-    public Object getLongClassType();
+    Object getLongClassType();
 
     /** Returns the type representation of class Map.Entry.*/
-    public Object getMapEntryType();
+    Object getMapEntryType();
 
     /** Returns the float type representation.*/
-    public Object getFloatType();
+    Object getFloatType();
 
     /** Returns the double type representation.*/
-    public Object getDoubleType();
+    Object getDoubleType();
 
     /** Returns the type representation of class Double.*/
-    public Object getDoubleClassType();
+    Object getDoubleClassType();
 
     /** Returns the type representation oc class String.*/
-    public Object getStringType();
+    Object getStringType();
 
     /** Returns the type representation of class BigInteger.*/
-    public Object getBigIntegerType();
+    Object getBigIntegerType();
 
     /** Returns the type representation of class BigDecimal.*/
-    public Object getBigDecimalType();
+    Object getBigDecimalType();
 
     /** Returns true if the specified type denotes an enum type. */
-    public boolean isEnumType(Object type);
+    boolean isEnumType(Object type);
 
     /** Returns true if the specified type represents an
      * integral type (or wrapper), a floating point type (or wrapper),
      * BigInteger or BigDecimal. */
-    public boolean isNumericType(Object type);
+    boolean isNumericType(Object type);
 
     /** Returns true if the specified type represents an
      * integral type or a wrapper class of an integral type. */
-    public boolean isIntegralType(Object type);
+    boolean isIntegralType(Object type);
 
     /** Returns true if the specified type represents an floating point type
      * or a wrapper class of an floating point type. */
-    public boolean isFloatingPointType(Object type);
+    boolean isFloatingPointType(Object type);
 
     /** Returns true if the specified type represents java.lang.String. */
-    public boolean isStringType(Object type);
+    boolean isStringType(Object type);
 
     /** Returns true if the specified type represents java.math.BigInteger. */
-    public boolean isBigIntegerType(Object type);
+    boolean isBigIntegerType(Object type);
 
     /** Returns true if the specified type represents java.math.BigDecimal. */
-    public boolean isBigDecimalType(Object type);
+    boolean isBigDecimalType(Object type);
 
     /** Returns true if the specified type denotes an orderable type. */
-    public boolean isOrderableType(Object type);
+    boolean isOrderableType(Object type);
 
     /** Returns true if the specified type denotes an entity class. */
-    public boolean isEntityClass(Object type);
+    boolean isEntityClass(Object type);
 
     /** Returns true if the specified type denotes an embedded class. */
-    public boolean isEmbeddable(Object type);
+    boolean isEmbeddable(Object type);
 
     /** Returns true if the specified type denotes an embedded attribute. */
-    public boolean isEmbeddedAttribute(Object ownerClass, String attribute);
+    boolean isEmbeddedAttribute(Object ownerClass, String attribute);
 
     /** Returns true if the specified type denotes a simple state attribute. */
-    public boolean isSimpleStateAttribute(Object ownerClass, String attribute);
+    boolean isSimpleStateAttribute(Object ownerClass, String attribute);
 
     /** Returns true if the specified attribute denotes a single valued
      * or collection valued relationship attribute.
      */
-    public boolean isRelationship(Object ownerClass, String attribute);
+    boolean isRelationship(Object ownerClass, String attribute);
 
     /** Returns true if the specified attribute denotes a single valued
      * relationship attribute.
      */
-    public boolean isSingleValuedRelationship(
-        Object ownerClass, String attribute);
+    boolean isSingleValuedRelationship(
+            Object ownerClass, String attribute);
 
     /** Returns true if the specified attribute denotes a collection valued
      * relationship attribute.
      */
-    public boolean isCollectionValuedRelationship(
-        Object ownerClass, String attribute);
+    boolean isCollectionValuedRelationship(
+            Object ownerClass, String attribute);
 
     /** Returns true if left is assignable from right. */
-    public boolean isAssignableFrom(Object left, Object right);
+    boolean isAssignableFrom(Object left, Object right);
 
     /** Binary numeric promotion as specified in the JLS, extended by
      * wrapper classes, BigDecimal and BigInteger.  */
-    public Object extendedBinaryNumericPromotion(Object left, Object right);
+    Object extendedBinaryNumericPromotion(Object left, Object right);
 }

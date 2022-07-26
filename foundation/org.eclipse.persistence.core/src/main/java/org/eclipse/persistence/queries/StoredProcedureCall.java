@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -97,7 +97,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The type is the type of Java class for the field, and is dependent on the type required by the procedure.  This is used
      * to set the type in case null is passed in.
      */
-    public void addNamedArgument(String procedureParameterName, String argumentFieldName, Class type) {
+    public void addNamedArgument(String procedureParameterName, String argumentFieldName, Class<?> type) {
         getProcedureArgumentNames().add(procedureParameterName);
         DatabaseField field = new DatabaseField(argumentFieldName);
         field.setType(type);
@@ -145,7 +145,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * or STRUCT type typeName
      */
     public void addNamedArgument(String procedureParameterName, String argumentFieldName, int type,
-        String typeName, Class javaType) {
+        String typeName, Class<?> javaType) {
         getProcedureArgumentNames().add(procedureParameterName);
         ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
         field.setSqlType(type);
@@ -165,7 +165,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * or STRUCT type typeName
      * The nestedType is a DatabaseField with type information set to match the VARRAYs object types
      */
-    public void addNamedArgument(String procedureParameterName, String argumentFieldName, int type, String typeName, Class javaType, DatabaseField nestedType) {
+    public void addNamedArgument(String procedureParameterName, String argumentFieldName, int type, String typeName, Class<?> javaType, DatabaseField nestedType) {
         getProcedureArgumentNames().add(procedureParameterName);
         ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
         field.setSqlType(type);
@@ -246,7 +246,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * is the result of the output row.
      * The type is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
      */
-    public void addNamedInOutputArgument(String procedureParameterName, String argumentFieldName, Class type) {
+    public void addNamedInOutputArgument(String procedureParameterName, String argumentFieldName, Class<?> type) {
         addNamedInOutputArgument(procedureParameterName, argumentFieldName, argumentFieldName, type);
     }
 
@@ -259,7 +259,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * If these names are the same (as they normally are) this method can be called with a single argument.
      * The type the Java class desired back from the procedure, if a struct is returned and the class has an ObjectRelationalDataTypeDescriptor defined .
      */
-    public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName, String outArgumentFieldName, Class type) {
+    public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName, String outArgumentFieldName, Class<?> type) {
         getProcedureArgumentNames().add(procedureParameterName);
         DatabaseField inField = new DatabaseField(inArgumentFieldName);
         inField.setType(type);
@@ -319,7 +319,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The typeName is the JDBC type name, this may be required for STRUCT and ARRAY types.
      * The classType is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
      */
-    public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName, String outArgumentFieldName, int type, String typeName, Class classType) {
+    public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName, String outArgumentFieldName, int type, String typeName, Class<?> classType) {
         addNamedInOutputArgument(procedureParameterName, inArgumentFieldName, outArgumentFieldName, type, typeName, classType, null);
     }
 
@@ -335,7 +335,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The javaType is the java class to return instead of the ARRAY and STRUCT types if a conversion is possible.
      * The nestedType is a DatabaseField with type information set to match the VARRAYs object types
      */
-    public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName, String outArgumentFieldName, int type, String typeName, Class javaType, DatabaseField nestedType) {
+    public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName, String outArgumentFieldName, int type, String typeName, Class<?> javaType, DatabaseField nestedType) {
         getProcedureArgumentNames().add(procedureParameterName);
         ObjectRelationalDatabaseField inField = new ObjectRelationalDatabaseField(inArgumentFieldName);
         inField.setSqlType(type);
@@ -363,7 +363,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * If these names are the same (as they normally are) this method can be called with a single argument.
      * The type is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
      */
-    public void addNamedInOutputArgumentValue(String procedureParameterName, Object inArgumentValue, String outArgumentFieldName, Class type) {
+    public void addNamedInOutputArgumentValue(String procedureParameterName, Object inArgumentValue, String outArgumentFieldName, Class<?> type) {
         getProcedureArgumentNames().add(procedureParameterName);
         DatabaseField outField = new DatabaseField(outArgumentFieldName);
         outField.setType(type);
@@ -401,7 +401,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * If these names are the same (as they normally are) this method can be called with a single argument.
      * The type is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
      */
-    public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName, Class type) {
+    public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName, Class<?> type) {
         getProcedureArgumentNames().add(procedureParameterName);
         DatabaseField field = new DatabaseField(argumentFieldName);
         field.setType(type);
@@ -449,7 +449,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The typeName is the JDBC type name, this may be required for ARRAY and STRUCT types.
      * The javaType is the java class to return instead of the ARRAY and STRUCT types if a conversion is possible.
      */
-    public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName, int jdbcType, String typeName, Class javaType) {
+    public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName, int jdbcType, String typeName, Class<?> javaType) {
         getProcedureArgumentNames().add(procedureParameterName);
         ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
         field.setSqlType(jdbcType);
@@ -468,7 +468,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The javaType is the java class to return instead of the ARRAY and STRUCT types if a conversion is possible.
      * The nestedType is a DatabaseField with type information set to match the VARRAYs object types
      */
-    public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName, int jdbcType, String typeName, Class javaType, DatabaseField nestedType) {
+    public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName, int jdbcType, String typeName, Class<?> javaType, DatabaseField nestedType) {
         getProcedureArgumentNames().add(procedureParameterName);
         ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
         field.setSqlType(jdbcType);
@@ -509,7 +509,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The type is the type of Java class for the field, and is dependent on the type required by the procedure.  This is used
      * to set the type in case null is passed in.
      */
-    public void addUnamedArgument(String argumentFieldName, Class type) {
+    public void addUnamedArgument(String argumentFieldName, Class<?> type) {
         getProcedureArgumentNames().add(null);
         DatabaseField field = new DatabaseField(argumentFieldName);
         field.setType(type);
@@ -576,7 +576,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * If these names are the same (as they normally are) this method can be called with a single argument.
      * The type is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
      */
-    public void addUnamedInOutputArgument(String inArgumentFieldName, String outArgumentFieldName, Class type) {
+    public void addUnamedInOutputArgument(String inArgumentFieldName, String outArgumentFieldName, Class<?> type) {
         getProcedureArgumentNames().add(null);
         DatabaseField inField = new DatabaseField(inArgumentFieldName);
         inField.setType(type);
@@ -644,7 +644,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * and to be used is the result of the output row.
      * The type is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
      */
-    public void addUnamedInOutputArgument(String argumentFieldName, Class type) {
+    public void addUnamedInOutputArgument(String argumentFieldName, Class<?> type) {
         addUnamedInOutputArgument(argumentFieldName, argumentFieldName, type);
     }
 
@@ -670,7 +670,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The typeName is the JDBC type name, this may be required for ARRAY types.
      * The collectionClass is the java class to return instead of the ARRAY type.
      */
-    public void addUnamedInOutputArgument( String inArgumentFieldName, String outArgumentFieldName, int type, String typeName, Class collection ) {
+    public void addUnamedInOutputArgument( String inArgumentFieldName, String outArgumentFieldName, int type, String typeName, Class<?> collection ) {
         addNamedInOutputArgument( null, inArgumentFieldName, outArgumentFieldName, type, typeName, collection, null);
     }
 
@@ -684,7 +684,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The javaType is the java class to return instead of the ARRAY and STRUCT types if a conversion is possible.
      * The nestedType is a DatabaseField with type information set to match the VARRAYs object types
      */
-    public void addUnamedInOutputArgument(String inArgumentFieldName, String outArgumentFieldName, int type, String typeName, Class collection, DatabaseField nestedType) {
+    public void addUnamedInOutputArgument(String inArgumentFieldName, String outArgumentFieldName, int type, String typeName, Class<?> collection, DatabaseField nestedType) {
         addNamedInOutputArgument(null, inArgumentFieldName,  outArgumentFieldName,  type,  typeName,  collection, nestedType);
     }
 
@@ -697,7 +697,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * If these names are the same (as they normally are) this method can be called with a single argument.
      * The type is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
      */
-    public void addUnamedInOutputArgumentValue(Object inArgumentValue, String outArgumentFieldName, Class type) {
+    public void addUnamedInOutputArgumentValue(Object inArgumentValue, String outArgumentFieldName, Class<?> type) {
         getProcedureArgumentNames().add(null);
         DatabaseField outField = new DatabaseField(outArgumentFieldName);
         outField.setType(type);
@@ -723,7 +723,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The argumentFieldName is the field or argument name to be used to pass to the procedure.
      * The type is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
      */
-    public void addUnamedOutputArgument(String argumentFieldName, Class type) {
+    public void addUnamedOutputArgument(String argumentFieldName, Class<?> type) {
         getProcedureArgumentNames().add(null);
         DatabaseField field = new DatabaseField(argumentFieldName);
         field.setType(type);
@@ -769,7 +769,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The typeName is the JDBC type name, this may be required for ARRAY and STRUCT types.
      * The javaType is the java class to return instead of the ARRAY and STRUCT types if a conversion is possible.
      */
-    public void addUnamedOutputArgument(String argumentFieldName, int jdbcType, String typeName, Class javaType) {
+    public void addUnamedOutputArgument(String argumentFieldName, int jdbcType, String typeName, Class<?> javaType) {
         addNamedOutputArgument(null, argumentFieldName, jdbcType, typeName, javaType, null);
     }
 
@@ -783,7 +783,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The javaType is the java class to return instead of the ARRAY and STRUCT types if a conversion is possible.
      * The nestedType is a DatabaseField with type information set to match the VARRAYs object types
      */
-    public void addUnamedOutputArgument(String argumentFieldName, int jdbcType, String typeName, Class javaType, DatabaseField nestedType) {
+    public void addUnamedOutputArgument(String argumentFieldName, int jdbcType, String typeName, Class<?> javaType, DatabaseField nestedType) {
         addNamedOutputArgument(null, argumentFieldName, jdbcType, typeName, javaType, nestedType);
     }
 
@@ -1099,7 +1099,7 @@ public class StoredProcedureCall extends DatabaseCall {
                     session = getQuery().getSession();
                 }
                 List<String> procedureArgs = getProcedureArgumentNames();
-                boolean indexBased = procedureArgs.size() == 0 || procedureArgs.get(0) == null || session.getProject().namingIntoIndexed();
+                boolean indexBased = isIndexBased(procedureArgs, session);
                 Collection<String> parameters = new ArrayList<>();
                 for (int index = 0; index < getParameters().size(); index++) {
                     if (indexBased) {
@@ -1114,5 +1114,14 @@ public class StoredProcedureCall extends DatabaseCall {
         } else {
             return getSQLString();
         }
+    }
+
+    private boolean isIndexBased(List<String> procedureArgs, AbstractSession session) {
+        boolean hasNoArgs = procedureArgs.size() == 0 || procedureArgs.get(0) == null;
+        boolean isNamingIntoIndexed = false;
+        if (session != null && session.getProject() != null) {
+            isNamingIntoIndexed = session.getProject().namingIntoIndexed();
+        }
+        return hasNoArgs || isNamingIntoIndexed;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,6 +93,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
         }
     }
 
+    @Override
     public void buildConformQuery() {
         conformedQuery = new ReadObjectQuery(Employee.class);
         ExpressionBuilder emp = new ExpressionBuilder();
@@ -103,10 +104,10 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
             exactPrimaryKeyExpression = emp.get("id").equal("" + selectionObject.getId());
         }
         if (shouldCheckCacheByExactPrimaryKey()) {
-            ((ReadObjectQuery)conformedQuery).setSelectionCriteria(exactPrimaryKeyExpression);
+            conformedQuery.setSelectionCriteria(exactPrimaryKeyExpression);
         } else {
             Expression inexactPrimaryKeyExpression = exactPrimaryKeyExpression.and(emp.get("firstName").equal(selectionObject.getFirstName()));
-            ((ReadObjectQuery)conformedQuery).setSelectionCriteria(inexactPrimaryKeyExpression);
+            conformedQuery.setSelectionCriteria(inexactPrimaryKeyExpression);
         }
         conformedQuery.conformResultsInUnitOfWork();
     }
@@ -132,6 +133,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
     /**
      * prepareTest method comment.
      */
+    @Override
     public void prepareTest() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         Vector employees = (Vector)getSession().executeQuery(query);
@@ -199,6 +201,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
         }
     }
 
+    @Override
     public void setup() {
         // Change how the primary key attribute 'id' in Employee is accessed.
         // Now everytime TopLink extracts the primary key from an Employee object it
@@ -211,6 +214,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
         super.setup();
     }
 
+    @Override
     public void reset() {
         DatabaseMapping mapping = getSession().getDescriptor(Employee.class).getMappingForAttributeName("id");
         mapping.setAttributeAccessor(overwrittenAccessor);
@@ -220,6 +224,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
     /**
      * Override test to count the calls to Employee.getId just for the query.
      */
+    @Override
     public void test() {
         int initialCount = Employee.getGetIdCallCount();
         result = unitOfWork.executeQuery(conformedQuery);
@@ -230,6 +235,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
     /**
      * verify method comment.
      */
+    @Override
     public void verify() {
         if ((result == null) && (testCase != CASE_DELETED)) {
             throw new TestErrorException("object existed in unit of work but not returned in query.");

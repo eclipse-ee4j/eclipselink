@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class FirstResultAndMaxRowsTest extends AutoVerifyTestCase {
         setName("FirstResultAndMaxRowsTest " + firstResult + "," + maxRows);
     }
 
+    @Override
     public void setup() {
         if (getSession().getPlatform().isTimesTen()) {
             throw new TestWarningException("This test is not supported on TimesTen");
@@ -44,6 +45,7 @@ public class FirstResultAndMaxRowsTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.setMaxRows(maxRows);
@@ -51,12 +53,14 @@ public class FirstResultAndMaxRowsTest extends AutoVerifyTestCase {
         results = ((Vector)getSession().executeQuery(query)).size();
     }
 
+    @Override
     public void verify() {
         if (results != expectedResults) {
             throw new TestErrorException("Expected " + expectedResults + " and returned " + results + " results. When using maxResults = " + maxRows + "and firstResult = " + firstResult + ".");
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }

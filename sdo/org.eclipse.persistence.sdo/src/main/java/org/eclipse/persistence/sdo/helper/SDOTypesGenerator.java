@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,11 +78,11 @@ import commonj.sdo.helper.HelperContext;
 public class SDOTypesGenerator {
     private Project schemaProject;
     private Schema rootSchema;
-    private HashMap processedComplexTypes;
-    private HashMap processedSimpleTypes;
-    private HashMap processedElements;
-    private HashMap processedAttributes;
-    private Map itemNameToSDOName;
+    private Map<QName, ComplexType> processedComplexTypes;
+    private Map<QName, SimpleType> processedSimpleTypes;
+    private Map<QName, Element> processedElements;
+    private Map<QName, Attribute> processedAttributes;
+    private Map<String, String> itemNameToSDOName;
     private boolean processImports;
     private boolean returnAllTypes;
     private java.util.List<NamespaceResolver> namespaceResolvers;
@@ -91,24 +91,24 @@ public class SDOTypesGenerator {
     private HelperContext aHelperContext;
 
     private java.util.List<SDOType> anonymousTypes;
-    private java.util.Map<QName, Type> generatedTypes;
-    private java.util.Map<QName, SDOType> generatedTypesByXsdQName;
-    private java.util.Map<QName, Property> generatedGlobalElements;
-    private java.util.Map<QName, Property> generatedGlobalAttributes;
+    private Map<QName, Type> generatedTypes;
+    private Map<QName, SDOType> generatedTypesByXsdQName;
+    private Map<QName, Property> generatedGlobalElements;
+    private Map<QName, Property> generatedGlobalAttributes;
     private String packageName;
     private java.util.List<NonContainmentReference> nonContainmentReferences;
     private Map<Type, java.util.List<GlobalRef>> globalRefs;
     private boolean isImportProcessor;
 
     public SDOTypesGenerator(HelperContext aContext) {
-        anonymousTypes = new ArrayList<SDOType>();
-        generatedTypesByXsdQName = new HashMap<QName, SDOType>();
-        processedComplexTypes = new HashMap();
-        processedSimpleTypes = new HashMap();
-        processedElements = new HashMap();
-        processedAttributes = new HashMap();
-        itemNameToSDOName = new HashMap();
-        namespaceResolvers = new ArrayList();
+        anonymousTypes = new ArrayList<>();
+        generatedTypesByXsdQName = new HashMap<>();
+        processedComplexTypes = new HashMap<>();
+        processedSimpleTypes = new HashMap<>();
+        processedElements = new HashMap<>();
+        processedAttributes = new HashMap<>();
+        itemNameToSDOName = new HashMap<>();
+        namespaceResolvers = new ArrayList<>();
         this.aHelperContext = aContext;
     }
 
@@ -180,10 +180,10 @@ public class SDOTypesGenerator {
                 ((SDOTypeHelper) aHelperContext.getTypeHelper()).addType(nextSDOType);
             }
 
-            Iterator anonymousIterator = getAnonymousTypes().iterator();
+            Iterator<SDOType> anonymousIterator = getAnonymousTypes().iterator();
 
             while (anonymousIterator.hasNext()) {
-                SDOType nextSDOType = (SDOType) anonymousIterator.next();
+                SDOType nextSDOType = anonymousIterator.next();
                 ((SDOTypeHelper) aHelperContext.getTypeHelper()).getAnonymousTypes().add(nextSDOType);
             }
 
@@ -252,13 +252,13 @@ public class SDOTypesGenerator {
         postProcessing();
     }
 
-    private void processImports(java.util.List imports) {
+    private void processImports(java.util.List<Import> imports) {
         if ((imports == null) || (imports.size() == 0) || !isProcessImports()) {
             return;
         }
-        Iterator iter = imports.iterator();
+        Iterator<Import> iter = imports.iterator();
         while (iter.hasNext()) {
-            Import nextImport = (Import) iter.next();
+            Import nextImport = iter.next();
             try {
                 processImportIncludeInternal(nextImport);
             } catch (Exception e) {
@@ -267,13 +267,13 @@ public class SDOTypesGenerator {
         }
     }
 
-    private void processIncludes(java.util.List includes) {
+    private void processIncludes(java.util.List<Include> includes) {
         if ((includes == null) || (includes.size() == 0) || !isProcessImports()) {
             return;
         }
-        Iterator iter = includes.iterator();
+        Iterator<Include> iter = includes.iterator();
         while (iter.hasNext()) {
-            Include nextInclude = (Include) iter.next();
+            Include nextInclude = iter.next();
             try {
                 processImportIncludeInternal(nextInclude);
             } catch (Exception e) {
@@ -285,7 +285,7 @@ public class SDOTypesGenerator {
     /**
      * INTERNAL:
      * This function is referenced by processImport or processInclude possibly recursively
-     * @param Include theImportOrInclude
+     * @param theImportOrInclude theImportOrInclude
      * @throws Exception
      */
     private void processImportIncludeInternal(Include theImportOrInclude) throws Exception {
@@ -338,7 +338,7 @@ public class SDOTypesGenerator {
             alreadyProcessed = true;
         } else {
             QName qname = new QName(targetNamespace, sdoTypeName);
-            Object processed = processedComplexTypes.get(qname);
+            ComplexType processed = processedComplexTypes.get(qname);
             if (processed != null) {
                 alreadyProcessed = true;
             }
@@ -365,14 +365,14 @@ public class SDOTypesGenerator {
     }
 
     private void processGlobalComplexTypes(Schema schema) {
-        Collection complexTypes = schema.getTopLevelComplexTypes().values();
+        Collection<ComplexType> complexTypes = schema.getTopLevelComplexTypes().values();
         if (complexTypes == null) {
             return;
         }
 
-        Iterator complexTypesIter = complexTypes.iterator();
+        Iterator<ComplexType> complexTypesIter = complexTypes.iterator();
         while (complexTypesIter.hasNext()) {
-            ComplexType complexType = (ComplexType) complexTypesIter.next();
+            ComplexType complexType = complexTypesIter.next();
             String targetNamespace = schema.getTargetNamespace();
             if(null == targetNamespace) {
                 targetNamespace = "";
@@ -383,7 +383,7 @@ public class SDOTypesGenerator {
 
     private void processGlobalComplexType(String targetNamespace, String defaultNamespace, ComplexType complexType) {
         QName qname = new QName(targetNamespace, complexType.getName());
-        Object processed = processedComplexTypes.get(qname);
+        ComplexType processed = processedComplexTypes.get(qname);
 
         if (processed == null) {
             processComplexType(targetNamespace, defaultNamespace, complexType.getName(), complexType);
@@ -426,7 +426,7 @@ public class SDOTypesGenerator {
 
     //return true if a new type was created
     private SDOType startComplexType(String targetNamespace, String defaultNamespace, String name, ComplexType complexType) {
-        String nameValue = (String) complexType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
+        String nameValue = complexType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
         String originalName = name;
         if (nameValue != null) {
             itemNameToSDOName.put(name, nameValue);
@@ -467,16 +467,16 @@ public class SDOTypesGenerator {
         currentType.setAbstract(complexType.isAbstractValue());
         currentType.setDataType(false);
 
-        String value = (String) complexType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
+        String value = complexType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (value != null) {
             XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
-            java.util.List names = (java.util.List) xmlConversionManager.convertObject(value, java.util.List.class);
+            java.util.List names = xmlConversionManager.convertObject(value, java.util.List.class);
             currentType.setAliasNames(names);
         }
 
-        String sequencedValue = (String) complexType.getAttributesMap().get(SDOConstants.SDOXML_SEQUENCE_QNAME);
+        String sequencedValue = complexType.getAttributesMap().get(SDOConstants.SDOXML_SEQUENCE_QNAME);
         if (sequencedValue != null) {
-            currentType.setSequenced(Boolean.valueOf(sequencedValue));
+            currentType.setSequenced(Boolean.parseBoolean(sequencedValue));
         }
         Annotation annotation = complexType.getAnnotation();
         if (annotation != null) {
@@ -509,13 +509,13 @@ public class SDOTypesGenerator {
     }
 
     private void processGlobalAttributes(Schema schema) {
-        Collection attributes = schema.getTopLevelAttributes().values();
+        Collection<Attribute> attributes = schema.getTopLevelAttributes().values();
         if (attributes == null) {
             return;
         }
-        Iterator attributesIter = attributes.iterator();
+        Iterator<Attribute> attributesIter = attributes.iterator();
         while (attributesIter.hasNext()) {
-            Attribute nextAttribute = (Attribute) attributesIter.next();
+            Attribute nextAttribute = attributesIter.next();
             String targetNamespace = schema.getTargetNamespace();
             if(null == targetNamespace) {
                 targetNamespace = "";
@@ -527,7 +527,7 @@ public class SDOTypesGenerator {
     private void processGlobalAttribute(String targetNamespace, String defaultNamespace, Attribute attribute) {
         if (attribute.getName() != null) {
             QName qname = new QName(targetNamespace, attribute.getName());
-            Object processed = processedAttributes.get(qname);
+            Attribute processed = processedAttributes.get(qname);
 
             if (processed == null) {
                 SDOType attributeType = processAttribute(targetNamespace, defaultNamespace, null, attribute, true);
@@ -613,7 +613,7 @@ public class SDOTypesGenerator {
                     processAnyAttribute(targetNamespace, defaultNamespace, owningType);
                 }
                 for (int j = 0; j < size; j++) {
-                    processAttribute(targetNamespace, defaultNamespace, owningType, (Attribute) globalAttributeGroup.getAttributes().get(j), false);
+                    processAttribute(targetNamespace, defaultNamespace, owningType, globalAttributeGroup.getAttributes().get(j), false);
                 }
             }
         }
@@ -630,14 +630,14 @@ public class SDOTypesGenerator {
     }
 
     private void processGlobalSimpleTypes(Schema schema) {
-        Collection simpleTypes = schema.getTopLevelSimpleTypes().values();
+        Collection<SimpleType> simpleTypes = schema.getTopLevelSimpleTypes().values();
         if (simpleTypes == null) {
             return;
         }
 
-        Iterator simpleTypesIter = simpleTypes.iterator();
+        Iterator<SimpleType> simpleTypesIter = simpleTypes.iterator();
         while (simpleTypesIter.hasNext()) {
-            SimpleType simpleType = (SimpleType) simpleTypesIter.next();
+            SimpleType simpleType = simpleTypesIter.next();
             String targetNamespace = schema.getTargetNamespace();
             if(null == targetNamespace) {
                 targetNamespace = "";
@@ -704,7 +704,7 @@ public class SDOTypesGenerator {
         typeHelper.getImplClassesToSDOType().put(wrapperType.getXmlDescriptor().getJavaClass(), wrapperType);
 
         // Add descriptor to XMLHelper
-        ArrayList list = new ArrayList(1);
+        ArrayList<SDOWrapperType> list = new ArrayList<>(1);
         list.add(wrapperType);
         ((SDOXMLHelper) aHelperContext.getXMLHelper()).addDescriptors(list);
 
@@ -722,7 +722,7 @@ public class SDOTypesGenerator {
         boolean addedNR = addNextNamespaceResolver(simpleType.getAttributesMap());
         String name = sdoTypeName;
         String originalName = name;
-        String nameValue = (String) simpleType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
+        String nameValue = simpleType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
         if (nameValue != null) {
             itemNameToSDOName.put(sdoTypeName, nameValue);
             name = nameValue;
@@ -755,20 +755,20 @@ public class SDOTypesGenerator {
     }
 
     private void finishSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, SimpleType simpleType, SDOType currentType) {
-        String value = (String) simpleType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
+        String value = simpleType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (value != null) {
             XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
-            java.util.List names = (java.util.List) xmlConversionManager.convertObject(value, java.util.List.class);
+            java.util.List names = xmlConversionManager.convertObject(value, java.util.List.class);
             currentType.setAliasNames(names);
         }
 
-        String instanceClassValue = (String) simpleType.getAttributesMap().get(SDOConstants.SDOJAVA_INSTANCECLASS_QNAME);
+        String instanceClassValue = simpleType.getAttributesMap().get(SDOConstants.SDOJAVA_INSTANCECLASS_QNAME);
         if (instanceClassValue != null) {
             currentType.setInstanceProperty(SDOConstants.JAVA_CLASS_PROPERTY, instanceClassValue);
             currentType.setBaseTypes(null);
         }
 
-        String extendedInstanceClassValue = (String) simpleType.getAttributesMap().get(SDOConstants.SDOJAVA_EXTENDEDINSTANCECLASS_QNAME);
+        String extendedInstanceClassValue = simpleType.getAttributesMap().get(SDOConstants.SDOJAVA_EXTENDEDINSTANCECLASS_QNAME);
         if (extendedInstanceClassValue != null) {
             currentType.setInstanceClassName(extendedInstanceClassValue);
         }
@@ -875,12 +875,12 @@ public class SDOTypesGenerator {
             if(baseType != null) {
                 if(!baseType.isFinalized() && baseQName.getNamespaceURI().equals(targetNamespace)) {
                     if(baseType.isDataType()) {
-                        SimpleType baseSimpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(baseQName.getLocalPart());
+                        SimpleType baseSimpleType = rootSchema.getTopLevelSimpleTypes().get(baseQName.getLocalPart());
                         if(baseSimpleType != null){
                             processGlobalSimpleType(targetNamespace, defaultNamespace, baseSimpleType);
                         }
                     } else {
-                        ComplexType baseComplexType = (ComplexType) rootSchema.getTopLevelComplexTypes().get(baseQName.getLocalPart());
+                        ComplexType baseComplexType = rootSchema.getTopLevelComplexTypes().get(baseQName.getLocalPart());
                         if(baseComplexType != null){
                             processGlobalComplexType(targetNamespace, defaultNamespace, baseComplexType);
                         }
@@ -936,7 +936,7 @@ public class SDOTypesGenerator {
                 SDOType typeForMemberType = getTypeForName(targetNamespace, defaultNamespace, nextMemberType);
                 QName baseQName = this.getQNameForString(defaultNamespace, nextMemberType);
                 if(!typeForMemberType.isFinalized() && baseQName.getNamespaceURI().equals(targetNamespace)) {
-                    SimpleType baseSimpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(baseQName.getLocalPart());
+                    SimpleType baseSimpleType = rootSchema.getTopLevelSimpleTypes().get(baseQName.getLocalPart());
                     processSimpleType(targetNamespace, defaultNamespace, baseQName.getLocalPart(), baseSimpleType);
                 }
                 if (i == 0) {
@@ -1000,10 +1000,10 @@ public class SDOTypesGenerator {
 
         if(!baseType.isFinalized() && baseQName.getNamespaceURI().equals(targetNamespace)) {
             if(baseType.isDataType()) {
-                SimpleType baseSimpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(baseQName.getLocalPart());
+                SimpleType baseSimpleType = rootSchema.getTopLevelSimpleTypes().get(baseQName.getLocalPart());
                 processGlobalSimpleType(targetNamespace, defaultNamespace, baseSimpleType);
             } else {
-                ComplexType baseComplexType = (ComplexType) rootSchema.getTopLevelComplexTypes().get(baseQName.getLocalPart());
+                ComplexType baseComplexType = rootSchema.getTopLevelComplexTypes().get(baseQName.getLocalPart());
                 processGlobalComplexType(targetNamespace, defaultNamespace, baseComplexType);
             }
         }
@@ -1057,9 +1057,6 @@ public class SDOTypesGenerator {
             }
             return;
         }
-
-        java.util.List<Type> baseTypes = new ArrayList<Type>();
-        baseTypes.add(baseType);
 
         if (owningType != null) {
             if (owningType.isDataType()) {
@@ -1133,13 +1130,13 @@ public class SDOTypesGenerator {
     }
 
     private void processGlobalElements(Schema schema) {
-        Collection elements = schema.getTopLevelElements().values();
+        Collection<Element> elements = schema.getTopLevelElements().values();
         if (elements == null) {
             return;
         }
-        Iterator elementsIter = elements.iterator();
+        Iterator<Element> elementsIter = elements.iterator();
         while (elementsIter.hasNext()) {
-            Element nextElement = (Element) elementsIter.next();
+            Element nextElement = elementsIter.next();
             String targetNamespace = schema.getTargetNamespace();
             if(null == targetNamespace) {
                 targetNamespace = "";
@@ -1156,7 +1153,7 @@ public class SDOTypesGenerator {
                 return;
             }
             QName qname = new QName(targetNamespace, element.getName());
-            Object processed = processedElements.get(qname);
+            Element processed = processedElements.get(qname);
 
             if (processed == null) {
                 SDOType elementType = processElement(targetNamespace, defaultNamespace, null, null, element, true, true);
@@ -1217,9 +1214,9 @@ public class SDOTypesGenerator {
             return;
         }
 
-        String manyValue = (String) element.getAttributesMap().get(SDOConstants.SDOXML_MANY_QNAME);
+        String manyValue = element.getAttributesMap().get(SDOConstants.SDOXML_MANY_QNAME);
         if (manyValue != null) {
-            isMany = Boolean.valueOf(manyValue);
+            isMany = Boolean.parseBoolean(manyValue);
         }
 
         SDOProperty p = null;
@@ -1306,11 +1303,11 @@ public class SDOTypesGenerator {
                     p.setXsdType(qname);
                 }
 
-                String mimeType = (String) element.getAttributesMap().get(SDOConstants.XML_MIME_TYPE_QNAME);
+                String mimeType = element.getAttributesMap().get(SDOConstants.XML_MIME_TYPE_QNAME);
                 if (mimeType != null) {
                     p.setInstanceProperty(SDOConstants.MIME_TYPE_PROPERTY, mimeType);
                 }
-                String mimeTypePropName = (String) element.getAttributesMap().get(SDOConstants.XML_MIME_TYPE_PROPERTY_QNAME);
+                String mimeTypePropName = element.getAttributesMap().get(SDOConstants.XML_MIME_TYPE_PROPERTY_QNAME);
                 if (mimeTypePropName != null) {
                     p.setInstanceProperty(SDOConstants.MIME_TYPE_PROPERTY_PROPERTY, mimeTypePropName);
                 }
@@ -1318,7 +1315,7 @@ public class SDOTypesGenerator {
                 sdoPropertyType = getSDOTypeForName(targetNamespace, defaultNamespace, typeName);
                 if(!sdoPropertyType.isFinalized() && qname.getNamespaceURI().equals(targetNamespace)) {
                     if(sdoPropertyType.isDataType()) {
-                        SimpleType baseSimpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(qname.getLocalPart());
+                        SimpleType baseSimpleType = rootSchema.getTopLevelSimpleTypes().get(qname.getLocalPart());
                         processGlobalSimpleType(targetNamespace, defaultNamespace, baseSimpleType);
                     }
                 }
@@ -1532,13 +1529,13 @@ public class SDOTypesGenerator {
                 owningType.setInstanceProperty(SDOConstants.ID_PROPERTY, p.getName());
             } else if (xsdType.getLocalPart().equals(SDOConstants.IDREF)) {
                 p.setContainment(false);
-                String propertyTypeValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
+                String propertyTypeValue = simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
                 if (propertyTypeValue != null) {
                     buildMapping = false;
                 }
             } else if (xsdType.getLocalPart().equals(SDOConstants.IDREFS)) {
                 p.setContainment(false);
-                String propertyTypeValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
+                String propertyTypeValue = simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
                 if (propertyTypeValue != null) {
                     buildMapping = false;
                     p.setMany(true);
@@ -1569,7 +1566,7 @@ public class SDOTypesGenerator {
 
     private Object convertDefaultValue(Type type, String stringValue) {
         if (type != null) {
-            Class javaClass = ((SDOTypeHelper) aHelperContext.getTypeHelper()).getJavaWrapperTypeForSDOType(type);
+            Class<?> javaClass = ((SDOTypeHelper) aHelperContext.getTypeHelper()).getJavaWrapperTypeForSDOType(type);
             if (javaClass != null) {
                 Object objectValue = ((SDODataHelper) aHelperContext.getDataHelper()).convertFromStringValue(stringValue, javaClass);
                 return objectValue;
@@ -1671,7 +1668,7 @@ public class SDOTypesGenerator {
                 sdoPropertyType = getSDOTypeForName(targetNamespace, defaultNamespace, typeName);
                 if(!sdoPropertyType.isFinalized() && qname.getNamespaceURI().equals(targetNamespace)) {
                     if(sdoPropertyType.isDataType()) {
-                        SimpleType baseSimpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(qname.getLocalPart());
+                        SimpleType baseSimpleType = rootSchema.getTopLevelSimpleTypes().get(qname.getLocalPart());
                         processGlobalSimpleType(targetNamespace, defaultNamespace, baseSimpleType);
                     }
                 }
@@ -1703,21 +1700,21 @@ public class SDOTypesGenerator {
 
     private SDOType processSimpleComponentAnnotations(SDOType owningType, SimpleComponent simpleComponent, SDOProperty p, String targetNamespace, String defaultNamespace, SDOType sdoPropertyType) {
         //aliasName annotation
-        String aliasNamesValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
+        String aliasNamesValue = simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (aliasNamesValue != null) {
             XMLConversionManager xmlConversionManager = ((SDOXMLHelper) aHelperContext.getXMLHelper()).getXmlConversionManager();
-            java.util.List names = (java.util.List) xmlConversionManager.convertObject(aliasNamesValue, java.util.List.class);
+            java.util.List names = xmlConversionManager.convertObject(aliasNamesValue, java.util.List.class);
             p.setAliasNames(names);
         }
 
         //readOnly annotation
-        String readOnlyValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_READONLY_QNAME);
+        String readOnlyValue = simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_READONLY_QNAME);
         if (readOnlyValue != null) {
-            p.setReadOnly(Boolean.valueOf(readOnlyValue));
+            p.setReadOnly(Boolean.parseBoolean(readOnlyValue));
         }
 
         //dataType annotation
-        String dataTypeValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_DATATYPE_QNAME);
+        String dataTypeValue = simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_DATATYPE_QNAME);
         if (dataTypeValue != null) {
             QName xsdQName = ((SDOTypeHelper) aHelperContext.getTypeHelper()).getXSDTypeFromSDOType(sdoPropertyType);
             if ((xsdQName == null) && !sdoPropertyType.isDataType()) {
@@ -1731,7 +1728,7 @@ public class SDOTypesGenerator {
         }
 
         //string annotation
-        String stringValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_STRING_QNAME);
+        String stringValue = simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_STRING_QNAME);
         if (stringValue != null) {
             QName xsdTypeQName = getQNameForString(defaultNamespace, simpleComponent.getType());
             p.setXsdType(xsdTypeQName);
@@ -1739,7 +1736,7 @@ public class SDOTypesGenerator {
         }
 
         //name annotation
-        String nameValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
+        String nameValue = simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
         if (nameValue != null) {
             //itemNameToSDOName.put(sdoTypeName, nameValue);
             p.setName(nameValue);
@@ -1755,7 +1752,7 @@ public class SDOTypesGenerator {
         }
 
         // propertyType annotation
-        String propertyTypeValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
+        String propertyTypeValue = simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
         if (propertyTypeValue != null) {
             String uri = targetNamespace;
             int colonIndex = propertyTypeValue.indexOf(':');
@@ -1768,7 +1765,7 @@ public class SDOTypesGenerator {
             nonContainmentReference.setPropertyTypeURI(uri);
             nonContainmentReference.setOwningType(owningType);
             nonContainmentReference.setOwningProp(p);
-            String oppositePropValue = (String) simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_OPPOSITEPROPERTY_QNAME);
+            String oppositePropValue = simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_OPPOSITEPROPERTY_QNAME);
 
             nonContainmentReference.setOppositePropName(oppositePropValue);
             getNonContainmentReferences().add(nonContainmentReference);
@@ -1813,9 +1810,9 @@ public class SDOTypesGenerator {
 
         Iterator<Type> iter = getGlobalRefs().keySet().iterator();
         while (iter.hasNext()) {
-            Object nextKey = iter.next();
+            Type nextKey = iter.next();
             java.util.List<GlobalRef> value = getGlobalRefs().get(nextKey);
-            java.util.List refsToRemove = new ArrayList();
+            java.util.List<GlobalRef> refsToRemove = new ArrayList<>();
             if (value != null) {
                 for (int i = 0; i < value.size(); i++) {
                     GlobalRef nextGlobalRef = value.get(i);
@@ -1834,7 +1831,7 @@ public class SDOTypesGenerator {
     private void addGlobalRef(GlobalRef ref) {
         java.util.List<GlobalRef> refs = getGlobalRefs().get(ref.getOwningType());
         if (null == refs) {
-            refs = new ArrayList<GlobalRef>();
+            refs = new ArrayList<>();
             refs.add(ref);
             getGlobalRefs().put(ref.getOwningType(), refs);
         } else {
@@ -1848,7 +1845,7 @@ public class SDOTypesGenerator {
      */
     private void initialize() {
         if (null == packageName) {
-            String packageValue = (String) rootSchema.getAttributesMap().get(SDOConstants.SDOJAVA_PACKAGE_QNAME);
+            String packageValue = rootSchema.getAttributesMap().get(SDOConstants.SDOJAVA_PACKAGE_QNAME);
             if (null != packageValue) {
                 packageName = packageValue;
             } else if ((null == rootSchema.getTargetNamespace()) || rootSchema.getTargetNamespace().equals(SDOConstants.EMPTY_STRING)) {
@@ -1908,7 +1905,7 @@ public class SDOTypesGenerator {
             return sdoType;
 
         } else {
-            String sdoName = (String) itemNameToSDOName.get(name);
+            String sdoName = itemNameToSDOName.get(name);
             if (sdoName != null) {
                 name = sdoName;
             }
@@ -1980,7 +1977,7 @@ public class SDOTypesGenerator {
     //Since types aren't registered until the end of the define call we need to check type helper
     //and the generatedTypesmap to see if a type already exists
     private SDOType getExisitingType(String uri, String localName) {
-        SDOType type = (SDOType) ((SDOTypeHelper) aHelperContext.getTypeHelper()).getType(uri, localName);
+        SDOType type = (SDOType) aHelperContext.getTypeHelper().getType(uri, localName);
         if (type == null) {
             QName qName = new QName(uri, localName);
             type = (SDOType) getGeneratedTypes().get(qName);
@@ -1995,7 +1992,7 @@ public class SDOTypesGenerator {
         // Do not execute the following if theURI isn't the target namespace
         if (type == null && ((theURI != null && theURI.equals(targetNamespace)) || (theURI == null && targetNamespace == null))) {
             processGlobalItem(targetNamespace, defaultNamespace, qualifiedName);
-            String sdoName = (String) itemNameToSDOName.get(localName);
+            String sdoName = itemNameToSDOName.get(localName);
             if (sdoName != null) {
                 localName = sdoName;
             }
@@ -2035,14 +2032,14 @@ public class SDOTypesGenerator {
 
     public Map<QName, Type> getGeneratedTypes() {
         if (null == generatedTypes) {
-            generatedTypes = new HashMap<QName, Type>();
+            generatedTypes = new HashMap<>();
         }
         return generatedTypes;
     }
 
     public Map<QName, Property> getGeneratedGlobalElements() {
         if (null == generatedGlobalElements) {
-            generatedGlobalElements = new HashMap<QName, Property>();
+            generatedGlobalElements = new HashMap<>();
         }
         return generatedGlobalElements;
     }
@@ -2057,15 +2054,15 @@ public class SDOTypesGenerator {
 
     public Map<QName, Property> getGeneratedGlobalAttributes() {
         if (null == generatedGlobalAttributes) {
-            generatedGlobalAttributes = new HashMap<QName, Property>();
+            generatedGlobalAttributes = new HashMap<>();
         }
         return generatedGlobalAttributes;
     }
 
-    private void processSubstitutionGroups(Collection elements, String targetNamespace, String defaultNamespace) {
-        Iterator elementsIter = elements.iterator();
+    private void processSubstitutionGroups(Collection<Element> elements, String targetNamespace, String defaultNamespace) {
+        Iterator<Element> elementsIter = elements.iterator();
         while (elementsIter.hasNext()) {
-            Element nextElement = (Element) elementsIter.next();
+            Element nextElement = elementsIter.next();
             if (nextElement.getSubstitutionGroup() != null) {
                 String substitutionGroup = nextElement.getSubstitutionGroup();
                 String localName = null;
@@ -2085,7 +2082,7 @@ public class SDOTypesGenerator {
 
                 if (rootProp != null && thisProperty != null) {
                     if (rootProp.getSubstitutableElements() == null) {
-                        rootProp.setSubstitutableElements(new java.util.ArrayList<SDOProperty>());
+                        rootProp.setSubstitutableElements(new java.util.ArrayList<>());
                         rootProp.setSubstitutable(true);
                     }
                     rootProp.getSubstitutableElements().add(thisProperty);
@@ -2103,7 +2100,7 @@ public class SDOTypesGenerator {
         if (value != null) {
             return (SDOType) value;
         } else {
-            String sdoName = (String) itemNameToSDOName.get(typeName);
+            String sdoName = itemNameToSDOName.get(typeName);
             if (sdoName != null) {
                 return getTypeForName(targetNamespace, defaultNamespace, sdoName);
             } else {
@@ -2141,13 +2138,13 @@ public class SDOTypesGenerator {
             localName = qualifiedName;
         }
 
-        SimpleType simpleType = (SimpleType) rootSchema.getTopLevelSimpleTypes().get(localName);
+        SimpleType simpleType = rootSchema.getTopLevelSimpleTypes().get(localName);
         if (simpleType == null) {
-            ComplexType complexType = (ComplexType) rootSchema.getTopLevelComplexTypes().get(localName);
+            ComplexType complexType = rootSchema.getTopLevelComplexTypes().get(localName);
             if (complexType == null) {
-                Element element = (Element) rootSchema.getTopLevelElements().get(localName);
+                Element element = rootSchema.getTopLevelElements().get(localName);
                 if (element == null) {
-                    Attribute attribute = (Attribute) rootSchema.getTopLevelAttributes().get(localName);
+                    Attribute attribute = rootSchema.getTopLevelAttributes().get(localName);
                     if (attribute != null) {
                         processGlobalAttribute(targetNamespace, defaultNamespace, attribute);
                     }
@@ -2207,10 +2204,10 @@ public class SDOTypesGenerator {
            closeSource(xsdSource);
        }
        //populate Imports
-       java.util.List imports = schema.getImports();
-       Iterator iter = imports.iterator();
+       java.util.List<Import> imports = schema.getImports();
+       Iterator<Import> iter = imports.iterator();
        while (iter.hasNext()) {
-           Import nextImport = (Import) iter.next();
+           Import nextImport = iter.next();
            Source referencedSchema = getReferencedSchema(xsdSource, nextImport.getNamespace(), nextImport.getSchemaLocation(), schemaResolverWrapper);
            if (referencedSchema != null) {
                Schema importedSchema = getSchema(referencedSchema, schemaResolverWrapper, true);
@@ -2219,10 +2216,10 @@ public class SDOTypesGenerator {
        }
 
        //populate includes
-       java.util.List includes = schema.getIncludes();
-       Iterator includesIter = includes.iterator();
+       java.util.List<Include> includes = schema.getIncludes();
+       Iterator<Include> includesIter = includes.iterator();
        while (includesIter.hasNext()) {
-            Include nextInclude = (Include) includesIter.next();
+            Include nextInclude = includesIter.next();
 
             Source referencedSchema = getReferencedSchema(xsdSource, schema.getTargetNamespace(), nextInclude.getSchemaLocation(), schemaResolverWrapper);
             if (referencedSchema != null) {
@@ -2235,7 +2232,7 @@ public class SDOTypesGenerator {
     }
 
     private void closeSource(Source source){
-        if(source != null && source instanceof StreamSource){
+        if(source instanceof StreamSource){
             StreamSource ss = (StreamSource)source;
             try{
                 if(ss.getInputStream() != null){
@@ -2312,12 +2309,18 @@ public class SDOTypesGenerator {
         return uri;
     }
 
-    public class NonContainmentReference {
+    public static class NonContainmentReference {
         private SDOType owningType;
         private SDOProperty owningProp;
         private String propertyTypeName;
         private String propertyTypeURI;
         private String oppositePropName;
+
+        /**
+         * Default constructor.
+         */
+        public NonContainmentReference() {
+        }
 
         public void setOwningType(SDOType owningType) {
             this.owningType = owningType;
@@ -2360,12 +2363,18 @@ public class SDOTypesGenerator {
         }
     }
 
-    public class GlobalRef {
+    public static class GlobalRef {
         private SDOType owningType;
         private boolean isElement;
         private String uri;
         private String localName;
         private Property property;
+
+        /**
+         * Default constructor.
+         */
+        protected GlobalRef() {
+        }
 
         public void setOwningType(SDOType owningType) {
             this.owningType = owningType;
@@ -2410,14 +2419,14 @@ public class SDOTypesGenerator {
 
     private java.util.List<NonContainmentReference> getNonContainmentReferences() {
         if (null == nonContainmentReferences) {
-            nonContainmentReferences = new ArrayList<NonContainmentReference>();
+            nonContainmentReferences = new ArrayList<>();
         }
         return nonContainmentReferences;
     }
 
     private Map<Type, java.util.List<GlobalRef>> getGlobalRefs() {
         if (null == globalRefs) {
-            globalRefs = new HashMap<Type, java.util.List<GlobalRef>>();
+            globalRefs = new HashMap<>();
         }
         return globalRefs;
     }
@@ -2456,7 +2465,7 @@ public class SDOTypesGenerator {
      * Return the SDOType (new or existing) corresponding to this complex type.
      */
     private SDOType preprocessComplexType(ComplexType complexType, Schema schema) {
-        String typeName = (String) complexType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
+        String typeName = complexType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
         if(null == typeName) {
             typeName = complexType.getName();
         }
@@ -2489,7 +2498,7 @@ public class SDOTypesGenerator {
      * Return the SDODataType (new or existing) corresponding to this simple type.
      */
     private SDODataType preprocessSimpleType(SimpleType simpleType, Schema schema) {
-        String typeName = (String) simpleType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
+        String typeName = simpleType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
         if(null == typeName) {
             typeName = simpleType.getName();
         }
@@ -2507,7 +2516,7 @@ public class SDOTypesGenerator {
                 return (SDODataType)existingType;
             }
             sdoDataType = new SDODataType(typeURI, typeName, sdoTypeHelper);
-            String instanceClassValue = (String) simpleType.getAttributesMap().get(SDOConstants.SDOJAVA_INSTANCECLASS_QNAME);
+            String instanceClassValue = simpleType.getAttributesMap().get(SDOConstants.SDOJAVA_INSTANCECLASS_QNAME);
             if (instanceClassValue != null) {
                 sdoDataType.setInstanceProperty(SDOConstants.JAVA_CLASS_PROPERTY, instanceClassValue);
             }

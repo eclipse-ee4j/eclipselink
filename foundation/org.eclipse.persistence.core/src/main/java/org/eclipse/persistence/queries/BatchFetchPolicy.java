@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,11 +53,13 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     protected transient Map<Object, Object> batchObjects;
 
     public BatchFetchPolicy() {
-        this.type = BatchFetchType.JOIN;
+        this(BatchFetchType.JOIN);
     }
 
     public BatchFetchPolicy(BatchFetchType type) {
         this.type = type;
+        this.dataResults = new HashMap<Object, List<AbstractRecord>>();
+        this.dataResults.put(this, new ArrayList<AbstractRecord>());
     }
 
     @Override
@@ -67,9 +70,13 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
         } catch (CloneNotSupportedException error) {
             throw new InternalError(error.getMessage());
         }
-        if (clone.dataResults != null) {
-            clone.dataResults.put(clone, clone.dataResults.get(this));
+
+        Map<Object, List<AbstractRecord>> dataResults = new HashMap<Object, List<AbstractRecord>>();
+        if (this.dataResults != null && this.dataResults.containsKey(this)) {
+            List<AbstractRecord> list = new ArrayList<AbstractRecord>(this.dataResults.get(this));
+            dataResults.put(clone, list);
         }
+        clone.setDataResults(dataResults);
         return clone;
     }
 
@@ -236,10 +243,6 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
      * This is used for IN batching in batches.
      */
     public void addDataResults(AbstractRecord row) {
-        if (this.dataResults == null) {
-            this.dataResults = new HashMap<>();
-            this.dataResults.put(this, new ArrayList<AbstractRecord>());
-        }
         for (List<AbstractRecord> results : this.dataResults.values()) {
             results.add(row);
         }

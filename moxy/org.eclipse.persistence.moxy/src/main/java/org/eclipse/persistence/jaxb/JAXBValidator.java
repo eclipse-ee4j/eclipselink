@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,14 +18,13 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.PropertyException;
 import jakarta.xml.bind.ValidationEventHandler;
 import jakarta.xml.bind.ValidationException;
-import jakarta.xml.bind.Validator;
 import jakarta.xml.bind.helpers.DefaultValidationEventHandler;
 import org.eclipse.persistence.oxm.XMLValidator;
 
 /**
  * Facilitates JAXBValidation.
  */
-public class JAXBValidator implements Validator {
+public class JAXBValidator /*implements Validator*/ {
     private ValidationEventHandler validationEventHandler;
     private XMLValidator xmlValidator;
 
@@ -34,7 +33,6 @@ public class JAXBValidator implements Validator {
      * DefaultValidationEventHandlervalidation instance, and sets the
      * XMLMarshaller instance to the one provided.
      *
-     * @param newValidator
      */
     public JAXBValidator(XMLValidator newValidator) {
         super();
@@ -47,9 +45,7 @@ public class JAXBValidator implements Validator {
      *
      * @param rootObject - the root object to be validated
      * @return true if a valid root object, false otherwise
-     * @throws JAXBException
      */
-    @Override
     public boolean validateRoot(Object rootObject) throws JAXBException {
         if (rootObject == null) {
             throw new IllegalArgumentException();
@@ -67,9 +63,7 @@ public class JAXBValidator implements Validator {
      *
      * @param object - the object to be validated
      * @return true if a valid object, false otherwise
-     * @throws JAXBException
      */
-    @Override
     public boolean validate(Object object) throws JAXBException {
         if (object == null) {
             throw new IllegalArgumentException();
@@ -82,7 +76,6 @@ public class JAXBValidator implements Validator {
         }
     }
 
-    @Override
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
         if (null == newValidationEventHandler) {
             validationEventHandler = new DefaultValidationEventHandler();
@@ -92,12 +85,10 @@ public class JAXBValidator implements Validator {
         xmlValidator.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
     }
 
-    @Override
     public ValidationEventHandler getEventHandler() throws JAXBException {
         return validationEventHandler;
     }
 
-    @Override
     public void setProperty(String key, Object value) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();
@@ -105,7 +96,6 @@ public class JAXBValidator implements Validator {
         throw new PropertyException(key, value);
     }
 
-    @Override
     public Object getProperty(String key) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();

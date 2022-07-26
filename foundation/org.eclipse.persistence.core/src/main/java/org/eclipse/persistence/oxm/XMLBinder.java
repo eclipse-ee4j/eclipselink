@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,7 +87,6 @@ public class XMLBinder {
     /**
      * This method will unmarshal the provided node into mapped java objects. The original node
      * will be cached rather than thrown away.
-     * @param node
      * @return The root object unmarshalled from the provided node.
      */
     public Object unmarshal(org.w3c.dom.Node node) {
@@ -110,7 +109,7 @@ public class XMLBinder {
         }
     }
 
-    public XMLRoot unmarshal(org.w3c.dom.Node node, Class javaClass) {
+    public XMLRoot unmarshal(org.w3c.dom.Node node, Class<?> javaClass) {
         validateNode(node);
         reader.setDocPresPolicy(documentPreservationPolicy);
         return buildXMLRootFromObject(saxUnmarshaller.unmarshal(reader, node, javaClass));
@@ -119,7 +118,6 @@ public class XMLBinder {
     /**
      * This method will update the cached XML node for the provided object. If no node exists for this
      * object, then no operation is performed.
-     * @param obj
      */
     public void updateXML(Object obj) {
         if(obj instanceof Root) {
@@ -194,7 +192,6 @@ public class XMLBinder {
 
     /**
      * Gets the XML Node associated with the provided object.
-     * @param object
      * @return an XML Node used to construct the given object. Null if no node exists for this object.
      */
     public Node getXMLNode(Object object) {
@@ -203,7 +200,6 @@ public class XMLBinder {
 
     /**
      * Gets the Java Object associated with the provided XML Node.
-     * @param node
      * @return the Java Object associated with this node. If no object is associated then returns null
      */
     public Object getObject(Node node) {
@@ -213,7 +209,6 @@ public class XMLBinder {
     /**
      * Updates the object associated with the provided node to reflect any changed made to that node.
      * If this Binder has no object associated with the given node, then no operation is performed.
-     * @param node
      */
     public void updateObject(org.w3c.dom.Node node) {
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
@@ -269,7 +264,6 @@ public class XMLBinder {
      * using the object's descriptor default root element - any prefixes
      * will be resolved - and the given object
      *
-     * @param obj
      * @return an XMLRoot instance encapsulating the given object
      */
     private XMLRoot buildXMLRootFromObject(Object obj) {

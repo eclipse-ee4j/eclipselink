@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,12 @@ import org.omg.CORBA.portable.ServantObject;
  */
 public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteSessionController {
     private static final String[] _type_ids = { "RMI:org.eclipse.persistence.sessions.remote.rmi.iiop.RMIRemoteSessionController:0000000000000000" };
+
+    /**
+     * Default constructor.
+     */
+    public _RMIRemoteSessionController_Stub() {
+    }
 
     @Override
     public String[] _ids() {

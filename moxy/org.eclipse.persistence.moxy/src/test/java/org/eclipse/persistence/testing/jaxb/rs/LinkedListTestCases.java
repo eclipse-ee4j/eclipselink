@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,7 +147,7 @@ public class LinkedListTestCases extends TestCase {
     public void testWriteComplexLinkedListWithoutRoot() throws Exception {
         Field complexLinkedListField = LinkedListTestCases.class.getField("COMPLEX_LINKED_LIST_WITH_XML_ROOT_ELEMENT");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        moxyJsonProvider.writeTo(COMPLEX_LINKED_LIST_WITH_XML_ROOT_ELEMENT, (Class<Object>) complexLinkedListField.getType(), complexLinkedListField.getGenericType(), null, null, null, outputStream);
+        moxyJsonProvider.writeTo(COMPLEX_LINKED_LIST_WITH_XML_ROOT_ELEMENT, complexLinkedListField.getType(), complexLinkedListField.getGenericType(), null, null, null, outputStream);
         assertEquals(COMPLEX_JSON_ARRAY_WITHOUT_ROOT, new String(outputStream.toByteArray()));
     }
 
@@ -155,7 +155,7 @@ public class LinkedListTestCases extends TestCase {
         moxyJsonProvider.setIncludeRoot(true);
         Field complexArrayField = LinkedListTestCases.class.getField("COMPLEX_LINKED_LIST_WITH_XML_ROOT_ELEMENT");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        moxyJsonProvider.writeTo(COMPLEX_LINKED_LIST_WITH_XML_ROOT_ELEMENT, (Class<Object>) complexArrayField.getType(), complexArrayField.getGenericType(), null, null, null, outputStream);
+        moxyJsonProvider.writeTo(COMPLEX_LINKED_LIST_WITH_XML_ROOT_ELEMENT, complexArrayField.getType(), complexArrayField.getGenericType(), null, null, null, outputStream);
         assertEquals(COMPLEX_JSON_ARRAY_WITH_ROOT, new String(outputStream.toByteArray()));
     }
 
@@ -167,7 +167,7 @@ public class LinkedListTestCases extends TestCase {
         jaxbElementLinkedList.add(new JAXBElement(new QName(""), ComplexWithXmlElementDecl.class, new ComplexWithXmlElementDecl(1)));
         jaxbElementLinkedList.add(new JAXBElement(new QName(""), ComplexWithXmlElementDecl.class, new ComplexWithXmlElementDecl(2)));
 
-        moxyJsonProvider.writeTo(jaxbElementLinkedList, (Class<Object>) complexLinkedListField.getType(), complexLinkedListField.getGenericType(), null, null, null, outputStream);
+        moxyJsonProvider.writeTo(jaxbElementLinkedList, complexLinkedListField.getType(), complexLinkedListField.getGenericType(), null, null, null, outputStream);
         assertEquals(COMPLEX_JSON_ARRAY_WITHOUT_ROOT, new String(outputStream.toByteArray()));
     }
 
@@ -180,7 +180,7 @@ public class LinkedListTestCases extends TestCase {
         jaxbElementLinkedList.add(new JAXBElement(new QName("complex"), ComplexWithXmlElementDecl.class, new ComplexWithXmlElementDecl(1)));
         jaxbElementLinkedList.add(new JAXBElement(new QName("complex"), ComplexWithXmlElementDecl.class, new ComplexWithXmlElementDecl(2)));
 
-        moxyJsonProvider.writeTo(jaxbElementLinkedList, (Class<Object>) complexLinkedListField.getType(), complexLinkedListField.getGenericType(), null, null, null, outputStream);
+        moxyJsonProvider.writeTo(jaxbElementLinkedList, complexLinkedListField.getType(), complexLinkedListField.getGenericType(), null, null, null, outputStream);
         assertEquals(COMPLEX_JSON_ARRAY_WITH_ROOT, new String(outputStream.toByteArray()));
     }
 

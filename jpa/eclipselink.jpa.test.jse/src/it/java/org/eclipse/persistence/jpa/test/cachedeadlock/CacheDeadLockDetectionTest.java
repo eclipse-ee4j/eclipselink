@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import org.eclipse.persistence.jpa.test.cachedeadlock.model.CacheDeadLockDetecti
 import org.eclipse.persistence.jpa.test.cachedeadlock.cdi.event.EventProducer;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -33,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class CacheDeadLockDetectionTest {
 
@@ -40,6 +42,7 @@ public class CacheDeadLockDetectionTest {
     public static final int NO_OF_THREADS = 100;
 
     public static EntityManagerFactory emf = Persistence.createEntityManagerFactory("cachedeadlockdetection-pu");
+    public static EntityManagerFactory emfSemaphore = Persistence.createEntityManagerFactory("cachedeadlocksemaphore-pu");
 
     SeContainer container;
 
@@ -62,12 +65,33 @@ public class CacheDeadLockDetectionTest {
                 em.getTransaction().rollback();
             }
         }
+        threadExecution(em);
+        try {
+            Thread.sleep(7000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("##########################Test with semaphores - begin###########################");
+        EntityManager emSemaphore = emfSemaphore.createEntityManager();
+        verifySemaphoreProperties();
+        threadExecution(emSemaphore);
+        System.out.println("##########################Test with semaphores - end###########################");
+    }
 
+    private void threadExecution(EntityManager em) {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NO_OF_THREADS);
         for (int i = 1; i <= NO_OF_THREADS; i++) {
             Thread thread = new Thread(new MainThread(container, emf, em));
             thread.setName("MainThread: " + i);
             executor.execute(thread);
+        }
+        executor.shutdown();
+        // Wait for everything to finish.
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Assert.fail();
         }
     }
 
@@ -104,8 +128,8 @@ public class CacheDeadLockDetectionTest {
             } catch (Exception ignore) {
             }
             try {
-                session.executeNonSelectingSQL("CREATE TABLE cachedeadlock_master (id integer PRIMARY KEY, name varchar(200))");
-                session.executeNonSelectingSQL("CREATE TABLE cachedeadlock_detail (id integer PRIMARY KEY, id_fk integer , name varchar(200))");
+                session.executeNonSelectingSQL("CREATE TABLE cachedeadlock_master (id integer NOT NULL, name varchar(200), PRIMARY KEY(id))");
+                session.executeNonSelectingSQL("CREATE TABLE cachedeadlock_detail (id integer NOT NULL, id_fk integer , name varchar(200), PRIMARY KEY(id))");
                 session.executeNonSelectingSQL("ALTER TABLE cachedeadlock_detail ADD CONSTRAINT fk_cachedeadlock_detail FOREIGN KEY ( id_fk ) REFERENCES cachedeadlock_master (ID)");
             } catch (Exception ignore) {
             }
@@ -122,10 +146,27 @@ public class CacheDeadLockDetectionTest {
     private void verifyPersistenceProperties() {
         assertEquals(1L, ConcurrencyUtil.SINGLETON.getAcquireWaitTime());
         assertEquals(2L, ConcurrencyUtil.SINGLETON.getMaxAllowedSleepTime());
-        assertEquals(3L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceTinyDumpLogMessage());
-        assertEquals(4L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceMassiveDumpLogMessage());
+        assertEquals(800L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceTinyDumpLogMessage());
+        assertEquals(1000L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceMassiveDumpLogMessage());
+        assertEquals(5L, ConcurrencyUtil.SINGLETON.getBuildObjectCompleteWaitTime());
         assertTrue(ConcurrencyUtil.SINGLETON.isAllowTakingStackTraceDuringReadLockAcquisition());
         assertTrue(ConcurrencyUtil.SINGLETON.isAllowConcurrencyExceptionToBeFiredUp());
         assertTrue(ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
+    }
+
+    private void verifySemaphoreProperties() {
+        assertEquals(1L, ConcurrencyUtil.SINGLETON.getAcquireWaitTime());
+        assertEquals(2L, ConcurrencyUtil.SINGLETON.getMaxAllowedSleepTime());
+        assertEquals(1000L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceTinyDumpLogMessage());
+        assertEquals(2000L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceMassiveDumpLogMessage());
+        assertTrue(ConcurrencyUtil.SINGLETON.isAllowTakingStackTraceDuringReadLockAcquisition());
+        assertTrue(ConcurrencyUtil.SINGLETON.isAllowConcurrencyExceptionToBeFiredUp());
+        assertTrue(ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
+        assertTrue(ConcurrencyUtil.SINGLETON.isUseSemaphoreInObjectBuilder());
+        assertEquals(5L, ConcurrencyUtil.SINGLETON.getNoOfThreadsAllowedToObjectBuildInParallel());
+        assertTrue(ConcurrencyUtil.SINGLETON.isUseSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks());
+        assertEquals(6L, ConcurrencyUtil.SINGLETON.getNoOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel());
+        assertEquals(7L, ConcurrencyUtil.SINGLETON.getConcurrencySemaphoreMaxTimePermit());
+        assertEquals(8L, ConcurrencyUtil.SINGLETON.getConcurrencySemaphoreLogTimeout());
     }
 }

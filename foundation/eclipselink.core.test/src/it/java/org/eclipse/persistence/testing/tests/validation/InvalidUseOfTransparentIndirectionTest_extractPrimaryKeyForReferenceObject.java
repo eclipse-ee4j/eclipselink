@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,7 @@ public class InvalidUseOfTransparentIndirectionTest_extractPrimaryKeyForReferenc
         setDescription("This tests Invalid Use Of Transparent Indirection (extractPrimaryKeyForReferenceObject) (TL-ERROR 144) " + "");
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
@@ -48,7 +49,7 @@ public class InvalidUseOfTransparentIndirectionTest_extractPrimaryKeyForReferenc
 
         expectedException = DescriptorException.invalidUseOfTransparentIndirection(null);
 
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(Employee.class);
+        descriptor = getSession().getDescriptor(Employee.class);
         //extractPrimaryKeyForReferenceObject is used in OneToOneMapping
         mapping = (OneToOneMapping)descriptor.getMappingForAttributeName("address");
         orgIndirectionPolicy = mapping.getIndirectionPolicy();
@@ -60,12 +61,14 @@ public class InvalidUseOfTransparentIndirectionTest_extractPrimaryKeyForReferenc
         getSession().getIntegrityChecker().dontCatchExceptions();
     }
 
+    @Override
     public void reset() {
         mapping.setIndirectionPolicy(orgIndirectionPolicy);
 
         getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         try {
             mapping.getIndirectionPolicy().extractPrimaryKeyForReferenceObject(employee.getAddress(), (AbstractSession)getSession());

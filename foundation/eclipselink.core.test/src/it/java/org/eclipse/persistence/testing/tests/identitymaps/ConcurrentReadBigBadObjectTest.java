@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class ConcurrentReadBigBadObjectTest extends AutoVerifyTestCase {
     protected int OrigDirectMapWeight;
 
 
+    @Override
     public void setup() throws Exception {
 
         DatabaseLogin login;
@@ -55,27 +56,29 @@ public class ConcurrentReadBigBadObjectTest extends AutoVerifyTestCase {
         ClassDescriptor d = (server.serverSession).getClassDescriptor(BigBadObject.class);
         DatabaseMapping m;
 
-        Vector v = d.getMappings();
+        Vector<DatabaseMapping> v = d.getMappings();
         int mappings = v.size();
         int i = 0;
         while (i < mappings) {
-            m = (DatabaseMapping)v.get(i);
-            m.setWeight(new Integer(Integer.MAX_VALUE - 1));
+            m = v.get(i);
+            m.setWeight(Integer.MAX_VALUE - 1);
             i++;
         }
 
         m = d.getMappingForAttributeName("number02");
-        m.setWeight(new Integer(Integer.MAX_VALUE));
+        m.setWeight(Integer.MAX_VALUE);
 
         server.login();
         server.serverSession.setLogLevel(getSession().getLogLevel());
         server.serverSession.setLog(getSession().getLog());
     }
 
+    @Override
     public void reset() throws Exception {
         server.logout();
     }
 
+    @Override
     public void test() {
         failed = false;
 
@@ -131,6 +134,7 @@ public class ConcurrentReadBigBadObjectTest extends AutoVerifyTestCase {
             counter = 0;
         }
 
+        @Override
         public void run() {
             try {
                 counter = 0;

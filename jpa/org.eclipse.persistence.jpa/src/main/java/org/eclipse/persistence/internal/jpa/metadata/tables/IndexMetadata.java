@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public class IndexMetadata extends ORMetadata {
     private String m_table;
     private String m_columnList;
 
-    private List<String> m_columnNames = new ArrayList();
+    private List<String> m_columnNames = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -224,7 +224,7 @@ public class IndexMetadata extends ORMetadata {
      * Return true is there is a unique setting for this index.
      */
     protected boolean isUnique() {
-        return m_unique != null && m_unique.booleanValue();
+        return m_unique != null && m_unique;
     }
 
     /**

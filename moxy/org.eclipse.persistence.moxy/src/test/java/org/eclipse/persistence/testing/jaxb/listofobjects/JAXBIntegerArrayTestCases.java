@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
         init();
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         return Integer[].class;
     }
@@ -42,7 +43,7 @@ public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Integer[].class;
         setClasses(classes);
         initXsiType();
@@ -56,6 +57,7 @@ public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
         return namespaces;
     }
 
+    @Override
     protected Object getControlObject() {
         Integer[] integers = new Integer[4];
         integers[0] = 10;
@@ -71,6 +73,7 @@ public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
     }
 
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/integerArray.xsd");
 
@@ -79,6 +82,7 @@ public class JAXBIntegerArrayTestCases extends JAXBListOfObjectsTestCases {
         return controlSchema;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

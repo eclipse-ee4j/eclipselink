@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -106,7 +106,6 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
      * Return a properties object for a given instance of the
      * XMLMarshaller.
      *
-     * @return
      */
     public Properties getProperties() {
         if(null == marshalProperties) {
@@ -148,7 +147,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                 }
             }
         }else{
-            Class objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             if(result instanceof ExtendedResult){
                 MarshalRecord writerRecord = ((ExtendedResult)result).createRecord();
                 if(object instanceof Collection){
@@ -375,7 +374,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                 }
             }
         }else{
-            Class objectClass = object.getClass();
+            Class<?> objectClass = object.getClass();
             session = context.getSession(objectClass);
             descriptor = getDescriptor(objectClass, session);
         }
@@ -530,7 +529,6 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
     /**
      * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
      * @since 2.3.3
-     * @return
      */
     @Override
     public NamespacePrefixMapper getNamespacePrefixMapper() {
@@ -558,7 +556,6 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
     /**
      * Set the MediaType for this xmlMarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
-     * @param mediaType
      * @since EclipseLink 2.4.0
      */
     @Override

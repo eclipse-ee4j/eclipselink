@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public class JPQLQueryBNFAccessor {
     /**
      * Creates a new <code>JPQLQueryBNFAccessor</code>.
      *
-     * @param registry
+     * @param registry registry
      */
     public JPQLQueryBNFAccessor(ExpressionRegistry registry) {
         super();
@@ -81,7 +81,7 @@ public class JPQLQueryBNFAccessor {
 
     public Iterable<String> arithmetics() {
         ExpressionFactory factory = getExpressionFactory(ArithmeticExpressionFactory.ID);
-        return new ArrayIterable<String>(factory.identifiers());
+        return new ArrayIterable<>(factory.identifiers());
     }
 
     public Iterable<String> arithmeticTermFunctions() {
@@ -110,7 +110,7 @@ public class JPQLQueryBNFAccessor {
 
     public Iterable<String> comparators() {
         ExpressionFactory factory = getExpressionFactory(ComparisonExpressionFactory.ID);
-        return new ArrayIterable<String>(factory.identifiers());
+        return new ArrayIterable<>(factory.identifiers());
     }
 
     public Iterable<String> comparisonExpressionClauses() {
@@ -127,7 +127,7 @@ public class JPQLQueryBNFAccessor {
 
     private Iterable<String> conditionalExpressions(IdentifierRole role) {
 
-        Set<String> identifiers = new HashSet<String>();
+        Set<String> identifiers = new HashSet<>();
         JPQLQueryBNF queryBNF = getQueryBNF(ConditionalExpressionBNF.ID);
 
         for (JPQLQueryBNF child : queryBNF.children()) {
@@ -172,7 +172,7 @@ public class JPQLQueryBNFAccessor {
 
     public Iterable<String> filter(Iterable<String> identifiers, IdentifierRole identifierRole) {
 
-        List<String> items = new ArrayList<String>();
+        List<String> items = new ArrayList<>();
 
         for (String identifier : identifiers) {
             if (getIdentifierRole(identifier) == identifierRole) {

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +35,6 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
  * <p>
  * <b>Description</b>: This is the container class for the components that
  * define an Update Query.
- * <p>
  *
  * @see jakarta.persistence.criteria CriteriaUpdate
  *
@@ -81,6 +81,9 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
     @Override
     public <Y, X extends Y> CriteriaUpdate<T> set(
             SingularAttribute<? super T, Y> attribute, X value) {
+        if(value instanceof Expression) {
+            findRootAndParameters((Expression)value);
+        }
         query.addUpdate(attribute.getName(), value);
         return this;
     }
@@ -88,6 +91,7 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
     @Override
     public <Y> CriteriaUpdate<T> set(SingularAttribute<? super T, Y> attribute,
             Expression<? extends Y> value) {
+        findRootAndParameters(value);
         query.addUpdate(attribute.getName(), ((InternalSelection)value).getCurrentNode());
         return this;
     }
@@ -95,6 +99,9 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     public <Y, X extends Y> CriteriaUpdate<T> set(Path<Y> attribute, X value) {
+        if(value instanceof Expression) {
+            findRootAndParameters((Expression)value);
+        }
         query.addUpdate(((PathImpl)attribute).getCurrentNode(), value);
         return this;
     }
@@ -102,6 +109,7 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
     @Override
     public <Y> CriteriaUpdate<T> set(Path<Y> attribute,
             Expression<? extends Y> value) {
+        findRootAndParameters(value);
         query.addUpdate(((PathImpl)attribute).getCurrentNode(), ((InternalSelection)value).getCurrentNode());
         return this;
     }
@@ -109,6 +117,10 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     public CriteriaUpdate<T> set(String attributeName, Object value) {
+        if(value instanceof Expression) {
+            findRootAndParameters((Expression)value);
+            value = ((InternalSelection)value).getCurrentNode();
+        }
         query.addUpdate(attributeName, value);
         return this;
     }

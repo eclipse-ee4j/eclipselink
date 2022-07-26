@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class StoredProcedureTest2 extends TestCase {
         setName(getName() + " bind = " + shouldBindAllParameters);
     }
 
+    @Override
     public void setup() {
         // right now only the stored procedure is set up in Oracle
         if (!(getSession().getPlatform().isOracle())) {
@@ -41,6 +42,7 @@ public class StoredProcedureTest2 extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("StoredProcedure_InOutput2");
@@ -53,11 +55,12 @@ public class StoredProcedureTest2 extends TestCase {
         query.addArgument("P_ID");
 
         Vector args = new Vector(1);
-        args.addElement(new Integer(id));
+        args.addElement(id);
 
         row = (DatabaseRecord)((Vector)getSession().executeQuery(query, args)).firstElement();
     }
 
+    @Override
     public void verify() {
         int id1 = ((Number)row.get("P_ID")).intValue();
         int id2 = ((Number)row.get("P_ID2")).intValue();

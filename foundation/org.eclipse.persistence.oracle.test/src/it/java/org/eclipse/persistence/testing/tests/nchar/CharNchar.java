@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,12 +44,12 @@ public class CharNchar {
     public void copyAllButId(CharNchar obj) {
         setChar(null);
         if (obj.getChar() != null) {
-            setChar(new Character(obj.getChar().charValue()));
+            setChar(obj.getChar());
         }
 
         setNchar(null);
         if (obj.getNchar() != null) {
-            setNchar(new Character(obj.getNchar().charValue()));
+            setNchar(obj.getNchar());
         }
 
         setStr(null);
@@ -89,8 +89,8 @@ public class CharNchar {
     }
 
     public void setAll(char ch, char nCh, int sizeStr, int sizeClob, int sizeClob2) {
-        this.ch = new Character(ch);
-        this.nCh = new Character(nCh);
+        this.ch = ch;
+        this.nCh = nCh;
 
         char[] chArray = new char[sizeStr];
         char[] nchArray = new char[sizeStr];

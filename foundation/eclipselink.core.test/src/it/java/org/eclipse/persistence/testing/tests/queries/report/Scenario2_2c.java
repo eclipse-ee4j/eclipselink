@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class Scenario2_2c extends ReportQueryTestCase {
         setDescription("Report query with constant expression");
     }
 
+    @Override
     protected void buildExpectedResults() throws Exception {
         ExpressionBuilder builder = new ExpressionBuilder();
 
@@ -41,25 +42,26 @@ public class Scenario2_2c extends ReportQueryTestCase {
             if (getSession().getPlatform().isOracle() || getSession().getPlatform().isTimesTen7() || getSession().getPlatform().isMaxDB()) {
                 result[1] = new java.math.BigDecimal(3);
             } else if (getSession().getPlatform().isMySQL()) {
-                result[1] = new java.lang.Long(3);
+                result[1] = 3L;
             } else if (getSession().getPlatform().isSymfoware()) {
-                result[1] = new java.lang.Short((short)3);
+                result[1] = (short) 3;
             } else if (getSession().getPlatform().isHANA()) {
                 String driverVersion = getAbstractSession().getAccessor().getConnection().getMetaData().getDriverVersion();
                 if (driverVersion.equals("1.0")) {
                     // up to version 1.00.35 driver version is returned as "1.0"
                     // and numeric constant is returned as Long
-                    result[1] = new java.lang.Long(3);
+                    result[1] = 3L;
                 } else {
-                    result[1] = new java.lang.Integer(3);
+                    result[1] = 3;
                 }
             } else {
-                result[1] = new java.lang.Integer(3);
+                result[1] = 3;
             }
 
             addResult(result, null);
         }
     }
+    @Override
     protected void setup()  throws Exception
     {
         super.setup();

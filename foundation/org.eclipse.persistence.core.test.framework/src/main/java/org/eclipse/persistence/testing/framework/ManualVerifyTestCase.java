@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.framework;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
- * <p>Purpose<b></b>:All the test cases are subclassed from this class. Each test case tests single
+ * <p><b>Purpose</b>:All the test cases are subclassed from this class. Each test case tests single
  * feature of TopLink. Ideally a test case consists of five steps.
  * Setup: Performs all the initial setup that is required by the test, such as setting
  *              up database to some state on which test would run.
@@ -31,6 +31,7 @@ public abstract class ManualVerifyTestCase extends TestCase {
     /**
      * Executes this test case.
      */
+    @Override
     public void execute(TestExecutor executor) {
         setTestResult(new TestResult(this, "You decide"));
         setExecutor(executor);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,35 +34,37 @@ public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[3];
+        Class<?>[] classes = new Class<?>[3];
         classes[0] = EmployeeCollection.class;
         classes[1] = Address.class;
         classes[2] = CanadianAddress.class;
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         EmployeeCollection employee = new EmployeeCollection();
         employee.id = CONTROL_ID;
         ArrayList choices = new ArrayList();
-        choices.add(new Integer(12));
+        choices.add(12);
         choices.add("String Value");
         CanadianAddress addr = new CanadianAddress();
         addr.city = "Ottawa";
         addr.street = "123 Fake Street";
         addr.postalCode = "A1A 1A1";
         choices.add(addr);
-        choices.add(new Integer(5));
+        choices.add(5);
         employee.choice = choices;
         return employee;
     }
 
+    @Override
     protected Object getJSONReadControlObject() {
           EmployeeCollection employee = new EmployeeCollection();
           employee.id = CONTROL_ID;
           ArrayList choices = new ArrayList();
-          choices.add(new Integer(12));
-          choices.add(new Integer(5));
+          choices.add(12);
+          choices.add(5);
           choices.add("String Value");
           CanadianAddress addr = new CanadianAddress();
           addr.city = "Ottawa";

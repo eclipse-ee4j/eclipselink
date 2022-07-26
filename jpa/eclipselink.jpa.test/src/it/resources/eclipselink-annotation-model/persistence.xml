@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,23 +99,6 @@
             <!-- sql queries off by default, so we need to be explicit here  -->
             <!--  and turn them on                                           -->
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="ignore" transaction-type="JTA">
-        <description>This PU is for validation purpose only - it should not
-                break the rest of the tests</description>
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>jdbc/__default</jta-data-source>
-    </persistence-unit>
-
-    <persistence-unit name="isolated1053">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>org.eclipse.persistence.testing.models.jpa.relationships.Item</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="eclipselink.session-name" value="isolated-session1053"/>
-            <property name="eclipselink.cache.shared.default" value="false"/>
         </properties>
     </persistence-unit>
 
@@ -427,114 +410,6 @@
             <!-- eventually hit the multitenant entities which turn native   -->
             <!-- sql queries off by default, so we need to be explicit here  -->
             <!--  and turn them on                                           -->
-            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="multi-tenant-shared-emf">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumber</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Card</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Envelope</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-            <property name="eclipselink.create-ddl-jdbc-file-name" value="createMafia_ddlGeneration.jdbc"/>
-            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropMafia_ddlGeneration.jdbc"/>
-            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
-            <!-- Since we don't exclude unlisted classes here, we will       -->
-            <!-- eventually hit the multitenant entities which turn native   -->
-            <!-- sql queries off by default, so we need to be explicit here  -->
-            <!--  and turn them on                                           -->
-            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="multi-tenant-123">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumber</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="tenant.id" value="123"/>
-            <!--  this one will be appended in the test suite when creating the emf -->
-            <!-- property name="eclipselink.tenant-id" value="123"/ -->
-            <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
-            <property name="eclipselink.session-name" value="multi-tenant-123"/>
-            <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="multi-tenant-vpd">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/multitenant-vpd.xml</mapping-file>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="eclipselink.session-name" value="multi-tenant-vpd"/>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-            <property name="eclipselink.create-ddl-jdbc-file-name" value="createMultitenantVPD_ddlGeneration.jdbc"/>
-            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropMultitenantVPD_ddlGeneration.jdbc"/>
-            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="multi-tenant-table-per-tenant">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfo</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfoSub</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Riding</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Party</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-    </persistence-unit>
-
-    <persistence-unit name="multi-tenant-table-per-tenant-C">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfo</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfoSub</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Riding</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Party</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason</class>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="eclipselink.tenant-id" value="C"/>
-            <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
-            <property name="eclipselink.session-name" value="multi-tenant-C"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="multi-tenant-schema-per-tenant">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <shared-cache-mode>NONE</shared-cache-mode>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.Customer</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
     </persistence-unit>

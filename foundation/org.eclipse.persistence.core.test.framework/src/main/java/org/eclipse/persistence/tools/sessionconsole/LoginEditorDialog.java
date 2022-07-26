@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public class LoginEditorDialog extends JDialog {
     }
 
     /**
-     * connEtoC1:  (CancelButton.action.actionPerformed(java.awt.event.ActionEvent) --> LoginEditorDialog.markCanceled()V)
+     * connEtoC1:  (CancelButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} LoginEditorDialog.markCanceled()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC1(java.awt.event.ActionEvent arg1) {
@@ -83,7 +83,7 @@ public class LoginEditorDialog extends JDialog {
     }
 
     /**
-     * connEtoC2:  (OKButton.action. --> LoginEditorDialog.loginOK()V)
+     * connEtoC2:  (OKButton.action. --{@literal >} LoginEditorDialog.loginOK()V)
      */
     private void connEtoC2() {
         try {
@@ -305,6 +305,7 @@ public class LoginEditorDialog extends JDialog {
     }
 
     class IvjEventHandler implements java.awt.event.ActionListener {
+        @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
             if (e.getSource() == LoginEditorDialog.this.getCancelButton()) {
                 connEtoC1(e);

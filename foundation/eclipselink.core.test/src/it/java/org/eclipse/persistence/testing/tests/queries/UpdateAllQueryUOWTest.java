@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,7 @@ public class UpdateAllQueryUOWTest extends AutoVerifyTestCase {
         setName(getName() + " defer=" + defer);
     }
 
+    @Override
     protected void setup() {
         m_session = getSession();
         beginTransaction();
@@ -48,11 +49,13 @@ public class UpdateAllQueryUOWTest extends AutoVerifyTestCase {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void reset() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     public void test() {
         if (m_session.getDatasourcePlatform().isSymfoware()) {
             throwWarning("Test UpdateAllQueryUOWTest skipped for this platform, "
@@ -65,6 +68,7 @@ public class UpdateAllQueryUOWTest extends AutoVerifyTestCase {
         m_uow.executeQuery(updateQuery);
     }
 
+    @Override
     protected void verify() {
         Vector emps = m_session.readAllObjects(Employee.class);
 

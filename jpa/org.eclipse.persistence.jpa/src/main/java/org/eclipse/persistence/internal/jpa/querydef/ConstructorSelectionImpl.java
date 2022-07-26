@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
  * criteria API.  Specifically this class represents the Selection of a Constructor.
  * <p>
  * <b>Description</b>: The Selection is the expression describing what should be returned by the query.
- * <p>
  *
  * @see jakarta.persistence.criteria Join
  *
@@ -38,9 +37,9 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
 public class ConstructorSelectionImpl extends CompoundSelectionImpl {
 
     protected transient Constructor constructor;
-    protected Class[] constructorArgTypes;
+    protected Class<?>[] constructorArgTypes;
 
-    public ConstructorSelectionImpl(Class javaType, Selection[] subSelections) {
+    public ConstructorSelectionImpl(Class<?> javaType, Selection[] subSelections) {
         super(javaType, subSelections, true);//need to validate selection items
     }
 
@@ -49,7 +48,7 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
         item.setResultType(this.getJavaType());
         item.setConstructor(constructor);
         for(Selection selection : this.getCompoundSelectionItems()){
-            if (((SelectionImpl)selection).isCompoundSelection()){
+            if (selection.isCompoundSelection()){
                 item.addItem(((ConstructorSelectionImpl)selection).translate());
             }else{
                 ReportItem reportItem = new ReportItem(item.getName()+item.getReportItems().size(),
@@ -80,7 +79,7 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
      * INTERNAL:
      * Set the constructorArgTypes.
      */
-    public void setConstructorArgTypes(Class[] constructorArgTypes){
+    public void setConstructorArgTypes(Class<?>[] constructorArgTypes){
         this.constructorArgTypes = constructorArgTypes;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@ package org.eclipse.persistence.internal.jpa.parsing;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -33,7 +34,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public class CaseNode extends Node implements AliasableNode {
 
-    private List whenClauses = null;
+    private List<Node> whenClauses = null;
 
 
     public CaseNode(){
@@ -49,7 +50,7 @@ public class CaseNode extends Node implements AliasableNode {
         if (theQuery instanceof ReportQuery) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
-            reportQuery.addAttribute("Case", expression, (Class)getType());
+            reportQuery.addAttribute("Case", expression, (Class<?>)getType());
         }
     }
 
@@ -59,8 +60,8 @@ public class CaseNode extends Node implements AliasableNode {
      */
     @Override
     public Expression generateExpression(GenerationContext context) {
-        LinkedHashMap whenClauseMap = new LinkedHashMap(whenClauses.size());
-        Iterator i = whenClauses.iterator();
+        Map<Expression, Expression> whenClauseMap = new LinkedHashMap<>(whenClauses.size());
+        Iterator<Node> i = whenClauses.iterator();
         while (i.hasNext()){
             WhenThenNode clause = (WhenThenNode)i.next();
             whenClauseMap.put(clause.generateExpressionForWhen(context), clause.generateExpressionForThen(context));
@@ -82,10 +83,10 @@ public class CaseNode extends Node implements AliasableNode {
             left.validate(context);
         }
         right.validate(context);
-        Iterator i = whenClauses.iterator();
+        Iterator<Node> i = whenClauses.iterator();
         Object type = null;
         while (i.hasNext()){
-            Node node = ((Node)i.next());
+            Node node = i.next();
             node.validate(context);
             if (type == null){
                 type = node.getType();
@@ -100,11 +101,11 @@ public class CaseNode extends Node implements AliasableNode {
     }
 
 
-    public List getWhenClauses() {
+    public List<Node> getWhenClauses() {
         return whenClauses;
     }
 
-    public void setWhenClauses(List whenClauses) {
+    public void setWhenClauses(List<Node> whenClauses) {
         this.whenClauses = whenClauses;
     }
 

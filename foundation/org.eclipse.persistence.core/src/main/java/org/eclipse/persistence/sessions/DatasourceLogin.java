@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -109,7 +110,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * PUBLIC:
      * Create a new login.
      */
-    public DatasourceLogin() {
+    protected DatasourceLogin() {
         this(new DatasourcePlatform());
     }
 
@@ -117,7 +118,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * ADVANCED:
      * Create a new login for the given platform.
      */
-    public DatasourceLogin(Platform databasePlatform) {
+    protected DatasourceLogin(Platform databasePlatform) {
         this.platform = databasePlatform;
 
         this.dontUseExternalConnectionPooling();
@@ -169,7 +170,8 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      */
     @Override
     public Object connectToDatasource(Accessor accessor, Session session) throws DatabaseException {
-        return getConnector().connect(prepareProperties(properties), session);
+
+        return getConnector().connect(prepareProperties(properties, session), session);
     }
 
     /**
@@ -307,8 +309,10 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * SECURE:
      * The password in the login properties is encrypted. Return a clone
      * of the properties with the password decrypted.
+     * @param properties connection properties
+     * @param session current session used for logging
      */
-    private Properties prepareProperties(Properties properties) {
+    private Properties prepareProperties(Properties properties, Session session) {
         Properties result = properties;
         Object passwordObject = result.get("password");
         if (passwordObject != null) {
@@ -341,6 +345,17 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             } else if ((passwordObject instanceof char[]) && (((char[])passwordObject).length == 0)) {
                 // Bug 236726 - deal with empty string for passwords
                 result.put("password", "");
+            }
+        }
+
+        // Add platform specific properties, but do not overwrite existing keys.
+        final Map<Object, Object> platformProperties = platform.connectionProperties();
+        for (final Object key : platformProperties.keySet()) {
+            if (result.containsKey(key)) {
+                session.getSessionLog().log(
+                        SessionLog.WARNING, "platform_specific_connection_property_exists", new Object[] {key, platformProperties.get(key)});
+            } else {
+                result.put(key, platformProperties.get(key));
             }
         }
 
@@ -395,9 +410,9 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * PUBLIC:
      * The default value to substitute for database NULLs can be configured
      * on a per-class basis.
-     * Example: login.setDefaultNullValue(long.class, new Long(0))
+     * Example: login.setDefaultNullValue(long.class, Long.valueOf(0))
      */
-    public void setDefaultNullValue(Class type, Object value) {
+    public void setDefaultNullValue(Class<?> type, Object value) {
         getDatasourcePlatform().getConversionManager().setDefaultNullValue(type, value);
     }
 
@@ -502,7 +517,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             platformClassName = "org.eclipse.persistence.platform.database.OraclePlatform";
         }
 
-        Class platformClass = null;
+        Class<?> platformClass = null;
         try {
             //First try loading with the Login's class loader
             platformClass = this.getClass().getClassLoader().loadClass(platformClassName);
@@ -521,7 +536,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
         Platform platform = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
+                platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
             } else {
                 platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
             }
@@ -542,14 +557,14 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      */
     public void setPlatformClassName(String platformClassName, ClassLoader loader) throws ValidationException {
         boolean exceptionCaught = false;
-        Class platformClass = null;
+        Class<?> platformClass = null;
         try {
             Platform platform = null;
             if (loader != null) {
                 platformClass = loader.loadClass(platformClassName);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                       platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
+                       platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
                   } catch (PrivilegedActionException exception) {
                       throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
                   }
@@ -819,7 +834,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * Returns a map of sequence names to Sequences (may be null).
      */
-    public Map getSequences() {
+    public Map<String, Sequence> getSequences() {
         return getDatasourcePlatform().getSequences();
     }
 
@@ -851,7 +866,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * INTERNAL:
      * Used only for writing the login into XML or Java.
      */
-    public Map getSequencesToWrite() {
+    public Map<String, Sequence> getSequencesToWrite() {
         return getDatasourcePlatform().getSequencesToWrite();
     }
 
@@ -859,7 +874,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * INTERNAL:
      * Used only for reading the login from XML.
      */
-    public void setSequences(Map sequences) {
+    public void setSequences(Map<String, Sequence> sequences) {
         getDatasourcePlatform().setSequences(sequences);
     }
 }

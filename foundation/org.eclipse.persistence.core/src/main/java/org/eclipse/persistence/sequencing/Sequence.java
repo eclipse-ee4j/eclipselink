@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.sequencing;
 import java.util.Vector;
 import java.io.Serializable;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -59,7 +58,7 @@ public abstract class Sequence implements Serializable, Cloneable {
     // note that even if set to false sequence always overrides if shouldAcquireValueAfterInsert returns true.
     protected boolean shouldAlwaysOverrideExistingValue;
 
-    public Sequence() {
+    protected Sequence() {
         super();
         setName("SEQUENCE");
     }
@@ -67,7 +66,7 @@ public abstract class Sequence implements Serializable, Cloneable {
     /**
      * Create a new sequence with the name.
      */
-    public Sequence(String name) {
+    protected Sequence(String name) {
         this();
         setName(name);
     }
@@ -75,13 +74,13 @@ public abstract class Sequence implements Serializable, Cloneable {
     /**
      * Create a new sequence with the name and sequence pre-allocation size.
      */
-    public Sequence(String name, int size) {
+    protected Sequence(String name, int size) {
         this();
         setName(name);
         setPreallocationSize(size);
     }
 
-    public Sequence(String name, int size, int initialValue) {
+    protected Sequence(String name, int size, int initialValue) {
         this();
         setName(name);
         setPreallocationSize(size);
@@ -251,7 +250,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      * @param seqName String is sequencing number field name
      * @param size int number of values to preallocate (output Vector size).
      */
-    public abstract Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size);
+    public abstract Vector<?> getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size);
 
     /**
      * INTERNAL:
@@ -265,7 +264,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      * @param accessor Accessor is a separate sequencing accessor (may be null);
      * @param writeSession Session is a Session used for writing (either ClientSession or DatabaseSession);
      */
-    public Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession) {
+    public Vector<?> getGeneratedVector(Accessor accessor, AbstractSession writeSession) {
         return getGeneratedVector(accessor, writeSession, getName(), getPreallocationSize());
     }
 
@@ -327,10 +326,10 @@ public abstract class Sequence implements Serializable, Cloneable {
     protected void verifyPlatform(Platform otherPlatform) {
         if (getDatasourcePlatform() != otherPlatform) {
             String hashCode1 = Integer.toString(System.identityHashCode(getDatasourcePlatform()));
-            String name1 = ((DatasourcePlatform)getDatasourcePlatform()).toString() + '(' + hashCode1 + ')';
+            String name1 = getDatasourcePlatform().toString() + '(' + hashCode1 + ')';
 
             String hashCode2 = Integer.toString(System.identityHashCode(otherPlatform));
-            String name2 = ((DatasourcePlatform)otherPlatform).toString() + '(' + hashCode2 + ')';
+            String name2 = otherPlatform.toString() + '(' + hashCode2 + ')';
 
             throw ValidationException.sequenceCannotBeConnectedToTwoPlatforms(getName(), name1, name2);
         }

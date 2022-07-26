@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,13 +35,14 @@ public class XmlTypeTestCases extends JAXBWithJSONTestCases {
 
     public XmlTypeTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
         setClasses(classes);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         return Employee.buildEmployee();
     }
@@ -54,7 +55,7 @@ public class XmlTypeTestCases extends JAXBWithJSONTestCases {
 
     public void testBuiltInTypeSchemaGen() throws Exception {
 
-        JAXBContext jctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { EmploymentPeriod.class, MyDate.class}, null);
+        JAXBContext jctx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { EmploymentPeriod.class, MyDate.class}, null);
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
         jctx.generateSchema(outputResolver);
 

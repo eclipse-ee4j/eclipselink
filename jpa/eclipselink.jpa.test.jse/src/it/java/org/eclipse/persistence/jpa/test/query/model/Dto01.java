@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 IBM Corporation, Oracle, and/or affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 IBM Corporation, Oracle, and/or affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,8 +40,8 @@ public class Dto01 {
     public Dto01(String str1, String str2, Long integer1, Long integer2) {
         this.str1 = str1;
         this.str2 = str2;
-        this.integer1 =  new Integer(integer1.intValue());
-        this.integer2 = new Integer(integer2.intValue());
+        this.integer1 = integer1.intValue();
+        this.integer2 = integer2.intValue();
     }
 
     public String getStr1() {

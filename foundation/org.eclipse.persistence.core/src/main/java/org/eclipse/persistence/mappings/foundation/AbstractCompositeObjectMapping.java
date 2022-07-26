@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
     /**
      * Default constructor.
      */
-    public AbstractCompositeObjectMapping() {
+    protected AbstractCompositeObjectMapping() {
         super();
     }
 
@@ -262,7 +262,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
 
         ClassDescriptor descriptor = this.referenceDescriptor;
         if (descriptor.hasInheritance()) {
-            Class nestedElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+            Class<?> nestedElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
             descriptor = getReferenceDescriptor(nestedElementClass, executionSession);
         }
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
@@ -294,7 +294,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
 
         ClassDescriptor descriptor = this.getReferenceDescriptor();
         if (descriptor.hasInheritance()) {
-            Class nestedElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+            Class<?> nestedElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
             descriptor = this.getReferenceDescriptor(nestedElementClass, executionSession);
         }
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();

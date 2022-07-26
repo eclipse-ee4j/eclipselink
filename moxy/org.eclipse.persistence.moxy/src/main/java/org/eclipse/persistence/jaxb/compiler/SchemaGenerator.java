@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Namespace;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.schema.model.All;
@@ -110,7 +111,7 @@ public class SchemaGenerator {
     private Map<String, PackageInfo> packageToPackageInfoMappings;
     private Map<String, SchemaTypeInfo> schemaTypeInfo;
     private Map<String, QName> userDefinedSchemaTypes;
-    private Map<String, Class> arrayClassesToGeneratedClasses;
+    private Map<String, Class<?>> arrayClassesToGeneratedClasses;
 
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "jakarta.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "jakarta.mail.internet.MimeMultipart";
@@ -140,17 +141,17 @@ public class SchemaGenerator {
         this.facets = helper.isFacets();
     }
 
-    public void generateSchema(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses, SchemaOutputResolver outputResolver) {
+    public void generateSchema(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class<?>> arrayClassesToGeneratedClasses, SchemaOutputResolver outputResolver) {
         this.outputResolver = outputResolver;
         generateSchema(typeInfoClasses, typeInfo, userDefinedSchemaTypes, packageToPackageInfoMappings, additionalGlobalElements, arrayClassesToGeneratedClasses);
     }
 
-    public void generateSchema(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class> arrayClassesToGeneratedClasses) {
+    public void generateSchema(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> additionalGlobalElements, Map<String, Class<?>> arrayClassesToGeneratedClasses) {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToPackageInfoMappings = packageToPackageInfoMappings;
         this.schemaCount = 1;
-        this.schemaTypeInfo = new HashMap<String, SchemaTypeInfo>(typeInfo.size());
+        this.schemaTypeInfo = new HashMap<>(typeInfo.size());
         this.arrayClassesToGeneratedClasses = arrayClassesToGeneratedClasses;
 
         //sort input classes before schema name (like schema1.xsd, schema2.xsd....) is generated and assigned
@@ -547,13 +548,11 @@ public class SchemaGenerator {
     /**
      * Return the schema type (as QName) based on a given JavaClass.
      *
-     * @param javaClass
-     * @return
      */
     public QName getSchemaTypeFor(JavaClass javaClass) {
         String className;
         if (javaClass.isArray()) {
-            Class wrapperClass = arrayClassesToGeneratedClasses.get(javaClass.getName());
+            Class<?> wrapperClass = arrayClassesToGeneratedClasses.get(javaClass.getName());
             if (null == wrapperClass) {
                 className = javaClass.getQualifiedName();
             } else {
@@ -565,7 +564,7 @@ public class SchemaGenerator {
         // check user defined types first
         QName schemaType = userDefinedSchemaTypes.get(className);
         if (schemaType == null) {
-            schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
+            schemaType = helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
         }
         if (schemaType == null) {
             TypeInfo targetInfo = this.typeInfo.get(className);
@@ -643,8 +642,6 @@ public class SchemaGenerator {
     /**
      * Indicates if a given Property is a collection type.
      *
-     * @param field
-     * @return
      */
     public boolean isCollectionType(Property field) {
         JavaClass type = field.getType();
@@ -661,13 +658,11 @@ public class SchemaGenerator {
      * Return the Schema for a given namespace.  If no schema exists for the
      * given namespace, one will be created.
      *
-     * @param namespace
-     * @return
      */
     private Schema getSchemaForNamespace(String namespace, String packageName) {
         if (schemaForNamespace == null) {
-            schemaForNamespace = new HashMap<String, Schema>();
-            allSchemas = new ArrayList<Schema>();
+            schemaForNamespace = new HashMap<>();
+            allSchemas = new ArrayList<>();
         }
         Schema schema = schemaForNamespace.get(namespace);
         if (schema == null && !javax.xml.XMLConstants.XML_NS_URI.equals(namespace)) {
@@ -679,9 +674,9 @@ public class SchemaGenerator {
                 if (namespaceInfo.getLocation() != null && !namespaceInfo.getLocation().equals(GENERATE)) {
                     return null;
                 }
-                java.util.Vector namespaces = namespaceInfo.getNamespaceResolver().getNamespaces();
+                java.util.Vector<Namespace> namespaces = namespaceInfo.getNamespaceResolver().getNamespaces();
                 for (int i = 0; i < namespaces.size(); i++) {
-                    Namespace nextNamespace = (Namespace) namespaces.get(i);
+                    Namespace nextNamespace = namespaces.get(i);
                     schema.getNamespaceResolver().put(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
                 }
             }
@@ -730,7 +725,7 @@ public class SchemaGenerator {
 
     public Collection<Schema> getAllSchemas() {
         if (allSchemas == null) {
-            allSchemas = new ArrayList<Schema>();
+            allSchemas = new ArrayList<>();
         }
         return allSchemas;
     }
@@ -766,9 +761,9 @@ public class SchemaGenerator {
         addImportIfRequired(schema, referencedSchema, URI);
 
         NamespaceResolver namespaceResolver = schema.getNamespaceResolver();
-        Enumeration keys = namespaceResolver.getPrefixes();
+        Enumeration<String> keys = namespaceResolver.getPrefixes();
         while (keys.hasMoreElements()) {
-            String next = (String) keys.nextElement();
+            String next = keys.nextElement();
             String nextUri = namespaceResolver.resolveNamespacePrefix(next);
             if (nextUri.equals(URI)) {
                 return next;
@@ -781,9 +776,6 @@ public class SchemaGenerator {
      * Attempt to resolve the given URI to a prefix.  If this is unsuccessful, one
      * will be generated and added to the resolver.
      *
-     * @param URI
-     * @param schema
-     * @return
      */
     public String getOrGeneratePrefixForNamespace(String URI, Schema schema) {
         String prefix = schema.getNamespaceResolver().resolveNamespaceURI(URI);
@@ -827,7 +819,7 @@ public class SchemaGenerator {
                         JavaClass javaClass = nextElement.getJavaType();
 
                         //First check for built in type
-                        QName schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
+                        QName schemaType = helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
                         if (schemaType != null) {
                             element.setType(Constants.SCHEMA_PREFIX + COLON + schemaType.getLocalPart());
                         } else if (areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, Image.class) || areEquals(javaClass, Source.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
@@ -925,16 +917,15 @@ public class SchemaGenerator {
      * Return the Map of SchemaTypeInfo instances.  The Map is keyed on JavaClass
      * qualified name.
      *
-     * @return
      */
     public Map<String, SchemaTypeInfo> getSchemaTypeInfo() {
         return this.schemaTypeInfo;
     }
 
     private boolean importExists(Schema schema, String importNsURI, String schemaLocation) {
-        java.util.List imports = schema.getImports();
+        java.util.List<Import> imports = schema.getImports();
         for (int i = 0; i < imports.size(); i++) {
-            Import nextImport = (Import) imports.get(i);
+            Import nextImport = imports.get(i);
             if (nextImport.getSchemaLocation() != null && nextImport.getSchemaLocation().equals(schemaLocation)) {
                 if ("".equals(importNsURI)) {
                     if (nextImport.getNamespace() == null) {
@@ -1014,9 +1005,6 @@ public class SchemaGenerator {
      * the raw name of the JavaClass compared to the canonical
      * name of the Class.
      *
-     * @param src
-     * @param tgtCanonicalName
-     * @return
      */
     protected boolean areEquals(JavaClass src, String tgtCanonicalName) {
         if (src == null || tgtCanonicalName == null) {
@@ -1030,11 +1018,8 @@ public class SchemaGenerator {
      * the raw name of the JavaClass compared to the canonical
      * name of the Class.
      *
-     * @param src
-     * @param tgt
-     * @return
      */
-    protected boolean areEquals(JavaClass src, Class tgt) {
+    protected boolean areEquals(JavaClass src, Class<?> tgt) {
         if (src == null || tgt == null) {
             return false;
         }
@@ -1044,10 +1029,6 @@ public class SchemaGenerator {
     /**
      * Return the type name for a given Property.
      *
-     * @param next
-     * @param javaType
-     * @param theSchema
-     * @return
      */
     private String getTypeName(Property next, JavaClass javaType, Schema theSchema){
         QName schemaType = next.getSchemaType();
@@ -1066,9 +1047,6 @@ public class SchemaGenerator {
     /**
      * Return the qualified (if necessary) type name for a given Property.
      *
-     * @param prop
-     * @param schema
-     * @return
      */
     private String getQualifiedTypeName(Property prop, Schema schema) {
         JavaClass javaType = prop.getActualType();
@@ -1096,13 +1074,8 @@ public class SchemaGenerator {
      * returning - this is necessary due to the fact that an Any will be added to the sequence
      * in place of the last path element by the calling method.
      *
-     * @param frag
-     * @param xpr
-     * @param isChoice
-     * @param next
-     * @return
      */
-    protected AddToSchemaResult buildSchemaComponentsForXPath(XPathFragment frag, AddToSchemaResult xpr, boolean isChoice, Property next) {
+    private AddToSchemaResult buildSchemaComponentsForXPath(XPathFragment frag, AddToSchemaResult xpr, boolean isChoice, Property next) {
         boolean isAny = next.isAny() || next.isAnyAttribute();
         TypeDefParticle currentParticle = xpr.particle;
         Schema workingSchema = xpr.schema;
@@ -1194,7 +1167,7 @@ public class SchemaGenerator {
                     // if fragSchema is null, just generate the ref
                     if(fragSchema != null) {
                         Attribute globalAttribute = null;
-                        globalAttribute = (Attribute) fragSchema.getTopLevelAttributes().get(frag.getLocalName());
+                        globalAttribute = fragSchema.getTopLevelAttributes().get(frag.getLocalName());
                         if (globalAttribute == null) {
                             globalAttribute = createGlobalAttribute(frag, workingSchema, fragSchema, next);
                         }
@@ -1232,7 +1205,7 @@ public class SchemaGenerator {
             if ((fragSchema.isElementFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isElementFormDefault() && fragUri.length() > 0)) {
                 // must generate a global element and create a reference to it
                 // if the global element exists, use it; otherwise create a new one
-                globalElement = (Element) fragSchema.getTopLevelElements().get(frag.getLocalName());
+                globalElement = fragSchema.getTopLevelElements().get(frag.getLocalName());
                 if (globalElement == null) {
                     globalElement = createGlobalElement(frag, workingSchema, fragSchema, isChoice, isUnbounded, next, (lastFrag && !isAny));
                 }
@@ -1336,20 +1309,19 @@ public class SchemaGenerator {
      * @param elementName the non-null element name to look for
      * @param refString if the element is a ref, this will be the prefix qualified element name
      * @param particle the sequence/choice/all to search for an existing element
-     * @return
      */
     protected Element elementExistsInParticle(String elementName, String refString, TypeDefParticle particle) {
         if (particle == null || particle.getElements() == null || particle.getElements().size() == 0) {
             return null;
         }
-        java.util.List existingElements = particle.getElements();
+        java.util.List<Element> existingElements = particle.getElements();
         if (existingElements != null) {
-            Iterator elementIt = existingElements.iterator();
+            Iterator<Element> elementIt = existingElements.iterator();
             while (elementIt.hasNext()) {
                 Element element;
                 // could be other components in the list, like Any, but we only care about Element
                 try {
-                    element = (Element) elementIt.next();
+                    element = elementIt.next();
                 } catch (ClassCastException cce) {
                     continue;
                 }
@@ -1382,11 +1354,6 @@ public class SchemaGenerator {
      * will typically be called when processing an XPath and a prefixed path
      * element is encountered tha requires an attribute ref.
      *
-     * @param frag
-     * @param workingSchema
-     * @param fragSchema
-     * @param prop
-     * @return
      */
     public Attribute createGlobalAttribute(XPathFragment frag, Schema workingSchema, Schema fragSchema, Property prop) {
         Attribute gAttribute = new Attribute();
@@ -1409,7 +1376,6 @@ public class SchemaGenerator {
      * @param isUnbounded maxOccurs setting for choice
      * @param prop property which owns the xml-path
      * @param shouldSetType if this is the last fragment in the xml-path and not an 'any', we should set the type
-     * @return
      */
     public Element createGlobalElement(XPathFragment frag, Schema workingSchema, Schema fragSchema, boolean isChoice, boolean isUnbounded, Property prop, boolean shouldSetType) {
         Element gElement = new Element();
@@ -1440,9 +1406,6 @@ public class SchemaGenerator {
      * method will typically be called when processing an XPath and a
      * prefixed path element is encountered that requires an element ref.
      *
-     * @param elementRefName
-     * @param particle
-     * @return
      */
     public Element createRefElement(String elementRefName, TypeDefParticle particle) {
         Element refElement = new Element();
@@ -1461,9 +1424,6 @@ public class SchemaGenerator {
      * and a prefixed path element is encountered that requires an
      * attribute ref.
      *
-     * @param attributeRefName
-     * @param owningComplexType
-     * @return
      */
     public Attribute createRefAttribute(String attributeRefName, ComplexType owningComplexType) {
         Attribute refAttribute = new Attribute();
@@ -1550,7 +1510,7 @@ public class SchemaGenerator {
             return null;
         }
         // create the XPathFragment(s) for the path
-        Field xfld = new XMLField(property.getXmlPath());
+        Field<XMLConversionManager, NamespaceResolver> xfld = new XMLField(property.getXmlPath());
         xfld.setNamespaceResolver(schema.getNamespaceResolver());
         xfld.initialize();
         // build the schema components for the xml-path
@@ -1630,7 +1590,6 @@ public class SchemaGenerator {
      *
      * @param attributeName name of the Attribute
      * @param typeName type of the Attribute
-     * @return
      */
     private Attribute buildAttribute(QName attributeName, String typeName) {
         Attribute attribute = new Attribute();
@@ -1644,7 +1603,6 @@ public class SchemaGenerator {
      *
      * @param property the Property used to build the Attribute
      * @param schema the schema currently being generated
-     * @return
      */
     private Attribute buildAttribute(Property property, Schema schema) {
         Attribute attribute = new Attribute();
@@ -2082,7 +2040,6 @@ public class SchemaGenerator {
      * @param elementName name of the Element
      * @param elementType type of the Element
      * @param isAll indicates if the Element will be added to an All structure
-     * @return
      */
     private Element buildElement(String elementName, String elementType, boolean isAll) {
         Element element = new Element();
@@ -2102,7 +2059,6 @@ public class SchemaGenerator {
      * @param isAll true if the Element will be added to an All structure
      * @param schema the schema currently being built
      * @param typeInfo the TypeInfo that owns the given Property
-     * @return
      */
     private Element buildElement(Property property, boolean isAll, Schema schema, TypeInfo typeInfo) {
         Element element = new Element();
@@ -2205,18 +2161,18 @@ public class SchemaGenerator {
      * @author Marcel Valovy
      */
     private static final class FacetVisitorHolder {
-        private static final FacetVisitor<Void, Restriction> VISITOR = new FacetVisitor<Void, Restriction>() {
+        private static final FacetVisitor<Void, Restriction> VISITOR = new FacetVisitor<>() {
             @Override
             public Void visit(DecimalMinFacet t, Restriction restriction) {
-                if (t.isInclusive())    restriction.setMinInclusive(t.getValue());
-                else                    restriction.setMinExclusive(t.getValue());
+                if (t.isInclusive()) restriction.setMinInclusive(t.getValue());
+                else restriction.setMinExclusive(t.getValue());
                 return null;
             }
 
             @Override
             public Void visit(DecimalMaxFacet t, Restriction restriction) {
-                if (t.isInclusive())    restriction.setMaxInclusive(t.getValue());
-                else                    restriction.setMaxExclusive(t.getValue());
+                if (t.isInclusive()) restriction.setMaxInclusive(t.getValue());
+                else restriction.setMaxExclusive(t.getValue());
                 return null;
             }
 
@@ -2322,7 +2278,7 @@ public class SchemaGenerator {
     private void addXmlJoinNodesToSchema(Property property, TypeDefParticle compositor, Schema schema, ComplexType type) {
         for (XmlJoinNode xmlJoinNode : property.getXmlJoinNodes().getXmlJoinNode()) {
             // create the XPathFragment(s) for the path
-            Field xfld = new XMLField(xmlJoinNode.getXmlPath());
+            Field<XMLConversionManager, NamespaceResolver> xfld = new XMLField(xmlJoinNode.getXmlPath());
             xfld.setNamespaceResolver(schema.getNamespaceResolver());
             xfld.initialize();
 
@@ -2439,7 +2395,7 @@ public class SchemaGenerator {
      * Replaces Java regexes with their respective XML Regex Shorthands, where applicable.
      * <p>
      * Recognized are Java regexes for the following XML Shorthands, and their negations:
-     * <blockquote><pre>
+     * <blockquote><pre>{@code
      * \i - Matches any character that may be the first character of an XML name.
      *      "[_:A-Za-z]"
      * \c - Matches any character that may occur after the first character in an XML name.
@@ -2473,39 +2429,39 @@ public class SchemaGenerator {
      *      }\\u0E30\\u0E32\\u0E33\\u0E45\\u0EB0\\u0EB2\\u0EB3]]*)|(?s:.))"
      * \R - Carriage return.
      *      "(?:(?>\\u000D\\u000A)|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029])"
-     * </pre></blockquote>
+     * }</pre></blockquote>
      *
      * CAUTION - ORDER SENSITIVE: Longer patterns should come first, because they may contain one of the shorter pattern.
      * <p>
      * Changes to this class should also be reflected in the opposite {@link org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin.RegexMutator RegexMutator} class within XJC BeanValidation Plugin.
      *
-     * @see <a href="http://stackoverflow.com/questions/4304928/unicode-equivalents-for-w-and-b-in-java-regular-expressions"/>tchrist's work</a>
+     * @see <a href="http://stackoverflow.com/questions/4304928/unicode-equivalents-for-w-and-b-in-java-regular-expressions">tchrist's work</a>
      * @see <a href="http://www.regular-expressions.info/shorthand.html#xml">Special shorthands in XML Schema.</a>
      */
     private static final class RegexMutator {
-        private static final Map<Pattern, String> shorthandReplacements = new LinkedHashMap<Pattern, String>(32) {{
-            put(Pattern.compile("[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD]" , Pattern.LITERAL),"\\\\i");
-            put(Pattern.compile("[^:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD]" , Pattern.LITERAL),"\\\\I");
-            put(Pattern.compile("[-.0-9:A-Z_a-z\\u00B7\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u203F\\u2040\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD]" , Pattern.LITERAL),"\\\\c");
-            put(Pattern.compile("[^-.0-9:A-Z_a-z\\u00B7\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u203F\\u2040\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD]" , Pattern.LITERAL),"\\\\C");
-            put(Pattern.compile("[\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]" , Pattern.LITERAL),"\\\\s");
-            put(Pattern.compile("[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]" , Pattern.LITERAL),"\\\\S");
-            put(Pattern.compile("[\\u000A-\\u000D\\u0085\\u2028\\u2029]" , Pattern.LITERAL),"\\\\v");
-            put(Pattern.compile("[^\\u000A-\\u000D\\u0085\\u2028\\u2029]" , Pattern.LITERAL),"\\\\V");
-            put(Pattern.compile("[\\u0009\\u0020\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u202F\\u205F\\u3000]" , Pattern.LITERAL),"\\\\h");
-            put(Pattern.compile("[^\\u0009\\u0020\\u00A0\\u1680\\u180E\\u2000\\u2001-\\u200A\\u202F\\u205F\\u3000]" , Pattern.LITERAL),"\\\\H");
-            put(Pattern.compile("[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]" , Pattern.LITERAL),"\\\\w");
-            put(Pattern.compile("[^\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]" , Pattern.LITERAL),"\\\\W");
-            put(Pattern.compile("(?:(?<=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])|(?<![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]))", Pattern.LITERAL),"\\\\b");
-            put(Pattern.compile("(?:(?<=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])|(?<![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]))", Pattern.LITERAL),"\\\\B");
-            put(Pattern.compile("\\p{Nd}" , Pattern.LITERAL),"\\\\d");
-            put(Pattern.compile("\\P{Nd}" , Pattern.LITERAL),"\\\\D");
-            put(Pattern.compile("(?:(?>\\u000D\\u000A)|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029])" , Pattern.LITERAL),"\\\\R");
-            put(Pattern.compile("(?:(?:\\u000D\\u000A)|(?:[\\u0E40\\u0E41\\u0E42\\u0E43\\u0E44\\u0EC0\\u0EC1\\u0EC2\\u0EC3\\u0EC4\\uAAB5\\uAAB6\\uAAB9\\uAABB\\uAABC]*(?:[\\u1100-\\u115F\\uA960-\\uA97C]+|([\\u1100-\\u115F\\uA960-\\uA97C]*((?:[[\\u1160-\\u11A2\\uD7B0-\\uD7C6][\\uAC00\\uAC1C\\uAC38]][\\u1160-\\u11A2\\uD7B0-\\uD7C6]*|[\\uAC01\\uAC02\\uAC03\\uAC04])[\\u11A8-\\u11F9\\uD7CB-\\uD7FB]*))|[\\u11A8-\\u11F9\\uD7CB-\\uD7FB]+|[^[\\p{Zl}\\p{Zp}\\p{Cc}\\p{Cf}&&[^\\u000D\\u000A\\u200C\\u200D]]\\u000D\\u000A])[[\\p{Mn}\\p{Me}\\u200C\\u200D\\u0488\\u0489\\u20DD\\u20DE\\u20DF\\u20E0\\u20E2\\u20E3\\u20E4\\uA670\\uA671\\uA672\\uFF9E\\uFF9F][\\p{Mc}\\u0E30\\u0E32\\u0E33\\u0E45\\u0EB0\\u0EB2\\u0EB3]]*)|(?s:.))" , Pattern.LITERAL),"\\\\X");
-            put(Pattern.compile("[_:A-Za-z]" , Pattern.LITERAL),"\\\\i"); // ascii only
-            put(Pattern.compile("[^:A-Z_a-z]" , Pattern.LITERAL),"\\\\I"); // ascii only
-            put(Pattern.compile("[-.0-9:A-Z_a-z]" , Pattern.LITERAL),"\\\\c"); // ascii only
-            put(Pattern.compile("[^-.0-9:A-Z_a-z]" , Pattern.LITERAL),"\\\\C"); // ascii only
+        private static final Map<Pattern, String> shorthandReplacements = new LinkedHashMap<>(32) {{
+            put(Pattern.compile("[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD]", Pattern.LITERAL), "\\\\i");
+            put(Pattern.compile("[^:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD]", Pattern.LITERAL), "\\\\I");
+            put(Pattern.compile("[-.0-9:A-Z_a-z\\u00B7\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u203F\\u2040\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD]", Pattern.LITERAL), "\\\\c");
+            put(Pattern.compile("[^-.0-9:A-Z_a-z\\u00B7\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u203F\\u2040\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD]", Pattern.LITERAL), "\\\\C");
+            put(Pattern.compile("[\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]", Pattern.LITERAL), "\\\\s");
+            put(Pattern.compile("[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]", Pattern.LITERAL), "\\\\S");
+            put(Pattern.compile("[\\u000A-\\u000D\\u0085\\u2028\\u2029]", Pattern.LITERAL), "\\\\v");
+            put(Pattern.compile("[^\\u000A-\\u000D\\u0085\\u2028\\u2029]", Pattern.LITERAL), "\\\\V");
+            put(Pattern.compile("[\\u0009\\u0020\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u202F\\u205F\\u3000]", Pattern.LITERAL), "\\\\h");
+            put(Pattern.compile("[^\\u0009\\u0020\\u00A0\\u1680\\u180E\\u2000\\u2001-\\u200A\\u202F\\u205F\\u3000]", Pattern.LITERAL), "\\\\H");
+            put(Pattern.compile("[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]", Pattern.LITERAL), "\\\\w");
+            put(Pattern.compile("[^\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]", Pattern.LITERAL), "\\\\W");
+            put(Pattern.compile("(?:(?<=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])|(?<![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]))", Pattern.LITERAL), "\\\\b");
+            put(Pattern.compile("(?:(?<=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])|(?<![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]))", Pattern.LITERAL), "\\\\B");
+            put(Pattern.compile("\\p{Nd}", Pattern.LITERAL), "\\\\d");
+            put(Pattern.compile("\\P{Nd}", Pattern.LITERAL), "\\\\D");
+            put(Pattern.compile("(?:(?>\\u000D\\u000A)|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029])", Pattern.LITERAL), "\\\\R");
+            put(Pattern.compile("(?:(?:\\u000D\\u000A)|(?:[\\u0E40\\u0E41\\u0E42\\u0E43\\u0E44\\u0EC0\\u0EC1\\u0EC2\\u0EC3\\u0EC4\\uAAB5\\uAAB6\\uAAB9\\uAABB\\uAABC]*(?:[\\u1100-\\u115F\\uA960-\\uA97C]+|([\\u1100-\\u115F\\uA960-\\uA97C]*((?:[[\\u1160-\\u11A2\\uD7B0-\\uD7C6][\\uAC00\\uAC1C\\uAC38]][\\u1160-\\u11A2\\uD7B0-\\uD7C6]*|[\\uAC01\\uAC02\\uAC03\\uAC04])[\\u11A8-\\u11F9\\uD7CB-\\uD7FB]*))|[\\u11A8-\\u11F9\\uD7CB-\\uD7FB]+|[^[\\p{Zl}\\p{Zp}\\p{Cc}\\p{Cf}&&[^\\u000D\\u000A\\u200C\\u200D]]\\u000D\\u000A])[[\\p{Mn}\\p{Me}\\u200C\\u200D\\u0488\\u0489\\u20DD\\u20DE\\u20DF\\u20E0\\u20E2\\u20E3\\u20E4\\uA670\\uA671\\uA672\\uFF9E\\uFF9F][\\p{Mc}\\u0E30\\u0E32\\u0E33\\u0E45\\u0EB0\\u0EB2\\u0EB3]]*)|(?s:.))", Pattern.LITERAL), "\\\\X");
+            put(Pattern.compile("[_:A-Za-z]", Pattern.LITERAL), "\\\\i"); // ascii only
+            put(Pattern.compile("[^:A-Z_a-z]", Pattern.LITERAL), "\\\\I"); // ascii only
+            put(Pattern.compile("[-.0-9:A-Z_a-z]", Pattern.LITERAL), "\\\\c"); // ascii only
+            put(Pattern.compile("[^-.0-9:A-Z_a-z]", Pattern.LITERAL), "\\\\C"); // ascii only
         }};
 
         private RegexMutator() {

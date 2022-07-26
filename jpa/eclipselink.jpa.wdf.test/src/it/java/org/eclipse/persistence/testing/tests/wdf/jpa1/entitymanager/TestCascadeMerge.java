@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -146,9 +146,8 @@ public class TestCascadeMerge extends JPA1Base {
             CascadingNodeDescription grandchildDescription = new CascadingNodeDescription(106, null, "new grandchild");
             grandchild.setDescription(grandchildDescription);
             child.addChild(grandchild);
-            CascadingNode managedChild = em.find(CascadingNode.class, new Integer(child.getId()));
-            CascadingNodeDescription managedChildDescription = em.find(CascadingNodeDescription.class, new Integer(
-                    childDescription.getId()));
+            CascadingNode managedChild = em.find(CascadingNode.class, child.getId());
+            CascadingNodeDescription managedChildDescription = em.find(CascadingNodeDescription.class, childDescription.getId());
             CascadingNode managedGrandchild = new CascadingNode(grandchild.getId(), null);
             CascadingNodeDescription managedGrandchildDescription = new CascadingNodeDescription(grandchildDescription.getId(),
                     null, "new grandchild");
@@ -253,15 +252,12 @@ public class TestCascadeMerge extends JPA1Base {
             verifyExistence(em, grandchild);
             verifyExistence(em, grandchildDescription);
             env.beginTransaction(em);
-            CascadingNode managedParent = em.find(CascadingNode.class, new Integer(parent.getId()));
-            CascadingNodeDescription managedParentDescription = em.find(CascadingNodeDescription.class, new Integer(
-                    parentDescription.getId()));
-            CascadingNode managedChild = em.find(CascadingNode.class, new Integer(child.getId()));
-            CascadingNodeDescription managedChildDescription = em.find(CascadingNodeDescription.class, new Integer(
-                    childDescription.getId()));
-            CascadingNode managedGrandchild = em.find(CascadingNode.class, new Integer(grandchild.getId()));
-            CascadingNodeDescription managedGrandchildDescription = em.find(CascadingNodeDescription.class, new Integer(
-                    grandchildDescription.getId()));
+            CascadingNode managedParent = em.find(CascadingNode.class, parent.getId());
+            CascadingNodeDescription managedParentDescription = em.find(CascadingNodeDescription.class, parentDescription.getId());
+            CascadingNode managedChild = em.find(CascadingNode.class, child.getId());
+            CascadingNodeDescription managedChildDescription = em.find(CascadingNodeDescription.class, childDescription.getId());
+            CascadingNode managedGrandchild = em.find(CascadingNode.class, grandchild.getId());
+            CascadingNodeDescription managedGrandchildDescription = em.find(CascadingNodeDescription.class, grandchildDescription.getId());
             managedParent.setChildren(null);
             em.remove(managedChild);
             em.persist(managedGrandchild);
@@ -365,7 +361,7 @@ public class TestCascadeMerge extends JPA1Base {
             env.commitTransactionAndClear(em);
             verifyExistence(em, managedNode);
             env.beginTransaction(em);
-            managedNode = em.find(CascadingNode.class, new Integer(managedNode.getId()));
+            managedNode = em.find(CascadingNode.class, managedNode.getId());
             managedNode.addChild(detachedNode);
             detachedNode.addChild(managedNode);
             CascadingNode mergedNode = em.merge(detachedNode);
@@ -416,7 +412,7 @@ public class TestCascadeMerge extends JPA1Base {
             verifyAbsence(em, child);
             verifyAbsence(em, childDescription);
             env.beginTransaction(em);
-            parent = em.find(CascadingNode.class, new Integer(parent.getId()));
+            parent = em.find(CascadingNode.class, parent.getId());
             parent.addChild(child);
             // setup complete
             CascadingNode mergedNode = em.merge(parent);
@@ -480,7 +476,7 @@ public class TestCascadeMerge extends JPA1Base {
             verifyExistence(em, child);
             verifyExistence(em, childDescription);
             env.beginTransaction(em);
-            child = em.find(CascadingNode.class, new Integer(child.getId()));
+            child = em.find(CascadingNode.class, child.getId());
             em.remove(child);
             parent.addChild(child);
             verify(!em.contains(parent), "parent not new");
@@ -521,11 +517,11 @@ public class TestCascadeMerge extends JPA1Base {
     private void verifyExistence(EntityManager em, Object entity) {
         if (entity instanceof CascadingNode) {
             CascadingNode node = (CascadingNode) entity;
-            CascadingNode found = em.find(CascadingNode.class, new Integer(node.getId()));
+            CascadingNode found = em.find(CascadingNode.class, node.getId());
             verify(found != null, "cascading node with id " + node.getId() + " not found");
         } else if (entity instanceof CascadingNodeDescription) {
             CascadingNodeDescription desc = (CascadingNodeDescription) entity;
-            CascadingNodeDescription found = em.find(CascadingNodeDescription.class, new Integer(desc.getId()));
+            CascadingNodeDescription found = em.find(CascadingNodeDescription.class, desc.getId());
             verify(found != null, "cascading node description with id " + desc.getId() + " not found");
         } else {
             throw new IllegalArgumentException("not supported");
@@ -535,11 +531,11 @@ public class TestCascadeMerge extends JPA1Base {
     private void verifyAbsence(EntityManager em, Object entity) {
         if (entity instanceof CascadingNode) {
             CascadingNode node = (CascadingNode) entity;
-            CascadingNode found = em.find(CascadingNode.class, new Integer(node.getId()));
+            CascadingNode found = em.find(CascadingNode.class, node.getId());
             verify(found == null, "cascading node with id " + node.getId() + " found");
         } else if (entity instanceof CascadingNodeDescription) {
             CascadingNodeDescription desc = (CascadingNodeDescription) entity;
-            CascadingNodeDescription found = em.find(CascadingNodeDescription.class, new Integer(desc.getId()));
+            CascadingNodeDescription found = em.find(CascadingNodeDescription.class, desc.getId());
             verify(found == null, "cascading node description with id " + desc.getId() + " found");
         } else {
             throw new IllegalArgumentException("not supported");

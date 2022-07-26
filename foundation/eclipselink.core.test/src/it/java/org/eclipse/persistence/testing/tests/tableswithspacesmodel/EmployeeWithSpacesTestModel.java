@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,10 +32,12 @@ public class EmployeeWithSpacesTestModel extends TestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeWithSpacesSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getUpdateObjectTestSuite());
@@ -46,6 +48,7 @@ public class EmployeeWithSpacesTestModel extends TestModel {
     }
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
 
+    @Override
     public void addSRGTests() {
         addTest(getSRGReadObjectTestSuite());
         addTest(getSRGUpdateObjectTestSuite());
@@ -67,9 +70,9 @@ public class EmployeeWithSpacesTestModel extends TestModel {
         suite.setName("EmployeeDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the employee demo.");
 
-        Class employeeClass = Employee.class;
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new EmployeeWithSpacesDeleteTest(manager.getObject(employeeClass, "0001")));
@@ -159,9 +162,9 @@ public class EmployeeWithSpacesTestModel extends TestModel {
         suite.setName("EmployeeReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the employee demo.");
 
-        Class employeeClass = Employee.class;
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "0001")));
@@ -200,9 +203,9 @@ public class EmployeeWithSpacesTestModel extends TestModel {
         suite.setName("EmployeeUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the employee demo.");
 
-        Class employeeClass = Employee.class;
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(employeeClass, "0001")));

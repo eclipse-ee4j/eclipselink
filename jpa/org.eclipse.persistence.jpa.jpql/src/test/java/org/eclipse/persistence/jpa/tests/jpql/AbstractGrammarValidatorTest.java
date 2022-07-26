@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,8 +46,9 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 @SuppressWarnings("nls")
 public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest {
 
-    private JPQLQueryStringFormatter buildFormatter_1() throws Exception {
+    private JPQLQueryStringFormatter buildFormatter_1() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String jpqlQuery) {
                 return jpqlQuery.replace("SELECT)", "SELECT )");
             }
@@ -56,38 +57,43 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
     private JPQLQueryStringFormatter buildFormatter_10(final String jpqlQuery) {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return jpqlQuery;
             }
         };
     }
 
-    private JPQLQueryStringFormatter buildFormatter_2() throws Exception {
+    private JPQLQueryStringFormatter buildFormatter_2() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String jpqlQuery) {
                 return jpqlQuery.replace("(DISTINCT)", "(DISTINCT )");
             }
         };
     }
 
-    private JPQLQueryStringFormatter buildFormatter_4() throws Exception {
+    private JPQLQueryStringFormatter buildFormatter_4() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String jpqlQuery) {
                 return jpqlQuery.replace(",)", ", )");
             }
         };
     }
 
-    private JPQLQueryStringFormatter buildFormatter_5() throws Exception {
+    private JPQLQueryStringFormatter buildFormatter_5() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String jpqlQuery) {
                 return jpqlQuery.replace(",)", ", )");
             }
         };
     }
 
-    private JPQLQueryStringFormatter buildFormatter_6() throws Exception {
+    private JPQLQueryStringFormatter buildFormatter_6() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String jpqlQuery) {
                 return jpqlQuery.replace(",)", ", )");
             }
@@ -96,6 +102,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
     private JPQLQueryStringFormatter buildFormatter_7() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String jpqlQuery) {
                 return jpqlQuery.replace("0,)", "0, )");
             }
@@ -104,6 +111,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
     private JPQLQueryStringFormatter buildFormatter_8() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String jpqlQuery) {
                 return jpqlQuery.replace(",,", ", ,");
             }
@@ -112,6 +120,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
     private JPQLQueryStringFormatter buildFormatter_9() {
         return new JPQLQueryStringFormatter() {
+            @Override
             public String format(String query) {
                 return query.endsWith("NULLS ORDER") ?
                        query.replace("NULLS ORDER", "NULLS order") :

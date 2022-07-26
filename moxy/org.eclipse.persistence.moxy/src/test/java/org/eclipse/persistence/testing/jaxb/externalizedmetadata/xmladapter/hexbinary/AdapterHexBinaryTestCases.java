@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class AdapterHexBinaryTestCases extends JAXBWithJSONTestCases{
@@ -34,11 +35,12 @@ public class AdapterHexBinaryTestCases extends JAXBWithJSONTestCases{
 
     public AdapterHexBinaryTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Customer.class});
+        setClasses(new Class<?>[]{Customer.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         byte[] bytes = new byte[] {30,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4};
         Customer customer = new Customer();
@@ -47,10 +49,11 @@ public class AdapterHexBinaryTestCases extends JAXBWithJSONTestCases{
         return customer;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/hexbinary-oxm.xml");
         HashMap<String, Source> properties = new HashMap<String, Source>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new StreamSource(inputStream));
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, new StreamSource(inputStream));
 
         return properties;
     }

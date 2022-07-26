@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ public class XmlAnyElementNoDomTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = EmployeeLax.class;
         classes[1] = Address.class;
         setClasses(classes);
@@ -43,6 +43,7 @@ public class XmlAnyElementNoDomTestCases extends JAXBWithJSONTestCases {
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
 
+    @Override
     public Object getReadControlObject() {
         EmployeeLax employee = new EmployeeLax();
         employee.name = "John Doe";
@@ -88,6 +89,7 @@ public class XmlAnyElementNoDomTestCases extends JAXBWithJSONTestCases {
         return employee;
     }
 
+    @Override
     public Object getJSONReadControlObject() {
         EmployeeLax employee = new EmployeeLax();
         employee.name = "John Doe";
@@ -132,6 +134,7 @@ public class XmlAnyElementNoDomTestCases extends JAXBWithJSONTestCases {
         return employee;
     }
 
+    @Override
     public Object getControlObject() {
         EmployeeLax employee = new EmployeeLax();
         employee.name = "John Doe";

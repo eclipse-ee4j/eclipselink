@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
     Object result = null;
     Vector results2, results3 = null;
     Address originalAddress;
-    Long policyHolderIdToUse = new Long(12345);
+    Long policyHolderIdToUse = 12345L;
     boolean useCustomSQL;
 
     public StoredProcedureObjectRelationalParameters() {
@@ -50,6 +50,7 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
         setName(getName() + " useCustomSQL = " + useCustomSQL);
     }
 
+    @Override
     public void setup() {
         // right now only the stored procedure is set up in Oracle
         if (!(getSession().getPlatform().isOracle9())) {
@@ -69,11 +70,12 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
     }
 
 
+    @Override
     public void test() {
         Vector args = new Vector();
         args.addElement(policyHolderIdToUse);//ssn
         args.addElement(null);//occupation
-        args.addElement(new Character('M'));//sex
+        args.addElement('M');//sex
         args.addElement("Chris");//firstName
         args.addElement(null);//birthDate
         args.addElement("Random");//lastName
@@ -94,6 +96,7 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
         results3 = (Vector)getSession().executeQuery(getDeleteQuery(), args);
     }
 
+    @Override
     public void verify() {
         if ((results2.size()!=1) &&(results3.size()!=1)){
             throw new TestErrorException("Collections returned did not contain expected number of results");

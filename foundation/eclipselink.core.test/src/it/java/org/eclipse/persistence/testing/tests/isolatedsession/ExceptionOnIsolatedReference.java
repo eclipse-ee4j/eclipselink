@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,12 +32,13 @@ public class ExceptionOnIsolatedReference extends TestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
             descriptors.addElement(iterator.next());
         }
         this.server.addDescriptors(descriptors);
     }
 
+    @Override
     public void test() {
         this.server = new ServerSession(getSession().getLogin().clone(), 2, 5);
         copyDescriptors(getSession());

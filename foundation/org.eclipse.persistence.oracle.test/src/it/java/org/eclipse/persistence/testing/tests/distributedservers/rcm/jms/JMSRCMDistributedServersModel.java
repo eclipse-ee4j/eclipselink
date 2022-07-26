@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ public class JMSRCMDistributedServersModel extends BroadcastDistributedServersMo
         connect sys/password@james as sysdba
 
         2 - might need to install aq procesures?
-        - in sqlplus - @@<orahome>\ora92\rdbms\admin\catproc.sql
+        - in sqlplus - {@code @@<orahome>\ora92\rdbms\admin\catproc.sql}
 
         3 - create aquser with aquser password
         grant connect, resource , aq_administrator_role to aquser identified by aquser
@@ -46,6 +46,7 @@ public class JMSRCMDistributedServersModel extends BroadcastDistributedServersMo
         grant execute on dbms_aqjms_internal to aquser
         connect aquser/aquser
      */
+    @Override
     public void setup() {
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("Supports Oracle platform only: uses Oracle AQ");
@@ -57,10 +58,12 @@ public class JMSRCMDistributedServersModel extends BroadcastDistributedServersMo
     /**
      * Factory method for a DistributedServer.
      */
+    @Override
     public DistributedServer createDistributedServer(Session session) {
         return new JMSRCMDistributedServer((DatabaseSession)session);
     }
 
+    @Override
     protected JMSSetupHelper getHelper() {
         return JMSSetupHelper.getHelper();
     }

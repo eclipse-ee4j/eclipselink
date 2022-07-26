@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,12 +19,7 @@ import java.util.Map;
 
 import javax.xml.transform.dom.DOMSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.ObjectGraph;
-import org.eclipse.persistence.jaxb.Subgraph;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jaxb.*;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
@@ -37,7 +32,7 @@ public class ObjectGraphBindingsTestCases extends JAXBWithJSONTestCases {
 
     public ObjectGraphBindingsTestCases(String name) throws Exception {
         super(name);
-        this.setClasses(new Class[]{Customer.class, Address.class, PhoneNumber.class});
+        this.setClasses(new Class<?>[]{Customer.class, Address.class, PhoneNumber.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
@@ -82,6 +77,7 @@ public class ObjectGraphBindingsTestCases extends JAXBWithJSONTestCases {
         return cust;
     }
 
+    @Override
     protected Map getProperties() {
 
         Map overrides = new HashMap();
@@ -116,7 +112,7 @@ public class ObjectGraphBindingsTestCases extends JAXBWithJSONTestCases {
         overrides.put("org.eclipse.persistence.testing.jaxb.objectgraph", src);
 
         Map props = new HashMap();
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return props;
     }
 }

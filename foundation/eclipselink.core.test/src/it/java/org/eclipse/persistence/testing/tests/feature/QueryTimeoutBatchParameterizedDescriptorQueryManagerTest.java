@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.tests.feature;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
- * Bug 214910:  Add query timeout support to batched update queries (Oracle DB 9.0.1+)</p>
+ * Bug 214910:  Add query timeout support to batched update queries (Oracle DB 9.0.1+)<br>
  * Test the query timeout feature in batch queries.
  * For data queries , a queryTimeout on the largest DatabaseQuery of the batch will be used.
  * For object queries, a queryTimeout on the largest DescriptorQueryManager (parent) or DatabaseQuery
@@ -25,14 +25,19 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
  */
 public class QueryTimeoutBatchParameterizedDescriptorQueryManagerTest extends QueryTimeoutBatchDescriptorQueryManagerTest {
 
+    @Override
     protected boolean shouldBindAllParameters() { return true; }
+    @Override
     protected boolean shouldCacheAllStatements() { return true; }
+    @Override
     protected  int getNumberOfInserts() { return 1; }
 
+    @Override
     protected String getQuerySQLPrefix() {
         return "insert into employee (f_name, emp_id, version) SELECT ?, ";
     }
 
+    @Override
     public void test() {
         super.test();
         if(!limitExceeded) {
@@ -45,6 +50,7 @@ public class QueryTimeoutBatchParameterizedDescriptorQueryManagerTest extends Qu
         setDescription("Test that the query timeout setting is passed to the JDBC layer in batch queries in parameterized object mode.");
     }
 
+    @Override
     public void verify() {
         if (!limitExceeded || (verifyErrorCode() && getExpectedErrorCode() != vendorErrorCodeEncountered))  {
             if(unsupportedPlatform) {

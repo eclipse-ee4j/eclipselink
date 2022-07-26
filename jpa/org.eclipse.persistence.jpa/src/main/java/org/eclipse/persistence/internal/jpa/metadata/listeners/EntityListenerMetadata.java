@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 
@@ -200,8 +201,8 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * methods from superclasses.
      */
     Method[] getCandidateCallbackMethodsForEntityListener() {
-        HashSet candidateMethods = new HashSet();
-        Class listenerClass = m_listener.getListenerClass();
+        Set<Method> candidateMethods = new HashSet<>();
+        Class<?> listenerClass = m_listener.getListenerClass();
 
         // Add all the declared methods ...
         Method[] declaredMethods = getDeclaredMethods(listenerClass);
@@ -219,20 +220,20 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             candidateMethods.add(methods[i]);
         }
 
-        return (Method[]) candidateMethods.toArray(new Method[candidateMethods.size()]);
+        return candidateMethods.toArray(new Method[candidateMethods.size()]);
     }
 
     /**
      * INTERNAL:
      * Load a class from a given class name.
      */
-    Class getClass(MetadataClass metadataClass, ClassLoader loader) {
+    Class<?> getClass(MetadataClass metadataClass, ClassLoader loader) {
         String classname = metadataClass.getName();
 
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedClassForName(classname, true, loader));
+                    return AccessController.doPrivileged(new PrivilegedClassForName<>(classname, true, loader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.unableToLoadClass(classname, exception.getException());
                 }
@@ -258,7 +259,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * access. This call returns all methods (private, protected, package and
      * public) on the given class ONLY. It does not traverse the superclasses.
      */
-    Method[] getDeclaredMethods(Class cls) {
+    Method[] getDeclaredMethods(Class<?> cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
         } else {
@@ -277,7 +278,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     /**
      * INTERNAL:
      */
-    protected Object getInstance(Class cls) {
+    protected Object getInstance(Class<?> cls) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -317,7 +318,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * This call returns only public methods from the given class and its
      * superclasses.
      */
-    Method[] getMethods(Class cls) {
+    Method[] getMethods(Class<?> cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedGetMethods(cls));
         } else {
@@ -401,7 +402,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             m_entityListenerClass = getMetadataFactory().getMetadataClass(m_className);
         }
         JPAEntityListenerHolder holder = new JPAEntityListenerHolder();
-        holder.setIsDefaultListener(Boolean.valueOf(isDefaultListener));
+        holder.setIsDefaultListener(isDefaultListener);
 
         holder.listenerClassName = m_entityListenerClass.getName();
 

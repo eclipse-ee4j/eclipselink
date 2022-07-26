@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
-import java.io.FileInputStream;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -25,8 +25,6 @@ import java.util.List;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import junit.textui.TestRunner;
-import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaResolver;
@@ -43,13 +41,14 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
         TestRunner.run(DefineWithImportsNoSchemaLocationTestCases.class);
     }
 
+    @Override
     public void testDefine() {
 
         InputStream is = getSchemaInputStream(getSchemaToDefine());
 
         List types = ((SDOXSDHelper) xsdHelper).define(new StreamSource(is), new TestResolver(getSchemaLocation()));
         log("\nExpected:\n");
-        List controlTypes = getControlTypes();
+        List<Type> controlTypes = getControlTypes();
         log(controlTypes);
 
         log("\nActual:\n");
@@ -58,14 +57,17 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
         compare(getControlTypes(), types);
     }
 
+    @Override
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/ImportsWithNamespacesNoSchemaLocations.xsd";
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
     }
 
+    @Override
     public List<Type> getControlTypes() {
         String uri = "my.uri";
         String uri2 = "my.uri2";
@@ -138,6 +140,7 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
             this.schemaLocationBase = schemaLocation;
         }
 
+        @Override
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             try {
                 if (namespace.equals("my.uri3")) {
@@ -161,10 +164,9 @@ public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineT
          * Satisfy EntityResolver interface implementation.
          * Allow resolution of external entities.
          *
-         * @param publicId
-         * @param systemId
          * @return null
          */
+        @Override
         public InputSource resolveEntity(String publicId, String systemId) {
             return null;
         }

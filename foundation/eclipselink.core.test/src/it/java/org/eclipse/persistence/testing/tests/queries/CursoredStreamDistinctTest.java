@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class CursoredStreamDistinctTest extends TestCase {
         setDescription("Verify the size works correctly with distinct when single field is queried");
     }
 
+    @Override
     public void setup() {
         // Access does not like this distinct.
         if (getSession().getPlatform().isAccess()) {
@@ -34,6 +35,7 @@ public class CursoredStreamDistinctTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         ExpressionBuilder eb = new ExpressionBuilder();
         ReportQuery q = new ReportQuery(org.eclipse.persistence.testing.models.employee.domain.Employee.class, eb);
@@ -50,6 +52,7 @@ public class CursoredStreamDistinctTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         ExpressionBuilder eb = new ExpressionBuilder();
         ReportQuery q = new ReportQuery(org.eclipse.persistence.testing.models.employee.domain.Employee.class, eb);

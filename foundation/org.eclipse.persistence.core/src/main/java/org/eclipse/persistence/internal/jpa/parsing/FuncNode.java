@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,11 +47,11 @@ public class FuncNode extends FunctionalExpressionNode {
         return this.name;
     }
 
-    public void setParameters(List parameters) {
+    public void setParameters(List<Node> parameters) {
         this.parameters = parameters;
     }
 
-    public List getParameters() {
+    public List<Node> getParameters() {
         return this.parameters;
     }
 
@@ -73,13 +73,12 @@ public class FuncNode extends FunctionalExpressionNode {
             return context.getBaseExpression().getFunction(this.name);
         }
 
-        List vExpressions = new ArrayList(size - 1);
+        List<Expression> vExpressions = new ArrayList<>(size - 1);
         Expression base = this.parameters.get(0).generateExpression(context);
         for(int i=1; i < size; i++) {
             Expression child = this.parameters.get(i).generateExpression(context);
             vExpressions.add(child);
         }
-        Expression expression = base.getFunctionWithArguments(this.name, vExpressions);
-        return expression;
+        return base.getFunctionWithArguments(this.name, vExpressions);
     }
 }

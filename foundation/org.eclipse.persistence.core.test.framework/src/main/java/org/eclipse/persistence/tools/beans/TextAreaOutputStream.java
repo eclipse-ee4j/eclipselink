@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,8 +44,8 @@ public class TextAreaOutputStream extends OutputStream {
         if (shouldAutoScroll()) {
             if (getText().getParent() instanceof JViewport) {
                 int max =
-                    ((JScrollPane)(((JViewport)getText().getParent()).getParent())).getVerticalScrollBar().getMaximum();
-                ((JScrollPane)(((JViewport)getText().getParent()).getParent())).getVerticalScrollBar().setValue(max);
+                    ((JScrollPane)(getText().getParent().getParent())).getVerticalScrollBar().getMaximum();
+                ((JScrollPane)(getText().getParent().getParent())).getVerticalScrollBar().setValue(max);
             }
         }
     }
@@ -73,6 +73,7 @@ public class TextAreaOutputStream extends OutputStream {
     /**
      * Append the char to the text area.
      */
+    @Override
     public void write(byte[] bytes) {
         getText().append(new String(bytes));
         scrollToEnd();
@@ -81,6 +82,7 @@ public class TextAreaOutputStream extends OutputStream {
     /**
      * Append the char to the text area.
      */
+    @Override
     public void write(byte[] bytes, int offset, int length) {
         byte[] buffer = new byte[length];
         System.arraycopy(bytes, offset, buffer, 0, length);
@@ -91,6 +93,7 @@ public class TextAreaOutputStream extends OutputStream {
     /**
      * Append the char to the text area.
      */
+    @Override
     public void write(int b) {
         byte[] bytes = new byte[1];
         bytes[0] = (byte)b;

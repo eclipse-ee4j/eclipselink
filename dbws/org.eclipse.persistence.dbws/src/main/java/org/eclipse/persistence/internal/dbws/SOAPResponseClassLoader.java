@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,14 +20,13 @@ package org.eclipse.persistence.internal.dbws;
 // Java extension imports
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_PUBLIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_SUPER;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECIAL;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_8;
 
 /**
  * <p><b>INTERNAL</b>: A subclass of {@link ClassLoader} that exposes a build method to the hidden
@@ -61,8 +60,8 @@ public class SOAPResponseClassLoader extends ClassLoader {
        *     }
        *   }
        */
-      ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-      cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
+      EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
+      cw.visit(ACC_PUBLIC + ACC_SUPER, className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
 
       MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
       mv.visitVarInsn(ALOAD, 0);

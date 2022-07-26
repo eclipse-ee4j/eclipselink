@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
         setDescription("This test verifies that Tranparent Map works with change tracking");
     }
 
+    @Override
     public void reset() {
         if (getAbstractSession().isInTransaction()) {
             getAbstractSession().rollbackTransaction();
@@ -54,6 +55,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
         }
     }
 
+    @Override
     public void setup() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             throw new TestWarningException("This test cannot be run through the remote.");
@@ -68,6 +70,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
      * the merge worked.
      */
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         this.clone =
@@ -112,7 +115,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
         //test update
         this.licenceType = "Alcohol License";
         this.licenceValue = (Boolean)clone.getLicenses().get(licenceType);
-        clone.getLicenses().put(licenceType, new Boolean((!(this.licenceValue).booleanValue())));
+        clone.getLicenses().put(licenceType, !this.licenceValue);
 
         uow.commit();
     }
@@ -120,6 +123,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
      * Checks to see that the names of the updated version and the origional are the same
      */
 
+    @Override
     public void verify() {
         Restaurant cachedRestaurant = (Restaurant)getSession().readObject(this.clone);
         Restaurant cachedRestaurant2 = (Restaurant)getSession().readObject(this.clone2);

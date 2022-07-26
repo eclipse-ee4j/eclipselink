@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,26 +30,26 @@ import java.util.Vector;
 public class SessionBrokerPlaceHolder extends org.eclipse.persistence.sessions.broker.SessionBroker {
 
     /** This member variable stores the sessions that have been retreived */
-    protected Vector sessionsCompleted;
+    protected Vector<String> sessionsCompleted;
 
     /** This member variable stores the sessions that need to be retreived */
-    protected Vector sessionNamesRequired;
+    protected Vector<String> sessionNamesRequired;
 
     public SessionBrokerPlaceHolder() {
         super();
-        this.sessionNamesRequired = new Vector();
-        this.sessionsCompleted = new Vector();
+        this.sessionNamesRequired = new Vector<>();
+        this.sessionsCompleted = new Vector<>();
     }
 
     public void addSessionName(String sessionName) {
         this.sessionNamesRequired.add(sessionName);
     }
 
-    public Vector getSessionNamesRequired() {
+    public Vector<String> getSessionNamesRequired() {
         return this.sessionNamesRequired;
     }
 
-    public Vector getSessionCompleted() {
+    public Vector<String> getSessionCompleted() {
         return this.sessionsCompleted;
     }
 }

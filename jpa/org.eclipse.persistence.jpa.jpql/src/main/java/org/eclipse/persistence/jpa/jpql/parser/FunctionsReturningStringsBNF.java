@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div><b>BNF:</b> <code>functions_returning_strings ::= CONCAT(string_primary, string_primary {, string_primary}*) |
  * SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression]) |
  * TRIM([[trim_specification] [trim_character] FROM] string_primary) |
- * LOWER(string_primary) | UPPER(string_primary)</code><p></div>
+ * LOWER(string_primary) | UPPER(string_primary)</code></div>
  *
  * @version 2.4
  * @since 2.3
@@ -42,9 +42,6 @@ public final class FunctionsReturningStringsBNF extends JPQLQueryBNF {
         super(ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

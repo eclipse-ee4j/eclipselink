@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,6 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date July 15, 2004
  */
 public class SessionBrokerEventListener extends SessionEventAdapter {
     public static final String FILENAME = "SessionBrokerEventListener";
@@ -39,6 +38,7 @@ public class SessionBrokerEventListener extends SessionEventAdapter {
      * PUBLIC:
      * This Event is raised before the session logs in.
      */
+    @Override
     public void preLogin(SessionEvent event) {
         File f = new File(FILENAME);
 

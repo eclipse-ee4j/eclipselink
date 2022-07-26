@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,13 +25,13 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.*;
 import org.eclipse.persistence.queries.ReadAllQuery;
 
 public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
 
-    static protected Class[] classes = {Company.class, Vehicle.class};
+    static protected Class<?>[] classes = {Company.class, Vehicle.class};
     static protected Vector[] objectVectors = {null, null};
 
     protected DatabaseSession dbSession;
@@ -49,6 +49,7 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
     // In order to enforce that the first test populates the db and caches the objects in static collections,
     // the following test reads all the objects from the db, compares them with the cached ones - if they are the
     // same (the case if the tests run directly one after another) then no population occurs.
+    @Override
     public void setUp() {
         super.setUp();
         dbSessionClearCache();
@@ -107,6 +108,7 @@ public class JoinedAttributeInheritanceJunitTest extends JUnitTestCase {
         clearCache();
     }
 
+    @Override
     public void tearDown() {
         dbSessionClearCache();
         dbSession = null;

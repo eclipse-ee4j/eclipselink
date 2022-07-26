@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,31 +44,31 @@ public class JPAConversionManager extends ConversionManager {
      * INTERNAL:
      */
     @Override
-    public Object getDefaultNullValue(Class theClass) {
+    public <T> T getDefaultNullValue(Class<T> theClass) {
         Object defaultNullValue = null;
         if (this.defaultNullValues != null){
             defaultNullValue = getDefaultNullValues().get(theClass);
         }
         if (defaultNullValue == null && theClass.isPrimitive()) {
             if(Double.TYPE.equals(theClass)){
-                return Double.valueOf(0D);
+                return (T) Double.valueOf(0D);
             }  else if(Long.TYPE.equals(theClass)) {
-                return Long.valueOf(0L);
+                return (T) Long.valueOf(0L);
             } else if(Character.TYPE.equals(theClass)){
-                return Character.valueOf('\u0000');
+                return (T) Character.valueOf('\u0000');
             } else if(Float.TYPE.equals(theClass)){
-                return Float.valueOf(0F);
+                return (T)  Float.valueOf(0F);
             } else if(Short.TYPE.equals(theClass)){
-                return Short.valueOf((short)0);
+                return (T) Short.valueOf((short) 0);
             } else if(Byte.TYPE.equals(theClass)){
-                return Byte.valueOf((byte)0);
+                return (T)  Byte.valueOf((byte) 0);
             } else if(Boolean.TYPE.equals(theClass)){
-                return Boolean.FALSE;
+                return (T) Boolean.FALSE;
             } else {
-                return 0;
+                return (T) Integer.valueOf(0);
             }
         } else {
-            return defaultNullValue;
+            return (T) defaultNullValue;
         }
     }
 }

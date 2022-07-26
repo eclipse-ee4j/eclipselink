@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import junit.framework.*;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.GoalieGear.AgeGroup;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup.AdvancedFetchGroupTableCreator;
@@ -53,6 +53,7 @@ public class EntityMappingsFetchGroupJunitTest extends JUnitTestCase {
         m_persistenceUnit = persistenceUnit;
     }
 
+    @Override
     public void setUp() {
         clearCache(m_persistenceUnit);
     }
@@ -142,8 +143,8 @@ public class EntityMappingsFetchGroupJunitTest extends JUnitTestCase {
             EntityManager em = createEntityManager(m_persistenceUnit);
             Map properties = new HashMap();
             properties.put(QueryHints.FETCH_GROUP_NAME, "HeightAndWidth");
-            Class PadsClass = Pads.class;
-            Pads pads = (Pads) em.find(PadsClass, padsId, properties);
+            Class<Pads> PadsClass = Pads.class;
+            Pads pads = em.find(PadsClass, padsId, properties);
 
             try {
                 verifyFetchedField(PadsClass.getDeclaredField("height"), pads, 35.5);
@@ -166,8 +167,8 @@ public class EntityMappingsFetchGroupJunitTest extends JUnitTestCase {
             EntityManager em = createEntityManager(m_persistenceUnit);
             Map properties = new HashMap();
             properties.put(QueryHints.FETCH_GROUP_NAME, "AgeGroup");
-            Class ChestProtecterClass = ChestProtector.class;
-            ChestProtector chestProtector = (ChestProtector) em.find(ChestProtecterClass, chestProtectorId, properties);
+            Class<ChestProtector> ChestProtecterClass = ChestProtector.class;
+            ChestProtector chestProtector = em.find(ChestProtecterClass, chestProtectorId, properties);
 
             try {
                 verifyFetchedField(ChestProtecterClass.getField("ageGroup"), chestProtector, AgeGroup.INTERMEDIATE);
@@ -188,8 +189,8 @@ public class EntityMappingsFetchGroupJunitTest extends JUnitTestCase {
             EntityManager em = createEntityManager(m_persistenceUnit);
             Map properties = new HashMap();
             properties.put(QueryHints.FETCH_GROUP_NAME, "MSRP");
-            Class PadsClass = Pads.class;
-            Pads pads = (Pads) em.find(PadsClass, padsId, properties);
+            Class<Pads> PadsClass = Pads.class;
+            Pads pads = em.find(PadsClass, padsId, properties);
 
             try {
                 verifyFetchedField(PadsClass.getField("msrp"), pads, 999.99);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,20 +39,20 @@ import org.xml.sax.InputSource;
  */
 public interface SDOXMLHelper extends XMLHelper {
 
-    public void serialize(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException;
+    void serialize(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException;
 
     /**
      * The specified TimeZone will be used for all String to date object
      * conversions.  By default the TimeZone from the JVM is used.
      */
-    public void setTimeZone(TimeZone timeZone);
+    void setTimeZone(TimeZone timeZone);
 
     /**
      * By setting this flag to true the marshalled date objects marshalled to
      * the XML schema types time and dateTime will be qualified by a time zone.
      * By default time information is not time zone qualified.
      */
-    public void setTimeZoneQualified(boolean timeZoneQualified);
+    void setTimeZoneQualified(boolean timeZoneQualified);
 
     /**
      * INTERNAL:
@@ -63,84 +63,84 @@ public interface SDOXMLHelper extends XMLHelper {
      * @return
      * @throws IOException
      */
-    public XMLDocument load(InputSource inputSource, String locationURI, Object options) throws IOException;
+    XMLDocument load(InputSource inputSource, String locationURI, Object options) throws IOException;
 
     /**
      * INTERNAL:
      *
      * @param loader
      */
-    public void setLoader(SDOClassLoader loader);
+    void setLoader(SDOClassLoader loader);
 
     /**
      * INTERNAL:
      *
      * @return
      */
-    public SDOClassLoader getLoader();
+    SDOClassLoader getLoader();
 
     /**
      * INTERNAL:
      *
      * @param xmlContext
      */
-    public void setXmlContext(XMLContext xmlContext);
+    void setXmlContext(XMLContext xmlContext);
 
     /**
      * INTERNAL:
      *
      * @return
      */
-    public XMLContext getXmlContext();
+    XMLContext getXmlContext();
 
     /**
      * INTERNAL:
      *
      * @param descriptors
      */
-    public void addDescriptors(List descriptors);
+    void addDescriptors(List descriptors);
 
     /**
      * INTERNAL:
      *
      * @param toplinkProject
      */
-    public void setTopLinkProject(Project toplinkProject);
+    void setTopLinkProject(Project toplinkProject);
 
     /**
      * INTERNAL:
      *
      * @return
      */
-    public Project getTopLinkProject();
+    Project getTopLinkProject();
 
     /**
      * INTERNAL:
      *
      * @param xmlMarshaller
      */
-    public void setXmlMarshaller(XMLMarshaller xmlMarshaller);
+    void setXmlMarshaller(XMLMarshaller xmlMarshaller);
 
     /**
      * INTERNAL:
      *
      * @return
      */
-    public XMLMarshaller getXmlMarshaller();
+    XMLMarshaller getXmlMarshaller();
 
     /**
      * INTERNAL:
      *
      * @param xmlUnmarshaller
      */
-    public void setXmlUnmarshaller(XMLUnmarshaller xmlUnmarshaller);
+    void setXmlUnmarshaller(XMLUnmarshaller xmlUnmarshaller);
 
     /**
      * INTERNAL:
      *
      * @return
      */
-    public XMLUnmarshaller getXmlUnmarshaller();
+    XMLUnmarshaller getXmlUnmarshaller();
 
     /**
      * INTERNAL:
@@ -148,7 +148,7 @@ public interface SDOXMLHelper extends XMLHelper {
      *
      * @return
      */
-    public HelperContext getHelperContext();
+    HelperContext getHelperContext();
 
     /**
      * INTERNAL:
@@ -156,19 +156,19 @@ public interface SDOXMLHelper extends XMLHelper {
      *
      * @param helperContext
      */
-    public void setHelperContext(HelperContext helperContext);
+    void setHelperContext(HelperContext helperContext);
 
     /**
      * INTERNAL:
      *
      */
-    public void reset();
+    void reset();
 
-    public void initializeDescriptor(XMLDescriptor descriptor);
+    void initializeDescriptor(XMLDescriptor descriptor);
 
     /**
      * INTERNAL:
      *
      */
-    public XMLConversionManager getXmlConversionManager();
+    XMLConversionManager getXmlConversionManager();
 }

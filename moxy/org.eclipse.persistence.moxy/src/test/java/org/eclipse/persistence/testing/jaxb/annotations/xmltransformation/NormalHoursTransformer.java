@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,25 +14,23 @@
 // Oracle = 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransformation;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class NormalHoursTransformer implements AttributeTransformer {
 
-    public String[] buildAttributeValue(Record record, Object object, Session session) {
-        String startTime = (String)record.get("normal-hours/start-time/text()");
-        String endTime = (String)record.get("normal-hours/end-time/text()");
+    @Override
+    public String[] buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
+        String startTime = (String) dataRecord.get("normal-hours/start-time/text()");
+        String endTime = (String) dataRecord.get("normal-hours/end-time/text()");
 
         return new String[]{startTime, endTime};
 
     }
 
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
         // TODO Auto-generated method stub
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ public class DataReadQueryTest extends TestCase {
         super();
     }
 
+    @Override
     public void setup() {
         //right now only the stored procedure is set up in SQLServer
         if (!getSession().getPlatform().isSQLServer()) {
@@ -30,6 +31,7 @@ public class DataReadQueryTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         DataReadQuery readQuery = new DataReadQuery();
         StoredProcedureCall call;
@@ -42,7 +44,7 @@ public class DataReadQueryTest extends TestCase {
         getSession().removeQuery("dblogin");
         getSession().addQuery("dblogin", readQuery);
         Vector args = new Vector(1);
-        args.addElement(new Integer(1));
+        args.addElement(1);
         try {
             Vector vResult = (Vector)getSession().executeQuery("dblogin", args);
         } catch (ClassCastException e) {
@@ -52,7 +54,7 @@ public class DataReadQueryTest extends TestCase {
         readQuery = new DataReadQuery();
         call = new StoredProcedureCall();
         call.setProcedureName("Select_Employee_using_Output");
-        call.addNamedArgumentValue("ARG1", new Integer(1));
+        call.addNamedArgumentValue("ARG1", 1);
         call.addNamedOutputArgument("VERSION", "VERSION", java.math.BigDecimal.class);
         readQuery.setCall(call);
         try {

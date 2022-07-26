@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -50,7 +50,7 @@ public class TestNativeQuery extends JPA1Base {
             env.beginTransaction(em);
             Employee knut = new Employee(1, "Knut", "Maier", dep10);
             Employee fred = new Employee(2, "Fred", "Schmidt", null);
-            Cubicle green = new Cubicle(Integer.valueOf(1), Integer.valueOf(2), "green", knut);
+            Cubicle green = new Cubicle(1, 2, "green", knut);
             knut.setCubicle(green);
             em.persist(dep10);
             em.persist(dep20);
@@ -202,7 +202,7 @@ public class TestNativeQuery extends JPA1Base {
         try {
             getEnvironment().beginTransaction(em);
             Query query = em.createNativeQuery("select * from TMP_DEP D where D.ID = ?", Department.class);
-            query.setParameter(1, Integer.valueOf(10));
+            query.setParameter(1, 10);
             List result = query.getResultList();
             Iterator iter = result.iterator();
             verify(iter.hasNext(), "no results");

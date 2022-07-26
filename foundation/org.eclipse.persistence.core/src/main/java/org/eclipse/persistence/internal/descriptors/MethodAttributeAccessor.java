@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,16 +22,11 @@ package org.eclipse.persistence.internal.descriptors;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethodParameterTypes;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethodReturnType;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
@@ -54,7 +49,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * Return the return type of the method accessor.
      */
     @Override
-    public Class getAttributeClass() {
+    public Class<?> getAttributeClass() {
         if (getGetMethod() == null) {
             return null;
         }
@@ -73,33 +68,26 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     /**
      * Gets the value of an instance variable in the object.
      */
-    protected Object getAttributeValueFromObject(Object anObject, Object[] parameters) throws DescriptorException {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(getGetMethod(), anObject, parameters));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), throwableException);
-                     }
-                }
-            } else {
+    protected Object getAttributeValueFromObject(final Object anObject, final Object[] parameters) throws DescriptorException {
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
                 // PERF: Direct-var access.
-                return this.getMethod.invoke(anObject, parameters);
-            }
-        } catch (IllegalArgumentException exception) {
-            throw DescriptorException.illegalArgumentWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), exception);
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), exception);
-        } catch (NullPointerException exception) {
-            // Some JVM's throw this exception for some very odd reason
-            throw DescriptorException.nullPointerWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), exception);
-        }
+                () -> getMethod.invoke(anObject, parameters),
+                (ex) -> {
+                    if (ex instanceof IllegalArgumentException) {
+                        return DescriptorException.illegalArgumentWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), ex);
+                    } else if (ex instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), ex);
+                    } else if (ex instanceof InvocationTargetException) {
+                        return DescriptorException.targetInvocationWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), ex);
+                    } else if (ex instanceof NullPointerException) {
+                        // Some JVM's throw this exception for some very odd reason
+                        return DescriptorException.nullPointerWhileGettingValueThruMethodAccessor(getGetMethodName(), anObject.getClass().getName(), ex);
+                    }
+                    // This indicates unexpected problem in the code
+                    return new RuntimeException(String.format(
+                            "Invocation of %s getter method failed", getMethod.getName()), ex);
+               }
+        );
     }
 
     /**
@@ -121,10 +109,9 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * INTERNAL:
      * Return the GetMethod return type for this MethodAttributeAccessor.
      * A special check is made to determine if a missing method is a result of failed weaving.
-     * @return
      */
     // Note: SDO overrides this method and will handle a null GetMethod
-    public Class getGetMethodReturnType() throws DescriptorException {
+    public Class<?> getGetMethodReturnType() throws DescriptorException {
         // 323403: If the getMethod is missing - check for "_persistence_*_vh" to see if weaving was expected
         if(null == getGetMethod() && null != getGetMethodName()
             && (getGetMethodName().indexOf(Helper.PERSISTENCE_FIELDNAME_PREFIX) > -1)) {
@@ -135,16 +122,9 @@ public class MethodAttributeAccessor extends AttributeAccessor {
             // If we allow the getMethodReturnType to continue - we will throw an obscure NullPointerException
             throw DescriptorException.nullPointerWhileGettingValueThruMethodAccessorCausedByWeavingNotOccurringBecauseOfModuleOrder(getGetMethodName(), "", null);
         }
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try {
-                return AccessController.doPrivileged(new PrivilegedGetMethodReturnType(getGetMethod()));
-            } catch (PrivilegedActionException exception) {
-                // we should not get here since this call does not throw any checked exceptions
-               return null;
-            }
-        } else {
-            return PrivilegedAccessHelper.getMethodReturnType(getGetMethod());
-        }
+        return PrivilegedAccessHelper.callDoPrivileged(
+                () -> PrivilegedAccessHelper.getMethodReturnType(getGetMethod())
+        );
     }
 
     /**
@@ -161,25 +141,18 @@ public class MethodAttributeAccessor extends AttributeAccessor {
         return setMethodName;
     }
 
-    public Class getSetMethodParameterType() {
+    public Class<?> getSetMethodParameterType() {
         return getSetMethodParameterType(0);
     }
 
-    protected Class getSetMethodParameterType(int index) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try {
-                return AccessController.doPrivileged(new PrivilegedGetMethodParameterTypes(getSetMethod()))[index];
-            } catch (PrivilegedActionException exception) {
-                // we should not get here since this call does not throw any checked exceptions
-                return null;
-            }
-        } else {
-            return PrivilegedAccessHelper.getMethodParameterTypes(getSetMethod())[index];
-        }
+    protected Class<?> getSetMethodParameterType(int index) {
+        return PrivilegedAccessHelper.callDoPrivileged(
+                () ->PrivilegedAccessHelper.getMethodParameterTypes(getSetMethod())[index]
+        );
     }
 
-    protected Class[] getSetMethodParameterTypes() {
-        return new Class[] {getGetMethodReturnType()};
+    protected Class<?>[] getSetMethodParameterTypes() {
+        return new Class<?>[] {getGetMethodReturnType()};
     }
 
     /**
@@ -187,7 +160,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * get and set method names
      */
     @Override
-    public void initializeAttributes(Class theJavaClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
         initializeAttributes(theJavaClass, null);
     }
 
@@ -195,7 +168,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      * Set get and set method after creating these methods by using
      * get and set method names
      */
-    protected void initializeAttributes(Class theJavaClass, Class[] getParameterTypes) throws DescriptorException {
+    protected void initializeAttributes(Class<?> theJavaClass, Class<?>[] getParameterTypes) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
         }
@@ -242,23 +215,11 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     /**
      * Sets the value of the instance variable in the object to the value.
      */
-    protected void setAttributeValueInObject(Object domainObject, Object attributeValue, Object[] parameters) throws DescriptorException {
+    protected void setAttributeValueInObject(final Object domainObject, final Object attributeValue, final Object[] parameters) throws DescriptorException {
         try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker(getSetMethod(), domainObject, parameters));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileSettingValueThruMethodAccessor(getSetMethodName(), attributeValue, throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileSettingValueThruMethodAccessor(getSetMethodName(), attributeValue, throwableException);
-                     }
-                }
-            } else {
-                // PERF: Direct-var access.
-                this.setMethod.invoke(domainObject, parameters);
-            }
+            PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> this.setMethod.invoke(domainObject, parameters)
+            );
         } catch (IllegalAccessException exception) {
             throw DescriptorException.illegalAccessWhileSettingValueThruMethodAccessor(getSetMethodName(), attributeValue, exception);
         } catch (IllegalArgumentException exception) {
@@ -266,18 +227,11 @@ public class MethodAttributeAccessor extends AttributeAccessor {
             // Allow XML change set to merge correctly since new value in XML change set is always String
             try {
                 if (attributeValue instanceof String) {
-                    Object newValue = ConversionManager.getDefaultManager().convertObject(attributeValue, getAttributeClass());
-                    Object[] newParameters = new Object[1];
-                    newParameters[0] = newValue;
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            AccessController.doPrivileged(new PrivilegedMethodInvoker(getSetMethod(), domainObject, newParameters));
-                        } catch (PrivilegedActionException exc) {
-                            // Do nothing and move on to throw the original exception
-                        }
-                    } else {
-                        PrivilegedAccessHelper.invokeMethod(getSetMethod(), domainObject, newParameters);
-                    }
+                    final Object[] newParameters = new Object[] {
+                            ConversionManager.getDefaultManager().convertObject(attributeValue, getAttributeClass())};
+                    PrivilegedAccessHelper.callDoPrivilegedWithException(
+                            () -> PrivilegedAccessHelper.invokeMethod(getSetMethod(), domainObject, newParameters)
+                    );
                     return;
                 }
             } catch (Exception e) {
@@ -287,40 +241,26 @@ public class MethodAttributeAccessor extends AttributeAccessor {
         } catch (InvocationTargetException exception) {
             throw DescriptorException.targetInvocationWhileSettingValueThruMethodAccessor(getSetMethodName(), attributeValue, exception);
         } catch (NullPointerException exception) {
-            try {
-                // TODO: This code should be removed, it should not be required and may cause unwanted side effects.
-                // cr 3737  If a null pointer was thrown because EclipseLink attempted to set a null reference into a
-                // primitive creating a primitive of value 0 to set in the object.
-                // Is this really the best place for this? is this not why we have null-value and conversion-manager?
-                Class fieldClass = getSetMethodParameterType();
-
-                //Found when fixing Bug2910086
-                if (fieldClass.isPrimitive() && (attributeValue == null)) {
-                    parameters[parameters.length-1] = ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass);
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            AccessController.doPrivileged(new PrivilegedMethodInvoker(getSetMethod(), domainObject, parameters));
-                        } catch (PrivilegedActionException exc) {
-                            Exception throwableException = exc.getException();
-                            if (throwableException instanceof IllegalAccessException) {
-                                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, throwableException);
-                            } else {
-                                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, throwableException);
-                             }
-                        }
-                    } else {
-                        PrivilegedAccessHelper.invokeMethod(getSetMethod(), domainObject, parameters);
-                    }
-                } else {
-                    // Some JVM's throw this exception for some very odd reason
-                    // See
-                    throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), attributeValue, exception);
-                }
-            } catch (IllegalAccessException accessException) {
-                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), attributeValue, exception);
-            } catch (InvocationTargetException invocationException) {
+            // TODO: This code should be removed, it should not be required and may cause unwanted side effects.
+            // cr 3737  If a null pointer was thrown because EclipseLink attempted to set a null reference into a
+            // primitive creating a primitive of value 0 to set in the object.
+            // Is this really the best place for this? is this not why we have null-value and conversion-manager?
+            final Class<?> fieldClass = getSetMethodParameterType();
+            //Found when fixing Bug2910086
+            if (fieldClass.isPrimitive() && (attributeValue == null)) {
+                parameters[parameters.length - 1] = ConversionManager.getDefaultManager().convertObject(0, fieldClass);
+                PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.invokeMethod(getSetMethod(), domainObject, parameters),
+                        (ex) -> DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, ex)
+                );
+            } else {
+                // Some JVM's throw this exception for some very odd reason
+                // See
                 throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), attributeValue, exception);
             }
+            // This indicates unexpected problem in the code
+        } catch (Exception ex) {
+            throw new RuntimeException(String.format("Invocation of %s setter method failed", getSetMethod().getName()), ex);
         }
     }
 

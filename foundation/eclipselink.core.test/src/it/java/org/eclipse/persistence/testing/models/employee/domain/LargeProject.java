@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import java.sql.Timestamp;
 /**
  * <b>Purpose</b>: Larger scale projects within the Employee Demo
  * <p><b>Description</b>: LargeProject is a concrete subclass of Project. It is instantiated for Projects with type = 'L'. The additional
- * information (budget, & milestoneVersion) are mapped from the LPROJECT table.
+ * information (budget, &amp; milestoneVersion) are mapped from the LPROJECT table.
  * @see Project
  */
 public class LargeProject extends Project implements org.eclipse.persistence.testing.models.employee.interfaces.LargeProject {
@@ -32,19 +32,23 @@ public class LargeProject extends Project implements org.eclipse.persistence.tes
         this.budget = 0.0;
     }
 
+    @Override
     public double getBudget() {
         return budget;
     }
 
+    @Override
     public Timestamp getMilestoneVersion() {
         return milestoneVersion;
     }
 
+    @Override
     public void setBudget(double budget) {
-        propertyChange("budget", new Double(this.budget), new Double(budget));
+        propertyChange("budget", this.budget, budget);
         this.budget = budget;
     }
 
+    @Override
     public void setMilestoneVersion(Timestamp milestoneVersion) {
         propertyChange("milestoneVersion", this.milestoneVersion, milestoneVersion);
         this.milestoneVersion = milestoneVersion;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class WasTransactionBegunPrematurelyRollbackTest extends AutoVerifyTestCa
         setDescription("Failure during commit of prematurely started transaction should cause the right exception");
     }
 
+    @Override
     public void setup() {
         // CR4204
         // To expose the problem, the SQL causing uow.commit() to fail should
@@ -66,6 +67,7 @@ public class WasTransactionBegunPrematurelyRollbackTest extends AutoVerifyTestCa
         exception = null;
     }
 
+    @Override
     public void test() {
 
         Person person = new Person();
@@ -84,6 +86,7 @@ public class WasTransactionBegunPrematurelyRollbackTest extends AutoVerifyTestCa
         }
     }
 
+    @Override
     public void verify() {
         if (exception == null) {
             throw new TestErrorException("No exception is thrown");
@@ -103,6 +106,7 @@ public class WasTransactionBegunPrematurelyRollbackTest extends AutoVerifyTestCa
         }
     }
 
+    @Override
     public void reset() {
         if (!usesBatchWriting) {
             getSession().getLogin().setUsesBatchWriting(false);

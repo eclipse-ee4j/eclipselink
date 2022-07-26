@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,9 +33,9 @@ public abstract class IsolatedConcurrentRegressionTest extends ConcurrentPerform
     @Override
     public void setup() {
         super.setup();
-        for (Iterator descriptors = getServerSession().getDescriptors().values().iterator();
-                 descriptors.hasNext();) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+        for (Iterator<ClassDescriptor> descriptors = getServerSession().getDescriptors().values().iterator();
+             descriptors.hasNext();) {
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
         }
         getServerSession().getProject().setHasIsolatedClasses(true);
@@ -47,9 +47,9 @@ public abstract class IsolatedConcurrentRegressionTest extends ConcurrentPerform
     @Override
     public void reset() {
         super.reset();
-        for (Iterator descriptors = getServerSession().getDescriptors().values().iterator();
-                 descriptors.hasNext();) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+        for (Iterator<ClassDescriptor> descriptors = getServerSession().getDescriptors().values().iterator();
+             descriptors.hasNext();) {
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.setCacheIsolation(CacheIsolationType.SHARED);
         }
         getServerSession().getProject().setHasIsolatedClasses(false);

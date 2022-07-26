@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,31 +27,35 @@ public class DirectMapMappingsSerializedConverterTestCase extends AutoVerifyTest
         setDescription("Ensure SerializedObjectConverter works with DirectMapMapping.");
     }
 
+    @Override
     public void setup() {
         beginTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         // Create a directmapmapping with a few items in it
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings m1 = new DirectMapMappings();
-        m1.blobDirectMap.put(new Integer(1), new Integer(1));
-        m1.blobDirectMap.put(new Integer(2), new Integer(2));
+        m1.blobDirectMap.put(1, 1);
+        m1.blobDirectMap.put(2, 2);
         DirectMapMappings maps1 = (DirectMapMappings)uow.registerObject(m1);
 
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings maps = (DirectMapMappings)uow.readObject(DirectMapMappings.class);
-        if (!maps.blobDirectMap.get(new Integer(1)).equals(new Integer(1))) {
+        if (!maps.blobDirectMap.get(1).equals(1)) {
             throw new TestErrorException("The cloned direct map does not maintain the proper type when used with a SerializedObjectConverter.");
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * <p>
  * <b>Purpose</b>: Allow for indexes to be created.
- * <p>
+ * </p>
  * @author James Sutherland
  * @since EclipseLink 2.2
  */
@@ -32,7 +32,7 @@ public class IndexDefinition extends DatabaseObjectDefinition {
     protected boolean isUnique;
 
     public IndexDefinition() {
-        this.fields = new ArrayList();
+        this.fields = new ArrayList<>();
     }
 
     public boolean isUnique() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.queries;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -52,15 +53,18 @@ RedirectQueryOnUOWTest extends TestCase {
     public RedirectQueryOnUOWTest() {
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         m_exceptionCaught = null;
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         ReadAllQuery r =
             new ReadAllQuery(Employee.class, (new ExpressionBuilder()).get("firstName").equal("Jill"));
@@ -75,6 +79,7 @@ RedirectQueryOnUOWTest extends TestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (m_exceptionCaught != null) {
             throw new TestErrorException("NullPointerException was thrown when executing a query with a redirect",
@@ -84,7 +89,8 @@ RedirectQueryOnUOWTest extends TestCase {
 }
 
 class StupidRedirector implements QueryRedirector {
-    public Object invokeQuery(DatabaseQuery arg0, org.eclipse.persistence.sessions.Record arg1, Session arg2) {
+    @Override
+    public Object invokeQuery(DatabaseQuery arg0, DataRecord arg1, Session arg2) {
         // change code to do the correct class cast.
         // Also for this test case to be relevant a completely different query
         // must be executed.

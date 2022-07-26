@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -47,10 +47,10 @@ import org.junit.Test;
 public class TestBidirectionalManyToMany extends JPA1Base {
 
     private static final int HANS_ID_VALUE = 1;
-    private static final Integer HANS_ID = new Integer(HANS_ID_VALUE);
+    private static final Integer HANS_ID = HANS_ID_VALUE;
     private static final Set<Pair> HANS_SET = new HashSet<Pair>();
     private static final int FRED_ID_VALUE = 2;
-    private static final Integer FRED_ID = new Integer(FRED_ID_VALUE);
+    private static final Integer FRED_ID = FRED_ID_VALUE;
     private static final Set<Pair> FRED_SET = new HashSet<Pair>();
     private static final Set<Pair> SEED_SET = new HashSet<Pair>();
     private static final Project PUHLEN = new Project("G\u00fcrteltiere puhlen");
@@ -92,11 +92,11 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             env.commitTransactionAndClear(em);
             HANS_SET.clear();
             for (final Project element : hansProjects) {
-                HANS_SET.add(new Pair(HANS_ID_VALUE, element.getId().intValue()));
+                HANS_SET.add(new Pair(HANS_ID_VALUE, element.getId()));
             }
             FRED_SET.clear();
             for (final Project element : fredProjects) {
-                FRED_SET.add(new Pair(FRED_ID_VALUE, element.getId().intValue()));
+                FRED_SET.add(new Pair(FRED_ID_VALUE, element.getId()));
             }
             SEED_SET.clear();
             SEED_SET.addAll(HANS_SET);
@@ -197,7 +197,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
         try {
-            final int removeId = PUHLEN.getId().intValue();
+            final int removeId = PUHLEN.getId();
             env.beginTransaction(em);
             Employee emp = em.find(Employee.class, HANS_ID);
             verify(emp != null, "employee not found");
@@ -207,7 +207,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             Iterator<Project> iter = projects.iterator();
             while (iter.hasNext()) {
                 Project project = iter.next();
-                if (project.getId().intValue() == removeId) {
+                if (project.getId() == removeId) {
                     Set<Employee> employeesOfProject = project.getEmployees();
                     employeesOfProject.remove(emp);
                     em.remove(project);
@@ -243,7 +243,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
         try {
-            final int REMOVE_ID = FALTEN.getId().intValue();
+            final int REMOVE_ID = FALTEN.getId();
             env.beginTransaction(em);
             Employee emp = em.find(Employee.class, HANS_ID);
             verify(emp != null, "employee not found");
@@ -253,7 +253,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             Iterator<Project> iter = projects.iterator();
             while (iter.hasNext()) {
                 Project project = iter.next();
-                if (project.getId().intValue() == REMOVE_ID) {
+                if (project.getId() == REMOVE_ID) {
                     Set<Employee> employeesOfProject = project.getEmployees();
                     employeesOfProject.remove(emp);
                     iter.remove();
@@ -288,7 +288,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             Set<Project> projects = emp.getProjects();
             Project p6 = new Project("Nasen bohren");
             em.persist(p6);
-            newId = p6.getId().intValue();
+            newId = p6.getId();
             projects.add(p6);
             emp.clearPostUpdate();
             env.commitTransactionAndClear(em);
@@ -318,13 +318,13 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             Set<Project> projects = emp.getProjects();
             Iterator<Project> iter = projects.iterator();
             Project project = iter.next();
-            int removedId = project.getId().intValue();
+            int removedId = project.getId();
             // there are no managed relationships -> we have to remove the projects on both sides
             em.remove(project);
             iter.remove();
             Project p7 = new Project("Ohren wacklen");
             em.persist(p7);
-            newId = p7.getId().intValue();
+            newId = p7.getId();
             projects.add(p7);
             emp.clearPostUpdate();
             env.commitTransactionAndClear(em);
@@ -348,7 +348,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
     }
 
     private void verifyEmployees(EntityManager em, int id, int size) {
-        Project project = em.find(Project.class, new Integer(id));
+        Project project = em.find(Project.class, id);
         verify(project != null, "project not found");
         Set<Employee> employees = project.getEmployees();
         verify(employees.size() == size, "wrong number of employees: " + employees.size() + " expected: " + size);
@@ -360,9 +360,9 @@ public class TestBidirectionalManyToMany extends JPA1Base {
         EntityManager em = env.getEntityManager();
         try {
             env.beginTransaction(em);
-            verifyEmployees(em, LINKEN.getId().intValue(), 0);
-            verifyEmployees(em, PUHLEN.getId().intValue(), 1);
-            verifyEmployees(em, FALTEN.getId().intValue(), 2);
+            verifyEmployees(em, LINKEN.getId(), 0);
+            verifyEmployees(em, PUHLEN.getId(), 1);
+            verifyEmployees(em, FALTEN.getId(), 2);
             env.rollbackTransactionAndClear(em);
         } finally {
             closeEntityManager(em);
@@ -388,7 +388,7 @@ public class TestBidirectionalManyToMany extends JPA1Base {
             }
             checkJoinTable(expected);
             env.beginTransaction(em);
-            paul = em.find(Employee.class, new Integer(newId));
+            paul = em.find(Employee.class, newId);
             verify(paul.getProjects().size() == HANS_SET.size(), "Paul has wrong number of projects");
             env.rollbackTransactionAndClear(em);
         } finally {

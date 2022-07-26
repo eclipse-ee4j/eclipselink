@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,9 +58,6 @@ public abstract class AbstractModifyStatementStateObject extends AbstractStateOb
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -107,9 +104,6 @@ public abstract class AbstractModifyStatementStateObject extends AbstractStateOb
         return getModifyClause().getAbstractSchemaNameStateObject();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DeclarationStateObject getDeclaration() {
         return modifyClause.getDeclaration();
@@ -152,9 +146,6 @@ public abstract class AbstractModifyStatementStateObject extends AbstractStateOb
         return modifyClause;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryStateObject getParent() {
         return (JPQLQueryStateObject) super.getParent();
@@ -190,18 +181,12 @@ public abstract class AbstractModifyStatementStateObject extends AbstractStateOb
         return whereClause != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         modifyClause = buildModifyClause();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -319,9 +304,6 @@ public abstract class AbstractModifyStatementStateObject extends AbstractStateOb
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         modifyClause.toString(writer);

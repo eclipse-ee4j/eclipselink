@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -29,27 +28,31 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
 
     public JSONAttributeNoXmlRootElementTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{AddressNoRoot.class});
+        setClasses(new Class<?>[]{AddressNoRoot.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
-    public Class getUnmarshalClass(){
+    @Override
+    public Class<?> getUnmarshalClass(){
         return AddressNoRoot.class;
     }
 
+    @Override
     public Object getReadControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName("street"), AddressNoRoot.class, new AddressNoRoot());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName("street"), AddressNoRoot.class, new AddressNoRoot());
         return jbe;
     }
 
 
+    @Override
     protected Object getJSONReadControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, (AddressNoRoot) getControlObject());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, (AddressNoRoot) getControlObject());
         return jbe;
     }
 
+    @Override
     protected Object getControlObject() {
         AddressNoRoot add = new AddressNoRoot();
         add.setId(10);
@@ -61,6 +64,7 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
 
 
 
+      @Override
       public void testXMLToObjectFromURL() throws Exception {
             if(isUnmarshalTest()) {
                 java.net.URL url = ClassLoader.getSystemResource(resourceName);
@@ -68,7 +72,7 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
 
                 Object testObject = null;
                 if(getUnmarshalClass() != null){
-                   testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
+                   testObject = jaxbUnmarshaller.unmarshal(new StreamSource(url.openStream()), getUnmarshalClass());
                 }else{
                     testObject = jaxbUnmarshaller.unmarshal(url);
                 }
@@ -76,6 +80,8 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
             }
         }
 
+      @Override
       public void testRoundTrip() throws Exception {}
+      @Override
       public void testUnmarshallerHandler() throws Exception {}
 }

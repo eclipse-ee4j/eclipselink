@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,12 +28,12 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * execution of a query. A <code><b>JOIN</b></code> is specified over an entity and its related
  * entities.
  *
- * <div><b>BNF:</b> <code>join ::= join_spec join_association_path_expression [AS] identification_variable</code><p></div>
+ * <div><p><b>BNF:</b> <code>join ::= join_spec join_association_path_expression [AS] identification_variable</code></p></div>
  * <p>
  * A <b>JOIN FETCH</b> enables the fetching of an association as a side effect of the execution of
  * a query. A <b>JOIN FETCH</b> is specified over an entity and its related entities.
  *
- * <div><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code><p></div>
+ * <div><p><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code></p></div>
  *
  * @see Join
  *
@@ -103,9 +103,6 @@ public class JoinStateObject extends AbstractStateObject {
         this.as = as;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -123,9 +120,6 @@ public class JoinStateObject extends AbstractStateObject {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -143,9 +137,6 @@ public class JoinStateObject extends AbstractStateObject {
         joinAssociationPath.addItems(paths);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Join getExpression() {
         return (Join) super.getExpression();
@@ -199,9 +190,6 @@ public class JoinStateObject extends AbstractStateObject {
         return joinType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractIdentificationVariableDeclarationStateObject getParent() {
         return (AbstractIdentificationVariableDeclarationStateObject) super.getParent();
@@ -239,9 +227,6 @@ public class JoinStateObject extends AbstractStateObject {
         return identificationVariable.hasText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
@@ -249,9 +234,6 @@ public class JoinStateObject extends AbstractStateObject {
         identificationVariable = new IdentificationVariableStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -386,9 +368,6 @@ public class JoinStateObject extends AbstractStateObject {
         setAs(!as);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.persistence.Embeddable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
@@ -51,7 +50,7 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.converters.ConverterClass;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Organizer;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Race;
@@ -146,7 +145,7 @@ public class ConverterTestSuite extends JUnitTestCase {
             organizer.setRace(race);
 
             Responsibility responsibility = new Responsibility();
-            responsibility.setUniqueIdentifier(new Long(System.currentTimeMillis()));
+            responsibility.setUniqueIdentifier(System.currentTimeMillis());
             responsibility.setDescription("Raise funds");
 
             race.addOrganizer(organizer, responsibility);
@@ -206,7 +205,7 @@ public class ConverterTestSuite extends JUnitTestCase {
             organizer.setRace(race);
 
             Responsibility responsibility = new Responsibility();
-            responsibility.setUniqueIdentifier(new Long(System.currentTimeMillis()));
+            responsibility.setUniqueIdentifier(System.currentTimeMillis());
             //This string causes an exception to be thrown from the ResponsibilityConverter.convertToEntityAttribute method
             responsibility.setDescription(ResponsibilityConverter.THROW_EXCEPTION_IN_TO_ENTITY_ATTRIBUTE);
 
@@ -232,7 +231,7 @@ public class ConverterTestSuite extends JUnitTestCase {
                 }//else this error is expected and can be ignored
             } catch (RuntimeException unexpected) {
                 if (ResponsibilityConverter.THROW_EXCEPTION_IN_TO_ENTITY_ATTRIBUTE.equals(unexpected.getMessage())) {
-                    this.fail("Application exception thrown from convertToEntityAttribute was not wrapped in a PersistenceException");
+                    fail("Application exception thrown from convertToEntityAttribute was not wrapped in a PersistenceException");
                 }
                 throw unexpected;
             }
@@ -261,7 +260,7 @@ public class ConverterTestSuite extends JUnitTestCase {
             organizer.setRace(race);
 
             Responsibility responsibility = new Responsibility();
-            responsibility.setUniqueIdentifier(new Long(System.currentTimeMillis()));
+            responsibility.setUniqueIdentifier(System.currentTimeMillis());
             //This string causes an exception to be thrown from the ResponsibilityConverter.convertToDatabaseColumn method
             responsibility.setDescription(ResponsibilityConverter.THROW_EXCEPTION_IN_TO_DATABASE_COLUMN);
 
@@ -280,7 +279,7 @@ public class ConverterTestSuite extends JUnitTestCase {
 
             } catch (RuntimeException unexpected) {
                 if (ResponsibilityConverter.THROW_EXCEPTION_IN_TO_DATABASE_COLUMN.equals(unexpected.getMessage())) {
-                    this.fail("Application exception thrown from convertToDatabaseColumn was not wrapped in a PersistenceException");
+                    fail("Application exception thrown from convertToDatabaseColumn was not wrapped in a PersistenceException");
                 }
                 throw unexpected;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,9 +59,9 @@ import org.eclipse.persistence.queries.ReadQuery;
 /**
  * <p><b>Purpose</b>: A OrderedListContainerPolicy is ContainerPolicy whose
  * container class implements the List interface and is ordered by an @OrderBy.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
- * Provide the functionality to operate on an instance of a List.
+ * Provide the functionality to operate on an instance of a List.</p>
  *
  * @see ContainerPolicy
  * @see CollectionContainerPolicy
@@ -84,7 +84,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public OrderedListContainerPolicy(Class containerClass) {
+    public OrderedListContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 
@@ -158,7 +158,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                 failed = true;
                 break;
             }
-            int intOrderValue = ((Integer)conversionManager.convertObject(orderValue, Integer.class)).intValue();
+            int intOrderValue = conversionManager.convertObject(orderValue, Integer.class);
             try {
                 // one or more elements have the same order value
                 if(NOT_SET != ((List)container).set(intOrderValue, elements.get(i))) {
@@ -183,7 +183,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                 if(orderValue == null) {
                     orderList.add(null);
                 } else {
-                    orderList.add((Integer)conversionManager.convertObject(orderValue, Integer.class));
+                    orderList.add(conversionManager.convertObject(orderValue, Integer.class));
                 }
             }
 
@@ -220,13 +220,13 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         }
 
         try {
-            if (index == null || (index.intValue() > sizeFor(container))) {
+            if (index == null || (index > sizeFor(container))) {
                 // The index can be larger than the size on a merge,
                 // so should be added to the end, it may also be null if the
                 // index was unknown, such as an event using the add API.
                 ((List)container).add(object);
             } else {
-                ((List)container).add(index.intValue(), object);
+                ((List)container).add(index, object);
             }
         } catch (ClassCastException ex1) {
             throw QueryException.cannotAddElement(object, container, ex1);
@@ -257,7 +257,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             ListIterator iterator = (ListIterator)iteratorFor(oldList);
 
             while (iterator.hasNext()) {
-                Integer index = Integer.valueOf(iterator.nextIndex());
+                Integer index = iterator.nextIndex();
                 Object value = iterator.next();
                 oldListValueIndex.put(value, index);
                 oldListIndexValue.put(index, value);
@@ -270,7 +270,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             // Step i - Gather the list info.
             ListIterator iterator = (ListIterator)iteratorFor(newList);
             while (iterator.hasNext()) {
-                newListValueIndex.put(iterator.next(), Integer.valueOf(iterator.previousIndex()));
+                newListValueIndex.put(iterator.next(), iterator.previousIndex());
             }
 
             // Step ii - Go through the new list again.
@@ -284,15 +284,15 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                 // If value is null then nothing can be done with it.
                 if (currentObject != null) {
                     if (oldListValueIndex.containsKey(currentObject)) {
-                        int oldIndex = ((Integer) oldListValueIndex.get(currentObject)).intValue();
+                        int oldIndex = (Integer) oldListValueIndex.get(currentObject);
                         oldListValueIndex.remove(currentObject);
 
                         if (index == oldIndex) {
-                            indicesToRemove.remove(Integer.valueOf(oldIndex));
+                            indicesToRemove.remove(oldIndex);
                             offset = 0; // Reset the offset, assume we're back on track.
                         } else if (index == (oldIndex + offset)) {
                             // We're in the right spot according to the offset.
-                            indicesToRemove.remove(Integer.valueOf(oldIndex));
+                            indicesToRemove.remove(oldIndex);
                         } else {
                             // Time to be clever and figure out why we're not in the right spot!
                             int movedObjects = 0;
@@ -303,7 +303,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                                 ++offset;
                             } else {
                                 for (int i = oldIndex - 1; i >= index; i--) {
-                                    Object oldObject = oldListIndexValue.get(Integer.valueOf(i));
+                                    Object oldObject = oldListIndexValue.get(i);
                                     if (newListValueIndex.containsKey(oldObject)) {
                                         ++movedObjects;
                                     } else {
@@ -321,10 +321,10 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                                 } else {
                                     // Assume we moved down unless the object that was
                                     // here before is directly beside us.
-                                    Object oldObject = oldListIndexValue.get(Integer.valueOf(index));
+                                    Object oldObject = oldListIndexValue.get(index);
 
                                     if (newListValueIndex.containsKey(oldObject)) {
-                                        if (((newListValueIndex.get(oldObject)).intValue() - index) > 1) {
+                                        if ((newListValueIndex.get(oldObject) - index) > 1) {
                                             moved = false; // Assume the old object moved up.
                                             --offset;
                                         }
@@ -337,7 +337,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
                                 orderedObjectsToAdd.add(currentObject);
                             } else {
                                 // Take us off the removed list.
-                                indicesToRemove.remove(Integer.valueOf(oldIndex));
+                                indicesToRemove.remove(oldIndex);
                             }
                         }
                     } else {
@@ -477,9 +477,9 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             ((IndirectList)valueOfTarget).setIsListOrderBrokenInDb(false);
         }
         if (!changeRecord.getOrderedChangeObjectList().isEmpty()) {
-            Iterator objects =changeRecord.getOrderedChangeObjectList().iterator();
+            Iterator<OrderedChangeObject> objects =changeRecord.getOrderedChangeObjectList().iterator();
             while (objects.hasNext()){
-                OrderedChangeObject changeObject = (OrderedChangeObject)objects.next();
+                OrderedChangeObject changeObject = objects.next();
                 objectChanges = changeObject.getChangeSet();
                 if (changeObject.getChangeType() == CollectionChangeEvent.REMOVE){
                     boolean objectRemoved = changeRecord.getRemoveObjectList().containsKey(objectChanges);
@@ -547,10 +547,10 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             if (removedIndices.isEmpty()) {
                 // Check if we have removed objects via a
                 // simpleRemoveFromCollectionChangeRecord API call.
-                Iterator removedObjects = changeRecord.getRemoveObjectList().keySet().iterator();
+                Iterator<ObjectChangeSet> removedObjects = changeRecord.getRemoveObjectList().keySet().iterator();
 
                 while (removedObjects.hasNext()) {
-                    objectChanges = (ObjectChangeSet) removedObjects.next();
+                    objectChanges = removedObjects.next();
                     removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
                     registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
                 }
@@ -626,11 +626,11 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         try {
             ((List) container).remove(index);
         } catch (ClassCastException ex1) {
-            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(index), container, this);
+            throw QueryException.cannotRemoveFromContainer(index, container, this);
         } catch (IllegalArgumentException ex2) {
-            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(index), container, this);
+            throw QueryException.cannotRemoveFromContainer(index, container, this);
         } catch (UnsupportedOperationException ex3) {
-            throw QueryException.cannotRemoveFromContainer(Integer.valueOf(index), container, this);
+            throw QueryException.cannotRemoveFromContainer(index, container, this);
         }
     }
 

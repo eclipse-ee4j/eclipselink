@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,6 @@ import org.eclipse.persistence.sessions.Project;
  * <p>
  * <b>Description</b>: Expressions are expression nodes that can not be joined from
  * and may or not be the result of a Path expression.
- * <p>
  *
  * @see jakarta.persistence.criteria Expression
  *
@@ -79,7 +78,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
     @Override
     public Predicate in(Object... values) {
-        List list = new ArrayList();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
     }
@@ -87,7 +86,6 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     /**
      * Apply a predicate to test whether the expression is a member
      * of the argument list.
-     * @param values
      * @return predicate testing for membership
      */
     @Override
@@ -100,7 +98,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
                 // and route the execution to the right method
                 return in((Expression<Collection<?>>) values[0]);
             }
-            List list = new ArrayList();
+            List<Expression<?>> list = new ArrayList<>();
             list.add(this);
             if (values.length == 1 && ((InternalExpression) values[0]).isSubquery()) {
                 list.add(values[0]);
@@ -131,7 +129,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      */
     @Override
     public Predicate in(Collection<?> values) {
-        List list = new ArrayList();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new InImpl(this.metamodel, this, values, list);
     }
@@ -143,7 +141,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      */
     @Override
     public Predicate in(Expression<Collection<?>> values) {
-        List list = new ArrayList();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(values);
         list.add(this);
         return new InImpl(metamodel, this, (ExpressionImpl)values, list);
@@ -151,7 +149,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
     @Override
     public Predicate isNotNull() {
-        List list = new ArrayList();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
     }
@@ -159,7 +157,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
     @Override
     public Predicate isNull() {
-        List list = new ArrayList();
+        List<Expression<?>> list = new ArrayList<>();
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.isNull(), list, "is null");
     }

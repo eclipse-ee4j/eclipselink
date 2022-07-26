@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,15 +25,18 @@ public class NewObjectDeleteTest extends ManualVerifyTestCase {
         setDescription("Check the SQL to see if the new objects inserted are also deleted or not. The test case is a faliure if objects are not deleted.");
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
     }
 
+    @Override
     protected void test() {
         this.employee = (Employee)(new EmployeePopulator()).basicEmployeeExample1();
         UnitOfWork uow = getSession().acquireUnitOfWork();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 /**
  * This test represents scenario when more complicated generic XmlAdapter is used.
  * <p>
- * Example: GenericSuitsAdapterWithT&lt;T extends Enum> extends XmlAdapter&lt;String, T>
+ * Example: {@code GenericSuitsAdapterWithT<T extends Enum> extends XmlAdapter<String, T>}
  * </p>
  */
 public class AdapterEnumMoreGenericTestCases extends JAXBWithJSONTestCases{
@@ -31,10 +31,11 @@ public class AdapterEnumMoreGenericTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = {MoreGenericEnumRoot.class};
+        Class<?>[] classes = {MoreGenericEnumRoot.class};
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         MoreGenericEnumRoot emp = new MoreGenericEnumRoot();
         emp.multi = new ArrayList<Byte>();

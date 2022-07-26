@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,6 @@ public class SchemaGenTestCases extends TestCase {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public SchemaGenTestCases(String name) {
         super(name);
@@ -54,9 +53,6 @@ public class SchemaGenTestCases extends TestCase {
     /**
      * Generate one or more schemas from deployment xml.
      *
-     * @param contextPath
-     * @param outputResolver
-     * @param additionalGlobalElements
      */
     protected void generateSchema(String contextPath, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) {
         JAXBContext jaxbContext;
@@ -71,11 +67,8 @@ public class SchemaGenTestCases extends TestCase {
     /**
      * Generate one or more schemas from an array of Classes.
      *
-     * @param classesToBeBound
-     * @param outputResolver
-     * @param additionalGlobalElements
      */
-    protected void generateSchema(Class[] classesToBeBound, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) throws Exception {
+    protected void generateSchema(Class<?>[] classesToBeBound, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) throws Exception {
         JAXBContext jaxbContext;
         try {
             jaxbContext = (JAXBContext) JAXBContextFactory.createContext(classesToBeBound, null, loader);
@@ -88,9 +81,6 @@ public class SchemaGenTestCases extends TestCase {
     /**
      * Generate one or more schemas from an array of Types.
      *
-     * @param typesToBeBound
-     * @param outputResolver
-     * @param additionalGlobalElements
      */
     protected void generateSchema(Type[] typesToBeBound, MySchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) {
         JAXBContext jaxbContext;
@@ -115,7 +105,6 @@ public class SchemaGenTestCases extends TestCase {
     /**
      * Validates a given instance doc against the generated schema.
      *
-     * @param src
      * @param schemaIndex index in output resolver's list of generated schemas
      * @param outputResolver contains one or more schemas to validate against
      */
@@ -153,6 +142,7 @@ public class SchemaGenTestCases extends TestCase {
             schemaFiles = new ArrayList<File>();
         }
 
+        @Override
         public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
             //return new StreamResult(System.out);
             File schemaFile = new File(tmpdir, suggestedFileName);

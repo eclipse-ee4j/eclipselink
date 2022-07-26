@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.transformers;
 
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 
@@ -28,12 +28,19 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
  *  @since   10
  */
 public class AttributeTransformerAdapter implements AttributeTransformer {
+
+    /**
+     * Default constructor.
+     */
+    public AttributeTransformerAdapter() {
+    }
+
     @Override
     public void initialize(AbstractTransformationMapping mapping) {
     }
 
     @Override
-    public Object buildAttributeValue(Record record, Object object, Session session) {
+    public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
         return null;
     }
 }

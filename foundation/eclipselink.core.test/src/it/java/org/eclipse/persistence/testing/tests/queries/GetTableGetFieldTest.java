@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class GetTableGetFieldTest extends TestCase {
         setDescription("Test using Expression getTable(\"x\").getField(\"y\")");
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         ExpressionBuilder builder = query.getExpressionBuilder();
@@ -53,6 +54,7 @@ public class GetTableGetFieldTest extends TestCase {
         setEmployees(emps);
     }
 
+    @Override
     public void verify() {
         if ((getEmployees() == null) || getEmployees().isEmpty()) {
             throw new TestErrorException("Failure. Employees read in is null / empty");
@@ -67,6 +69,7 @@ public class GetTableGetFieldTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         setEmployees(null);
     }

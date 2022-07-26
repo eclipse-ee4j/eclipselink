@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class TestSuite extends TestCollection {
     /**
      * Constructs a TestSuite from the given class with the given name.
      */
-    public TestSuite(Class theClass, String name) {
+    public TestSuite(Class<?> theClass, String name) {
         super(theClass, name);
     }
 
@@ -39,7 +39,7 @@ public class TestSuite extends TestCollection {
      * Constructs a TestSuite from the given class. Adds all the methods
      * starting with "test" as test cases to the suite.
      */
-    public TestSuite(final Class theClass) {
+    public TestSuite(final Class<?> theClass) {
         super(theClass);
     }
 
@@ -56,6 +56,7 @@ public class TestSuite extends TestCollection {
      * The subclasses must overwrite this method. To add tests to the suite.
      * It could be collection of test cases or test suites themselves.
      */
+    @Override
     public void addTests() {
         ;
     }
@@ -63,6 +64,7 @@ public class TestSuite extends TestCollection {
     /**
      * Executes all the test entities in the collection.
      */
+    @Override
     public void execute(TestExecutor executor) throws Throwable {
         setSummary(new TestResultsSummary(this));
         setExecutor(executor);
@@ -100,6 +102,7 @@ public class TestSuite extends TestCollection {
     /**
      * Format the test output on the print stream.
      */
+    @Override
     protected void logFootNote(Writer log) {
         try {
             log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "RESULTS OF TEST SUITE: " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
@@ -111,6 +114,7 @@ public class TestSuite extends TestCollection {
      * Format the test output on the print stream.
      * This method is added to migrate tests to Ora*Tst
      */
+    @Override
     protected void logRegressionHeadNote(Writer log) {
         try {
             log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "TEST SUITE NAME: " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
@@ -122,6 +126,7 @@ public class TestSuite extends TestCollection {
     /**
      * Format the test output on the print stream.
      */
+    @Override
     protected void logHeadNote(Writer log) {
         try {
             log.write(org.eclipse.persistence.internal.helper.Helper.cr() + org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "VERSION: " + org.eclipse.persistence.sessions.DatabaseLogin.getVersion());
@@ -135,6 +140,7 @@ public class TestSuite extends TestCollection {
         return;
     }
 
+    @Override
     public void resetEntity() {
         // Clear the cache to help make test runs more stable for erroronious test cases.
         // Use old API to be able to run on 9.0.4 for perf testing.
@@ -145,6 +151,7 @@ public class TestSuite extends TestCollection {
         return;
     }
 
+    @Override
     public void setupEntity() throws Throwable {
         try {
             setup();

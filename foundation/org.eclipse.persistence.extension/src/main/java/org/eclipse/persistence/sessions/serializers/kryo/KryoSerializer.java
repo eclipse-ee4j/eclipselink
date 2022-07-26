@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,39 +30,50 @@ import org.eclipse.persistence.sessions.serializers.AbstractSerializer;
  * @author James Sutherland
  */
 public class KryoSerializer extends AbstractSerializer {
+
+    private static final long serialVersionUID = 6538902324232789378L;
+
     /** Kryo is not thread safe, so need thread local. */
-    transient ThreadLocal kryo;
-    transient Constructor kryoConstructor;
-    transient Constructor outputConstructor;
-    transient Constructor inputConstructor;
+    transient ThreadLocal<Object> kryo;
+    transient Constructor<?> kryoConstructor;
+    transient Constructor<?> outputConstructor;
+    transient Constructor<?> inputConstructor;
     transient Method writeMethod;
     transient Method readMethod;
     transient Method inputCloseMethod;
     transient Method outputCloseMethod;
 
+    /**
+     * Default constructor.
+     */
     public KryoSerializer() {
         try {
-            Class kryoClass = Class.forName("com.esotericsoftware.kryo.Kryo");
+            Class<?> kryoClass = Class.forName("com.esotericsoftware.kryo.Kryo");
             this.kryoConstructor = kryoClass.getConstructor();
-            Class inputClass = Class.forName("com.esotericsoftware.kryo.io.Input");
+            Class<?> inputClass = Class.forName("com.esotericsoftware.kryo.io.Input");
             this.inputConstructor = inputClass.getConstructor(InputStream.class);
-            Class outputClass = Class.forName("com.esotericsoftware.kryo.io.Output");
+            Class<?> outputClass = Class.forName("com.esotericsoftware.kryo.io.Output");
             this.outputConstructor = outputClass.getConstructor(OutputStream.class);
             this.writeMethod = kryoClass.getMethod("writeClassAndObject", outputClass, Object.class);
             this.readMethod = kryoClass.getMethod("readClassAndObject", inputClass);
             this.inputCloseMethod = inputClass.getMethod("close");
             this.outputCloseMethod = outputClass.getMethod("close");
-            this.kryo = new ThreadLocal();
+            this.kryo = new ThreadLocal<>();
         } catch (Exception exception) {
             throw ValidationException.reflectiveExceptionWhileCreatingClassInstance("com.esotericsoftware.kryo.Kryo", exception);
         }
     }
 
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return byte[].class;
     }
 
+    /**
+     * Return an instance of {@code com.esotericsoftware.kryo.Kryo}.
+     *
+     * @return the instance of {@code com.esotericsoftware.kryo.Kryo}
+     */
     public Object getKryo() {
         Object value = this.kryo.get();
         if (value == null) {

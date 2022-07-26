@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,6 @@ public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public SchemaGenXmlElementRefTestCases(String name) throws Exception {
         super(name);
@@ -61,7 +60,7 @@ public class SchemaGenXmlElementRefTestCases extends SchemaGenTestCases {
         if (shouldGenerateSchema) {
             outputResolver = new MySchemaOutputResolver();
             try {
-                Class[] classes = new Class[]{ Employee.class, Address.class, Thing.class };
+                Class<?>[] classes = new Class<?>[]{ Employee.class, Address.class, Thing.class };
                 JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
                 context.generateSchema(outputResolver);
             } catch (Exception ex) {

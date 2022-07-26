@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,11 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 public class DeleteAllQueryTestHelper {
 
-    public static String execute(Session mainSession, Class referenceClass, Expression selectionExpression) {
+    public static String execute(Session mainSession, Class<?> referenceClass, Expression selectionExpression) {
         return execute(mainSession, referenceClass, selectionExpression, true);
     }
 
-    public static String execute(Session mainSession, Class referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW) {
+    public static String execute(Session mainSession, Class<?> referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW) {
         return execute(mainSession, referenceClass, selectionExpression, shouldDeferExecutionInUOW, true);
     }
 
@@ -53,8 +53,8 @@ public class DeleteAllQueryTestHelper {
     //  the results are saved and after compared with DeleteAllQuery results:
     //    both inCache and inDb comparison performed;
     //    both deleted and remained objects should be the same;
-    public static String execute(Session mainSession, Class referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren) {
-        Class rootClass = referenceClass;
+    public static String execute(Session mainSession, Class<?> referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren) {
+        Class<?> rootClass = referenceClass;
         ClassDescriptor descriptor = mainSession.getClassDescriptor(referenceClass);
         if(descriptor.hasInheritance()) {
             ClassDescriptor parentDescriptor = descriptor;
@@ -72,19 +72,19 @@ public class DeleteAllQueryTestHelper {
         }
     }
 
-    protected static String execute(Session mainSession, Class referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren,
-                                    Class rootClass) {
+    protected static String execute(Session mainSession, Class<?> referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren,
+                                    Class<?> rootClass) {
         String errorMsg = "";
         clearCache(mainSession);
 
         // first delete using the original TopLink approach - one by one.
         UnitOfWork uow = mainSession.acquireUnitOfWork();
         // mainSession could be a ServerSession
-        Session session = uow.getParent();
+        AbstractSession session = uow.getParent();
 
         // Will need to bring the db back to its original state
         // so that comparison of the deletion result would be possible.
-        ((AbstractSession)session).beginTransaction();
+        session.beginTransaction();
 
         Vector objectsToDelete = uow.readAllObjects(referenceClass, selectionExpression);
 
@@ -96,7 +96,7 @@ public class DeleteAllQueryTestHelper {
 
         Vector objectsLeftAfterOriginalDeletion = session.readAllObjects(rootClass);
 
-        ((AbstractSession)session).rollbackTransaction();
+        session.rollbackTransaction();
 
         // now delete using DeleteAllQuery.
         clearCache(mainSession);
@@ -111,7 +111,7 @@ public class DeleteAllQueryTestHelper {
         // Will need to bring the db back to its original state
         // so that the in case thre are children descriptors
         // they would still have objects to work with.
-        ((AbstractSession)session).beginTransaction();
+        session.beginTransaction();
 
         DeleteAllQuery query = new DeleteAllQuery(referenceClass, selectionExpression);
         query.setShouldDeferExecutionInUOW(shouldDeferExecutionInUOW);
@@ -157,7 +157,7 @@ public class DeleteAllQueryTestHelper {
             }
         }
 
-        ((AbstractSession)session).rollbackTransaction();
+        session.rollbackTransaction();
 
         if(classErrorMsg.length() > 0) {
             String className = referenceClass.getName();
@@ -167,10 +167,10 @@ public class DeleteAllQueryTestHelper {
 
         if(handleChildren) {
             if(descriptor.hasInheritance() && descriptor.getInheritancePolicy().hasChildren()) {
-                Iterator it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
+                Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
                 while(it.hasNext()) {
-                    ClassDescriptor childDescriptor = (ClassDescriptor)it.next();
-                    Class childReferenceClass = childDescriptor.getJavaClass();
+                    ClassDescriptor childDescriptor = it.next();
+                    Class<?> childReferenceClass = childDescriptor.getJavaClass();
                     errorMsg += execute(mainSession, childReferenceClass, selectionExpression, shouldDeferExecutionInUOW, handleChildren, rootClass);
                 }
             }

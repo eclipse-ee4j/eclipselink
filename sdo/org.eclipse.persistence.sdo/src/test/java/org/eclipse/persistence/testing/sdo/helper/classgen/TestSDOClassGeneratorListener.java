@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,30 +24,37 @@ public class TestSDOClassGeneratorListener implements SDOClassGeneratorListener 
     public TestSDOClassGeneratorListener() {
     }
 
+    @Override
     public void preInterfacePackage(StringBuffer buffer) {
         buffer.append("//this is the preInterfacePackage event" + cr);
     }
 
+    @Override
     public void preImplPackage(StringBuffer buffer) {
         buffer.append("//this is the preImplPackage event"+ cr);
     }
 
+    @Override
     public void preInterfaceImports(StringBuffer buffer) {
         buffer.append("//this is the preInterfaceImports event"+ cr);
     }
 
+    @Override
     public void preImplImports(StringBuffer buffer) {
         buffer.append("//this is the preImplImports event"+ cr);
     }
 
+    @Override
     public void preInterfaceClass(StringBuffer buffer) {
         buffer.append("//this is the preInterfaceClass event"+ cr);
     }
 
+    @Override
     public void preImplClass(StringBuffer buffer) {
         buffer.append("//this is the preImplClass event"+ cr);
     }
 
+    @Override
     public void preImplAttributes(StringBuffer buffer) {
         buffer.append("//this is the preImplAttributes event"+ cr);
     }

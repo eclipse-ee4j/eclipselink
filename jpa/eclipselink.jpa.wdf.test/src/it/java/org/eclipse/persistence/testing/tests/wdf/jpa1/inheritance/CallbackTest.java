@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -56,6 +56,7 @@ public class CallbackTest extends JPA1Base {
             callCounter = 0;
         }
 
+        @Override
         public void callbackCalled(Object entity, Class<? extends Annotation> event) {
             if (event != expectedEvent) {
                 log.add("Wrong event, expected " + expectedEvent + ", got " + event);
@@ -101,12 +102,14 @@ public class CallbackTest extends JPA1Base {
         final EntityManager em = environment.getEntityManager();
         try {
             VehicleListener.setListener(new CallbackEventListener() {
+                @Override
                 public void callbackCalled(Object entity, Class<? extends Annotation> event) {
                     vehicleCallbackCalled((Vehicle) entity, event);
                 }
             });
             try {
                 BikeListener.setListener(new CallbackEventListener() {
+                    @Override
                     public void callbackCalled(Object entity, Class<? extends Annotation> event) {
                         bikeCallbackCalled((Bicycle) entity, event);
                     }
@@ -197,12 +200,14 @@ public class CallbackTest extends JPA1Base {
             final MountainBike storedMountainBike = (MountainBike) em.find(Vehicle.class, mountainBike.getId());
             // test starts here
             VehicleListener.setListener(new CallbackEventListener() {
+                @Override
                 public void callbackCalled(Object entity, Class<? extends Annotation> event) {
                     vehicleCallbackCalled((Vehicle) entity, event);
                 }
             });
             try {
                 BikeListener.setListener(new CallbackEventListener() {
+                    @Override
                     public void callbackCalled(Object entity, Class<? extends Annotation> event) {
                         bikeCallbackCalled((Bicycle) entity, event);
                     }

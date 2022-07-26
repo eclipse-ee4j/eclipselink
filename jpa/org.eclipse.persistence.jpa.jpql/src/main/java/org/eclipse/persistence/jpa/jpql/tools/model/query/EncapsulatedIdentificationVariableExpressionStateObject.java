@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
 /**
  * This object represents an identification variable that is wrapped by a function.
  *
- * <div><b>BNF:</b> <code>&lt;identifier&gt;(identification_variable)</code><p></div>
+ * <div><p><b>BNF:</b> <code>&lt;identifier&gt;(identification_variable)</code></p></div>
  *
  * @see EncapsulatedIdentificationVariableExpression
  *
@@ -108,9 +108,6 @@ public abstract class EncapsulatedIdentificationVariableExpressionStateObject ex
         typeDeclaration = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EncapsulatedIdentificationVariableExpression getExpression() {
         return (EncapsulatedIdentificationVariableExpression) super.getExpression();
@@ -149,17 +146,11 @@ public abstract class EncapsulatedIdentificationVariableExpressionStateObject ex
         return managedType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return IdentificationVariableBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IdentificationVariableStateObject getStateObject() {
         return (IdentificationVariableStateObject) super.getStateObject();
@@ -213,9 +204,6 @@ public abstract class EncapsulatedIdentificationVariableExpressionStateObject ex
         return ExpressionTools.stringIsNotEmpty(getIdentificationVariable());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * An ordering clause allows the objects or values that are returned by the query to be ordered.
  *
- * <div><b>BNF:</b> <code>orderby_clause ::= <b>&lt;identifier&gt;</b> {@link OrderByItem orderby_item} {, {@link OrderByItem orderby_item}}*</code><p></div>
+ * <div><b>BNF:</b> <code>orderby_clause ::= <b>&lt;identifier&gt;</b> {@link OrderByItem orderby_item} {, {@link OrderByItem orderby_item}}*</code></div>
  *
  * @version 2.5
  * @since 2.5
@@ -37,7 +37,7 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
     private boolean hasSpaceAfterIdentifier;
 
     /**
-     * The actual <b></b> identifier found in the string representation of the JPQL query.
+     * The actual identifier found in the string representation of the JPQL query.
      */
     private String identifier;
 
@@ -56,25 +56,16 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getOrderByItems().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getOrderByItems());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -96,21 +87,18 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
      */
     public final CollectionExpression buildCollectionExpression() {
 
-        List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+        List<AbstractExpression> children = new ArrayList<>(1);
         children.add((AbstractExpression) getOrderByItems());
 
-        List<Boolean> commas = new ArrayList<Boolean>(1);
+        List<Boolean> commas = new ArrayList<>(1);
         commas.add(Boolean.FALSE);
 
-        List<Boolean> spaces = new ArrayList<Boolean>(1);
+        List<Boolean> spaces = new ArrayList<>(1);
         spaces.add(Boolean.FALSE);
 
         return new CollectionExpression(this, children, spaces, commas, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -162,9 +150,6 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
         return hasSpaceAfterIdentifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -177,9 +162,6 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
         orderByItems = parse(wordParser, OrderByItemBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

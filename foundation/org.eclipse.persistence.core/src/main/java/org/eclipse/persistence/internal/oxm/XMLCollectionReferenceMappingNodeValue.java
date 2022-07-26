@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,6 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * This constructor sets the XMLCollectionReferenceMapping and XMLField members to
      * the provided values.
      *
-     * @param xmlCollectionReferenceMapping
      */
     public XMLCollectionReferenceMappingNodeValue(CollectionReferenceMapping xmlCollectionReferenceMapping, Field xmlField) {
         super();
@@ -112,7 +111,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
 
         ConversionManager conversionManager = unmarshalRecord.getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {
-            Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName(), conversionManager);
+            Class<?> typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName(), conversionManager);
             value = conversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
             value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
@@ -233,9 +232,6 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
     }
 
     /**
-     * @param xPathFragment
-     * @param unmarshalRecord
-     * @param atts
      */
     @Override
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {

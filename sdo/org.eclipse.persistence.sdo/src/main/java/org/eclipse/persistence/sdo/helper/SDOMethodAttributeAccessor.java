@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,14 +29,14 @@ import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
  * the DataObject and that must be set on this accessor.
  */
 public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
-    protected Class attributeClass;
+    protected Class<?> attributeClass;
     protected SDOProperty property;
 
     public SDOMethodAttributeAccessor(Property property) {
         setProperty(property);
     }
 
-    public SDOMethodAttributeAccessor(Property property, Class attributeClass) {
+    public SDOMethodAttributeAccessor(Property property, Class<?> attributeClass) {
         setProperty(property);
         this.attributeClass = attributeClass;
     }
@@ -45,7 +45,7 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
       * Return the return type of the method accessor.
       */
     @Override
-    public Class getAttributeClass() {
+    public Class<?> getAttributeClass() {
         if (attributeClass != null) {
             return attributeClass;
         }
@@ -71,7 +71,7 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
      * get and set method names
      */
     @Override
-    public void initializeAttributes(Class theJavaClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
         }
@@ -109,12 +109,12 @@ public class SDOMethodAttributeAccessor extends MethodAttributeAccessor {
     }
 
     @Override
-    public Class getGetMethodReturnType() {
+    public Class<?> getGetMethodReturnType() {
         return attributeClass;
     }
 
     @Override
-    public Class getSetMethodParameterType() {
+    public Class<?> getSetMethodParameterType() {
         return attributeClass;
     }
 

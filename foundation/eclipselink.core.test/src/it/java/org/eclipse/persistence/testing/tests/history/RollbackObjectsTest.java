@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,20 +31,22 @@ import org.eclipse.persistence.testing.models.employee.domain.Project;
 
 public class RollbackObjectsTest extends AutoVerifyTestCase {
 
-    Class domainClass;
+    Class<?> domainClass;
     AsOfClause pastTime;
     Vector pastObjects;
 
-    public RollbackObjectsTest(Class domainClass, AsOfClause pastTime) {
+    public RollbackObjectsTest(Class<?> domainClass, AsOfClause pastTime) {
         super();
         this.domainClass = domainClass;
         this.pastTime = pastTime;
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         org.eclipse.persistence.sessions.Session hs = getSession().acquireHistoricalSession(pastTime);
         pastObjects = hs.readAllObjects(domainClass);
@@ -84,6 +86,7 @@ public class RollbackObjectsTest extends AutoVerifyTestCase {
             uow.commit();
     }
 
+    @Override
     public void verify() {
         try {
             Vector restoredObjects = getSession().readAllObjects(domainClass);
@@ -95,6 +98,7 @@ public class RollbackObjectsTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsNoJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
 import org.w3c.dom.Document;
@@ -53,32 +54,44 @@ public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsNoJSONT
 
         Type mapType2 = new ParameterizedType() {
         Type[] typeArgs = { Calendar.class, Float.class };
+         @Override
          public Type[] getActualTypeArguments() { return typeArgs;}
+         @Override
          public Type getOwnerType() { return null; }
+         @Override
          public Type getRawType() { return Map.class; }
         };
         types[1] = mapType2;
 
         Type mapType3 = new ParameterizedType() {
             Type[] typeArgs = { Person.class, Job.class };
+             @Override
              public Type[] getActualTypeArguments() { return typeArgs;}
+             @Override
              public Type getOwnerType() { return null; }
+             @Override
              public Type getRawType() { return Map.class; }
             };
         types[2] = mapType3;
 
         Type listType = new ParameterizedType() {
             Type[] typeArgs = { Person.class};
+             @Override
              public Type[] getActualTypeArguments() { return typeArgs;}
+             @Override
              public Type getOwnerType() { return null; }
+             @Override
              public Type getRawType() { return List.class; }
             };
         types[3] = listType;
 
         Type listType2 = new ParameterizedType() {
             Type[] typeArgs = { String.class};
+             @Override
              public Type[] getActualTypeArguments() { return typeArgs;}
+             @Override
              public Type getOwnerType() { return null; }
+             @Override
              public Type getRawType() { return List.class; }
             };
         types[4] = listType2;
@@ -87,17 +100,20 @@ public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsNoJSONT
         setTypes(types);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         getXMLComparer().setIgnoreOrder(true);
         init();
     }
 
+    @Override
     public void tearDown(){
         super.tearDown();
         getXMLComparer().setIgnoreOrder(false);
     }
 
+    @Override
     public List<InputStream> getControlSchemaFiles() {
         InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMapsNamespace.xsd");
         InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMapsNamespace2.xsd");
@@ -109,11 +125,12 @@ public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsNoJSONT
 
     }
 
+    @Override
     protected Object getControlObject() {
 
         Map<String, Integer> theMap = new HashMap<String, Integer>();
-        theMap.put("aaa", new Integer(1));
-        theMap.put("bbb", new Integer(2));
+        theMap.put("aaa", 1);
+        theMap.put("bbb", 2);
 
         QName qname = new QName("root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
@@ -121,23 +138,26 @@ public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsNoJSONT
         return jaxbElement;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = getClass().getField("mapField1");
         Type fieldType =  fld.getGenericType();
         return fieldType;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE;
     }
 
+    @Override
     protected Map getProperties() {
         String pkg = "java.util";
 
         HashMap<String, Source> overrides = new HashMap<String, Source>();
         overrides.put(pkg, getXmlSchemaOxm(pkg));
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 

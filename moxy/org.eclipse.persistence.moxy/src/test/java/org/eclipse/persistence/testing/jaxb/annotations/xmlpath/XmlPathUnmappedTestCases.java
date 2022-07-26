@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,13 +30,14 @@ public class XmlPathUnmappedTestCases extends JAXBWithJSONTestCases {
 
     public XmlPathUnmappedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class, Employee.class, Address.class, PhoneNumber.class});
+        setClasses(new Class<?>[] {Root.class, Employee.class, Address.class, PhoneNumber.class});
         setControlDocument(XML_RESOURCE_UNMAPPED);
         setWriteControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE_UNMAPPED);
         setWriteControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public Object getJSONReadControlObject(){
         Root root = (Root)getControlObject();
         Employee emp = root.employees.get(0);
@@ -46,6 +47,7 @@ public class XmlPathUnmappedTestCases extends JAXBWithJSONTestCases {
         return root;
     }
 
+    @Override
     public Object getControlObject() {
         Employee emp = new Employee();
         emp.id = 101;

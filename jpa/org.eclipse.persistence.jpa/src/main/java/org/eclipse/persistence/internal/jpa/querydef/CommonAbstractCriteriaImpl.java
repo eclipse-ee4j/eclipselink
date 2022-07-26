@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +22,7 @@ import java.util.Set;
 
 import jakarta.persistence.criteria.CommonAbstractCriteria;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -40,7 +42,6 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * <b>Description</b>: This is the container class for the components that
  * define a query. This is the superclass of CriteriaQuery, SubQuery, CriteriaDelete
  * and CriteriaUpdate.
- * <p>
  *
  * @see jakarta.persistence.criteria CommonAbstractCriteria
  *
@@ -54,7 +55,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     protected Metamodel metamodel;
     protected Expression<Boolean> where;
     protected CriteriaBuilderImpl queryBuilder;
-    protected Class queryType;
+    protected Class<T> queryType;
 
     protected Set<ParameterExpression<?>> parameters;
 
@@ -115,7 +116,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *            the entity class
      * @return query root corresponding to the given entity
      */
-    public Root internalFrom(Class entityClass) {
+    public Root internalFrom(Class<?> entityClass) {
         EntityType entity = this.metamodel.entity(entityClass);
         return this.internalFrom(entity);
     }
@@ -172,6 +173,10 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
 
     protected void findRootAndParameters(Expression<?> predicate) {
         ((InternalSelection) predicate).findRootAndParameters(this);
+    }
+
+    protected void findRootAndParameters(Order order) {
+        ((OrderImpl) order).findRootAndParameters(this);
     }
 
     protected abstract org.eclipse.persistence.expressions.Expression getBaseExpression();

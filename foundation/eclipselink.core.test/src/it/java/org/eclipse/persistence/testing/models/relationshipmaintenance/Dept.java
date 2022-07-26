@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,8 @@ import java.util.Vector;
 public class Dept implements Serializable {
 
     /**
-     * Map empCollection <-> model.Emp
-     * @associates <{model.Emp}>
+     * Map empCollection {@literal <}-{@literal >} model.Emp
+     * associates {@code <{model.Emp}>}
      */
     public Collection empCollection;
     public Double deptno;

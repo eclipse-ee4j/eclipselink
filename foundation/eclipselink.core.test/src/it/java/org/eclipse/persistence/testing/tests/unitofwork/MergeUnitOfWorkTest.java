@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ import org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod;
  * <li> <i>Address</i> 1:1 Mapping
  * <li> <i>Period</i> Simple Aggregate
  * <li> <i>NormalHours</i>
+ * </ul>
  */
 public class MergeUnitOfWorkTest extends org.eclipse.persistence.testing.framework.WriteObjectTest {
     public Object unitOfWorkWorkingCopy;
@@ -109,6 +110,7 @@ public class MergeUnitOfWorkTest extends org.eclipse.persistence.testing.framewo
     /**
      * This method was created by a SmartGuide.
      */
+    @Override
     public void setup() {
         super.setup();
 
@@ -124,6 +126,7 @@ public class MergeUnitOfWorkTest extends org.eclipse.persistence.testing.framewo
         }
     }
 
+    @Override
     protected void test() {
         this.unitOfWork.commit();
     }
@@ -132,6 +135,7 @@ public class MergeUnitOfWorkTest extends org.eclipse.persistence.testing.framewo
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         boolean found = false;
         Employee employeeToBeWritten = new org.eclipse.persistence.testing.models.employee.domain.Employee();

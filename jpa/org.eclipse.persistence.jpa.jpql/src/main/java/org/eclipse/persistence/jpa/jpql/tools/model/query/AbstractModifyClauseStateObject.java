@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,26 +45,17 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
         children.add(rangeVariableDeclaration);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<VariableDeclarationStateObject> declarations() {
-        return new SingleElementListIterable<VariableDeclarationStateObject>(rangeVariableDeclaration);
+        return new SingleElementListIterable<>(rangeVariableDeclaration);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType findManagedType(StateObject stateObject) {
         return getManagedType(stateObject);
@@ -89,9 +80,6 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
         return rangeVariableDeclaration.getRootStateObject();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DeclarationStateObject getDeclaration() {
         return this;
@@ -131,9 +119,6 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
      */
     public abstract String getIdentifier();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
@@ -146,9 +131,6 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractModifyStatementStateObject getParent() {
         return (AbstractModifyStatementStateObject) super.getParent();
@@ -173,18 +155,12 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
         return rangeVariableDeclaration.hasIdentificationVariable();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         rangeVariableDeclaration = new RangeVariableDeclarationStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -263,9 +239,6 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
         rangeVariableDeclaration.setIdentificationVariable(identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         writer.append(getIdentifier());

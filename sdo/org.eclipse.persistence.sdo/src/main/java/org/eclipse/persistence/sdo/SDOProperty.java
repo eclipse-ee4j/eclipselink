@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -480,7 +480,7 @@ public class SDOProperty implements Property, Serializable {
         // Set fields even though defaults are set
         //aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         // Parameter type is always String
-        ((IsSetNullPolicy)aNullPolicy).setIsSetParameterTypes(new Class[] { ClassConstants.STRING });
+        ((IsSetNullPolicy)aNullPolicy).setIsSetParameterTypes(new Class<?>[] { ClassConstants.STRING });
         ((IsSetNullPolicy)aNullPolicy).setIsSetParameters(new Object[] { propertyName });
         aMapping.setNullPolicy(aNullPolicy);
         return aNullPolicy;
@@ -633,7 +633,7 @@ public class SDOProperty implements Property, Serializable {
             if (sdoMethodAttributeAccessor) {
                 SDOMethodAttributeAccessor accessor = null;
                 if (this.getType().isDataType()) {
-                    Class theClass = getType().getInstanceClass();
+                    Class<?> theClass = getType().getInstanceClass();
                     accessor = new SDOMethodAttributeAccessor(this, theClass);
                 } else {
                     accessor = new SDOMethodAttributeAccessor(this);
@@ -935,7 +935,7 @@ public class SDOProperty implements Property, Serializable {
      * @return id Property or null
      */
     private SDOProperty getIDProp(Type aType) {
-        return (SDOProperty)aType.getProperty((String)((SDOType)aType).get(SDOConstants.ID_PROPERTY));
+        return (SDOProperty)aType.getProperty((String) aType.get(SDOConstants.ID_PROPERTY));
     }
 
     private DatabaseMapping buildXMLCollectionReferenceMapping(String mappingUri) {
@@ -966,7 +966,7 @@ public class SDOProperty implements Property, Serializable {
     private boolean shouldAddInstanceClassConverter() {
         Object value = getType().get(SDOConstants.JAVA_CLASS_PROPERTY);
         if (getType().isDataType() && (value != null)) {
-            Class instanceClass = getType().getInstanceClass();
+            Class<?> instanceClass = getType().getInstanceClass();
             String instanceClassName = getType().getInstanceClassName();
             if (((instanceClassName != null) && instanceClassName.equals("jakarta.activation.DataHandler")) ||//
                     (instanceClass == ClassConstants.ABYTE) ||//

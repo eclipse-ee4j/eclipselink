@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,13 +29,13 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
     int deleteSuccess = 1;
     String parameterNamePrefix;
     boolean shouldUseNamedArguments;
-    static final Integer menuID = new Integer(99);
-    static final Integer restaurantID = new Integer(100);
-    static final Integer dinerID = new Integer(101);
-    static final Integer personID = new Integer(102);
-    static final Integer locationID = new Integer(103);
-    static final Integer waiterID = new Integer(104);
-    static final Integer menuItemID = new Integer(105);
+    static final Integer menuID = 99;
+    static final Integer restaurantID = 100;
+    static final Integer dinerID = 101;
+    static final Integer personID = 102;
+    static final Integer locationID = 103;
+    static final Integer waiterID = 104;
+    static final Integer menuItemID = 105;
     static final String menuType = "Lunch";
     static final String menuTypeUpdate = "Dinner";
     static final String dinerFirstName = "Steve";
@@ -55,14 +55,15 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
     static final String waiterSpecialityUpdate = "Speaking Spanish and Italian";
     static final String waiterClass = "A";
     static final String menuItemName = "Roasted beef and potato";
-    static final Float menuItemPrice = new Float(20.99f);
-    static final Float menuItemPriceUpdate = new Float(22.99f);
+    static final Float menuItemPrice = 20.99f;
+    static final Float menuItemPriceUpdate = 22.99f;
     static final String restaurantName = "May Flower";
     static final String restaurantNameUpdate = "Great Wall Restaurant";
 
     public SPGExecuteStoredProcedureTest() {
     }
 
+    @Override
     public void setup() {
         shouldUseNamedArguments = !getSession().getDatasourcePlatform().isMySQL();
         if(shouldUseNamedArguments) {
@@ -135,6 +136,7 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         {
         StoredProcedureCall call = new StoredProcedureCall();
@@ -199,6 +201,7 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         {
         StoredProcedureCall call = new StoredProcedureCall();
@@ -262,6 +265,7 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if(insertSuccess * updateSuccess * deleteSuccess == 0 ) {
           throw new TestErrorException("Failed to call stored procedures.") ;

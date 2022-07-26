@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,10 +33,12 @@ public class PerformanceComparisonModel extends TestModel {
         setDescription("Performance tests that compare/verify the performance of two or more ways of doing something.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadingTestSuite());
         addTest(getWritingTestSuite());
@@ -83,6 +85,7 @@ public class PerformanceComparisonModel extends TestModel {
         return suite;
     }
 
+    @Override
     public void setup() {
         for (int j = 0; j < 100; j++) {
             Employee empInsert = new Employee();

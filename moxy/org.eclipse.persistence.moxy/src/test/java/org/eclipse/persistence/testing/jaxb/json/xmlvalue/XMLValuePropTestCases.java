@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,11 +36,12 @@ public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
     private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/xmlvalue/personSchema.json";
     public XMLValuePropTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Person.class});
+        setClasses(new Class<?>[]{Person.class});
         setControlJSON(JSON_RESOURCE);
         setControlDocument(XML_RESOURCE);
     }
 
+    @Override
     public Map getProperties(){
         Map props = new HashMap();
         props.put(JAXBContextProperties.JSON_VALUE_WRAPPER, "valuewrapper");

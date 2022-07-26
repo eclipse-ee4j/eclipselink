@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,19 +22,16 @@
 package org.eclipse.persistence.internal.helper;
 
 //javase imports
+
 import java.io.Serializable;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
-import static java.lang.Integer.MIN_VALUE;
-
-//EclipseLink imports
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+
+import static java.lang.Integer.MIN_VALUE;
 
 /**
  * INTERNAL:
@@ -71,7 +68,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      * Respective Java type desired for the field's value, used to optimize performance and for binding.
      * PERF: Allow direct variable access from getObject.
      */
-    public transient Class type;
+    public transient Class<?> type;
     public String typeName; // shadow variable - string name of above Class type variable
 
     /**
@@ -91,7 +88,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
 
     /**
      * If this is set, it will be used in determining equality (unless delimiters are used) and the hashcode.
-     * @see getNameForComparisons
+     * @see #getNameForComparisons()
      */
     protected String nameForComparisons;
 
@@ -197,19 +194,10 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         if (type == null && typeName != null) {
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        type = AccessController.doPrivileged(new PrivilegedClassForName(typeName, true, classLoader));
-                    } catch (PrivilegedActionException e) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, e.getException());
-                    }
-                } else {
-                    type = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(typeName, true, classLoader);
-                }
-            } catch (Exception exception) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, exception);
-            }
+            type = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getClassForName(typeName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(typeName, ex)
+            );
         }
     }
 
@@ -369,7 +357,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     }
 
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         if ((this.type == null) && (this.typeName != null)) {
             convertClassNamesToClasses(getClass().getClassLoader());
         }
@@ -626,7 +614,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      * this is used to optimize performance, and for binding.
      */
     @Override
-    public void setType(Class type) {
+    public void setType(Class<?> type) {
         this.type = type;
         if (this.type != null && typeName == null) {
             typeName = this.type.getName();

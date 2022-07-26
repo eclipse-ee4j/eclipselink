@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 
 //Created by Ian Reid
@@ -32,10 +33,11 @@ public class InvalidAttributeTypeForProxyIndirectionTest extends ExceptionTest {
     }
 
     IntegrityChecker orgIntegrityChecker;
-    Class attributeType = org.eclipse.persistence.testing.models.employee.domain.Employee.class;
-    Class[] targetInterfaces = { InvalidAttributeTypeForProxyIndirectionTest.class };
+    Class<Employee> attributeType = org.eclipse.persistence.testing.models.employee.domain.Employee.class;
+    Class<?>[] targetInterfaces = { InvalidAttributeTypeForProxyIndirectionTest.class };
     OneToManyMapping mapping = new OneToManyMapping();
 
+    @Override
     protected void setup() {
         //setup need to remove setup null pointer thrown error
         RelationalDescriptor descriptor = new RelationalDescriptor();
@@ -49,11 +51,13 @@ public class InvalidAttributeTypeForProxyIndirectionTest extends ExceptionTest {
         getSession().getIntegrityChecker().dontCatchExceptions();
     }
 
+    @Override
     public void reset() {
         if (orgIntegrityChecker != null)
             getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         ProxyIndirectionPolicy policy = new ProxyIndirectionPolicy();
         mapping.setReferenceClass(attributeType);

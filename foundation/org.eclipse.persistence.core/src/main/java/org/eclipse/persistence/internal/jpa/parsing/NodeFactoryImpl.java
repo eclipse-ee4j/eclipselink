@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,12 +112,12 @@ public class NodeFactoryImpl implements NodeFactory {
 
     @Override
     public Object newSelectClause(int line, int column,
-                                    boolean distinct, List selectExprs) {
+                                  boolean distinct, List<Node> selectExprs) {
         return newSelectClause(line, column, distinct, selectExprs, null);
     }
 
     @Override
-    public Object newSelectClause(int line, int column, boolean distinct, List selectExprs, List identifiers) {
+    public Object newSelectClause(int line, int column, boolean distinct, List<Node> selectExprs, List<String> identifiers) {
         SelectNode node = new SelectNode();
         node.setContext(context);
         node.setSelectExpressions(selectExprs);
@@ -125,7 +125,7 @@ public class NodeFactoryImpl implements NodeFactory {
         if (identifiers != null){
             for (int i=0;i<identifiers.size();i++){
                 if (identifiers.get(i) != null){
-                    context.registerJoinVariable(calculateCanonicalName((String)identifiers.get(i)), (Node)selectExprs.get(i), line, column);
+                    context.registerJoinVariable(calculateCanonicalName(identifiers.get(i)), selectExprs.get(i), line, column);
                 }
             }
         }
@@ -136,7 +136,7 @@ public class NodeFactoryImpl implements NodeFactory {
 
     /** */
     @Override
-    public Object newFromClause(int line, int column, List decls) {
+    public Object newFromClause(int line, int column, List<Node> decls) {
         FromNode node = new FromNode();
         node.setContext(context);
         node.setDeclarations(decls);
@@ -156,7 +156,7 @@ public class NodeFactoryImpl implements NodeFactory {
 
     /** */
     @Override
-    public Object newGroupByClause(int line, int column, List items) {
+    public Object newGroupByClause(int line, int column, List<Node> items) {
         GroupByNode node = new GroupByNode();
         node.setContext(context);
         node.setGroupByItems(items);
@@ -176,7 +176,7 @@ public class NodeFactoryImpl implements NodeFactory {
 
     /** */
     @Override
-    public Object newOrderByClause(int line, int column, List items) {
+    public Object newOrderByClause(int line, int column, List<Node> items) {
         OrderByNode node = new OrderByNode();
         node.setContext(context);
         node.setOrderByItems(items);
@@ -587,7 +587,7 @@ public class NodeFactoryImpl implements NodeFactory {
     /** */
     @Override
     public Object newIn(int line, int column,
-                        boolean not, Object expr, List items) {
+                        boolean not, Object expr, List<Node> items) {
         InNode node = new InNode();
         if (not) node.indicateNot();
         node.setLeft((Node)expr);
@@ -723,7 +723,7 @@ public class NodeFactoryImpl implements NodeFactory {
 
     /** */
     @Override
-    public Object newConcat(int line, int column, List objects) {
+    public Object newConcat(int line, int column, List<Node> objects) {
         ConcatNode node = new ConcatNode();
         node.setObjects(objects);
         setPosition(node, line, column);
@@ -882,7 +882,7 @@ public class NodeFactoryImpl implements NodeFactory {
 
     /** */
     @Override
-    public Object newFunc(int line, int column, String name, List parameters) {
+    public Object newFunc(int line, int column, String name, List<Node> parameters) {
         FuncNode node = new FuncNode();
         if(name.startsWith("'") && name.endsWith("'")) {
             name = name.substring(1, name.length()-1);
@@ -998,7 +998,7 @@ public class NodeFactoryImpl implements NodeFactory {
     /** */
     @Override
     public Object newConstructor(int line, int column,
-                                 String className, List args) {
+                                 String className, List<Node> args) {
         ConstructorNode node = new ConstructorNode(className);
         node.setConstructorItems(args);
         setPosition(node, line, column);
@@ -1007,7 +1007,7 @@ public class NodeFactoryImpl implements NodeFactory {
 
     /** */
     @Override
-    public Object newSetClause(int line, int column, List assignments) {
+    public Object newSetClause(int line, int column, List<Node> assignments) {
         SetNode node = new SetNode();
         node.setAssignmentNodes(assignments);
         setPosition(node, line, column);
@@ -1077,7 +1077,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     @Override
-    public Object newCaseClause(int line, int column, Object base, List whenClauses, Object elseClause){
+    public Object newCaseClause(int line, int column, Object base, List<Node> whenClauses, Object elseClause){
         CaseNode node = new CaseNode();
         node.setWhenClauses(whenClauses);
         if (base != null){
@@ -1089,7 +1089,7 @@ public class NodeFactoryImpl implements NodeFactory {
     }
 
     @Override
-    public Object newCoalesceClause(int line, int column, List clauses){
+    public Object newCoalesceClause(int line, int column, List<Node> clauses){
         CoalesceNode node = new CoalesceNode();
         node.setClauses(clauses);
         setPosition(node, line, column);

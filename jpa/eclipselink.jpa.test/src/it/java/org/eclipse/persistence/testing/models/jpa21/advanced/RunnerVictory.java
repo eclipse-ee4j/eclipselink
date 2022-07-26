@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 /**
- * Victory of an Runner in a competition.<br/>
+ * <p>Victory of an Runner in a competition.</p>
  * Embedded class to verify {@code @Convert} annotation with {@code @ElementCollection} mapping.
  * @author Tomas Kraus
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import org.w3c.dom.Document;
@@ -56,7 +57,6 @@ public class DirectCollectionMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public DirectCollectionMappingTestCases(String name) throws Exception{
         super(name);
@@ -64,12 +64,13 @@ public class DirectCollectionMappingTestCases extends JAXBWithJSONTestCases {
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[]{});
+        setClasses(new Class<?>[]{});
     }
 
     /**
      * Create the control Employee.
      */
+    @Override
     public Object getControlObject() {
         List<String> prjIds = new ArrayList<String>();
         prjIds.add(PRJ_ID1);
@@ -98,12 +99,14 @@ public class DirectCollectionMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * Create the control Employee.
      */
+    @Override
     public Object getJSONReadControlObject() {
         Employee emp = (Employee) getWriteControlObject();
         emp.privateData = null;
         return emp;
     }
 
+    @Override
     public Object getWriteControlObject() {
         if(writeCtrlObject == null){
             writeCtrlObject = (Employee)getControlObject();
@@ -121,26 +124,30 @@ public class DirectCollectionMappingTestCases extends JAXBWithJSONTestCases {
 
 
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/eclipselink-oxm.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.directcollection", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
            assertTrue("Accessor method was not called as expected", ((Employee)testObject).wasSetCalled);
     }
 
+    @Override
     public void testRoundTrip() throws Exception{
         //doesn't apply since read and write only mappings are present
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", writeCtrlObject.wasGetCalled);
@@ -177,6 +184,7 @@ public class DirectCollectionMappingTestCases extends JAXBWithJSONTestCases {
         assertTrue("Instance doc validation (write-employee) failed unxepectedly: " + result, result == null);
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         //See Bug 355143
 

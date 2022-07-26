@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.jpa.JpaHelper;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.tools.schemaframework.DefaultTableGenerator;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 
@@ -49,10 +48,11 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
+    @Override
     public void testSetup() {
         // Create the EM.  This might unnecessarily drop and create the tables
         EntityManager em = createEntityManager(DDL_PU);
-        DatabaseSessionImpl session = this.getDatabaseSession(DDL_PU);
+        DatabaseSessionImpl session = getDatabaseSession(DDL_PU);
 
         TableCreator defaultTableCreator = new DefaultTableGenerator(session.getProject(), true).generateDefaultTableCreator();
         defaultTableCreator.setIgnoreDatabaseException(true);
@@ -69,7 +69,7 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
         } catch (PersistenceException e){
             exception = e;
         }
-        this.assertNotNull("setup failed because a query on a drop table did not throw an exception.", exception);
+        assertNotNull("setup failed because a query on a drop table did not throw an exception.", exception);
 
         //create some empty tables so that we can test they are altered correctly later.
         TableCreator tbCreator = new EmptyTableCreator();

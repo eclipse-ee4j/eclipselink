@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * The <code><b>SQRT</b></code> function takes a numeric argument and returns a <code>Double</code>.
  *
- * <div><b>BNF:</b> <code>expression ::= SQRT(simple_arithmetic_expression)</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= SQRT(simple_arithmetic_expression)</code></p></div>
  *
  * @see SqrtExpression
  *
@@ -64,33 +64,21 @@ public class SqrtExpressionStateObject extends AbstractSingleEncapsulatedExpress
         super(parent, jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SqrtExpression getExpression() {
         return (SqrtExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return SQRT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return SimpleArithmeticExpressionBNF.ID;
@@ -108,9 +96,6 @@ public class SqrtExpressionStateObject extends AbstractSingleEncapsulatedExpress
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);

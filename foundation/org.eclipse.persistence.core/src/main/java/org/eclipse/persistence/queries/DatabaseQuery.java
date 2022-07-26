@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,9 +56,9 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
@@ -108,7 +108,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected List<Object> argumentValues;
 
     /** Needed to differentiate queries with the same name. */
-    protected List<Class> argumentTypes;
+    protected List<Class<?>> argumentTypes;
 
     /** Used to build a list of argumentTypes by name pre-initialization */
     protected List<String> argumentTypeNames;
@@ -268,6 +268,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     protected TimeUnit queryTimeoutUnit;
 
+    protected boolean shouldReturnGeneratedKeys;
+
     /* Used as default for read, means shallow write for modify. */
     public static final int NoCascading = 1;
 
@@ -339,7 +341,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * PUBLIC: Initialize the state of the query
      */
-    public DatabaseQuery() {
+    protected DatabaseQuery() {
         this.shouldMaintainCache = true;
         // bug 3524620: lazy-init query mechanism
         // this.queryMechanism = new ExpressionQueryMechanism(this);
@@ -418,7 +420,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * order from executeQuery(). Specifying the class type is important if
      * identically named queries are used but with different argument lists.
      */
-    public void addArgument(String argumentName, Class type) {
+    public void addArgument(String argumentName, Class<?> type) {
         addArgument(argumentName, type, false);
     }
 
@@ -427,7 +429,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * information about whether parameters are positional or named for JPQL query introspeciton
      * API
      */
-    public void addArgument(String argumentName, Class type, ParameterType parameterType) {
+    public void addArgument(String argumentName, Class<?> type, ParameterType parameterType) {
         addArgument(argumentName, type, parameterType, false);
     }
 
@@ -440,7 +442,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * If the argument can be null, and null must be treated differently in the
      * generated SQL, then nullable should be set to true.
      */
-    public void addArgument(String argumentName, Class type, boolean nullable) {
+    public void addArgument(String argumentName, Class<?> type, boolean nullable) {
         getArguments().add(argumentName);
         getArgumentTypes().add(type);
         if(type != null) {
@@ -456,7 +458,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * information about whether parameters are positional or named for JPQL query introspeciton
      * API
      */
-    public void addArgument(String argumentName, Class type, ParameterType argumentParameterType, boolean nullable) {
+    public void addArgument(String argumentName, Class<?> type, ParameterType argumentParameterType, boolean nullable) {
         addArgument(argumentName, type, nullable);
         getArgumentParameterTypes().add(argumentParameterType);
     }
@@ -707,7 +709,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 if (cloneQuery.properties.isEmpty()) {
                     cloneQuery.properties = null;
                 } else {
-                    cloneQuery.properties = new HashMap(this.properties);
+                    cloneQuery.properties = new HashMap<>(this.properties);
                 }
             }
 
@@ -736,7 +738,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * actual class-based settings This method is implemented by subclasses as
      * necessary.
      *
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         // note: normally we would fix the argument types here, but they are
@@ -957,7 +958,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Used to calculate parameter types in JPQL
-     * @return
      */
     public List<ParameterType> getArgumentParameterTypes(){
         if (argumentParameterTypes == null){
@@ -970,15 +970,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL: Return the argumentTypes for use with the pre-defined query
      * option
      */
-    public List<Class> getArgumentTypes() {
+    public List<Class<?>> getArgumentTypes() {
         if ((this.argumentTypes == null) || (this.argumentTypes.isEmpty() && (this.argumentTypeNames != null) && !this.argumentTypeNames.isEmpty())) {
             this.argumentTypes = new ArrayList<>();
             // Bug 3256198 - lazily initialize the argument types from their
             // class names
             if (this.argumentTypeNames != null) {
-                Iterator args = this.argumentTypeNames.iterator();
+                Iterator<String> args = this.argumentTypeNames.iterator();
                 while (args.hasNext()) {
-                    String argumentTypeName = (String) args.next();
+                    String argumentTypeName = args.next();
                     this.argumentTypes.add(Helper.getObjectClass(ConversionManager.loadClass(argumentTypeName)));
                 }
             }
@@ -1001,12 +1001,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL: Set the argumentTypes for use with the pre-defined query option
      */
-    public void setArgumentTypes(List<Class> argumentTypes) {
+    public void setArgumentTypes(List<Class<?>> argumentTypes) {
         this.argumentTypes = argumentTypes;
         // bug 3256198 - ensure the list of type names matches the argument
         // types.
         getArgumentTypeNames().clear();
-        for (Class type : argumentTypes) {
+        for (Class<?> type : argumentTypes) {
             this.argumentTypeNames.add(type.getName());
         }
     }
@@ -1023,7 +1023,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Maintain the argumentTypes as well.
      */
     public void setArguments(List<String> arguments) {
-        List<Class> types = new ArrayList<>(arguments.size());
+        List<Class<?>> types = new ArrayList<>(arguments.size());
         List<String> typeNames = new ArrayList<>(arguments.size());
         List<DatabaseField> typeFields = new ArrayList<>(arguments.size());
         int size = arguments.size();
@@ -1075,7 +1075,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * ADVANCED: Return the call for this query. This call contains the SQL and
      * argument list.
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
     public Call getDatasourceCall() {
         Call call = null;
@@ -1097,7 +1097,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * ADVANCED: Return the calls for this query. This method can be called for
      * queries with multiple calls This call contains the SQL and argument list.
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
     public List getDatasourceCalls() {
         List calls = new Vector();
@@ -1191,7 +1191,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public Map<Object, Object> getProperties() {
         if (this.properties == null) {
             // Lazy initialize to conserve space and allocation time.
-            this.properties = new HashMap();
+            this.properties = new HashMap<>();
         }
         return this.properties;
     }
@@ -1312,7 +1312,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Return the domain class associated with this query. By default
      * this is null, but should be overridden in subclasses.
      */
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return null;
     }
 
@@ -1343,13 +1343,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (operationName == null) {
             return getQueryNounName(sessionName);
         }
-
-        Hashtable sensorNames = (Hashtable)getProperty("DMSSensorNames");
+        @SuppressWarnings({"unchecked"})
+        Hashtable<String, String> sensorNames = (Hashtable<String, String>) getProperty("DMSSensorNames");
         if (sensorNames == null) {
-            sensorNames = new Hashtable();
+            sensorNames = new Hashtable<>();
             setProperty("DMSSensorNames", sensorNames);
         }
-        Object sensorName = sensorNames.get(operationName);
+        String sensorName = sensorNames.get(operationName);
         if (sensorName == null) {
             StringBuilder buffer = new StringBuilder(getQueryNounName(sessionName));
             buffer.append("_");
@@ -1357,7 +1357,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             sensorName = buffer.toString();
             sensorNames.put(operationName, sensorName);
         }
-        return (String)sensorName;
+        return sensorName;
     }
 
     /**
@@ -1435,7 +1435,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * queries. This can also be used for normal queries if they have been
      * prepared, (i.e. query.prepareCall()).
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
     public String getSQLString() {
         Call call = getDatasourceCall();
@@ -1455,7 +1455,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * for normal queries if they have been prepared, (i.e.
      * query.prepareCall()).
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
     public List getSQLStrings() {
         List calls = getDatasourceCalls();
@@ -1494,9 +1494,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * have been prepared, (i.e. query.prepareCall()). The Record argument is
      * one of (Record, XMLRecord) that contains the query arguments.
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord)
      */
-    public String getTranslatedSQLString(org.eclipse.persistence.sessions.Session session, Record translationRow) {
+    public String getTranslatedSQLString(org.eclipse.persistence.sessions.Session session, DataRecord translationRow) {
         prepareCall(session, translationRow);
         // CR#2859559 fix to use Session and Record interfaces not impl classes.
         CallQueryMechanism queryMechanism = (CallQueryMechanism) getQueryMechanism();
@@ -1514,9 +1514,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * have been prepared, (i.e. query.prepareCall()). This method can be used
      * for queries with multiple calls.
      *
-     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
-    public List getTranslatedSQLStrings(org.eclipse.persistence.sessions.Session session, Record translationRow) {
+    public List getTranslatedSQLStrings(org.eclipse.persistence.sessions.Session session, DataRecord translationRow) {
         prepareCall(session, translationRow);
         CallQueryMechanism queryMechanism = (CallQueryMechanism) getQueryMechanism();
         if ((queryMechanism.getCalls() == null) || queryMechanism.getCalls().isEmpty()) {
@@ -1924,9 +1924,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * @see #getCall()
      * @see #getSQLString()
      * @see #getTranslatedSQLString(org.eclipse.persistence.sessions.Session,
-     *      Record)
+     *      DataRecord)
      */
-    public void prepareCall(org.eclipse.persistence.sessions.Session session, Record translationRow) throws QueryException {
+    public void prepareCall(org.eclipse.persistence.sessions.Session session, DataRecord translationRow) throws QueryException {
         // CR#2859559 fix to use Session and Record interfaces not impl classes.
         checkPrepare((AbstractSession) session, (AbstractRecord) translationRow, true);
     }
@@ -2019,13 +2019,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * types.
      */
     public List<DatabaseField> buildArgumentFields() {
-        List arguments = getArguments();
-        List argumentTypes = getArgumentTypes();
-        List argumentFields = new ArrayList(arguments.size());
+        List<String> arguments = getArguments();
+        List<Class<?>> argumentTypes = getArgumentTypes();
+        List<DatabaseField> argumentFields = new ArrayList<>(arguments.size());
         int size = arguments.size();
         for (int index = 0; index < size; index++) {
-            DatabaseField argumentField = new DatabaseField((String) arguments.get(index));
-            argumentField.setType((Class) argumentTypes.get(index));
+            DatabaseField argumentField = new DatabaseField(arguments.get(index));
+            argumentField.setType(argumentTypes.get(index));
             argumentFields.add(argumentField);
         }
 
@@ -2074,7 +2074,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             this.accessors = null;
             return;
         }
-        List<Accessor> accessors = new ArrayList(1);
+        List<Accessor> accessors = new ArrayList<>(1);
         accessors.add(accessor);
         this.accessors = accessors;
     }
@@ -2362,7 +2362,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Bind all arguments to any SQL statement.
      */
     public void setShouldBindAllParameters(boolean shouldBindAllParameters) {
-        this.shouldBindAllParameters = Boolean.valueOf(shouldBindAllParameters);
+        this.shouldBindAllParameters = shouldBindAllParameters;
         setIsPrepared(false);
     }
 
@@ -2379,7 +2379,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * binding as well.
      */
     public void setShouldCacheStatement(boolean shouldCacheStatement) {
-        this.shouldCacheStatement = Boolean.valueOf(shouldCacheStatement);
+        this.shouldCacheStatement = shouldCacheStatement;
         setIsPrepared(false);
     }
 
@@ -2421,6 +2421,18 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setShouldRetrieveBypassCache(boolean shouldRetrieveBypassCache) {
         this.shouldRetrieveBypassCache = shouldRetrieveBypassCache;
+    }
+
+    /**
+     * ADVANCED: JPA flag used to control the behavior of IDENTITY generation. This
+     * flag specifies the behavior when data is retrieved by the find methods
+     * and by the execution of queries.
+     * <p>
+     * This flag is only applicable to Insert queries and will only apply if the database
+     * platform supports {@link java.sql.Statement#RETURN_GENERATED_KEYS}
+     */
+    public void setShouldReturnGeneratedKeys(boolean shouldReturnGeneratedKeys) {
+        this.shouldReturnGeneratedKeys = shouldReturnGeneratedKeys;
     }
 
     /**
@@ -2501,7 +2513,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public boolean shouldAllowNativeSQLQuery(boolean projectAllowsNativeQueries) {
         // If allow native SQL query is undefined, use the project setting
         // otherwise use the allow native SQL setting.
-        return (allowNativeSQLQuery == null) ? projectAllowsNativeQueries : allowNativeSQLQuery.booleanValue();
+        return (allowNativeSQLQuery == null) ? projectAllowsNativeQueries : allowNativeSQLQuery;
     }
 
     /**
@@ -2635,6 +2647,18 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * ADVANCED: JPA flag used to control the behavior of IDENTITY generation. This
+     * flag specifies the behavior when data is retrieved by the find methods
+     * and by the execution of queries.
+     * <p>
+     * This flag is only applicable to Insert queries and will only apply if the database
+     * platform supports {@link java.sql.Statement#RETURN_GENERATED_KEYS}
+     */
+    public boolean shouldReturnGeneratedKeys() {
+        return this.shouldReturnGeneratedKeys;
+    }
+
+    /**
      * ADVANCED: JPA flag used to control the behavior of the shared cache. This
      * flag specifies the behavior when data is read from the database and when
      * data is committed into the database.
@@ -2735,6 +2759,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * Return temporary map of batched objects.
      */
+    @SuppressWarnings({"unchecked"})
     public Map<Object, Object> getBatchObjects() {
         return (Map<Object, Object>)getProperty(BATCH_FETCH_PROPERTY);
     }

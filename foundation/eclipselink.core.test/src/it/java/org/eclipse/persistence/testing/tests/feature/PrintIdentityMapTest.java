@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import java.io.*;
 import org.eclipse.persistence.testing.framework.*;
 
 public class PrintIdentityMapTest extends AutoVerifyTestCase {
-    protected Class classToPrint;
+    protected Class<?> classToPrint;
     protected StringWriter outWriter;
 
     /**
@@ -32,7 +32,7 @@ public class PrintIdentityMapTest extends AutoVerifyTestCase {
     /**
      * PrintIdentityMapTestModel constructor comment.
      */
-    public PrintIdentityMapTest(Class classToPrint) {
+    public PrintIdentityMapTest(Class<?> classToPrint) {
         this();
         this.classToPrint = classToPrint;
     }
@@ -40,12 +40,14 @@ public class PrintIdentityMapTest extends AutoVerifyTestCase {
     /**
      * Do nothing
      */
+    @Override
     protected void setup() {
     }
 
     /**
      * The actual test code goes in here.
      */
+    @Override
     protected void test() {
         if (classToPrint == null) {
             //printAllIdentityMaps
@@ -60,6 +62,7 @@ public class PrintIdentityMapTest extends AutoVerifyTestCase {
      * Parse the stream and veerify that everything is okay...
      * Eventually.  Right now do nothing.
      */
+    @Override
     protected void verify() {
     }
 }

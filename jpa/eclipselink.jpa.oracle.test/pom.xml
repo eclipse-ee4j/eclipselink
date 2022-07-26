@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -144,8 +144,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.json</artifactId>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -180,17 +180,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.oracle.ojdbc</groupId>
+            <groupId>com.oracle.database.xml</groupId>
             <artifactId>xmlparserv2</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.oracle.ojdbc</groupId>
+            <groupId>com.oracle.database.xml</groupId>
             <artifactId>xdb</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.oracle.ojdbc</groupId>
+            <groupId>com.oracle.database.nls</groupId>
             <artifactId>orai18n</artifactId>
             <scope>test</scope>
         </dependency>
@@ -245,7 +245,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--Required due filtering applied to org.eclipse.persistence.testing.framework.server.TestRunnerBean java class.-->
+            <!--Required due filtering applied to org.eclipse.persistence.testing.framework.jpa.server.TestRunnerBean java class.-->
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
                 <artifactId>replacer</artifactId>
@@ -257,8 +257,8 @@
                             <goal>replace</goal>
                         </goals>
                         <configuration>
-                            <file>${project.basedir}/${integration.test.directory}/java-templates/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java</file>
-                            <outputFile>${project.build.directory}/generated-test-sources/jpa-runner-src/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java</outputFile>
+                            <file>${project.basedir}/${integration.test.directory}/java-templates/org/eclipse/persistence/testing/framework/jpa/server/TestRunnerBean.java</file>
+                            <outputFile>${project.build.directory}/generated-test-sources/jpa-runner-src/org/eclipse/persistence/testing/framework/jpa/server/TestRunnerBean.java</outputFile>
                             <replacements>
                                 <replacement>
                                     <token>@puName@</token>
@@ -581,7 +581,7 @@
             <!--Start selected JEE server configure there datasource and deploy test application-->
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
+                <artifactId>cargo-maven3-plugin</artifactId>
                 <configuration>
                     <skip>${skip-server-test-jpa}</skip>
                     <container>

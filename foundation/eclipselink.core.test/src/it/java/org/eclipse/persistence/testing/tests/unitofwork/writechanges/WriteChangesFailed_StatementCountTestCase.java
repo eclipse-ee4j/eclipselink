@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
     public int originalStoredProcedureStatementsCount = 0;
 
 
+    @Override
     public void setup() {
         id = new BigDecimal(999);
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -52,6 +53,7 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
         uow.commit();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         originalWriteStatementsCount = ((DatasourceAccessor)uow.getParent().getAccessor()).writeStatementsCount;
@@ -76,7 +78,7 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
                         throw new TestErrorException("The write statments count property should be set if writechanges get failed.");
                     }else {
                         writeStatementsCount =
-                                ((Integer)uow.getProperties().get(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY)).intValue();
+                                (Integer) uow.getProperties().get(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY);
                     }
                     if (uow.getProperties().get(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY) == null) {
                         throw new TestErrorException("The store procedure statments count property should be set if writechanges get failed.");
@@ -88,6 +90,7 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
         }
     }
 
+    @Override
     public void verify() {
         if ((writeStatementsCount - originalWriteStatementsCount) != 0) {
             throw new TestErrorException("The desirable number of write statement being executed should be 0, it however has more than 0 statement being executed:" +
@@ -95,6 +98,7 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
         }
     }
 
+    @Override
     public void reset() {
         if (id == null) {
             return;
@@ -110,6 +114,7 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
         uow.commit();
     }
 
+    @Override
     protected void resetVerify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Expression expression = (new ExpressionBuilder()).get("id").equal(id);

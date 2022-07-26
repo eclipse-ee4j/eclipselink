@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class OCIProxyTestHelper extends ProxyTestHelper {
         //        PROXY_USER_PASSWORD = OracleOCIConnectionPool.PROXY_PASSWORD;
     }
 
+    @Override
     public JNDIConnector createProxyConnector(Session session) throws SQLException {
         // Note that OCI client is required.
         // Logical name of the pool. This needs to be one in the tnsnames.ora configuration file.

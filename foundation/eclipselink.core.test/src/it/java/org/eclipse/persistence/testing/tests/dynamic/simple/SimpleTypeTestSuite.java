@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,10 +29,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -53,6 +49,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 //domain-specific (testing) imports
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
+import static org.junit.Assert.*;
 
 public class SimpleTypeTestSuite {
 
@@ -112,7 +109,7 @@ public class SimpleTypeTestSuite {
         DynamicEntity simpleInstance = find(dynamicHelper, session, 1);
         assertNotNull("Could not find simple instance with id = 1", simpleInstance);
 
-        simpleInstance = find(dynamicHelper, session, new Integer(1));
+        simpleInstance = find(dynamicHelper, session, 1);
         assertNotNull("Could not find simple instance with id = Integer(1)", simpleInstance);
     }
 
@@ -141,7 +138,7 @@ public class SimpleTypeTestSuite {
 
     @Test
     public void verifyDefaultValuesFromDescriptor() throws Exception {
-        DynamicType simpleType = (DynamicType)dynamicHelper.getType("Simple");
+        DynamicType simpleType = dynamicHelper.getType("Simple");
         assertNotNull(simpleType);
 
         DynamicEntity simpleInstance = (DynamicEntity) simpleType.getDescriptor().getObjectBuilder().buildNewInstance();
@@ -155,7 +152,7 @@ public class SimpleTypeTestSuite {
             0, simpleInstance.<Integer>get("id").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",
-            false, simpleInstance.<Boolean>get("value2").booleanValue());
+            false, simpleInstance.<Boolean>get("value2"));
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
         assertFalse("value4 set on new instance", simpleInstance.isSet("value4"));
     }
@@ -182,9 +179,9 @@ public class SimpleTypeTestSuite {
         DynamicEntity foundEntity = find(dynamicHelper, session, 1);
 
         assertNotNull(foundEntity);
-        assertEquals(simpleInstance.get("id"), foundEntity.get("id"));
-        assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
-        assertEquals(simpleInstance.get("value2"), foundEntity.get("value2"));
+        assertEquals(simpleInstance.<Integer>get("id"), foundEntity.<Integer>get("id"));
+        assertEquals(simpleInstance.<String>get("value1"), foundEntity.<String>get("value1"));
+        assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
 
         session.release();
 

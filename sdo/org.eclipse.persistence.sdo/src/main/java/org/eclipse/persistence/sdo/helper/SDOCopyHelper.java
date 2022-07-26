@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,6 @@ import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.ValueStore;
 import org.eclipse.persistence.exceptions.SDOException;
 import commonj.sdo.ChangeSummary;
@@ -155,12 +154,12 @@ public class SDOCopyHelper implements CopyHelper {
         }
 
         if (dataObject.getType().isSequenced()) {
-            List settings = ((SDOSequence)dataObject.getSequence()).getSettings();
+            List<Setting> settings = ((SDOSequence)dataObject.getSequence()).getSettings();
             for (int index = 0, size = dataObject.getSequence().size(); index < size; index++) {
-                Setting nextSetting = (Setting)settings.get(index);
+                Setting nextSetting = settings.get(index);
 
                 Property prop = dataObject.getSequence().getProperty(index);
-                if (prop == null || ((SDOType) prop.getType()).isDataType()) {
+                if (prop == null || prop.getType().isDataType()) {
                     Setting copySetting = nextSetting.copy(copy);
                     copy.getSequence().getSettings().add(copySetting);
                     copy.getSequence().addValueToSettings(copySetting);
@@ -394,9 +393,9 @@ public class SDOCopyHelper implements CopyHelper {
 
         SDOProperty seqProperty = null;
         try {
-            List settings = origSequence.getSettings();
+            List<Setting> settings = origSequence.getSettings();
             for (int index = 0, size = origSequence.size(); index < size; index++) {
-                Setting nextSetting = (Setting)settings.get(index);
+                Setting nextSetting = settings.get(index);
                 seqProperty = origSequence.getProperty(nextSetting);
 
                 if ((null == seqProperty) || seqProperty.getType().isDataType()) {
@@ -455,8 +454,8 @@ public class SDOCopyHelper implements CopyHelper {
 
         /**
          * Prerequisites: - the copy tree has been built and the doMap has been
-         * fully populated with containment nodes.<br/> Iterate the doMap and
-         * for each containment dataObject populate the sequence
+         * fully populated with containment nodes.<p> Iterate the doMap and
+         * for each containment dataObject populate the sequence</p>
          */
 
         // iterate containment nodes
@@ -502,7 +501,7 @@ public class SDOCopyHelper implements CopyHelper {
      *
      * @param anOriginalCS
      * @param aCopyCS
-     * @param doMap (map of original do's (CS1) to their copy do's in (CS2))
+     * @param origDOCS1toCopyDOCS2Map (map of original do's (CS1) to their copy do's in (CS2))
      */
     private void copyChangeSummary(ChangeSummary anOriginalCS, ChangeSummary aCopyCS,//
                                    Map origDOCS1toCopyDOCS2Map) {
@@ -571,14 +570,14 @@ public class SDOCopyHelper implements CopyHelper {
             Object aVSPropertyItem = null;
 
             // get the # of non-opencontent properties for the object holding the CS - do not use DVS.getTypePropertyValues()
-            for (int size = ((SDOType) anOriginalObject.getType()).getDeclaredProperties().size(), i = 0;
-                     i < size; i++) {
+            for (int size = anOriginalObject.getType().getDeclaredProperties().size(), i = 0;
+                 i < size; i++) {
                 aVSPropertyItem = aVSOriginal.getDeclaredProperty(i);
                 // only iterate set properties
                 if (aVSOriginal.isSetDeclaredProperty(i)) {
                     // shallow copy the object values
                     // handle single case
-                    SDOProperty currentProperty = (SDOProperty)((SDOType)anOriginalObject.getType()).getDeclaredProperties().get(i);
+                    SDOProperty currentProperty = (SDOProperty) anOriginalObject.getType().getDeclaredProperties().get(i);
                     if (currentProperty.isMany()) {
                         propertyToOriginalListMap.put(aVSPropertyItem, currentProperty);
 
@@ -824,7 +823,7 @@ public class SDOCopyHelper implements CopyHelper {
      * Recurse the tree in preorder traversal (root, child1-n)
      * Scope: We do not have to check the copyTree scope when iterating opposites since
      * we will not enter any opposite property dataTree that is outside of the copyTree scope
-     * @param doMap (cache original -> copy DataObject instances to set non-containment properties after tree construction)
+     * @param doMap (cache original -{@literal >} copy DataObject instances to set non-containment properties after tree construction)
      * @param ncPropMap (cache original DO:non-containment property values to be set after tree construction)
      */
     private SDODataObject copyPrivate(SDODataObject dataObject, HashMap doMap,//
@@ -909,8 +908,8 @@ public class SDOCopyHelper implements CopyHelper {
      * @param copy
      * @param property
      * @param value
-     * @param doMap (cache original -> copy DataObject instances to set non-containment properties after tree construction)
-     * @param propMap (cache original DO:non-containment property values to be set after tree construction)
+     * @param doMap (cache original -{@literal >} copy DataObject instances to set non-containment properties after tree construction)
+     * @param ncPropMap (cache original DO:non-containment property values to be set after tree construction)
      */
     private void copyContainmentPropertyValue(SDODataObject copy, SDOProperty property, Object value,//
                                               HashMap doMap, HashMap ncPropMap, SDOChangeSummary cs) {

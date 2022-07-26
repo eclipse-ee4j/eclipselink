@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 
 public class StoredFunctionXMLTypeTest extends TestCase {
     public static String charsToIgnore = " \n\t";
+    @Override
     public void test() throws Exception {
         // 12.1 works with both OracleTypes.OPAQUE and Types.SQLXML
         // 11.2.0.3 - only with OracleTypes.OPAQUE
@@ -40,7 +41,7 @@ public class StoredFunctionXMLTypeTest extends TestCase {
         // see the stored function definition in XMLTypeEmployeeSystem
         StoredFunctionCall call = new StoredFunctionCall(sqlType, "XMLTYPE", String.class);
         call.setProcedureName("STOREDFUNCTION_XMLTYPE");
-        if (sqlType == OracleTypes.OPAQUE && (getAbstractSession().isClientSession() || ((DatabaseLogin)getAbstractSession().getDatasourceLogin()).shouldUseExternalConnectionPooling())) {
+        if (sqlType == OracleTypes.OPAQUE && (getAbstractSession().isClientSession() || getAbstractSession().getDatasourceLogin().shouldUseExternalConnectionPooling())) {
             // UnwrapConnectionXDBTestModel uses external connection pooling. In this case transaction is required to keep the same connection open until the string is extracted.
             getAbstractSession().beginTransaction();
         }
@@ -50,7 +51,7 @@ public class StoredFunctionXMLTypeTest extends TestCase {
 
             String str;
             if (xmlResult instanceof OPAQUE) {
-                str = ((XMLTypeFactory)Class.forName("org.eclipse.persistence.internal.platform.database.oracle.xdb.XMLTypeFactoryImpl").newInstance()).getString((OPAQUE)xmlResult);
+                str = ((XMLTypeFactory)Class.forName("org.eclipse.persistence.internal.platform.database.oracle.xdb.XMLTypeFactoryImpl").getConstructor().newInstance()).getString((OPAQUE)xmlResult);
             } else {
                 str = JavaPlatform.getStringAndFreeSQLXML(xmlResult);
             }

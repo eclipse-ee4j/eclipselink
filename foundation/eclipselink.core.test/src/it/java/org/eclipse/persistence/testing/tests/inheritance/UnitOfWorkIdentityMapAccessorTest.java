@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,13 +28,10 @@ import org.eclipse.persistence.testing.models.inheritance.BudgettedProject;
  * <p>
  * <b>Purpose</b>: This test checks to see if the Unit of Work Identity Map functions with the Inheritance mappings.
  * <p>
- * <p>
  * <b>Motivation </b>: This test was written to test inheritance using UnitOfWorkIdentityMapAccessor.
  * <p>
  * <b>Responsibilities</b>: Check if the unit of work identity map works correctly with inheritance.
- * <p>
- * <p>
- * */
+ */
 public class UnitOfWorkIdentityMapAccessorTest extends AutoVerifyTestCase {
 
     private UnitOfWork unitOfWork;
@@ -45,6 +42,7 @@ public class UnitOfWorkIdentityMapAccessorTest extends AutoVerifyTestCase {
         super();
     }
 
+    @Override
     protected void setup() {
         DatabaseSession session = (DatabaseSession)getSession();
         UnitOfWork uow = session.acquireUnitOfWork();
@@ -54,6 +52,7 @@ public class UnitOfWorkIdentityMapAccessorTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     protected void test() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         unitOfWork = getSession().acquireUnitOfWork();
@@ -69,6 +68,7 @@ public class UnitOfWorkIdentityMapAccessorTest extends AutoVerifyTestCase {
     /**
      * Verify if the objects fetched does not belong to other subclass.
      */
+    @Override
     protected void verify() {
         try {
             if (result != null && !(result instanceof BudgettedProject)) {
@@ -85,6 +85,7 @@ public class UnitOfWorkIdentityMapAccessorTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         DatabaseSession session = (DatabaseSession)getSession();
         UnitOfWork uow = session.acquireUnitOfWork();

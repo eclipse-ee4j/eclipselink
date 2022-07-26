@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,17 +34,20 @@ public class DirectMapMappingBatchReadTest extends AutoVerifyTestCase {
         setDescription("Tests that objects direct map mapping are batch read properly.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
         getSession().getEventManager().removeListener(sessionListener);
     }
 
+    @Override
     public void setup() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
 
         sessionListener = new SessionEventAdapter() {
+                    @Override
                     public void postExecuteQuery(SessionEvent event) {
                         isPostExecutedQuery = true;
                     }
@@ -54,16 +57,17 @@ public class DirectMapMappingBatchReadTest extends AutoVerifyTestCase {
         // Create a directmapmapping with a few items in it
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectMapMappings maps1 = (DirectMapMappings)uow.registerObject(new DirectMapMappings());
-        maps1.directMap.put(new Integer(1), "guy");
-        maps1.directMap.put(new Integer(2), "axemen");
+        maps1.directMap.put(1, "guy");
+        maps1.directMap.put(2, "axemen");
 
         DirectMapMappings maps2 = (DirectMapMappings)uow.registerObject(new DirectMapMappings());
-        maps2.directMap.put(new Integer(1), "steve");
-        maps2.directMap.put(new Integer(2), "superman");
+        maps2.directMap.put(1, "steve");
+        maps2.directMap.put(2, "superman");
 
         uow.commit();
     }
 
+    @Override
     public void verify() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 

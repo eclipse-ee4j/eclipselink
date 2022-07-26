@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,7 @@ public class ConstructorReportItem extends ReportItem  {
      */
     private static final String TO_STR_SUFFIX = "])";
 
-    protected Class[] constructorArgTypes;
+    protected Class<?>[] constructorArgTypes;
     protected List<DatabaseMapping> constructorMappings;
     protected List<ReportItem> reportItems;
     protected Constructor constructor;
@@ -109,7 +109,7 @@ public class ConstructorReportItem extends ReportItem  {
         getReportItems().add(item);
     }
 
-    public Class[] getConstructorArgTypes(){
+    public Class<?>[] getConstructorArgTypes(){
         return constructorArgTypes;
     }
 
@@ -162,9 +162,9 @@ public class ConstructorReportItem extends ReportItem  {
         int numberOfItems = getReportItems().size();
         // Arguments may be initialized depending on how the query was constructed, so types may be undefined though.
         if (getConstructorArgTypes() == null) {
-            setConstructorArgTypes(new Class[numberOfItems]);
+            setConstructorArgTypes(new Class<?>[numberOfItems]);
         }
-        Class[] constructorArgTypes = getConstructorArgTypes();
+        Class<?>[] constructorArgTypes = getConstructorArgTypes();
         for (int index = 0; index < numberOfItems; index++) {
             if (constructorArgTypes[index] == null) {
                 ReportItem argumentItem = getReportItems().get(index);
@@ -193,10 +193,10 @@ public class ConstructorReportItem extends ReportItem  {
         }
         if (getConstructor() == null) {
             try {
-                Constructor constructor = null;
+                Constructor<?> constructor = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(getResultType(), constructorArgTypes, true));
+                        constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getResultType(), constructorArgTypes, true));
                     } catch (PrivilegedActionException exception) {
                         throw QueryException.exceptionWhileUsingConstructorExpression(exception.getException(), query);
                     }
@@ -215,7 +215,7 @@ public class ConstructorReportItem extends ReportItem  {
         return true;
     }
 
-    public void setConstructorArgTypes(Class[] constructorArgTypes){
+    public void setConstructorArgTypes(Class<?>[] constructorArgTypes){
         this.constructorArgTypes = constructorArgTypes;
     }
 

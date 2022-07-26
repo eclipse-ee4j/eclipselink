@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.UpdateAllQuery;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 
@@ -65,6 +65,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         clearCache();
@@ -118,7 +119,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             assassin.getNicknames().add("Clyde");
 
             Gun gun = new Gun();
-            gun.setCaliber(new Integer(50));
+            gun.setCaliber(50);
             gun.setDescription("Sniper rifle");
             gun.setModel("9-112");
 
@@ -175,7 +176,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             // Assassin already has a gun, therefore, correct weapon already set
             // for a direct elimination.
             directElimination = new DirectElimination();
-            directElimination.setId(new Long(System.currentTimeMillis()).intValue());
+            directElimination.setId(Long.valueOf(System.currentTimeMillis()).intValue());
             directElimination.setName("Joe Smuck");
             directElimination.setDescription("Because he has a big mouth");
             directElimination.setAssassin(assassin);
@@ -201,10 +202,10 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         assertTrue("The elimination was not a direct elimination", directElimination.isDirectElimination());
 
         // Validate the weapon that was used for the direct elimination.
-        Weapon weapon = ((DirectElimination) directElimination).getDirectWeapon();
+        DirectWeapon weapon = ((DirectElimination) directElimination).getDirectWeapon();
         assertNotNull("The direct elimination's weapon was null", weapon);
         assertTrue("The direct elimination's weapon was not a direct weapon", weapon.isDirectWeapon());
-        assertTrue("The direct elimination's weapon was not a gun", ((DirectWeapon) weapon).isGun());
+        assertTrue("The direct elimination's weapon was not a gun", weapon.isGun());
 
         closeEntityManager(em);
     }
@@ -226,7 +227,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             assassin.setWeapon(bomb);
 
             indirectElimination = new IndirectElimination();
-            indirectElimination.setId(new Long(System.currentTimeMillis()).intValue());
+            indirectElimination.setId(Long.valueOf(System.currentTimeMillis()).intValue());
             indirectElimination.setName("Jill Smuck");
             indirectElimination.setDescription("Because she has a big mouth");
             indirectElimination.setAssassin(assassin);
@@ -252,10 +253,10 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         assertTrue("The elimination was not an idirect elimination", indirectElimination.isIndirectElimination());
 
         // Validate the weapon that was used for the direct elimination.
-        Weapon weapon = ((IndirectElimination) indirectElimination).getIndirectWeapon();
+        IndirectWeapon weapon = ((IndirectElimination) indirectElimination).getIndirectWeapon();
         assertNotNull("The indirect elimination's weapon was null", weapon);
         assertTrue("The indirect elimination's weapon was not an idirect weapon", weapon.isIndirectWeapon());
-        assertTrue("The indirect elimination's weapon was not a bomb", ((IndirectWeapon) weapon).isBomb());
+        assertTrue("The indirect elimination's weapon was not a bomb", weapon.isBomb());
 
         closeEntityManager(em);
     }
@@ -637,8 +638,8 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
                 Gun gun1 = em1.find(Gun.class, gunSerialNumber);
                 Gun gun2 = em2.find(Gun.class, gunSerialNumber);
 
-                gun1.setCaliber(new Integer(12));
-                gun2.setCaliber(new Integer(22));
+                gun1.setCaliber(12);
+                gun2.setCaliber(22);
 
                 em1.getTransaction().commit();
                 em2.getTransaction().commit();

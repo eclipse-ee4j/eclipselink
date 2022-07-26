@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.Vector;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
@@ -47,7 +47,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.server.Server;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
@@ -376,7 +376,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Vector expectedResult = (Vector)em.getUnitOfWork().executeQuery(reportQuery);
 
         if (!comparer.compareObjects(result, expectedResult)) {
-            this.fail("simpleJoinFetchTest Failed when using cache, collections do not match: " + result + " expected: " + expectedResult);
+            fail("simpleJoinFetchTest Failed when using cache, collections do not match: " + result + " expected: " + expectedResult);
         }
 
         //Bypass the cache
@@ -405,7 +405,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         expectedResult = (Vector)em.getUnitOfWork().executeQuery(reportQuery);
 
         if (!comparer.compareObjects(result, expectedResult)) {
-            this.fail("simpleJoinFetchTest Failed when not using cache, collections do not match: " + result + " expected: " + expectedResult);
+            fail("simpleJoinFetchTest Failed when not using cache, collections do not match: " + result + " expected: " + expectedResult);
         }
     }
 
@@ -1014,10 +1014,10 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
             if (getServerSession().getPlatform().isMySQL()) {
             patternString = "234 RUBY $_Way";
-            escChar = new Character('$');
+            escChar = '$';
         } else {
             patternString = "234 RUBY \\_Way";
-            escChar = new Character('\\');
+            escChar = '\\';
         }
 
         List result = em.createQuery(ejbqlString).setParameter("pattern", patternString).setParameter("esc", escChar).getResultList();
@@ -1369,7 +1369,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt((new Double(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
+        double salarySquareRoot = Math.sqrt(((Employee) expectedResult.firstElement()).getSalary());
 
         clearCache();
 
@@ -1422,7 +1422,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
 
-        double salarySquareRoot = Math.sqrt((new Double(((Employee)expectedResult.firstElement()).getSalary()).doubleValue()));
+        double salarySquareRoot = Math.sqrt(((Employee) expectedResult.firstElement()).getSalary());
 
         clearCache();
 
@@ -1588,11 +1588,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         serverSession.login();
         UnitOfWork unitOfWork = serverSession.acquireUnitOfWork();
         Employee newEmployee = new Employee();
-        newEmployee.setId(new Integer(9000));
+        newEmployee.setId(9000);
         unitOfWork.registerObject(newEmployee);
 
         Vector testV = new Vector();
-        testV.addElement(new Integer(9000));
+        testV.addElement(9000);
 
         Employee result = (Employee)unitOfWork.executeQuery(readObjectQuery, testV);
 
@@ -1992,7 +1992,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        Employee emp = (Employee)expectedResult.get(0);
+        Employee emp = expectedResult.get(0);
         expectedResult.remove(0);
 
         boolean shouldCleanUp = false;
@@ -2056,7 +2056,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         PhoneNumber phone = null;
         for (Project project : allProjectsWithTeamLeader) {
             if (project.getTeamLeader().getPhoneNumbers().size() > 0) {
-                phone = (PhoneNumber)project.getTeamLeader().getPhoneNumbers().iterator().next();
+                phone = project.getTeamLeader().getPhoneNumbers().iterator().next();
                 break;
             }
         }
@@ -2149,7 +2149,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         try {
             jakarta.persistence.Query query = em.createNamedQuery("findEmployeeByPK");
             query.setParameter("id", emp1.getId());
-            query.setHint("lockMode", new Short((short)1));
+            query.setHint("lockMode", (short) 1);
 
             emp2 = (Employee)query.getSingleResult();
         } catch (Exception e) {

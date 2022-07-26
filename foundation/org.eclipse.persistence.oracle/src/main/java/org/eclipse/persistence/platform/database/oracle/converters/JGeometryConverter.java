@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.eclipse.persistence.platform.database.converters.StructConverter;
  */
 public class JGeometryConverter implements StructConverter {
     private final static String JGEOMETRY_DB_TYPE = "MDSYS.SDO_GEOMETRY";
-    private final Class JGEOMETRY_CLASS;
+    private final Class<?> JGEOMETRY_CLASS;
     private final MethodHandle loadJSMethod;
     private final MethodHandle storeJSMethod;
 
@@ -58,7 +58,7 @@ public class JGeometryConverter implements StructConverter {
     }
 
     @Override
-    public Class getJavaType() {
+    public Class<?> getJavaType() {
         return JGEOMETRY_CLASS;
     }
 

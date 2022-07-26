@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -127,6 +127,12 @@ public abstract class AbstractNullPolicy {
     protected XMLNullRepresentationType marshalNullRepresentation = XMLNullRepresentationType.ABSENT_NODE;
 
     /**
+     * Default constructor.
+     */
+    protected AbstractNullPolicy() {
+    }
+
+    /**
      * Get the enum that determines what XML to write when a null value is encountered.
      */
     public XMLNullRepresentationType getMarshalNullRepresentation() {
@@ -145,11 +151,6 @@ public abstract class AbstractNullPolicy {
      * When using the SAX or DOM Platform, this method is responsible for
      * marshalling null values for the XML Direct Mapping.
      *
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param session
-     * @param namespaceResolver
      * @return true if this method caused any nodes to be marshaled, else false.
      */
     public boolean directMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
@@ -187,11 +188,6 @@ public abstract class AbstractNullPolicy {
      * INTERNAL: When using the SAX Platform, this method is responsible for
      * marshalling null values for the XML Composite Object Mapping.
      *
-     * @param xPathFragment
-     * @param marshalRecord
-     * @param object
-     * @param session
-     * @param namespaceResolver
      * @return true if this method caused any nodes to be marshaled, else false.
      */
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
@@ -219,9 +215,6 @@ public abstract class AbstractNullPolicy {
      * INTERNAL: When using the DOM Platform, this method is responsible for
      * marshalling null values for the XML Composite Object Mapping.
      *
-     * @param record
-     * @param object
-     * @param field
      * @return true if this method caused any objects to be marshaled, else false.
      */
     public boolean compositeObjectMarshal(AbstractMarshalRecord record, Object object, Field field, CoreAbstractSession session) {
@@ -245,7 +238,6 @@ public abstract class AbstractNullPolicy {
      * INTERNAL: When using the SAX or DOM Platform during unmarshal operations.
      * Use the attributes to determine if the element represents a null value.
      *
-     * @param attributes
      * @return true if based on the attributes the corresponding element
      *         represents a null value, else false.
      */
@@ -271,7 +263,6 @@ public abstract class AbstractNullPolicy {
      * INTERNAL: When using the DOM Platform during unmarshal operations.
      * Use the element to determine if the element represents a null value.
      *
-     * @param element
      * @return true if based on the element it represents a null value, else false.
      */
     public boolean valueIsNull(Element element) {
@@ -296,8 +287,6 @@ public abstract class AbstractNullPolicy {
     /**
      * INTERNAL: When using the SAX Platform this allows a NodeValue to be
      * registered to receive events from the TreeObjectBuilder.
-     * @param xPathNode
-     * @param nullCapableValue
      */
     public abstract void xPathNode(XPathNode xPathNode, NullCapableValue nullCapableValue);
 
@@ -310,7 +299,6 @@ public abstract class AbstractNullPolicy {
 
     /**
      *
-     * @return
      */
     public boolean isNullRepresentedByEmptyNode() {
         return isNullRepresentedByEmptyNode;
@@ -318,7 +306,6 @@ public abstract class AbstractNullPolicy {
 
     /**
      *
-     * @param bIsNullRepresentedByEmptyNode
      */
     public void setNullRepresentedByEmptyNode(boolean bIsNullRepresentedByEmptyNode) {
         isNullRepresentedByEmptyNode = bIsNullRepresentedByEmptyNode;
@@ -326,7 +313,6 @@ public abstract class AbstractNullPolicy {
 
     /**
      *
-     * @return
      */
     public boolean isNullRepresentedByXsiNil() {
         return isNullRepresentedByXsiNil;
@@ -334,7 +320,6 @@ public abstract class AbstractNullPolicy {
 
     /**
      *
-     * @param bIsNullRepresentedByXsiNil
      */
     public void setNullRepresentedByXsiNil(boolean bIsNullRepresentedByXsiNil) {
         isNullRepresentedByXsiNil = bIsNullRepresentedByXsiNil;
@@ -342,7 +327,6 @@ public abstract class AbstractNullPolicy {
 
     /**
      *
-     * @return
      */
     public boolean ignoreAttributesForNil() {
         return ignoreAttributesForNil;
@@ -350,7 +334,6 @@ public abstract class AbstractNullPolicy {
 
     /**
      *
-     * @param ignoreAttributesForNil
      */
     public void setIgnoreAttributesForNil(boolean ignoreAttributesForNil) {
         this.ignoreAttributesForNil = ignoreAttributesForNil;
@@ -359,7 +342,6 @@ public abstract class AbstractNullPolicy {
     /**
      * INTERNAL:
      * Private function to process or create an entry in the NamespaceResolver for the xsi prefix.
-     * @param namespaceResolver
      * @return xsi prefix
      */
     protected String processNamespaceResolverForXSIPrefix(NamespaceResolver namespaceResolver, MarshalRecord marshalRecord) {

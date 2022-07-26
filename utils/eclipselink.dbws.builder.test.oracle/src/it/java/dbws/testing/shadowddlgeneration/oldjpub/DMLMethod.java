@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,8 +23,8 @@ public class DMLMethod extends SqlStmtMethod {
 
     /**
      * Construct a Method that is a DML (which returns an int)
-     * <p/>
-     * m_isBatched <= isBatched
+     * <br>
+     * m_isBatched {@literal <}= isBatched
      */
     public DMLMethod(String name, int modifiers, String sqlStmt, boolean isBatched,
         SqlReflector reflector) throws SQLException,
@@ -35,7 +35,7 @@ public class DMLMethod extends SqlStmtMethod {
         if (isBatched) {
             TypeClass[] batchParamTypes = new TypeClass[m_paramTypes.length];
             for (int i = 0; i < m_paramTypes.length; i++) {
-                batchParamTypes[i] = new JavaArrayType((SqlType)m_paramTypes[i], m_reflector, null);
+                batchParamTypes[i] = new JavaArrayType(m_paramTypes[i], m_reflector, null);
             }
             m_paramTypes = batchParamTypes;
         }

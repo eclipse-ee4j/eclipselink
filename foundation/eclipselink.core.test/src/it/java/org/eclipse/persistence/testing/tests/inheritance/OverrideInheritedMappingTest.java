@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class OverrideInheritedMappingTest extends TestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
@@ -39,6 +40,7 @@ public class OverrideInheritedMappingTest extends TestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void setup() {
         this.theCar = Car.example4();
     }
@@ -46,6 +48,7 @@ public class OverrideInheritedMappingTest extends TestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void test() {
         //Insert a car
         org.eclipse.persistence.sessions.UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -63,15 +66,16 @@ public class OverrideInheritedMappingTest extends TestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void verify() {
         //Update fuel capacity of the previously inserted car
         getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("UPDATE CAR SET FUEL_CAP = 200 WHERE (ID = " + this.carID + ")"));
 
-        //this.theCar.fuelCapacity = new Integer(200);
+        //this.theCar.fuelCapacity = Integer.valueOf(200);
         //getAbstractSession().updateObject(this.theCar);
         //Read the car and check that the field was set (override of inherited mapping worked)
         Car carRead = (Car)getSession().readObject(Car.class, new ExpressionBuilder().get("id").equal(this.carID));
-        if (carRead.fuelCapacity.intValue() != 200) {
+        if (carRead.fuelCapacity != 200) {
             throw new TestErrorException("The inherited mapping was not overridden!");
         }
     }

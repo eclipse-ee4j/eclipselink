@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,13 +34,12 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.Body;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.CitySlicker;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.CoachVitals;
@@ -322,9 +321,9 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
 
             World w = em.find(World.class, world.getId());
 
-            Collection css = w.getCitySlickers();
+            Collection<CitySlicker> css = w.getCitySlickers();
             css.toString();
-            Collection cds = w.getCountryDwellers();
+            Collection<CountryDweller> cds = w.getCountryDwellers();
             cds.toString();
 
             // Check the ordering

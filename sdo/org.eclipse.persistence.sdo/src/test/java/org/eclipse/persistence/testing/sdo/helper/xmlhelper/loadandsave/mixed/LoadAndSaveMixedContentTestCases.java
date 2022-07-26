@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,10 +48,12 @@ public class LoadAndSaveMixedContentTestCases extends LoadAndSaveTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return "Employee.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/mixed/Employee.xml");
     }
@@ -60,27 +62,33 @@ public class LoadAndSaveMixedContentTestCases extends LoadAndSaveTestCases {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/mixed/");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return getControlFileName();
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/mixed/";
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://www.example.org";
     }
 
+    @Override
     protected String getControlRootName() {
         return "employee";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "EmployeeType";
     }
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
@@ -121,6 +129,7 @@ public class LoadAndSaveMixedContentTestCases extends LoadAndSaveTestCases {
         compareXML(getControlWriteFileName(), writer.toString());
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception {
         URL url = new URL(getSchemaLocation() + getSchemaName());
         InputStream is = url.openStream();
@@ -131,6 +140,7 @@ public class LoadAndSaveMixedContentTestCases extends LoadAndSaveTestCases {
         classGenerator.generate(ss, tmpDirName, schemaResolver);
     }
 
+    @Override
     protected List defineTypes() {
         try {
             URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -148,6 +158,7 @@ public class LoadAndSaveMixedContentTestCases extends LoadAndSaveTestCases {
         }
     }
 
+    @Override
     public void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");

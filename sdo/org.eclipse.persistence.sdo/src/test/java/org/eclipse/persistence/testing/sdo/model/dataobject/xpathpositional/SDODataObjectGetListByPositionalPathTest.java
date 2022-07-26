@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject.xpathpositional;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 
@@ -34,14 +36,14 @@ public class SDODataObjectGetListByPositionalPathTest extends SDODataObjectGetBy
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        Boolean bb = new Boolean(true);
+        Boolean bb = Boolean.TRUE;
         List b = new ArrayList();
 
         //b.add(bb);
         dataObject_a.setList("PName-a/PName-b.0/PName-c", b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBoolean(property3, true);
 
-        this.assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
+        assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
 
     }
 
@@ -61,7 +63,7 @@ public class SDODataObjectGetListByPositionalPathTest extends SDODataObjectGetBy
         dataObject_a.setList("PName-a/PName-b[1]/PName-c", b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setString(property + ".0", bb);
 
-        this.assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
+        assertEquals(bb, dataObject_a.getList("PName-a/PName-b.0/PName-c").get(0));
 
     }
 
@@ -73,7 +75,7 @@ public class SDODataObjectGetListByPositionalPathTest extends SDODataObjectGetBy
         type_c.addDeclaredProperty(property_c);
         dataObject_c.setType(type_c);
 
-        Boolean bb = new Boolean(true);
+        Boolean bb = Boolean.valueOf(true);
         List b = new ArrayList();
 
         dataObject_a.setList("PName-a/PName-b[number=1]/PName-c", b);// c dataobject's a property has value boolean 'true'

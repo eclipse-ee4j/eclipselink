@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,9 +19,9 @@ import org.eclipse.persistence.tools.schemaframework.*;
 
 /**
  *  The following is the object structure of this model:
- *  GolfClub - AggregateObject -> GolfClubShaft
- *  GolfClub - One-To-One -> Manufacturer
- *  GolfClubShaft - One-To-One -> Manufacturer
+ *  GolfClub - AggregateObject -{@literal >} GolfClubShaft
+ *  GolfClub - One-To-One -{@literal >} Manufacturer
+ *  GolfClubShaft - One-To-One -{@literal >} Manufacturer
  *  This structure is special because both GolfClub and GolfClubShaft have an attribute
  *  called manufacturer.  This is useful for joining tests.
  */

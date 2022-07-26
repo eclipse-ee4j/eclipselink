@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
+
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -33,19 +35,19 @@ public class DataHelperToDurationWithCalnTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.SECOND, 27);
         controlCalendar.set(Calendar.MILLISECOND, 870);
         String tm = dataHelper.toDuration(controlCalendar);
-        this.assertEquals("P12Y11M2DT0H40M27.87S", tm);
+        assertEquals("P12Y11M2DT0H40M27.87S", tm);
     }
 
     public void testToDateTimeWithDefault() {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         String tm = dataHelper.toDuration(controlCalendar);
-        this.assertEquals("P1970Y1M1DT0H0M0.0S", tm);
+        assertEquals("P1970Y1M1DT0H0M0.0S", tm);
     }
 
     public void testToDateTimeWithNullInput() {
         Calendar controlCalendar = null;
         String tm = dataHelper.toDuration(controlCalendar);
-        this.assertNull(tm);
+        assertNull(tm);
     }
 }

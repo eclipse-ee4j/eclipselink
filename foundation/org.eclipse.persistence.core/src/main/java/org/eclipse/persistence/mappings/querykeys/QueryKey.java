@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,12 @@ public class QueryKey implements Cloneable, Serializable {
     protected ClassDescriptor descriptor;
 
     /**
+     * Default constructor.
+     */
+    public QueryKey() {
+    }
+
+    /**
      * INTERNAL:
      * Clones itself.
      */
@@ -54,7 +60,6 @@ public class QueryKey implements Cloneable, Serializable {
      * Convert all the class-name-based settings in this QueryKey to actual class-based
      * settings
      * Will be overridded by subclasses
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){}
 

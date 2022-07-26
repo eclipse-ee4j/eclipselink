@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,13 @@ package org.eclipse.persistence.eis.interactions;
 
 import java.io.*;
 import java.util.*;
+
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLField;
 import org.w3c.dom.Element;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.eis.*;
@@ -157,7 +157,7 @@ public class XMLInteraction extends MappedInteraction {
         } else {
             XMLRecord parameterRow = createXMLRecord(getInputRootElementName());
             for (int index = 0; index < getArgumentNames().size(); index++) {
-                String parameterName = (String)getArgumentNames().get(index);
+                String parameterName = getArgumentNames().get(index);
                 Object parameter = getParameters().get(index);
 
                 // If no arguments were passed to the call execution find the paramter from the row.
@@ -189,7 +189,7 @@ public class XMLInteraction extends MappedInteraction {
         } else if (hasOutputArguments()) {
             row = createXMLRecord(getOutputRootElementName());
             for (int index = 0; index < getOutputArgumentNames().size(); index++) {
-                DatabaseField field = (DatabaseField)getOutputArguments().get(index);
+                DatabaseField field = getOutputArguments().get(index);
                 row.put(field, row.get(getOutputArgumentNames().get(index)));
             }
         }
@@ -200,20 +200,21 @@ public class XMLInteraction extends MappedInteraction {
      * Build a collection of database rows from the Record returned from the interaction.
      */
     @Override
-    public Vector buildRows(jakarta.resource.cci.Record record, EISAccessor accessor) {
-        Vector rows = null;
+    public Vector<AbstractRecord> buildRows(jakarta.resource.cci.Record record, EISAccessor accessor) {
+        Vector<AbstractRecord> rows = null;
         if (record == null) {
-            return new Vector(0);
+            return new Vector<>(0);
         }
         AbstractRecord row = accessor.getEISPlatform().createDatabaseRowFromDOMRecord(record, this, accessor);
         if (getOutputResultPath().length() > 0) {
-            Vector values = (Vector)row.getValues(getOutputResultPath());
+            @SuppressWarnings({"unchecked"})
+            Vector<AbstractRecord> values = (Vector<AbstractRecord>)row.getValues(getOutputResultPath());
             if (values == null) {
-                values = new Vector(0);
+                values = new Vector<>(0);
             }
             rows = values;
         } else {
-            rows = new Vector(1);
+            rows = new Vector<>(1);
             rows.add(row);
         }
         return rows;

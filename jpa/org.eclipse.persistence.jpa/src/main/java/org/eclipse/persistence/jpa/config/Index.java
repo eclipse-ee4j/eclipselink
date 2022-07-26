@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,12 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface Index {
 
-    public Index addColumnName(String columnName); // EclipseLink index
-    public Index setCatalog(String catalog); // EclipseLink index
-    public Index setColumnList(String columnList); // JPA 2.1 index
-    public Index setName(String name); // EclipseLink and JPA 2.1 index
-    public Index setSchema(String schema); // EclipseLink index
-    public Index setTable(String table); // EclipseLink index
-    public Index setUnique(Boolean unique); // EclipseLink and JPA 2.1 index
+    Index addColumnName(String columnName); // EclipseLink index
+    Index setCatalog(String catalog); // EclipseLink index
+    Index setColumnList(String columnList); // JPA 2.1 index
+    Index setName(String name); // EclipseLink and JPA 2.1 index
+    Index setSchema(String schema); // EclipseLink index
+    Index setTable(String table); // EclipseLink index
+    Index setUnique(Boolean unique); // EclipseLink and JPA 2.1 index
 
 }

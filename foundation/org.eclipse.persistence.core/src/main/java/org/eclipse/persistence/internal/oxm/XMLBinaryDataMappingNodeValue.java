@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     private BinaryDataMapping xmlBinaryDataMapping;
 
     protected String getValueToWrite(QName schemaType, Object value, CoreAbstractSession session) {
-        return (String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
+        return ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
     @Override
@@ -300,7 +300,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         return xmlBinaryDataMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
 
-    public DataHandler getDataHandlerForObjectValue(Object obj, Class classification) {
+    public DataHandler getDataHandlerForObjectValue(Object obj, Class<?> classification) {
         if (classification == DataHandler.class) {
             return (DataHandler) obj;
         }

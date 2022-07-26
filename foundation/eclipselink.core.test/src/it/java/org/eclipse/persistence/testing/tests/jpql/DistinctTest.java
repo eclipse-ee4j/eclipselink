@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 public class DistinctTest extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
+    @Override
     public void setup() {
         // Get an original employee...
         ReadAllQuery raq = new ReadAllQuery();
@@ -38,10 +39,12 @@ public class DistinctTest extends org.eclipse.persistence.testing.tests.jpql.JPQ
         super.setup();
     }
 
+    @Override
     public void test() throws Exception {
         super.test();
     }
 
+    @Override
     public void verify() throws Exception {
         super.verify();
     }

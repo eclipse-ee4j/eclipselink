@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
+import junit.framework.Test;
+
 import java.lang.reflect.*;
 import java.util.Enumeration;
 import java.util.Vector;
 
 /**
- * <p>Purpose<b></b>:This is a JUnit Test wrapper for TopLink.
+ * <p><b>Purpose</b>:This is a JUnit Test wrapper for TopLink.
  * It simply calls the method corresponding to the test name.
  * Setup: Performs setUp().
  * Test: Runs the named Test.
@@ -38,11 +40,12 @@ public class JUnitTestCase extends AutoVerifyTestCase {
     /**
      * Run the JUnit "setUp" method.
      */
+    @Override
     public void setup() throws Throwable {
         try {
-            Method setUp = testCase.getClass().getMethod("setUp", new Class[0]);
+            Method setUp = testCase.getClass().getMethod("setUp");
             setUp.setAccessible(true);
-            setUp.invoke(testCase, new Object[0]);
+            setUp.invoke(testCase);
         } catch (InvocationTargetException exception) {
             throw exception.getTargetException();
         } catch (Exception exception) {
@@ -53,11 +56,12 @@ public class JUnitTestCase extends AutoVerifyTestCase {
     /**
      * Run the JUnit "tearDown" method.
      */
+    @Override
     public void reset() throws Throwable {
         try {
-            Method tearDown = testCase.getClass().getMethod("tearDown", new Class[0]);
+            Method tearDown = testCase.getClass().getMethod("tearDown");
             tearDown.setAccessible(true);
-            tearDown.invoke(testCase, new Object[0]);
+            tearDown.invoke(testCase);
         } catch (InvocationTargetException exception) {
             throw exception.getTargetException();
         } catch (Exception exception) {
@@ -68,16 +72,17 @@ public class JUnitTestCase extends AutoVerifyTestCase {
     /**
      * Run the JUnit "runTest" method.
      */
+    @Override
     public void test() throws Throwable {
         try {
             Method runTest = null;
             try {
-                runTest = testCase.getClass().getMethod(testCase.getName(), new Class[0]);
+                runTest = testCase.getClass().getMethod(testCase.getName());
             } catch (NoSuchMethodException exc) {
-                runTest = testCase.getClass().getMethod("runTest", new Class[0]);
+                runTest = testCase.getClass().getMethod("runTest");
             }
             runTest.setAccessible(true);
-            runTest.invoke(testCase, new Object[0]);
+            runTest.invoke(testCase);
         } catch (InvocationTargetException exception) {
             throw exception.getTargetException();
         } catch (Exception exception) {
@@ -100,13 +105,13 @@ public class JUnitTestCase extends AutoVerifyTestCase {
      *   void testC() {...
      * }
      */
-    public static Vector suite(Class junitTestCaseClass) {
+    public static Vector suite(Class<?> junitTestCaseClass) {
         if (!(junit.framework.TestCase.class.isAssignableFrom(junitTestCaseClass))) {
             throw new TestProblemException("Class " + junitTestCaseClass + " is not derived from junit.framework.TestCase");
         }
         junit.framework.TestSuite suite;
         try {
-            Method suiteMethod = junitTestCaseClass.getMethod("suite", new Class[0]);
+            Method suiteMethod = junitTestCaseClass.getMethod("suite");
             suiteMethod.setAccessible(true);
             junit.framework.Test test = (junit.framework.Test)suiteMethod.invoke(null, new Object[0]);
             while(test instanceof junit.extensions.TestDecorator) {
@@ -121,7 +126,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
             throw new TestProblemException("suite method failed on class " + junitTestCaseClass.getName() + " with: " + exception.toString(), exception);
         }
         Vector testsOut = new Vector(suite.countTestCases());
-        Enumeration tests = suite.tests();
+        Enumeration<Test> tests = suite.tests();
         while (tests.hasMoreElements()) {
             junit.framework.TestCase testCaseToAdd = (junit.framework.TestCase)tests.nextElement();
             testsOut.addElement(new JUnitTestCase(testCaseToAdd));

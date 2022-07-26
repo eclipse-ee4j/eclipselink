@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,13 @@ public class TestUpdateDirectDirectMapMapping extends TestReadDirectDirectMapMap
 
     protected DirectDirectMapHolder changedHolder = null;
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectDirectMapHolder.class, holderExp);
         changedHolder = (DirectDirectMapHolder)holders.get(0);
-        changedHolder.removeDirectToDirectMapItem(new Integer(1));
-        changedHolder.addDirectToDirectMapItem(new Integer(3), new Integer(3));
+        changedHolder.removeDirectToDirectMapItem(1);
+        changedHolder.addDirectToDirectMapItem(3, 3);
         uow.commit();
         Object holderForComparison = uow.readObject(changedHolder);
         if (!compareObjects(changedHolder, holderForComparison)){
@@ -35,6 +36,7 @@ public class TestUpdateDirectDirectMapMapping extends TestReadDirectDirectMapMap
         }
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object initialHolder = holders.get(0);
@@ -43,11 +45,11 @@ public class TestUpdateDirectDirectMapMapping extends TestReadDirectDirectMapMap
         if (!compareObjects(holder, changedHolder)){
             throw new TestErrorException("Objects do not match reinitialize");
         }
-        if (holder.getDirectToDirectMap().containsKey(new Integer(1))){
+        if (holder.getDirectToDirectMap().containsKey(1)){
             throw new TestErrorException("Item that was removed is still present in map.");
         }
-        Integer value = (Integer)holder.getDirectToDirectMap().get(new Integer(3));
-        if (value.intValue() != 3){
+        Integer value = (Integer)holder.getDirectToDirectMap().get(3);
+        if (value != 3){
             throw new TestErrorException("Item was not correctly added to map");
         }
     }

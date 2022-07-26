@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import junit.framework.TestCase;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -44,11 +45,11 @@ public class UnmarshallerTestCases extends TestCase  {
     private static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     private static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 
-    private final static String CONTROL_XML_FILE_NAME = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xml";
+    private final static String CONTROL_XML_FILE_NAME = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xml";
     private final static String CONTROL_EMPLOYEE_NAME = "Jane Doe";
 
     private JAXBContext jaxbContext;
-    private Unmarshaller unmarshaller;
+    private JAXBUnmarshaller unmarshaller;
     private DocumentBuilder parser;
     private String contextPath;
 
@@ -56,11 +57,12 @@ public class UnmarshallerTestCases extends TestCase  {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         contextPath = System.getProperty("jaxb.test.contextpath", JAXBSAXTestSuite.CONTEXT_PATH);
 
         jaxbContext = JAXBContext.newInstance(contextPath, getClass().getClassLoader());
-        unmarshaller = jaxbContext.createUnmarshaller();
+        unmarshaller = (JAXBUnmarshaller) jaxbContext.createUnmarshaller();
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setIgnoringElementContentWhitespace(true);
         parser = builderFactory.newDocumentBuilder();
@@ -237,15 +239,15 @@ public class UnmarshallerTestCases extends TestCase  {
     public void testJAXBClassLoader() throws Exception {
         // Determine the directory that Employee.class is in
         URL classURL = ClassLoader.getSystemClassLoader().getResource("org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.class");
-        URL directoryURL = new File(classURL.getFile()).getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().toURL();
+        URL directoryURL = new File(classURL.getFile()).getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().toURI().toURL();
 
         // Create a URLClassLoader specifically for this class
         URLClassLoader classLoader = new URLClassLoader(new URL[] { directoryURL });
 
         // Set up a control object using this ClassLoader
-        Object controlObject = Class.forName("org.eclipse.persistence.testing.jaxb.xmlmarshaller.Employee", true, classLoader).newInstance();
-        Method setMethod = controlObject.getClass().getMethod("setName", new Class[] { String.class });
-        setMethod.invoke(controlObject, new Object[] { CONTROL_EMPLOYEE_NAME });
+        Object controlObject = Class.forName("org.eclipse.persistence.testing.jaxb.xmlmarshaller.Employee", true, classLoader).getConstructor().newInstance();
+        Method setMethod = controlObject.getClass().getMethod("setName", String.class);
+        setMethod.invoke(controlObject, CONTROL_EMPLOYEE_NAME);
 
         // Unmarshall the control file, passing JAXB this classLoader
         JAXBContext jaxbContext = JAXBContext.newInstance(contextPath, classLoader);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,14 +17,16 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmltransformation;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class AddressTransformer implements FieldTransformer, AttributeTransformer {
 
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
     }
 
+    @Override
     public Object buildFieldValue(Object instance, String fieldName, Session session) {
         if (instance instanceof EmployeeWithAddress) {
             if (fieldName.contains("street")) {
@@ -43,9 +45,10 @@ public class AddressTransformer implements FieldTransformer, AttributeTransforme
         return null;
     }
 
-    public Object buildAttributeValue(Record record, Object object, Session session) {
-        String street = (String) record.get("address/street/text()");
-        String city =(String) record.get("address/city/text()");
+    @Override
+    public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
+        String street = (String) dataRecord.get("address/street/text()");
+        String city =(String) dataRecord.get("address/city/text()");
         return new AddressNoCtor(street, city);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 /**
- * <p>Purpose<b></b>:Creates several variations of the passed TestCase
+ * <p><b>Purpose</b>:Creates several variations of the passed TestCase
  * (or of each member of a Vector of TestCases) using all combinations
  * of values of the specified boolean attributes on the specified object.
  * Suppose we want to run an existing test with four different DatabasePlatform settings:
@@ -136,7 +136,7 @@ public class TestVariation {
         return out;
     }
 
-    protected static void getMembers(Class cls, Vector names, Vector getters, Vector setters, Vector fields, boolean throwExceptionIfNotFound) {
+    protected static void getMembers(Class<?> cls, Vector names, Vector getters, Vector setters, Vector fields, boolean throwExceptionIfNotFound) {
         Method[] allMethods = cls.getMethods();
         Field[] allFields = cls.getFields();
 
@@ -150,8 +150,8 @@ public class TestVariation {
         Vector candidateFieldsNames = new Vector();
 
         for (int i = 0; i < allMethods.length; i++) {
-            Class returnType = allMethods[i].getReturnType();
-            Class[] parameterTypes = allMethods[i].getParameterTypes();
+            Class<?> returnType = allMethods[i].getReturnType();
+            Class<?>[] parameterTypes = allMethods[i].getParameterTypes();
             if (returnType.equals(boolean.class) && (parameterTypes.length == 0)) {
                 candidateGetters.addElement(allMethods[i]);
                 candidateGettersNames.addElement(allMethods[i].getName().toLowerCase());
@@ -163,7 +163,7 @@ public class TestVariation {
             }
         }
         for (int i = 0; i < allFields.length; i++) {
-            Class type = allFields[i].getType();
+            Class<?> type = allFields[i].getType();
             if (type.equals(boolean.class)) {
                 candidateFields.addElement(allFields[i]);
                 candidateFieldsNames.addElement(allFields[i].getName().toLowerCase());
@@ -241,18 +241,19 @@ public class TestVariation {
             }
         }
 
+        @Override
         protected void setup() throws Throwable {
             for (int i = 0; i < required.length; i++) {
                 if (getters[i] != null) {
                     Object[] args = {  };
                     Boolean res = (Boolean)getters[i].invoke(object, args);
-                    original[i] = res.booleanValue();
+                    original[i] = res;
                 } else {
                     original[i] = fields[i].getBoolean(object);
                 }
 
                 if (setters[i] != null) {
-                    Object[] args = { new Boolean(required[i]) };
+                    Object[] args = {required[i]};
                     setters[i].invoke(object, args);
                 } else {
                     fields[i].setBoolean(object, required[i]);
@@ -261,11 +262,12 @@ public class TestVariation {
             super.setup();
         }
 
+        @Override
         public void reset() throws Throwable {
             super.reset();
             for (int i = required.length - 1; i >= 0; i--) {
                 if (setters[i] != null) {
-                    Object[] args = { new Boolean(original[i]) };
+                    Object[] args = {original[i]};
                     setters[i].invoke(object, args);
                 } else {
                     fields[i].setBoolean(object, original[i]);

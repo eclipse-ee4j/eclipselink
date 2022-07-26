@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ import org.xml.sax.EntityResolver;
  * @author Gordon Yorke, Guy Pelletier
  */
 public class PersistenceEntityResolver implements EntityResolver {
-    protected Hashtable m_localResources;
+    protected Hashtable<String, String> m_localResources;
     protected static final String dtdFileName40 = "sessions_4_0.dtd";
     protected static final String doctTypeId40 = "-//Oracle Corp.//DTD TopLink for JAVA 4.0//EN";
     protected static final String dtdFileName45 = "sessions_4_5.dtd";
@@ -48,7 +48,7 @@ public class PersistenceEntityResolver implements EntityResolver {
      * INTERNAL:
      */
     public PersistenceEntityResolver() {
-        m_localResources = new Hashtable();
+        m_localResources = new Hashtable<>();
         populateLocalResources();
     }
 
@@ -65,20 +65,20 @@ public class PersistenceEntityResolver implements EntityResolver {
      * INTERNAL:
      */
     protected String getDtdFileName(String docTypeId) {
-        return (String)getLocalResources().get(docTypeId);
+        return getLocalResources().get(docTypeId);
     }
 
     /**
      * INTERNAL:
      */
-    public Hashtable getLocalResources() {
+    public Hashtable<String, String> getLocalResources() {
         return m_localResources;
     }
 
     /**
      * INTERNAL:
      */
-    public void setLocalResources(Hashtable ht) {
+    public void setLocalResources(Hashtable<String, String> ht) {
         m_localResources = ht;
     }
 
@@ -94,11 +94,11 @@ public class PersistenceEntityResolver implements EntityResolver {
      */
     @Override
     public InputSource resolveEntity(String publicId, String systemId) {
-        for (Enumeration docTypeIds = m_localResources.keys(); docTypeIds.hasMoreElements();) {
-            String docTypeId = (String)docTypeIds.nextElement();
+        for (Enumeration<String> docTypeIds = m_localResources.keys(); docTypeIds.hasMoreElements();) {
+            String docTypeId = docTypeIds.nextElement();
 
             if ((publicId != null) && publicId.equals(docTypeId)) {
-                InputStream localDtdStream =  null;
+                InputStream localDtdStream;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try{
                         localDtdStream = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(getClass())).getResourceAsStream(getDtdFileName(docTypeId));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,12 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
     protected boolean isReadOnly = false;
 
     /**
+     * Default constructor.
+     */
+    protected AttributeAccessor() {
+    }
+
+    /**
      * INTERNAL:
      * Clones itself.
      */
@@ -70,7 +76,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
      * Return the class type of the attribute.
      */
     @Override
-    public Class getAttributeClass() {
+    public Class<?> getAttributeClass() {
         return ClassConstants.OBJECT;
     }
 
@@ -78,7 +84,7 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
      * Allow any initialization to be performed with the descriptor class.
      */
     @Override
-    public void initializeAttributes(Class descriptorClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> descriptorClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
         }
@@ -116,7 +122,6 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
 
     /**
      * INTERNAL:
-     * @return
      */
     @Override
     public boolean isWriteOnly() {
@@ -125,7 +130,6 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
 
     /**
      * INTERNAL:
-     * @param aBoolean
      */
     @Override
     public void setIsWriteOnly(boolean aBoolean) {
@@ -134,14 +138,12 @@ public abstract class AttributeAccessor implements CoreAttributeAccessor, Clonea
 
     /**
      * INTERNAL
-     * @return
      */
     public boolean isReadOnly() {
         return isReadOnly;
     }
     /**
      * INTERNAL
-     * @param aBoolean
      */
     @Override
     public void setIsReadOnly(boolean aBoolean) {

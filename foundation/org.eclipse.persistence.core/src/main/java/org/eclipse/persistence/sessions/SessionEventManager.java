@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +23,6 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ClientSession;
-import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * <p><b>Purpose</b>: Used to support session events.
@@ -147,7 +147,7 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
      * INTERNAL:
      * Raised for missing descriptors for lazy registration.
      */
-    public void missingDescriptor(Class missingClass) {
+    public void missingDescriptor(Class<?> missingClass) {
         if (!hasListeners()) {
             return;
         }
@@ -205,7 +205,7 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
      * INTERNAL:
      * Raised for stored proc output parameters.
      */
-    public void outputParametersDetected(Record outputRow, DatasourceCall call) {
+    public void outputParametersDetected(DataRecord outputRow, DatasourceCall call) {
         if (!hasListeners()) {
             return;
         }
@@ -364,6 +364,26 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
         int size = listeners.size();
         for (int index = 0; index < size; index++) {
             listeners.get(index).postConnect(event);
+        }
+        endOperationProfile();
+    }
+
+    /**
+     * INTERNAL:
+     * Post execute call.
+     */
+    public void postExecuteCall(Call call, Object result) {
+        if (!hasListeners()) {
+            return;
+        }
+        startOperationProfile();
+        SessionEvent event = new SessionEvent(SessionEvent.PostExecuteCall, getSession());
+        event.setCall(call);
+        event.setResult(result);
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
+        for (int index = 0; index < size; index++) {
+            this.listeners.get(index).postExecuteCall(event);
         }
         endOperationProfile();
     }
@@ -585,6 +605,25 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
         int size = listeners.size();
         for (int index = 0; index < size; index++) {
             listeners.get(index).preCommitUnitOfWork(event);
+        }
+        endOperationProfile();
+    }
+
+    /**
+     * INTERNAL:
+     * Pre execute call.
+     */
+    public void preExecuteCall(Call call) {
+        if (!hasListeners()) {
+            return;
+        }
+        startOperationProfile();
+        SessionEvent event = new SessionEvent(SessionEvent.PreExecuteCall, getSession());
+        event.setCall(call);
+        List<SessionEventListener> listeners = this.listeners;
+        int size = listeners.size();
+        for (int index = 0; index < size; index++) {
+            listeners.get(index).preExecuteCall(event);
         }
         endOperationProfile();
     }

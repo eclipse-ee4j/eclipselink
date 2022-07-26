@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,14 +51,17 @@ public class AggregateTestModel extends TestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         //We need to ensure that the correct database schema is created
         addForcedRequiredSystem(new AggregateSystem());
     }
 
+    @Override
     public void addRequiredSystems() {
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getUpdateObjectTestSuite());
@@ -78,6 +81,7 @@ public class AggregateTestModel extends TestModel {
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
+    @Override
     public void addSRGTests() {
         addTest(getSRGReadObjectTestSuite());
         addTest(getSRGUpdateObjectTestSuite());
@@ -143,8 +147,8 @@ public class AggregateTestModel extends TestModel {
         suite.setName("AggregateCheckForNullUnitOfWorkTestSuite");
         suite.setDescription("This suite tests updating objects with UOW in the aggregate model.");
 
-        Class employeeClass = Employee.class;
-        Class clientClass = Client.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<Client> clientClass = Client.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new CheckForNullUnitOfWorkTest(manager.getObject(employeeClass, "example1")));
@@ -167,9 +171,9 @@ public class AggregateTestModel extends TestModel {
         suite.setName("AggregateDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the aggregate model.");
 
-        Class employeeClass = Employee.class;
-        Class clientClass = Client.class;
-        Class evaluationClientClass = EvaluationClient.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<Client> clientClass = Client.class;
+        Class<EvaluationClient> evaluationClientClass = EvaluationClient.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new DeleteObjectTest(manager.getObject(employeeClass, "example1")));
@@ -382,12 +386,12 @@ public class AggregateTestModel extends TestModel {
         suite.setDescription("This suite test the reading of each object in the aggregate model.");
 
         //=====================================
-        Class employee1Class = Employee1.class;
+        Class<Employee1> employee1Class = Employee1.class;
 
         //======================================
-        Class employeeClass = Employee.class;
-        Class clientClass = Client.class;
-        Class evaluationClientClass = EvaluationClient.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<Client> clientClass = Client.class;
+        Class<EvaluationClient> evaluationClientClass = EvaluationClient.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         //===============================================================================
@@ -428,7 +432,7 @@ public class AggregateTestModel extends TestModel {
         suite.setName("AggregateUnitOfWorkCommitResumeTestSuite");
         suite.setDescription("This suite tests updating objects with UOW in the aggregate model using the commitAndResume method.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new BatchReadingWithAggregateCollectionMapping(Agent.class));
@@ -458,8 +462,8 @@ public class AggregateTestModel extends TestModel {
         suite.setName("AggregateUnitOfWorkTestSuite");
         suite.setDescription("This suite tests updating objects with UOW in the aggregate model.");
 
-        Class employeeClass = Employee.class;
-        Class clientClass = Client.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<Client> clientClass = Client.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new UnitOfWorkTest(manager.getObject(employeeClass, "example1")));
@@ -501,10 +505,10 @@ public class AggregateTestModel extends TestModel {
         suite.setName("AggregateUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the aggregate model.");
 
-        Class employee1Class = Employee1.class;
-        Class employeeClass = Employee.class;
-        Class clientClass = Client.class;
-        Class evaluationClientClass = EvaluationClient.class;
+        Class<Employee1> employee1Class = Employee1.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<Client> clientClass = Client.class;
+        Class<EvaluationClient> evaluationClientClass = EvaluationClient.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         //=================================================================================

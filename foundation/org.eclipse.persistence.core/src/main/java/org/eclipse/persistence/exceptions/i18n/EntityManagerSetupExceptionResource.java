@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,14 @@ import java.util.ListResourceBundle;
  *
  * @author Tom Ware
  */
-public class EntityManagerSetupExceptionResource extends ListResourceBundle {
+public final class EntityManagerSetupExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
-                                           { "28001", "A ValidationException was thrown while trying to create session: [{0}] " + ". The most likely causes of this issue are that your [{1}] file is not available on the classpath " + "or it does not contain a session called: [{0}]." },
+                                           { "28001", "A ValidationException was thrown while trying to create session: [{0}]. " +
+                                                   "The most likely causes of this issue are that your [{1}] file is not available on the classpath " +
+                                                   "or it does not contain a session called: [{0}]." },
                                            { "28002", "EclipseLink is attempting to load a ServerSession named [{0}] from [{1}], and not getting a ServerSession." },
-                                           { "28003", "EclipseLink has loaded Session [{0}] from [{1}] and it either does not have a server platform specified or specifies " + "a server platform that does not use and external transaction controller.  Specify an appropriate server platform if you plan to use JTA." },
+                                           { "28003", "EclipseLink has loaded Session [{0}] from [{1}] and it either does not have a server platform specified or specifies " +
+                                                   "a server platform that does not use and external transaction controller.  Specify an appropriate server platform if you plan to use JTA." },
                                            { "28004", "Error in setup of EntityManager factory: JavaSECMPInitializer.initializeFromMain returned false." },
                                            { "28005", "An Exception was thrown in setup of EntityManager factory." },
                                            { "28006", "ClassNotFound: [{0}] specified in [{1}] property." },
@@ -57,6 +60,13 @@ public class EntityManagerSetupExceptionResource extends ListResourceBundle {
                                            { "28031", "Missing the required property [{0}]." },
                                            { "28032", "Failed to create temporary classloader with doPrivileged." }
    };
+
+    /**
+     * Default constructor.
+     */
+    public EntityManagerSetupExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

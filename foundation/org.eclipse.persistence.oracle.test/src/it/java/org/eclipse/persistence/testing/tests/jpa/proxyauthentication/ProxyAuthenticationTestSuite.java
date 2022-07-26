@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ package org.eclipse.persistence.testing.tests.jpa.proxyauthentication;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -27,8 +26,9 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import oracle.jdbc.OracleConnection;
-import oracle.jdbc.pool.OracleDataSource;
 
+import oracle.ucp.jdbc.PoolDataSource;
+import oracle.ucp.jdbc.PoolDataSourceFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
@@ -40,7 +40,7 @@ import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.tests.proxyauthentication.thin.ProxyAuthenticationUsersAndProperties;
 
@@ -61,11 +61,12 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     // indicates whether EclusiveIsolatedClientSession should be used.
     boolean shoulUseExclusiveIsolatedSession;
     // datasource created in external connection pooling case.
-    OracleDataSource dataSource;
+    PoolDataSource dataSource;
 
     // writeUser is set by an event risen by ModifyQuery.
     private static String writeUser;
     public static class Listener extends SessionEventAdapter {
+        @Override
         public void outputParametersDetected(SessionEvent event) {
             writeUser = (String)((Map)event.getResult()).get("OUT");
         }
@@ -97,6 +98,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public String getPersistenceUnitName() {
         return PU_NAME;
     }
@@ -127,6 +129,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         return suite;
     }
 
+    @Override
     public void setUp() {
         // runs for the first time - setup user names and properties used by the tests.
         if(setupErrorMsg == null) {
@@ -155,6 +158,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         }
     }
 
+    @Override
     public void tearDown() {
         // clean-up
         if(setupErrorMsg.length() > 0) {
@@ -167,27 +171,17 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         // the test has customized the factory - it should be closed.
         closeEntityManagerFactory();
         // close the data source if it has been created
-        if(dataSource != null) {
-            try {
-                dataSource.close();
-            } catch (SQLException ex) {
-                throw new RuntimeException("Exception thrown while closing OracleDataSource:\n", ex);
-            } finally {
-                dataSource = null;
-            }
-        }
+        dataSource = null;
     }
 
     // create a data source using the supplied connection string
     void createDataSource(String connectionString) {
         try {
-            dataSource = new OracleDataSource();
-            Properties props = new Properties();
-            // the pool using just one connection would cause deadlock in case of a connection leak - good for the test.
-            props.setProperty("MinLimit", "1");
-            props.setProperty("MaxLimit", "1");
-            props.setProperty("InitialLimit", "1");
-            dataSource.setConnectionCacheProperties(props);
+            dataSource = PoolDataSourceFactory.getPoolDataSource();
+            dataSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+            dataSource.setMinPoolSize(1);
+            dataSource.setMaxPoolSize(1);
+            dataSource.setInitialPoolSize(1);
             dataSource.setURL(connectionString);
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to create OracleDataSource with " + connectionString + ".\n", ex);

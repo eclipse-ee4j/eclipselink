@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,31 +29,22 @@ public abstract class AbstractStaticWeaveOutputHandler{
 
     /**
      * create directory into target directory, or insert directory entry into outputstream.
-     * @param dirPath
-     * @throws IOException
      */
     abstract public void addDirEntry(String dirPath)throws IOException;
 
     /**
      * Write entry bytes into target, this is usually called if class has been tranformed
-     * @param targetEntry
-     * @param entryBytes
-     * @throws IOException
      */
     abstract public void addEntry(JarEntry targetEntry,byte[] entryBytes)throws IOException;
 
     /**
      * Write entry into target, this method usually copy original class into target.
-     * @param jis
-     * @param entry
-     * @throws IOException
      */
     abstract public void addEntry(InputStream jis,JarEntry entry) throws IOException,URISyntaxException;
 
 
     /**
      * Close the output stream.
-     * @throws IOException
      */
     public void closeOutputStream() throws IOException {
         if(outputStreamHolder!=null){
@@ -63,7 +54,6 @@ public abstract class AbstractStaticWeaveOutputHandler{
 
     /**
      * Get the ouput stream instance.
-     * @return
      */
     public JarOutputStream getOutputStream(){
         return this.outputStreamHolder;

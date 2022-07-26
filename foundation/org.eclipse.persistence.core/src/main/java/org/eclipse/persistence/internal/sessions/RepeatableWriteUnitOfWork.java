@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -139,7 +139,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                     if (this.classesToBeInvalidated == null) {
                         this.classesToBeInvalidated = new HashSet<>();
                     }
-                    Iterator enumDeleted = this.unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
+                    Iterator<Object> enumDeleted = this.unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
                     // classes of the deleted objects should be invalidated in the shared cache
                     while (enumDeleted.hasNext()) {
                         this.classesToBeInvalidated.add(getDescriptor(enumDeleted.next().getClass()));
@@ -267,11 +267,10 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * In this implementation, we check whether the inheritance policy has been configured to allow
      * superclass descriptors to describe subclasses that do not have a descriptor themselves
      *
-     * @param theClass
      * @return ClassDescriptor
      */
     @Override
-    protected ClassDescriptor checkHierarchyForDescriptor(Class theClass){
+    protected ClassDescriptor checkHierarchyForDescriptor(Class<?> theClass){
         ClassDescriptor descriptor = getDescriptor(theClass.getSuperclass());
         if (descriptor != null && descriptor.hasInheritance() && descriptor.getInheritancePolicy().getDescribesNonPersistentSubclasses()){
             return descriptor;
@@ -650,8 +649,8 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     public Object getUnregisteredDeletedCloneForOriginal(Object original) {
         if (unregisteredDeletedObjectsCloneToBackupAndOriginal != null) {
-            Iterator keys = unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
-            Iterator values = unregisteredDeletedObjectsCloneToBackupAndOriginal.values().iterator();
+            Iterator<Object> keys = unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
+            Iterator<Object> values = unregisteredDeletedObjectsCloneToBackupAndOriginal.values().iterator();
             while(keys.hasNext()) {
                 Object deletedObjectClone = keys.next();
                 Object[] backupAndOriginal = (Object[])values.next();
@@ -712,7 +711,6 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
     /**
      * Return whether we are already performing a flush() call
-     * @return
      */
     public boolean isWithinFlush() {
         return isWithinFlush;

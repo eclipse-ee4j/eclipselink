@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited;
 
 import java.sql.Date;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,7 +27,7 @@ import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.inherited.Canadian;
@@ -198,7 +199,7 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
         /**
          * Merge Test:Have a class(TelephoneNumber) that uses a composite primary
          * key (defined partially in annotations and XML) and define a 1-M
-         * (BeerConsumer->TelephoneNumber) for it in XML
+         * (BeerConsumer-{@literal >}TelephoneNumber) for it in XML
          */
     public void testOneToManyRelationships() {
         EntityManager em = createEntityManager("ddlGeneration");
@@ -239,10 +240,10 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
             beginTransaction(em);
 
             BeerConsumer cm = em.find(BeerConsumer.class, beerConsumerId);
-            java.util.Collection phones = cm.getTelephoneNumbers().values();
+            Collection<TelephoneNumber> phones = cm.getTelephoneNumbers().values();
             assertTrue("Wrong phonenumbers associated with BeerConsumer", phones.size() == 2);
-            for (Iterator iterator = phones.iterator(); iterator.hasNext();){
-                    TelephoneNumber phone = (TelephoneNumber)(iterator.next());
+            for (Iterator<TelephoneNumber> iterator = phones.iterator(); iterator.hasNext();){
+                    TelephoneNumber phone = iterator.next();
                     assertTrue("Wrong owner of the telephone",phone.getBeerConsumer().getId() == beerConsumerId);
             }
 

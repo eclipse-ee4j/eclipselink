@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ public class ClientSessionIdentityMapAccessor extends IdentityMapAccessor {
      * The client session does not have a local identity map, so this has no effect and should not be used.
      */
     @Override
-    public void initializeIdentityMap(Class theClass) {
+    public void initializeIdentityMap(Class<?> theClass) {
         // Do nothing
     }
 

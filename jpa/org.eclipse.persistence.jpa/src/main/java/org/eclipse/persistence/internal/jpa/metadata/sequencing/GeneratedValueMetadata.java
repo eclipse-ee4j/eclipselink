@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_GENERATION_IDENTITY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_GENERATION_SEQUENCE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_GENERATION_TABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_GENERATION_UUID;
 
 /**
  * Metadata object to hold generated value information.
@@ -150,6 +151,13 @@ public class GeneratedValueMetadata extends ORMetadata {
                     sequence = sequences.get(MetadataProject.DEFAULT_IDENTITY_GENERATOR);
                 } else {
                     sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_IDENTITY_GENERATOR).clone();
+                    sequence.setName(m_generator);
+                }
+            } else if (m_strategy.equals(JPA_GENERATION_UUID)) {
+                if (m_generator.equals("")) {
+                    sequence = sequences.get(MetadataProject.DEFAULT_UUID_GENERATOR);
+                } else {
+                    sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_UUID_GENERATOR).clone();
                     sequence.setName(m_generator);
                 }
             }

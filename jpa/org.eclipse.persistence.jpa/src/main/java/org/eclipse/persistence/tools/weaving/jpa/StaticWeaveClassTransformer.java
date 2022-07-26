@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ package org.eclipse.persistence.tools.weaving.jpa;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import java.util.Map;
 import java.util.zip.ZipException;
 
 import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.TransformerException;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.StaticWeaveInfo;
@@ -82,7 +82,7 @@ public class StaticWeaveClassTransformer {
      * The method performs weaving function on the given class.
      * @return the converted(woven) class
      */
-    public byte[] transform(String originalClassName, Class originalClass, byte[] originalClassBytes)throws IllegalClassFormatException{
+    public byte[] transform(String originalClassName, Class<?> originalClass, byte[] originalClassBytes)throws TransformerException {
         byte[] newClassBytes = null;
         for(ClassTransformer transformer : classTransformers){
             newClassBytes=transformer.transform(aClassLoader, originalClassName, originalClass, null, originalClassBytes);
@@ -112,7 +112,7 @@ public class StaticWeaveClassTransformer {
             if (persistenceUnitsList==null) {
                 throw PersistenceUnitLoadingException.couldNotGetUnitInfoFromUrl(inputArchiveURL);
             }
-            Map emptyMap = new HashMap(0);
+            Map<Object, Object> emptyMap = new HashMap<>(0);
             Iterator<SEPersistenceUnitInfo> persistenceUnitsIterator = persistenceUnitsList.iterator();
             while (persistenceUnitsIterator.hasNext()) {
                 SEPersistenceUnitInfo unitInfo = persistenceUnitsIterator.next();

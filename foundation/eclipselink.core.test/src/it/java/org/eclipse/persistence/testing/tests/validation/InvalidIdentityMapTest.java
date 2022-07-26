@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -29,19 +30,20 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 public class InvalidIdentityMapTest extends ExceptionTest {
 
     ClassDescriptor descriptor;
-    Class orgIdentityMapClass;
+    Class<? extends IdentityMap> orgIdentityMapClass;
     IntegrityChecker orgIntegrityChecker;
 
     public InvalidIdentityMapTest() {
         setDescription("This tests Invalid Identity Map (TL-ERROR 38)");
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         expectedException = DescriptorException.invalidIdentityMap(null, null); //causes 7012 error
 
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        descriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         orgIdentityMapClass = descriptor.getIdentityMapClass();
         //the following causes the correct error to occure.
         descriptor.setIdentityMapClass(null);
@@ -51,11 +53,13 @@ public class InvalidIdentityMapTest extends ExceptionTest {
         getSession().getIntegrityChecker().dontCatchExceptions();
     }
 
+    @Override
     public void reset() {
         descriptor.setIdentityMapClass(orgIdentityMapClass);
         getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         try {
             IdentityMapManager identityMapManager = new IdentityMapManager((AbstractSession)getSession());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,16 +31,18 @@ public class StringArrayTestCases extends JSONTestCases {
 
     public StringArrayTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{String.class});
+        setClasses(new Class<?>[]{String.class});
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
+    @Override
     protected Object getControlObject() {
         String[] stringArray = {"aaa", "bbb", "ccc", null};
         return stringArray;

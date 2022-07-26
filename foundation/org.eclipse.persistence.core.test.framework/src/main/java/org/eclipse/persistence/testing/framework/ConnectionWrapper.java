@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,6 +112,7 @@ public class ConnectionWrapper implements Connection {
     /*
      * The following methods implement Connection interface
      */
+    @Override
     public Statement createStatement() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -119,6 +120,7 @@ public class ConnectionWrapper implements Connection {
         return conn.createStatement();
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -126,6 +128,7 @@ public class ConnectionWrapper implements Connection {
         return conn.prepareStatement(sql);
     }
 
+    @Override
     public CallableStatement prepareCall(String sql) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -133,6 +136,7 @@ public class ConnectionWrapper implements Connection {
         return conn.prepareCall(sql);
     }
 
+    @Override
     public String nativeSQL(String sql) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -140,6 +144,7 @@ public class ConnectionWrapper implements Connection {
         return conn.nativeSQL(sql);
     }
 
+    @Override
     public void setAutoCommit(boolean autoCommit) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -147,6 +152,7 @@ public class ConnectionWrapper implements Connection {
         conn.setAutoCommit(autoCommit);
     }
 
+    @Override
     public boolean getAutoCommit() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -154,6 +160,7 @@ public class ConnectionWrapper implements Connection {
         return conn.getAutoCommit();
     }
 
+    @Override
     public void commit() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -161,6 +168,7 @@ public class ConnectionWrapper implements Connection {
         conn.commit();
     }
 
+    @Override
     public void rollback() throws SQLException {
         conn.rollback();
         if(broken) {
@@ -168,6 +176,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public void close() throws SQLException {
         conn.close();
         if(broken) {
@@ -175,6 +184,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public boolean isClosed() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -182,10 +192,12 @@ public class ConnectionWrapper implements Connection {
         return conn.isClosed();
     }
 
+    @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         return conn.getMetaData();
     }
 
+    @Override
     public void setReadOnly(boolean readOnly) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -193,6 +205,7 @@ public class ConnectionWrapper implements Connection {
         conn.setReadOnly(readOnly);
     }
 
+    @Override
     public boolean isReadOnly() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -200,6 +213,7 @@ public class ConnectionWrapper implements Connection {
         return conn.isReadOnly();
     }
 
+    @Override
     public void setCatalog(String catalog) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -207,6 +221,7 @@ public class ConnectionWrapper implements Connection {
         conn.setCatalog(catalog);
     }
 
+    @Override
     public String getCatalog() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -214,6 +229,7 @@ public class ConnectionWrapper implements Connection {
         return conn.getCatalog();
     }
 
+    @Override
     public void setTransactionIsolation(int level) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -221,6 +237,7 @@ public class ConnectionWrapper implements Connection {
         conn.setTransactionIsolation(level);
     }
 
+    @Override
     public int getTransactionIsolation() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -228,6 +245,7 @@ public class ConnectionWrapper implements Connection {
         return conn.getTransactionIsolation();
     }
 
+    @Override
     public SQLWarning getWarnings() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -235,6 +253,7 @@ public class ConnectionWrapper implements Connection {
         return conn.getWarnings();
     }
 
+    @Override
     public void clearWarnings() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -242,6 +261,7 @@ public class ConnectionWrapper implements Connection {
         conn.clearWarnings();
     }
 
+    @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -249,8 +269,9 @@ public class ConnectionWrapper implements Connection {
         return conn.createStatement(resultSetType, resultSetConcurrency);
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType,
-                       int resultSetConcurrency)
+                                              int resultSetConcurrency)
     throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -258,14 +279,16 @@ public class ConnectionWrapper implements Connection {
         return conn.prepareStatement(sql, resultSetType, resultSetConcurrency);
     }
 
+    @Override
     public CallableStatement prepareCall(String sql, int resultSetType,
-                  int resultSetConcurrency) throws SQLException {
+                                         int resultSetConcurrency) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
         }
         return conn.prepareCall(sql, resultSetType, resultSetConcurrency);
     }
 
+    @Override
     public java.util.Map<String,Class<?>> getTypeMap() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -273,6 +296,7 @@ public class ConnectionWrapper implements Connection {
         return conn.getTypeMap();
     }
 
+    @Override
     public void setTypeMap(java.util.Map<String,Class<?>> map) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -280,6 +304,7 @@ public class ConnectionWrapper implements Connection {
         conn.setTypeMap(map);
     }
 
+    @Override
     public void setHoldability(int holdability) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -287,6 +312,7 @@ public class ConnectionWrapper implements Connection {
         conn.setHoldability(holdability);
     }
 
+    @Override
     public int getHoldability() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -294,6 +320,7 @@ public class ConnectionWrapper implements Connection {
         return conn.getHoldability();
     }
 
+    @Override
     public Savepoint setSavepoint() throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -301,6 +328,7 @@ public class ConnectionWrapper implements Connection {
         return conn.setSavepoint();
     }
 
+    @Override
     public Savepoint setSavepoint(String name) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -308,6 +336,7 @@ public class ConnectionWrapper implements Connection {
         return conn.setSavepoint(name);
     }
 
+    @Override
     public void rollback(Savepoint savepoint) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -315,6 +344,7 @@ public class ConnectionWrapper implements Connection {
         conn.rollback();
     }
 
+    @Override
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -322,16 +352,18 @@ public class ConnectionWrapper implements Connection {
         conn.releaseSavepoint(savepoint);
     }
 
+    @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency,
-                  int resultSetHoldability) throws SQLException {
+                                     int resultSetHoldability) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
         }
         return conn.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType,
-                       int resultSetConcurrency, int resultSetHoldability)
+                                              int resultSetConcurrency, int resultSetHoldability)
     throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -339,15 +371,17 @@ public class ConnectionWrapper implements Connection {
         return conn.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
+    @Override
     public CallableStatement prepareCall(String sql, int resultSetType,
-                  int resultSetConcurrency,
-                  int resultSetHoldability) throws SQLException {
+                                         int resultSetConcurrency,
+                                         int resultSetHoldability) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
         }
         return conn.prepareCall(sql, resultSetType, resultSetConcurrency);
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -355,6 +389,7 @@ public class ConnectionWrapper implements Connection {
         return conn.prepareStatement(sql, autoGeneratedKeys);
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int columnIndexes[]) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -362,6 +397,7 @@ public class ConnectionWrapper implements Connection {
         return conn.prepareStatement(sql, columnIndexes);
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, String columnNames[]) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
@@ -371,65 +407,83 @@ public class ConnectionWrapper implements Connection {
 
     // 236070: Methods introduced in JDK 1.6 (stolen from EmulatedConnection).
     // Those *must* be no-op as long as this code should compile under jdk 1.5
+    @Override
     public Array createArrayOf(String typeName, Object[] elements)  throws SQLException {
         return null;
     }
 
+    @Override
     public Blob createBlob() throws SQLException {
         return null;
     }
 
+    @Override
     public Clob createClob() throws SQLException {
         return null;
     }
 
+    @Override
     public NClob createNClob()  throws SQLException {
         return null;
     }
 
+    @Override
     public SQLXML createSQLXML()  throws SQLException {
         return null;
     }
 
+    @Override
     public Struct createStruct(String typeName, Object[] attributes)  throws SQLException {
         return null;
     }
 
+    @Override
     public Properties getClientInfo()  throws SQLException {
         return null;
     }
 
+    @Override
     public String getClientInfo(String name)  throws SQLException {
         return null;
     }
 
+    @Override
     public boolean isValid(int timeout)  throws SQLException {
         return false;
     }
 
+    @Override
     public void setClientInfo(String name, String value) {
     }
 
+    @Override
     public void setClientInfo(Properties properties) {
     }
 
     // From java.sql.Wrapper
 
+    @Override
     public boolean isWrapperFor(Class<?> iFace) throws SQLException {
         return false;
     }
 
+    @Override
     public <T> T unwrap(Class<T> iFace) throws SQLException {
         return iFace.cast(this);
     }
 
+    @Override
     public int getNetworkTimeout(){return 0;}
 
+    @Override
     public void setNetworkTimeout(Executor executor, int milliseconds){}
 
+    @Override
     public void abort(Executor executor){}
 
+    @Override
     public String getSchema(){return null;}
 
+    @Override
     public void setSchema(String schema){}
 }

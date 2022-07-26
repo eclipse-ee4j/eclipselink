@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,9 +53,11 @@ public class CacheHitOnPKWithInheritanceTest extends ReadObjectTest {
         setDescription("Test whether querying on PK (erroneously) results in a cache hit when using inheritance.");
     }
 
+    @Override
     protected void setup() {
     }
 
+    @Override
     protected void test() {
         Expression exp1;
         ExpressionBuilder builder1;
@@ -73,6 +75,7 @@ public class CacheHitOnPKWithInheritanceTest extends ReadObjectTest {
         objectFromDatabase = getSession().executeQuery(query1);
     }
 
+    @Override
     protected void verify() {
         if (originalObject != null) {
             throw new TestErrorException("A LargeProject was read in using a SmallProject's ID (cache hit).");

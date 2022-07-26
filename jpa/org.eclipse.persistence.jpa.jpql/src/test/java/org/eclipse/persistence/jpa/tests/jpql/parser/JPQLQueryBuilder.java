@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.WordParser;
-import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
-import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLStatementBNF;
+import org.eclipse.persistence.jpa.jpql.parser.*;
 import org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryFormatter.IdentifierStyle;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -43,7 +39,7 @@ public final class JPQLQueryBuilder {
      * Parses the given JPQL query and tests its generated string with the given query, which will be
      * formatted first.
      *
-     * @param query The JPQL query to parse into a parsed tree
+     * @param jpqlQuery The JPQL query to parse into a parsed tree
      * @param jpqlGrammar The JPQL grammar that defines how to parse the given JPQL query
      * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
      * to parse invalid or incomplete queries
@@ -57,7 +53,7 @@ public final class JPQLQueryBuilder {
      * Parses the given JPQL query and tests its generated string with the given query, which will be
      * formatted first.
      *
-     * @param query The JPQL query to parse into a parsed tree
+     * @param jpqlQuery The JPQL query to parse into a parsed tree
      * @param jpqlGrammar The JPQL grammar that defines how to parse the given JPQL query
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
@@ -77,10 +73,9 @@ public final class JPQLQueryBuilder {
      * Parses the given JPQL query and tests its generated string with the given query, which will be
      * formatted first.
      *
-     * @param query The JPQL query to parse into a parsed tree
+     * @param jpqlQuery The JPQL query to parse into a parsed tree
      * @param jpqlGrammar The JPQL grammar that defines how to parse the given JPQL query
-     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.
-     * parser.JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the {@link JPQLQueryBNF JPQLQueryBNF}
      * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
      * to parse invalid or incomplete queries
      * @return The parsed tree representation of the given JPQL query
@@ -99,8 +94,7 @@ public final class JPQLQueryBuilder {
      *
      * @param jpqlQuery The JPQL query to parse into a parsed tree
      * @param jpqlGrammar The JPQL grammar that defines how to parse the given JPQL query
-     * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.
-     * parser.JPQLQueryBNF JPQLQueryBNF}
+     * @param jpqlQueryBNFId The unique identifier of the {@link JPQLQueryBNF JPQLQueryBNF}
      * @param formatter This formatter is used to personalized the formatting of the JPQL query
      * before it is used to test the generated string
      * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
@@ -142,8 +136,8 @@ public final class JPQLQueryBuilder {
     }
 
     /**
-     * Formats the given JPQL query by converting it to what {@link org.eclipse.persistence.jpa.jpql.
-     * parser.Expression#toActualText() Expression.toActualText()} would return.
+     * Formats the given JPQL query by converting it to what
+     * {@link Expression#toActualText() Expression.toActualText()} would return.
      * <p>
      * For instance, "Select e   From Employee e" will be converted to "Select e From Employee e".
      *
@@ -151,15 +145,15 @@ public final class JPQLQueryBuilder {
      * @param jpqlGrammar The {@link JPQLGrammar} is used to properly format the string
      * @return The converted string
      * @see #toParsedText(String, JPQLGrammar)
-     * @see #toText(String, JPQLGrammar)
+     * @see #toText(String, JPQLGrammar, boolean, IdentifierStyle)
      */
     public static String toActualText(String jpqlQuery, JPQLGrammar jpqlGrammar) {
         return toText(jpqlQuery, jpqlGrammar, true, IdentifierStyle.UPPERCASE);
     }
 
     /**
-     * Formats the given JPQL query by converting it to what {@link org.eclipse.persistence.jpa.jpql.
-     * parser.Expression#toParsedText() Expression.toParsedText()} would return.
+     * Formats the given JPQL query by converting it to what
+     * {@link Expression#toParsedText() Expression.toParsedText()}  would return.
      * <p>
      * For instance, "Select e   From Employee e" will be converted to "SELECT e FROM Employee e".
      *
@@ -167,7 +161,7 @@ public final class JPQLQueryBuilder {
      * @param jpqlGrammar The {@link JPQLGrammar} is used to properly format the string
      * @return The formatted JPQL query
      * @see #toActualText(String, JPQLGrammar)
-     * @see #toText(String, JPQLGrammar)
+     * @see #toText(String, JPQLGrammar, boolean, IdentifierStyle)
      */
     public static String toParsedText(String jpqlQuery, JPQLGrammar jpqlGrammar) {
         return toText(jpqlQuery, jpqlGrammar, false, IdentifierStyle.UPPERCASE);
@@ -180,8 +174,6 @@ public final class JPQLQueryBuilder {
      *
      * @param jpqlQuery The string to format
      * @param jpqlGrammar The {@link JPQLGrammar} is used to properly format the string
-     * @param exactMatch
-     * @param style
      * @return The formatted JPQL query
      * @see #toActualText(String, JPQLGrammar)
      * @see #toParsedText(String, JPQLGrammar)

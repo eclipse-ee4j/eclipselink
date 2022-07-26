@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,6 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date Septmeber 28, 2004
  */
 public class MWConfigModelEncryptionTest extends AutoVerifyTestCase {
     DatabaseSessionConfig m_sessionConfig1;
@@ -38,6 +37,7 @@ public class MWConfigModelEncryptionTest extends AutoVerifyTestCase {
         setDescription("Tests the detection and encryption of a unencrypted password on the config model");
     }
 
+    @Override
     public void test() throws Exception {
         // Read a session with an unencrypted password
         SessionConfigs m_sessions = SessionManager.getManager().getInternalMWConfigObjects("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSession.xml", getClass().getClassLoader());
@@ -54,6 +54,7 @@ public class MWConfigModelEncryptionTest extends AutoVerifyTestCase {
         m_sessionConfig2.getLoginConfig().setEncryptedPassword(null);
     }
 
+    @Override
     protected void verify() {
         // For the first config test the encryption with an actual password stored
         String password1 = m_sessionConfig1.getLoginConfig().getEncryptedPassword();

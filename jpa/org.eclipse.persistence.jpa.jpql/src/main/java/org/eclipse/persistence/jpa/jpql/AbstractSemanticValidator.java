@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -229,9 +230,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         return new TopLevelFirstDeclarationVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         super.dispose();
@@ -291,9 +289,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         return comparisonExpressionVisitor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLGrammar getGrammar() {
         return helper.getGrammar();
@@ -338,13 +333,10 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         return virtualIdentificationVariableFinder;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
-        usedIdentificationVariables    = new ArrayList<IdentificationVariable>();
+        usedIdentificationVariables    = new ArrayList<>();
         registerIdentificationVariable = true;
     }
 
@@ -372,7 +364,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     protected boolean isIdentificationVariableDeclaredAfter(String variableName,
                                                             int variableNameIndex,
                                                             int joinIndex,
-                                                            List<JPQLQueryDeclaration> declarations) {
+                                                            List<? extends JPQLQueryDeclaration> declarations) {
 
         for (int index = variableNameIndex, declarationCount = declarations.size(); index < declarationCount; index++) {
 
@@ -526,7 +518,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * identification variable declarations.
      *
      * @param expression The {@link AbstractFromClause} to validate
-     * @param visitor
      */
     protected void validateAbstractFromClause(AbstractFromClause expression,
                                               FirstDeclarationVisitor visitor) {
@@ -534,7 +525,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         // The identification variable declarations are evaluated from left to right in
         // the FROM clause, and an identification variable declaration can use the result
         // of a preceding identification variable declaration of the query string
-        List<JPQLQueryDeclaration> declarations = helper.getDeclarations();
+        List<? extends JPQLQueryDeclaration> declarations = helper.getDeclarations();
 
         for (int index = 0, count = declarations.size(); index < count; index++) {
 
@@ -919,6 +910,76 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
             }
             else if (collectionTypeOnly && !helper.isCollectionMapping(mapping) ||
                     !collectionTypeOnly && !helper.isRelationshipMapping(mapping)) {
+
+                int startPosition = position(expression);
+                int endPosition   = startPosition + length(expression);
+
+                addProblem(
+                    expression,
+                    startPosition,
+                    endPosition,
+                    CollectionValuedPathExpression_NotCollectionType,
+                    expression.toParsedText()
+                );
+
+                valid = false;
+            }
+        }
+
+        return valid;
+    }
+
+    /**
+     * Validates the given {@link Expression} and makes sure it's a valid collection value path expression.
+     * 
+     * join_collection_valued_path_expression::=
+     *     identification_variable.{single_valued_embeddable_object_field.}*collection_valued_field
+     * join_single_valued_path_expression::=
+     *     identification_variable.{single_valued_embeddable_object_field.}*single_valued_object_field
+     *
+     * @param expression The {@link Expression} to validate
+     * @param collectionTypeOnly <code>true</code> to make sure the path expression resolves to a
+     * collection mapping only; <code>false</code> if it can simply resolves to a relationship mapping
+     */
+    protected boolean validateJoinCollectionValuedPathExpression(Expression expression,
+                                                             boolean collectionTypeOnly) {
+
+        boolean valid = true;
+
+        // The path expression resolves to a collection-valued path expression
+        CollectionValuedPathExpression collectionValuedPathExpression = getCollectionValuedPathExpression(expression);
+
+        if (collectionValuedPathExpression != null &&
+            collectionValuedPathExpression.hasIdentificationVariable() &&
+           !collectionValuedPathExpression.endsWithDot()) {
+
+            // A collection_valued_field is designated by the name of an association field in a
+            // one-to-many or a many-to-many relationship or by the name of an element collection field
+
+            // A single_valued_object_field is designated by the name of an association field in a one-to-one or
+            // many-to-one relationship or a field of embeddable class type
+            Object mapping = helper.resolveMapping(expression);
+            Object type = helper.getMappingType(mapping);
+
+            // Does not resolve to a valid path
+            if (!helper.isTypeResolvable(type) || (mapping == null)) {
+
+                int startPosition = position(expression);
+                int endPosition   = startPosition + length(expression);
+
+                addProblem(
+                    expression,
+                    startPosition,
+                    endPosition,
+                    CollectionValuedPathExpression_NotResolvable,
+                    expression.toParsedText()
+                );
+
+                valid = false;
+            }
+            else if (!helper.isCollectionMapping(mapping) && 
+                    !helper.isRelationshipMapping(mapping) && 
+                    !helper.isEmbeddableMapping(mapping)) {
 
                 int startPosition = position(expression);
                 int endPosition   = startPosition + length(expression);
@@ -1506,7 +1567,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     protected void validateIdentificationVariables() {
 
         // Collect the identification variables from the Declarations
-        Map<String, List<IdentificationVariable>> identificationVariables = new HashMap<String, List<IdentificationVariable>>();
+        Map<String, List<IdentificationVariable>> identificationVariables = new HashMap<>();
         helper.collectLocalDeclarationIdentificationVariables(identificationVariables);
 
         // Check for duplicate identification variables
@@ -1605,7 +1666,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
         if (expression.hasJoinAssociationPath()) {
             Expression joinAssociationPath = expression.getJoinAssociationPath();
-            validateCollectionValuedPathExpression(joinAssociationPath, false);
+            validateJoinCollectionValuedPathExpression(joinAssociationPath, false);
             joinAssociationPath.accept(this);
         }
 
@@ -1621,7 +1682,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     }
 
     protected void validateJoinsIdentificationVariable(AbstractFromClause expression,
-                                                       List<JPQLQueryDeclaration> declarations,
+                                                       List<? extends JPQLQueryDeclaration> declarations,
                                                        JPQLQueryDeclaration declaration,
                                                        int index) {
 
@@ -2063,7 +2124,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     protected void validateSimpleSelectStatement(SimpleSelectStatement expression) {
 
         // Keep a copy of the identification variables that are used throughout the parent query
-        List<IdentificationVariable> oldUsedIdentificationVariables = new ArrayList<IdentificationVariable>(usedIdentificationVariables);
+        List<IdentificationVariable> oldUsedIdentificationVariables = new ArrayList<>(usedIdentificationVariables);
 
         // Create a context for the subquery
         helper.newSubqueryContext(expression);
@@ -2583,306 +2644,192 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         return PathType.BASIC_FIELD_ONLY;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(AbsExpression expression) {
         validateAbsExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(AbstractSchemaName expression) {
         validateAbstractSchemaName(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(AdditionExpression expression) {
         validateAdditionExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(AllOrAnyExpression expression) {
         validateAllOrAnyExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(AndExpression expression) {
         validateAndExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(ArithmeticFactor expression) {
         validateArithmeticExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(AvgFunction expression) {
         validateAvgFunction(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(BadExpression expression) {
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(BetweenExpression expression) {
         validateBetweenExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(CaseExpression expression) {
         validateCaseExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(CoalesceExpression expression) {
         validateCoalesceExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(CollectionExpression expression) {
         // Nothing to validate semantically
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(CollectionMemberDeclaration expression) {
         validateCollectionMemberDeclaration(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(CollectionMemberExpression expression) {
         validateCollectionMemberExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(CollectionValuedPathExpression expression) {
         // Validated by the parent of the expression
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(ComparisonExpression expression) {
         validateComparisonExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(ConcatExpression expression) {
         validateConcatExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(ConstructorExpression expression) {
         validateConstructorExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(CountFunction expression) {
         validateCountFunction(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(DateTime expression) {
         validateDateTime(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(DeleteClause expression) {
         validateDeleteClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(DeleteStatement expression) {
         validateDeleteStatement(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(DivisionExpression expression) {
         validateDivisionExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(EmptyCollectionComparisonExpression expression) {
         validateCollectionValuedPathExpression(expression.getExpression(), true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(EntityTypeLiteral expression) {
         validateEntityTypeLiteral(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(EntryExpression expression) {
         validateEntryExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(ExistsExpression expression) {
         validateExistsExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(FromClause expression) {
         validateFromClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(FunctionExpression expression) {
         validateFunctionExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(GroupByClause expression) {
         validateGroupByClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(HavingClause expression) {
         validateHavingClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(IdentificationVariable expression) {
         validateIdentificationVariable(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(IdentificationVariableDeclaration expression) {
         validateIdentificationVariableDeclaration(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(IndexExpression expression) {
         validateIndexExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(InExpression expression) {
         validateInExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(InputParameter expression) {
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(Join expression) {
         validateJoin(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(JPQLExpression expression) {
         if (expression.hasQueryStatement()) {
@@ -2891,177 +2838,111 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(KeyExpression expression) {
         validateKeyExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(KeywordExpression expression) {
         // Nothing semantically to validate
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(LengthExpression expression) {
         validateLengthExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(LikeExpression expression) {
         validateLikeExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(LocateExpression expression) {
         validateLocateExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(LowerExpression expression) {
         validateLowerExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(MaxFunction expression) {
         validateMaxFunction(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(MinFunction expression) {
         validateMinFunction(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(ModExpression expression) {
         validateModExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(MultiplicationExpression expression) {
         validateMultiplicationExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(NotExpression expression) {
         validateNotExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(NullComparisonExpression expression) {
         validateNullComparisonExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(NullExpression expression) {
         // Nothing semantically to validate
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(NullIfExpression expression) {
         validateNullIfExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(NumericLiteral expression) {
         // Nothing semantically to validate
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(ObjectExpression expression) {
         validateObjectExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(OnClause expression) {
         validateOnClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(OrderByClause expression) {
         validateOrderByClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(OrderByItem expression) {
         validateOrderByItem(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(OrExpression expression) {
         validateOrExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(RangeVariableDeclaration expression) {
         validateRangeVariableDeclaration(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(ResultVariable expression) {
 
@@ -3074,194 +2955,122 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SelectClause expression) {
         validateSelectClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SelectStatement expression) {
         validateSelectStatement(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SimpleFromClause expression) {
         validateSimpleFromClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SimpleSelectClause expression) {
         validateSimpleSelectClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SimpleSelectStatement expression) {
         validateSimpleSelectStatement(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SizeExpression expression) {
         validateSizeExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SqrtExpression expression) {
         validateSqrtExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(StateFieldPathExpression expression) {
         validateStateFieldPathExpression(expression, PathType.ANY_FIELD);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(StringLiteral expression) {
         // Nothing semantically to validate
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SubExpression expression) {
         // Nothing semantically to validate
         super.visit(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SubstringExpression expression) {
         validateSubstringExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SubtractionExpression expression) {
         validateSubtractionExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(SumFunction expression) {
         validateSumFunction(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(TreatExpression expression) {
         validateTreatExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(TrimExpression expression) {
         validateTrimExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(TypeExpression expression) {
         validateTypeExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(UnknownExpression expression) {
         // Nothing semantically to validate
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(UpdateClause expression) {
         validateUpdateClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(UpdateItem expression) {
          validateUpdateItem(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(UpdateStatement expression) {
         validateUpdateStatement(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(UpperExpression expression) {
         validateUpperExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(ValueExpression expression) {
         validateValueExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(WhenClause expression) {
         validateWhenClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void visit(WhereClause expression) {
         validateWhereClause(expression);
@@ -3280,8 +3089,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         protected CollectionValuedPathExpression expression;
 
         /**
-         * {@inheritDoc}
+         * Default constructor.
          */
+        protected CollectionValuedPathExpressionVisitor() {
+        }
+
         @Override
         public void visit(CollectionValuedPathExpression expression) {
             this.expression = expression;
@@ -3295,16 +3107,16 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         public boolean result;
 
         /**
-         * {@inheritDoc}
+         * Default constructor.
          */
+        protected ComparingEntityTypeLiteralVisitor() {
+        }
+
         @Override
         public void visit(ComparisonExpression expression) {
             result = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariable expression) {
             if (this.expression == expression) {
@@ -3312,9 +3124,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SubExpression expression) {
             // Make sure to bypass any sub expression
@@ -3358,18 +3167,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
             rightStateFieldPathExpressionValid = false;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(Expression expression) {
             // Redirect to the validator, nothing special is required
             expression.accept(validator);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariable expression) {
 
@@ -3391,9 +3194,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpression expression) {
 
@@ -3424,50 +3224,38 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         protected boolean valid;
 
         /**
-         * {@inheritDoc}
+         * Default constructor.
          */
+        protected FirstDeclarationVisitor() {
+        }
+
         @Override
         public void visit(AbstractSchemaName expression) {
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(BadExpression expression) {
             // Already validated, no need to duplicate the issue
             valid = false;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(Expression expression) {
             valid = false;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariableDeclaration expression) {
             expression.getRangeVariableDeclaration().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(NullExpression expression) {
             // Already validated, no need to duplicate the issue
             valid = false;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(RangeVariableDeclaration expression) {
             expression.getRootObject().accept(this);
@@ -3483,17 +3271,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
             this.validator = validator;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(Expression expression) {
             expression.accept(validator);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpression expression) {
             validator.validateStateFieldPathExpression(expression, validator.validPathExpressionTypeForInItem());
@@ -3542,8 +3324,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         protected StateFieldPathExpression expression;
 
         /**
-         * {@inheritDoc}
+         * Default constructor.
          */
+        protected StateFieldPathExpressionVisitor() {
+        }
+
         @Override
         public void visit(StateFieldPathExpression expression) {
             this.expression = expression;
@@ -3554,8 +3339,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     protected static final class SubqueryFirstDeclarationVisitor extends FirstDeclarationVisitor {
 
         /**
-         * {@inheritDoc}
+         * Default constructor.
          */
+        protected SubqueryFirstDeclarationVisitor() {
+        }
+
         @Override
         public void visit(CollectionValuedPathExpression expression) {
             valid = true;
@@ -3566,8 +3354,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     protected static class TopLevelFirstDeclarationVisitor extends FirstDeclarationVisitor {
 
         /**
-         * {@inheritDoc}
+         * Default constructor.
          */
+        protected TopLevelFirstDeclarationVisitor() {
+        }
+
         @Override
         public void visit(AbstractSchemaName expression) {
             // TODO

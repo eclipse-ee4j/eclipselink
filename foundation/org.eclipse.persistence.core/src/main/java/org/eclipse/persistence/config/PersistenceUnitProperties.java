@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,6 +60,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -1015,18 +1016,39 @@ public class PersistenceUnitProperties {
     public static final String PARTITIONING_CALLBACK = "eclipselink.partitioning.callback";
 
     /**
-     * Property "<code>eclipselink.jdbc.bind-parameters</code>" configures whether parameter binding will be used in the
-     * creation of JDBC prepared statements. Usage of parameter binding is
-     * generally a performance optimization allowing for SQL and prepared
-     * statement caching as well as usage of batch writing.
+     * Property "<code>eclipselink.jdbc.bind-parameters</code>" configures whether parameter binding 
+     * should be used in the creation of JDBC prepared statements.
+     * <p>
+     * Usage of parameter binding is generally a performance optimization; 
+     * allowing for SQL and prepared statement caching, as well as usage of batch writing. 
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>false</code>" - values will be written literally into the generated SQL
-     * <li>"<code>true</code>" (DEFAULT) - binding will be used
+     * <li>"<code>false</code>" - all values will be written literally into the generated SQL
+     * <li>"<code>true</code>" (DEFAULT) - all values will be bound as parameters in the generated SQL
      * </ul>
      */
     public static final String JDBC_BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
+
+    /**
+     * Property "<code>eclipselink.jdbc.allow-partial-bind-parameters</code>" configures whether 
+     * partial parameter binding should be allowed in the creation of JDBC prepared statements.
+     * <p>
+     * EclipseLink determines binding behavior based on the database platform's support for binding.
+     * If the database platform doesn't support binding for a specific expression, EclipseLink disables
+     * all binding for the whole query. Setting this property to 'true' will allow EclipseLink to bind
+     * per expression, instead of per query.
+     * <p>
+     * Usage of parameter binding is generally a performance optimization; 
+     * allowing for SQL and prepared statement caching, as well as usage of batch writing. 
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>true</code>" - EclipseLink binds parameters per SQL function/expression. Requires Platform support if enabled.
+     * <li>"<code>false</code>" (DEFAULT) - EclipseLink either binds all parameters or no parameters; depending on database support
+     * </ul>
+     */
+    public static final String JDBC_ALLOW_PARTIAL_PARAMETERS = "eclipselink.jdbc.allow-partial-bind-parameters";
 
     /**
      * Property "<code>eclipselink.jdbc.force-bind-parameters</code>" enables parameter binding
@@ -1288,6 +1310,49 @@ public class PersistenceUnitProperties {
      */
     public static final String CACHE_TYPE_DEFAULT = CACHE_TYPE_ + DEFAULT;
 
+    /**
+     * The "<code>eclipselink.cache.extended.logging</code>" property control (enable/disable)
+     * usage logging of JPA L2 cache. In case of "<code>true</code>" EclipseLink generates messages into log output
+     * about cache hit/miss new object population and object removal or invalidation.
+     * This kind of messages will by displayed only if logging level (property "<code>eclipselink.logging.level</code>")
+     * is "<code>FINEST</code>"
+     * It displays Entity class, ID and thread info (ID, Name).
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT)
+     * <li>"<code>true</code>"
+     * </ul>
+     */
+    public static final String CACHE_EXTENDED_LOGGING = "eclipselink.cache.extended.logging";
+
+    /**
+     * The "<code>eclipselink.thread.extended.logging</code>" property control (enable/disable)
+     * some additional logging messages like print error message if cached Entity is picked by different thread,
+     * or if EntityManager/UnitOfWork is reused/passed to different thread.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT)
+     * <li>"<code>true</code>"
+     * </ul>
+     */
+    public static final String THREAD_EXTENDED_LOGGING = "eclipselink.thread.extended.logging";
+
+    /**
+     * The "<code>eclipselink.thread.extended.logging.threaddump</code>" property control (enable/disable)
+     * store and display thread dump. This is extension to "<code>eclipselink.thread.extended.logging</code>" which
+     * must be enabled. It prints additionally to some log messages presented by "<code>eclipselink.thread.extended.logging</code>"
+     * creation and current thread stack traces.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT)
+     * <li>"<code>true</code>"
+     * </ul>
+     */
+    public static final String THREAD_EXTENDED_LOGGING_THREADDUMP = "eclipselink.thread.extended.logging.threaddump";
+
     /*
      * NOTE: The Canonical Model properties should be kept in sync with those
      * in org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.
@@ -1482,6 +1547,18 @@ public class PersistenceUnitProperties {
      */
     public static final String DATABASE_EVENT_LISTENER = "eclipselink.cache.database-event-listener";
 
+    /**
+     * The "<code>eclipselink.cache.query-force-deferred-locks</code>" property force all queries and relationships
+     * to use deferred lock strategy during object building and L2 cache population.
+     * <p>
+     * <b>Allowed Values</b> (String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT) - use use mixed object cache locking strategy
+     * <li>"<code>true</code>" - use deferred locking strategy all queries and relationships
+     * </ul>
+     */
+    public static final String CACHE_QUERY_FORCE_DEFERRED_LOCKS = "eclipselink.cache.query-force-deferred-locks";
+
     // Customizations properties
 
     // Logging properties
@@ -1505,7 +1582,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.logging.level</code>" property allows the default logging levels to be specified.
-     * <p>
+     *
      * <table>
      * <caption>Logging Levels:</caption>
      * <tr><td>{@link SessionLog#ALL_LABEL}</td><td>&nbsp;</td><td>ALL</td></tr>
@@ -1533,7 +1610,7 @@ public class PersistenceUnitProperties {
     /**
      * Property prefix "<code>eclipselink.logging.level.</code>" allows the category specific logging levels
      * to be specified.
-     * <p>
+     *
      * <table>
      * <caption>Logger categories:</caption>
      * <tr><td>{@link SessionLog#CACHE}</td><td>&nbsp;</td><td>cache</td></tr>
@@ -1812,6 +1889,13 @@ public class PersistenceUnitProperties {
      *
      * {@code
      *  <property name="eclipselink.target-database-properties" value="shouldBindLiterals=true"/>}
+     * <p>
+     * <b> Example 2 : </b> To change the value of
+     * DatabasePlatform.supportsReturnGeneratedKeys via configuration, provide the
+     * following :<br><br>
+     * 
+     * {@code
+     *  <property name="eclipselink.target-database-properties" value="supportsReturnGeneratedKeys=true"/>}
      * @see TargetDatabase
      * @see DatabasePlatform
      */
@@ -3916,6 +4000,14 @@ public class PersistenceUnitProperties {
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
+     * It control how much time ConcurrencyManager will wait before it will identify, that thread which builds new object/entity instance
+     * should be identified as a potential dead lock source. It leads into some additional log messages.
+     * Default value is 0 (unit is ms). In this case extended logging is not active. Allowed values are: long
+     */
+    public static final String CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME = "eclipselink.concurrency.manager.build.object.complete.waittime";
+
+    /**
+     * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
      * It control how long we are willing to wait before firing up an exception
      * Default value is 40000 (unit is ms). Allowed values are: long
      */
@@ -3936,35 +4028,123 @@ public class PersistenceUnitProperties {
     public static final String CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE  = "eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage";
 
     /**
-     * true - if we want the to fire up an exception to try to get the current thread to release all of its acquired locks and allow other
-     * threads to progress.
-     * false - if aborting frozen thread is not effective it is preferable to not fire the interrupted exception let the system
+     * <p>
+     * This property control (enable/disable) if <code>InterruptedException</code> fired when dead-lock diagnostic is enabled.
+     * <p>
+     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" - if aborting frozen thread is not effective it is preferable to not fire the interrupted exception let the system
      * In the places where use this property normally if a thread is stuck it is because it is doing object building.
      * Blowing the threads ups is not that dangerous. It can be very dangerous for production if the dead lock ends up
      * not being resolved because the productive business transactions will become cancelled if the application has a
      * limited number of retries to for example process an MDB. However, the code spots where we use this constant are
      * not as sensible as when the write lock manager is starving to run commit.
+     * <li>"<code>true</code>" (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired locks and allow other
+     * threads to progress.
+     * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION  = "eclipselink.concurrency.manager.allow.interruptedexception";
 
     /**
-     * true - if we want the to fire up an exception to try to get the current thread to realease all of its acquired locks and allow other
-     * threads to progress.
-     * false - if aborting frozen thread is not effective it is preferable to not fire the concurrency exception let the system
+     * <p>
+     * This property control (enable/disable) if <code>ConcurrencyException</code> fired when dead-lock diagnostic is enabled.
+     * <p>
+     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" - if aborting frozen thread is not effective it is preferable to not fire the concurrency exception let the system
      * freeze and die and force the administration to kill the server. This is preferable to aborting the transactions
      * multiple times without success in resolving the dead lock and having business critical messages that after 3 JMS
      * retries are discarded out. Failing to resolve a dead lock can have terrible impact in system recovery unless we
      * have infinite retries for the business transactions.
-     * Allowed values are: true/false.
+     * <li>"<code>true</code>" (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired
+     * locks and allow other threads to progress.
+     * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION  = "eclipselink.concurrency.manager.allow.concurrencyexception";
 
     /**
-     * true - collect debug/trace information during ReadLock acquisition
-     * false - don't collect debug/trace information during ReadLock acquisition
-     * Allowed values are: true/false.
+     * <p>
+     * This property control (enable/disable) collection debug/trace information during ReadLock acquisition, when dead-lock diagnostic is enabled.
+     * <p>
+     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT) - don't collect debug/trace information during ReadLock acquisition
+     * <li>"<code>true</code>" - collect debug/trace information during ReadLock acquisition. Has negative impact to the performance.
+     * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK = "eclipselink.concurrency.manager.allow.readlockstacktrace";
+
+    /**
+     * <p>
+     * This property control (enable/disable) semaphore in {@link org.eclipse.persistence.internal.descriptors.ObjectBuilder}
+     * </p>
+     * Object building see {@link org.eclipse.persistence.internal.descriptors.ObjectBuilder} could be one of the
+     * primary sources pressure on concurrency manager. Most of the cache key acquisition and releasing is taking place during object building.
+     * Enable <code>true</code> this property to try reduce the likelihood of having dead locks is to allow less threads to start object
+     * building in parallel. In this case there should be negative impact to the performance.
+     * Note: Parallel access to the same entity/entity tree from different threads is not recommended technique in EclipseLink.
+     * <ul>
+     * <li>"<code>true</code>" - means we want to override vanilla behavior and use a semaphore to not allow too many
+     * threads in parallel to do object building
+     * <li>"<code>false</code>" (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
+     * vanilla behavior).
+     * </ul>
+     */
+    public static final String CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING = "eclipselink.concurrency.manager.object.building.semaphore";
+
+    /**
+     * <p>
+     * This property control (enable/disable) semaphore in {@link org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks}
+     * </p>
+     * This algorithm
+     * {@link org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks}
+     * is being used when a transaction is committing and it is acquire locks to merge the change set.
+     * It should happen if algorithm has trouble when multiple threads report change sets on the same entity (e.g.
+     * one-to-many relations of master detail being enriched with more details on this master).
+     * Note: Parallel access to the same entity/entity tree from different threads is not recommended technique in EclipseLink.
+     * <ul>
+     * <li>"<code>true</code>" - means we want to override vanilla behavior and use a semaphore to not allow too many
+     * threads. In this case there should be negative impact to the performance.
+     * <li>"<code>false</code>" (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
+     * vanilla behavior).
+     * </ul>
+     */
+    public static final String CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS = "eclipselink.concurrency.manager.write.lock.manager.semaphore";
+
+    /**
+     * <p>
+     * This property control number of threads in semaphore in {@link org.eclipse.persistence.internal.descriptors.ObjectBuilder}
+     * If "eclipselink.concurrency.manager.object.building.semaphore" property is <code>true</code> default value is 10. Allowed values are: int
+     * If "eclipselink.concurrency.manager.object.building.semaphore" property is <code>false</code> (DEFAULT) number of threads is unlimited.
+     * </p>
+     */
+    public static final String CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS = "eclipselink.concurrency.manager.object.building.no.threads";
+
+    /**
+     * <p>
+     * This property control number of threads in semaphore in {@link org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks}
+     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is <code>true</code> default value is 2. Allowed values are: int
+     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is <code>false</code> (DEFAULT) number of threads is unlimited.
+     * </p>
+     */
+    public static final String CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS = "eclipselink.concurrency.manager.write.lock.manager.no.threads";
+
+    /**
+     * <p>
+     * This property control semaphore the maximum time to wait for a permit in {@link org.eclipse.persistence.internal.helper.ConcurrencySemaphore#acquireSemaphoreIfAppropriate(boolean)}
+     * It's passed to {@link java.util.concurrent.Semaphore#tryAcquire(long, TimeUnit)}
+     * Default value is 2000 (unit is ms). Allowed values are: long
+     * </p>
+     */
+    public static final String CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT = "eclipselink.concurrency.semaphore.max.time.permit";
+
+    /**
+     * <p>
+     * This property control timeout between log messages in {@link org.eclipse.persistence.internal.helper.ConcurrencySemaphore#acquireSemaphoreIfAppropriate(boolean)} when method/thread tries to get permit for the execution.
+     * Default value is 10000 (unit is ms). Allowed values are: long
+     * </p>
+     */
+    public static final String CONCURRENCY_SEMAPHORE_LOG_TIMEOUT = "eclipselink.concurrency.semaphore.log.timeout";
 
     /**
      * INTERNAL: The following properties will not be displayed through logging

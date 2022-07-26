@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -120,7 +120,7 @@ public class SimpleTypeTestSuite {
         EntityManager em = emf.createEntityManager();
         DynamicEntity simpleInstance = find(em, 1);
         assertNotNull("Could not find simple instance with id = 1", simpleInstance);
-        simpleInstance = find(em, new Integer(1));
+        simpleInstance = find(em, 1);
         assertNotNull("Could not find simple instance with id = Integer(1)", simpleInstance);
     }
 
@@ -163,7 +163,7 @@ public class SimpleTypeTestSuite {
             0, simpleInstance.<Integer>get("id").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",
-            false, simpleInstance.<Boolean>get("value2").booleanValue());
+            false, simpleInstance.<Boolean>get("value2"));
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
         assertFalse("value4 set on new instance", simpleInstance.isSet("value4"));
     }
@@ -182,7 +182,7 @@ public class SimpleTypeTestSuite {
         DynamicEntity foundEntity = find(em, 1);
         assertNotNull(foundEntity);
         assertEquals(simpleInstance.<Number>get("id"), foundEntity.<Number>get("id"));
-        assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
+        assertEquals(simpleInstance.<String>get("value1"), foundEntity.<String>get("value1"));
         assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
         em.close();
         return simpleInstance;

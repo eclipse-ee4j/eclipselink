@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -187,7 +187,7 @@ public class EmployeePopulator {
             employee.setFirstName("Bob");
             employee.setLastName("Smith");
             employee.setMale();
-            employee.setSalary(new Long(35000));
+            employee.setSalary(35000L);
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
             employee.setDepartment(departmentExample1());
@@ -210,7 +210,7 @@ public class EmployeePopulator {
             employee.setFemale();
             employee.setPeriod(employmentPeriodExample10());
             employee.setAddress(addressExample10());
-            employee.setSalary(new Long(56232));
+            employee.setSalary(56232L);
             employee.addPhoneNumber(phoneNumberExample1());
             employee.addPhoneNumber(phoneNumberExample2());
             employee.addResponsibility("Sort files");
@@ -230,7 +230,7 @@ public class EmployeePopulator {
             employee.setFemale();
             employee.setPeriod(employmentPeriodExample11());
             employee.setAddress(addressExample11());
-            employee.setSalary(new Long(75000));
+            employee.setSalary(75000L);
             employee.addPhoneNumber(phoneNumberExample2());
             employee.addPhoneNumber(phoneNumberExample3());
             employee.addPhoneNumber(phoneNumberExample4());
@@ -252,7 +252,7 @@ public class EmployeePopulator {
             employee.setMale();
             employee.setPeriod(employmentPeriodExample12());
             employee.setAddress(addressExample12());
-            employee.setSalary(new Long(50000));
+            employee.setSalary(50000L);
             employee.addPhoneNumber(phoneNumberExample3());
             employee.addPhoneNumber(phoneNumberExample4());
             employee.addResponsibility("Bug fixes");
@@ -269,7 +269,7 @@ public class EmployeePopulator {
         try {
             employee.setFirstName("SquareRoot");
             employee.setLastName("TestCase1");
-            employee.setSalary(new Long(36));
+            employee.setSalary(36L);
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
             employee.addPhoneNumber(phoneNumberExample1());
@@ -288,7 +288,7 @@ public class EmployeePopulator {
         try {
             employee.setFirstName("SquareRoot");
             employee.setLastName("TestCase2");
-            employee.setSalary(new Long(49));
+            employee.setSalary(49L);
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
             employee.addPhoneNumber(phoneNumberExample1());
@@ -308,7 +308,7 @@ public class EmployeePopulator {
         try {
             employee.setFirstName("No Phone Number");
             employee.setLastName("Test case");
-            employee.setSalary(new Long(555));
+            employee.setSalary(555L);
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
             employee.addResponsibility("Find ways to make the days go by faster");
@@ -326,7 +326,7 @@ public class EmployeePopulator {
             employee.setFirstName("John");
             employee.setLastName("Way");
             employee.setMale();
-            employee.setSalary(new Long(53000));
+            employee.setSalary(53000L);
             startCalendar.set(1970, 0, 1, 8, 0, 0);
             endCalendar.set(1970, 0, 1, 17, 30, 0);
             employee.setPeriod(employmentPeriodExample2());
@@ -350,7 +350,7 @@ public class EmployeePopulator {
             employee.setFirstName("Charles");
             employee.setLastName("Chanley");
             employee.setMale();
-            employee.setSalary(new Long(43000));
+            employee.setSalary(43000L);
             startCalendar.set(1970, 0, 1, 7, 0, 0);
             endCalendar.set(1970, 0, 1, 15, 30, 0);
             employee.setPeriod(employmentPeriodExample6());
@@ -373,7 +373,7 @@ public class EmployeePopulator {
             employee.setFirstName("Emanual");
             employee.setLastName("Smith");
             employee.setMale();
-            employee.setSalary(new Long(49631));
+            employee.setSalary(49631L);
             startCalendar.set(1970, 0, 1, 6, 45, 0);
             endCalendar.set(1970, 0, 1, 16, 32, 0);
             employee.setPeriod(employmentPeriodExample5());
@@ -397,7 +397,7 @@ public class EmployeePopulator {
             employee.setFirstName("Sarah");
             employee.setLastName("Way");
             employee.setFemale();
-            employee.setSalary(new Long(87000));
+            employee.setSalary(87000L);
             startCalendar.set(1970, 0, 1, 12, 0, 0);
             endCalendar.set(1970, 0, 1, 20, 0, 30);
             employee.setPeriod(employmentPeriodExample4());
@@ -420,7 +420,7 @@ public class EmployeePopulator {
             employee.setFirstName("Marcus");
             employee.setLastName("Saunders");
             employee.setMale();
-            employee.setSalary(new Long(54300));
+            employee.setSalary(54300L);
             employee.setPeriod(employmentPeriodExample3());
             employee.setAddress(addressExample3());
             employee.addResponsibility("Write user specifications.");
@@ -440,7 +440,7 @@ public class EmployeePopulator {
             employee.setFirstName("Nancy");
             employee.setLastName("White");
             employee.setFemale();
-            employee.setSalary(new Long(31000));
+            employee.setSalary(31000L);
             employee.setPeriod(employmentPeriodExample7());
             employee.setAddress(addressExample7());
             employee.addPhoneNumber(phoneNumberExample3());
@@ -458,7 +458,7 @@ public class EmployeePopulator {
             employee.setFirstName("Fred");
             employee.setLastName("Jones");
             employee.setMale();
-            employee.setSalary(new Long(500000));
+            employee.setSalary(500000L);
             employee.setPeriod(employmentPeriodExample8());
             employee.setAddress(addressExample8());
             employee.addPhoneNumber(phoneNumberExample4());
@@ -477,7 +477,7 @@ public class EmployeePopulator {
             employee.setFirstName("Betty");
             employee.setLastName("Jones");
             employee.setFemale();
-            employee.setSalary(new Long(500001));
+            employee.setSalary(500001L);
             startCalendar.set(1970, 0, 1, 22, 0, 0);
             endCalendar.set(1970, 0, 1, 5, 30, 0);
             employee.setPeriod(employmentPeriodExample9());
@@ -841,7 +841,7 @@ public class EmployeePopulator {
         return proc;
     }
 
-    protected boolean containsObject(Class domainClass, String identifier) {
+    protected boolean containsObject(Class<?> domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
     }
 
@@ -1220,11 +1220,11 @@ public class EmployeePopulator {
         return populationManager.getAllObjects();
     }
 
-    public Vector getAllObjectsForClass(Class domainClass) {
+    public Vector getAllObjectsForClass(Class<?> domainClass) {
         return populationManager.getAllObjectsForClass(domainClass);
     }
 
-    protected Object getObject(Class domainClass, String identifier) {
+    protected Object getObject(Class<?> domainClass, String identifier) {
         return populationManager.getObject(domainClass, identifier);
     }
 
@@ -1379,7 +1379,7 @@ public class EmployeePopulator {
         return new PhoneNumber("ISDN", "905", "5553691");
     }
 
-    protected void registerObject(Class domainClass, Object domainObject, String identifier) {
+    protected void registerObject(Class<?> domainClass, Object domainObject, String identifier) {
         populationManager.registerObject(domainClass, domainObject, identifier);
     }
 

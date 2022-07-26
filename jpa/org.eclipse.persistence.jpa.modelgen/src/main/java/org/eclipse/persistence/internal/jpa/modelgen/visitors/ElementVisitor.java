@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnota
     public ElementVisitor(ProcessingEnvironment processingEnv) {
         this.processingEnv = processingEnv;
 
-        typeVisitor = new TypeVisitor<MetadataAnnotatedElement, MetadataAnnotatedElement>();
+        typeVisitor = new TypeVisitor<>();
     }
 
     /**
@@ -74,7 +74,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnota
      * and build complete MetadataAnnotation from the mirrors.
      */
     protected void buildMetadataAnnotations(MetadataAnnotatedElement annotatedElement, List<? extends AnnotationMirror> annotationMirrors) {
-        AnnotationValueVisitor<Object, Object> visitor = new AnnotationValueVisitor<Object, Object>();
+        AnnotationValueVisitor<Object, Object> visitor = new AnnotationValueVisitor<>();
 
         for (AnnotationMirror annotationMirror : annotationMirrors) {
             String annotation = annotationMirror.getAnnotationType().toString() ;
@@ -194,7 +194,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnota
      */
     @Override
     public MetadataClass visitPackage(PackageElement packageElement, MetadataClass metadataClass) {
-        MetadataLogger logger = ((MetadataMirrorFactory) metadataClass.getMetadataFactory()).getLogger();
+        MetadataLogger logger = metadataClass.getMetadataFactory().getLogger();
         logger.getSession().getSessionLog().log(SessionLog.FINE, SessionLog.PROCESSOR,
                 "ElementVisitor Package NOT IMPLEMENTED : {0}",
                 new Object[] {packageElement}, false);

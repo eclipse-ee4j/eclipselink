@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ import javax.xml.validation.SchemaFactory;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.CustomEntityResolver;
@@ -68,6 +69,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: XSD: " + super.getName();
     }
@@ -365,7 +367,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
         Map<String, Object> props = new HashMap<String, Object>();
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLELEMENT);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, props);
@@ -722,7 +724,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
             InputStream xmlStream = ClassLoader.getSystemResourceAsStream(PERSON_XML);
             JAXBElement person = (JAXBElement) jaxbContext.createUnmarshaller().unmarshal(xmlStream);
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "person"), person.getName());
-            JAXBElement name = (JAXBElement) ((DynamicEntity) person.getValue()).get("name");
+            JAXBElement name = ((DynamicEntity) person.getValue()).get("name");
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "name"), name.getName());
 
             // ====================================================================
@@ -730,7 +732,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
             InputStream xmlStream2 = ClassLoader.getSystemResourceAsStream(PERSONNE_XML);
             JAXBElement person2 = (JAXBElement) jaxbContext.createUnmarshaller().unmarshal(xmlStream2);
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "personne"), person2.getName());
-            JAXBElement name2 = (JAXBElement) ((DynamicEntity) person2.getValue()).get("name");
+            JAXBElement name2 = ((DynamicEntity) person2.getValue()).get("name");
             assertEquals("Element was not substituted properly: ", new QName("myNamespace", "nom"), name2.getName());
         } catch (JAXBException e) {
             // If running in a non-JAXB 2.2 environment, we will get this error because the required() method
@@ -937,7 +939,6 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     /**
      * Test for element type reference across multiple XML schemas with different namespaces.
      * Validates result after marshalling against XML Schema.
-     * @throws Exception
      */
     public void testXmlSchemaCrossSchema() throws Exception {
         String backupProperty = null;
@@ -1007,7 +1008,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         // Tests to ensure that XSD dateTime is always unmarshalled as XMLGregorianCalendar, and never
         // as GregorianCalendar.  This can fail intermittently so is tested in a loop.
 
-        HashSet<Class> elemClasses = new HashSet<Class>();
+        HashSet<Class<?>> elemClasses = new HashSet<Class<?>>();
 
         for (int i = 0; i < 50; i++) {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(DATETIME_ARRAY);
@@ -1022,7 +1023,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         }
 
         assertEquals("dateTime was not consistently unmarshalled as XMLGregorianCalendar " + elemClasses, 1, elemClasses.size());
-        Class elemClass = (Class) elemClasses.toArray()[0];
+        Class<?> elemClass = (Class) elemClasses.toArray()[0];
         boolean isXmlGregorianCalendar = ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(elemClass);
         assertTrue("dateTime was not unmarshalled as XMLGregorianCalendar", isXmlGregorianCalendar);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import commonj.sdo.DataObject;
+import junit.framework.TestCase;
 
 public class ChangeSummaryInitalizedInCreatingDataObjectTests extends ChangeSummaryTestCases {
     public ChangeSummaryInitalizedInCreatingDataObjectTests(String name) {
@@ -23,46 +24,46 @@ public class ChangeSummaryInitalizedInCreatingDataObjectTests extends ChangeSumm
 
     public void testInitalizeChangedDataObjectListAfterLogging() {
         changeSummary.beginLogging();
-        this.assertTrue(changeSummary.getChangedDataObjects().isEmpty());
+        assertTrue(changeSummary.getChangedDataObjects().isEmpty());
     }
 
     public void testChangedDataObjectsAfterModifyLogging() {
         changeSummary.beginLogging();
         root.set(rootProperty, null);
-        this.assertFalse(changeSummary.getChangedDataObjects().isEmpty());
-        this.assertEquals(2, changeSummary.getChangedDataObjects().size());
-        this.assertTrue(changeSummary.getChangedDataObjects().contains(containedDataObject));
-        this.assertTrue(changeSummary.getChangedDataObjects().contains(root));
+        assertFalse(changeSummary.getChangedDataObjects().isEmpty());
+        assertEquals(2, changeSummary.getChangedDataObjects().size());
+        assertTrue(changeSummary.getChangedDataObjects().contains(containedDataObject));
+        assertTrue(changeSummary.getChangedDataObjects().contains(root));
     }
 
     public void testChangedDataObjectsAfterCreatNewdataObjectLogging() {
         changeSummary.beginLogging();
-        this.assertTrue(changeSummary.getChangedDataObjects().isEmpty());
+        assertTrue(changeSummary.getChangedDataObjects().isEmpty());
         DataObject o = root.createDataObject(rootProperty);
-        this.assertFalse(changeSummary.getChangedDataObjects().isEmpty());
-        this.assertTrue(changeSummary.getChangedDataObjects().contains(o));
+        assertFalse(changeSummary.getChangedDataObjects().isEmpty());
+        assertTrue(changeSummary.getChangedDataObjects().contains(o));
     }
 
     public void testCahngedDataObjectAfterDeleteLogging() {
         changeSummary.beginLogging();
-        this.assertTrue(changeSummary.getChangedDataObjects().isEmpty());
+        assertTrue(changeSummary.getChangedDataObjects().isEmpty());
         containedDataObject.delete();
-        this.assertFalse(changeSummary.getChangedDataObjects().isEmpty());
-        this.assertTrue(changeSummary.getChangedDataObjects().contains(containedDataObject));
+        assertFalse(changeSummary.getChangedDataObjects().isEmpty());
+        assertTrue(changeSummary.getChangedDataObjects().contains(containedDataObject));
     }
 
     public void testChangedDataObjectAfterDetachLogging() {
         changeSummary.beginLogging();
-        this.assertTrue(changeSummary.getChangedDataObjects().isEmpty());
+        assertTrue(changeSummary.getChangedDataObjects().isEmpty());
         DataObject oldContainer = containedDataObject.getContainer();
         containedDataObject.detach();
-        this.assertFalse(changeSummary.getChangedDataObjects().isEmpty());
-        this.assertEquals(2, changeSummary.getChangedDataObjects().size());
-        this.assertTrue(changeSummary.getChangedDataObjects().contains(containedDataObject));
-        this.assertTrue(changeSummary.getChangedDataObjects().contains(oldContainer));
+        assertFalse(changeSummary.getChangedDataObjects().isEmpty());
+        assertEquals(2, changeSummary.getChangedDataObjects().size());
+        assertTrue(changeSummary.getChangedDataObjects().contains(containedDataObject));
+        assertTrue(changeSummary.getChangedDataObjects().contains(oldContainer));
     }
 
     public void testChangedDataObjectBeforeLogging() {
-        this.assertTrue(changeSummary.getChangedDataObjects().isEmpty());
+        assertTrue(changeSummary.getChangedDataObjects().isEmpty());
     }
 }

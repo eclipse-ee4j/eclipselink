@@ -1,0 +1,63 @@
+#
+# Copyright (c) 2021, 2022 Contributors to the Eclipse Foundation
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License v. 2.0 which is available at
+# http://www.eclipse.org/legal/epl-2.0,
+# or the Eclipse Distribution License v. 1.0 which is available at
+# http://www.eclipse.org/org/documents/edl-v10.php.
+#
+# SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+#
+
+name: EclipseLink PR build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  build:
+    name: Test on JDK ${{ matrix.java_version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java_version: [ 17 ]
+
+    steps:
+      - name: Cancel previous runs of this workflow
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          all_but_latest: true
+          access_token: ${{ github.token }}
+      - name: Start MySQL Database
+        run: |
+          sudo systemctl start mysql.service
+          mysql -e 'SET GLOBAL log_bin_trust_function_creators = 1;' -uroot -proot
+          mysql -e 'CREATE DATABASE ecltests;' -uroot -proot
+          mysql -e 'SHOW DATABASES;' -uroot -proot
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Checkout for build
+        uses: actions/checkout@v2.3.4
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.java_version }}
+      - name: Verify
+        run: mvn -B -V -U -C -Pstaging,oss-release,test-lrg,mysql,dependency-check clean verify -Dgpg.skip=true -Dwarn.limit=15 -Dcomp.xlint=-Xlint:none
+      - name: Upload dependency-check
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-check.html
+          path: target/dependency-check-report.html

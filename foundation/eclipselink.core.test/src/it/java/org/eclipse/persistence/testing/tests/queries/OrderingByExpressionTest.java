@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,10 +24,12 @@ import org.eclipse.persistence.sessions.*;
  * Test the ordering feature.
  */
 public class OrderingByExpressionTest extends OrderingTest {
+    @Override
     protected void setup() {
         this.customSQLRows = getSession().executeSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT * FROM EMPLOYEE t1, ADDRESS t2 WHERE t1.ADDR_ID = t2.ADDRESS_ID ORDER BY CITY DESC, STREET"));
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
@@ -38,9 +40,10 @@ public class OrderingByExpressionTest extends OrderingTest {
 
     }
 
+    @Override
     protected void verify() {
         for (int i = 0; i < orderedQueryObjects.size(); i++) {
-            org.eclipse.persistence.sessions.Record row = (org.eclipse.persistence.sessions.Record)customSQLRows.elementAt(i);
+            DataRecord row = (DataRecord)customSQLRows.elementAt(i);
             Employee employee = (Employee)orderedQueryObjects.elementAt(i);
             String city = (String)row.get("CITY");
             String street = (String)row.get("STREET");

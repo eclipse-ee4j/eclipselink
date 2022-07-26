@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,7 @@ public abstract class SpringJunitTestCase extends TestCase {
             assertTrue(((Address)em.find(address)).getStreet().equals("First St."));
 
             em.remove(truck);
-            assertTrue(((Truck)em.find(truck)) == null);
+            assertTrue(em.find(truck) == null);
             assertTrue(((Route)em.find(route)).getAverageTimeMins() == 155);
             assertTrue(((Address)em.find(address)).getStreet().equals("First St."));
         } finally {
@@ -139,7 +139,7 @@ public abstract class SpringJunitTestCase extends TestCase {
         assertTrue(r.getAverageTimeMins() == 150);
 
         em.executeNativeQuery("DELETE FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")");
-        List l = em.createNativeQuery(
+        List<?> l = em.createNativeQuery(
                 "SELECT id as ID, averageTimeMins as AVERAGETIMEMINS FROM SPRING_TLE_ROUTE WHERE (ID="+route.getId()+")", Route.class)
                 .getResultList();
         assertTrue(l.size() == 0);

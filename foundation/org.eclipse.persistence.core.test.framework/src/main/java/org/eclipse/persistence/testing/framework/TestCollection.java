@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
 
 /**
- * <p>Purpose<b></b>: TestCollection is a collection of test suites and models. When a test collection is executed
+ * <p><b>Purpose</b>: TestCollection is a collection of test suites and models. When a test collection is executed
  * all the test entities registered with it are executed one by one.
  */
 public abstract class TestCollection extends junit.framework.TestSuite implements TestEntity {
@@ -61,6 +61,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Constructs a TestSuite from the given class with the given name.
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public TestCollection(Class theClass, String name) {
         super(theClass, name);
         initialize();
@@ -70,6 +71,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * Constructs a TestSuite from the given class. Adds all the methods
      * starting with "test" as test cases to the suite.
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public TestCollection(final Class theClass) {
         super(theClass);
         initialize();
@@ -91,6 +93,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Reset the JUnit name in case serialization looses it.
      */
+    @Override
     public String getName() {
         if (super.getName() == null) {
             setName(this.name);
@@ -101,6 +104,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Store the test name locally to ensure it can serialize.
      */
+    @Override
     public void setName(String name) {
        super.setName(name);
        this.name = name;
@@ -109,6 +113,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Adds a test to itself
      */
+    @Override
     public final void addTest(junit.framework.Test test) {
         super.addTest(test);
         if (test instanceof TestEntity) {
@@ -134,7 +139,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
 
     public final void addServerTest(TestCase theTest) {
         TestCase serverTestCase;
-        Class serverTestCaseClass;
+        Class<?> serverTestCaseClass;
         Object[] args = new Object[1];
 
         try {
@@ -159,6 +164,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Append test summaries of the collection of tests.
      */
+    @Override
     public void appendTestResult(TestResultsSummary summary) {
         summary.appendTestCollectionResult(this);
     }
@@ -166,6 +172,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Computes the level for indentation.
      */
+    @Override
     public void computeNestedLevel() {
         TestEntity testContainer = getContainer();
 
@@ -181,6 +188,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * if no explicit login is done for testing. This method must be overridden in
      * the subclasses if different login is required.
      */
+    @Override
     public Session defaultLogin() {
         return (new TestSystem()).login();
     }
@@ -188,6 +196,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Return test collection which contains this test entity.
      */
+    @Override
     public TestEntity getContainer() {
         return container;
     }
@@ -220,6 +229,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Return the nested counter. This is used finally used to do proper indentation.
      */
+    @Override
     public int getNestedCounter() {
         return nestedCounter;
     }
@@ -227,6 +237,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Return the summary of the test execution.
      */
+    @Override
     public ResultInterface getReport() {
         return getSummary();
     }
@@ -270,6 +281,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * Counts the number of test cases that will be run by this test.
      * If the tests have not been added yet just return 1.
      */
+    @Override
     public int countTestCases() {
         if (getTests().isEmpty()) {
             return 1;
@@ -280,6 +292,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Returns the number of tests in this suite
      */
+    @Override
     public int testCount() {
         return getTests().size();
     }
@@ -287,6 +300,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Returns the tests as an enumeration
      */
+    @Override
     public Enumeration tests() {
         return getTests().elements();
     }
@@ -294,10 +308,12 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Returns the test at the given index
      */
+    @Override
     public junit.framework.Test testAt(int index) {
         return (junit.framework.Test)getTests().elementAt(index);
     }
 
+    @Override
     public void incrementNestedCounter() {
         setNestedCounter(getNestedCounter() + 1);
     }
@@ -305,6 +321,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Runs the tests and collects their result in a TestResult.
      */
+    @Override
     public void run(junit.framework.TestResult result) {
         TestExecutor.setDefaultJUnitTestResult(result);
         try {
@@ -342,6 +359,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * Logs the result summary of the suite on the print stream.
      * This method is added to migrate tests to Ora*Tst
      */
+    @Override
     public void logRegressionResult(Writer log) {
         logResult(log, false, true);
     }
@@ -349,6 +367,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Logs the result summary of the suite on the print stream.
      */
+    @Override
     public void logResult(Writer log) {
         logResult(log, false, false);
     }
@@ -356,6 +375,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Logs the result summary of the suite on the print stream.
      */
+    @Override
     public void logResult(Writer log, boolean logOnlyErrors) {
         logResult(log, logOnlyErrors, false);
     }
@@ -429,15 +449,18 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
         getTests().removeElement(test);
     }
 
+    @Override
     public boolean requiresDatabase() {
         return true;
     }
 
+    @Override
     public abstract void resetEntity();
 
     /**
      * Reinitialize the nested counter value.
      */
+    @Override
     public void resetNestedCounter() {
         setNestedCounter(INITIAL_VALUE);
         for (Enumeration tests = getTests().elements(); tests.hasMoreElements();) {
@@ -451,6 +474,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Set the test collection which contains this test
      */
+    @Override
     public void setContainer(TestEntity testEntity) {
         container = testEntity;
     }
@@ -483,6 +507,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Set the nested counter value.
      */
+    @Override
     public void setNestedCounter(int level) {
         this.nestedCounter = level;
     }
@@ -498,6 +523,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Set the test result.
      */
+    @Override
     public void setReport(ResultInterface summary) {
         setSummary((TestResultsSummary)summary);
     }

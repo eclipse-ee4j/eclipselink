@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,23 +57,23 @@ public interface ValueStore {
      02/01/07 - add copy() function as part of SDOChangeSummary.undoChanges()
      */
 
-    public Object getDeclaredProperty(int propertyIndex);
+    Object getDeclaredProperty(int propertyIndex);
 
-    public Object getOpenContentProperty(Property property);
+    Object getOpenContentProperty(Property property);
 
-    public void setDeclaredProperty(int propertyIndex, Object value);
+    void setDeclaredProperty(int propertyIndex, Object value);
 
-    public void setOpenContentProperty(Property property, Object value);
+    void setOpenContentProperty(Property property, Object value);
 
-    public void setManyProperty(Property propertyName, Object value);
+    void setManyProperty(Property propertyName, Object value);
 
-    public boolean isSetDeclaredProperty(int propertyIndex);
+    boolean isSetDeclaredProperty(int propertyIndex);
 
-    public boolean isSetOpenContentProperty(Property property);
+    boolean isSetOpenContentProperty(Property property);
 
-    public void unsetDeclaredProperty(int propertyIndex);
+    void unsetDeclaredProperty(int propertyIndex);
 
-    public void unsetOpenContentProperty(Property property);
+    void unsetOpenContentProperty(Property property);
 
     /**
      * Perform any post-instantiation integrity operations that could not be done during
@@ -84,12 +84,12 @@ public interface ValueStore {
      *
      * @param dataObject
      */
-    public void initialize(DataObject dataObject);
+    void initialize(DataObject dataObject);
 
     /**
      * Get a shallow copy of the original ValueStore.
      * Changes made to the copy must not impact the original ValueStore
      * @return ValueStore
      */
-    public ValueStore copy();
+    ValueStore copy();
 }

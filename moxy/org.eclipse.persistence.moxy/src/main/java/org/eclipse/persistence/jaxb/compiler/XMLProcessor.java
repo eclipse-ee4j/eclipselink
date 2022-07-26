@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,7 +115,6 @@ public class XMLProcessor {
     /**
      * This is the preferred constructor.
      *
-     * @param bindings
      */
     public XMLProcessor(Map<String, XmlBindings> bindings) {
         this.xmlBindingMap = bindings;
@@ -125,7 +124,6 @@ public class XMLProcessor {
      * Process XmlBindings on a per package basis for a given
      * AnnotationsProcessor instance.
      *
-     * @param annotationsProcessor
      */
     public void processXML(AnnotationsProcessor annotationsProcessor, JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] originalJavaClasses) {
         this.jModelInput = jModelInput;
@@ -142,7 +140,7 @@ public class XMLProcessor {
         // process each XmlBindings in the map
         XmlBindings xmlBindings;
         for (String packageName : xmlBindingMap.keySet()) {
-            ArrayList classesToProcess = pkgToClassMap.get(packageName);
+            ArrayList<JavaClass> classesToProcess = pkgToClassMap.get(packageName);
             if (classesToProcess == null) {
                 getLogger().logWarning("jaxb_metadata_warning_no_classes_to_process", new Object[] { packageName });
                 continue;
@@ -176,7 +174,7 @@ public class XMLProcessor {
             }
 
             // build an array of JavaModel classes to process
-            JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
+            JavaClass[] javaClasses = classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
 
             // handle xml-enums
             // build a map of enum class names to XmlEnum objects
@@ -379,14 +377,14 @@ public class XMLProcessor {
 
         }
         for (String packageName : xmlBindingMap.keySet()) {
-            ArrayList classesToProcess = pkgToClassMap.get(packageName);
+            ArrayList<JavaClass> classesToProcess = pkgToClassMap.get(packageName);
             if (classesToProcess == null) {
                 getLogger().logWarning("jaxb_metadata_warning_no_classes_to_process", new Object[] { packageName });
                 continue;
             }
 
             xmlBindings = xmlBindingMap.get(packageName);
-            JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
+            JavaClass[] javaClasses = classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
             // post-build the TypeInfo objects
             javaClasses = aProcessor.postBuildTypeInfo(javaClasses);
 
@@ -475,7 +473,7 @@ public class XMLProcessor {
     private XMLNameTransformer getXMLNameTransformerClassFromString(String transformerClassName){
     XMLNameTransformer transformer = null;
         if(transformerClassName != null){
-           Class nameTransformerClass;
+           Class<?> nameTransformerClass;
 
              try {
                  nameTransformerClass = Class.forName(transformerClassName);
@@ -483,10 +481,8 @@ public class XMLProcessor {
                  throw JAXBException.exceptionWithNameTransformerClass(transformerClassName, ex);
              }
              try {
-                 transformer = (XMLNameTransformer) nameTransformerClass.newInstance();
-             } catch (InstantiationException ex) {
-                 throw JAXBException.exceptionWithNameTransformerClass(transformerClassName, ex);
-             } catch (IllegalAccessException ex) {
+                 transformer = (XMLNameTransformer) nameTransformerClass.getConstructor().newInstance();
+             } catch (ReflectiveOperationException ex) {
                  throw JAXBException.exceptionWithNameTransformerClass(transformerClassName, ex);
              }
          }
@@ -497,9 +493,6 @@ public class XMLProcessor {
     /**
      * Process a given JavaType's attributes.
      *
-     * @param javaType
-     * @param typeInfo
-     * @param nsInfo
      */
     private void processJavaType(JavaType javaType, TypeInfo typeInfo, NamespaceInfo nsInfo) {
         // process field/property overrides
@@ -677,10 +670,6 @@ public class XMLProcessor {
     /**
      * Process a given JavaAtribute.
      *
-     * @param javaAttribute
-     * @param oldProperty
-     * @param nsInfo
-     * @return
      */
     private Property processJavaAttribute(TypeInfo typeInfo, JavaAttribute javaAttribute, Property oldProperty, NamespaceInfo nsInfo, JavaType javaType) {
          if (javaAttribute instanceof XmlVariableNode) {
@@ -732,9 +721,6 @@ public class XMLProcessor {
     /**
      * Handle property-level XmlJavaTypeAdapter
      *
-     * @param xmlAdapter
-     * @param oldProperty
-     * @return
      */
     private Property processXmlJavaTypeAdapter(XmlJavaTypeAdapter xmlAdapter, Property oldProperty) {
         oldProperty.setXmlJavaTypeAdapter(xmlAdapter);
@@ -744,9 +730,6 @@ public class XMLProcessor {
     /**
      * Handle xml-inverse-reference.
      *
-     * @param xmlInverseReference
-     * @param oldProperty
-     * @return
      */
     private Property processXmlInverseReference(XmlInverseReference xmlInverseReference, Property oldProperty, TypeInfo info) {
         resetProperty(oldProperty, info);
@@ -784,11 +767,6 @@ public class XMLProcessor {
     /**
      * Handle xml-any-attribute.
      *
-     * @param xmlAnyAttribute
-     * @param oldProperty
-     * @param tInfo
-     * @param javaType
-     * @return
      */
     private Property processXmlAnyAttribute(XmlAnyAttribute xmlAnyAttribute, Property oldProperty, TypeInfo tInfo, JavaType javaType) {
         // if oldProperty is already an Any (via @XmlAnyAttribute annotation)
@@ -878,11 +856,6 @@ public class XMLProcessor {
      * Handle xml-any-element. If the property was annotated with @XmlAnyElement
      * in code all values will be overridden.
      *
-     * @param xmlAnyElement
-     * @param oldProperty
-     * @param tInfo
-     * @param javaType
-     * @return
      */
     private Property processXmlAnyElement(XmlAnyElement xmlAnyElement, Property oldProperty, TypeInfo tInfo, JavaType javaType) {
 
@@ -949,10 +922,6 @@ public class XMLProcessor {
     /**
      * XmlAttribute override will completely replace the existing values.
      *
-     * @param xmlAttribute
-     * @param oldProperty
-     * @param nsInfo
-     * @return
      */
     private Property processXmlAttribute(XmlAttribute xmlAttribute, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo, JavaType javaType) {
         // reset any existing values
@@ -1088,8 +1057,8 @@ public class XMLProcessor {
         }
         // handle null policy
         if (xmlAttribute.getXmlAbstractNullPolicy() != null) {
-            JAXBElement jaxbElt = xmlAttribute.getXmlAbstractNullPolicy();
-            oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+            JAXBElement<? extends XmlAbstractNullPolicy> jaxbElt = xmlAttribute.getXmlAbstractNullPolicy();
+            oldProperty.setNullPolicy(jaxbElt.getValue());
         }
         // set user-defined properties
         if (xmlAttribute.getXmlProperties() != null  && xmlAttribute.getXmlProperties().getXmlProperty().size() > 0) {
@@ -1101,11 +1070,6 @@ public class XMLProcessor {
     /**
      * XmlElement override will completely replace the existing values.
      *
-     * @param xmlElement
-     * @param oldProperty
-     * @param typeInfo
-     * @param nsInfo
-     * @return
      */
     private Property processXmlElement(XmlElement xmlElement, Property oldProperty, TypeInfo typeInfo, NamespaceInfo nsInfo, JavaType javaType) {
         // reset any existing values
@@ -1302,8 +1266,8 @@ public class XMLProcessor {
         }
         // handle null policy
         if (xmlElement.getXmlAbstractNullPolicy() != null) {
-            JAXBElement jaxbElt = xmlElement.getXmlAbstractNullPolicy();
-            oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+            JAXBElement<? extends XmlAbstractNullPolicy> jaxbElt = xmlElement.getXmlAbstractNullPolicy();
+            oldProperty.setNullPolicy(jaxbElt.getValue());
         }
         // set user-defined properties
         if (xmlElement.getXmlProperties() != null  && xmlElement.getXmlProperties().getXmlProperty().size() > 0) {
@@ -1337,10 +1301,6 @@ public class XMLProcessor {
      * The XmlElements object will be set on the property, and it will be
      * flagged as a 'choice'.
      *
-     * @param xmlElements
-     * @param oldProperty
-     * @param tInfo
-     * @return
      */
     private Property processXmlElements(XmlElements xmlElements, Property oldProperty, TypeInfo tInfo) {
         resetProperty(oldProperty, tInfo);
@@ -1394,10 +1354,6 @@ public class XMLProcessor {
     /**
      * Process an xml-element-ref.
      *
-     * @param xmlElementRef
-     * @param oldProperty
-     * @param info
-     * @return
      */
     private Property processXmlElementRef(XmlElementRef xmlElementRef, Property oldProperty, TypeInfo info) {
         processObjectFactory(info);
@@ -1449,10 +1405,6 @@ public class XMLProcessor {
     /**
      * Process an xml-element-refs.
      *
-     * @param xmlElementRefs
-     * @param oldProperty
-     * @param info
-     * @return
      */
     private Property processXmlElementRefs(XmlElementRefs xmlElementRefs, Property oldProperty, TypeInfo info) {
         processObjectFactory(info);
@@ -1569,8 +1521,8 @@ public class XMLProcessor {
         }
         // handle null policy
         if (xmlValue.getXmlAbstractNullPolicy() != null) {
-            JAXBElement jaxbElt = xmlValue.getXmlAbstractNullPolicy();
-            oldProperty.setNullPolicy((XmlAbstractNullPolicy) jaxbElt.getValue());
+            JAXBElement<? extends XmlAbstractNullPolicy> jaxbElt = xmlValue.getXmlAbstractNullPolicy();
+            oldProperty.setNullPolicy(jaxbElt.getValue());
         }
         // set user-defined properties
         if (xmlValue.getXmlProperties() != null  && xmlValue.getXmlProperties().getXmlProperty().size() > 0) {
@@ -1583,8 +1535,6 @@ public class XMLProcessor {
      * Process an XmlSchema. This involves creating a NamespaceInfo instance and
      * populating it based on the given XmlSchema.
      *
-     * @param xmlBindings
-     * @param packageName
      * @see NamespaceInfo
      * @see AnnotationsProcessor
      * @return newly created namespace info, or null if schema is null
@@ -1601,9 +1551,9 @@ public class XMLProcessor {
         }
         // process XmlSchema
         XmlNsForm form = schema.getAttributeFormDefault();
-        nsInfo.setAttributeFormQualified(form.equals(form.QUALIFIED));
+        nsInfo.setAttributeFormQualified(form.equals(XmlNsForm.QUALIFIED));
         form = schema.getElementFormDefault();
-        nsInfo.setElementFormQualified(form.equals(form.QUALIFIED));
+        nsInfo.setElementFormQualified(form.equals(XmlNsForm.QUALIFIED));
 
 
         if (!nsInfo.isElementFormQualified() || nsInfo.isAttributeFormQualified()) {
@@ -1630,9 +1580,6 @@ public class XMLProcessor {
      * Process an XmlTransformation. The info in the XmlTransformation will be
      * used to generate an XmlTransformationMapping in MappingsGenerator.
      *
-     * @param xmlTransformation
-     * @param oldProperty
-     * @param tInfo
      */
     private Property processXmlTransformation(XmlTransformation xmlTransformation, Property oldProperty, TypeInfo tInfo) {
         // reset any existing values
@@ -1659,9 +1606,6 @@ public class XMLProcessor {
      * Process XmlJoinNodes.  This method sets the XmlJoinNodes instance on the Property
      * for use in MappingsGen and SchemaGen.
      *
-     * @param xmlJoinNodes
-     * @param oldProperty
-     * @return
      */
     private Property processXmlJoinNodes(XmlJoinNodes xmlJoinNodes, Property oldProperty, TypeInfo typeInfo) {
         // reset any existing values
@@ -1693,7 +1637,6 @@ public class XMLProcessor {
     /**
      * Convenience method for building a Map of package to classes.
      *
-     * @return
      */
     private Map<String, ArrayList<JavaClass>> buildPackageToJavaClassMap() {
         Map<String, ArrayList<JavaClass>> theMap = new HashMap<String, ArrayList<JavaClass>>();
@@ -1702,7 +1645,7 @@ public class XMLProcessor {
         XmlBindings xmlBindings;
         for (String packageName : xmlBindingMap.keySet()) {
             xmlBindings = xmlBindingMap.get(packageName);
-            ArrayList classes = new ArrayList<JavaClass>();
+            ArrayList<JavaClass> classes = new ArrayList<JavaClass>();
             // add binding classes - the Java Model will be used to get a
             // JavaClass via class name
             JavaTypes jTypes = xmlBindings.getJavaTypes();
@@ -1739,7 +1682,7 @@ public class XMLProcessor {
                 if (allExistingClasses != null) {
                     allExistingClasses.add(jClass);
                 } else {
-                    ArrayList classes = new ArrayList<JavaClass>();
+                    ArrayList<JavaClass> classes = new ArrayList<JavaClass>();
                     classes.add(jClass);
                     theMap.put(pkg, classes);
                 }
@@ -1761,7 +1704,6 @@ public class XMLProcessor {
     /**
      * Lazy load the metadata logger.
      *
-     * @return
      */
     private JAXBMetadataLogger getLogger() {
         if (logger == null) {
@@ -1782,8 +1724,6 @@ public class XMLProcessor {
      * Convenience method for resetting a number of properties on a given
      * property.
      *
-     * @param oldProperty
-     * @return
      */
     private Property resetProperty(Property oldProperty, TypeInfo tInfo) {
         oldProperty.setIsAttribute(false);
@@ -1836,8 +1776,6 @@ public class XMLProcessor {
     /**
      * Ensure that a given property is not set as an xml-id.
      *
-     * @param oldProperty
-     * @param tInfo
      */
     private void unsetXmlID(Property oldProperty, TypeInfo tInfo) {
         oldProperty.setIsXmlId(false);
@@ -1850,8 +1788,6 @@ public class XMLProcessor {
     /**
      * Ensure that a given property is not set as an xml-key.
      *
-     * @param oldProperty
-     * @param tInfo
      */
     private void unsetXmlKey(Property oldProperty, TypeInfo tInfo) {
         if (tInfo.hasXmlKeyProperties()) {
@@ -1870,8 +1806,6 @@ public class XMLProcessor {
     /**
      * Ensure that a given property is not set as an xml-element-refs.
      *
-     * @param oldProperty
-     * @param tInfo
      */
     private void unsetXmlElementRefs(Property oldProperty, TypeInfo tInfo) {
         if (tInfo.hasElementRefs() && tInfo.getElementRefsPropName().equals(oldProperty.getPropertyName())) {
@@ -1882,7 +1816,6 @@ public class XMLProcessor {
     /**
      * Ensure that a given property is not set as an xml-elements.
      *
-     * @param oldProperty
      */
     private void unsetXmlElements(Property oldProperty) {
         oldProperty.setXmlElements(null);
@@ -1892,8 +1825,6 @@ public class XMLProcessor {
     /**
      * Ensure that a given property is not set as an xml-any-attribute.
      *
-     * @param oldProperty
-     * @param tInfo
      */
     private void unsetXmlAnyAttribute(Property oldProperty, TypeInfo tInfo) {
         oldProperty.setIsAnyAttribute(false);
@@ -1905,8 +1836,6 @@ public class XMLProcessor {
     /**
      * Ensure that a given property is not set as an xml-any-element.
      *
-     * @param oldProperty
-     * @param tInfo
      */
     private void unsetXmlAnyElement(Property oldProperty, TypeInfo tInfo) {
         oldProperty.setIsAny(false);
@@ -1918,8 +1847,6 @@ public class XMLProcessor {
     /**
      * Ensure that a given property is not set as an xml-value.
      *
-     * @param oldProperty
-     * @param tInfo
      */
     private void unsetXmlValue(Property oldProperty, TypeInfo tInfo) {
         oldProperty.setIsXmlValue(false);
@@ -1941,10 +1868,6 @@ public class XMLProcessor {
      * - returns 'project' for xml-path 'projects/prj:project/text()'
      * - returns 'data' for xml-path 'pieces-of-data/data[1]/text()'
      *
-     * @param xpath
-     * @param propertyName
-     * @param isAttribute
-     * @return
      */
     public static String getNameFromXPath(String xpath, String propertyName, boolean isAttribute) {
         // handle self mapping
@@ -2010,8 +1933,6 @@ public class XMLProcessor {
      * other simple type that was converted by ConversionManager,
      * i.e. numerical, boolean, temporal.
      *
-     * @param propList
-     * @return
      */
     private Map createUserPropertyMap(List<XmlProperty> propList) {
         return mergeUserPropertyMap(propList, new HashMap());
@@ -2030,8 +1951,6 @@ public class XMLProcessor {
      * String or some other simple type that was converted by
      * ConversionManager, i.e. numerical, boolean, temporal.
      *
-     * @param propList
-     * @return
      */
     private Map mergeUserPropertyMap(List<XmlProperty> propList, Map existingMap) {
         Map propMap = existingMap;
@@ -2052,8 +1971,6 @@ public class XMLProcessor {
      * doing so, so the original generic type will be retrieved and set after
      * the call to set the container type.
      *
-     * @param property
-     * @param containerClassName
      */
     private void setContainerType(Property property, String containerClassName) {
         // store the original generic type as the call to setType will overwrite it

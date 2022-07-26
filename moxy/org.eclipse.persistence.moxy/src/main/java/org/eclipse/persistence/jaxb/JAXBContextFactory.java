@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -96,7 +96,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on the array of Class objects.  The JAXBContext will
      * also be aware of classes reachable from the classes in the array.
      */
-    public static jakarta.xml.bind.JAXBContext createContext(Class[] classesToBeBound, Map properties) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(Class<?>[] classesToBeBound, Map<String, Object> properties) throws JAXBException {
         ClassLoader loader = null;
         if (classesToBeBound.length > 0) {
             loader = classesToBeBound[0].getClassLoader();
@@ -108,7 +108,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on the array of Class objects.  The JAXBContext will
      * also be aware of classes reachable from the classes in the array.
      */
-    public static jakarta.xml.bind.JAXBContext createContext(Class[] classesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(Class<?>[] classesToBeBound, Map<String, Object> properties, ClassLoader classLoader) throws JAXBException {
         Type[] types = new Type[classesToBeBound.length];
         System.arraycopy(classesToBeBound, 0, types, 0, classesToBeBound.length);
         return createContext(types, properties, classLoader);
@@ -126,7 +126,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on context path.  The JAXBContext will
      * also be aware of classes reachable from the classes on the context path.
      */
-    public static jakarta.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader, Map properties) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         JAXBContextInput contextInput = new ContextPathInput(contextPath, properties, classLoader);
         JAXBContext context = new JAXBContext(contextInput);
         if (context.isRefreshable()) {
@@ -141,7 +141,7 @@ public class JAXBContextFactory {
      * preferred means of creating a Type aware JAXBContext is to create the
      * JAXBContext with an array of TypeMappingInfo objects.
      */
-    public static jakarta.xml.bind.JAXBContext createContext(Type[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(Type[] typesToBeBound, Map<String, Object> properties, ClassLoader classLoader) throws JAXBException {
         Map<Type, TypeMappingInfo> typeToTypeMappingInfo = new HashMap<Type, TypeMappingInfo>();
         TypeMappingInfo[] typeMappingInfos = new TypeMappingInfo[typesToBeBound.length];
         for(int i = 0; i < typesToBeBound.length; i++) {
@@ -162,7 +162,7 @@ public class JAXBContextFactory {
      * JAXBContext will also be aware of classes reachable from the types in the
      * array.  This is the preferred means of creating a Type aware JAXBContext.
      */
-    public static jakarta.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, Map<String, Object> properties, ClassLoader classLoader) throws JAXBException {
         JAXBContextInput contextInput = new TypeMappingInfoInput(typesToBeBound, properties, classLoader);
         JAXBContext context = new JAXBContext(contextInput);
         if (context.isRefreshable()) {
@@ -201,7 +201,7 @@ public class JAXBContextFactory {
      *       xml-bindings element
      * </pre>
      */
-    public static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
+    public static Map<String, XmlBindings> getXmlBindingsFromProperties(Map<String, Object> properties, ClassLoader classLoader) {
         Map<String, List<XmlBindings>> bindings = new HashMap<String, List<XmlBindings>>();
         Object value = null;
         if (properties != null) {
@@ -277,8 +277,6 @@ public class JAXBContextFactory {
      *
      * @param originalBindings Map of bindings to be updated
      * @param bindingHandle handle to bindings file
-     * @param classLoader
-     * @return
      */
     private static Map<String, List<XmlBindings>> processBindingFile(Map<String, List<XmlBindings>> originalBindings, Object bindingHandle, ClassLoader classLoader, Map<String, Object> properties) {
         XmlBindings binding = getXmlBindings(bindingHandle, classLoader, properties);

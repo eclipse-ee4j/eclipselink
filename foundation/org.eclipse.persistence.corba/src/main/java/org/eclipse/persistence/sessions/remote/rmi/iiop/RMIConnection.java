@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -191,15 +191,16 @@ public class RMIConnection extends RemoteConnection {
             throw transporter.getException();
         }
 
-        Vector serverNextPageObjects = (Vector)transporter.getObject();
+        @SuppressWarnings({"unchecked"})
+        Vector<Object> serverNextPageObjects = (Vector<Object>)transporter.getObject();
         if (serverNextPageObjects == null) {
             cursoredStreamClose(remoteCursoredStream.getID());
             return null;
         }
-        Vector clientNextPageObjects = serverNextPageObjects;
+        Vector<Object> clientNextPageObjects = serverNextPageObjects;
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
-            clientNextPageObjects = new Vector(serverNextPageObjects.size());
-            for (Enumeration objEnum = serverNextPageObjects.elements(); objEnum.hasMoreElements();) {
+            clientNextPageObjects = new Vector<>(serverNextPageObjects.size());
+            for (Enumeration<Object> objEnum = serverNextPageObjects.elements(); objEnum.hasMoreElements();) {
                 // 2612538 - the default size of Map (32) is appropriate
                 Object clientObject = session.getObjectCorrespondingTo(objEnum.nextElement(), transporter.getObjectDescriptors(), new IdentityHashMap(), (ObjectLevelReadQuery)query);
                 clientNextPageObjects.addElement(clientObject);
@@ -223,7 +224,7 @@ public class RMIConnection extends RemoteConnection {
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         }
-        return ((Integer)transporter.getObject()).intValue();
+        return (Integer) transporter.getObject();
 
     }
 
@@ -297,7 +298,7 @@ public class RMIConnection extends RemoteConnection {
      * Return the table descriptor specified for the class.
      */
     @Override
-    public ClassDescriptor getDescriptor(Class domainClass) {
+    public ClassDescriptor getDescriptor(Class<?> domainClass) {
         try {
             Transporter transporter = getRemoteSessionController().getDescriptor(new Transporter(domainClass));
             if (!transporter.wasOperationSuccessful()) {
@@ -433,7 +434,7 @@ public class RMIConnection extends RemoteConnection {
      * Execute query remotely.
      */
     @Override
-    public Transporter remoteExecuteNamedQuery(String name, Class javaClass, Vector arguments) {
+    public Transporter remoteExecuteNamedQuery(String name, Class<?> javaClass, Vector arguments) {
         try {
             Transporter transporter = getRemoteSessionController().executeNamedQuery(new Transporter(name), new Transporter(javaClass), new Transporter(arguments));
             transporter.expand(this.session);
@@ -481,7 +482,7 @@ public class RMIConnection extends RemoteConnection {
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         }
-        return ((Boolean)transporter.getObject()).booleanValue();
+        return (Boolean) transporter.getObject();
     }
 
     /**
@@ -550,7 +551,7 @@ public class RMIConnection extends RemoteConnection {
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         }
-        return ((Integer)transporter.getObject()).intValue();
+        return (Integer) transporter.getObject();
     }
 
     /**
@@ -572,7 +573,7 @@ public class RMIConnection extends RemoteConnection {
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         }
-        return ((Boolean)transporter.getObject()).booleanValue();
+        return (Boolean) transporter.getObject();
     }
 
     /**
@@ -593,7 +594,7 @@ public class RMIConnection extends RemoteConnection {
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         }
-        return ((Boolean)transporter.getObject()).booleanValue();
+        return (Boolean) transporter.getObject();
     }
 
     /**
@@ -616,7 +617,7 @@ public class RMIConnection extends RemoteConnection {
             throw transporter.getException();
         }
 
-        return ((Boolean)transporter.getObject()).booleanValue();
+        return (Boolean) transporter.getObject();
     }
 
     /**
@@ -638,7 +639,7 @@ public class RMIConnection extends RemoteConnection {
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         }
-        return ((Boolean)transporter.getObject()).booleanValue();
+        return (Boolean) transporter.getObject();
     }
 
     /**
@@ -660,7 +661,7 @@ public class RMIConnection extends RemoteConnection {
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         }
-        return ((Boolean)transporter.getObject()).booleanValue();
+        return (Boolean) transporter.getObject();
     }
 
     /**
@@ -682,7 +683,7 @@ public class RMIConnection extends RemoteConnection {
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         }
-        return ((Boolean)transporter.getObject()).booleanValue();
+        return (Boolean) transporter.getObject();
     }
 
     /**
@@ -768,7 +769,7 @@ public class RMIConnection extends RemoteConnection {
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         }
-        return ((Boolean)transporter.getObject()).booleanValue();
+        return (Boolean) transporter.getObject();
     }
 
     /**
@@ -785,7 +786,7 @@ public class RMIConnection extends RemoteConnection {
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         }
-        return ((Integer)transporter.getObject()).intValue();
+        return (Integer) transporter.getObject();
 
     }
 

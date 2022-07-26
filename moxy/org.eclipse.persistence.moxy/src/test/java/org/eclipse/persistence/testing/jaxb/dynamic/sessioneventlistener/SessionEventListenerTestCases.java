@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,8 +48,8 @@ public class SessionEventListenerTestCases extends TestCase {
     public void testOXM() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(2);
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, "org/eclipse/persistence/testing/jaxb/dynamic/sessioneventlistener/oxm.xml");
-        JAXBContext jc = (JAXBContext) DynamicJAXBContextFactory.createContextFromOXM(this.getClass().getClassLoader(), properties);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, "org/eclipse/persistence/testing/jaxb/dynamic/sessioneventlistener/oxm.xml");
+        JAXBContext jc = DynamicJAXBContextFactory.createContextFromOXM(this.getClass().getClassLoader(), properties);
         unmarshalTest(jc);
     }
 
@@ -58,8 +58,8 @@ public class SessionEventListenerTestCases extends TestCase {
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
 
         ClassLoader classLoader = SessionEventListenerTestCases.class.getClassLoader();
-        InputStream schemaStream = classLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/dynamic/sessioneventlistener/schema.xsd");
-        JAXBContext jc = (JAXBContext) DynamicJAXBContextFactory.createContextFromXSD(schemaStream, null, classLoader, properties);
+        InputStream schemaStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/dynamic/sessioneventlistener/schema.xsd");
+        JAXBContext jc = DynamicJAXBContextFactory.createContextFromXSD(schemaStream, null, classLoader, properties);
         unmarshalTest(jc);
     }
 

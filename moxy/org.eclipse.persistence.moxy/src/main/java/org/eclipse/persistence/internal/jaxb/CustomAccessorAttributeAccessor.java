@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,8 +39,8 @@ public class CustomAccessorAttributeAccessor extends AttributeAccessor {
     public CustomAccessorAttributeAccessor(Object accessor) {
         this.accessor = accessor;
 
-        Class[] getMethodParams = new Class[]{Object.class};
-        Class[] setMethodParams = new Class[]{Object.class, Object.class};
+        Class<?>[] getMethodParams = new Class<?>[]{Object.class};
+        Class<?>[] setMethodParams = new Class<?>[]{Object.class, Object.class};
         try {
             getMethod = PrivilegedAccessHelper.getDeclaredMethod(accessor.getClass(), "get", getMethodParams);
             setMethod = PrivilegedAccessHelper.getDeclaredMethod(accessor.getClass(), "set", setMethodParams);

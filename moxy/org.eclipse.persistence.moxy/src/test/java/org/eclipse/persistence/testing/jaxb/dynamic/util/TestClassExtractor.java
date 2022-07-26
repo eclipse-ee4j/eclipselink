@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,14 @@
 package org.eclipse.persistence.testing.jaxb.dynamic.util;
 
 import org.eclipse.persistence.descriptors.ClassExtractor;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class TestClassExtractor extends ClassExtractor {
 
-    public Class extractClassFromRow(Record databaseRow, Session session) {
-        Class empClass = session.getProject().getDescriptorForAlias("Employee").getJavaClass();
+    @Override
+    public Class<?> extractClassFromRow(DataRecord databaseRow, Session session) {
+        Class<?> empClass = session.getProject().getDescriptorForAlias("Employee").getJavaClass();
         return empClass;
     }
 

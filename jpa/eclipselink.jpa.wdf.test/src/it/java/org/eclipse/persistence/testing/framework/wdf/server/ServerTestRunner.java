@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -30,6 +30,6 @@ public interface ServerTestRunner {
      * @param testProperties the test properties
      * @return a list of notifications recorded during test execution
      */
-    public List<Notification> runTestClass(String className, String dsName, Map<String, String> testProperties);
+    List<Notification> runTestClass(String className, String dsName, Map<String, String> testProperties);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -351,9 +351,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
         delta.addTextEdits(renamer.textEdits);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toActualText() {
         return getDelta().applyChanges();
@@ -376,7 +373,7 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
          */
         protected AbstractRenamer() {
             super();
-            textEdits = new ArrayList<TextEdit>();
+            textEdits = new ArrayList<>();
         }
 
         /**
@@ -540,17 +537,11 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpression expression) {
             rename(expression);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpression expression) {
             rename(expression);
@@ -584,9 +575,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             this.newClassName = newClassName;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpression expression) {
             // Test for a fully qualified class name in a range variable declaration
@@ -595,9 +583,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ConstructorExpression expression) {
             visit(expression, expression.getClassName(), 4); // 4 = "NEW "
@@ -640,9 +625,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpression expression) {
             // A fully qualified enum constant is parsed as a state field path expression
@@ -704,9 +686,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             this.newEntityName = newEntityName;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AbstractSchemaName expression) {
             if (oldEntityName.equals(expression.getText())) {
@@ -714,9 +693,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(EntityTypeLiteral expression) {
             if (oldEntityName.equals(expression.getEntityTypeName())) {
@@ -724,9 +700,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariable expression) {
             if (oldEntityName.equals(expression.getText())) {
@@ -788,17 +761,11 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpression expression) {
             renameEnumConstant(expression);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpression expression) {
             renameEnumConstant(expression);
@@ -832,17 +799,11 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             setExpression(jpqlQuery);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String getExpression() {
             return jpqlQuery;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public IManagedTypeProvider getProvider() {
             return provider;
@@ -857,9 +818,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             this.jpqlQuery = (jpqlQuery != null) ? jpqlQuery.toString() : ExpressionTools.EMPTY_STRING;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -902,9 +860,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             this.newVariableName = newVariableName;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariable expression) {
 
@@ -915,9 +870,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ResultVariable expression) {
 
@@ -932,9 +884,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectStatement expression) {
 
@@ -981,9 +930,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
             this.newVariableName = newVariableName;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariable expression) {
             if (oldVariableName.equalsIgnoreCase(expression.getText())) {

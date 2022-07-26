@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -178,12 +178,12 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                 @Override
                 public Object getAttributeValueFromObject(Object object) {
                     XMLInteraction interaction = (XMLInteraction)object;
-                    Vector argumentNames = interaction.getArgumentNames();
-                    Vector arguments = interaction.getArguments();
-                    Vector interactionArguments = new Vector(arguments.size());
+                    Vector<String> argumentNames = interaction.getArgumentNames();
+                    Vector<?> arguments = interaction.getArguments();
+                    Vector<InteractionArgument> interactionArguments = new Vector<>(arguments.size());
                     for (int index = 0; index < arguments.size(); index++) {
                         InteractionArgument interactionArgument = new InteractionArgument();
-                        interactionArgument.setArgumentName((String)argumentNames.get(index));
+                        interactionArgument.setArgumentName(argumentNames.get(index));
                         Object argument = arguments.get(index);
                         if (argument instanceof DatabaseField) {
                             interactionArgument.setKey(argument);
@@ -198,12 +198,13 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                 @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     XMLInteraction interaction = (XMLInteraction)object;
-                    Vector interactionArguments = (Vector)value;
-                    Vector arguments = new Vector(interactionArguments.size());
-                    Vector argumentNames = new Vector(interactionArguments.size());
-                    Vector values = new Vector(interactionArguments.size());
+                    @SuppressWarnings({"unchecked"})
+                    Vector<InteractionArgument> interactionArguments = (Vector<InteractionArgument>)value;
+                    Vector<DatabaseField> arguments = new Vector<>(interactionArguments.size());
+                    Vector<String> argumentNames = new Vector<>(interactionArguments.size());
+                    Vector<Object> values = new Vector<>(interactionArguments.size());
                     for (int index = 0; index < interactionArguments.size(); index++) {
-                        InteractionArgument interactionArgument = (InteractionArgument)interactionArguments.get(index);
+                        InteractionArgument interactionArgument = interactionArguments.get(index);
                         if (interactionArgument.getKey() != null) {
                             arguments.add(new DatabaseField((String)interactionArgument.getKey()));
                         }
@@ -236,13 +237,13 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                 @Override
                 public Object getAttributeValueFromObject(Object object) {
                     XMLInteraction interaction = (XMLInteraction)object;
-                    Vector arguments = interaction.getOutputArguments();
-                    Vector argumentNames = interaction.getOutputArgumentNames();
-                    Vector interactionArguments = new Vector(arguments.size());
+                    Vector<DatabaseField> arguments = interaction.getOutputArguments();
+                    Vector<String> argumentNames = interaction.getOutputArgumentNames();
+                    Vector<InteractionArgument> interactionArguments = new Vector<>(arguments.size());
                     for (int index = 0; index < arguments.size(); index++) {
                         InteractionArgument interactionArgument = new InteractionArgument();
-                        interactionArgument.setKey(((DatabaseField)arguments.get(index)).getName());
-                        interactionArgument.setArgumentName((String)argumentNames.get(index));
+                        interactionArgument.setKey(arguments.get(index).getName());
+                        interactionArgument.setArgumentName(argumentNames.get(index));
                         interactionArguments.add(interactionArgument);
                     }
                     return interactionArguments;
@@ -251,11 +252,12 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                 @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     XMLInteraction interaction = (XMLInteraction)object;
-                    Vector interactionArguments = (Vector)value;
-                    Vector arguments = new Vector(interactionArguments.size());
-                    Vector argumentNames = new Vector(interactionArguments.size());
+                    @SuppressWarnings({"unchecked"})
+                    Vector<InteractionArgument> interactionArguments = (Vector<InteractionArgument>)value;
+                    Vector<DatabaseField> arguments = new Vector<>(interactionArguments.size());
+                    Vector<String> argumentNames = new Vector<>(interactionArguments.size());
                     for (int index = 0; index < interactionArguments.size(); index++) {
-                        InteractionArgument interactionArgument = (InteractionArgument)interactionArguments.get(index);
+                        InteractionArgument interactionArgument = interactionArguments.get(index);
                         arguments.add(new DatabaseField((String)interactionArgument.getKey()));
                         argumentNames.add(interactionArgument.getArgumentName());
                     }
@@ -376,11 +378,11 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
                 @Override
                 public Object getAttributeValueFromObject(Object object) {
-                    Map sourceToTargetKeyFields = ((EISOneToOneMapping)object).getSourceToTargetKeyFields();
-                    List associations = new ArrayList(sourceToTargetKeyFields.size());
-                    Iterator iterator = sourceToTargetKeyFields.entrySet().iterator();
+                    Map<DatabaseField, DatabaseField> sourceToTargetKeyFields = ((EISOneToOneMapping)object).getSourceToTargetKeyFields();
+                    List<Association> associations = new ArrayList<>(sourceToTargetKeyFields.size());
+                    Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
                     while (iterator.hasNext()) {
-                        Map.Entry entry = (Map.Entry)iterator.next();
+                        Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
                         associations.add(new Association(entry.getKey(), entry.getValue()));
                     }
                     return associations;
@@ -389,12 +391,13 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                 @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     EISOneToOneMapping mapping = (EISOneToOneMapping)object;
-                    List associations = (List)value;
-                    mapping.setSourceToTargetKeyFields(new HashMap(associations.size() + 1));
-                    mapping.setTargetToSourceKeyFields(new HashMap(associations.size() + 1));
-                    Iterator iterator = associations.iterator();
+                    @SuppressWarnings({"unchecked"})
+                    List<Association> associations = (List<Association>)value;
+                    mapping.setSourceToTargetKeyFields(new HashMap<>(associations.size() + 1));
+                    mapping.setTargetToSourceKeyFields(new HashMap<>(associations.size() + 1));
+                    Iterator<Association> iterator = associations.iterator();
                     while (iterator.hasNext()) {
-                        Association association = (Association)iterator.next();
+                        Association association = iterator.next();
                         mapping.getSourceToTargetKeyFields().put((DatabaseField)association.getKey(), (DatabaseField)association.getValue());
                         mapping.getTargetToSourceKeyFields().put((DatabaseField)association.getValue(), (DatabaseField)association.getKey());
                     }
@@ -459,7 +462,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
 
                 @Override
                 public void setAttributeValueInObject(Object object, Object value) {
-                    if ((value != null) && value instanceof ReadQuery) {
+                    if (value instanceof ReadQuery) {
                         ((ForeignReferenceMapping)object).setCustomSelectionQuery((ReadQuery)value);
                     }
                 }
@@ -555,7 +558,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
 
                 @Override
                 public void setAttributeValueInObject(Object object, Object value) {
-                    if ((value != null) && value instanceof ReadQuery) {
+                    if (value instanceof ReadQuery) {
                         ((ForeignReferenceMapping)object).setCustomSelectionQuery((ReadQuery)value);
                     }
                 }
@@ -581,7 +584,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
 
                 @Override
                 public void setAttributeValueInObject(Object object, Object value) {
-                    if ((value != null) && value instanceof ModifyQuery) {
+                    if (value instanceof ModifyQuery) {
                         ((EISOneToManyMapping)object).setCustomDeleteAllQuery((ModifyQuery)value);
                     }
                 }

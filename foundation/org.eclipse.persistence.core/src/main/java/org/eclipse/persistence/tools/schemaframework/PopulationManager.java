@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,20 +33,20 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class PopulationManager {
 
     /** Store the objects registered. */
-    protected Hashtable registeredObjects;
+    protected Map<Class<?>, Map<String, Object>> registeredObjects;
 
     /** Store the default instance. */
     protected static PopulationManager defaultManager;
 
     public PopulationManager() {
-        registeredObjects = new Hashtable();
+        registeredObjects = new Hashtable<>();
     }
 
     /**
      * Add all of the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
-    public void addAllObjectsForAbstractClass(Class objectsClass, AbstractSession session, Vector allObjects) {
+    public void addAllObjectsForAbstractClass(Class<?> objectsClass, AbstractSession session, Vector<Object> allObjects) {
         ClassDescriptor descriptor = session.getDescriptor(objectsClass);
         addAllObjectsForClass(objectsClass, allObjects);
         for (ClassDescriptor child : descriptor.getInheritancePolicy().getChildDescriptors()) {
@@ -58,19 +58,19 @@ public class PopulationManager {
      * Add all of the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
-    public void addAllObjectsForAbstractClass(Class objectsClass, org.eclipse.persistence.sessions.Session session, Vector allObjects) {
+    public void addAllObjectsForAbstractClass(Class<?> objectsClass, org.eclipse.persistence.sessions.Session session, Vector<Object> allObjects) {
         addAllObjectsForAbstractClass(objectsClass, (AbstractSession)session, allObjects);
     }
 
     /**
      * Add all of the objects of the class.
      */
-    public void addAllObjectsForClass(Class objectsClass, List allObjects) {
+    public void addAllObjectsForClass(Class<?> objectsClass, List<Object> allObjects) {
         if (!getRegisteredObjects().containsKey(objectsClass)) {
             return;
         }
 
-        for (Object object : ((Map)getRegisteredObjects().get(objectsClass)).values()) {
+        for (Object object : getRegisteredObjects().get(objectsClass).values()) {
             allObjects.add(object);
         }
     }
@@ -78,8 +78,8 @@ public class PopulationManager {
     /**
      * Check if the object is registered given its name.
      */
-    public boolean containsObject(Class objectsClass, String objectsName) {
-        return ((getRegisteredObjects().containsKey(objectsClass)) && (((Hashtable)getRegisteredObjects().get(objectsClass)).containsKey(objectsName)));
+    public boolean containsObject(Class<?> objectsClass, String objectsName) {
+        return ((getRegisteredObjects().containsKey(objectsClass)) && (getRegisteredObjects().get(objectsClass).containsKey(objectsName)));
     }
 
     /**
@@ -92,25 +92,18 @@ public class PopulationManager {
     /**
      * Return all of the objects registered.
      */
-    public Vector getAllClasses() {
-        Vector allClasses = new Vector();
-
-        for (Enumeration e = getRegisteredObjects().keys(); e.hasMoreElements();) {
-            allClasses.addElement(e.nextElement());
-        }
-
+    public List<Class<?>> getAllClasses() {
+        Vector<Class<?>> allClasses = new Vector<>();
+        allClasses.addAll(getRegisteredObjects().keySet());
         return allClasses;
     }
 
     /**
      * Return all of the objects registered.
      */
-    public Vector getAllObjects() {
-        Vector allObjects;
-
-        allObjects = new Vector();
-        for (Enumeration e = getAllClasses().elements(); e.hasMoreElements();) {
-            Class eachClass = (Class)e.nextElement();
+    public Vector<Object> getAllObjects() {
+        Vector<Object> allObjects = new Vector<> ();
+        for (Class<?> eachClass : getAllClasses()) {
             addAllObjectsForClass(eachClass, allObjects);
         }
 
@@ -120,10 +113,8 @@ public class PopulationManager {
     /**
      * Return all of the objects of the class and all of its subclasses.
      */
-    public Vector getAllObjectsForAbstractClass(Class objectsClass) {
-        Vector allObjects;
-
-        allObjects = new Vector();
+    public List<Object> getAllObjectsForAbstractClass(Class<?> objectsClass) {
+        List<Object> allObjects = new Vector<>();
         // hummm, how can this be done....
         return allObjects;
     }
@@ -132,9 +123,9 @@ public class PopulationManager {
      * Return all of the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
-    public Vector getAllObjectsForAbstractClass(Class objectsClass, AbstractSession session) {
+    public List<Object> getAllObjectsForAbstractClass(Class<?> objectsClass, AbstractSession session) {
         ClassDescriptor descriptor = session.getDescriptor(objectsClass);
-        Vector allObjects = new Vector();
+        List<Object> allObjects = new Vector<>();
         addAllObjectsForClass(objectsClass, allObjects);
         if (descriptor.hasInheritance()) {
             for (ClassDescriptor child : descriptor.getInheritancePolicy().getChildDescriptors()) {
@@ -148,10 +139,8 @@ public class PopulationManager {
     /**
      * Return all of the objects of the class.
      */
-    public Vector getAllObjectsForClass(Class objectsClass) {
-        Vector allObjects;
-
-        allObjects = new Vector();
+    public Vector<Object> getAllObjectsForClass(Class<?> objectsClass) {
+        Vector<Object> allObjects = new Vector<>();
         addAllObjectsForClass(objectsClass, allObjects);
 
         return allObjects;
@@ -170,18 +159,18 @@ public class PopulationManager {
     /**
      * Return the object registered given its name.
      */
-    public Object getObject(Class objectsClass, String objectsName) {
+    public Object getObject(Class<?> objectsClass, String objectsName) {
         if (!(getRegisteredObjects().containsKey(objectsClass))) {
             return null;
         }
 
-        return ((Hashtable)getRegisteredObjects().get(objectsClass)).get(objectsName);
+        return getRegisteredObjects().get(objectsClass).get(objectsName);
     }
 
     /**
      * Return the registered objects.
      */
-    public Hashtable getRegisteredObjects() {
+    public Map<Class<?>, Map<String, Object>> getRegisteredObjects() {
         return registeredObjects;
     }
 
@@ -189,11 +178,11 @@ public class PopulationManager {
      * Register the object given its name.
      * The objects are represented as a hashtable of hashtables, lazy initialized on the class.
      */
-    public Object registerObject(Class javaClass, Object objectToRegister, String objectsName) {
+    public Object registerObject(Class<?> javaClass, Object objectToRegister, String objectsName) {
         if (!(getRegisteredObjects().containsKey(javaClass))) {
-            getRegisteredObjects().put(javaClass, new Hashtable());
+            getRegisteredObjects().put(javaClass, new Hashtable<>());
         }
-        ((Hashtable)getRegisteredObjects().get(javaClass)).put(objectsName, objectToRegister);
+        getRegisteredObjects().get(javaClass).put(objectsName, objectToRegister);
 
         return objectToRegister;
     }
@@ -204,9 +193,9 @@ public class PopulationManager {
      */
     public Object registerObject(Object objectToRegister, String objectsName) {
         if (!(getRegisteredObjects().containsKey(objectToRegister.getClass()))) {
-            getRegisteredObjects().put(objectToRegister.getClass(), new Hashtable());
+            getRegisteredObjects().put(objectToRegister.getClass(), new Hashtable<>());
         }
-        ((Hashtable)getRegisteredObjects().get(objectToRegister.getClass())).put(objectsName, objectToRegister);
+        getRegisteredObjects().get(objectToRegister.getClass()).put(objectsName, objectToRegister);
 
         return objectToRegister;
     }
@@ -214,9 +203,9 @@ public class PopulationManager {
     /**
      * Remove the object given its class and name.
      */
-    public void removeObject(Class classToRemove, String objectsName) {
+    public void removeObject(Class<?> classToRemove, String objectsName) {
         if (getRegisteredObjects().containsKey(classToRemove)) {
-            ((Hashtable)getRegisteredObjects().get(classToRemove)).remove(objectsName);
+            getRegisteredObjects().get(classToRemove).remove(objectsName);
         }
     }
 
@@ -246,7 +235,7 @@ public class PopulationManager {
     /**
      * Set the registered objects.
      */
-    public void setRegisteredObjects(Hashtable registeredObjects) {
+    public void setRegisteredObjects(Map<Class<?>, Map<String, Object>> registeredObjects) {
         this.registeredObjects = registeredObjects;
     }
 }

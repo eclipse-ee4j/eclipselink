@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,16 +23,14 @@ public class SDOEqualityHelperTestSuite {
 
     /**
     *
-    * @param args
-    */
+     */
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
     /**
     *  Inherited suite mthod for generating all test cases.
-    * @return
-    */
+     */
     public static Test suite() {
         TestSuite suite = new TestSuite("All CopyHelper Tests");
         suite.addTest(new TestSuite(SDOEqualityHelperTest.class));

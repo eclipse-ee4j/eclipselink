@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,9 +53,11 @@ public class CacheHitWithNonPKCriteriaTest extends ReadObjectTest {
         setDescription("Test whether querying on PK plus additional fields (erroneously) results in a cache hit.");
     }
 
+    @Override
     protected void setup() {
     }
 
+    @Override
     protected void test() {
         Expression exp1;
         Expression exp2;
@@ -80,6 +82,7 @@ public class CacheHitWithNonPKCriteriaTest extends ReadObjectTest {
         objectFromDatabase = getSession().executeQuery(query2);
     }
 
+    @Override
     protected void verify() {
         if (originalObject != null) {
             throw new TestErrorException("Cache hit occurred when querying on PK plus additional field.");

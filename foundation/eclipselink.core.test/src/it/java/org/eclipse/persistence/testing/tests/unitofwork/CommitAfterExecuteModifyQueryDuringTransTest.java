@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class CommitAfterExecuteModifyQueryDuringTransTest extends org.eclipse.pe
     /**
      * Test makes modifications that is not wrapped in a transaction..
      */
+    @Override
     public void setup() {
         if (getSession() instanceof RemoteSession) {
             throw new TestWarningException("test will not run on RemoteSession - it uses events");
@@ -76,6 +77,7 @@ public class CommitAfterExecuteModifyQueryDuringTransTest extends org.eclipse.pe
      * Test makes modifications that is not wrapped in a transaction..
      * so we have to reset our change
      */
+    @Override
     public void reset() {
         Vector myV = new Vector();
         myV.addElement(originalEmployee.firstName);
@@ -91,9 +93,11 @@ public class CommitAfterExecuteModifyQueryDuringTransTest extends org.eclipse.pe
         }
     }
 
+    @Override
     public void test() {
         uow = getSession().acquireUnitOfWork();
         uow.getEventManager().addListener(new SessionEventAdapter() {
+                    @Override
                     public void prepareUnitOfWork(SessionEvent event) {
                         Vector myV = new Vector();
                         myV.addElement(employeesNewFirstName);
@@ -111,6 +115,7 @@ public class CommitAfterExecuteModifyQueryDuringTransTest extends org.eclipse.pe
         cachedEmployee = (Employee)getSession().refreshObject(cachedEmployee);
     }
 
+    @Override
     public void verify() {
         if (!employeesNewFirstName.equals(cachedEmployee.firstName)) {
             throw new TestErrorException("UOW was not commited when non-selecting SQL was issued during transaction.  Emp First name was not updated");

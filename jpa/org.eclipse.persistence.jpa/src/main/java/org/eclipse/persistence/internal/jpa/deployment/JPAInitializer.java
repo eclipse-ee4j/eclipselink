@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -66,7 +66,10 @@ public abstract class JPAInitializer {
     protected Map<String, EntityManagerSetupImpl> initialEmSetupImpls;
 
     // Initializers keyed by their initializationClassloaders
-    protected static Map<ClassLoader, JPAInitializer> initializers = new Hashtable();
+    protected static Map<ClassLoader, JPAInitializer> initializers = new Hashtable<>();
+
+    protected JPAInitializer() {
+    }
 
     /**
      * Initialize the logging file if it is specified by the system property.
@@ -93,7 +96,7 @@ public abstract class JPAInitializer {
         // Bug#4452468  When globalInstrumentation is null, there is no weaving
         checkWeaving(mergedProperties);
 
-        Set tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, m);
+        Set<String> tempLoaderSet = PersistenceUnitProcessor.buildClassSet(persistenceUnitInfo, m);
         // Create the temp loader that will not cache classes for entities in our persistence unit
         ClassLoader tempLoader = createTempLoader(tempLoaderSet);
         persistenceUnitInfo.setNewTempClassLoader(tempLoader);
@@ -191,8 +194,6 @@ public abstract class JPAInitializer {
 
     /**
      * Returns whether the given persistence provider class is supported by this implementation
-     * @param providerClassName
-     * @return
      */
     public boolean isPersistenceProviderSupported(String providerClassName){
         return (providerClassName == null) || providerClassName.equals("") || providerClassName.equals(EntityManagerFactoryProvider.class.getName()) || providerClassName.equals(PersistenceProvider.class.getName());
@@ -203,7 +204,7 @@ public abstract class JPAInitializer {
      * that we will be deploying.
      */
     protected Set loadEntityClasses(Collection entityNames, ClassLoader classLoader) {
-        Set entityClasses = new HashSet();
+        Set<Object> entityClasses = new HashSet<>();
 
         // Load the classes using the loader passed in
         AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.JPA, "cmp_loading_entities_using_loader", classLoader);
@@ -221,8 +222,6 @@ public abstract class JPAInitializer {
     /**
      * Register a transformer.  This method should be overridden to provide the appropriate transformer
      * registration for the environment
-     * @param transformer
-     * @param persistenceUnitInfo
      */
     public abstract void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo, Map properties);
 
@@ -257,10 +256,10 @@ public abstract class JPAInitializer {
     public void initialize(Map m) {
         boolean keepInitialMaps = keepAllPredeployedPersistenceUnits();
         if(keepInitialMaps) {
-            this.initialPuInfos = new HashMap();
+            this.initialPuInfos = new HashMap<>();
         }
         // always create initialEmSetupImpls - it's used to check for puName uniqueness in initPersistenceUnits
-        this.initialEmSetupImpls = new HashMap();
+        this.initialEmSetupImpls = new HashMap<>();
         // ailitchev - copied from findPersistenceUnitInfoInArchives: mkeith - get resource name from prop and include in subsequent call
         String descriptorPath = (String) m.get(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML);
         final Set<Archive> pars;

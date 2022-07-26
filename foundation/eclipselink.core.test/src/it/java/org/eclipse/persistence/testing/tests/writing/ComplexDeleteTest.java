@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,7 @@ public class ComplexDeleteTest extends ComplexUpdateTest {
         usesUnitOfWork = true;
     }
 
+    @Override
     protected void changeObject() {
         UnitOfWork uow = (UnitOfWork)getSession();
 
@@ -68,6 +69,7 @@ public class ComplexDeleteTest extends ComplexUpdateTest {
         this.dependants = dependants;
     }
 
+    @Override
     protected void verify() {
         this.objectToBeWritten = null;
         super.verify();

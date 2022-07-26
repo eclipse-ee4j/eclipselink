@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import java.util.ListResourceBundle;
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Xi Chen
  */
-public class OptimisticLockExceptionResource extends ListResourceBundle {
+public final class OptimisticLockExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "5001", "An attempt was made to delete the object [{0}], but it has no version number in the identity map. {3}It may not have been read before the delete was attempted. {3}Class> {1} Primary Key> {2}" },
                                            { "5003", "The object [{0}] cannot be deleted because it has changed or been deleted since it was last read. {3}Class> {1} Primary Key> {2}" },
@@ -35,6 +35,13 @@ public class OptimisticLockExceptionResource extends ListResourceBundle {
                                            { "5010", "The object [{0}] cannot be merged because it has changed or been deleted since it was last read. {2}Class> {1}" },
                                            { "5011", "One or more objects cannot be updated because it has changed or been deleted since it was last read" }
     };
+
+    /**
+     * Default constructor.
+     */
+    public OptimisticLockExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,6 +79,7 @@ public class CoreAttributeConverter {
      *         or any element to be returned after split is <code>null</code>, empty or contains
      *         whitespace at the beginning or end.
      */
+    @SuppressWarnings({"fallthrough"})
     public static final String[] convert(final String... nameOrPath)
             throws IllegalArgumentException {
         if (nameOrPath == null) {
@@ -212,26 +213,26 @@ public class CoreAttributeConverter {
                 item = nameOrPath[i];
                 if (item == null) {
                     throw new IllegalArgumentException("Name or path value at index "
-                            + Integer.toString(i) + " is null");
+                            + i + " is null");
                 }
                 final int itemLen = item.length();
                 // Empty String.
                 if (itemLen == 0) {
                     throw new IllegalArgumentException("Name or path value at index "
-                            + Integer.toString(i) + " is empty String");
+                            + i + " is empty String");
                 // String contains at least one character.
                 } else {
                     switch(item.charAt(0)) {
                     case TAB: case LF: case FF: case CR: case SPACE:
                         throw new IllegalArgumentException("Name or path value at index "
-                                + Integer.toString(i) + " starts with whitespace");
+                                + i + " starts with whitespace");
                     }
                     // String contains more than one character.
                     if (itemLen > 0) {
                         switch(item.charAt(itemLen - 1)) {
                         case TAB: case LF: case FF: case CR: case SPACE:
                             throw new IllegalArgumentException("Name or path value at index "
-                                    + Integer.toString(i) + " ends with whitespace");
+                                    + i + " ends with whitespace");
                         }
                     }
                 }

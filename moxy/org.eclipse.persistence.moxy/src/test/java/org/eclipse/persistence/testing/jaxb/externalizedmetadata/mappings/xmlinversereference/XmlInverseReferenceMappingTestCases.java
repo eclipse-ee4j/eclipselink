@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
@@ -58,9 +59,10 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Root.class});
+        setClasses(new Class<?>[]{Root.class});
     }
 
+    @Override
     protected Root getControlObject() {
         Employee employee = new Employee();
         employee.id = CONTROL_ID;
@@ -96,6 +98,7 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         return root;
     }
 
+    @Override
     public Root getWriteControlObject() {
         ArrayList rootAddresses = new ArrayList();
         ArrayList rootPhones = new ArrayList();
@@ -146,13 +149,14 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         return root;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmlinversereference/root-oxm.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -170,6 +174,6 @@ public class XmlInverseReferenceMappingTestCases extends JAXBWithJSONTestCases {
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("emp");
         assertNotNull("No mapping exists on Address for attribute [emp].", mapping);
         assertTrue("Expected an XMLInverseReferenceMapping for attribute [emp], but was [" + mapping.toString() +"].", mapping instanceof XMLInverseReferenceMapping);
-        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLInverseReferenceMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLInverseReferenceMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 }

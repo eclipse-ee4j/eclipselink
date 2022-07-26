@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,6 +77,7 @@ public class ServerBrokerTestModel extends TestModel {
         broker.addQuery(QUERY_NAME, query);
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getReadAllTestSuite());
@@ -238,6 +239,7 @@ public class ServerBrokerTestModel extends TestModel {
     /**
      * Replace the executor with the old session.
      */
+    @Override
     public void reset() {
         try {
             if (getExecutor().getSession() instanceof SessionBroker) {
@@ -252,6 +254,7 @@ public class ServerBrokerTestModel extends TestModel {
     /**
      * Replace the executor with the broker session.
      */
+    @Override
     public void setup() {
         oldSession = getSession();
         getExecutor().setSession(buildBroker());

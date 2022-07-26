@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.metadata.XMLMetadataSource;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Employee;
@@ -40,6 +41,7 @@ public class MultipleBindingsSimpleTestCases extends JAXBWithJSONTestCases{
             super(name);
         }
 
+        @Override
         public void setUp() throws Exception {
             setControlDocument(XML_RESOURCE);
             setControlJSON(JSON_RESOURCE);
@@ -57,6 +59,7 @@ public class MultipleBindingsSimpleTestCases extends JAXBWithJSONTestCases{
             setTypes(types);
         }
 
+        @Override
         protected Object getControlObject() {
             Employee emp = new Employee();
             emp.age = 35;
@@ -122,15 +125,16 @@ public class MultipleBindingsSimpleTestCases extends JAXBWithJSONTestCases{
             overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple", bindingsList);
 
             Map props = new HashMap();
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
             return props;
         }
 
+        @Override
         protected Map getProperties() {
             Map overrides = new HashMap();
 
-            InputStream iStream = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/simple-oxm1.xml");
-            InputStream iStream2 = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/simple-oxm2.xml");
+            InputStream iStream = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/simple-oxm1.xml");
+            InputStream iStream2 = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/simple-oxm2.xml");
 
             ArrayList<Object> bindingsList = new ArrayList();
             bindingsList.add(new StreamSource(iStream));
@@ -139,7 +143,7 @@ public class MultipleBindingsSimpleTestCases extends JAXBWithJSONTestCases{
             overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple", bindingsList);
 
             Map props = new HashMap();
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
             return props;
         }
 }

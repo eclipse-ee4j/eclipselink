@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class JAXBInteger3DArrayTestCases extends JAXBListOfObjectsTestCases {
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Integer[][][].class;
         setClasses(classes);
         initXsiType();
@@ -53,6 +53,7 @@ public class JAXBInteger3DArrayTestCases extends JAXBListOfObjectsTestCases {
     }
 
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/integer3DArray.xsd");
 
@@ -61,10 +62,12 @@ public class JAXBInteger3DArrayTestCases extends JAXBListOfObjectsTestCases {
         return controlSchema;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() {
         return Integer[][][].class;
     }
 
+    @Override
     protected Object getControlObject() {
         int level1Size = 2;
         int level2Size = 3;
@@ -83,6 +86,7 @@ public class JAXBInteger3DArrayTestCases extends JAXBListOfObjectsTestCases {
         return jaxbElement;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

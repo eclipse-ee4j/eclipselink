@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -252,7 +252,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         if(null == genericType) {
             return asSet(Object.class);
         }
-        if(genericType instanceof Class && genericType != JAXBElement.class) {
+        if(genericType instanceof Class<?> && genericType != JAXBElement.class) {
             Class<?> clazz = (Class<?>) genericType;
             if(clazz.isArray()) {
                 return getDomainClasses(clazz.getComponentType());
@@ -306,8 +306,6 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @param annotations - The annotations corresponding to domain object.
      * @param mediaType - The media type for the HTTP entity.
      * @param httpHeaders - HTTP headers associated with HTTP entity.
-     * @return
-     * @throws JAXBException
      */
     protected JAXBContext getJAXBContext(Set<Class<?>> domainClasses, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, ?> httpHeaders) throws JAXBException {
 
@@ -332,13 +330,13 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             }
 
             if(null == jaxbContext) {
-                jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class[0]), null);
+                jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class<?>[0]), null);
                 contextCache.put(domainClasses, jaxbContext);
                 return jaxbContext;
             } else if (jaxbContext instanceof org.eclipse.persistence.jaxb.JAXBContext) {
                 return jaxbContext;
             } else {
-                jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class[0]), null);
+                jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class<?>[0]), null);
                 contextCache.put(domainClasses, jaxbContext);
                 return jaxbContext;
             }
@@ -585,7 +583,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             //special case for List<JAXBElement<String>>
             //this is quick fix, MOXyJsonProvider should be refactored as stated in issue #459541
             if (domainClasses.size() == 3) {
-                Class[] domainArray = domainClasses.toArray(new Class[domainClasses.size()]);
+                Class<?>[] domainArray = domainClasses.toArray(new Class<?>[domainClasses.size()]);
                 if (JAXBElement.class.isAssignableFrom(domainArray[1]) && String.class == domainArray[2]) {
                     return true;
                 }
@@ -623,7 +621,6 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @param httpHeaders - HTTP headers associated with HTTP entity.
      * @param unmarshaller - The instance of <i>Unmarshaller</i> that will be
      * used to unmarshal the JSON message.
-     * @throws JAXBException
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties
      */
     protected void preReadFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, Unmarshaller unmarshaller) throws JAXBException {
@@ -643,7 +640,6 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @param httpHeaders - HTTP headers associated with HTTP entity.
      * @param marshaller - The instance of <i>Marshaller</i> that will be used
      * to marshal the domain object to JSON.
-     * @throws JAXBException
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
     protected void preWriteTo(Object object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, Marshaller marshaller) throws JAXBException {
@@ -751,7 +747,6 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * Get first non java class if exists.
      *
-     * @param domainClasses
      * @return first domain class or first generic class or just the first class from the list
      */
     public Class<?> getDomainClass(Set<Class<?>> domainClasses) {
@@ -801,7 +796,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         }
     }
 
-    private Object handleJAXBElement(Object element, Class domainClass, boolean wrapItemInJAXBElement) {
+    private Object handleJAXBElement(Object element, Class<?> domainClass, boolean wrapItemInJAXBElement) {
         if(wrapItemInJAXBElement) {
             if(element instanceof JAXBElement) {
                 return element;

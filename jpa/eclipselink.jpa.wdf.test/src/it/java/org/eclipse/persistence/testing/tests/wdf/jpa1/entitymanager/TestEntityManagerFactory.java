@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,7 +20,7 @@ import javax.naming.NamingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
@@ -82,7 +82,7 @@ public class TestEntityManagerFactory extends JPA1Base {
         em.persist(dep1);
         env.commitTransactionAndClear(em);
         env.beginTransaction(em);
-        dep1 = em.find(Department.class, new Integer(dep1.getId()));
+        dep1 = em.find(Department.class, dep1.getId());
         em.persist(dep2);
         try {
             emf.close(); // persistence context should remain active

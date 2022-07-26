@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.TransformationMappingChangeRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -110,7 +111,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * PUBLIC:
      * Default constructor.
      */
-    public AbstractTransformationMapping() {
+    protected AbstractTransformationMapping() {
         fieldTransformations = new ArrayList();
         fieldToTransformers = new ArrayList();
         setIsMutable(true);
@@ -549,18 +550,17 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
 
         if (attributeTransformerClassName != null) {
-            Class attributeTransformerClass = null;
+            Class<?> attributeTransformerClass = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        attributeTransformerClass = AccessController.doPrivileged(new PrivilegedClassForName(attributeTransformerClassName, true, classLoader));
+                        attributeTransformerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(attributeTransformerClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(attributeTransformerClassName, exception.getException());
                     }
@@ -581,11 +581,11 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 if (transformerClassName == null) {
                     return;
                 }
-                Class transformerClass = null;
+                Class<?> transformerClass = null;
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
-                            transformerClass = AccessController.doPrivileged(new PrivilegedClassForName(transformerClassName, true, classLoader));
+                            transformerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(transformerClassName, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(transformerClassName, exception.getException());
                         }
@@ -609,7 +609,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * the shared cache, and then cloning the original.
      */
     @Override
-    public DatabaseValueHolder createCloneValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+    public <T> DatabaseValueHolder<T> createCloneValueHolder(ValueHolderInterface<T> attributeValue, Object original, Object clone, AbstractRecord row, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         return cloningSession.createCloneTransformationValueHolder(attributeValue, original, clone, this);
     }
 
@@ -629,7 +629,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         this.indirectionPolicy.fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
     }
 
@@ -658,7 +658,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Return the attribute transformer's class.
      * This is used to map to XML.
      */
-    public Class getAttributeTransformerClass() {
+    public Class<?> getAttributeTransformerClass() {
         if ((this.attributeTransformer == null) || (this.attributeTransformer instanceof MethodBasedAttributeTransformer)) {
             return null;
         }
@@ -670,7 +670,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Set the attribute transformer's class.
      * This is used to map from XML.
      */
-    public void setAttributeTransformerClass(Class attributeTransformerClass) {
+    public void setAttributeTransformerClass(Class<?> attributeTransformerClass) {
         if (attributeTransformerClass == null) {
             return;
         }
@@ -678,7 +678,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             Object instance = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    instance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeTransformerClass));
+                    instance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(attributeTransformerClass));
                 } catch (PrivilegedActionException ex) {
                     throw (Exception)ex.getCause();
                 }
@@ -803,9 +803,9 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      */
     public Hashtable getFieldNameToMethodNames() {
         Hashtable table = new Hashtable(getFieldTransformations().size());
-        Iterator transformations = getFieldTransformations().iterator();
+        Iterator<FieldTransformation> transformations = getFieldTransformations().iterator();
         while (transformations.hasNext()) {
-            FieldTransformation transformation = (FieldTransformation)transformations.next();
+            FieldTransformation transformation = transformations.next();
             if (transformation instanceof MethodBasedFieldTransformation) {
                 table.put(transformation.getField().getQualifiedName(), ((MethodBasedFieldTransformation)transformation).getMethodName());
             }
@@ -851,11 +851,11 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 } else if (field.getColumnDefinition() != null) {
                     // Search for the type for this field definition.
                     if (session.getDatasourcePlatform() instanceof DatabasePlatform) {
-                        Iterator iterator = session.getPlatform().getFieldTypes().entrySet().iterator();
+                        Iterator<Map.Entry<Class<?>, FieldTypeDefinition>> iterator = session.getPlatform().getFieldTypes().entrySet().iterator();
                         while (iterator.hasNext()) {
-                            Map.Entry entry = (Map.Entry)iterator.next();
-                            if (((FieldTypeDefinition)entry.getValue()).getName().equals(field.getColumnDefinition())) {
-                                field.setType((Class)entry.getKey());
+                            Map.Entry<Class<?>, FieldTypeDefinition> entry = iterator.next();
+                            if (entry.getValue().getName().equals(field.getColumnDefinition())) {
+                                field.setType(entry.getKey());
                                 break;
                             }
                         }
@@ -1162,8 +1162,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      */
     public Vector getFieldNameToMethodNameAssociations() {
         Vector associations = new Vector();
-        for (Iterator source = getFieldTransformations().iterator(); source.hasNext();) {
-            FieldTransformation tf = (FieldTransformation)source.next();
+        for (Iterator<FieldTransformation> source = getFieldTransformations().iterator(); source.hasNext();) {
+            FieldTransformation tf = source.next();
             if (tf instanceof MethodBasedFieldTransformation) {
                 Association ass = new Association();
                 ass.setKey(tf.getField().getQualifiedName());
@@ -1223,7 +1223,6 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     /**
      * INTERNAL:
      * Set the Attribute Transformer Class Name
-     * @param className
      */
     public void setAttributeTransformerClassName(String className) {
         attributeTransformerClassName = className;
@@ -1370,7 +1369,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * This allows for the reading of the target from the database to be delayed until accessed.
      * This defaults to true and is strongly suggested as it give a huge performance gain.
      */
-    public void useContainerIndirection(Class containerClass) {
+    public void useContainerIndirection(Class<?> containerClass) {
         ContainerIndirectionPolicy policy = new ContainerIndirectionPolicy();
         policy.setContainerClass(containerClass);
         setIndirectionPolicy(policy);
@@ -1413,14 +1412,14 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         }
 
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
-            Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
+            Class<?> attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             this.indirectionPolicy.validateDeclaredAttributeType(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             // 323403
-            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
+            Class<?> returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
             this.indirectionPolicy.validateGetMethodReturnType(returnType, session.getIntegrityChecker());
 
-            Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
+            Class<?> parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
             this.indirectionPolicy.validateSetMethodParameterType(parameterType, session.getIntegrityChecker());
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.exceptions.QueryException;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.queries.ConstructorReportItem;
@@ -46,12 +46,14 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp () {
         m_reset = true;
         super.setUp();
         clearCache();
     }
 
+    @Override
     public void tearDown () {
         if (m_reset) {
             m_reset = false;
@@ -104,7 +106,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         employees = new ExpressionBuilder();
         query = new ReportQuery(Employee.class, employees);
 
-        Class[] argTypes = new Class[]{String.class, String.class};
+        Class<?>[] argTypes = new Class<?>[]{String.class, String.class};
         query.beginAddingConstructorArguments(Employee.class, argTypes);
         query.addAttribute("firstName");
         query.addAttribute("lastName");
@@ -168,7 +170,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         Vector reportResults = (Vector)getServerSession().executeQuery(query);
         query = new ReportQuery(Employee.class, employees);
 
-        Class[] argTypes = new Class[]{String.class, java.sql.Date.class, Integer.class};
+        Class<?>[] argTypes = new Class<?>[]{String.class, java.sql.Date.class, Integer.class};
         query.beginAddingConstructorArguments(DataHolder.class, argTypes);
         query.addAttribute("firstName");
         query.addItem("endDate", employees.get("period").get("endDate"));
@@ -197,7 +199,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ExpressionBuilder employees = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(Employee.class, employees);
 
-        Class[] argTypes = new Class[]{String.class, java.sql.Date.class, Integer.class};
+        Class<?>[] argTypes = new Class<?>[]{String.class, java.sql.Date.class, Integer.class};
         query.beginAddingConstructorArguments(Employee.class, argTypes);
         query.addAttribute("firstName");
         query.addItem("endDate", employees.get("period").get("endDate"));
@@ -223,7 +225,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         Vector reportResults = (Vector)getServerSession().executeQuery(query);
 
         query = new ReportQuery(Employee.class, employees);
-        Class[] argTypes = new Class[]{int.class};
+        Class<?>[] argTypes = new Class<?>[]{int.class};
         query.beginAddingConstructorArguments(DataHolder.class, argTypes);
         query.addAttribute("salary");
         query.endAddingToConstructorItem();
@@ -233,7 +235,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         while (i.hasNext()){
             DataHolder holder = (DataHolder)((ReportQueryResult)i.next()).get(DataHolder.class.getName());
             ReportQueryResult result = (ReportQueryResult)report.next();
-            assertTrue("Incorrect salary ", ((Integer)result.get("salary")).intValue() == holder.getPrimitiveInt());
+            assertTrue("Incorrect salary ", (Integer) result.get("salary") == holder.getPrimitiveInt());
 
         }
         assertTrue("Different result sizes", !(report.hasNext()));

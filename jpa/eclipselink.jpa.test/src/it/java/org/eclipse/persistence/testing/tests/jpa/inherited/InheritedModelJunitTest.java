@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -59,7 +58,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.sessions.CopyGroup;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
@@ -109,6 +108,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         clearCache();
@@ -337,7 +337,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
 
         try {
             Blue blue = new Blue();
-            blue.setAlcoholContent(new Float(5.3));
+            blue.setAlcoholContent(5.3f);
             em.persist(blue);
             m_blueId = blue.getId();
             blue.setUniqueKey(m_blueId.toBigInteger());
@@ -1109,8 +1109,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         consumer.setName("Keith Alexander");
 
         BlueLight blueLight = new BlueLight();
-        blueLight.setAlcoholContent(new Float(4.0));
-        blueLight.setUniqueKey(new BigInteger((new Long(System.currentTimeMillis()).toString())));
+        blueLight.setAlcoholContent(4.0f);
+        blueLight.setUniqueKey(new BigInteger((Long.valueOf(System.currentTimeMillis()).toString())));
         em.persist(blueLight);
         consumer.addBlueLightBeerToConsume(blueLight);
         clone.setBeerConsumer(consumer);
@@ -1483,9 +1483,9 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             em.flush();
 
             clearCache();
-            becksTag1 = (BecksTag)em.find(BecksTag.class, becksTag1.getId());
+            becksTag1 = em.find(BecksTag.class, becksTag1.getId());
             assertTrue("Key was deleted when it should not be.", becksTag1 != null);
-            becks1 = (Becks)em.find(Becks.class, becks1.getId());
+            becks1 = em.find(Becks.class, becks1.getId());
             assertTrue("Orphan removal did not remove the orphan", becks1 == null);
 
             rollbackTransaction(em);
@@ -1841,9 +1841,9 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     // Bug 370975
     public void testNodeImplWeaving(){
         if (isWeavingEnabled()) {
-            Class[] interfaces = NodeImpl.class.getInterfaces();
+            Class<?>[] interfaces = NodeImpl.class.getInterfaces();
             boolean found = false;
-            for (Class c : interfaces){
+            for (Class<?> c : interfaces){
                 if (c == PersistenceWeaved.class){
                     found = true;
                 }
@@ -1890,10 +1890,10 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         // ensure weaving has occured
         EntityManager em = createEntityManager();
         em.getCriteriaBuilder();
-        Class[] testClasses = new Class[]{BeerConsumer.class, Alpine.class, NoviceBeerConsumer.class, Bluish.class, Blue.class, Corona.class, ExpertBeerConsumer.class, Heineken.class};
+        Class<?>[] testClasses = new Class<?>[]{BeerConsumer.class, Alpine.class, NoviceBeerConsumer.class, Bluish.class, Blue.class, Corona.class, ExpertBeerConsumer.class, Heineken.class};
 
         for (int index = 0;index<testClasses.length;index++){
-            Class[] interfaces = testClasses[index].getInterfaces();
+            Class<?>[] interfaces = testClasses[index].getInterfaces();
             Type[] genericInterfaces = testClasses[index].getGenericInterfaces();
 
             if (interfaces.length != genericInterfaces.length){

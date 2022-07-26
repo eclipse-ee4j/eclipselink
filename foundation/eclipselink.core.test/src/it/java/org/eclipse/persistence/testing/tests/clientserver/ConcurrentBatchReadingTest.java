@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class ConcurrentBatchReadingTest extends TestCase {
         this.index = index;
     }
 
+    @Override
     public void reset() {
         execute = false;
         for (int count = 0; count < numThreads; ++count) {
@@ -59,6 +60,7 @@ public class ConcurrentBatchReadingTest extends TestCase {
         server.logout();
     }
 
+    @Override
     public void setup() {
         execute = true;
         try {
@@ -88,6 +90,7 @@ public class ConcurrentBatchReadingTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         for (int count = 0; count < numThreads; ++count) {
             threadList[count].start();
@@ -102,6 +105,7 @@ public class ConcurrentBatchReadingTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (!execute) {
             for (int count = 0; count < numThreads; ++count) {
@@ -119,6 +123,7 @@ public class ConcurrentBatchReadingTest extends TestCase {
                 // to watch the other threads for deadlock.  If none occurs then
                 // the test will time out.
 
+                @Override
                 public void run() {
                     if (isCheckerThread) {
                         watchOtherThreads();
@@ -178,6 +183,7 @@ public class ConcurrentBatchReadingTest extends TestCase {
 
         }
 
+        @Override
         public void postExecuteQuery(SessionEvent event) {
             try {
                 Thread.sleep(10000);

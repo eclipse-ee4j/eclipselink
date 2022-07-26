@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -50,7 +50,7 @@ public class QueryMonitor {
                 shouldMonitor = Boolean.TRUE;
             }
         }
-        return shouldMonitor.booleanValue();
+        return shouldMonitor;
     }
 
     public static void checkDumpTime() {
@@ -71,11 +71,11 @@ public class QueryMonitor {
             for (String query : queries) {
                 Number hits = cacheHits.get(query);
                 if (hits == null) {
-                    hits = Integer.valueOf(0);
+                    hits = 0;
                 }
                 Number misses = cacheMisses.get(query);
                 if (misses == null) {
-                    misses = Integer.valueOf(0);
+                    misses = 0;
                 }
                 writer.write(query);
                 writer.write("\t");
@@ -84,7 +84,7 @@ public class QueryMonitor {
                 writer.write(misses.toString());
                 writer.write("\n");
             }
-            System.out.println(writer.toString());
+            System.out.println(writer);
         }
     }
 
@@ -93,9 +93,9 @@ public class QueryMonitor {
         String name = query.getReferenceClass().getName() + "-findByPrimaryKey";
         Number hits = cacheHits.get(name);
         if (hits == null) {
-            hits = Integer.valueOf(0);
+            hits = 0;
         }
-        hits = Integer.valueOf(hits.intValue() + 1);
+        hits = hits.intValue() + 1;
         cacheHits.put(name, hits);
     }
 
@@ -104,9 +104,9 @@ public class QueryMonitor {
         String name = query.getReferenceClass().getName() + "-findByPrimaryKey";
         Number misses = cacheMisses.get(name);
         if (misses == null) {
-            misses = Integer.valueOf(0);
+            misses = 0;
         }
-        misses = Integer.valueOf(misses.intValue() + 1);
+        misses = misses.intValue() + 1;
         cacheMisses.put(name, misses);
     }
 
@@ -120,9 +120,9 @@ public class QueryMonitor {
         }
         Number hits = cacheHits.get(name);
         if (hits == null) {
-            hits = Integer.valueOf(0);
+            hits = 0;
         }
-        hits = Integer.valueOf(hits.intValue() + 1);
+        hits = hits.intValue() + 1;
         cacheHits.put(name, hits);
     }
 
@@ -136,9 +136,9 @@ public class QueryMonitor {
         }
         Number misses = cacheMisses.get(name);
         if (misses == null) {
-            misses = Integer.valueOf(0);
+            misses = 0;
         }
-        misses = Integer.valueOf(misses.intValue() + 1);
+        misses = misses.intValue() + 1;
         cacheMisses.put(name, misses);
     }
 
@@ -147,9 +147,9 @@ public class QueryMonitor {
         String name = query.getReferenceClass().getName() + "-insert";
         Number misses = cacheMisses.get(name);
         if (misses == null) {
-            misses = Integer.valueOf(0);
+            misses = 0;
         }
-        misses = Integer.valueOf(misses.intValue() + 1);
+        misses = misses.intValue() + 1;
         cacheMisses.put(name, misses);
     }
 
@@ -158,9 +158,9 @@ public class QueryMonitor {
         String name = query.getReferenceClass().getName() + "-update";
         Number misses = cacheMisses.get(name);
         if (misses == null) {
-            misses = Integer.valueOf(0);
+            misses = 0;
         }
-        misses = Integer.valueOf(misses.intValue() + 1);
+        misses = misses.intValue() + 1;
         cacheMisses.put(name, misses);
     }
 
@@ -169,9 +169,9 @@ public class QueryMonitor {
         String name = query.getReferenceClass().getName() + "-delete";
         Number misses = cacheMisses.get(name);
         if (misses == null) {
-            misses = Integer.valueOf(0);
+            misses = 0;
         }
-        misses = Integer.valueOf(misses.intValue() + 1);
+        misses = misses.intValue() + 1;
         cacheMisses.put(name, misses);
     }
 }

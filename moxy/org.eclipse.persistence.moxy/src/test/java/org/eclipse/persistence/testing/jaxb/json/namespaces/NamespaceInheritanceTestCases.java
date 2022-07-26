@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,14 +37,16 @@ public class NamespaceInheritanceTestCases extends JSONMarshalUnmarshalTestCases
         super(name);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
     }
 
+    @Override
     protected Object getControlObject() {
         Employee emp = getEmployee();
         return emp;
     }
 
+    @Override
     public Object getWriteControlObject() {
         Employee emp = getEmployee();
 
@@ -73,6 +75,7 @@ public class NamespaceInheritanceTestCases extends JSONMarshalUnmarshalTestCases
         return emp;
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.querykeys.ManyToManyQueryKey;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  * <p><b>Purpose</b>: This exception is used for any problem that is detected with a query.
@@ -286,7 +286,7 @@ public class QueryException extends ValidationException {
     }
 
     public static QueryException backupCloneIsDeleted(Object clone) {
-        Object[] args = { clone, clone.getClass(), Integer.valueOf(System.identityHashCode(clone)), CR };
+        Object[] args = { clone, clone.getClass(), System.identityHashCode(clone), CR };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, BACKUP_CLONE_DELETED, args));
         queryException.setErrorCode(BACKUP_CLONE_DELETED);
@@ -295,7 +295,7 @@ public class QueryException extends ValidationException {
 
     public static QueryException backupCloneIsOriginalFromParent(Object clone) {
         // need to be verified
-        Object[] args = { clone, clone.getClass(), Integer.valueOf(System.identityHashCode(clone)), CR };
+        Object[] args = { clone, clone.getClass(), System.identityHashCode(clone), CR };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, BACKUP_CLONE_IS_ORIGINAL_FROM_PARENT, args));
         queryException.setErrorCode(BACKUP_CLONE_IS_ORIGINAL_FROM_PARENT);
@@ -303,7 +303,7 @@ public class QueryException extends ValidationException {
     }
 
     public static QueryException backupCloneIsOriginalFromSelf(Object clone) {
-        Object[] args = { clone, clone.getClass(), Integer.valueOf(System.identityHashCode(clone)), CR };
+        Object[] args = { clone, clone.getClass(), System.identityHashCode(clone), CR };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, BACKUP_CLONE_IS_ORIGINAL_FROM_SELF, args));
         queryException.setErrorCode(BACKUP_CLONE_IS_ORIGINAL_FROM_SELF);
@@ -465,7 +465,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException couldNotInstantiateContainerClass(Class aClass, Exception exception) {
+    public static QueryException couldNotInstantiateContainerClass(Class<?> aClass, Exception exception) {
         Object[] args = { aClass.toString() };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, COULD_NOT_INSTANTIATE_CONTAINER_CLASS, args));
@@ -474,7 +474,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException descriptorIsMissing(Class referenceClass, DatabaseQuery query) {
+    public static QueryException descriptorIsMissing(Class<?> referenceClass, DatabaseQuery query) {
         Object[] args = { referenceClass };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, DESCRIPTOR_IS_MISSING, args), query);
@@ -482,7 +482,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException descriptorIsMissingForNamedQuery(Class domainClass, String queryName) {
+    public static QueryException descriptorIsMissingForNamedQuery(Class<?> domainClass, String queryName) {
         Object[] args = { domainClass.getName(), queryName };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, DESCRIPTOR_IS_MISSING_FOR_NAMED_QUERY, args));
@@ -501,7 +501,7 @@ public class QueryException extends ValidationException {
      * Oct 18, 2000 JED
      * Added this method and exception value
      */
-    public static QueryException exampleAndReferenceObjectClassMismatch(Class exampleObjectClass, Class referenceObjectClass, DatabaseQuery query) {
+    public static QueryException exampleAndReferenceObjectClassMismatch(Class<?> exampleObjectClass, Class<?> referenceObjectClass, DatabaseQuery query) {
         Object[] args = { exampleObjectClass, referenceObjectClass };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXAMPLE_AND_REFERENCE_OBJECT_CLASS_MISMATCH, args));
@@ -513,7 +513,7 @@ public class QueryException extends ValidationException {
     /**
      * An exception was thrown while initializing the constructor from the class.
      */
-    public static QueryException exceptionWhileInitializingConstructor(Exception thrownException, DatabaseQuery query, Class targetClass) {
+    public static QueryException exceptionWhileInitializingConstructor(Exception thrownException, DatabaseQuery query, Class<?> targetClass) {
         Object[] args = { targetClass, thrownException };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXCEPTION_WHILE_LOADING_CONSTRUCTOR, args));
@@ -562,7 +562,7 @@ public class QueryException extends ValidationException {
      * PUBLIC:
      * Return the query argements used in the original query when exception is thrown
      */
-    public Record getQueryArgumentsRecord() {
+    public DataRecord getQueryArgumentsRecord() {
         return queryArguments;
     }
 
@@ -614,7 +614,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException incorrectQueryObjectFound(DatabaseQuery query, Class expectedQueryClass) {
+    public static QueryException incorrectQueryObjectFound(DatabaseQuery query, Class<?> expectedQueryClass) {
         Object[] args = { expectedQueryClass, query.getClass() };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, INCORRECT_QUERY_FOUND, args), query);
@@ -622,7 +622,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException invalidContainerClass(Class containerGiven, Class containerRequired) {
+    public static QueryException invalidContainerClass(Class<?> containerGiven, Class<?> containerRequired) {
         Object[] args = { containerGiven, containerRequired };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, INVALID_CONTAINER_CLASS, args));
@@ -784,7 +784,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException joiningAcrossInheritanceClassWithMultipleTablesNotSupported(DatabaseQuery query, Class joinClass) {
+    public static QueryException joiningAcrossInheritanceClassWithMultipleTablesNotSupported(DatabaseQuery query, Class<?> joinClass) {
         Object[] args = { query, joinClass };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, JOINING_ACROSS_INHERITANCE_WITH_MULTIPLE_TABLES, args));
@@ -832,7 +832,7 @@ public class QueryException extends ValidationException {
         return validationException;
     }
 
-    public static QueryException methodDoesNotExistInContainerClass(String methodName, Class aClass) {
+    public static QueryException methodDoesNotExistInContainerClass(String methodName, Class<?> aClass) {
         Object[] args = { methodName, aClass };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, METHOD_DOES_NOT_EXIST_IN_CONTAINER_CLASS, args));
@@ -840,7 +840,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException methodDoesNotExistOnExpression(String methodName, Class[] argTypes) {
+    public static QueryException methodDoesNotExistOnExpression(String methodName, Class<?>[] argTypes) {
         Object[] args = { methodName, argTypes };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, METHOD_DOES_NOT_EXIST_ON_EXPRESSION, args));
@@ -909,7 +909,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException noDescriptorForClassFromInheritancePolicy(DatabaseQuery query, Class referenceClass) {
+    public static QueryException noDescriptorForClassFromInheritancePolicy(DatabaseQuery query, Class<?> referenceClass) {
         Object[] args = { String.valueOf(referenceClass) };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, NO_DESCRIPTOR_FOR_SUBCLASS, args), query);
@@ -949,7 +949,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException classPkDoesNotExistInCache(Class theClass, Object primaryKey) {
+    public static QueryException classPkDoesNotExistInCache(Class<?> theClass, Object primaryKey) {
         Object[] args = { theClass, primaryKey };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, CLASS_PK_DOES_NOT_EXIST_IN_CACHE, args));
@@ -999,7 +999,7 @@ public class QueryException extends ValidationException {
         return queryNotDefined(args);
     }
 
-    public static QueryException queryNotDefined(String queryName, Class domainClass) {
+    public static QueryException queryNotDefined(String queryName, Class<?> domainClass) {
         Object[] args = { queryName, domainClass };
         return queryNotDefined(args);
     }
@@ -1052,7 +1052,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException redirectionMethodNotDefinedCorrectly(Class methodClass, String methodName, Exception exception, DatabaseQuery query) {
+    public static QueryException redirectionMethodNotDefinedCorrectly(Class<?> methodClass, String methodName, Exception exception, DatabaseQuery query) {
         Object[] args = { methodClass, methodName, CR };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, REDIRECTION_METHOD_NOT_DEFINED_CORRECTLY, args), query);
@@ -1078,7 +1078,7 @@ public class QueryException extends ValidationException {
     }
 
     public static QueryException reportQueryResultSizeMismatch(int expected, int retrieved) {
-        Object[] args = { Integer.valueOf(expected), Integer.valueOf(retrieved) };
+        Object[] args = {expected, retrieved};
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, REPORT_QUERY_RESULT_SIZE_MISMATCH, args));
         queryException.setErrorCode(REPORT_QUERY_RESULT_SIZE_MISMATCH);
@@ -1157,7 +1157,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException typeMismatchBetweenAttributeAndConstantOnExpression(Class constantClass, Class attributeClass) {
+    public static QueryException typeMismatchBetweenAttributeAndConstantOnExpression(Class<?> constantClass, Class<?> attributeClass) {
         Object[] args = { constantClass, attributeClass };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, TYPE_MISMATCH_BETWEEN_ATTRIBUTE_AND_CONSTANT_ON_EXPRESSION, args));
@@ -1477,7 +1477,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException errorInstantiatedClassForQueryHint(Exception exception, DatabaseQuery query, Class theClass, String hint) {
+    public static QueryException errorInstantiatedClassForQueryHint(Exception exception, DatabaseQuery query, Class<?> theClass, String hint) {
         Object[] args = { theClass, hint };
 
         QueryException queryException =
@@ -1577,7 +1577,7 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException couldNotFindCastDescriptor(Class castClass, Expression base) {
+    public static QueryException couldNotFindCastDescriptor(Class<?> castClass, Expression base) {
         Object[] args = { castClass, base };
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, COULD_NOT_FIND_CAST_DESCRIPTOR, args));

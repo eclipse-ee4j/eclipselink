@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.tests.feature;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
- * Bug 214910:  Add query timeout support to batched update queries (Oracle DB 9.0.1+)</p>
+ * Bug 214910:  Add query timeout support to batched update queries (Oracle DB 9.0.1+)<br>
  * Test the query timeout feature in batch queries.
  * For data queries , a queryTimeout on the largest DatabaseQuery of the batch will be used.
  * For object queries, a queryTimeout on the largest DescriptorQueryManager (parent) or DatabaseQuery
@@ -30,18 +30,25 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
  */
 public class QueryTimeoutBatchDynamicDataModifyDatabaseQueryParentRefExceptionTest extends QueryTimeoutBatchDatabaseQueryTest {
 
+    @Override
     protected boolean shouldBindAllParameters() { return false; }
+    @Override
     protected boolean shouldCacheAllStatements() { return true; }
+    @Override
     protected  int getNumberOfInserts() { return 1; }
 
+    @Override
     protected String getQuerySQLPrefix() {
         return "insert into employee (emp_id, version) SELECT ";
     }
 
+    @Override
     protected  int getParentQueryTimeout() { return 1; }
     // A -1 timeout should not override the parent - it is ignored for data queries
+    @Override
     protected  int getChildQueryTimeout() { return -1; }
 
+    @Override
     protected String getQuerySQLPostfix() {
         return ", SUM(e.address_id) as version from address e, address b, address b, address c, address c, address c, address b";
     }
@@ -51,6 +58,7 @@ public class QueryTimeoutBatchDynamicDataModifyDatabaseQueryParentRefExceptionTe
         setDescription("Test that an invalid queryTimeout parent reference in a DataModifyQuery does not throw an exception in batch queries.");
     }
 
+    @Override
     public void test() {
         super.test();
         if(limitExceeded) {
@@ -60,6 +68,7 @@ public class QueryTimeoutBatchDynamicDataModifyDatabaseQueryParentRefExceptionTe
         }
     }
 
+    @Override
     public void verify() {
         if(!limitNotExceeded) {
             throw new TestErrorException("QueryTimeoutBatchDynamicDataModifyDatabaseQueryParentRefExceptionTest Batch queryTimeout erroroccurred but was designed to pass.");

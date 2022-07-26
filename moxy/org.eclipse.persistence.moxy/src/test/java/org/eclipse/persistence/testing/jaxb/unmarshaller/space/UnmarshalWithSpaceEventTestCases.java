@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import java.io.InputStream;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
@@ -31,7 +30,7 @@ public class UnmarshalWithSpaceEventTestCases extends JAXBTestCases{
 
     public UnmarshalWithSpaceEventTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{TestObject.class});
+        setClasses(new Class<?>[]{TestObject.class});
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
 
@@ -50,7 +49,7 @@ public class UnmarshalWithSpaceEventTestCases extends JAXBTestCases{
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
                 XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
                 jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");
-                JAXBElement testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader, TestObject.class);
+                JAXBElement<TestObject> testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader, TestObject.class);
                 instream.close();
                 xmlToObjectTest(testObject, getJAXBElementControlObject());
             }

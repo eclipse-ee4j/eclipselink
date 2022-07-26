@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,15 +30,16 @@ import org.eclipse.persistence.testing.framework.TestCase;
  */
 public class CacheInvalidationPolicyCloneTest extends TestCase {
 
-    protected Class policyClassToTest;
+    protected Class<?> policyClassToTest;
 
-    public CacheInvalidationPolicyCloneTest(Class policyClassToTest) {
+    public CacheInvalidationPolicyCloneTest(Class<?> policyClassToTest) {
         super();
         this.policyClassToTest = policyClassToTest;
         setName(getClass().getSimpleName() + " : " + policyClassToTest.getSimpleName());
         setDescription("Test CacheInvalidationPolicy cloning for: " + policyClassToTest.getSimpleName());
     }
 
+    @Override
     public void test() {
         if (policyClassToTest == null || !Helper.classIsSubclass(policyClassToTest, CacheInvalidationPolicy.class)) {
             throwError("CacheInvalidationPolicy class to test cannot be null");

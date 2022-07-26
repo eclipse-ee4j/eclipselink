@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,13 +32,11 @@ import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
-import org.eclipse.persistence.sdo.SDOSetting;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
@@ -76,6 +74,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         stringType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
@@ -98,14 +97,17 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         return "company";
     }
 
+    @Override
     public String getSchemaToDefine() {
         return XSD_PATH;
     }
 
+    @Override
     public String getControlGeneratedFileName() {
         return XSD_PATH;
     }
 
+    @Override
     protected List<Type> getTypesToGenerateFrom() {
         return getControlTypes();
     }
@@ -127,7 +129,6 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * by using the standard spec SDODataObject generation method on page
      *
      * The existing getControlTypes() uses non-public Property constructors
-     * @throws Exception
      */
     public DataObject createRootObject(boolean viaXML, List types) {
         DataObject aRoot = null;
@@ -335,6 +336,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         return aType;
     }
 
+    @Override
     protected DataObject addProperty(DataObject parentType, String name, Type propType) {
         DataObject newProperty = parentType.createDataObject("property");
         SDOProperty prop = (SDOProperty)newProperty.getType().getProperty("name");
@@ -402,6 +404,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     public void registerTypes() {
         registerTypes(true);
     }
+    @Override
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
         if(typeHelper.getType(URINAME, COMPANY_TYPENAME) != null) {
@@ -495,7 +498,6 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
     /**
      * Invoke a get() call to finish the lazy initialization of this map
-     * @param aCS
      */
     public Map verifyOldSequences(SDOChangeSummary aCS) {
         return aCS.getOldSequences();
@@ -503,7 +505,6 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
     /**
      * Invoke a get() call to finish the lazy initialization of this map
-     * @param aCS
      */
     public Map verifyOriginalSequences(SDOChangeSummary aCS) {
         return aCS.getOriginalSequences();
@@ -1034,7 +1035,6 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * Updates through DataObject and the Lists or Sequences returned
      * from DataObject operate on the same data.
      * When getType().isSequencedType() == false, null is returned.
-     * @return the <code>Sequence</code> or null.
      */
     public void testSequenceReturnFrom_SDODataObject_getSequence() {
         defineAndLoadRoot(false, false);
@@ -1044,10 +1044,10 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     /**
      * Returns the value of a <code>Sequence</code> property identified by the specified path.
      * @param path the path to a valid object and property.
-     * @return the <code>Sequence</code> value of the specified property.
      * @see #get(String)
      * @deprecated in 2.1.0.
      */
+    @Deprecated
     public void test_SequenceReturnFrom_SDODataObject_getSequence_StringFails() {
         defineAndLoadRoot(false, false);
         assertNotNull(root);
@@ -1078,10 +1078,10 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     /**
      * Returns the value of a <code>Sequence</code> property identified by the specified property index.
      * @param propertyIndex the index of the property.
-     * @return the <code>Sequence</code> value of the specified property.
      * @see #get(int)
      * @deprecated in 2.1.0.
      */
+    @Deprecated
     public void test_SequenceReturnFrom_SDODataObject_getSequence_index_type_complex_many() {
         defineAndLoadRoot(false, false);
         assertNotNull(root);
@@ -1161,10 +1161,10 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     /**
      * Returns the value of the specified <code>Sequence</code> property.
      * @param property the property to get.
-     * @return the <code>Sequence</code> value of the specified property.
      * @see #get(Property)
      * @deprecated in 2.1.0.
      */
+    @Deprecated
     public void test_SequenceReturnFrom_SDODataObject_getSequence_Property_type_single_many() {
         defineAndLoadRoot(false, false);
         assertNotNull(root);
@@ -1281,7 +1281,6 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
     /**
      * Returns the number of entries in the sequence.
-     * @return the number of entries.
      */
     public void test_intReturnFrom_size() {
     }
@@ -1585,7 +1584,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
         // copy po
-        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        DataObject rootCopy = copyHelper.copy(root);
         // check sequence was copied
         SDOSequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
@@ -1702,7 +1701,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
         // copy po
-        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        DataObject rootCopy = copyHelper.copy(root);
         // check sequence was copied
         SDOSequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
@@ -1719,7 +1718,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
         // copy po
-        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        DataObject rootCopy = copyHelper.copy(root);
         // check sequence was copied
         SDOSequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
@@ -1754,7 +1753,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         Sequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         DataObject po = (DataObject)root.get(PO_SEQUENCE_PATH);
         // copy po
-        DataObject rootCopy = (DataObject)copyHelper.copy(root);
+        DataObject rootCopy = copyHelper.copy(root);
         // check sequence was copied
         Sequence aSequenceCopy = getSequence(rootCopy, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
         assertNotNull(aSequenceCopy);
@@ -2465,7 +2464,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
         List<DataObject> aListToAdd = new ArrayList<DataObject>();
         aListToAdd.add(item3);
         aListToAdd.add(item3);
-        for(Iterator i = aListToAdd.iterator(); i.hasNext();) {
+        for(Iterator<DataObject> i = aListToAdd.iterator(); i.hasNext();) {
             // add to the end of the list
             existingList.add(i.next());
         }
@@ -3279,6 +3278,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     /**
     * @deprecated replaced by {@link #addText(String)} in 2.1.0
     */
+    @Deprecated
     public void test_voidReturnFrom_add_String() {
         // String text) {
         defineAndLoadRoot(false, false);
@@ -3303,6 +3303,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     /**
      * @deprecated replaced by {@link #addText(int, String)} in 2.1.0
      */
+    @Deprecated
     public void test_voidReturnFrom_add_int_String() {
         defineAndLoadRoot(false, false);
         SDOSequence aSequence = getSequence(root, PO_SEQUENCE_PATH, PO_SEQUENCE_SIZE);
@@ -3507,7 +3508,7 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
 
     public void test_getValue_whereSettingIsNull() {
         registerCustomerType(true, null);
-        DataObject cust1 = (DataObject)dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
+        DataObject cust1 = dataFactory.create(typeHelper.getType(URINAME, CUSTOMER_TYPENAME));
         cust1.set("custID", 5);
         List emails = new ArrayList();
         emails.add("email1-DF@myCompany.com");
@@ -3559,7 +3560,6 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
      * Returns the property for the given entry index.
      * Returns <code>null</code> for mixed text entries.
      * @param index the index of the entry.
-     * @return the property or <code>null</code> for the given entry index.
      */
     public void test_PropertyReturnFrom_getProperty() {
         // int index) {
@@ -3604,7 +3604,6 @@ public class SDOSequenceTestCS extends SDOSequenceTestCases {
     /**
      * Returns the property value for the given entry index.
      * @param index the index of the entry.
-     * @return the value for the given entry index.
      */
     public void test_ObjectReturnFrom_getValue() {
         // int index) {

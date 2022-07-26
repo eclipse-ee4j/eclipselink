@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,6 @@ import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.structures.ReferenceMapping;
 
 /**
@@ -64,8 +63,6 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
 
     /**
      * Create an instance of the Attribute
-     * @param managedType
-     * @param mapping
      */
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         this(managedType, mapping, false);
@@ -73,14 +70,11 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     /**
      * INTERNAL:
      * Create an Attribute instance with a passed in validation flag (usually set to true only during Metamodel initialization)
-     * @param managedType
-     * @param mapping
-     * @param validationEnabled
      */
     protected SingularAttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping, boolean validationEnabled) {
         super(managedType, mapping);
         // Case: Handle primitive or java lang type (non-Entity) targets
-        Class attributeClass = mapping.getAttributeClassification();
+        Class<?> attributeClass = mapping.getAttributeClassification();
         /**
          * Case: Handle Entity targets
          * Process supported mappings by assigning their elementType.
@@ -128,7 +122,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
             attributeClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
         }
-        elementType = getMetamodel().getType(attributeClass);
+        elementType = (Type<T>) getMetamodel().getType(attributeClass);
     }
 
     /**
@@ -176,7 +170,6 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     /**
      * INTERNAL:
      * Return whether the attribute is plural or singular
-     * @return
      */
     @Override
     public boolean isPlural() {
@@ -193,7 +186,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         if (getDescriptor().usesOptimisticLocking() && getMapping().isDirectToFieldMapping()) {
             OptimisticLockingPolicy policy = getDescriptor().getOptimisticLockingPolicy();
 
-            return policy.getWriteLockField().equals(((AbstractDirectMapping) getMapping()).getField());
+            return policy.getWriteLockField().equals(getMapping().getField());
         }
         return false;
     }
@@ -208,29 +201,30 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      *  @return Java type
      */
     @Override
+    @SuppressWarnings({"unchecked"})
     public Class<T> getJavaType() {
         if(null == elementType) {
-            Class aJavaType = getMapping().getAttributeClassification();
+            Class<?> aJavaType = getMapping().getAttributeClassification();
             if(null == aJavaType) {
                 aJavaType = getMapping().getField().getType();
                 if(null == aJavaType) {
                     // lookup the attribute on the containing class
-                    Class containingClass = getMapping().getDescriptor().getJavaClass();
+                    Class<?> containingClass = getMapping().getDescriptor().getJavaClass();
                     Field aField = null;
                     try {
                         aField = containingClass.getDeclaredField(getMapping().getAttributeName());
                         aJavaType = aField.getType();
-                        return aJavaType;
+                        return (Class<T>) aJavaType;
                     } catch (NoSuchFieldException nsfe) {
                         // This exception will be warned about below
                         if(null == aJavaType) {
                             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
-                            return MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
+                            return (Class<T>) MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
                         }
                     }
                 }
             }
-            return aJavaType;
+            return (Class<T>) aJavaType;
         } else {
             return this.elementType.getJavaType();
         }

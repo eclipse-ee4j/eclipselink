@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,11 @@
 package org.eclipse.persistence.internal.jaxb;
 
 import java.lang.reflect.InvocationTargetException;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
  * Purpose:
@@ -36,7 +32,7 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
  */
 public class MultiArgInstantiationPolicy extends InstantiationPolicy {
     private String[] parameterTypeNames;
-    private Class[] parameterTypes;
+    private Class<?>[] parameterTypes;
 
     private Object[] defaultValues;
 
@@ -45,7 +41,7 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
         this.parameterTypeNames = parameterTypeNames;
     }
 
-    public void setParameterTypes(Class[] parameterTypes) {
+    public void setParameterTypes(Class<?>[] parameterTypes) {
         this.parameterTypes = parameterTypes;
     }
 
@@ -58,22 +54,14 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
         super.convertClassNamesToClasses(loader);
         if(parameterTypes == null) {
             if(parameterTypeNames != null) {
-                Class[] values = new Class[parameterTypeNames.length];
+                Class<?>[] values = new Class<?>[parameterTypeNames.length];
                 for(int i = 0; i < values.length; i++) {
-                    try{
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            try {
-                                values[i] = AccessController.doPrivileged(new PrivilegedClassForName(parameterTypeNames[i], true, loader));
-                            } catch (PrivilegedActionException exception) {
-                                throw ValidationException.classNotFoundWhileConvertingClassNames(parameterTypeNames[i], exception.getException());
-                            }
-                        } else {
-                            values[i] = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(parameterTypeNames[i], true, loader);
-                        }
-                    } catch (ClassNotFoundException exc){
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, exc);
-                    }
-                }
+                    final String parameterTypeName = parameterTypeNames[i];
+                    values[i] = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                            () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(parameterTypeName, true, loader),
+                            (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, ex)
+                    );
+                 }
                 this.parameterTypes = values;
             }
         }
@@ -81,7 +69,7 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
     }
     @Override
     protected void initializeMethod() throws DescriptorException {
-        Class tempClass;
+        Class<?> tempClass;
         if (this.getFactory() != null) {
             tempClass = this.getFactory().getClass();
         } else if (this.getFactoryClass() == null) {
@@ -90,7 +78,7 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
             tempClass = this.getFactoryClass();
         }
         if(this.parameterTypes == null) {
-            this.setMethod(this.buildMethod(tempClass, this.getMethodName(), new Class[0]));
+            this.setMethod(this.buildMethod(tempClass, this.getMethodName(), new Class<?>[0]));
         } else {
             this.setMethod(this.buildMethod(tempClass, this.getMethodName(), this.parameterTypes));
         }
@@ -102,30 +90,20 @@ public class MultiArgInstantiationPolicy extends InstantiationPolicy {
      */
     @Override
     protected Object buildNewInstanceUsingFactory() throws DescriptorException {
-        try {
-            // If the method is static, the first argument is ignored and can be null
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod(), getFactory(), this.defaultValues));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), throwableException);
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(getMethod(), getFactory(), this.defaultValues),
+                (ex) -> {
+                    if (ex instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), ex);
+                    } else if (ex instanceof InvocationTargetException) {
+                        return DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), ex);
+                    } else if (ex instanceof NullPointerException) {
+                        return DescriptorException.nullPointerWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), ex);
                     } else {
-                        throw DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), throwableException);
+                        return new RuntimeException("Unexpected exception from MultiArgInstantiationPolicy.buildNewInstanceUsingFactory()", ex);
                     }
                 }
-            } else {
-                return PrivilegedAccessHelper.invokeMethod(getMethod(), getFactory(), this.defaultValues);
-            }
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), exception);
-        } catch (NullPointerException exception) {
-            // Some JVMs will throw a NULL pointer exception here
-            throw DescriptorException.nullPointerWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), exception);
-        }
+        );
     }
 
 }

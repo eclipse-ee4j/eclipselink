@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,7 +79,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
 
             Map<String, Object> props = new HashMap<>();
             props.put(JAXBContextProperties.BEAN_VALIDATION_FACETS, true);
-            jakarta.xml.bind.JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[] {Employee.class}, props);
+            jakarta.xml.bind.JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[] {Employee.class}, props);
 
             String generatorSchemaWithFacetsPath = Thread.currentThread().getContextClassLoader().getResource(GENERATOR_SCHEMA_WITH_FACETS).getPath();
             GENERATOR_SCHEMA = generatorSchemaWithFacetsPath.substring(0, generatorSchemaWithFacetsPath.lastIndexOf('/') + 1) + GENERATOR_SCHEMA_SUFFIX;
@@ -105,7 +105,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
      */
     public void testCustomAnnotations() throws Exception {
         JAXBMarshaller marshaller = (JAXBMarshaller) JAXBContextFactory.createContext(new
-                Class[]{CustomAnnotatedEmployee.class}, null).createMarshaller();
+                Class<?>[]{CustomAnnotatedEmployee.class}, null).createMarshaller();
         CustomAnnotatedEmployee employee = new CustomAnnotatedEmployee().withId(0xCAFEBABE);
 
         try {
@@ -130,7 +130,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
      */
     public void testMethodAnnotations() throws Exception {
         JAXBMarshaller marshaller = (JAXBMarshaller) JAXBContextFactory.createContext(new
-                Class[]{MethodAnnotatedEmployee.class}, null).createMarshaller();
+                Class<?>[]{MethodAnnotatedEmployee.class}, null).createMarshaller();
         MethodAnnotatedEmployee employee = new MethodAnnotatedEmployee().withId(null);
 
         try {
@@ -154,7 +154,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
      */
     public void testInheritedAnnotations() throws Exception {
         JAXBMarshaller marshaller = (JAXBMarshaller) JAXBContextFactory.createContext(new
-                Class[]{InheritanceAnnotatedEmployee.class}, null).createMarshaller();
+                Class<?>[]{InheritanceAnnotatedEmployee.class}, null).createMarshaller();
 
         InheritanceAnnotatedEmployee employee = (InheritanceAnnotatedEmployee) new InheritanceAnnotatedEmployee()
                 .withId(null);
@@ -180,7 +180,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
      * methods but have some on constructors.
      */
     public void testConstructorAnnotations() throws Exception {
-        JAXBContext context = (JAXBContext)JAXBContextFactory.createContext(new Class[]{ConstructorAnnotatedEmployee.class}, null);
+        JAXBContext context = (JAXBContext)JAXBContextFactory.createContext(new Class<?>[]{ConstructorAnnotatedEmployee.class}, null);
         JAXBMarshaller marshaller = context.createMarshaller();
 
         ConstructorAnnotatedEmployee employee = new ConstructorAnnotatedEmployee(null);
@@ -211,7 +211,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
      */
     public void testNoOptimisationOption() throws Exception {
         JAXBMarshaller marshaller = (JAXBMarshaller) JAXBContextFactory.createContext(
-                new Class[]{ NonConstrainedClass.class },
+                new Class<?>[]{ NonConstrainedClass.class },
                 new HashMap<String, Object>(){{
                     put(JAXBContextProperties.BEAN_VALIDATION_NO_OPTIMISATION, true);
                     put(JAXBContextProperties.BEAN_VALIDATION_FACTORY, new CustomValidatorFactory());
@@ -378,8 +378,10 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
 
         }
 
+        @Override
         public ClockProvider getClockProvider() {
             return new ClockProvider() {
+                @Override
                 public Clock getClock() {
                     return Clock.systemUTC();
                 }

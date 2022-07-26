@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.jaxb.casesensitivity.JAXBCaseInsensitivityTestCase;
 import org.eclipse.persistence.testing.jaxb.collections.CollectionsTestSuite;
+import org.eclipse.persistence.testing.jaxb.converter.ConverterTestSuite;
 import org.eclipse.persistence.testing.jaxb.defaultvalue.DefaultValueTestSuite;
 import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeNSTestCases;
 import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeNoWrapperTestCases;
@@ -91,6 +92,7 @@ public class JAXBTestSuite4 {
         suite.addTestSuite(OtherRootTestCases.class);
         suite.addTest(TypeVariableTestSuite.suite());
         suite.addTestSuite(JAXBCaseInsensitivityTestCase.class);
+        suite.addTest(ConverterTestSuite.suite());
 
         return suite;
     }

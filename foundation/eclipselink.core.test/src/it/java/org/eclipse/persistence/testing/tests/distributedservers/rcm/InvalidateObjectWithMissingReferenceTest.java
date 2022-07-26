@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,10 +44,11 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
     public InvalidateObjectWithMissingReferenceTest() {
         super();
         setName("InvalidateObjectWithMissingReferenceTest");
-        cacheSyncConfigValues.put(Employee.class, new Integer(ClassDescriptor.SEND_OBJECT_CHANGES));
-        cacheSyncConfigValues.put(Address.class, new Integer(ClassDescriptor.DO_NOT_SEND_CHANGES));
+        cacheSyncConfigValues.put(Employee.class, ClassDescriptor.SEND_OBJECT_CHANGES);
+        cacheSyncConfigValues.put(Address.class, ClassDescriptor.DO_NOT_SEND_CHANGES);
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Enumeration enumtr = DistributedServersModel.getDistributedServers().elements();
@@ -56,26 +57,27 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
         }
         Enumeration keys = oldCacheSyncConfigValues.keys();
         while (keys.hasMoreElements()) {
-            Class keyClass = (Class)keys.nextElement();
+            Class<?> keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
-            int newCacheSyncType = ((Integer)oldCacheSyncConfigValues.get(keyClass)).intValue();
+            int newCacheSyncType = (Integer) oldCacheSyncConfigValues.get(keyClass);
             descriptor.setCacheSynchronizationType(newCacheSyncType);
         }
     }
 
+    @Override
     public void setup() {
         oldCacheSyncConfigValues = new Hashtable();
         Enumeration keys = cacheSyncConfigValues.keys();
         while (keys.hasMoreElements()) {
-            Class keyClass = (Class)keys.nextElement();
+            Class<?> keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
 
             if (descriptor != null) {
                 int cacheSyncType = descriptor.getCacheSynchronizationType();
                 Object newCacheSyncType = cacheSyncConfigValues.get(keyClass);
                 if (newCacheSyncType != null) {
-                    oldCacheSyncConfigValues.put(keyClass, new Integer(cacheSyncType));
-                    descriptor.setCacheSynchronizationType(((Integer)newCacheSyncType).intValue());
+                    oldCacheSyncConfigValues.put(keyClass, cacheSyncType);
+                    descriptor.setCacheSynchronizationType((Integer) newCacheSyncType);
                 }
             }
         }
@@ -90,6 +92,7 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
     }
 
 
+    @Override
     protected void test() {
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -117,6 +120,7 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
     }
 
 
+    @Override
     protected void verify() {
         Employee remoteEmployee = (Employee)getObjectFromDistributedCache(this.originalObject);
         if ((remoteEmployee != null) && (remoteEmployee.getAddress() == null)) {

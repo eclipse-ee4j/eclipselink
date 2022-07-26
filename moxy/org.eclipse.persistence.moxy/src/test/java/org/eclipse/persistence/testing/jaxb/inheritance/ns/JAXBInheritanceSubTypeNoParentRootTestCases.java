@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class JAXBInheritanceSubTypeNoParentRootTestCases extends JAXBWithJSONTestCases {
     public JAXBInheritanceSubTypeNoParentRootTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {SubTypeWithRootElementNoParentRoot.class});
+        setClasses(new Class<?>[] {SubTypeWithRootElementNoParentRoot.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/ns/subTypeNoParentRoot.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/ns/subTypeNoParentRoot.json");
 
@@ -38,6 +38,7 @@ public class JAXBInheritanceSubTypeNoParentRootTestCases extends JAXBWithJSONTes
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    @Override
     public JAXBMarshaller getJSONMarshaller() throws Exception{
         Map<String, String> namespaces= new HashMap<String, String>();
         namespaces.put("rootNamespace","ns0");
@@ -50,6 +51,7 @@ public class JAXBInheritanceSubTypeNoParentRootTestCases extends JAXBWithJSONTes
         return jsonMarshaller;
     }
 
+    @Override
     public Object getControlObject() {
         SubTypeWithRootElementNoParentRoot subType = new SubTypeWithRootElementNoParentRoot();
         return subType;

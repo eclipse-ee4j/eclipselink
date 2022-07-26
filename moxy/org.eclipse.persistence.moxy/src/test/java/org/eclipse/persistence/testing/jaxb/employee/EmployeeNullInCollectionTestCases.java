@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,16 +46,18 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee_B.class;
         setClasses(classes);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.TRUE);
     }
 
+    @Override
     public void testRoundTrip(){
 
     }
 
+    @Override
     protected Object getControlObject() {
         ArrayList responsibilities = new ArrayList();
         responsibilities.add(CONTROL_RESPONSIBILITY1);
@@ -82,6 +84,7 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
         return elem;
     }
 
+    @Override
     public void testObjectToXMLStreamWriter() throws Exception {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
@@ -99,7 +102,8 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
         objectToXMLDocumentTest(testDocument);
     }
 
-    public Class getUnmarshalClass(){
+    @Override
+    public Class<?> getUnmarshalClass(){
     return Employee_B.class;
     }
     /*
@@ -189,6 +193,7 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
         }
     }
     */
+    @Override
     public void testUnmarshallerHandler() throws Exception {
         //Not Applicable.
     }

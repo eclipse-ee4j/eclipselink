@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      * INTERNAL:
      * Return a new exception.
      */
-    public EclipseLinkException() {
+    protected EclipseLinkException() {
         this("");
     }
 
@@ -50,7 +50,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      * INTERNAL:
      * EclipseLink exception should only be thrown by EclipseLink.
      */
-    public EclipseLinkException(String theMessage) {
+    protected EclipseLinkException(String theMessage) {
         super(theMessage);
         this.indentationString = "";
         hasBeenLogged = false;
@@ -60,7 +60,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      * INTERNAL:
      * EclipseLink exception should only be thrown by EclipseLink.
      */
-    public EclipseLinkException(String message, Throwable internalException) {
+    protected EclipseLinkException(String message, Throwable internalException) {
         this(message);
         setInternalException(internalException);
     }
@@ -242,7 +242,7 @@ public abstract class EclipseLinkException extends RuntimeException {
      * in the stack trace or the exception message of EclipseLinkExceptions
      */
     public static void setShouldPrintInternalException(boolean printException) {
-        shouldPrintInternalException = Boolean.valueOf(printException);
+        shouldPrintInternalException = printException;
     }
 
     /**
@@ -255,7 +255,7 @@ public abstract class EclipseLinkException extends RuntimeException {
         if (shouldPrintInternalException == null) {
             shouldPrintInternalException = Boolean.FALSE;
         }
-        return shouldPrintInternalException.booleanValue();
+        return shouldPrintInternalException;
     }
 
     /**

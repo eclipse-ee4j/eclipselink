@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +31,7 @@ import static java.lang.Integer.MIN_VALUE;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -97,10 +99,6 @@ import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR;
 import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_11_SCHEMA;
@@ -355,9 +353,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 @Override
                 public Object getAttributeValueFromObject(Object object) {
                     ClassDescriptor descriptor = (ClassDescriptor) object;
-                    Vector associations = descriptor.getMultipleTableForeignKeyAssociations();
+                    List<Association> associations = descriptor.getMultipleTableForeignKeyAssociations();
                     for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association) associations.get(index);
+                        Association association = associations.get(index);
                         String targetPrimaryKeyFieldName = (String) association.getKey();
                         association.setKey(new DatabaseField((String) association.getValue()));
                         association.setValue(new DatabaseField(targetPrimaryKeyFieldName));
@@ -367,9 +365,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     ClassDescriptor descriptor = (ClassDescriptor) object;
-                    Vector associations = (Vector) value;
+                    List<Association> associations = (List<Association>) value;
                     for (int index = 0; index < associations.size(); index++) {
-                        Association association = (Association) associations.get(index);
+                        Association association = associations.get(index);
                         association.setKey(((DatabaseField) association.getKey()).getQualifiedName());
                         association.setValue(((DatabaseField) association.getValue()).getQualifiedName());
                     }
@@ -411,9 +409,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("inner-join", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("outer-join", Integer.valueOf(ForeignReferenceMapping.OUTER_JOIN));
-        joinFetchConverter.addConversionValue("none", Integer.valueOf(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("inner-join", ForeignReferenceMapping.INNER_JOIN);
+        joinFetchConverter.addConversionValue("outer-join", ForeignReferenceMapping.OUTER_JOIN);
+        joinFetchConverter.addConversionValue("none", ForeignReferenceMapping.NONE);
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -452,9 +450,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("inner-join", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("outer-join", Integer.valueOf(ForeignReferenceMapping.OUTER_JOIN));
-        joinFetchConverter.addConversionValue("none", Integer.valueOf(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("inner-join", ForeignReferenceMapping.INNER_JOIN);
+        joinFetchConverter.addConversionValue("outer-join", ForeignReferenceMapping.OUTER_JOIN);
+        joinFetchConverter.addConversionValue("none", ForeignReferenceMapping.NONE);
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -470,9 +468,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("inner-join", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("outer-join", Integer.valueOf(ForeignReferenceMapping.OUTER_JOIN));
-        joinFetchConverter.addConversionValue("none", Integer.valueOf(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("inner-join", ForeignReferenceMapping.INNER_JOIN);
+        joinFetchConverter.addConversionValue("outer-join", ForeignReferenceMapping.OUTER_JOIN);
+        joinFetchConverter.addConversionValue("none", ForeignReferenceMapping.NONE);
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -488,9 +486,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("inner-join", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("outer-join", Integer.valueOf(ForeignReferenceMapping.OUTER_JOIN));
-        joinFetchConverter.addConversionValue("none", Integer.valueOf(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("inner-join", ForeignReferenceMapping.INNER_JOIN);
+        joinFetchConverter.addConversionValue("outer-join", ForeignReferenceMapping.OUTER_JOIN);
+        joinFetchConverter.addConversionValue("none", ForeignReferenceMapping.NONE);
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -522,9 +520,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         joinFetchMapping.setAttributeName("joinFetch");
         joinFetchMapping.setXPath(getPrimaryNamespaceXPath() + "join-fetch/text()");
         ObjectTypeConverter joinFetchConverter = new ObjectTypeConverter();
-        joinFetchConverter.addConversionValue("inner-join", Integer.valueOf(ForeignReferenceMapping.INNER_JOIN));
-        joinFetchConverter.addConversionValue("outer-join", Integer.valueOf(ForeignReferenceMapping.OUTER_JOIN));
-        joinFetchConverter.addConversionValue("none", Integer.valueOf(ForeignReferenceMapping.NONE));
+        joinFetchConverter.addConversionValue("inner-join", ForeignReferenceMapping.INNER_JOIN);
+        joinFetchConverter.addConversionValue("outer-join", ForeignReferenceMapping.OUTER_JOIN);
+        joinFetchConverter.addConversionValue("none", ForeignReferenceMapping.NONE);
         joinFetchMapping.setConverter(joinFetchConverter);
         joinFetchMapping.setNullValue(ForeignReferenceMapping.NONE);
         descriptor.addMapping(joinFetchMapping);
@@ -616,11 +614,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         sourceToTargetKeyFieldAssociationsMapping.setAttributeAccessor(new AttributeAccessor() {
                 @Override
                 public Object getAttributeValueFromObject(Object object) {
-                    Map sourceToTargetKeyFields = ((XMLObjectReferenceMapping) object).getSourceToTargetKeyFieldAssociations();
-                    List associations = new ArrayList(sourceToTargetKeyFields.size());
-                    Iterator iterator = sourceToTargetKeyFields.entrySet().iterator();
+                    Map<XMLField, XMLField> sourceToTargetKeyFields = ((XMLObjectReferenceMapping) object).getSourceToTargetKeyFieldAssociations();
+                    List<Association> associations = new ArrayList<>(sourceToTargetKeyFields.size());
+                    Iterator<Map.Entry<XMLField, XMLField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
                     while (iterator.hasNext()) {
-                        Map.Entry entry = (Map.Entry)iterator.next();
+                        Map.Entry<XMLField, XMLField> entry = iterator.next();
                         associations.add(new Association(entry.getKey(), entry.getValue()));
                     }
                     return associations;
@@ -629,11 +627,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 @Override
                 public void setAttributeValueInObject(Object object, Object value) {
                     XMLObjectReferenceMapping mapping = (XMLObjectReferenceMapping) object;
-                    List associations = (List)value;
-                    mapping.setSourceToTargetKeyFieldAssociations(new HashMap(associations.size() + 1));
-                    Iterator iterator = associations.iterator();
+                    List<Association> associations = (List<Association>)value;
+                    mapping.setSourceToTargetKeyFieldAssociations(new HashMap<>(associations.size() + 1));
+                    Iterator<Association> iterator = associations.iterator();
                     while (iterator.hasNext()) {
-                        Association association = (Association)iterator.next();
+                        Association association = iterator.next();
                         mapping.getSourceToTargetKeyFieldAssociations().put(association.getKey(), association.getValue());
                     }
                 }
@@ -711,8 +709,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         XMLDirectMapping unitOfWorkCacheIsolationLevelMapping = (XMLDirectMapping)descriptor.getMappingForAttributeName("unitOfWorkCacheIsolationLevel");
         ObjectTypeConverter unitOfWorkCacheIsolationLevelConverter = (ObjectTypeConverter)unitOfWorkCacheIsolationLevelMapping.getConverter();
-        unitOfWorkCacheIsolationLevelConverter.addConversionValue("default", Integer.valueOf(ClassDescriptor.UNDEFINED_ISOLATATION));
-        unitOfWorkCacheIsolationLevelMapping.setNullValue(Integer.valueOf(ClassDescriptor.UNDEFINED_ISOLATATION));
+        unitOfWorkCacheIsolationLevelConverter.addConversionValue("default", ClassDescriptor.UNDEFINED_ISOLATATION);
+        unitOfWorkCacheIsolationLevelMapping.setNullValue(ClassDescriptor.UNDEFINED_ISOLATATION);
 
         return descriptor;
     }
@@ -735,7 +733,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
     /**
      * <p>
      * <b>Purpose</b>: helper classes - represent stored procedure arguments in XML
-     * <p>
+     *
      *
      * @author Kyle Chen
      * @since 11
@@ -744,10 +742,10 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
      *           be nested inner classes of ObjectPersistenceRuntimeXMLProject_11_1_1
      *           so that they don't 'leak' out into the runtime
      */
-    class StoredProcedureArgument {
+    static class StoredProcedureArgument {
           String argumentName;
           String argumentFieldName;
-          Class argumentType;
+          Class<?> argumentType;
           String argumentTypeName;
           int argumentSQLType = NULL_SQL_TYPE;
           String argumentSqlTypeName;
@@ -759,8 +757,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           StoredProcedureArgument(DatabaseField dbfield) {
               this.setDatabaseField(dbfield);
           }
-          Integer getDirection() {
-              return IN;
+          ParameterType getDirection() {
+              return ParameterType.IN;
           }
           DatabaseField getDatabaseField() {
               DatabaseField dbfield = new DatabaseField(argumentFieldName == null ? "" : argumentFieldName);
@@ -811,7 +809,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         }
     }
 
-    class StoredProcedureInOutArgument extends StoredProcedureArgument {
+    static class StoredProcedureInOutArgument extends StoredProcedureArgument {
           String outputArgumentName;
           StoredProcedureInOutArgument() {
               super();
@@ -820,12 +818,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
               super(dbfield);
           }
           @Override
-        Integer getDirection() {
-              return INOUT;
+          ParameterType getDirection() {
+              return ParameterType.INOUT;
           }
     }
 
-    class StoredProcedureOutArgument extends StoredProcedureArgument {
+    static class StoredProcedureOutArgument extends StoredProcedureArgument {
         StoredProcedureOutArgument() {
             super();
         }
@@ -833,12 +831,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
             super(dbfield);
         }
         @Override
-        Integer getDirection() {
-            return OUT;
+        ParameterType getDirection() {
+            return ParameterType.OUT;
         }
     }
 
-    class StoredProcedureOutCursorArgument extends StoredProcedureOutArgument {
+    static class StoredProcedureOutCursorArgument extends StoredProcedureOutArgument {
         StoredProcedureOutCursorArgument() {
             super();
         }
@@ -846,8 +844,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
             super(dbfield);
         }
         @Override
-        Integer getDirection() {
-            return OUT_CURSOR;
+        ParameterType getDirection() {
+            return ParameterType.OUT_CURSOR;
         }
     }
 
@@ -860,28 +858,26 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
     // Made static for performance reasons.
     static class StoredProcedureArgumentInstantiationPolicy extends InstantiationPolicy {
-        ObjectPersistenceRuntimeXMLProject_11_1_1 outer;
         StoredProcedureArgumentType argType;
-        StoredProcedureArgumentInstantiationPolicy(
-            ObjectPersistenceRuntimeXMLProject_11_1_1 outer, StoredProcedureArgumentType argType) {
-            this.outer = outer;
+        StoredProcedureArgumentInstantiationPolicy(StoredProcedureArgumentType argType) {
             this.argType = argType;
         }
+
         @Override
         public Object buildNewInstance() throws DescriptorException {
             Object arg = null;
             switch (argType) {
                 case STORED_PROCEDURE_ARG:
-                    arg = outer.new StoredProcedureArgument();
+                    arg = new StoredProcedureArgument();
                     break;
                 case STORED_PROCEDURE_INOUT_ARG:
-                    arg = outer.new StoredProcedureInOutArgument();
+                    arg = new StoredProcedureInOutArgument();
                     break;
                 case STORED_PROCEDURE_OUT_ARG:
-                    arg = outer.new StoredProcedureOutArgument();
+                    arg = new StoredProcedureOutArgument();
                     break;
                 case STORED_PROCEDURE_OUTCURSOR_ARG:
-                    arg = outer.new StoredProcedureOutCursorArgument();
+                    arg = new StoredProcedureOutCursorArgument();
                     break;
             }
             return arg;
@@ -893,8 +889,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(StoredProcedureArgument.class);
         // need policy 'cause TreeBuilder cannot use default constructor
-        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(this,
-            StoredProcedureArgumentType.STORED_PROCEDURE_ARG));
+        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(StoredProcedureArgumentType.STORED_PROCEDURE_ARG));
         descriptor.descriptorIsAggregate();
 
         descriptor.setDefaultRootElement("argument");
@@ -953,8 +948,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(StoredProcedureInOutArgument.class);
-        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(this,
-            StoredProcedureArgumentType.STORED_PROCEDURE_INOUT_ARG));
+        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(StoredProcedureArgumentType.STORED_PROCEDURE_INOUT_ARG));
         descriptor.getInheritancePolicy().setParentClass(StoredProcedureArgument.class);
 
         //used in case the in databasefield is named different than the out databasefield
@@ -970,8 +964,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(StoredProcedureOutArgument.class);
-        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(this,
-            StoredProcedureArgumentType.STORED_PROCEDURE_OUT_ARG));
+        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(StoredProcedureArgumentType.STORED_PROCEDURE_OUT_ARG));
         descriptor.getInheritancePolicy().setParentClass(StoredProcedureArgument.class);
 
         return descriptor;
@@ -981,36 +974,35 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(StoredProcedureOutCursorArgument.class);
-        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(this,
-            StoredProcedureArgumentType.STORED_PROCEDURE_OUTCURSOR_ARG));
+        descriptor.setInstantiationPolicy(new StoredProcedureArgumentInstantiationPolicy(StoredProcedureArgumentType.STORED_PROCEDURE_OUTCURSOR_ARG));
         descriptor.getInheritancePolicy().setParentClass(StoredProcedureArgument.class);
 
         return descriptor;
     }
 
-    class StoredProcedureArgumentsAccessor extends AttributeAccessor {
+    static class StoredProcedureArgumentsAccessor extends AttributeAccessor {
         StoredProcedureArgumentsAccessor() {
             super();
         }
         @Override
         public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
             StoredProcedureCall spc = (StoredProcedureCall)anObject;
-            List parameterTypes = spc.getParameterTypes();
-            List parameters = spc.getParameters();
-            List procedureArgumentNames = spc.getProcedureArgumentNames();
-            List storedProcedureArguments = new Vector();
+            List<ParameterType> parameterTypes = spc.getParameterTypes();
+            List<?> parameters = spc.getParameters();
+            List<String> procedureArgumentNames = spc.getProcedureArgumentNames();
+            List<StoredProcedureArgument> storedProcedureArguments = new Vector<>();
             for (int i = spc.getFirstParameterIndexForCallString(); i < parameterTypes.size(); i++) {
-                StoredProcedureArgument spa = null;
-                Integer direction = (Integer)parameterTypes.get(i);
+                StoredProcedureArgument spa;
+                ParameterType direction = parameterTypes.get(i);
                 Object argument = parameters.get(i);
-                String argumentName = (String)procedureArgumentNames.get(i);
-                if (direction.equals(IN)) {
+                String argumentName = procedureArgumentNames.get(i);
+                if (direction.equals(ParameterType.IN)) {
                     spa = new StoredProcedureArgument();
                 }
-                else if (direction.equals(OUT)) {
+                else if (direction.equals(ParameterType.OUT)) {
                     spa = new StoredProcedureOutArgument();
                 }
-                else if (direction.equals(INOUT)) {
+                else if (direction.equals(ParameterType.INOUT)) {
                     spa = new StoredProcedureInOutArgument();
                     // outputArgumentName ??
                 }
@@ -1050,13 +1042,13 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
             StoredProcedureCall spc = (StoredProcedureCall)domainObject;
             // vector of parameters/arguments to be added the call
-            Vector procedureArguments = (Vector)attributeValue;
+            List<StoredProcedureArgument> procedureArguments = (Vector<StoredProcedureArgument>)attributeValue;
             for (int i = 0; i < procedureArguments.size(); i++) {
-                StoredProcedureArgument spa = (StoredProcedureArgument)procedureArguments.get(i);
-                Integer direction = spa.getDirection();
+                StoredProcedureArgument spa = procedureArguments.get(i);
+                ParameterType direction = spa.getDirection();
                 DatabaseField dbField = spa.getDatabaseField();
                 spc.getProcedureArgumentNames().add(spa.argumentName);
-                if (direction.equals(IN)) {
+                if (direction.equals(ParameterType.IN)) {
                     if (spa.argumentValue != null) {
                         spc.appendIn(spa.argumentValue);
                     }
@@ -1064,13 +1056,13 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                         spc.appendIn(dbField);
                     }
                 }
-                else if (direction.equals(OUT)) {
+                else if (direction.equals(ParameterType.OUT)) {
                     spc.appendOut(dbField);
                 }
-                else if (direction.equals(OUT_CURSOR)) {
+                else if (direction.equals(ParameterType.OUT_CURSOR)) {
                     spc.appendOutCursor(dbField);
                 }
-                else  if (direction.equals(INOUT)) {
+                else  if (direction.equals(ParameterType.INOUT)) {
                     StoredProcedureInOutArgument spaInOut = (StoredProcedureInOutArgument)spa;
                     DatabaseField outField = new DatabaseField(spaInOut.outputArgumentName);
                     outField.type = dbField.type;
@@ -1122,7 +1114,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         return descriptor;
     }
 
-    class StoredFunctionResultAccessor extends AttributeAccessor {
+    static class StoredFunctionResultAccessor extends AttributeAccessor {
         StoredFunctionResultAccessor() {
             super();
         }
@@ -1145,7 +1137,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
             sfc.getProcedureArgumentNames().set(0, spoa.argumentName);
             sfc.getParameters().set(0, spoa.getDatabaseField());
             // Set argument type.
-            sfc.getParameterTypes().set(0, OUT);
+            sfc.getParameterTypes().set(0, ParameterType.OUT);
         }
     }
 
@@ -1423,8 +1415,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
              // Convert the collection of Strings to an array of Object values (round-trip)
              if(value instanceof Collection) {
                  int i = 0;
-                 Object[] parameters = new Object[((Collection)value).size()];
-                 for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
+                 Object[] parameters = new Object[((Collection<?>)value).size()];
+                 for(Iterator<?> anIterator = ((Collection<?>)value).iterator(); anIterator.hasNext();) {
                         // Lookup the object type via the predefined parameterTypes array and convert based on that type
                         parameters[i] = XMLConversionManager.getDefaultXMLManager().convertObject(//
                                 anIterator.next(), ((IsSetNullPolicy)object).getIsSetParameterTypes()[i++]);
@@ -1458,19 +1450,20 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          }
 
          @Override
+         @SuppressWarnings({"unchecked"})
          public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
              try {
                  // Get the Class of each entry in the collection
                  if(value instanceof Collection) {
-                     Class[] parameterTypes = new Class[((Collection)value).size()];
+                     Class<?>[] parameterTypes = new Class<?>[((Collection<?>)value).size()];
                      int i = 0;
-                     for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
-                         parameterTypes[i++] = Class.forName((String)anIterator.next());
+                     for(Iterator<String> anIterator = ((Collection<String>)value).iterator(); anIterator.hasNext();) {
+                         parameterTypes[i++] = Class.forName(anIterator.next());
                      }
                      ((IsSetNullPolicy)object).setIsSetParameterTypes(parameterTypes);
                  } else {
                      // cast to class array
-                     ((IsSetNullPolicy)object).setIsSetParameterTypes((Class[])value);
+                     ((IsSetNullPolicy)object).setIsSetParameterTypes((Class<?>[])value);
                  }
              } catch (ClassNotFoundException e) {
                  throw new RuntimeException(e);
@@ -1713,24 +1706,24 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          fieldsMapping.setAttributeAccessor(new AttributeAccessor() {
              @Override
             public Object getAttributeValueFromObject(Object object) {
-                 Map fields = ((OracleObjectType) object).getFields();
-                 List associations = new ArrayList(fields.size());
-                 Iterator iterator = fields.entrySet().iterator();
+                 Map<String, DatabaseType> fields = ((OracleObjectType) object).getFields();
+                 List<ObjectTypeFieldAssociation> associations = new ArrayList<>(fields.size());
+                 Iterator<Map.Entry<String, DatabaseType>> iterator = fields.entrySet().iterator();
                  while (iterator.hasNext()) {
-                     Map.Entry entry = (Map.Entry)iterator.next();
-                     associations.add(new ObjectTypeFieldAssociation(entry.getKey().toString(),  wrapType((DatabaseType) entry.getValue())));
+                     Map.Entry<String, DatabaseType> entry = iterator.next();
+                     associations.add(new ObjectTypeFieldAssociation(entry.getKey(),  wrapType(entry.getValue())));
                  }
                  return associations;
              }
              @Override
             public void setAttributeValueInObject(Object object, Object value) {
                  OracleObjectType objectType = (OracleObjectType) object;
-                 List associations = (List) value;
-                 Map fieldMap = new LinkedHashMap<String, DatabaseType>(associations.size() + 1);
-                 Iterator iterator = associations.iterator();
+                 List<ObjectTypeFieldAssociation> associations = (List<ObjectTypeFieldAssociation>) value;
+                 Map<String, DatabaseType> fieldMap = new LinkedHashMap<>(associations.size() + 1);
+                 Iterator<ObjectTypeFieldAssociation> iterator = associations.iterator();
                  while (iterator.hasNext()) {
-                     ObjectTypeFieldAssociation association = (ObjectTypeFieldAssociation)iterator.next();
-                     fieldMap.put(association.getKey(), unwrapType((DatabaseTypeWrapper)association.getValue()));
+                     ObjectTypeFieldAssociation association = iterator.next();
+                     fieldMap.put(association.getKey(), unwrapType(association.getValue()));
                  }
                  objectType.setFields(fieldMap);
              }
@@ -1746,7 +1739,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
       * the value is a DatabaseType.  The value must be wrapped/unwrapped
       * using the wrap/unwrap type methods on the outer class.
       */
-     public class ObjectTypeFieldAssociation implements Map.Entry {
+     public static class ObjectTypeFieldAssociation implements Map.Entry<String, DatabaseTypeWrapper> {
          String key;
          DatabaseTypeWrapper value;
 
@@ -1760,19 +1753,19 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          }
 
         @Override
-        public Object getKey() {
+        public String getKey() {
             return key;
         }
 
         @Override
-        public Object getValue() {
+        public DatabaseTypeWrapper getValue() {
             return value;
         }
 
         @Override
-        public Object setValue(Object arg0) {
-            Object oldValue = this.value;
-            this.value = (DatabaseTypeWrapper) arg0;
+        public DatabaseTypeWrapper setValue(DatabaseTypeWrapper arg0) {
+            DatabaseTypeWrapper oldValue = this.value;
+            this.value = arg0;
             return oldValue;
         }
      }
@@ -1782,7 +1775,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
      protected ClassDescriptor buildObjectTypeFieldAssociationDescriptor() {
          XMLDescriptor descriptor = new XMLDescriptor();
          descriptor.setJavaClass(ObjectTypeFieldAssociation.class);
-         descriptor.setInstantiationPolicy(new ObjectTypeFieldAssociationInstantiationPolicy(this));
+         descriptor.setInstantiationPolicy(new ObjectTypeFieldAssociationInstantiationPolicy());
 
          XMLDirectMapping keyMapping = new XMLDirectMapping();
          keyMapping.setAttributeName("key");
@@ -1804,14 +1797,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
       * enables the default constructor of the inner class to be accessed.
       */
      static class ObjectTypeFieldAssociationInstantiationPolicy extends InstantiationPolicy {
-         ObjectPersistenceRuntimeXMLProject_11_1_1 outer;
-         ObjectTypeFieldAssociationInstantiationPolicy(
-             ObjectPersistenceRuntimeXMLProject_11_1_1 outer) {
-             this.outer = outer;
+         ObjectTypeFieldAssociationInstantiationPolicy() {
          }
          @Override
          public Object buildNewInstance() throws DescriptorException {
-             return outer.new ObjectTypeFieldAssociation();
+             return new ObjectTypeFieldAssociation();
          }
      }
      protected ClassDescriptor buildPLSQLrecordDescriptor() {
@@ -1947,11 +1937,11 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          directionMapping.setAttributeName("direction");
          directionMapping.setXPath(getPrimaryNamespaceXPath() + "direction/text()");
          ObjectTypeConverter directionConverter = new ObjectTypeConverter();
-         directionConverter.addConversionValue("IN", IN);
-         directionConverter.addConversionValue("INOUT", INOUT);
-         directionConverter.addConversionValue("OUT", OUT);
+         directionConverter.addConversionValue("IN", ParameterType.IN);
+         directionConverter.addConversionValue("INOUT", ParameterType.INOUT);
+         directionConverter.addConversionValue("OUT", ParameterType.OUT);
          directionMapping.setConverter(directionConverter);
-         directionMapping.setNullValue(IN);
+         directionMapping.setNullValue(ParameterType.IN);
          descriptor.addMapping(directionMapping);
 
          XMLDirectMapping lengthMapping = new XMLDirectMapping();

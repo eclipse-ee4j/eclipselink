@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,13 +34,14 @@ public class NullValueTest extends AutoVerifyTestCase {
         setDescription("Verify that the appropriate values are put in the object when nulls are encountered on the database");
     }
 
+    @Override
     protected void setup() {
         // save current null values for later restoration
         saveDefaultDefaultNullValues = ConversionManager.getDefaultManager().getDefaultNullValues();
         saveDefaultNullValues = getSession().getLogin().getPlatform().getConversionManager().getDefaultNullValues();
         getSession().getLogin().getPlatform().getConversionManager().setDefaultNullValues(new Hashtable());
         getSession().getLogin().setDefaultNullValue(String.class, "null");
-        getSession().getLogin().setDefaultNullValue(int.class, new Integer(-1));
+        getSession().getLogin().setDefaultNullValue(int.class, -1);
         // Reinit mappings.
         for (DatabaseMapping mapping : getSession().getDescriptor(Address.class).getMappings()) {
             if (mapping.isDirectToFieldMapping()) {
@@ -63,6 +64,7 @@ public class NullValueTest extends AutoVerifyTestCase {
         getSession().executeNonSelectingCall(new SQLCall("update SALARY set SALARY = null where EMP_ID = " + employee.getId()));
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -70,6 +72,7 @@ public class NullValueTest extends AutoVerifyTestCase {
         ConversionManager.getDefaultManager().setDefaultNullValues(saveDefaultDefaultNullValues);
     }
 
+    @Override
     public void test() {
         // force a read from the database
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -77,6 +80,7 @@ public class NullValueTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     protected void verify() {
         if (!employee.getAddress().getCity().equals("null")) {
             throw new TestErrorException("Null value not converted correctly for string.");

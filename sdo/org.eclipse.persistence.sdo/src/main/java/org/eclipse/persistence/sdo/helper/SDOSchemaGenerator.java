@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,7 @@ import org.eclipse.persistence.sessions.Project;
  * @see commonj.sdo.helper.XSDHelper
  */
 public class SDOSchemaGenerator {
-    private Map namespaceToSchemaLocation;
+    private Map<String, String> namespaceToSchemaLocation;
     private SchemaLocationResolver schemaLocationResolver;
     private List allTypes;
     private Schema generatedSchema;
@@ -85,10 +85,10 @@ public class SDOSchemaGenerator {
 
         //Now we have a built schema model
         Project p = new SchemaModelProject();
-        Vector generatedNamespaces = generatedSchema.getNamespaceResolver().getNamespaces();
+        Vector<Namespace> generatedNamespaces = generatedSchema.getNamespaceResolver().getNamespaces();
         XMLDescriptor desc = ((XMLDescriptor)p.getDescriptor(Schema.class));
         for (int i = 0; i < generatedNamespaces.size(); i++) {
-            Namespace next = (Namespace)generatedNamespaces.get(i);
+            Namespace next = generatedNamespaces.get(i);
             desc.getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
 
             if (next.getNamespaceURI().equals(SDOConstants.SDO_URL) || next.getNamespaceURI().equals(SDOConstants.SDOXML_URL) || next.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) {
@@ -156,7 +156,7 @@ public class SDOSchemaGenerator {
      * used for getting the value of the schemaLocation attribute of generated imports and includes
      * @return String The generated XSD.
     */
-    public String generate(List types, Map aNamespaceToSchemaLocation) {
+    public String generate(List types, Map<String, String> aNamespaceToSchemaLocation) {
         if ((types == null) || (types.size() == 0)) {
             throw new IllegalArgumentException("No Schema was generated from null or empty list of types.");
         }
@@ -175,9 +175,9 @@ public class SDOSchemaGenerator {
 
         //Now we have a built schema model
         Project p = new SchemaModelProject();
-        Vector namespaces = generatedSchema.getNamespaceResolver().getNamespaces();
+        Vector<Namespace> namespaces = generatedSchema.getNamespaceResolver().getNamespaces();
         for (int i = 0; i < namespaces.size(); i++) {
-            Namespace next = (Namespace)namespaces.get(i);
+            Namespace next = namespaces.get(i);
             ((XMLDescriptor)p.getDescriptor(Schema.class)).getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
         }
 
@@ -277,10 +277,10 @@ public class SDOSchemaGenerator {
         }
 
         Object value = sdoType.get(SDOConstants.JAVA_CLASS_PROPERTY);
-        if ((value != null) && value instanceof String) {
+        if (value instanceof String) {
             String sdoJavaPrefix = getPrefixForURI(SDOConstants.SDOJAVA_URL);
             QName qname = new QName(SDOConstants.SDOJAVA_URL, SDOConstants.SDOJAVA_INSTANCECLASS, sdoJavaPrefix);
-            simpleType.getAttributesMap().put(qname, value);
+            simpleType.getAttributesMap().put(qname, (String) value);
         }
 
         SDOType baseType = null;
@@ -376,7 +376,7 @@ public class SDOSchemaGenerator {
     }
 
     private void buildElementsAndAttributes(Object owner, Type type) {
-        List properties = ((SDOType) type).getDeclaredProperties();
+        List properties = type.getDeclaredProperties();
         NestedParticle nestedParticle = null;
 
         if ((properties == null) || (properties.size() == 0)) {
@@ -572,7 +572,7 @@ public class SDOSchemaGenerator {
         if (sdoProperty.isDefaultSet()) {
             if (!sdoProperty.isMany() && sdoProperty.getType().isDataType()) {
                 XMLConversionManager xmlConversionManager = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
-                elem.setDefaultValue((String)xmlConversionManager.convertObject(sdoProperty.getDefault(), ClassConstants.STRING, sdoProperty.getXsdType()));
+                elem.setDefaultValue(xmlConversionManager.convertObject(sdoProperty.getDefault(), ClassConstants.STRING, sdoProperty.getXsdType()));
             }
 
         }
@@ -597,7 +597,7 @@ public class SDOSchemaGenerator {
         Type schemaSDOType = null;
         QName schemaType = sdoProperty.getXsdType();
         if (schemaType != null) {
-            schemaSDOType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(schemaType.getNamespaceURI(), schemaType.getLocalPart());
+            schemaSDOType = aHelperContext.getTypeHelper().getType(schemaType.getNamespaceURI(), schemaType.getLocalPart());
 
             if ((sdoProperty.getType() == SDOConstants.SDO_STRING) && (schemaSDOType != SDOConstants.SDO_STRING)) {
                 String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
@@ -676,9 +676,9 @@ public class SDOSchemaGenerator {
 
         // process default values that are defined in the schema (not via primitive numeric Object wrapped pseudo defaults)
         if (((SDOProperty)property).isDefaultSet()) {
-            if (!property.isMany() && ((SDOType)property.getType()).isDataType()) {
+            if (!property.isMany() && property.getType().isDataType()) {
                 XMLConversionManager xmlConversionManager = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
-                attr.setDefaultValue((String)xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
+                attr.setDefaultValue(xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
             }
         }
         addSimpleComponentAnnotations(attr, property, false);
@@ -687,7 +687,7 @@ public class SDOSchemaGenerator {
         QName schemaType = ((SDOProperty)property).getXsdType();
 
         if (schemaType != null) {
-            Type schemaSDOType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(schemaType.getNamespaceURI(), schemaType.getLocalPart());
+            Type schemaSDOType = aHelperContext.getTypeHelper().getType(schemaType.getNamespaceURI(), schemaType.getLocalPart());
 
             if ((property.getType() == SDOConstants.SDO_STRING) && (schemaSDOType != SDOConstants.SDO_STRING)) {
                 String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
@@ -696,7 +696,7 @@ public class SDOSchemaGenerator {
             }
         }
 
-        if (!((SDOType)property.getType()).isDataType()) {
+        if (!property.getType().isDataType()) {
             schemaType = SDOConstants.ANY_URI_QNAME;
         }
 
@@ -747,7 +747,7 @@ public class SDOSchemaGenerator {
             boolean alreadyGenerated = allTypes.contains(targetType);
             String schemaLocation = null;
             if (namespaceToSchemaLocation != null) {
-                schemaLocation = (String)namespaceToSchemaLocation.get(targetType.getURI());
+                schemaLocation = namespaceToSchemaLocation.get(targetType.getURI());
 
                 if (targetType.getURI().equals(generatedSchema.getTargetNamespace())) {
                     if (!alreadyGenerated) {
@@ -807,7 +807,7 @@ public class SDOSchemaGenerator {
         }
         String lowerName = Character.toLowerCase(name.charAt(0)) + name.substring(1, name.length());
 
-        Object exists = schema.getTopLevelElements().get(lowerName);
+        Element exists = schema.getTopLevelElements().get(lowerName);
         if (exists != null) {
             elem.setName(name);
         } else {

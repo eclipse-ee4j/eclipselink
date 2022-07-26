@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class SimplePojoProjectXMLClientTest extends TestCase {
         setName("SimplePojoProjectXMLClientTest");
     }
 
+    @Override
     public void setup() throws TestErrorException {
         simplePojoProjectXMLClient = new SimplePojoProjectXMLClientTest();
 
@@ -45,6 +46,7 @@ public class SimplePojoProjectXMLClientTest extends TestCase {
         }
     }
 
+    @Override
     public void test() throws TestErrorException {
         try {
             Vector objects = session.readAllObjects(org.eclipse.persistence.testing.tests.simplepojoclient.PojoEmployee.class);

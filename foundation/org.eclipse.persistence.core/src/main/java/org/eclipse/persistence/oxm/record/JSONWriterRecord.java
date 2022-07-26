@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -127,10 +127,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
     /**
      * Handle marshal of an empty collection.
-     * @param xPathFragment
-     * @param namespaceResolver
      * @param openGrouping if grouping elements should be marshalled for empty collections
-     * @return
      */
     @Override
     public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
@@ -216,7 +213,6 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
     /**
      * INTERNAL:
-     * @throws IOException
      */
     protected void startCallback() throws IOException{
        if(callbackName != null){
@@ -489,7 +485,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
          } else if(value.getClass() == String.class){
              //if schemaType is set and it's a numeric or boolean type don't treat as a string
              if(schemaType != null && isNumericOrBooleanType(schemaType)){
-                 String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+                 String convertedValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
                  characters(convertedValue, false, isAttribute);
              }else if(isCDATA){
                  cdata((String)value);
@@ -498,8 +494,8 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
              }
         }else{
             ConversionManager conversionManager = getConversionManager();
-            String convertedValue = (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
-            Class theClass = conversionManager.javaType(schemaType);
+            String convertedValue = conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
+            Class<Object> theClass = conversionManager.javaType(schemaType);
 
             if(schemaType == null || theClass == null){
                 if(value.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(value.getClass())){
@@ -744,7 +740,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         }
         CoreConversionManager xmlConversionManager = getSession().getDatasourcePlatform().getConversionManager();
 
-        return (String) xmlConversionManager.convertObject(qName, String.class);
+        return xmlConversionManager.convertObject(qName, String.class);
     }
 
     /**
@@ -993,7 +989,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         }
     }
 
-    protected static interface Output {
+    protected interface Output {
 
         void flush() throws IOException;
 

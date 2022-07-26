@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpars.test.model.employee.LargeProject;
 import org.eclipse.persistence.jpars.test.model.employee.Office;
 import org.eclipse.persistence.jpars.test.model.employee.SmallProject;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
-import org.eclipse.persistence.jpars.test.server.noversion.ServerEmployeeTest;
+import org.eclipse.persistence.jpars.test.server.ServerEmployeeTestBase;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -39,19 +39,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * ServerEmployeeTest from JPARS 1.0 adapted for version 2.0.
- * {@see ServerEmployeeTest}
+ * ServerEmployeeTestBase from JPARS 1.0 adapted for version 2.0.
+ * {@link ServerEmployeeTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerEmployeeV2Test extends ServerEmployeeTest {
+public class ServerEmployeeV2Test extends ServerEmployeeTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {
         initContext("jpars_employee-static", "v2.0");
     }
 
+    @Override
     @After
     public void cleanup() throws URISyntaxException {
         RestUtils.restUpdateQuery(context, "Employee.deleteAll", null, null, MediaType.APPLICATION_JSON_TYPE);

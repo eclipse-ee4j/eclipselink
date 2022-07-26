@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class NoTextMappingErrorTests extends junit.framework.TestCase {
     private final static String ROOT_INHERITANCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/notext/root-inheritance.xml";
     private final static String ROOT_INHERITANCE_NOTEXT = "org/eclipse/persistence/testing/jaxb/jaxbcontext/notext/root-inheritance-notext.xml";
 
+    @Override
     public String getName() {
         return "No Text Mapping Error Tests: " + super.getName();
     }
@@ -96,12 +97,12 @@ public class NoTextMappingErrorTests extends junit.framework.TestCase {
     // ============================================================================================
 
     private void positiveTest(String bindings) throws Exception {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Root.class }, getBindings(bindings));
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { Root.class }, getBindings(bindings));
     }
 
     private void negativeTest(String bindings) throws Exception {
         try {
-            JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Root.class }, getBindings(bindings));
+            JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { Root.class }, getBindings(bindings));
         } catch (JAXBException e) {
             if (e.getLinkedException() != null && e.getLinkedException() instanceof org.eclipse.persistence.exceptions.JAXBException) {
                 org.eclipse.persistence.exceptions.JAXBException je = (org.eclipse.persistence.exceptions.JAXBException) e.getLinkedException();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,8 +55,8 @@ public class JavaEntity extends JavaManagedType
      *
      * @param provider The provider of JPA managed types
      * @param type The {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType} wrapping the Java type
-     * @param mappingBuilder The builder that is responsible to create the {@link org.eclipse.
-     * persistence.jpa.jpql.spi.IMapping IMapping} wrapping a persistent attribute or property
+     * @param mappingBuilder The builder that is responsible to create the
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping} wrapping a persistent attribute or property
      */
     public JavaEntity(IManagedTypeProvider provider,
                       JavaType type,
@@ -65,9 +65,7 @@ public class JavaEntity extends JavaManagedType
         super(provider, type, mappingBuilder);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void accept(IManagedTypeVisitor visitor) {
         visitor.visit(this);
     }
@@ -87,7 +85,7 @@ public class JavaEntity extends JavaManagedType
 
     protected Map<String, IQuery> buildQueries() {
 
-        Map<String, IQuery> queries = new HashMap<String, IQuery>();
+        Map<String, IQuery> queries = new HashMap<>();
 
         try {
             Class<?> type = getType().getType();
@@ -132,9 +130,7 @@ public class JavaEntity extends JavaManagedType
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String getName() {
         if (name == null) {
             name = buildName();
@@ -142,9 +138,7 @@ public class JavaEntity extends JavaManagedType
         return name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IQuery getNamedQuery(String queryName) {
         initializeQueries();
         return queries.get(queryName);
@@ -165,9 +159,6 @@ public class JavaEntity extends JavaManagedType
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return getName();

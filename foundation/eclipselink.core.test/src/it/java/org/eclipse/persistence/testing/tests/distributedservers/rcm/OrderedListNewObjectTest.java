@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,10 +27,11 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
 
     public OrderedListNewObjectTest(){
         super();
-        cacheSyncConfigValues.put(ListHolder.class, new Integer(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
-        cacheSyncConfigValues.put(ListItem.class, new Integer(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
+        cacheSyncConfigValues.put(ListHolder.class, ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
+        cacheSyncConfigValues.put(ListItem.class, ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
     }
 
+    @Override
     public void setup(){
         super.setup();
 
@@ -45,6 +46,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         uow.commit();
     }
 
+    @Override
     public void test(){
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
 
@@ -73,6 +75,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         uow.commit();
     }
 
+    @Override
     public void verify(){
         // ensure the changes are propgated
         try{
@@ -86,10 +89,11 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ListHolder holder = (ListHolder)uow.readObject(ListHolder.class);
-        Iterator i = holder.getItems().iterator();
+        Iterator<ListItem> i = holder.getItems().iterator();
         while (i.hasNext()){
             uow.deleteObject(i.next());
         }

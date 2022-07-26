@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,14 +32,14 @@ import org.junit.runners.Suite.SuiteClasses;
  * Test suite requires AQ extension to be installed in Oracle database:<ul>
  * <li>Log in as SYSDBA: {@code sqlplus <admin_user>/<admin_password> as SYSDBA}</li>
  * <li>Install AQ extension: {@code @@<orahome>\rdbms\admin\catproc.sql}</li>
- * <li>Create user and grant him required privileges:</li><ul>
+ * <li>Create user and grant him required privileges:</li>
  * <li>{@code CREATE USER <user> IDENTIFIED BY <password>;}</li>
  * <li>{@code GRANT CONNECT, RESOURCE, AQ_ADMINISTRATOR_ROLE TO <user> IDENTIFIED BY <password>;}</li>
  * <li>{@code GRANT EXECUTE ON dbms_aq TO <user>}</li>
  * <li>{@code GRANT EXECUTE ON dbms_aqin TO <user>}</li>
  * <li>{@code GRANT EXECUTE ON dbms_aqadm TO <user>}</li>
  * <li>{@code GRANT EXECUTE ON dbms_lock TO <user>}</li>
- * </ul></ul>
+ * </ul>
  */
 @RunWith(Suite.class)
 @SuiteClasses({

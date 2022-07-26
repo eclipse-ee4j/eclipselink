@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -33,12 +33,12 @@ public class TestMap extends JPA1Base {
     @Test
     @Bugzilla(bugid=300485)
     public void testEmptyOffice() {
-        final Integer officeId = Integer.valueOf(1);
+        final Integer officeId = 1;
         final EntityManager em = getEnvironment().getEntityManager();
         try {
             getEnvironment().beginTransaction(em);
             final Office office = new Office();
-            office.setId(officeId.intValue());
+            office.setId(officeId);
             office.setCapacity(10);
             em.persist(office);
             getEnvironment().commitTransactionAndClear(em);
@@ -59,12 +59,12 @@ public class TestMap extends JPA1Base {
     @Test
     @Bugzilla(bugid=300485)
     public void testOffice() {
-        final Integer officeId = Integer.valueOf(2);
+        final Integer officeId = 2;
         final EntityManager em = getEnvironment().getEntityManager();
         try {
             getEnvironment().beginTransaction(em);
             final Office office = new Office();
-            office.setId(officeId.intValue());
+            office.setId(officeId);
             office.setCapacity(10);
             em.persist(office);
             final Department department = new Department(1, "R&D");
@@ -73,7 +73,7 @@ public class TestMap extends JPA1Base {
                 for (int place = 10; place < 13; place++) {
                     final Employee employee = new Employee(floor * 3 + place, "first", "last", department);
                     em.persist(employee);
-                    final Cubicle cubicle = new Cubicle(Integer.valueOf(floor), Integer.valueOf(place), "green", employee);
+                    final Cubicle cubicle = new Cubicle(floor, place, "green", employee);
                     employee.setCubicle(cubicle);
                     em.persist(cubicle);
                     office.addCubicle(cubicle);
@@ -89,7 +89,7 @@ public class TestMap extends JPA1Base {
                 verify(10 <= employee.getId() && employee.getId() < 20, "Strangers in cubicles");
             }
             for (int place = 10; place < 13; place++) {
-                final CubiclePrimaryKeyClass testKey = new CubiclePrimaryKeyClass(Integer.valueOf(2), Integer.valueOf(place));
+                final CubiclePrimaryKeyClass testKey = new CubiclePrimaryKeyClass(2, place);
                 final Cubicle cubicle = storedOffice.getCubicles().get(testKey);
                 final Employee employee = cubicle.getEmployee();
                 verify(employee.getId() == place + 6, "Wrong occupant of cubicle with id (floor: " + cubicle.getFloor()
@@ -104,12 +104,12 @@ public class TestMap extends JPA1Base {
     @Test
     public void testColorOffice() {
         final String[] colors = new String[] { "red", "green", "blue" };
-        final Integer officeId = Integer.valueOf(3);
+        final Integer officeId = 3;
         final EntityManager em = getEnvironment().getEntityManager();
         try {
             getEnvironment().beginTransaction(em);
             final UniqueColorOffice office = new UniqueColorOffice();
-            office.setId(officeId.intValue());
+            office.setId(officeId);
             office.setCapacity(5);
             em.persist(office);
             final Department department = new Department(2, "HR");
@@ -120,7 +120,7 @@ public class TestMap extends JPA1Base {
                 final int emplyoeeId = 100 + i;
                 final Employee employee = new Employee(emplyoeeId, "first", "last", department);
                 em.persist(employee);
-                final Cubicle cubicle = new Cubicle(Integer.valueOf(floor), Integer.valueOf(place), colors[i], employee);
+                final Cubicle cubicle = new Cubicle(floor, place, colors[i], employee);
                 employee.setCubicle(cubicle);
                 em.persist(cubicle);
                 office.addCubicle(cubicle);

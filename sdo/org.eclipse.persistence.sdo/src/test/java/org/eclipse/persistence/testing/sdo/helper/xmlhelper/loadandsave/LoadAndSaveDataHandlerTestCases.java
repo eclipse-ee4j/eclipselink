@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,37 +38,46 @@ public class LoadAndSaveDataHandlerTestCases extends LoadAndSaveTestCases {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
     }
 
+    @Override
     protected String getSchemaName() {
         return "EmployeeDataHandler1.xsd";
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/schemas/";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/EmployeeWithDataHandler.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/EmployeeWithDataHandler.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://www.example.org";
     }
 
+    @Override
     protected String getControlRootName() {
         return "employeeType";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "EmployeeType";
     }
+    @Override
     protected List defineTypes() {
         try {
             URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -81,6 +90,7 @@ public class LoadAndSaveDataHandlerTestCases extends LoadAndSaveTestCases {
         }
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception{
         URL url = new URL(getSchemaLocation() + getSchemaName());
         InputStream is = url.openStream();
@@ -93,6 +103,7 @@ public class LoadAndSaveDataHandlerTestCases extends LoadAndSaveTestCases {
         classGenerator.generate(ss, tmpDirName, schemaResolver);
     }
 
+    @Override
     public void registerTypes() {
         SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
         SDOType bytesType = (SDOType) typeHelper.getType("commonj.sdo", "Bytes");

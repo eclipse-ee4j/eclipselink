@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ public class Restriction implements SimpleDerivation {
     private Sequence sequence;
     private All all;
     private SimpleType simpleType;
-    private java.util.ArrayList enumerationFacets;
+    private List enumerationFacets;
     private AnyAttribute anyAttribute;
     private String minInclusive;
     private String maxInclusive;
@@ -40,7 +40,7 @@ public class Restriction implements SimpleDerivation {
     private String maxLength;
 
     //private List facets
-    private java.util.List attributes;
+    private List<Attribute> attributes;
     private Restrictable owner;
 
     public Restriction() {
@@ -142,19 +142,19 @@ public class Restriction implements SimpleDerivation {
         return simpleType;
     }
 
-    public void setAttributes(java.util.List attributes) {
+    public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
     }
 
-    public java.util.List getAttributes() {
+    public List<Attribute> getAttributes() {
         return attributes;
     }
 
-    public java.util.ArrayList getEnumerationFacets() {
+    public List getEnumerationFacets() {
         return enumerationFacets;
     }
 
-    public void setEnumerationFacets(java.util.ArrayList values) {
+    public void setEnumerationFacets(List values) {
         enumerationFacets = values;
     }
 
@@ -257,7 +257,6 @@ public class Restriction implements SimpleDerivation {
      * Overwrites attributes of this restriction with attributes of the argument,
      * if they are not null.
      *
-     * @param restriction
      */
     public void mergeWith(Restriction restriction) {
         if (restriction.getAll() != null) this.setAll(restriction.getAll());

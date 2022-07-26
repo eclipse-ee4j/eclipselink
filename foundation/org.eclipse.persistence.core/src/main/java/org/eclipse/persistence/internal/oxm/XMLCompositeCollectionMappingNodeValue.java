@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -153,7 +153,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 UnmarshalKeepAsElementPolicy policy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();
                 if (policy != null && ((xmlDescriptor == null && policy.isKeepUnknownAsElement()) || policy.isKeepAllAsElement())) {
                     if (unmarshalRecord.getTypeQName() != null) {
-                        Class theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
+                        Class<Object> theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
                         if (theClass == null) {
                             setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
                             return true;
@@ -218,7 +218,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
                if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && builder.getNodes().size() > 1) {
                    if(unmarshalRecord.getTypeQName() != null){
-                       Class theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
+                       Class<Object> theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
                        if(theClass != null){
                            //handle simple text
                            endElementProcessText(unmarshalRecord, xmlCompositeCollectionMapping, xPathFragment, collection);
@@ -303,7 +303,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         if(descriptor == null){
             descriptor = (Descriptor) session.getDescriptor(value.getClass());
         }else if(descriptor.hasInheritance()){
-            Class objectValueClass = value.getClass();
+            Class<?> objectValueClass = value.getClass();
             if(!(objectValueClass == descriptor.getJavaClass())){
                 descriptor = (Descriptor) session.getDescriptor(objectValueClass);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class SequenceTestCases extends JAXBWithJSONTestCases {
@@ -32,7 +33,7 @@ public class SequenceTestCases extends JAXBWithJSONTestCases {
 
     public SequenceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class});
+        setClasses(new Class<?>[] {Root.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
@@ -40,7 +41,7 @@ public class SequenceTestCases extends JAXBWithJSONTestCases {
     @Override
     protected Map getProperties() {
         Map<String, Object> properties = new HashMap<String, Object>(1);
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, OXM_RESOURCE);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, OXM_RESOURCE);
         return properties;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class STI_JoinedAttributeTest extends TestCase {
     static protected boolean eachTestShouldEnsurePopulation = false;
 
     // the following static variables are used only in case eachTestShouldEnsurePopulation==true
-    static protected Class[] classes = {STI_Employee.class, STI_Project.class};
+    static protected Class<?>[] classes = {STI_Employee.class, STI_Project.class};
     static protected Vector[] objectVectors = {null, null};
     static protected STI_EmployeePopulator populator = new STI_EmployeePopulator();
 
@@ -78,8 +78,8 @@ public class STI_JoinedAttributeTest extends TestCase {
     // stolen from junit.framework.TestSuite
     private static boolean isTestMethod(Method m) {
         String name= m.getName();
-        Class[] parameters= m.getParameterTypes();
-        Class returnType= m.getReturnType();
+        Class<?>[] parameters= m.getParameterTypes();
+        Class<?> returnType= m.getReturnType();
         return parameters.length == 0 && name.startsWith("test") && returnType.equals(Void.TYPE);
      }
 
@@ -89,6 +89,7 @@ public class STI_JoinedAttributeTest extends TestCase {
     // the following test reads all the objects from the db, compares them with the cached ones - if they are the
     // same (the case if the tests run directly one after another) then no population occurs.
     // Switched on/off with eachTestShouldEnsurePopulation flag.
+    @Override
     protected void setup() throws Throwable {
         clearCache();
         if(eachTestShouldEnsurePopulation) {
@@ -101,11 +102,13 @@ public class STI_JoinedAttributeTest extends TestCase {
     }
 
     // executes the method with the same name as the test
+    @Override
     protected void test() throws Exception {
-        Method method = this.getClass().getDeclaredMethod(getName(), new Class[]{});
-        method.invoke(this, new Object[] {});
+        Method method = this.getClass().getDeclaredMethod(getName());
+        method.invoke(this);
     }
 
+    @Override
     public void reset() {
         clearCache();
     }

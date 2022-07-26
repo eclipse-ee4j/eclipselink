@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import java.sql.*;
 import javax.transaction.xa.XAResource;
 import jakarta.transaction.*;
 import org.eclipse.persistence.exceptions.TransactionException;
-import org.eclipse.persistence.internal.jpa.ExceptionFactory;
 import org.eclipse.persistence.internal.jpa.jdbc.ConnectionProxyHandler;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 
@@ -44,7 +43,7 @@ public class TransactionImpl implements Transaction {
 
     // The transactional connection we use
     Connection connection;
-    static Class proxyClass = Proxy.getProxyClass(Connection.class.getClassLoader(), new Class[] { Connection.class });
+    static Class<?> proxyClass = Proxy.getProxyClass(Connection.class.getClassLoader(), Connection.class);
 
     // The enlisted data source
     DataSourceImpl dataSource;
@@ -106,7 +105,7 @@ public class TransactionImpl implements Transaction {
         Connection proxyConnection = null;
         try {
             InvocationHandler handler = new ConnectionProxyHandler(connection);
-            proxyConnection = (Connection)proxyClass.getConstructor(new Class[] { InvocationHandler.class }).newInstance(new Object[] { handler });
+            proxyConnection = (Connection)proxyClass.getConstructor(new Class<?>[] { InvocationHandler.class }).newInstance(new Object[] { handler });
         } catch (Exception ex) {
             throw TransactionException.internalProxyException(ex);
         }

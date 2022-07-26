@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class XmlElementsIdRefInterfaceTestCases extends JAXBWithJSONTestCases {
 
     public XmlElementsIdRefInterfaceTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         //classes[1] = EmployeeWithElementsInterface.class;
         classes[0] = RootWithEmployeeInterfaces.class;
         //classes[3] = PhoneNumber.class;
@@ -48,6 +48,7 @@ public class XmlElementsIdRefInterfaceTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getJSONReadControlObject() {
 
          EmployeeWithElementsInterfaces employee = new EmployeeWithElementsInterfaces();
@@ -95,6 +96,7 @@ public class XmlElementsIdRefInterfaceTestCases extends JAXBWithJSONTestCases {
          return root;
     }
 
+    @Override
     protected Object getControlObject() {
         EmployeeWithElementsInterfaces employee = new EmployeeWithElementsInterfaces();
         employee.id = CONTROL_ID;

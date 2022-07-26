@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,34 +40,42 @@ public class LoadAndSaveBug6680769TestCases extends LoadAndSaveTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6680769/bug6680769.xml");
     }
 
+    @Override
     protected String getControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6680769/bug6680769write.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6680769/bug6680769noschema.xml");
     }
 
+    @Override
     protected String getSchemaName() {
         return "root.xsd";
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://www.example.org/root";
     }
 
+    @Override
     protected String getControlRootName() {
         return "root";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "Root";
     }
 
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("org/example/root");
@@ -76,6 +84,7 @@ public class LoadAndSaveBug6680769TestCases extends LoadAndSaveTestCases {
         return packages;
     }
 
+    @Override
     protected void registerTypes() {
         SDOType changeSummaryType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.CHANGESUMMARY);
         SDOType dataObjectType = (SDOType) typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATAOBJECT);
@@ -114,10 +123,12 @@ public class LoadAndSaveBug6680769TestCases extends LoadAndSaveTestCases {
 
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6680769/";
     }
 
+    @Override
     protected List defineTypes() {
         try {
             URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -130,6 +141,7 @@ public class LoadAndSaveBug6680769TestCases extends LoadAndSaveTestCases {
         }
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception{
 
         URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -144,6 +156,7 @@ public class LoadAndSaveBug6680769TestCases extends LoadAndSaveTestCases {
     }
 
 
+    @Override
     protected void verifyAfterLoad(XMLDocument doc) {
         super.verifyAfterLoad(doc);
         DataObject rootDO = doc.getRootObject();

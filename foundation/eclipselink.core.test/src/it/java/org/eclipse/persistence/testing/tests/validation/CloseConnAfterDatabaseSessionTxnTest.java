@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,15 +35,17 @@ public class CloseConnAfterDatabaseSessionTxnTest extends AutoVerifyTestCase {
         setDescription("Ensure the connection closed properly once query finished - DatabaseSession has no ExternalTransactionController");
     }
 
+    @Override
     public void setup() {
         org.eclipse.persistence.sessions.Project project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
-        DatasourceLogin clonedLogin = (DatasourceLogin)((org.eclipse.persistence.sessions.DatabaseSession)getSession()).getProject().getDatasourceLogin().clone();
+        DatasourceLogin clonedLogin = (DatasourceLogin) getSession().getProject().getDatasourceLogin().clone();
         project.setLogin(clonedLogin);
         clonedLogin.useExternalConnectionPooling();
         session=project.createDatabaseSession();
         session.login();
     }
 
+    @Override
     public void test() {
         EmployeePopulator system = new EmployeePopulator();
         Object employee = system.basicEmployeeExample1();
@@ -51,12 +53,14 @@ public class CloseConnAfterDatabaseSessionTxnTest extends AutoVerifyTestCase {
         session.deleteObject(employee);
     }
 
+    @Override
     public void verify() {
         if(((AbstractSession)session).getAccessor().getDatasourceConnection()!=null){
             throw new TestErrorException("The connection expected to close which still open after a txn was finished.");
         }
     }
 
+    @Override
     public void reset() {
         session.logout();
     }

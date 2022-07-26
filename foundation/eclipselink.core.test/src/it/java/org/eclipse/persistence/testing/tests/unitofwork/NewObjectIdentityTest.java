@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,12 +33,14 @@ public class NewObjectIdentityTest extends AutoVerifyTestCase {
         this.setDescription("Tests that TopLink is correctly using the original new object in the cache.");
     }
 
+    @Override
     public void setup() {
         if (getSession().isDistributedSession()) {
             throw new TestWarningException("Test unavailable on Remote UnitOfWork because of timing issues");
         }
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         origPerson = new Employee();
@@ -49,6 +51,7 @@ public class NewObjectIdentityTest extends AutoVerifyTestCase {
         ((UnitOfWorkImpl)uow).issueSQLbeforeCompletion();
 
         Runnable runnable = new Runnable() {
+                @Override
                 public void run() {
                     ReadAllQuery query = new ReadAllQuery(Employee.class);
                     query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").equal("Anthony").and(query.getExpressionBuilder().get("lastName").equal("Anthony")));
@@ -68,12 +71,14 @@ public class NewObjectIdentityTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (origPerson != readPerson) {
             throw new TestErrorException("Original New Object not placed in cache");
         }
     }
 
+    @Override
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteObject(readPerson);

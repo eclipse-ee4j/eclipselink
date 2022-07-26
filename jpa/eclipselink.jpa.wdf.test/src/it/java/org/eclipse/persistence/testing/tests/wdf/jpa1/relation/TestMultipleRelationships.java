@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -37,7 +37,7 @@ import org.junit.Test;
 public class TestMultipleRelationships extends JPA1Base {
     private static final int HANS_ID_VALUE = 1;
     private static final int FRED_ID_VALUE = 2;
-    private static final Integer HANS_ID = new Integer(HANS_ID_VALUE);
+    private static final Integer HANS_ID = HANS_ID_VALUE;
     private static final Project PUHLEN = new Project("G\u00fcrteltiere puhlen");
     private static final Project PINSELN = new Project("B\u00e4uche pinseln");
     private static final Project FALTEN = new Project("Zitronen falten");
@@ -117,18 +117,18 @@ public class TestMultipleRelationships extends JPA1Base {
         try {
             env.beginTransaction(em);
             Employee hans = em.find(Employee.class, HANS_ID);
-            Set reviews = hans.getReviews();
+            Set<Review> reviews = hans.getReviews();
             verify(reviews != null, "Hans has no reviews");
             verify(reviews.size() == 2, "Hans has wrong number of reviews");
             verify(reviews.contains(PASSION), "Hans has no passion!");
             verify(reviews.contains(PERFORMANCE), "Hans has no performance!");
-            Set projects = hans.getProjects();
+            Set<Project> projects = hans.getProjects();
             verify(projects != null, "Hans has no projects");
             verify(projects.size() == 3, "Hans has wrong number of projects");
             verify(projects.contains(PUHLEN), "Hans misses project " + PUHLEN.getName());
             verify(projects.contains(PINSELN), "Hans misses project " + PINSELN.getName());
             verify(projects.contains(FALTEN), "Hans misses project " + FALTEN.getName());
-            Collection patents = hans.getPatents();
+            Collection<Patent> patents = hans.getPatents();
             verify(patents != null, "Hans has no patens");
             verify(patents.size() == 2, "Hans has wrong number of patents");
             verify(patents.contains(PHONOGRAPGH), "Hans misses patent " + PHONOGRAPGH.getId().getName());
@@ -147,17 +147,17 @@ public class TestMultipleRelationships extends JPA1Base {
         try {
             env.beginTransaction(em);
             Employee hans = em.find(Employee.class, HANS_ID);
-            Collection patents = hans.getPatents();
+            Collection<Patent> patents = hans.getPatents();
             patents.remove(PHONOGRAPGH);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             hans = em.find(Employee.class, HANS_ID);
-            Set reviews = hans.getReviews();
+            Set<Review> reviews = hans.getReviews();
             verify(reviews != null, "Hans has no reviews");
             verify(reviews.size() == 2, "Hans has wrong number of reviews");
             verify(reviews.contains(PASSION), "Hans has no passion!");
             verify(reviews.contains(PERFORMANCE), "Hans has no performance!");
-            Set projects = hans.getProjects();
+            Set<Project> projects = hans.getProjects();
             verify(projects != null, "Hans has no projects");
             verify(projects.size() == 3, "Hans has wrong number of projects");
             verify(projects.contains(PUHLEN), "Hans misses project " + PUHLEN.getName());
@@ -185,19 +185,19 @@ public class TestMultipleRelationships extends JPA1Base {
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             hans = em.find(Employee.class, HANS_ID);
-            Set reviews = hans.getReviews();
+            Set<Review> reviews = hans.getReviews();
             verify(reviews != null, "Hans has no reviews");
             verify(reviews.size() == 3, "Hans has wrong number of reviews");
             verify(reviews.contains(PASSION), "Hans has no passion!");
             verify(reviews.contains(PERFORMANCE), "Hans has no performance!");
             verify(reviews.contains(PROFICIENCY), "Hans has no performance!");
-            Set projects = hans.getProjects();
+            Set<Project> projects = hans.getProjects();
             verify(projects != null, "Hans has no projects");
             verify(projects.size() == 3, "Hans has wrong number of projects");
             verify(projects.contains(PUHLEN), "Hans misses project " + PUHLEN.getName());
             verify(projects.contains(PINSELN), "Hans misses project " + PINSELN.getName());
             verify(projects.contains(FALTEN), "Hans misses project " + FALTEN.getName());
-            Collection patents = hans.getPatents();
+            Collection<Patent> patents = hans.getPatents();
             verify(patents != null, "Hans has no patens");
             verify(patents.size() == 2, "Hans has wrong number of patents");
             verify(patents.contains(PHONOGRAPGH), "Hans misses patent " + PHONOGRAPGH.getId().getName());

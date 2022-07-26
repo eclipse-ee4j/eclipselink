@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,9 +108,6 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
 
     /**
      * Spec 8.4 "Properties that are bi-directional require that no more than one end has containment=true"
-     * @param oppositeProperty1
-     * @param oppositeProperty2
-     * @return
      */
     private boolean areBothBidirectionalOppositePropertiesContainmentTrue(//
     SDOProperty oppositeProperty1, SDOProperty oppositeProperty2) {
@@ -259,13 +256,13 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         "containedProperty2-notdataType");
         assertNotNull(bidirCopyStart);
         // get property containing opposite property link (inside copy tree)
-        SDOProperty bidirCopyOppositeStartProp = (SDOProperty)bidirCopyStart.getType().getProperty(//
+        SDOProperty bidirCopyOppositeStartProp = bidirCopyStart.getType().getProperty(//
         "containedByContainedProperty1-notdataType");
         assertNotNull(bidirCopyOppositeStartProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
         assertFalse(bidirCopyOppositeStartProp.getType().isDataType());
         // get bidir property outside of copy tree
-        SDOProperty bidirCopyViaOpposite = (SDOProperty)bidirCopyOppositeStartProp.getType()//
+        SDOProperty bidirCopyViaOpposite = bidirCopyOppositeStartProp.getType()//
         .getProperty("contained1Property1-notdataType");
         assertNull(bidirCopyViaOpposite);
         SDODataObject bidirCopyViaOppositeDO = (SDODataObject)copy.get(//
@@ -328,13 +325,13 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         "containedProperty2-notdataType");
         assertNotNull(bidirCopyStart);
         // get property containing opposite property link (inside copy tree)
-        SDOProperty bidirCopyOppositeStartProp = (SDOProperty)bidirCopyStart.getType().getProperty(//
+        SDOProperty bidirCopyOppositeStartProp = bidirCopyStart.getType().getProperty(//
         "containedByContainedProperty1-notdataType");
         assertNotNull(bidirCopyOppositeStartProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
         assertFalse(bidirCopyOppositeStartProp.getType().isDataType());
         // get bidir property outside of copy tree
-        SDOProperty bidirCopyViaOpposite = (SDOProperty)bidirCopyOppositeStartProp.getType()//
+        SDOProperty bidirCopyViaOpposite = bidirCopyOppositeStartProp.getType()//
         .getProperty("contained1Property1-notdataType");
         assertNull(bidirCopyViaOpposite);
         SDODataObject bidirCopyViaOppositeDO = (SDODataObject)copy.get(//
@@ -361,13 +358,13 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         ChangeSummary aCS2 = bidirCopyStart.getChangeSummary();
         assertNotNull(aCS2);
         // get property containing opposite property link (inside copy tree)
-        SDOProperty bidirCopyOppositeStartProp = (SDOProperty)bidirCopyStart.getType().getProperty(//
+        SDOProperty bidirCopyOppositeStartProp = bidirCopyStart.getType().getProperty(//
         "containedByContainedProperty1-notdataType");
         assertNotNull(bidirCopyOppositeStartProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
         assertFalse(bidirCopyOppositeStartProp.getType().isDataType());
         // get bidir property inside copy tree
-        SDOProperty oppositeEndProp = (SDOProperty)((SDODataObject)copy.get(//
+        SDOProperty oppositeEndProp = ((SDODataObject)copy.get(//
         "rootproperty3-notdatatype")).getType().getProperty("contained1Property1-notdataType").getOpposite();
         assertNotNull(oppositeEndProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
@@ -383,14 +380,14 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         // Constraint C3 - Spec 3.9.4
         // verify there are no object pointers between source and copy (all objects are instance independent)
         // ie: a' != a  - or there are no references to "root" from "copy"
-        assertNotSame((SDODataObject)root.get("rootproperty2-notdatatype/containedProperty2-notdataType"),//
-                      (SDODataObject)copy.get("rootproperty2-notdatatype/containedProperty2-notdataType"));
-        assertNotSame((SDODataObject)root.get("rootproperty3-notdatatype"),//
-                      (SDODataObject)copy.get("rootproperty3-notdatatype"));
-        assertNotSame((SDODataObject)root.get(//
+        assertNotSame(root.get("rootproperty2-notdatatype/containedProperty2-notdataType"),//
+                copy.get("rootproperty2-notdatatype/containedProperty2-notdataType"));
+        assertNotSame(root.get("rootproperty3-notdatatype"),//
+                copy.get("rootproperty3-notdatatype"));
+        assertNotSame(root.get(//
         "rootproperty2-notdatatype/containedProperty2-notdataType/containedByContainedProperty1-notdataType"),//
-                      (SDODataObject)copy.get("//" +//
-                                              "rootproperty2-notdatatype/containedProperty2-notdataType/containedByContainedProperty1-notdataType"));
+                copy.get("//" +//
+                                        "rootproperty2-notdatatype/containedProperty2-notdataType/containedByContainedProperty1-notdataType"));
 
         // Spec 8.4 "Properties that are bi-directional require that no more than one end has containment=true"
         assertFalse(areBothBidirectionalOppositePropertiesContainmentTrue(//
@@ -416,13 +413,13 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         //ChangeSummary aCS2 = bidirCopyStart.getChangeSummary();
         //assertNotNull(aCS2);
         // get property containing opposite property link (inside copy tree)
-        SDOProperty bidirCopyOppositeStartProp = (SDOProperty)bidirCopyStart.getType().getProperty(//
+        SDOProperty bidirCopyOppositeStartProp = bidirCopyStart.getType().getProperty(//
         "addressWork");
         assertNotNull(bidirCopyOppositeStartProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
         assertFalse(bidirCopyOppositeStartProp.getType().isDataType());
         // get bidir property inside copy tree
-        SDOProperty oppositeEndProp = (SDOProperty)((SDODataObject)copy.get(//
+        SDOProperty oppositeEndProp = ((SDODataObject)copy.get(//
         "rootWork")).getType().getProperty("workAddress").getOpposite();
         assertNotNull(oppositeEndProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
@@ -437,18 +434,18 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         // Constraint C3 - Spec 3.9.4
         // verify there are no object pointers between source and copy (all objects are instance independent)
         // ie: a' != a  - or there are no references to "root" from "copy"
-        assertNotSame((SDODataObject)rootUC4.get("rootHome/homeAddress"),//
-                      (SDODataObject)copy.get("rootHome/homeAddress"));
-        assertNotSame((SDODataObject)rootUC4.get("rootWork"),//
-                      (SDODataObject)copy.get("rootWork"));
-        assertNotSame((SDODataObject)rootUC4.get(//
+        assertNotSame(rootUC4.get("rootHome/homeAddress"),//
+                copy.get("rootHome/homeAddress"));
+        assertNotSame(rootUC4.get("rootWork"),//
+                copy.get("rootWork"));
+        assertNotSame(rootUC4.get(//
         "rootHome/homeAddress/addressWork"),//
-                      (SDODataObject)copy.get("//" +//
-                                              "rootHome/homeAddress/addressWork"));
+                copy.get("//" +//
+                                        "rootHome/homeAddress/addressWork"));
 
         // Spec 8.4 "Properties that are bi-directional require that no more than one end has containment=true"
         assertFalse(areBothBidirectionalOppositePropertiesContainmentTrue(//
-        bidirCopyOppositeStartProp, (SDOProperty)bidirCopyOppositeStartProp.getOpposite()));
+        bidirCopyOppositeStartProp, bidirCopyOppositeStartProp.getOpposite()));
     }
 
     // bidirectional property target is cached during containment iteration
@@ -473,13 +470,13 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         //ChangeSummary aCS2 = bidirCopyStart.getChangeSummary();
         //assertNotNull(aCS2);
         // get property containing opposite property link (inside copy tree)
-        SDOProperty bidirCopyOppositeStartProp = (SDOProperty)bidirCopyStart.getType().getProperty(//
+        SDOProperty bidirCopyOppositeStartProp = bidirCopyStart.getType().getProperty(//
         "addressWork");
         assertNotNull(bidirCopyOppositeStartProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
         assertFalse(bidirCopyOppositeStartProp.getType().isDataType());
         // get bidir property inside copy tree
-        SDOProperty oppositeEndProp = (SDOProperty)((SDODataObject)copy.get(//
+        SDOProperty oppositeEndProp = ((SDODataObject)copy.get(//
         "rootHome/homeAddress")).getType().getProperty("addressWork");//.getOpposite();
         assertNotNull(oppositeEndProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
@@ -495,8 +492,8 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         // Constraint C3 - Spec 3.9.4
         // verify there are no object pointers between source and copy (all objects are instance independent)
         // ie: a' != a  - or there are no references to "root" from "copy"
-        assertNotSame((SDODataObject)rootUC4m.get("rootHome/homeAddress"),//
-                      (SDODataObject)copy.get("rootHome/homeAddress"));
+        assertNotSame(rootUC4m.get("rootHome/homeAddress"),//
+                copy.get("rootHome/homeAddress"));
         // verify isMany objects are distinct
         ListWrapper do1 = (ListWrapper)rootUC4m.get("rootWork");
         ListWrapper do2 = (ListWrapper)copy.get("rootWork");
@@ -516,7 +513,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         //                                    "rootHome/homeAddress/addressWork"));
         // Spec 8.4 "Properties that are bi-directional require that no more than one end has containment=true"
         assertFalse(areBothBidirectionalOppositePropertiesContainmentTrue(//
-        bidirCopyOppositeStartProp, (SDOProperty)bidirCopyOppositeStartProp.getOpposite()));
+        bidirCopyOppositeStartProp, bidirCopyOppositeStartProp.getOpposite()));
     }
 
     // bidirectional property target is not cached during containment iteration - original unidirectional is cached
@@ -541,13 +538,13 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         //ChangeSummary aCS2 = bidirCopyStart.getChangeSummary();
         //assertNotNull(aCS2);
         // get property containing opposite property link (inside copy tree)
-        SDOProperty bidirCopyOppositeStartProp = (SDOProperty)bidirCopyStart.getType().getProperty(//
+        SDOProperty bidirCopyOppositeStartProp = bidirCopyStart.getType().getProperty(//
         "addressWork");
         assertNotNull(bidirCopyOppositeStartProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
         assertFalse(bidirCopyOppositeStartProp.getType().isDataType());
         // get bidir property inside copy tree
-        SDOProperty oppositeEndProp = (SDOProperty)((SDODataObject)copy.get(//
+        SDOProperty oppositeEndProp = ((SDODataObject)copy.get(//
         "rootHome/homeAddress")).getType().getProperty("addressWork");//.getOpposite();
         assertNotNull(oppositeEndProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
@@ -563,8 +560,8 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         // Constraint C3 - Spec 3.9.4
         // verify there are no object pointers between source and copy (all objects are instance independent)
         // ie: a' != a  - or there are no references to "root" from "copy"
-        assertNotSame((SDODataObject)rootUC4m.get("rootHome/homeAddress"),//
-                      (SDODataObject)copy.get("rootHome/homeAddress"));
+        assertNotSame(rootUC4m.get("rootHome/homeAddress"),//
+                copy.get("rootHome/homeAddress"));
         // verify isMany objects are distinct
         ListWrapper do1 = (ListWrapper)rootUC4m.get("rootWork");
         ListWrapper do2 = (ListWrapper)copy.get("rootWork");
@@ -585,7 +582,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         //                                    "rootHome/homeAddress/addressWork"));
         // Spec 8.4 "Properties that are bi-directional require that no more than one end has containment=true"
         assertFalse(areBothBidirectionalOppositePropertiesContainmentTrue(//
-        bidirCopyOppositeStartProp, (SDOProperty)bidirCopyOppositeStartProp.getOpposite()));
+        bidirCopyOppositeStartProp, bidirCopyOppositeStartProp.getOpposite()));
     }
 
     // bidirectional property target is not cached during containment iteration - it is unset
@@ -611,13 +608,13 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         //ChangeSummary aCS2 = bidirCopyStart.getChangeSummary();
         //assertNotNull(aCS2);
         // get property containing opposite property link (inside copy tree)
-        SDOProperty bidirCopyOppositeStartProp = (SDOProperty)bidirCopyStart.getType().getProperty(//
+        SDOProperty bidirCopyOppositeStartProp = bidirCopyStart.getType().getProperty(//
         "addressWork");
         assertNotNull(bidirCopyOppositeStartProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
         assertFalse(bidirCopyOppositeStartProp.getType().isDataType());
         // get bidir property inside copy tree
-        SDOProperty oppositeEndProp = (SDOProperty)((SDODataObject)copy.get(//
+        SDOProperty oppositeEndProp = ((SDODataObject)copy.get(//
         "rootHome/homeAddress")).getType().getProperty("addressWork");//.getOpposite();
         assertNotNull(oppositeEndProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
@@ -633,8 +630,8 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         // Constraint C3 - Spec 3.9.4
         // verify there are no object pointers between source and copy (all objects are instance independent)
         // ie: a' != a  - or there are no references to "root" from "copy"
-        assertNotSame((SDODataObject)rootUC4m.get("rootHome/homeAddress"),//
-                      (SDODataObject)copy.get("rootHome/homeAddress"));
+        assertNotSame(rootUC4m.get("rootHome/homeAddress"),//
+                copy.get("rootHome/homeAddress"));
         // verify isMany objects are distinct
         ListWrapper do1 = (ListWrapper)rootUC4m.get("rootWork");
         ListWrapper do2 = (ListWrapper)copy.get("rootWork");
@@ -655,7 +652,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         //                                    "rootHome/homeAddress/addressWork"));
         // Spec 8.4 "Properties that are bi-directional require that no more than one end has containment=true"
         assertFalse(areBothBidirectionalOppositePropertiesContainmentTrue(//
-        bidirCopyOppositeStartProp, (SDOProperty)bidirCopyOppositeStartProp.getOpposite()));
+        bidirCopyOppositeStartProp, bidirCopyOppositeStartProp.getOpposite()));
     }
 
     public void testUC0102DeepCopy1_1BidirectionalPropSubTreeOutsideCopyTreeNotCopied() {
@@ -673,13 +670,13 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
         "homeAddress");
         assertNotNull(bidirCopyStart);
         // get property containing opposite property link (inside copy tree)
-        SDOProperty bidirCopyOppositeStartProp = (SDOProperty)bidirCopyStart.getType().getProperty(//
+        SDOProperty bidirCopyOppositeStartProp = bidirCopyStart.getType().getProperty(//
         "addressWork");
         assertNotNull(bidirCopyOppositeStartProp);
         // Spec 8.4 "Properties that are bi-directional require type.dataType=false"
         assertFalse(bidirCopyOppositeStartProp.getType().isDataType());
         // get bidir property outside of copy tree
-        SDOProperty bidirCopyViaOpposite = (SDOProperty)bidirCopyOppositeStartProp.getType()//
+        SDOProperty bidirCopyViaOpposite = bidirCopyOppositeStartProp.getType()//
         .getProperty("workAddress");
         assertNull(bidirCopyViaOpposite);
         SDODataObject bidirCopyViaOppositeDO = (SDODataObject)copy.get(//
@@ -797,7 +794,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
 
         assertEquals(originalChSum.isLogging(), copyChSum.isLogging());// logging status is same
         // their root dataObject have the same setting
-        testCopySourceMap(containedDataObject, (SDODataObject)copyChSum.getRootObject());
+        testCopySourceMap(containedDataObject, copyChSum.getRootObject());
 
     }
 
@@ -917,13 +914,13 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
     }
 
     public void testShallowCopySourceHaveSameType() {
-        SDODataObject copy = (SDODataObject)((SDOCopyHelper)copyHelper).copyShallow(root);
+        SDODataObject copy = (SDODataObject) copyHelper.copyShallow(root);
         assertEquals(copy.getType(), root.getType());
     }
 
     // TODO: this tests only tests the MapValueStore impl, separate generic test required
     public void testShallowCopySourceHaveDifferentMap() {
-        SDODataObject copy = (SDODataObject)((SDOCopyHelper)copyHelper).copyShallow(root);
+        SDODataObject copy = (SDODataObject) copyHelper.copyShallow(root);
         int copySize = getPropertiesSize(copy);
         assertFalse(copySize == getPropertiesSize(root));
         //testCopySourceMap(root, copy);
@@ -931,7 +928,7 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
 
     // TODO: this tests only tests the MapValueStore impl, separate generic test required
     public void testShallowCopySourceMapsHaveSameDataTypeObj() {
-        SDODataObject copy = (SDODataObject)((SDOCopyHelper)copyHelper).copyShallow(root);
+        SDODataObject copy = (SDODataObject) copyHelper.copyShallow(root);
         int copySize = getPropertiesSize(copy);
         assertFalse(copySize == getPropertiesSize(root));
 

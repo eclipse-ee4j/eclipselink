@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -38,13 +38,15 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkAnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
-import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkFieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassReader;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkMethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -199,7 +201,7 @@ public class MetadataAsmFactory extends MetadataFactory {
 
             List<String> parentGenericTypes = parent.getGenericType();
             if (parentGenericTypes != null) {
-                List genericParentTemp = new ArrayList(genericTypes);
+                List<String> genericParentTemp = new ArrayList<>(genericTypes);
                 genericParentTemp.removeAll(child.getInterfaces());
 
                 int size = genericParentTemp.size();
@@ -239,14 +241,14 @@ public class MetadataAsmFactory extends MetadataFactory {
     /**
      * Walk the class byte codes and collect the class info.
      */
-    public class ClassMetadataVisitor extends ClassVisitor {
+    public class ClassMetadataVisitor extends EclipseLinkClassVisitor {
 
         private boolean isLazy;
         private boolean processedMemeber;
         private MetadataClass classMetadata;
 
         ClassMetadataVisitor(MetadataClass metadataClass, boolean isLazy) {
-            super(Opcodes.ASM9);
+            super();
             this.isLazy = isLazy;
             this.classMetadata = metadataClass;
         }
@@ -331,7 +333,7 @@ public class MetadataAsmFactory extends MetadataFactory {
      *
      * @see MetadataAnnotationArrayVisitor for population of array attributes
      */
-    class MetadataAnnotationVisitor extends AnnotationVisitor {
+    class MetadataAnnotationVisitor extends EclipseLinkAnnotationVisitor {
 
         /**
          * Element the annotation is being applied to. If this is null the
@@ -350,7 +352,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         MetadataAnnotationVisitor(MetadataAnnotatedElement element, String name, boolean isRegular) {
-            super(Opcodes.ASM9);
+            super();
             this.element = element;
             this.annotation = new MetadataAnnotation();
             this.annotation.setName(processDescription(name, false).get(0));
@@ -358,7 +360,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         public MetadataAnnotationVisitor(MetadataAnnotation annotation) {
-            super(Opcodes.ASM9);
+            super();
             this.annotation = annotation;
         }
 
@@ -401,7 +403,7 @@ public class MetadataAsmFactory extends MetadataFactory {
      * Specialized visitor to handle the population of arrays of annotation
      * values.
      */
-    class MetadataAnnotationArrayVisitor extends AnnotationVisitor {
+    class MetadataAnnotationArrayVisitor extends EclipseLinkAnnotationVisitor {
 
         private MetadataAnnotation annotation;
 
@@ -410,7 +412,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         private List<Object> values;
 
         public MetadataAnnotationArrayVisitor(MetadataAnnotation annotation, String name) {
-            super(Opcodes.ASM9);
+            super();
             this.annotation = annotation;
             this.attributeName = name;
             this.values = new ArrayList<Object>();
@@ -444,12 +446,12 @@ public class MetadataAsmFactory extends MetadataFactory {
      * Factory for the creation of {@link MetadataField} handling basic type,
      * generics, and annotations.
      */
-    class MetadataFieldVisitor extends FieldVisitor {
+    class MetadataFieldVisitor extends EclipseLinkFieldVisitor {
 
         private MetadataField field;
 
         public MetadataFieldVisitor(MetadataClass classMetadata, int access, String name, String desc, String signature, Object value) {
-            super(Opcodes.ASM9);
+            super();
             this.field = new MetadataField(classMetadata);
             this.field.setModifiers(access);
             this.field.setName(name);
@@ -479,12 +481,12 @@ public class MetadataAsmFactory extends MetadataFactory {
      */
     // Note: Subclassed EmptyListener to minimize signature requirements for
     // ignored MethodVisitor API
-    class MetadataMethodVisitor extends MethodVisitor {
+    class MetadataMethodVisitor extends EclipseLinkMethodVisitor {
 
         private MetadataMethod method;
 
         public MetadataMethodVisitor(MetadataClass classMetadata, int access, String name, String desc, String signature, String[] exceptions) {
-            super(Opcodes.ASM9);
+            super();
             this.method = new MetadataMethod(MetadataAsmFactory.this, classMetadata);
 
             this.method.setName(name);
@@ -549,11 +551,11 @@ public class MetadataAsmFactory extends MetadataFactory {
         // since it is a JDK class, just use reflection.
         if ((className.length() > 5) && className.substring(0, 5).equals("java.")) {
             try {
-                Class reflectClass = Class.forName(className);
+                Class<?> reflectClass = Class.forName(className);
                 if (reflectClass.getSuperclass() != null) {
                     metadataClass.setSuperclassName(reflectClass.getSuperclass().getName());
                 }
-                for (Class reflectInterface : reflectClass.getInterfaces()) {
+                for (Class<?> reflectInterface : reflectClass.getInterfaces()) {
                     metadataClass.addInterface(reflectInterface.getName());
                 }
             } catch (Exception failed) {
@@ -573,7 +575,7 @@ public class MetadataAsmFactory extends MetadataFactory {
     /**
      * Process the byte-code argument description and return the array of Java
      * class names. i.e.
-     * "(Lorg/foo/Bar;Z)Ljava/lang/Boolean;"=>[org.foo.Bar,boolean
+     * "(Lorg/foo/Bar;Z)Ljava/lang/Boolean;"={@literal >}[org.foo.Bar,boolean
      * ,java.lang.Boolean]
      */
     private static List<String> processDescription(String desc, boolean isGeneric) {
@@ -653,11 +655,11 @@ public class MetadataAsmFactory extends MetadataFactory {
                             index ++;
                         }
                     } else if (myNext == ';' && next == 'T') {
-                        arguments.add(new String(new char[] { next }));
+                        arguments.add(String.valueOf(next));
                         arguments.add(desc.substring(start + 1, end));
                         index = end - 1;
                     } else {
-                        arguments.add(new String(new char[] { next }));
+                        arguments.add(String.valueOf(next));
                     }
                 }
             }
@@ -690,7 +692,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         } else if (primitive == 'S') {
             return "short";
         } else {
-            return new String(new char[] { primitive });
+            return String.valueOf(primitive);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -148,7 +148,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "metamodel_managed_type_attribute_not_present", "The attribute [{0}] is not present in the managed type [{1}]." },
                                            { "metamodel_managed_type_attribute_type_incorrect", "Expected attribute type [{2}] on the existing attribute [{0}] on the managed type [{1}] but found attribute type [{3}]." },
                                            { "metamodel_identifiable_version_attribute_type_incorrect", "Expected version attribute type [{2}] on the existing version attribute [{0}] on the identifiable type [{1}] but found attribute type [{3}]." },
-                                           { "metamodel_identifiable_id_attribute_type_incorrect", "Expected id attribute type [{2}] on the existing id attribute [{0}] on the identifiable type [{1}] but found attribute type [{3}]." },
+                                           { "metamodel_identifiable_id_attribute_type_incorrect", "Expected id attribute type [{2}] in the existing id attributes [{0}] on the identifiable type [{1}] but found attribute types [{3}]." },
                                            { "metamodel_managed_type_declared_attribute_not_present_but_is_on_superclass", "The declared attribute [{0}] from the managed type [{1}] is not present - however, it is declared on a superclass." },
                                            { "metamodel_managed_type_attribute_return_type_incorrect", "Expected attribute return type [{2}] on the existing attribute [{0}] on the managed type [{1}] but found attribute return type [{3}]." },
                                            { "metamodel_incompatible_persistence_config_for_getIdType", "Incompatible persistence configuration getting Metamodel Id Type for the ManagedType [{0}]." },
@@ -183,6 +183,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "sdo_helper_invalid_target_for_typehelper", "The provided target Class [{0}] must be EclipseLink SDOTypeHelper class." },
                                            { "sdo_helper_invalid_target_for_xmlhelper", "The provided target Class [{0}] must be one of EclipseLink SDOXMLHelper, EclipseLink XMLMarshaller or EclipseLink XMLUnmarshaller." },
                                            { "sdo_helper_invalid_target_for_xsdhelper", "The provided target Class [{0}] must be EclipseLink SDOXSDHelper class." },
+                                           { "jaxb_context_factory_property_invalid", "Property eclipselink.moxy.factory value {0} is invalid" },
                                            { "jaxb_helper_invalid_jaxbcontext", "The provided JAXBContext [{0}] is not an EclipseLink JAXBContext, and therefore could not be converted." },
                                            { "jaxb_helper_invalid_unmarshaller", "The provided Unmarshaller [{0}] is not an EclipseLink JAXBUnmarshaller, and therefore could not be converted." },
                                            { "jaxb_helper_invalid_marshaller", "The provided Marshaller [{0}] is not an EclipseLink JAXBMarshaller, and therefore could not be converted." },
@@ -255,8 +256,13 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"},
                                            { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."},
                                            { "bean_validation_constraint_violated", "One or more Bean Validation constraints were violated while executing Automatic Bean Validation on callback event: {0} for class: {1}. Please refer to the embedded constraint violations for details."},
-                                           { "unsupported_classfile_version", "The {0} class was compiled with an unsupported JDK. Report this error to the EclipseLink open source project."}
-
+                                           { "unsupported_classfile_version", "The {0} class was compiled with an unsupported JDK. Report this error to the EclipseLink open source project."},
+                                           { "json_pgsql_missing_class_on_classpath", "Missing {0} on classpath."},
+                                           { "json_pgsql_jsonvalue_to_database_type", "JSON value to database type conversion failed."},
+                                           { "json_pgsql_pgobject_conversion", "Database PGobject conversion failed."},
+                                           { "json_pgsql_unknown_type", "Unknown JSON type returned from database."},
+                                           { "json_ora21c_jsonvalue_to_oraclevalue", "Could not convert JsonValue to OracleJsonValue."},
+                                           { "json_ora21c_resultset_to_jsonvalue", "Could not convert JDBC ResultSet type to JsonValue."}
                                         };
     /**
      * Return the lookup table.

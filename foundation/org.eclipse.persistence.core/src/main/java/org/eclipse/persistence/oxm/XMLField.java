@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -613,7 +613,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * @param qname The qualified name of the XML Schema type to use as a key in the lookup
     * @return The class corresponding to the specified schema type, if no corresponding match found returns null
     */
-    public Class getJavaClass(QName qname) {
+    public Class<?> getJavaClass(QName qname) {
         return getJavaClass(qname, XMLConversionManager.getDefaultXMLManager());
     }
 
@@ -623,9 +623,9 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * @since EclipseLink 2.6.0
      */
     @Override
-    public Class getJavaClass(QName qname, ConversionManager conversionManager) {
+    public Class<?> getJavaClass(QName qname, ConversionManager conversionManager) {
         if (userXMLTypes != null) {
-            Class theClass = (Class)userXMLTypes.get(qname);
+            Class<?> theClass = (Class)userXMLTypes.get(qname);
             if(theClass != null){
                 return theClass;
             }
@@ -638,7 +638,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * @param javaClass The class to use as a key in the lookup
      * @return QName The qualified XML Schema type, if no corresponding match found returns null
      */
-    public QName getXMLType(Class javaClass) {
+    public QName getXMLType(Class<?> javaClass) {
         return getXMLType(javaClass, XMLConversionManager.getDefaultXMLManager());
     }
 
@@ -647,7 +647,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * @since EclipseLink 2.6.0
      */
     @Override
-    public QName getXMLType(Class javaClass, ConversionManager conversionManager) {
+    public QName getXMLType(Class<?> javaClass, ConversionManager conversionManager) {
         if (userJavaTypes != null) {
             QName theQName = (QName)userJavaTypes.get(javaClass);
             if (theQName !=null) {
@@ -758,7 +758,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
             if(XMLConstants.QNAME_QNAME.equals(schemaType)){
                 return xmlConversionManager.buildQNameFromString((String)value, record);
             }else{
-                Class fieldType = getType();
+                Class<?> fieldType = getType();
                 if (fieldType == null) {
                     fieldType = getJavaClass(schemaType, xmlConversionManager);
                 }
@@ -774,7 +774,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * @param qname The qualified name of the XML schema type
     * @param javaClass The class to add
     */
-    public void addXMLConversion(QName qname, Class javaClass) {
+    public void addXMLConversion(QName qname, Class<?> javaClass) {
         getUserXMLTypes().put(qname, javaClass);
     }
 
@@ -783,23 +783,21 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * @param javaClass The class to add
      * @param qname The qualified name of the XML schema type
      */
-    public void addJavaConversion(Class javaClass, QName qname) {
+    public void addJavaConversion(Class<?> javaClass, QName qname) {
         getUserJavaTypes().put(javaClass, qname);
     }
 
     /**
      * Add an entry for both an XML Conversion and a Java Conversion entry
      * @param qname The qualified name of the XML schema type
-     * @param javaClass
      */
-    public void addConversion(QName qname, Class javaClass) {
+    public void addConversion(QName qname, Class<?> javaClass) {
         addJavaConversion(javaClass, qname);
         addXMLConversion(qname, javaClass);
     }
 
     /**
      * Remove an XML to Java Conversion entry
-     * @param qname
      */
     public void removeXMLConversion(QName qname) {
         getUserXMLTypes().remove(qname);
@@ -808,19 +806,16 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     /**
      * Remove a Java to XML Conversion entry
      *
-     * @param javaClass
      */
-    public void removeJavaConversion(Class javaClass) {
+    public void removeJavaConversion(Class<?> javaClass) {
         getUserJavaTypes().remove(javaClass);
     }
 
     /**
      * Remove both a Java to XML Conversion and the corresponding XML to Java Conversion entry
      *
-     * @param qname
-     * @param javaClass
      */
-    public void removeConversion(QName qname, Class javaClass) {
+    public void removeConversion(QName qname, Class<?> javaClass) {
         removeJavaConversion(javaClass);
         removeXMLConversion(qname);
     }
@@ -828,7 +823,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     /**
      * Assumes type is in the format prefix:localPart, or localPart.
      *
-     * @param type
      */
     public void setLeafElementType(QName type) {
         leafElementType = type;
@@ -847,7 +841,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
 
     /**
      * INTERNAL:
-     * @return
      */
     @Override
     public boolean hasLastXPathFragment() {
@@ -877,7 +870,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
 
     /**
      * INTERNAL:
-     * @param CDATA
      */
     @Override
     public void setIsCDATA(boolean CDATA) {
@@ -886,7 +878,6 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
 
     /**
      * INTERNAL:
-     * @return
      */
     @Override
     public boolean isCDATA() {
@@ -960,6 +951,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      *
      * @param nestedArray flag.
      */
+    @Override
     public void setNestedArray(boolean nestedArray) {
         this.nestedArray = nestedArray;
     }
@@ -969,6 +961,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      *
      * @return True if content is nested array.
      */
+    @Override
     public boolean isNestedArray() {
         return this.nestedArray;
     }

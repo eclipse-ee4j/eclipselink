@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,9 +25,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.AllTests;
 
 /**
- * This test suite runs {@link JPQLParserThreadTest} many times and concurrently, this is trying to
- * test using the parser concurrently and making sure there is no deadlock or a {@link java.util.
- * ConcurrentModificationException} thrown by some {@link Collection} classes.
+ * This test suite runs {@link JPQLParserConcurrentTest} many times and concurrently, this is trying to
+ * test using the parser concurrently and making sure there is no deadlock or a
+ * {@link java.util.ConcurrentModificationException} thrown by some {@link java.util.Collection} classes.
  *
  * @version 2.4.1
  * @since 2.4.1

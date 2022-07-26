@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,23 +38,28 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
     public static final String URINAME = "http://www.example.org";
     public static final String TYPENAME = "purchaseOrder";
 
+    @Override
     protected String getControlRootURI() {
         return URINAME;
     }
 
+    @Override
     protected String getControlRootName() {
         return TYPENAME;
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "PurchaseOrderType";
     }
 
+    @Override
     protected String getControlFileName() {
         // implemented by subclass
         return getControlFileName2();
     }
 
+    @Override
     public void testClassGenerationLoadAndSave() throws Exception {
       //TODO:implement
     }
@@ -68,6 +73,7 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeepWithCS.xml");
     }
 
+    @Override
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
         //do nothing
         //TODO: need to make this test run
@@ -77,6 +83,7 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         super(name);
     }
 
+    @Override
     public String getSchemaName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/PurchaseOrderDeepWithCS.xsd");
     }
@@ -86,6 +93,7 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         TestRunner.main(arguments);
     }
 
+    @Override
     public void setUp() {
         super.setUp();// watch setup redundancy
         //define types from deep with cs
@@ -102,6 +110,7 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         }
     }
 
+    @Override
     protected String getControlString(String fileName) {
         try {
             FileInputStream inputStream = new FileInputStream(fileName);
@@ -115,16 +124,19 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         }
     }
 
+    @Override
     protected void verifyAfterLoad(XMLDocument document) {
         assertNull(document.getRootObject().getContainer());
     }
 
+    @Override
     protected List defineTypes() {
         // do not define types twice - so we do not set dirty=true
         //return xsdHelper.define(getSchema(getSchemaName()));
-        return (List)new ArrayList(((SDOTypeHelper)typeHelper).getTypesHashMap().values());
+        return new ArrayList(((SDOTypeHelper)typeHelper).getTypesHashMap().values());
     }
 
+    @Override
     protected String getSchemaLocation() {
         return "";
     }
@@ -1069,7 +1081,7 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
             assertNotNull(shipToDO.get("street"));
             DataObject oldContainer = ((SDOChangeSummary)cs).getOldContainer(shipToDO);
             Property shipToProp = oldContainer.getInstanceProperty("shipTo");
-            ChangeSummary.Setting oldSetting = ((SDOChangeSummary)cs).getOldValue(oldContainer, shipToProp);
+            ChangeSummary.Setting oldSetting = cs.getOldValue(oldContainer, shipToProp);
             DataObject deepCopyShipTo = (DataObject)oldSetting.getValue();
 
             assertEquals("123 Maple Street", deepCopyShipTo.get("street"));
@@ -1184,16 +1196,16 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         Property sfProp = yardDO.getInstanceProperty("squarefootage");
         Property widthProp = yardDO.getInstanceProperty("width");
         Property lengthProp = yardDO.getInstanceProperty("length");
-        ChangeSummary.Setting yardSFsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, sfProp);
+        ChangeSummary.Setting yardSFsetting = cs.getOldValue(yardDO, sfProp);
         assertEquals(yardSFsetting.getValue(), null);
 
         //TODO: uncomment this line.  Will fail unless Node Null policy stuff is fixed
         //assertEquals(false, yardSFsetting.isSet());
-        ChangeSummary.Setting yardWidthsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, widthProp);
+        ChangeSummary.Setting yardWidthsetting = cs.getOldValue(yardDO, widthProp);
         assertEquals("65", yardWidthsetting.getValue());
         assertEquals(true, yardWidthsetting.isSet());
 
-        ChangeSummary.Setting yardLengththsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, lengthProp);
+        ChangeSummary.Setting yardLengththsetting = cs.getOldValue(yardDO, lengthProp);
         assertEquals("45", yardLengththsetting.getValue());
         assertEquals(true, yardLengththsetting.isSet());
         // shipToDO was not deleted, only check yardDO
@@ -1206,16 +1218,16 @@ public abstract class ChangeSummaryOnRootTestCases extends ChangeSummaryRootLoad
         Property sfProp = yardDO.getInstanceProperty("squarefootage");
         Property widthProp = yardDO.getInstanceProperty("width");
         Property lengthProp = yardDO.getInstanceProperty("length");
-        ChangeSummary.Setting yardSFsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, sfProp);
+        ChangeSummary.Setting yardSFsetting = cs.getOldValue(yardDO, sfProp);
         assertEquals(yardSFsetting.getValue(), null);
 
         //TODO: uncomment this line.  Will fail unless Node Null policy stuff is fixed
         //assertEquals(false, yardSFsetting.isSet());
-        ChangeSummary.Setting yardWidthsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, widthProp);
+        ChangeSummary.Setting yardWidthsetting = cs.getOldValue(yardDO, widthProp);
         assertEquals("65", yardWidthsetting.getValue());
         assertEquals(true, yardWidthsetting.isSet());
 
-        ChangeSummary.Setting yardLengththsetting = (ChangeSummary.Setting)cs.getOldValue(yardDO, lengthProp);
+        ChangeSummary.Setting yardLengththsetting = cs.getOldValue(yardDO, lengthProp);
         assertEquals("45", yardLengththsetting.getValue());
         assertEquals(true, yardLengththsetting.isSet());
     }

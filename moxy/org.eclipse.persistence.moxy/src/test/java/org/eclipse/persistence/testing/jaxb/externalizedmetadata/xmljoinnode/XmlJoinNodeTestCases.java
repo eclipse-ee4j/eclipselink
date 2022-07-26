@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,17 +27,14 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jaxb.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
- * Tests relationship mapping configuration via XmlJoinNode & XmlJoinNodes.
+ * Tests relationship mapping configuration via XmlJoinNode &amp; XmlJoinNodes.
  *
  */
 public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
@@ -55,18 +52,18 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlJoinNodeTestCases(String name) throws Exception{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { Company.class });
+        setClasses(new Class<?>[] { Company.class });
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("http://www.example.com", "x");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
+    @Override
     protected Marshaller getJSONMarshaller() throws Exception{
         Marshaller m = jaxbContext.createMarshaller();
         Map<String, String> namespaces = new HashMap<String, String>();
@@ -80,6 +77,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
     /**
      * Return the control Company object.
      */
+    @Override
     public Object getControlObject() {
         Address ottawa100 = new Address("a100", "45 O'Connor St.", "400", "Kanata", "K1P1A4");
         Address ottawa200 = new Address("a200", "1 Anystreet Rd.", "9", "Ottawa", "K4P1A2");
@@ -97,12 +95,13 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(OXM_DOC);
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -144,12 +143,12 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_OXM_DOC);
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> invalidProperties = new HashMap<>();
+            invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-            JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
+            JAXBContextFactory.createContext(new Class<?>[] { Company.class }, invalidProperties);
         } catch (JAXBException e) {
             exception = true;
         }
@@ -165,12 +164,12 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_XPATH_OXM_DOC);
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> invalidProperties = new HashMap<>();
+            invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-            JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
+            JAXBContextFactory.createContext(new Class<?>[] { Company.class }, invalidProperties);
 
         } catch (JAXBException e) {
             return;
@@ -191,12 +190,12 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
 
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(INVALID_TARGET_OXM_DOC);
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> invalidProperties = new HashMap<>();
+            invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-            JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
+            JAXBContextFactory.createContext(new Class<?>[] { Company.class }, invalidProperties);
 
         } catch (JAXBException e) {
             return;
@@ -211,12 +210,12 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         try {
                InputStream inputStream = ClassLoader.getSystemResourceAsStream(OXM_DOC_V2);
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> invalidProperties = new HashMap<String, Map<String, Source>>();
-            invalidProperties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> invalidProperties = new HashMap<>();
+            invalidProperties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
-            jCtx = (JAXBContext)JAXBContextFactory.createContext(new Class[] { Company.class }, invalidProperties);
+            jCtx = (JAXBContext)JAXBContextFactory.createContext(new Class<?>[] { Company.class }, invalidProperties);
 
 
         } catch (JAXBException e) {
@@ -228,7 +227,7 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("employees");
         assertNotNull("No mapping exists on Customer for attribute [employees].", mapping);
         assertTrue("Expected an XMLCollectionReferenceMapping for attribute [employees], but was [" + mapping.toString() +"].", mapping instanceof XMLCollectionReferenceMapping);
-        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLCollectionReferenceMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLCollectionReferenceMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 
 

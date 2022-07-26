@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -73,7 +74,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     /**
      * Default constructor.
      */
-    public AbstractColumnMapping() {
+    protected AbstractColumnMapping() {
         super();
         this.setWeight(WEIGHT_DIRECT);
     }
@@ -142,13 +143,13 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
 
         // Instantiate any custom converter class
         if (converterClassName != null) {
-            Class converterClass;
+            Class<?> converterClass;
             Converter converter;
 
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        converterClass = AccessController.doPrivileged(new PrivilegedClassForName(converterClassName, true, classLoader));
+                        converterClass = AccessController.doPrivileged(new PrivilegedClassForName<>(converterClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, exception.getException());
                     }
@@ -180,7 +181,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
      * with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
     }
 
     /**

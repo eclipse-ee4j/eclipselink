@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ public class NoMappingsTestCases extends JAXBWithJSONTestCases{
 
     public NoMappingsTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{SomeClass.class});
+        setClasses(new Class<?>[]{SomeClass.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
@@ -45,21 +45,22 @@ public class NoMappingsTestCases extends JAXBWithJSONTestCases{
 
     @Override
     public Object getJSONReadControlObject() {
-        JAXBElement jbe = new JAXBElement<SomeClass>(new QName(""), SomeClass.class, new SomeClass());
+        JAXBElement<SomeClass> jbe = new JAXBElement<SomeClass>(new QName(""), SomeClass.class, new SomeClass());
         return jbe;
     }
 
     @Override
     public Object getReadControlObject() {
-        JAXBElement jbe = new JAXBElement<SomeClass>(new QName("someClass"), SomeClass.class, new SomeClass());
+        JAXBElement<SomeClass> jbe = new JAXBElement<SomeClass>(new QName("someClass"), SomeClass.class, new SomeClass());
         return jbe;
     }
 
     @Override
-    public Class getUnmarshalClass(){
+    public Class<?> getUnmarshalClass(){
         return SomeClass.class;
     }
 
+    @Override
     public void testUnmarshallerHandler(){};
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,7 +147,7 @@ public class OptimisticLockingMetadata extends ORMetadata {
         if (m_type == null || m_type.equals(OptimisticLockingType.VERSION_COLUMN.name())) {
             // A version annotation or element should be define and discovered
             // in later processing.
-            descriptor.setUsesCascadedOptimisticLocking(m_cascade != null && m_cascade.booleanValue());
+            descriptor.setUsesCascadedOptimisticLocking(m_cascade != null && m_cascade);
         } else if (m_type.equals(OptimisticLockingType.ALL_COLUMNS.name())) {
             descriptor.setOptimisticLockingPolicy(new AllFieldsLockingPolicy());
         } else if (m_type.equals(OptimisticLockingType.CHANGED_COLUMNS.name())) {

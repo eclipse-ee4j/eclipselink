@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,6 +76,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator.CascadeCo
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.IdentityWeakHashMap;
@@ -105,6 +106,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 
@@ -137,6 +139,12 @@ import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
  *
  */
 public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persistence.sessions.UnitOfWork {
+
+    //These constants and variables are used in extended thread logging to compare UnitOfWork creation thread and thread which registering object in UnitOfWork
+    public final long CREATION_THREAD_ID = Thread.currentThread().getId();
+    public final String CREATION_THREAD_NAME = String.copyValueOf(Thread.currentThread().getName().toCharArray());
+    public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
+    private String creationThreadStackTrace;
 
     /** Fix made for weak caches to avoid garbage collection of the originals. **/
     /** As well as used as lookup in merge algorithm for aggregates and others **/
@@ -196,7 +204,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Map<ReadQuery, ReadQuery> batchQueries;
 
     /** Read-only class can be used for reference data to avoid cloning when not required. */
-    protected Set<Class> readOnlyClasses;
+    protected Set<Class<?>> readOnlyClasses;
 
     /** Flag indicating that the transaction for this UOW was already begun. */
     protected boolean wasTransactionBegunPrematurely;
@@ -396,6 +404,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Copy down the table per tenant information.
         this.tablePerTenantDescriptors = parent.tablePerTenantDescriptors;
         this.tablePerTenantQueries = parent.tablePerTenantQueries;
+
+        // Init only if thread extended logging + thread dump is enabled
+        creationThreadStackTrace = project.allowExtendedThreadLoggingThreadDump() ? ConcurrencyUtil.SINGLETON.enrichGenerateThreadDumpForCurrentThread() : null;
     }
 
     /**
@@ -468,7 +479,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Cannot be called after objects have been registered in the unit of work.
      */
     @Override
-    public void addReadOnlyClass(Class theClass) throws ValidationException {
+    public void addReadOnlyClass(Class<?> theClass) throws ValidationException {
         if (!canChangeReadOnlySet()) {
             throw ValidationException.cannotModifyReadOnlyClassesSetAfterUsingUnitOfWork();
         }
@@ -493,7 +504,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     @Override
     public void addReadOnlyClasses(Collection classes) {
         for (Iterator iterator = classes.iterator(); iterator.hasNext();) {
-            Class theClass = (Class)iterator.next();
+            Class<?> theClass = (Class)iterator.next();
             addReadOnlyClass(theClass);
         }
     }
@@ -834,7 +845,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         existQuery.setDescriptor(descriptor);
         existQuery.setIsExecutionClone(true);
 
-        return ((Boolean) executeQuery(existQuery)).booleanValue();
+        return (Boolean) executeQuery(existQuery);
     }
 
     /**
@@ -1926,7 +1937,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (descriptor == null) {
             throw DescriptorException.missingDescriptor(lockObject.getClass().toString());
         }
-        getOptimisticReadLockObjects().put(descriptor.getObjectBuilder().unwrapObject(lockObject, this), Boolean.valueOf(shouldModifyVersionField));
+        getOptimisticReadLockObjects().put(descriptor.getObjectBuilder().unwrapObject(lockObject, this), shouldModifyVersionField);
     }
 
     /**
@@ -1992,7 +2003,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return any new objects matching the expression.
      * Used for in-memory querying.
      */
-    public Vector getAllFromNewObjects(Expression selectionCriteria, Class theClass, AbstractRecord translationRow, int valueHolderPolicy) {
+    public Vector getAllFromNewObjects(Expression selectionCriteria, Class<?> theClass, AbstractRecord translationRow, int valueHolderPolicy) {
         // PERF: Avoid initialization of new objects if none.
         if (!hasNewObjects()) {
             return new Vector(1);
@@ -2143,7 +2154,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
      * at different levels based on Cache Isolation.  This method will return the correct Session
      * for a particular Entity class based on the Isolation Level and the attributes provided.
-     * <p>
+     *
      * @param canReturnSelf true when method calls itself.  If the path
      * starting at <code>this</code> is acceptable.  Sometimes true if want to
      * move to the first valid session, i.e. executing on ClientSession when really
@@ -2522,7 +2533,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return any new object matching the expression.
      * Used for in-memory querying.
      */
-    public Object getObjectFromNewObjects(Class theClass, Object selectionKey) {
+    public Object getObjectFromNewObjects(Class<?> theClass, Object selectionKey) {
         // PERF: Avoid initialization of new objects if none.
         if (!hasNewObjects()) {
             return null;
@@ -2552,7 +2563,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return any new object matching the expression.
      * Used for in-memory querying.
      */
-    public Object getObjectFromNewObjects(Expression selectionCriteria, Class theClass, AbstractRecord translationRow, int valueHolderPolicy) {
+    public Object getObjectFromNewObjects(Expression selectionCriteria, Class<?> theClass, AbstractRecord translationRow, int valueHolderPolicy) {
         // PERF: Avoid initialization of new objects if none.
         if (!hasNewObjects()) {
             return null;
@@ -2759,7 +2770,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the platform for a particular class.
      */
     @Override
-    public Platform getPlatform(Class domainClass) {
+    public Platform getPlatform(Class<?> domainClass) {
         return this.parent.getPlatform(domainClass);
     }
 
@@ -2981,6 +2992,19 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     @Override
     public Object internalExecuteQuery(DatabaseQuery query, AbstractRecord databaseRow) throws DatabaseException, QueryException {
+        if (project.allowExtendedThreadLogging()) {
+            Thread currentThread = Thread.currentThread();
+            if (this.CREATION_THREAD_HASHCODE != currentThread.hashCode()) {
+                log(SessionLog.SEVERE, SessionLog.THREAD, "unit_of_work_thread_info", new Object[]{this.getName(),
+                        this.CREATION_THREAD_ID, this.CREATION_THREAD_NAME,
+                        currentThread.getId(), currentThread.getName()});
+                if (project.allowExtendedThreadLoggingThreadDump()) {
+                    log(SessionLog.SEVERE, SessionLog.THREAD, "unit_of_work_thread_info_thread_dump", new Object[]{
+                            this.CREATION_THREAD_ID, this.CREATION_THREAD_NAME, this.creationThreadStackTrace,
+                            currentThread.getId(), currentThread.getName(), ConcurrencyUtil.SINGLETON.enrichGenerateThreadDumpForCurrentThread()});
+                }
+            }
+        }
         Object result = query.executeInUnitOfWork(this, databaseRow);
         executeDeferredEvents();
         return result;
@@ -3047,7 +3071,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return boolean, true if the class is read-only, false otherwise.
      */
     @Override
-    public boolean isClassReadOnly(Class theClass, ClassDescriptor descriptor) {
+    public boolean isClassReadOnly(Class<?> theClass, ClassDescriptor descriptor) {
         if ((descriptor != null) && (descriptor.shouldBeReadOnly())) {
             return true;
         }
@@ -3359,7 +3383,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 //If we are merging into the shared cache acquire all required locks before merging.
                 this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
             }
-            Set<Class> classesChanged = new HashSet<>();
+            Set<Class<?>> classesChanged = new HashSet<>();
             if (! shouldStoreBypassCache()) {
                 for (Map<ObjectChangeSet, ObjectChangeSet> objectChangesList : ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getObjectChanges().values()) {
                     // May be no changes for that class type.
@@ -3406,7 +3430,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
                 postMergeChanges(classesChanged);
 
-                for (Class changedClass : classesChanged) {
+                for (Class<?> changedClass : classesChanged) {
                     this.parent.getIdentityMapAccessorInstance().invalidateQueryCache(changedClass);
                 }
                 // If change propagation enabled through RemoteCommandManager then go for it
@@ -3628,7 +3652,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This can be used to ensure that new objects are registered correctly.
      */
     @Override
-    public Object newInstance(Class theClass) {
+    public Object newInstance(Class<?> theClass) {
         //CR#2272
         logDebugMessage(theClass, "new_instance");
 
@@ -3671,7 +3695,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             existQuery.setIsExecutionClone(true);
 
             existQuery.setCheckCacheFirst(true);
-            if (((Boolean)executeQuery(existQuery)).booleanValue()){
+            if ((Boolean) executeQuery(existQuery)){
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_remove_detatched_entity", new Object[]{toBeDeleted}));
             }//else, it is a new or previously deleted object that should be ignored (and delete should cascade)
         } else {
@@ -3788,9 +3812,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected void postMergeChanges(Set classesChanged) {
         //bug 4730595: objects removed during flush are not removed from the cache during commit
         if (this.unitOfWorkChangeSet.hasDeletedObjects()) {
-            Map deletedObjects = this.unitOfWorkChangeSet.getDeletedObjects();
-            for (Iterator removedObjects = deletedObjects.keySet().iterator(); removedObjects.hasNext(); ) {
-                ObjectChangeSet removedObjectChangeSet = (ObjectChangeSet) removedObjects.next();
+            Map<ObjectChangeSet, ObjectChangeSet> deletedObjects = this.unitOfWorkChangeSet.getDeletedObjects();
+            for (Iterator<ObjectChangeSet> removedObjects = deletedObjects.keySet().iterator(); removedObjects.hasNext(); ) {
+                ObjectChangeSet removedObjectChangeSet = removedObjects.next();
                 Object primaryKey = removedObjectChangeSet.getId();
                 ClassDescriptor descriptor = removedObjectChangeSet.getDescriptor();
                 // PERF: Do not remove if uow is isolated.
@@ -4022,6 +4046,37 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (descriptor.isDescriptorTypeAggregate()) {
             throw ValidationException.cannotRegisterAggregateObjectInUnitOfWork(objectToRegister.getClass());
         }
+        CacheKey cacheKey = null;
+        Object objectToRegisterId = null;
+        Thread currentThread = Thread.currentThread();
+        if (project.allowExtendedCacheLogging()) {
+            //Not null if objectToRegister exist in cache
+            Session rootSession = this.getRootSession(null).getParent() == null ? this.getRootSession(null) : this.getRootSession(null).getParent();
+            cacheKey = ((org.eclipse.persistence.internal.sessions.IdentityMapAccessor)rootSession.getIdentityMapAccessor()).getCacheKeyForObject(objectToRegister);
+            objectToRegisterId = this.getId(objectToRegister);
+            if (cacheKey != null) {
+                log(SessionLog.FINEST, SessionLog.CACHE, "cache_hit", new Object[] {objectToRegister.getClass(), objectToRegisterId});
+            } else {
+                log(SessionLog.FINEST, SessionLog.CACHE, "cache_miss", new Object[] {objectToRegister.getClass(), objectToRegisterId});
+            }
+            if (cacheKey != null && currentThread.hashCode() != cacheKey.CREATION_THREAD_HASHCODE) {
+                log(SessionLog.FINEST, SessionLog.CACHE, "cache_thread_info", new Object[]{objectToRegister.getClass(), objectToRegisterId,
+                        cacheKey.CREATION_THREAD_ID, cacheKey.CREATION_THREAD_NAME,
+                        currentThread.getId(), currentThread.getName()});
+            }
+        }
+        if (project.allowExtendedThreadLogging()) {
+            if (this.CREATION_THREAD_HASHCODE != currentThread.hashCode()) {
+                log(SessionLog.SEVERE, SessionLog.THREAD, "unit_of_work_thread_info", new Object[]{this.getName(),
+                        this.CREATION_THREAD_ID, this.CREATION_THREAD_NAME,
+                        currentThread.getId(), currentThread.getName()});
+                if (project.allowExtendedThreadLoggingThreadDump()) {
+                    log(SessionLog.SEVERE, SessionLog.THREAD, "unit_of_work_thread_info_thread_dump", new Object[]{
+                            this.CREATION_THREAD_ID, this.CREATION_THREAD_NAME, this.creationThreadStackTrace,
+                            currentThread.getId(), currentThread.getName(), ConcurrencyUtil.SINGLETON.enrichGenerateThreadDumpForCurrentThread()});
+                }
+            }
+        }
         //CR#2272
         logDebugMessage(objectToRegister, "register_existing");
         Object registeredObject;
@@ -4055,7 +4110,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     // check object for cachekey otherwise
                     // a new cache-key is used as there is no original to use for locking.
                     // It read time must be set to avoid it being invalidated.
-                    CacheKey cacheKey = null;
+                    cacheKey = null;
                     if (objectToRegister instanceof PersistenceEntity){
                         cacheKey = ((PersistenceEntity)objectToRegister)._persistence_getCacheKey();
                     }
@@ -4372,7 +4427,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             existQuery.setObject(newObject);
             existQuery.setDescriptor(descriptor);
             existQuery.setIsExecutionClone(true);
-            if (((Boolean)executeQuery(existQuery)).booleanValue()) {
+            if ((Boolean) executeQuery(existQuery)) {
                 throw ValidationException.cannotPersistExistingObject(newObject, this);
             }
         }
@@ -4648,7 +4703,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * It is illegal to try to send this method to a nested UnitOfWork.
      */
     @Override
-    public void removeReadOnlyClass(Class theClass) throws ValidationException {
+    public void removeReadOnlyClass(Class<?> theClass) throws ValidationException {
         if (!canChangeReadOnlySet()) {
             throw ValidationException.cannotModifyReadOnlyClassesSetAfterUsingUnitOfWork();
         }
@@ -4810,7 +4865,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return Map to facilitate merging with conforming instances
      * returned from a query on the database.
      */
-    public Map<Object, Object> scanForConformingInstances(Expression selectionCriteria, Class referenceClass, AbstractRecord arguments, ObjectLevelReadQuery query) {
+    public Map<Object, Object> scanForConformingInstances(Expression selectionCriteria, Class<?> referenceClass, AbstractRecord arguments, ObjectLevelReadQuery query) {
         // for bug 3568141 use the painstaking shouldTriggerIndirection if set
         int policy = query.getInMemoryQueryIndirectionPolicyState();
         if (policy != InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION) {
@@ -4850,7 +4905,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * INTERNAL:
      * Used to set the collections of all objects in the UnitOfWork.
-     * @param objects
      */
     protected void setAllClonesCollection(Map objects) {
         this.allClones = objects;
@@ -4975,7 +5029,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This set of classes given are checked that subclasses of a read-only class are also
      * in the read-only set provided.
      */
-    public void setReadOnlyClasses(List<Class> classes) {
+    public void setReadOnlyClasses(List<Class<?>> classes) {
         if (classes.isEmpty()) {
             this.readOnlyClasses = null;
             return;
@@ -5372,10 +5426,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void resumeUnitOfWork() {
         // Resume new objects.
         if (hasNewObjects() && !this.isNestedUnitOfWork) {
-            Iterator newEntries = this.newObjectsCloneToOriginal.entrySet().iterator();
+            Iterator<Map.Entry<Object, Object>> newEntries = this.newObjectsCloneToOriginal.entrySet().iterator();
             Map cloneToOriginals = getCloneToOriginals();
             while (newEntries.hasNext()) {
-                Map.Entry entry = (Map.Entry)newEntries.next();
+                Map.Entry<Object, Object> entry = newEntries.next();
                 Object clone = entry.getKey();
                 Object original = entry.getValue();
                 if (original != null) {
@@ -5414,7 +5468,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (this.unregisteredDeletedObjectsCloneToBackupAndOriginal == null) {
                 this.unregisteredDeletedObjectsCloneToBackupAndOriginal = new IdentityHashMap(this.objectsDeletedDuringCommit.size());
             }
-            Iterator iterator = this.objectsDeletedDuringCommit.keySet().iterator();
+            Iterator<Object> iterator = this.objectsDeletedDuringCommit.keySet().iterator();
             Map cloneToOriginals = getCloneToOriginals();
             while (iterator.hasNext()) {
                 Object deletedObject = iterator.next();
@@ -5774,7 +5828,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      */
     public void addPessimisticLockedClone(Object clone) {
-        log(SessionLog.FINEST, SessionLog.TRANSACTION, "tracking_pl_object", clone, Integer.valueOf(this.hashCode()));
+        log(SessionLog.FINEST, SessionLog.TRANSACTION, "tracking_pl_object", clone, this.hashCode());
         getPessimisticLockedObjects().put(clone, clone);
     }
 
@@ -5939,9 +5993,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             //ignore for bug 290703
         }
         if(accessor!=null && accessor instanceof DatasourceAccessor){
-            getProperties().put(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY,Integer.valueOf(((DatasourceAccessor)accessor).getReadStatementsCount()));
-            getProperties().put(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY,Integer.valueOf(((DatasourceAccessor)accessor).getWriteStatementsCount()));
-            getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY,Integer.valueOf(((DatasourceAccessor)accessor).getStoredProcedureStatementsCount()));
+            getProperties().put(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY, ((DatasourceAccessor) accessor).getReadStatementsCount());
+            getProperties().put(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY, ((DatasourceAccessor) accessor).getWriteStatementsCount());
+            getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY, ((DatasourceAccessor) accessor).getStoredProcedureStatementsCount());
         }
     }
 
@@ -5955,7 +6009,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * This method is used internally to create a map to hold the persistenceContexts.  A weak map is returned if ReferenceMode is weak.
      *
-     *  @param size
      */
     protected Map createMap(int size){
         if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) return new IdentityWeakHashMap(size);
@@ -5996,7 +6049,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @param id The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
      */
     @Override
-    public Object getReference(Class theClass, Object id) {
+    public Object getReference(Class<?> theClass, Object id) {
         ClassDescriptor descriptor = getDescriptor(theClass);
         if (descriptor == null || descriptor.isDescriptorTypeAggregate()) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { theClass }));
@@ -6102,13 +6155,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     @Override
-    public DatabaseValueHolder createCloneQueryValueHolder(ValueHolderInterface attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
-        return new UnitOfWorkQueryValueHolder(attributeValue, clone, mapping, row, this);
+    public <T> DatabaseValueHolder<T> createCloneQueryValueHolder(ValueHolderInterface<T> attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
+        return new UnitOfWorkQueryValueHolder<>(attributeValue, clone, mapping, row, this);
     }
 
     @Override
-    public DatabaseValueHolder createCloneTransformationValueHolder(ValueHolderInterface attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
-        return new UnitOfWorkTransformerValueHolder(attributeValue, original, clone, mapping, this);
+    public <T> DatabaseValueHolder<T> createCloneTransformationValueHolder(ValueHolderInterface<T> attributeValue, Object original, Object clone, AbstractTransformationMapping mapping) {
+        return new UnitOfWorkTransformerValueHolder<>(attributeValue, original, clone, mapping, this);
     }
 
     /**

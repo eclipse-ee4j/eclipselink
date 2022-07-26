@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,21 +35,21 @@ public abstract class _SunCORBAConnectionImplBase extends ObjectImpl implements 
     public _SunCORBAConnectionImplBase() {
     }
 
-    private static Hashtable _methods = new Hashtable();
+    private static Hashtable<String, Integer> _methods = new Hashtable<>();
 
     static {
-        _methods.put("executeCommand", Integer.valueOf(0));
+        _methods.put("executeCommand", 0);
     }
 
     @Override
     public org.omg.CORBA.portable.OutputStream _invoke(String $method, InputStream in, ResponseHandler $rh) {
         OutputStream out = null;
-        Integer __method = (Integer) _methods.get($method);
+        Integer __method = _methods.get($method);
         if (__method == null) {
             throw new BAD_OPERATION(0, CompletionStatus.COMPLETED_MAYBE);
         }
 
-        switch (__method.intValue()) {
+        switch (__method) {
         case 0:// org/eclipse/persistence/internal/remotecommand/corba/sun/SunCORBAConnection/executeCommand
          {
             byte[] commandData = org.eclipse.persistence.internal.sessions.coordination.corba.sun.CommandDataHelper.read(in);

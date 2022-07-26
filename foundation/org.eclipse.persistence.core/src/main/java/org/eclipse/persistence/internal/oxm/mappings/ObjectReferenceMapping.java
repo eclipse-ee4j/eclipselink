@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,8 +38,6 @@ public interface ObjectReferenceMapping<
     /**
      * Add a source-target xpath pair to the map.
      *
-     * @param srcXPath
-     * @param tgtXPath
      */
     void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath);
 
@@ -51,7 +49,7 @@ public interface ObjectReferenceMapping<
 
     InverseReferenceMapping getInverseReferenceMapping();
 
-    Class getReferenceClass();
+    Class<?> getReferenceClass();
 
     /**
      * INTERNAL:

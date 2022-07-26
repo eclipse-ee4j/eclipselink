@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,23 +14,32 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import java.io.File;
-import java.net.URL;
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.PropertyException;
 import jakarta.xml.bind.Unmarshaller;
 import jakarta.xml.bind.ValidationException;
-import jakarta.xml.bind.Validator;
-import org.eclipse.persistence.testing.oxm.xmlmarshaller.Car;
+
+import java.io.File;
+
 import junit.framework.TestCase;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBValidator;
+import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Address;
+import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Badge;
+import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Employee;
+import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
+import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Job;
+import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Job2;
+import org.eclipse.persistence.testing.jaxb.xmlmarshaller.Phone;
+import org.eclipse.persistence.testing.oxm.xmlmarshaller.Car;
+
 public class ValidatorTestCases extends TestCase {
-    private final static String CONTROL_XML_FILE_NAME = "org/eclipse/persistence/testing/oxm/jaxb/Employee_WithAddresses.xml";
-    private final static String CONTROL_XML_ADDRESS_FAIL = "org/eclipse/persistence/testing/oxm/jaxb/Employee_WithAddresses_Fail.xml";
-    private final static String CONTROL_XML_INHERITANCE_FILE_NAME = "org/eclipse/persistence/testing/oxm/jaxb/Employee_WithPOBoxAddress.xml";
-    private final static String CONTROL_JOB_FILE_NAME = "org/eclipse/persistence/testing/oxm/jaxb/Job_Empty.xml";
+    private final static String CONTROL_XML_FILE_NAME = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_WithAddresses.xml";
+    private final static String CONTROL_XML_ADDRESS_FAIL = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_WithAddresses_Fail.xml";
+    private final static String CONTROL_XML_INHERITANCE_FILE_NAME = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_WithPOBoxAddress.xml";
+    private final static String CONTROL_JOB_FILE_NAME = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Job_Empty.xml";
     private JAXBContext jaxbContext;
-    private Validator validator;
+    private JAXBValidator validator;
     private Unmarshaller unmarshaller;
     private String contextPath;
 
@@ -38,10 +47,11 @@ public class ValidatorTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         contextPath = System.getProperty("jaxb.test.contextpath", JAXBSAXTestSuite.CONTEXT_PATH);
 
-        jaxbContext = JAXBContext.newInstance(contextPath);
+        jaxbContext = (JAXBContext) JAXBContext.newInstance(contextPath);
         validator = jaxbContext.createValidator();
         unmarshaller = jaxbContext.createUnmarshaller();
     }
@@ -299,6 +309,7 @@ public class ValidatorTestCases extends TestCase {
 
     //=============================== Inner class for eventhandler test =================//
     class ValidationEventHandlerImpl implements jakarta.xml.bind.ValidationEventHandler {
+        @Override
         public boolean handleEvent(jakarta.xml.bind.ValidationEvent param1) {
             return true;
         }

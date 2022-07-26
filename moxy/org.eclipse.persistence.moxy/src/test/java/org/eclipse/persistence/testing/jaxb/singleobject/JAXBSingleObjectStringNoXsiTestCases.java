@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,7 +48,7 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
         setControlDocument(XML_RESOURCE);
         setControlDocument(XML_RESOURCE_WRITE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Object.class;
         setClasses(classes);
     }
@@ -65,10 +65,12 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
         return null;
     }
 
+    @Override
     public Object getWriteControlObject() {
         return getControlObject();
     }
 
+    @Override
     protected Object getControlObject() {
         String testString = "25";
         QName qname = new QName("rootNamespace", "root");
@@ -76,6 +78,7 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
         return jaxbElement;
     }
 
+    @Override
     public Map getProperties(){
         Map props = new HashMap();
 
@@ -91,9 +94,11 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
         return XML_RESOURCE;
     }
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
 
+    @Override
     public void testRoundTrip() throws Exception{
         if(isUnmarshalTest()) {
             InputStream instream = null;
@@ -111,7 +116,7 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
     }
 
     @Override
-    public Class getUnmarshalClass() {
+    public Class<?> getUnmarshalClass() {
         return String.class;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.framework;
 
 
 /**
- * <p>Purpose<b></b>:A wrapper around TestCase.
+ * <p><b>Purpose</b>:A wrapper around TestCase.
  * Use it to aggregate test instead of inheriting from it.
  * Suppose we need to amend in the same way
  * setup and reset for unspecified number of TestCase's subclasses.
@@ -50,30 +50,37 @@ public class TestWrapper extends TestCase {
         setDescription(test.getDescription());
     }
 
+    @Override
     protected void setup() throws Throwable {
         test.setup();
     }
 
+    @Override
     protected void test() throws Throwable {
         test.test();
     }
 
+    @Override
     protected void verify() throws Throwable {
         test.verify();
     }
 
+    @Override
     public void reset() throws Throwable {
         test.reset();
     }
 
+    @Override
     protected void resetVerify() throws Throwable {
         test.resetVerify();
     }
 
+    @Override
     public TestExecutor getExecutor() {
         return test.getExecutor();
     }
 
+    @Override
     public void setExecutor(TestExecutor anExecutor) {
         test.setExecutor(anExecutor);
     }

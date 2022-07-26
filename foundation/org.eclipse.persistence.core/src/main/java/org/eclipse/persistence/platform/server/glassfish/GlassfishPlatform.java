@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.services.glassfish.MBeanGlassfishRuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController;
 import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController11;
 
@@ -92,7 +93,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * @see ServerPlatformBase#initializeExternalTransactionController()
      */
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {
             // JTA 1.1 exixts since Glassfish 3. Check JTA 1.1 availability to set proper JTa transaction controller.
             externalTransactionControllerClass = isJTA11()
@@ -106,7 +107,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         Connection unwrappedConnection;
 
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            unwrappedConnection = AccessController.doPrivileged(new PrivilegedAction<Connection>() {
+            unwrappedConnection = AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Connection run() {
                     return unwrapGlassFishConnectionHelper(connection);
@@ -132,7 +133,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         // If GlassFish behavior changes, both reflective call below should be cached.
         Connection unwrappedConnection = null;
         try {
-            Class connectionWrapperClass = connection.getClass().getClassLoader().loadClass("com.sun.gjc.spi.base.ConnectionHolder");
+            Class<?> connectionWrapperClass = connection.getClass().getClassLoader().loadClass("com.sun.gjc.spi.base.ConnectionHolder");
             if(connectionWrapperClass.isInstance(connection) ) {
                 Method unwrapMethod = connectionWrapperClass.getDeclaredMethod("getConnection");
                 unwrappedConnection = (Connection) unwrapMethod.invoke(connection);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,11 +34,13 @@ public class MyJAXBAttachmentUnmarshaller extends AttachmentUnmarshaller {
         getAttachmentAsDataHandlerWasCalled = false;
     }
 
+    @Override
     public byte[] getAttachmentAsByteArray(String cid) {
         Object obj = MyJAXBAttachmentMarshaller.attachments.get(ATTACHMENT_TEST_ID);
         return (byte[])obj;
     }
 
+    @Override
     public DataHandler getAttachmentAsDataHandler(String cid) {
         this.getAttachmentAsDataHandlerWasCalled = true;
         HashMap map = MyJAXBAttachmentMarshaller.attachments;
@@ -49,6 +51,7 @@ public class MyJAXBAttachmentUnmarshaller extends AttachmentUnmarshaller {
         return null;
     }
 
+    @Override
     public boolean isXOPPackage() {
         // force attachment usage
         return true;

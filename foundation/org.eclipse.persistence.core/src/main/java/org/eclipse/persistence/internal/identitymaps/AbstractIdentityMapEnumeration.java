@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public abstract class AbstractIdentityMapEnumeration<T> implements Enumeration<T
      * @param shouldCheckReadLocks value of {@code true} if read lock on the {@link CacheKey}
      *        instances should be checked or {@code false} otherwise
      */
-    public AbstractIdentityMapEnumeration(Collection<CacheKey> keys, boolean shouldCheckReadLocks) {
+    protected AbstractIdentityMapEnumeration(Collection<CacheKey> keys, boolean shouldCheckReadLocks) {
         this.shouldCheckReadLocks = shouldCheckReadLocks;
         this.cacheKeysIterator = keys.iterator();
     }

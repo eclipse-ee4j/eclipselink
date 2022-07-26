@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,6 @@
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +26,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ComplexQueryResult;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -44,12 +41,12 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
  * @since TopLink for Java 2.0
  */
 public class InterfacePolicy implements Serializable, Cloneable {
-    protected List<Class> parentInterfaces;
+    protected List<Class<?>> parentInterfaces;
     protected List<String> parentInterfaceNames;
     protected List<ClassDescriptor> parentDescriptors;
     protected List<ClassDescriptor> childDescriptors;
     protected ClassDescriptor descriptor;
-    protected Class implementorDescriptor;
+    protected Class<?> implementorDescriptor;
     protected String implementorDescriptorClassName;
 
     /**
@@ -58,10 +55,10 @@ public class InterfacePolicy implements Serializable, Cloneable {
      * Only descriptor involved in interface should have a policy.
      */
     public InterfacePolicy() {
-        this.childDescriptors = new ArrayList();
-        this.parentInterfaces = new ArrayList(2);
-        this.parentInterfaceNames = new ArrayList(2);
-        this.parentDescriptors = new ArrayList(2);
+        this.childDescriptors = new ArrayList<>();
+        this.parentInterfaces = new ArrayList<>(2);
+        this.parentInterfaceNames = new ArrayList<>(2);
+        this.parentDescriptors = new ArrayList<>(2);
     }
 
     /**
@@ -96,7 +93,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
      *
      * This method should be called once for each parent Interface of the Descriptor.
      */
-    public void addParentInterface(Class parentInterface) {
+    public void addParentInterface(Class<?> parentInterface) {
         getParentInterfaces().add(parentInterface);
     }
 
@@ -128,8 +125,9 @@ public class InterfacePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * Returns the implementor descriptor class.
      */
-    public Class getImplementorDescriptor() {
-        return implementorDescriptor;
+    @SuppressWarnings({"unchecked"})
+    public <T> Class<T> getImplementorDescriptor() {
+        return (Class<T>) implementorDescriptor;
     }
 
     /**
@@ -155,7 +153,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * Return the list of parent interfaces.
      */
-    public List<Class> getParentInterfaces() {
+    public List<Class<?>> getParentInterfaces() {
         return parentInterfaces;
     }
 
@@ -175,24 +173,14 @@ public class InterfacePolicy implements Serializable, Cloneable {
      * It will also convert referenced classes to the versions of the classes from the classLoader.
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-        List<Class> newParentInterfaces = new ArrayList(2);
-        for (Iterator iterator = getParentInterfaceNames().iterator(); iterator.hasNext(); ) {
-            String interfaceName = (String)iterator.next();
-            Class interfaceClass = null;
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        interfaceClass = AccessController.doPrivileged(new PrivilegedClassForName(interfaceName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(interfaceName, exception.getException());
-                    }
-                } else {
-                    interfaceClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(interfaceName, true, classLoader);
-                }
-            } catch (ClassNotFoundException exc){
-                throw ValidationException.classNotFoundWhileConvertingClassNames(interfaceName, exc);
-            }
-            newParentInterfaces.add(interfaceClass);
+        List<Class<?>> newParentInterfaces = new ArrayList<>(2);
+        for (Iterator<String> iterator = getParentInterfaceNames().iterator(); iterator.hasNext(); ) {
+            String interfaceName = iterator.next();
+            Class<?> interfaceClass = null;
+            newParentInterfaces.add(PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getClassForName(interfaceName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(interfaceName, ex)
+            ));
         }
         this.parentInterfaces = newParentInterfaces;
     }
@@ -235,7 +223,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
      */
     protected ObjectLevelReadQuery prepareQuery(ObjectLevelReadQuery query) {
         ObjectLevelReadQuery concreteQuery = null;
-        Class javaClass = this.descriptor.getJavaClass();
+        Class<?> javaClass = this.descriptor.getJavaClass();
         // PERF: First check the subclass query cache for the prepared query.
         boolean shouldPrepare = query.shouldPrepare();
         if (shouldPrepare) {
@@ -258,7 +246,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
                 concreteQuery.setSelectionCriteria(concreteQuery.getQueryMechanism().getSelectionCriteria().rebuildOn(concreteQuery.getExpressionBuilder()));
             }
             if (concreteQuery.hasAdditionalFields()) {
-                List rebuiltFields = new ArrayList(concreteQuery.getAdditionalFields().size());
+                List<Object> rebuiltFields = new ArrayList<>(concreteQuery.getAdditionalFields().size());
                 for (Object field : concreteQuery.getAdditionalFields()) {
                     if (field instanceof Expression) {
                         rebuiltFields.add(((Expression)field).rebuildOn(concreteQuery.getExpressionBuilder()));
@@ -350,7 +338,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * Sets the implementor descriptor class.
      */
-    public void setImplementorDescriptor(Class implementorDescriptor) {
+    public void setImplementorDescriptor(Class<?> implementorDescriptor) {
         this.implementorDescriptor = implementorDescriptor;
     }
 
@@ -365,7 +353,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
     /**
      * Set the Vector to store parent interfaces.
      */
-    public void setParentInterfaces(List<Class> parentInterfaces) {
+    public void setParentInterfaces(List<Class<?>> parentInterfaces) {
         this.parentInterfaces = parentInterfaces;
     }
 

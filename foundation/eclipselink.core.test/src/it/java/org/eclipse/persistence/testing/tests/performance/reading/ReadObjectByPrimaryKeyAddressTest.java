@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class ReadObjectByPrimaryKeyAddressTest extends PerformanceTest {
     /**
      * Find any address.
      */
+    @Override
     public void setup() {
         super.setup();
         Expression expression = new ExpressionBuilder().get("postalCode").equal("L5J2B5");
@@ -44,6 +45,7 @@ public class ReadObjectByPrimaryKeyAddressTest extends PerformanceTest {
     /**
      * Read employee and clear the cache, test database read.
      */
+    @Override
     public void test() throws Exception {
         if (!shouldCache()) {
             getSession().getIdentityMapAccessor().removeFromIdentityMap(address);

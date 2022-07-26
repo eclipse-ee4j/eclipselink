@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,40 +57,25 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
         this.element = element;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void add(E item) {
         throw new UnsupportedOperationException("This SingleElementListIterator is read-only.");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasNext() {
         return next == element;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasPrevious() {
         return next == END;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public ListIterator<E> iterator() {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public E next() {
@@ -103,17 +88,11 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
         return element;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int nextIndex() {
         return (next == element) ? 0 : 1;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public E previous() {
 
@@ -125,25 +104,16 @@ public class SingleElementListIterator<E> implements ListIterator<E> {
         return element;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int previousIndex() {
         return (next == END) ? 0 : -1;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void remove() {
         throw new UnsupportedOperationException("This SingleElementListIterator is read-only.");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void set(E item) {
         throw new UnsupportedOperationException("This SingleElementListIterator is read-only.");

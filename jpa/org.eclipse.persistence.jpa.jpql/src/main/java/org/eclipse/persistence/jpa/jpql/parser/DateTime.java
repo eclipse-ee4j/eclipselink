@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * The JDBC escape syntax may be used for the specification of date, time, and timestamp literals.
  *
- * <div><b>BNF:</b> <code>expression ::= {d 'yyyy-mm-dd'} | {t 'hh:mm:ss'} | {ts 'yyyy-mm-dd hh:mm:ss.f...'}</code><p></div>
+ * <div><b>BNF:</b> <code>expression ::= {d 'yyyy-mm-dd'} | {t 'hh:mm:ss'} | {ts 'yyyy-mm-dd hh:mm:ss.f...'}</code></div>
  *
  * @version 2.4
  * @since 2.3
@@ -54,24 +54,15 @@ public final class DateTime extends AbstractExpression {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
         children.add(buildStringExpression(getText()));
@@ -87,17 +78,11 @@ public final class DateTime extends AbstractExpression {
         return identifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningDatetimeBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getText() {
         return super.getText();
@@ -148,9 +133,6 @@ public final class DateTime extends AbstractExpression {
         return getText().charAt(0) == LEFT_CURLY_BRACKET;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -204,25 +186,16 @@ public final class DateTime extends AbstractExpression {
         wordParser.moveForward(stopIndex - startIndex);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toActualText() {
         return getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toParsedText() {
         return getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
         writer.append(actual && !isJDBCDate() ? identifier : getText());

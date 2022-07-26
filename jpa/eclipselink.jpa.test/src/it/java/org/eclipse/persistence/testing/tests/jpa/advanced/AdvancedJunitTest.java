@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,19 +22,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.Query;
 
-import junit.framework.*;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
-import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
@@ -52,6 +49,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleEntity;
 import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleNature;
 import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleLanguage;
+import org.junit.Assert;
 
 public class AdvancedJunitTest extends JUnitTestCase {
     public AdvancedJunitTest() {
@@ -576,7 +574,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
             query = query.setParameter("sal", null); // deliberate null parameter value
             Long result = (Long)query.getSingleResult(); // query should still function
             assertNotNull("Query result should be non-null", result);
-            assertEquals("Incorrect query results", new Long(2), result); // result value from db
+            assertEquals("Incorrect query results", Long.valueOf(2), result); // result value from db
         } catch (RuntimeException e) {
             throw e;
         } finally {

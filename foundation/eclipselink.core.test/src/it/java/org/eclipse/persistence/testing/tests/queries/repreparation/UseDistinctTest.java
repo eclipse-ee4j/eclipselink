@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,12 @@ public class UseDistinctTest extends AutoVerifyTestCase {
         setDescription("Test if SQL is reprepared the second time");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
@@ -41,11 +43,13 @@ public class UseDistinctTest extends AutoVerifyTestCase {
         results = (Vector)getSession().executeQuery(reportQuery);
     }
 
+    @Override
     public void test() {
         reportQuery.useDistinct();
         results = (Vector)getSession().executeQuery(reportQuery);
     }
 
+    @Override
     public void verify() {
         if (!reportQuery.getCall().getSQLString().equals("SELECT DISTINCT t0.F_NAME FROM EMPLOYEE t0, SALARY t1 WHERE (t1.EMP_ID = t0.EMP_ID)")) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("UseDistinctTest failed.");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -179,13 +179,13 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
 
                 depth++;
                 StartElement startElement = xmlEvent.asStartElement();
-                Iterator namespaces = startElement.getNamespaces();
+                Iterator<Namespace> namespaces = startElement.getNamespaces();
                 List<Namespace> declaredNs = null;
                 if(namespaces.hasNext()) {
                     declaredNs = new ArrayList<>();
                 }
                 while(namespaces.hasNext()) {
-                    Namespace next = (Namespace)namespaces.next();
+                    Namespace next = namespaces.next();
                     contentHandler.startPrefixMapping(next.getPrefix(), next.getNamespaceURI());
                     declaredNs.add(next);
                 }

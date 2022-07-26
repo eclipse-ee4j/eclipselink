@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * The <code><b>GROUP BY</b></code> construct enables the aggregation of values according to the
  * properties of an entity class.
  *
- * <div><b>BNF:</b> <code>groupby_clause ::= GROUP BY groupby_item {, groupby_item}*</code><p></div>
+ * <div><p><b>BNF:</b> <code>groupby_clause ::= GROUP BY groupby_item {, groupby_item}*</code></p></div>
  *
  * @see GroupByClause
  *
@@ -52,9 +52,6 @@ public class GroupByClauseStateObject extends AbstractListHolderStateObject<Stat
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -73,34 +70,22 @@ public class GroupByClauseStateObject extends AbstractListHolderStateObject<Stat
         return stateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public GroupByClause getExpression() {
         return (GroupByClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSelectStatementStateObject getParent() {
         return (AbstractSelectStatementStateObject) super.getParent();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
         return super.isEquivalent(stateObject) &&
                areChildrenEquivalent((GroupByClauseStateObject) stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return GROUP_BY_ITEMS_LIST;
@@ -129,9 +114,6 @@ public class GroupByClauseStateObject extends AbstractListHolderStateObject<Stat
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         writer.append(GROUP_BY);

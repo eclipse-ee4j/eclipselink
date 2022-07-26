@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import java.sql.Time;
 
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class AdvancedReadTransformer implements AttributeTransformer {
@@ -32,22 +32,24 @@ public class AdvancedReadTransformer implements AttributeTransformer {
     /**
      * @param mapping - The mapping associated with this transformer. Only used if some special information is required.
      */
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
         this.attributeName = mapping.getAttributeName();
     }
 
     /**
-     * @param record - The metadata being used to build the object.
+     * @param dataRecord - The metadata being used to build the object.
      * @param session - the current session
      * @param object - The current object that the attribute is being built for.
      * @return - The attribute value to be built into the object containing this mapping.
      */
-    public Object buildAttributeValue(Record record, Object object, Session session) {
+    @Override
+    public Object buildAttributeValue(DataRecord dataRecord, Object object, Session session) {
         if(attributeName.equals("overtimeHours")) {
             Time[] hours = new Time[2];
             /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
-            hours[0] = (Time) session.getDatasourcePlatform().convertObject(record.get("START_OVERTIME"), java.sql.Time.class);
-            hours[1] = (Time) session.getDatasourcePlatform().convertObject(record.get("END_OVERTIME"), java.sql.Time.class);
+            hours[0] = session.getDatasourcePlatform().convertObject(dataRecord.get("START_OVERTIME"), Time.class);
+            hours[1] = session.getDatasourcePlatform().convertObject(dataRecord.get("END_OVERTIME"), Time.class);
             return hours;
         } else {
             throw new RuntimeException("Unknown attribute");

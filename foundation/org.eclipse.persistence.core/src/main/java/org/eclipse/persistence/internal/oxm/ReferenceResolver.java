@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,7 +86,7 @@ public final class ReferenceResolver {
     /**
      * Speed-up cache that was introduced in 2.5 instead of the previous speed-up mechanisms using session cache.
      */
-    private Map<Class, Map<Object, Object>> cache;
+    private Map<Class<?>, Map<Object, Object>> cache;
 
     /**
      * The default constructor initializes the list of References.
@@ -102,10 +102,10 @@ public final class ReferenceResolver {
     /* Shows why the containers are not final. Keep this private method up here. */
     /**
      * Resets the references containers.
-     * <p/>
+     * <br>
      * PERF:
      * Allocating a new object may be faster than clearing old objects, especially in this case.
-     * <p/>
+     * <br>
      * As 'Stephen C' points out: ,,There are locality and cross-generational issues that could affect performance. When
      * you repeatedly recycle an ArrayList, the object and its backing array are likely to be tenured. That means that:
      * <pre>
@@ -115,7 +115,7 @@ public final class ReferenceResolver {
      *     write barrier overheads ... depending on the GC implementation."
      * </pre>
      * from <a href="http://stackoverflow.com/questions/18370780/empty-an-arraylist-or-just-create-a-new-one-and-let-the-old-one-be-garbage-colle">Stack Overflow.</a>
-     * <p/>
+     * <br>
      * Taking last size can give approximate prediction of the next size.
      * Halving provides convergence and increases efficiency. Since the list will be empty after, it's efficient.
      */
@@ -304,7 +304,7 @@ public final class ReferenceResolver {
      *
      * @since EclipseLink 2.5.0
      */
-    public void putValue(final Class clazz, final Object key, final Object object) {
+    public void putValue(final Class<?> clazz, final Object key, final Object object) {
         Map<Object, Object> keyToObject = cache.get(clazz);
         if (null == keyToObject) {
             keyToObject = new HashMap<>();
@@ -553,7 +553,7 @@ public final class ReferenceResolver {
      */
     private Object getValue(final CoreAbstractSession session, final Reference reference, final CacheId primaryKey,
                             final ErrorHandler handler) {
-        final Class referenceTargetClass = reference.getTargetClass();
+        final Class<?> referenceTargetClass = reference.getTargetClass();
         if (null == referenceTargetClass || referenceTargetClass == CoreClassConstants.OBJECT) {
             for (Object entry : session.getDescriptors().values()) {
                 Object value = null;
@@ -562,7 +562,7 @@ public final class ReferenceResolver {
                 if (null != pkFields && 1 == pkFields.size()) {
                     Field pkField = (Field) pkFields.get(0);
                     pkField = (Field) targetDescriptor.getTypedField(pkField);
-                    final Class targetType = pkField.getType();
+                    final Class<?> targetType = pkField.getType();
                     if (targetType == CoreClassConstants.STRING || targetType == CoreClassConstants.OBJECT) {
                         value = getValue(targetDescriptor.getJavaClass(), primaryKey);
                     } else {
@@ -630,7 +630,7 @@ public final class ReferenceResolver {
     /**
      * Retrieves value from {@link #cache}.
      */
-    private Object getValue(Class clazz, CacheId primaryKey) {
+    private Object getValue(Class<?> clazz, CacheId primaryKey) {
         Map<Object, Object> keyToObject = cache.get(clazz);
         if (null != keyToObject) {
             return keyToObject.get(primaryKey);

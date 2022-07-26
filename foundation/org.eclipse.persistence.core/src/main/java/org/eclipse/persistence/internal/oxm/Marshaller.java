@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public abstract class Marshaller<
     private MARSHALLER_LISTENER marshalListener;
     protected Properties marshalProperties;
 
-    public Marshaller(CONTEXT context) {
+    protected Marshaller(CONTEXT context) {
         this.context = context;
         this.encoding = Constants.DEFAULT_XML_ENCODING;
         this.equalUsingIdenity = true;
@@ -246,7 +246,7 @@ public abstract class Marshaller<
      * <p>An implementation of Marshaller.Listener can be set on an Marshaller
      * to provide additional behaviour during marshal operations.</p>
      */
-    public static interface Listener {
+    public interface Listener {
 
         /**
          * This event  will be called after an object is marshalled.

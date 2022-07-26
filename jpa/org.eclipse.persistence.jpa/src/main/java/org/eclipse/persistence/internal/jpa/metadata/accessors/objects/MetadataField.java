@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,6 @@ public class MetadataField extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      * Used to determine if this is a field EclipseLink weaved into the class.
-     * @return
      */
     public boolean isEclipseLinkWeavedField(){
         return getName().startsWith(ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX);
@@ -106,7 +105,6 @@ public class MetadataField extends MetadataAnnotatedElement {
     /**
      * INTERNAL
      * Some fields should automatically be ignored, return true if this field should be ignored
-     * @return
      */
     public boolean shouldBeIgnored(){
         return (getName() != null) && (getName().startsWith(ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -106,7 +106,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * externalTransactionControllerClass: This is a user-specifiable class defining the class
      * of external transaction controller to be set into the DatabaseSession
      */
-    protected Class externalTransactionControllerClass;
+    protected Class<? extends ExternalTransactionController> externalTransactionControllerClass;
 
 
     /**
@@ -152,7 +152,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @param newDatabaseSession
      *            The instance of DatabaseSession that I am helping.
      */
-    public ServerPlatformBase(DatabaseSession newDatabaseSession) {
+    protected ServerPlatformBase(DatabaseSession newDatabaseSession) {
         this.isJTAEnabled = true;
         // Default JMX support to false for all sub-platforms except those that override this flag
         this.isRuntimeServicesEnabled = isRuntimeServicesEnabledDefault();
@@ -253,7 +253,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #disableJTA()
      */
     @Override
-    public abstract Class getExternalTransactionControllerClass();
+    public abstract Class<? extends ExternalTransactionController> getExternalTransactionControllerClass();
 
     /**
      * INTERNAL: setExternalTransactionControllerClass(Class newClass): Set the class of external
@@ -266,7 +266,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #initializeExternalTransactionController()
      */
     @Override
-    public void setExternalTransactionControllerClass(Class newClass) {
+    public void setExternalTransactionControllerClass(Class<? extends ExternalTransactionController> newClass) {
         this.externalTransactionControllerClass = newClass;
     }
 
@@ -302,7 +302,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
             ExternalTransactionController controller = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    controller = (ExternalTransactionController)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(this.getExternalTransactionControllerClass()));
+                    controller = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(this.getExternalTransactionControllerClass()));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof InstantiationException) {
@@ -312,7 +312,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
                     }
                 }
             } else {
-                controller = (ExternalTransactionController)PrivilegedAccessHelper.newInstanceFromClass(this.getExternalTransactionControllerClass());
+                controller = PrivilegedAccessHelper.newInstanceFromClass(this.getExternalTransactionControllerClass());
             }
             getDatabaseSession().setExternalTransactionController(controller);
         } catch (InstantiationException instantiationException) {
@@ -468,7 +468,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * Default behavior is to use Thread(runnable).start()
      *
-     * @param runnable: the instance of runnable to be "started"
+     * @param runnable the instance of runnable to be "started"
      */
     @Override
     public void launchContainerRunnable(Runnable runnable) {

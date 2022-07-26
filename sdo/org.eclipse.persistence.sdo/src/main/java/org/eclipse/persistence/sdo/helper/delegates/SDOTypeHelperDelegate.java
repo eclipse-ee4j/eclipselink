@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,11 +67,11 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     /** Map containing wrapper types */
     private Map<QName, SDOType> wrappersHashMap;
 
-    /** Map of interfaces -> SDOType */
-    private Map<Class, SDOType> interfacesToSDOTypeHashMap;
+    /** Map of interfaces -{@literal >} SDOType */
+    private Map<Class<?>, SDOType> interfacesToSDOTypeHashMap;
 
-    /** Map of impl classes -> SDOType */
-    private Map<Class, SDOType> implClassesToSDOType = new HashMap<Class, SDOType>();
+    /** Map of impl classes -{@literal >} SDOType */
+    private Map<Class<?>, SDOType> implClassesToSDOType = new HashMap<Class<?>, SDOType>();
 
     /** Map containing built-in types for primitive and SDO types */
     private final Map commonjHashMap = new HashMap();
@@ -224,7 +224,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             sdoWrapperTypes = new HashMap<>();
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_BOOLEAN_WRAPPER ,SDO_BOOLEAN_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BOOLEAN, SDOConstants.BOOLEAN, this, XMLConstants.BOOLEAN_QNAME, SDOWrapperType.BooleanWrapperImpl.class));
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_BYTE_WRAPPER ,SDO_BYTE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTE, SDOConstants.BYTE, this, XMLConstants.BYTE_QNAME, SDOWrapperType.ByteWrapperImpl.class));
-            sdoWrapperTypes.put(SDOWrapperTypeId.SDO_BYTES_WRAPPER ,SDO_BYTES_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTES, SDOConstants.BYTES, this, new QName[] { XMLConstants.BASE_64_BINARY_QNAME, XMLConstants.HEX_BINARY_QNAME }, new Class[] {SDOWrapperType.BytesWrapperImpl.class, SDOWrapperType.Bytes_hexBunaryWrapperImpl.class}));
+            sdoWrapperTypes.put(SDOWrapperTypeId.SDO_BYTES_WRAPPER ,SDO_BYTES_WRAPPER = new SDOWrapperType(SDOConstants.SDO_BYTES, SDOConstants.BYTES, this, new QName[] { XMLConstants.BASE_64_BINARY_QNAME, XMLConstants.HEX_BINARY_QNAME }, (Class<? extends SDODataObject>[]) new Class<?>[] {SDOWrapperType.BytesWrapperImpl.class, SDOWrapperType.Bytes_hexBunaryWrapperImpl.class}));
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_CHARACTER_WRAPPER ,SDO_CHARACTER_WRAPPER = new SDOWrapperType(SDOConstants.SDO_CHARACTER, SDOConstants.CHARACTER, this, XMLConstants.STRING_QNAME, SDOWrapperType.CharacterWrapperImpl.class));
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_DATE_WRAPPER ,SDO_DATE_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DATE, SDOConstants.DATE, this, XMLConstants.DATE_QNAME, SDOWrapperType.DateWrapperImpl.class));
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_DATETIME_WRAPPER ,SDO_DATETIME_WRAPPER = new SDOWrapperType(SDOConstants.SDO_DATETIME, SDOConstants.DATETIME, this, XMLConstants.DATE_TIME_QNAME, SDOWrapperType.DateTimeWrapperImpl.class));
@@ -243,7 +243,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_STRING_WRAPPER ,SDO_STRING_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRING, SDOConstants.STRING, this, XMLConstants.STRING_QNAME, SDOWrapperType.StringWrapperImpl.class));
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_STRINGS_WRAPPER ,SDO_STRINGS_WRAPPER = new SDOWrapperType(SDOConstants.SDO_STRINGS, SDOConstants.STRINGS, this, XMLConstants.STRING_QNAME, SDOWrapperType.StringsWrapperImpl.class));
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_TIME_WRAPPER ,SDO_TIME_WRAPPER = new SDOWrapperType(SDOConstants.SDO_TIME, SDOConstants.TIME, this, XMLConstants.TIME_QNAME, SDOWrapperType.TimeWrapperImpl.class));
-            sdoWrapperTypes.put(SDOWrapperTypeId.SDO_URI_WRAPPER ,SDO_URI_WRAPPER = new SDOWrapperType(SDOConstants.SDO_URI, SDOConstants.URI, this, new QName[] {XMLConstants.ANY_URI_QNAME, XMLConstants.QNAME_QNAME}, new Class[] {SDOWrapperType.URIWrapperImpl.class, SDOWrapperType.URI_QNameWrapperImpl.class}));
+            sdoWrapperTypes.put(SDOWrapperTypeId.SDO_URI_WRAPPER ,SDO_URI_WRAPPER = new SDOWrapperType(SDOConstants.SDO_URI, SDOConstants.URI, this, new QName[] {XMLConstants.ANY_URI_QNAME, XMLConstants.QNAME_QNAME}, (Class<? extends SDODataObject>[]) new Class<?>[] {SDOWrapperType.URIWrapperImpl.class, SDOWrapperType.URI_QNameWrapperImpl.class}));
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_YEAR_WRAPPER ,SDO_YEAR_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEAR, SDOConstants.YEAR, this, XMLConstants.G_YEAR_QNAME, SDOWrapperType.YearWrapperImpl.class));
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_YEARMONTH_WRAPPER ,SDO_YEARMONTH_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTH, SDOConstants.YEARMONTH, this, XMLConstants.G_YEAR_MONTH_QNAME, SDOWrapperType.YearMonthWrapperImpl.class));
             sdoWrapperTypes.put(SDOWrapperTypeId.SDO_YEARMONTHDAY_WRAPPER ,SDO_YEARMONTHDAY_WRAPPER = new SDOWrapperType(SDOConstants.SDO_YEARMONTHDAY, SDOConstants.YEARMONTHDAY, this, XMLConstants.DATE_QNAME, SDOWrapperType.YearMonthDayWrapperImpl.class));
@@ -475,7 +475,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         wrappersHashMap.put(SDOConstants.SDO_SHORTOBJECT.getQName(), SDO_SHORTOBJECT_WRAPPER);
 
         // Now add these into the impl-to-type Map
-        Iterator wrappers = wrappersHashMap.values().iterator();
+        Iterator<SDOType> wrappers = wrappersHashMap.values().iterator();
         while (wrappers.hasNext()) {
             SDOWrapperType wrapper = (SDOWrapperType) wrappers.next();
             Iterator descriptors = wrapper.getDescriptorsMap().values().iterator();
@@ -622,12 +622,12 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     @Override
-    public Class getJavaWrapperTypeForSDOType(Type type) {
+    public Class<?> getJavaWrapperTypeForSDOType(Type type) {
         SDOType sdoType = (SDOType) type;
         if (sdoType.getInstanceClass() != null) {
             return sdoType.getInstanceClass();
         }
-        Class javaClass = null;
+        Class<?> javaClass = null;
         if (sdoType.isSubType()) {
             for (int i = 0; i < sdoType.getBaseTypes().size(); i++) {
                 Type baseType = (Type)sdoType.getBaseTypes().get(i);
@@ -684,7 +684,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @return the Type for this interfaceClass or null if not found.
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public SDOType getType(Class interfaceClass) {
         if (LOGGER.isLoggable(Level.INFO)) {
             LOGGER.info("Looking for : " + interfaceClass);
@@ -748,7 +748,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @param interfaceClass which contains SDOType we are looking for
      * @return SDOType with a given interfaceClass or null
      */
-    private SDOType getFromCollection(Collection<SDOType> collection, Class interfaceClass) {
+    private SDOType getFromCollection(Collection<SDOType> collection, Class<?> interfaceClass) {
         for (SDOType sdoType : collection) {
             if (sdoType.getInstanceClass() == interfaceClass) {
                 return sdoType;
@@ -758,7 +758,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     @Override
-    public SDOType getTypeForImplClass(Class implClass) {
+    public SDOType getTypeForImplClass(Class<?> implClass) {
         SDOType type = getTypeForSimpleJavaType(implClass);
         if (type != null) {
             return type;
@@ -789,7 +789,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * Used to determine which SDO Type corresponds the given Java simple type
      */
     @Override
-    public SDOType getTypeForSimpleJavaType(Class implClass) {
+    public SDOType getTypeForSimpleJavaType(Class<?> implClass) {
         return (SDOType)getSDOTypeForSimpleJavaTypeMap().get(implClass);
     }
 
@@ -961,7 +961,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     private boolean isBaseTypeBytes(Type theType) {
         if (((SDOType) theType).isSubType()) {
-            List baseTypes = ((SDOType)theType).getBaseTypes();
+            List baseTypes = theType.getBaseTypes();
             Type nextType = (Type)baseTypes.get(0);
             if (nextType == SDOConstants.SDO_BYTES) {
                 return true;
@@ -998,7 +998,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         if (typeValue != null) {
             if (typeValue == SDOConstants.SDO_BYTES) {
                 newProperty.setXsdType(XMLConstants.BASE_64_BINARY_QNAME);
-            } else if (((SDOType)typeValue).isDataType()) {
+            } else if (typeValue.isDataType()) {
                 if (isBaseTypeBytes(typeValue)) {
                     newProperty.setXsdType(XMLConstants.BASE_64_BINARY_QNAME);
                 }
@@ -1011,7 +1011,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             newProperty.setContainment(dataObject.getBoolean("containment"));
         } else {
             if (typeValue != null) {
-                newProperty.setContainment(!((SDOType)typeValue).isDataType());
+                newProperty.setContainment(!typeValue.isDataType());
             }
         }
 
@@ -1152,7 +1152,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     @Override
     public void reset() {
-        interfacesToSDOTypeHashMap = new HashMap<Class, SDOType>();
+        interfacesToSDOTypeHashMap = new HashMap<Class<?>, SDOType>();
         namespaceResolver = null;
 
         initWrapperTypes();
@@ -1222,7 +1222,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     /**
      * INTERNAL:
-     * @param propertyQName
+     * @param propertyUri
      * @param property
      */
     private void defineOpenContentProperty(String propertyUri, String propertyName, Property property) {
@@ -1237,7 +1237,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             ((SDOProperty)property).setUri(propertyUri);
 
             XMLDescriptor aDescriptor;
-            if (((SDOType)property.getType()).isDataType()) {
+            if (property.getType().isDataType()) {
                 // RICK: Types from DataObjects: isDataType() == true so:
                 //   - find the SDOWrapperType from TypeHelper's WrappersHashMap
                 //   - add the descriptor to XMLContext's DescriptorsByQName map
@@ -1422,7 +1422,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     @Override
-    public Map<Class, SDOType> getImplClassesToSDOType() {
+    public Map<Class<?>, SDOType> getImplClassesToSDOType() {
         return implClassesToSDOType;
     }
 

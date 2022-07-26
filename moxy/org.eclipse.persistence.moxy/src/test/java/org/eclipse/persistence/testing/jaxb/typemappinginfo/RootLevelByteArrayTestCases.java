@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCase
         return typeMappingInfos;
     }
 
+    @Override
     protected Object getControlObject() {
 
         byte[] data = new byte[] {1, 2, 3, 4, 5, 6};
@@ -74,6 +75,7 @@ public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCase
     }
 
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArray.xsd");
 
@@ -86,6 +88,7 @@ public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCase
         return XML_RESOURCE;
     }
 
+    @Override
     protected void comparePrimitiveArrays(Object controlValue, Object testValue){
         byte[] bytes1;
         byte[] bytes2;
@@ -106,6 +109,7 @@ public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCase
         }
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertNotNull(this.attachmentMarshaller.getLocalName());

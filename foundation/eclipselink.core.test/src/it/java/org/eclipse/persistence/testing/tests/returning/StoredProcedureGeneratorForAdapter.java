@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,14 +33,14 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
 
     public StoredProcedureGeneratorForAdapter(SchemaManager schemaMngr) {
         super(schemaMngr);
-        insertStoredProcedures = new Hashtable();
-        updateStoredProcedures = new Hashtable();
-        substituteName = new Hashtable();
+        insertStoredProcedures = new Hashtable<>();
+        updateStoredProcedures = new Hashtable<>();
+        substituteName = new Hashtable<>();
     }
 
-    protected Hashtable insertStoredProcedures;
-    protected Hashtable updateStoredProcedures;
-    protected Hashtable substituteName;
+    protected Map<ClassDescriptor, StoredProcedureDefinition> insertStoredProcedures;
+    protected Map<ClassDescriptor, StoredProcedureDefinition> updateStoredProcedures;
+    protected Map<StoredProcedureDefinition, Map<String, String>> substituteName;
     protected boolean useTableNames;
 
     public boolean usesTableNames() {
@@ -58,11 +58,11 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
      */
     public void generateInsertStoredProceduresDefinitionsForProject(Project project) {
         verifyProject(project);
-        Map descrpts = project.getDescriptors();
-        Iterator iterator = descrpts.keySet().iterator();
+        Map<Class<?>, ClassDescriptor> descrpts = project.getDescriptors();
+        Iterator<Class<?>> iterator = descrpts.keySet().iterator();
         ClassDescriptor desc;
         while (iterator.hasNext()) {
-            desc = (ClassDescriptor)descrpts.get(iterator.next());
+            desc = descrpts.get(iterator.next());
             if (desc.isDescriptorForInterface() || desc.isAggregateDescriptor()) {
                 continue;
             }
@@ -78,11 +78,11 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
 
     public void generateUpdateStoredProceduresDefinitionsForProject(Project project) {
         verifyProject(project);
-        Map descrpts = project.getDescriptors();
-        Iterator iterator = descrpts.keySet().iterator();
+        Map<Class<?>, ClassDescriptor> descrpts = project.getDescriptors();
+        Iterator<Class<?>> iterator = descrpts.keySet().iterator();
         ClassDescriptor desc;
         while (iterator.hasNext()) {
-            desc = (ClassDescriptor)descrpts.get(iterator.next());
+            desc = descrpts.get(iterator.next());
             if (desc.isDescriptorForInterface() || desc.isAggregateDescriptor()) {
                 continue;
             }
@@ -101,10 +101,10 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
     }
 
     protected StoredProcedureDefinition generateStoredProcedureDefinition(ClassDescriptor desc, DatabaseQuery query, String namePrefix) {
-        Vector fields = desc.getFields();
-        Hashtable namesNewToNames = null;
+        List<DatabaseField> fields = desc.getFields();
+        Map<String, String> namesNewToNames = null;
         if (shouldCapitalizeNames()) {
-            namesNewToNames = new Hashtable();
+            namesNewToNames = new Hashtable<>();
             fields = capitalize(fields, namesNewToNames);
         }
         StoredProcedureDefinition definition = generateObjectStoredProcedure(query, fields, namePrefix);
@@ -123,19 +123,13 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
      * PUBLIC:
      */
     public void writeInsertStoredProcedures() {
-        Enumeration descriptorEnum = insertStoredProcedures.keys();
-        while (descriptorEnum.hasMoreElements()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.nextElement();
-            StoredProcedureDefinition definition = (StoredProcedureDefinition)insertStoredProcedures.get(descriptor);
+        for (StoredProcedureDefinition definition : insertStoredProcedures.values()) {
             writeDefinition(definition);
         }
     }
 
     public void writeUpdateStoredProcedures() {
-        Enumeration descriptorEnum = updateStoredProcedures.keys();
-        while (descriptorEnum.hasMoreElements()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.nextElement();
-            StoredProcedureDefinition definition = (StoredProcedureDefinition)updateStoredProcedures.get(descriptor);
+        for (StoredProcedureDefinition definition : updateStoredProcedures.values()) {
             writeDefinition(definition);
         }
     }
@@ -150,6 +144,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
      * The base class doesn't allow optimistic locking in getSession().getProject() -
      * override this restriction.
      */
+    @Override
     protected void verify() throws org.eclipse.persistence.exceptions.ValidationException {
     }
 
@@ -168,23 +163,18 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
      * Amends descriptors with stored procedures
      */
     public void amendDescriptorsInsertQuery() {
-        Enumeration descriptorEnum = insertStoredProcedures.keys();
-        while (descriptorEnum.hasMoreElements()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.nextElement();
-            StoredProcedureDefinition definition = (StoredProcedureDefinition)insertStoredProcedures.get(descriptor);
+        for (Map.Entry<ClassDescriptor, StoredProcedureDefinition> entry : insertStoredProcedures.entrySet()) {
             InsertObjectQuery insertQuery = new InsertObjectQuery();
-            defineQuery(insertQuery, definition);
-            descriptor.getQueryManager().setInsertQuery(insertQuery);
+            defineQuery(insertQuery, entry.getValue());
+            entry.getKey().getQueryManager().setInsertQuery(insertQuery);
         }
     }
 
     public void amendDescriptorsUpdateQuery() {
-        Enumeration descriptorEnum = updateStoredProcedures.keys();
-        while (descriptorEnum.hasMoreElements()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.nextElement();
-            StoredProcedureDefinition definition = (StoredProcedureDefinition)updateStoredProcedures.get(descriptor);
+        for (Map.Entry<ClassDescriptor, StoredProcedureDefinition> entry : updateStoredProcedures.entrySet()) {
             UpdateObjectQuery updateQuery = new UpdateObjectQuery();
-            descriptor.getQueryManager().setUpdateQuery(updateQuery);
+            defineQuery(updateQuery, entry.getValue());
+            entry.getKey().getQueryManager().setUpdateQuery(updateQuery);
         }
     }
 
@@ -194,7 +184,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName(definition.getName());
         for (int i = 0; i < definition.getArguments().size(); i++) {
-            FieldDefinition fieldDefinition = ((FieldDefinition)definition.getArguments().elementAt(i));
+            FieldDefinition fieldDefinition = definition.getArguments().get(i);
             String procedureParameterName = fieldDefinition.getName();
             String fieldName = getFieldName(fieldDefinition.getName());
             String argumentFieldName = fieldName;
@@ -220,19 +210,19 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
     // However namesCapitalizedToNames still will be needed, because the DatabaseField's
     // name to be used as a parameter for StoredProcedureCall is extracted from
     // storedProcedureDefinition - and there it is always the same as in database.
-
-    protected Vector capitalize(Vector fields, Hashtable namesCapitalizedToNames) {
+    @SuppressWarnings({"unchecked"})
+    protected List<DatabaseField> capitalize(List<DatabaseField> fields, Map<String, String> namesCapitalizedToNames) {
         // Can't change names of descriptor's fields, create a new Vector.
-        Vector newFields = null;
+        List<DatabaseField> newFields = null;
         for (int i = 0; i < fields.size(); i++) {
-            DatabaseField field = (DatabaseField)fields.elementAt(i);
+            DatabaseField field = fields.get(i);
             String fieldNameUpper = field.getName().toUpperCase();
             String tableNameUpper = field.getTableName().toUpperCase();
             if (!fieldNameUpper.equals(field.getName()) || !tableNameUpper.equals(field.getTableName())) {
                 DatabaseField newField = new DatabaseField(fieldNameUpper, tableNameUpper);
                 newField.setType(field.getType());
                 if (newFields == null) {
-                    newFields = (Vector)fields.clone();
+                    newFields = (List<DatabaseField>) ((Vector<DatabaseField>)fields).clone();
                 }
                 newFields.set(i, newField);
                 namesCapitalizedToNames.put(fieldNameUpper, field.getName());
@@ -261,7 +251,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
         }
     }
 
-    protected StoredProcedureDefinition generateObjectStoredProcedure(DatabaseQuery query, Vector fields, String namePrefix) {
+    protected StoredProcedureDefinition generateObjectStoredProcedure(DatabaseQuery query, List<DatabaseField> fields, String namePrefix) {
         String namePrefixToUse = namePrefix;
         String className = Helper.getShortClassName(query.getDescriptor().getJavaClass());
         if (useTableNames) {

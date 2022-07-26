@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,16 +28,17 @@ public class RedefineConverterTest extends CobolTest {
         return "This test will take a database row, write its contents to a byte array and then " + "read the contents back into another database row, then compare the results to assure " + "the two rows are equal";
     }
 
+    @Override
     protected void test() {
         RecordMetaData recordMetaData = CobolTestModel.getConversionRecord();
         row = CobolTestModel.getConversionRow();
         row.remove("emp-tasks");
         row.add(new DatabaseField("emp-depart"), "accounting");
-        Enumeration fieldEnum = row.getFields().elements();
+        Enumeration<DatabaseField> fieldEnum = row.getFields().elements();
         resultRow = new CobolRow();
         //write to array
         while (fieldEnum.hasMoreElements()) {
-            DatabaseField databaseField = (DatabaseField)fieldEnum.nextElement();
+            DatabaseField databaseField = fieldEnum.nextElement();
             FieldMetaData field = recordMetaData.getFieldNamed(databaseField.getName());
             field.writeOnArray(row, recordData);
         }
@@ -45,12 +46,13 @@ public class RedefineConverterTest extends CobolTest {
         //write to database row
         fieldEnum = row.getFields().elements();
         while (fieldEnum.hasMoreElements()) {
-            DatabaseField databaseField = (DatabaseField)fieldEnum.nextElement();
+            DatabaseField databaseField = fieldEnum.nextElement();
             FieldMetaData field = recordMetaData.getFieldNamed(databaseField.getName());
             field.writeOnRow(resultRow, recordData);
         }
     }
 
+    @Override
     protected void verify() throws TestException {
         if (!CobolTestModel.compareCobolRows(row, resultRow)) {
             TestErrorException exception = new TestErrorException("The rows do not match.");

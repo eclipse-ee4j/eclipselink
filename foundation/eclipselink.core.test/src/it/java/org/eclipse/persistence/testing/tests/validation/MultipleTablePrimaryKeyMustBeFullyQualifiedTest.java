@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,16 +32,18 @@ public class MultipleTablePrimaryKeyMustBeFullyQualifiedTest extends ExceptionTe
         setDescription("This tests Multiple Table Primary Key Must Be Fully Qualified (TL-ERROR 111)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.multipleTablePrimaryKeyMustBeFullyQualified(null);
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)
@@ -49,6 +51,7 @@ public class MultipleTablePrimaryKeyMustBeFullyQualifiedTest extends ExceptionTe
     }
 
 
+    @Override
     public void test() {
         try {
             getSession().setIntegrityChecker(new IntegrityChecker());

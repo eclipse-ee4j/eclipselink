@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public class CloneIterator<E>
      */
     protected CloneIterator(Remover<E> remover, Object... array) {
         super();
-        this.iterator = new ArrayIterator<Object>(array);
+        this.iterator = new ArrayIterator<>(array);
         this.current = null;
         this.remover = remover;
         this.removeAllowed = false;

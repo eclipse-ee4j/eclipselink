@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,9 +23,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * the size of the ever growing RemoteController and RemoteConnection framework
  * Note that the only difference between this interface and RemoteCommand is execute method
  * returning a value
- * <p>
+ * </p><p>
  * <b>Description</b>: Used as the Interface for making calls to the object
- * <p>
+ * </p>
  */
 public interface RemoteFunctionCall extends java.io.Serializable {
 

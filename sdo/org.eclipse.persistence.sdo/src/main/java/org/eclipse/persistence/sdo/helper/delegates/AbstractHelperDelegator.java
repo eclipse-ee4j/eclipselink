@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,12 @@ import commonj.sdo.impl.HelperProvider;
 public abstract class AbstractHelperDelegator {
     // Hold the context containing all helpers so that we can preserve inter-helper relationships
     protected HelperContext aHelperContext;
+
+    /**
+     * Default constructor.
+     */
+    protected  AbstractHelperDelegator() {
+    }
 
     /**
      * Return the helperContext that this instance is associated with.

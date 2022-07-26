@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlValueInternationalPricesTestCases extends JAXBWithJSONTestCases{
@@ -33,19 +34,20 @@ public class XmlValueInternationalPricesTestCases extends JAXBWithJSONTestCases{
 
     public XmlValueInternationalPricesTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { InternationalPricesNoAnnotation.class });
+        setClasses(new Class<?>[] { InternationalPricesNoAnnotation.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
 
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/eclipselink-oxm-intprices.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -65,6 +67,7 @@ public class XmlValueInternationalPricesTestCases extends JAXBWithJSONTestCases{
 
     }
 
+    @Override
     protected Object getControlObject() {
         InternationalPricesNoAnnotation price = new InternationalPricesNoAnnotation();
         price.currency ="CDN";

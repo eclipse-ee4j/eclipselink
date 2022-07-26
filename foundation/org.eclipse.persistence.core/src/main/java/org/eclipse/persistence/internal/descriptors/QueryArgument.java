@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.mappings.TypedAssociation;
 public class QueryArgument extends TypedAssociation {
 
     /** The type of the query argument */
-    protected Class type;
+    protected Class<?> type;
     protected String typeName;// bug 3256198 types can now be set by name
     protected boolean nullable;
 
@@ -37,7 +37,7 @@ public class QueryArgument extends TypedAssociation {
         super();
     }
 
-    public QueryArgument(String argumentName, Object value, Class type) {
+    public QueryArgument(String argumentName, Object value, Class<?> type) {
         super(argumentName, value);
         this.type = type;
     }
@@ -50,7 +50,7 @@ public class QueryArgument extends TypedAssociation {
         this.nullable = nullable;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
@@ -62,7 +62,7 @@ public class QueryArgument extends TypedAssociation {
         return typeName;
     }
 
-    public void setType(Class type) {
+    public void setType(Class<?> type) {
         this.type = type;
         if (type != null) {
             this.typeName = type.getName();

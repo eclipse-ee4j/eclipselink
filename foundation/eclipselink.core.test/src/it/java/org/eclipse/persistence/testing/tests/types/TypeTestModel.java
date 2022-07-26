@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,10 +39,12 @@ public class TypeTestModel extends org.eclipse.persistence.testing.framework.Tes
         }
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new TypeTestSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getBooleanTestSuite());
         addTest(getTimeDateTestSuite());
@@ -50,6 +52,7 @@ public class TypeTestModel extends org.eclipse.persistence.testing.framework.Tes
         addTest(getNumericTestSuite());
         addTest(getBLOBTestSuite());
         addTest(getCLOBTestSuite());
+        addTest(getUUIDTestSuite());
     }
 
     public static TestSuite getBLOBTestSuite() {
@@ -130,6 +133,20 @@ public class TypeTestModel extends org.eclipse.persistence.testing.framework.Tes
         return suite;
     }
 
+    public static TestSuite getUUIDTestSuite() {
+        TestSuite suite = new TestSuite();
+        Enumeration examples = UUIDTester.testInstances().elements();
+
+        suite.setName("UUID Types Test Suite");
+        suite.setDescription("Tests the use of UUID with EclipseLink");
+
+        while (examples.hasMoreElements()) {
+            suite.addTest(new WriteTypeObjectTest((TypeTester)examples.nextElement()));
+        }
+        return suite;
+    }
+
+    @Override
     public void setup() {
         DatabaseSession session = (DatabaseSession)getSession();
         if (useAccessors) {
@@ -139,6 +156,7 @@ public class TypeTestModel extends org.eclipse.persistence.testing.framework.Tes
             session.addDescriptor(StringTester.descriptorWithAccessors());
             session.addDescriptor(CLOBTester.descriptorWithAccessors());
             session.addDescriptor(BLOBTester.descriptorWithAccessors());
+            session.addDescriptor(UUIDTester.descriptorWithAccessors());
         } else {
             session.addDescriptor(BooleanTester.descriptor());
             session.addDescriptor(TimeDateTester.descriptor());
@@ -146,6 +164,7 @@ public class TypeTestModel extends org.eclipse.persistence.testing.framework.Tes
             session.addDescriptor(StringTester.descriptor());
             session.addDescriptor(CLOBTester.descriptor());
             session.addDescriptor(BLOBTester.descriptor());
+            session.addDescriptor(UUIDTester.descriptor());
         }
     }
 

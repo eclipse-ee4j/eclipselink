@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,13 +38,14 @@ public class SameNamePKTest extends TestCase {
     protected SecureSystem system = null;
     protected Exception exception = null;
 
+    @Override
     public void setup() {
         beginTransaction();
         // Insert an example Object
         SecureSystem system = new SecureSystem();
         system.setManufacturer("Secure Systems Inc.");
         Identification identification = new Identification();
-        identification.setId(new Long(1));
+        identification.setId(1L);
         system.setId(identification);
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.registerObject(system);
@@ -53,6 +54,7 @@ public class SameNamePKTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         ReadObjectQuery query = new ReadObjectQuery(SecureSystem.class);
         ExpressionBuilder aBuilder = new ExpressionBuilder();
@@ -66,6 +68,7 @@ public class SameNamePKTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception != null) {
             throw new TestErrorException("An exception was thrown while trying to query across two attributes of the same name.",
@@ -76,6 +79,7 @@ public class SameNamePKTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

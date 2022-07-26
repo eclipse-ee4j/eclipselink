@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -149,8 +149,8 @@ final class DeclarationResolver {
      * Converts the given {@link Declaration} from being set as a range variable declaration to
      * a path expression declaration.
      * <p>
-     * In this query "<code>UPDATE Employee SET firstName = 'MODIFIED' WHERE (SELECT COUNT(m) FROM
-     * managedEmployees m) > 0</code>" <em>managedEmployees</em> is an unqualified collection-valued
+     * In this query "{@code UPDATE Employee SET firstName = 'MODIFIED' WHERE (SELECT COUNT(m) FROM
+     * managedEmployees m) > 0}" <em>managedEmployees</em> is an unqualified collection-valued
      * path expression (<code>employee.managedEmployees</code>).
      *
      * @param declaration The {@link Declaration} that was parsed to range over an abstract schema
@@ -313,6 +313,7 @@ final class DeclarationResolver {
      * @return <code>true</code> if the given identification variable maps a collection-valued field
      * defined in a <code>JOIN</code> or <code>IN</code> expression; <code>false</code> otherwise
      */
+    @SuppressWarnings({"fallthrough"})
     boolean isCollectionIdentificationVariableImp(String variableName) {
 
         for (Declaration declaration : declarations) {
@@ -452,9 +453,6 @@ final class DeclarationResolver {
          */
         JPQLQueryContext queryContext;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AbstractSchemaName expression) {
 
@@ -484,17 +482,11 @@ final class DeclarationResolver {
             currentDeclaration.rootPath = rootPath;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             expression.acceptChildren(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionMemberDeclaration expression) {
 
@@ -517,9 +509,6 @@ final class DeclarationResolver {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpression expression) {
 
@@ -542,9 +531,6 @@ final class DeclarationResolver {
             currentDeclaration.rootPath = rootPath;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(DeleteClause expression) {
             try {
@@ -555,25 +541,16 @@ final class DeclarationResolver {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(DeleteStatement expression) {
             expression.getDeleteClause().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(FromClause expression) {
             expression.getDeclaration().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariableDeclaration expression) {
 
@@ -590,9 +567,6 @@ final class DeclarationResolver {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(Join expression) {
 
@@ -608,17 +582,11 @@ final class DeclarationResolver {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(JPQLExpression expression) {
             expression.getQueryStatement().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(RangeVariableDeclaration expression) {
 
@@ -639,33 +607,21 @@ final class DeclarationResolver {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectStatement expression) {
             expression.getFromClause().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleFromClause expression) {
             expression.getDeclaration().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectClause expression) {
             expression.getSelectExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectStatement expression) {
 
@@ -680,17 +636,11 @@ final class DeclarationResolver {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SubExpression expression) {
             expression.getExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(TableVariableDeclaration expression) {
 
@@ -702,9 +652,6 @@ final class DeclarationResolver {
             declarations.add(declaration);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UpdateClause expression) {
             try {
@@ -715,9 +662,6 @@ final class DeclarationResolver {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UpdateStatement expression) {
             expression.getUpdateClause().accept(this);
@@ -742,9 +686,6 @@ final class DeclarationResolver {
          */
         JPQLQueryContext queryContext;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpression expression) {
             // Create the path because CollectionValuedPathExpression.toParsedText()
@@ -756,18 +697,12 @@ final class DeclarationResolver {
             declaration.rootPath = rootPath.toString();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariableDeclaration expression) {
             expression.getRangeVariableDeclaration().accept(this);
             declaration.declarationExpression = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(RangeVariableDeclaration expression) {
 
@@ -798,42 +733,27 @@ final class DeclarationResolver {
             resultVariables = new HashSet<>();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             expression.acceptChildren(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(JPQLExpression expression) {
             expression.getQueryStatement().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ResultVariable expression) {
             IdentificationVariable identificationVariable = (IdentificationVariable) expression.getResultVariable();
             resultVariables.add(identificationVariable);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectClause expression) {
             expression.getSelectExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectStatement expression) {
             expression.getSelectClause().accept(this);

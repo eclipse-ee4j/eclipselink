@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
@@ -58,19 +59,19 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
     /**
      * Return the control Employee.
      *
-     * @return
      */
+    @Override
     public Object getWriteControlObject() {
         if(writeCtrlObject == null){
             List<Object> things = new ArrayList<Object>();
-            things.add(new Integer(INT_VAL66));
-            things.add(new Integer(INT_VAL99));
-            things.add(new Float(FLOAT_VAL));
+            things.add(Integer.valueOf(INT_VAL66));
+            things.add(Integer.valueOf(INT_VAL99));
+            things.add(Float.valueOf(FLOAT_VAL));
             List<Object> roThings = new ArrayList<Object>();
-            roThings.add(new Integer(RO_INT_VAL));
-            roThings.add(new Float(RO_FLOAT_VAL));
+            roThings.add(Integer.valueOf(RO_INT_VAL));
+            roThings.add(Float.valueOf(RO_FLOAT_VAL));
             List<Object> woThings = new ArrayList<Object>();
-            woThings.add(new Integer(WO_INT_VAL));
+            woThings.add(Integer.valueOf(WO_INT_VAL));
             Employee emp = new Employee();
             emp.things = things;
             emp.readOnlyThings = roThings;
@@ -80,15 +81,16 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
         return writeCtrlObject;
     }
 
+    @Override
     public Object getControlObject() {
 
         List<Object> things = new ArrayList<Object>();
-        things.add(new Integer(INT_VAL66));
-        things.add(new Integer(INT_VAL99));
-        things.add(new Float(FLOAT_VAL));
+        things.add(Integer.valueOf(INT_VAL66));
+        things.add(Integer.valueOf(INT_VAL99));
+        things.add(Float.valueOf(FLOAT_VAL));
         List<Object> roThings = new ArrayList<Object>();
-        roThings.add(new Integer(RO_INT_VAL));
-        roThings.add(new Float(RO_FLOAT_VAL));
+        roThings.add(Integer.valueOf(RO_INT_VAL));
+        roThings.add(Float.valueOf(RO_FLOAT_VAL));
 
         Employee emp = new Employee();
         emp.things = things;
@@ -96,13 +98,14 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
         return emp;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choicecollection/employee-oxm.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choicecollection", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
 
         return properties;
@@ -133,23 +136,28 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
         assertTrue("Instance doc validation (write-employee) failed unxepectedly: " + result, result == null);
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
         assertTrue("Accessor method was not called as expected", ((Employee)testObject).wasSetCalled);
     }
 
+    @Override
     public void testRoundTrip() throws Exception{
         //doesn't apply since read and write only mappings are present
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", writeCtrlObject.wasGetCalled);
     }
 
+    @Override
     public void testJSONMarshalToBuilderResult() throws Exception{
         //Currently not supported, 101.1 will get written as 101.0999984741211
     }
+    @Override
     public void testJSONMarshalToGeneratorResult() throws Exception{
         //Currently not supported, 101.1 will get written as 101.0999984741211
     }

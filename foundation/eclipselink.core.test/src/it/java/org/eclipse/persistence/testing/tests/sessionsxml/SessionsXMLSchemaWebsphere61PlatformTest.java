@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date July 22, 2005
  */
 public class SessionsXMLSchemaWebsphere61PlatformTest extends AutoVerifyTestCase {
     Exception m_exceptionCaught;
@@ -36,6 +35,7 @@ public class SessionsXMLSchemaWebsphere61PlatformTest extends AutoVerifyTestCase
         setDescription("Tests loading a websphere 6.0 platform from the schema.");
     }
 
+    @Override
     public void reset() {
         if (m_employeeSession != null && m_employeeSession.isConnected()) {
             m_employeeSession.logout();
@@ -44,10 +44,12 @@ public class SessionsXMLSchemaWebsphere61PlatformTest extends AutoVerifyTestCase
         }
     }
 
+    @Override
     protected void setup() {
         m_exceptionCaught = null;
     }
 
+    @Override
     public void test() {
         try {
             XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSessionWAS61Platform.xml");
@@ -58,6 +60,7 @@ public class SessionsXMLSchemaWebsphere61PlatformTest extends AutoVerifyTestCase
         }
     }
 
+    @Override
     protected void verify() {
         if (m_exceptionCaught != null) {
             throw new TestErrorException("Loading of the session failed: " + m_exceptionCaught, m_exceptionCaught);

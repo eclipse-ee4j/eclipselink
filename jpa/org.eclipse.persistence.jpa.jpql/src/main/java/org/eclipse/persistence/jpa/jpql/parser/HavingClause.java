@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The <b>HAVING</b> construct enables conditions to be specified that further restrict the query
  * result as restrictions upon the groups.
  *
- * <div><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code><p></div>
+ * <div><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -36,17 +36,11 @@ public final class HavingClause extends AbstractConditionalClause {
         super(parent, HAVING);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(HavingClauseBNF.ID);

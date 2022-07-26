@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,10 +34,11 @@ public class PrintStackTraceTest extends AutoVerifyTestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void test() {
 
         // do not use logMessages(), which has been already set up for the session
-        Integer integer = new Integer(1);
+        Integer integer = 1;
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             uow.registerObject(integer);

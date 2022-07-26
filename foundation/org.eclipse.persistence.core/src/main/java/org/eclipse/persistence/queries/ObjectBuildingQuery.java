@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.expressions.ForUpdateClause;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -47,7 +48,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 public abstract class ObjectBuildingQuery extends ReadQuery {
 
     /** The class of the target objects to be read from the database. */
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected String referenceClassName;
 
     /** Allows for the resulting objects to be refresh with the data from the database. */
@@ -107,7 +108,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * INTERNAL:
      * Initialize the state of the query
      */
-    public ObjectBuildingQuery() {
+    protected ObjectBuildingQuery() {
         this.shouldRefreshIdentityMapResult = false;
         this.isCacheCheckComplete = false;
     }
@@ -139,16 +140,15 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Convert all the class-name-based settings in this query to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        Class referenceClass = null;
+        Class<?> referenceClass = null;
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    referenceClass = AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader));
+                    referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getReferenceClassName(), true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
                 }
@@ -324,8 +324,6 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Return the primary key stored in this query if there is one
      * This is overridden by subclasses that actually hold a primary key
      *
-     * @return
-     *
      * @see ReadObjectQuery
      */
     protected Object getQueryPrimaryKey(){
@@ -337,7 +335,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Return the reference class of the query.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -492,7 +490,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Fetch/trigger indirection on the clone passed in, based on join expressions in the joinManager.
      */
     private void triggerJoinExpressions(UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, Object clone, ClassDescriptor concreteDescriptor) {
-        List joinExpressions = joinManager.getJoinedAttributeExpressions();
+        List<Expression> joinExpressions = joinManager.getJoinedAttributeExpressions();
         int size = joinExpressions.size();
         if ((size == 0) || (clone == null)) {
             return;
@@ -542,7 +540,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * with an object the acquires deferred locks behaves the same as its owner
      */
     public boolean requiresDeferredLocks() {
-        return requiresDeferredLocks != null && requiresDeferredLocks.booleanValue();
+        return requiresDeferredLocks != null && requiresDeferredLocks;
     }
 
     /**
@@ -587,7 +585,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * REQUIRED:
      * Set the reference class for the query.
      */
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         referenceClass = aClass;
         setIsPrepared(false);
     }
@@ -608,7 +606,11 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * with an object the acquires deferred locks behaves the same as its owner
      */
     public void setRequiresDeferredLocks(boolean cascadeDeferredLocks) {
-        this.requiresDeferredLocks = Boolean.valueOf(cascadeDeferredLocks);
+        if (session != null && session.getProject().isQueryCacheForceDeferredLocks()) {
+            this.requiresDeferredLocks = true;
+        } else {
+            this.requiresDeferredLocks = cascadeDeferredLocks;
+        }
     }
 
     /**

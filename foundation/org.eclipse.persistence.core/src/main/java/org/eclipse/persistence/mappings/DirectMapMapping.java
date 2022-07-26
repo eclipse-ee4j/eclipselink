@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -518,7 +518,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         Map valueOfTarget = null;
@@ -558,7 +558,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
                 // Next iterate over the changes and add them to the container
                 for (Iterator i = removeObjects.keySet().iterator(); i.hasNext();) {
                     Object keyToRemove = i.next();
-                    containerPolicy.removeFrom(keyToRemove, (Object)null, valueOfTarget, session);
+                    containerPolicy.removeFrom(keyToRemove, null, valueOfTarget, session);
                 }
 
                 for (Iterator i = addObjects.keySet().iterator(); i.hasNext();) {
@@ -585,7 +585,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         if (isTargetUnInitialized) {
@@ -876,7 +876,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * has specific typing requirements such as usage of java.sql.Blob or NChar.
      * This must be called after the field name has been set.
      */
-    public void setDirectKeyFieldClassification(Class fieldType) {
+    public void setDirectKeyFieldClassification(Class<?> fieldType) {
         getDirectKeyField().setType(fieldType);
     }
 
@@ -958,7 +958,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * <p>Note: Do not use both useMapClass(Class concreteClass), useTransparentMap().  The last use of one of the two methods will override the previous one.
      */
     @Override
-    public void useMapClass(Class concreteClass) {
+    public void useMapClass(Class<?> concreteClass) {
         if (!Helper.classImplementsInterface(concreteClass, ClassConstants.Map_Class)) {
             throw DescriptorException.illegalContainerClass(concreteClass);
         }
@@ -984,7 +984,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Java type.  The converter can also be set directly.
      * Note that setting the converter to another converter will overwrite this setting.
      */
-    public void setKeyClass(Class keyClass) {
+    public void setKeyClass(Class<?> keyClass) {
         TypeConversionConverter converter = new TypeConversionConverter(this);
         converter.setObjectClass(keyClass);
         setKeyConverter(converter);
@@ -996,7 +996,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * if it is a TypeConversionConverter.
      * This returns null if not using a TypeConversionConverter key converter.
      */
-    public Class getKeyClass() {
+    public Class<?> getKeyClass() {
         if ((getKeyConverter() == null) || !(getKeyConverter() instanceof TypeConversionConverter)) {
             return null;
         }
@@ -1010,7 +1010,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Java type.  The converter can also be set directly.
      * Note that setting the converter to another converter will overwrite this setting.
      */
-    public void setValueClass(Class valueClass) {
+    public void setValueClass(Class<?> valueClass) {
         TypeConversionConverter converter = new TypeConversionConverter(this);
         converter.setObjectClass(valueClass);
         setValueConverter(converter);
@@ -1068,7 +1068,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * if it is a TypeConversionConverter.
      * This returns null if not using a TypeConversionConverter value converter.
      */
-    public Class getValueClass() {
+    public Class<?> getValueClass() {
         if (!(getValueConverter() instanceof TypeConversionConverter)) {
             return null;
         }

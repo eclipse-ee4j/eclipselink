@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class SecurityOnFindMethodTest extends ExceptionTestSaveSecurityManager {
         super("This tests security on find method (TL-ERROR 82)", FindMethod.class);
     }
 
+    @Override
     protected void setup() {
         super.setup();
         expectedException = DescriptorException.securityOnFindMethod("dummy_Method", new RelationalDescriptor(), new Exception());
@@ -41,6 +42,7 @@ public class SecurityOnFindMethodTest extends ExceptionTestSaveSecurityManager {
         eventManager.setPreWriteSelector("dummy_Method"); //this method exist in above class
     }
 
+    @Override
     public void test() {
         try {
             //need to thrown security         return Helper.getDeclaredMethod(getDescriptor().getJavaClass(), methodName, declarationParameters);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,22 +94,68 @@ public final class ExpressionTools {
             char character = value.charAt(index);
 
             switch (character) {
-                case '\b': sb.append("\\b");  if (index < originalPosition) position[0]++; break;
-                case '\t': sb.append("\\t");  if (index < originalPosition) position[0]++; break;
-                case '\n': sb.append("\\n");  if (index < originalPosition) position[0]++; break;
-                case '\f': sb.append("\\f");  if (index < originalPosition) position[0]++; break;
-                case '\r': sb.append("\\r");  if (index < originalPosition) position[0]++; break;
-                case '\"': sb.append("\\\""); if (index < originalPosition) position[0]++; break;
-                case '\\': sb.append("\\\\"); if (index < originalPosition) position[0]++; break;
-                case '\0': sb.append("\\0");  if (index < originalPosition) position[0]++; break;
-                case '\1': sb.append("\\1");  if (index < originalPosition) position[0]++; break;
-                case '\2': sb.append("\\2");  if (index < originalPosition) position[0]++; break;
-                case '\3': sb.append("\\3");  if (index < originalPosition) position[0]++; break;
-                case '\4': sb.append("\\4");  if (index < originalPosition) position[0]++; break;
-                case '\5': sb.append("\\5");  if (index < originalPosition) position[0]++; break;
-                case '\6': sb.append("\\6");  if (index < originalPosition) position[0]++; break;
-                case '\7': sb.append("\\7");  if (index < originalPosition) position[0]++; break;
-                default:   sb.append(character);
+                case '\b':
+                    sb.append("\\b");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\t':
+                    sb.append("\\t");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\n':
+                    sb.append("\\n");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\f':
+                    sb.append("\\f");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\r':
+                    sb.append("\\r");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\"':
+                    sb.append("\\\"");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\\':
+                    sb.append("\\\\");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\0':
+                    sb.append("\\0");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\1':
+                    sb.append("\\1");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\2':
+                    sb.append("\\2");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\3':
+                    sb.append("\\3");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\4':
+                    sb.append("\\4");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\5':
+                    sb.append("\\5");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\6':
+                    sb.append("\\6");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                case '\7':
+                    sb.append("\\7");
+                    if (index < originalPosition) position[0]++;
+                    break;
+                default:
+                    sb.append(character);
             }
         }
 
@@ -458,7 +504,7 @@ public final class ExpressionTools {
     public static boolean stringsAreEqualIgnoreCase(CharSequence value1, CharSequence value2) {
 
         // Both are equal or both are null
-        if ((value1 == value2) || (value1 == null) && (value2 == null)) {
+        if (value1 == value2) {
             return true;
         }
 
@@ -495,21 +541,66 @@ public final class ExpressionTools {
 
                 switch (character) {
                     // Standard escape character
-                    case 'b':  sb.append("\b"); if (index <= originalPosition) position[0]--; break;
-                    case 't':  sb.append("\t"); if (index <= originalPosition) position[0]--; break;
-                    case 'n':  sb.append("\n"); if (index <= originalPosition) position[0]--; break;
-                    case 'f':  sb.append("\f"); if (index <= originalPosition) position[0]--; break;
-                    case 'r':  sb.append("\r"); if (index <= originalPosition) position[0]--; break;
-                    case '"':  sb.append("\""); if (index <= originalPosition) position[0]--; break;
-                    case '\\': sb.append("\\"); if (index <= originalPosition) position[0]--; break;
-                    case '0':  sb.append("\0"); if (index <= originalPosition) position[0]--; break;
-                    case '1':  sb.append("\1"); if (index <= originalPosition) position[0]--; break;
-                    case '2':  sb.append("\2"); if (index <= originalPosition) position[0]--; break;
-                    case '3':  sb.append("\3"); if (index <= originalPosition) position[0]--; break;
-                    case '4':  sb.append("\4"); if (index <= originalPosition) position[0]--; break;
-                    case '5':  sb.append("\5"); if (index <= originalPosition) position[0]--; break;
-                    case '6':  sb.append("\6"); if (index <= originalPosition) position[0]--; break;
-                    case '7':  sb.append("\7"); if (index <= originalPosition) position[0]--; break;
+                    case 'b':
+                        sb.append("\b");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case 't':
+                        sb.append("\t");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case 'n':
+                        sb.append("\n");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case 'f':
+                        sb.append("\f");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case 'r':
+                        sb.append("\r");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case '"':
+                        sb.append("\"");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case '\\':
+                        sb.append("\\");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case '0':
+                        sb.append("\0");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case '1':
+                        sb.append("\1");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case '2':
+                        sb.append("\2");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case '3':
+                        sb.append("\3");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case '4':
+                        sb.append("\4");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case '5':
+                        sb.append("\5");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case '6':
+                        sb.append("\6");
+                        if (index <= originalPosition) position[0]--;
+                        break;
+                    case '7':
+                        sb.append("\7");
+                        if (index <= originalPosition) position[0]--;
+                        break;
 
                     // Unicode
                     case 'u': {
@@ -522,8 +613,7 @@ public final class ExpressionTools {
                         // value, then it's only adjusted to be at the beginning of the unicode value
                         if ((originalPosition > index - 1) && (originalPosition <= index + 5)) {
                             position[0] -= (originalPosition - index + 1);
-                        }
-                        else if (index <= originalPosition) {
+                        } else if (index <= originalPosition) {
                             position[0] -= 5;
                         }
 
@@ -600,7 +690,7 @@ public final class ExpressionTools {
     public static boolean valuesAreEqual(Object value1, Object value2) {
 
         // Both are equal or both are null
-        if ((value1 == value2) || (value1 == null) && (value2 == null)) {
+        if (value1 == value2) {
             return true;
         }
 

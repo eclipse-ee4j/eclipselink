@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,10 +37,12 @@ public class TransparentIndirectionChangeFlagBasicTestModel extends TestModel {
         setDescription("This model tests reading/writing/deleting using the IndirectList with change tracking.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new RelationshipsSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(new TransparentIndirectionTest());
         addTest(new TransparentIndirectionAddOverflowBehaviourTest());
@@ -48,12 +50,14 @@ public class TransparentIndirectionChangeFlagBasicTestModel extends TestModel {
         addTest(new TransparentIndirectionResumeAddTest());
     }
 
+    @Override
     public void setup() {
         // Save change policies for the all employee demo class in order to restore them at reset time.
         fieldOfficeChangePolicy = getSession().getDescriptor(FieldOffice.class).getObjectChangePolicy();
         getSession().getDescriptor(FieldOffice.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
     }
 
+    @Override
     public void reset() {
         // restore old change policies.
         getSession().getDescriptor(FieldOffice.class).setObjectChangePolicy(fieldOfficeChangePolicy);

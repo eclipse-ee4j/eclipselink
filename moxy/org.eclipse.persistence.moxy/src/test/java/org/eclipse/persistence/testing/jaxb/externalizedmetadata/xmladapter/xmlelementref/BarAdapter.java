@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 public final class BarAdapter extends XmlAdapter<Object, String> {
     public BarAdapter() {}
 
+    @Override
     public String unmarshal(Object arg0) throws Exception {
         if (arg0 instanceof Bar) {
             return ((Bar)arg0).id;
@@ -26,6 +27,7 @@ public final class BarAdapter extends XmlAdapter<Object, String> {
         return Integer.toString(((FooBar)arg0).id);
     }
 
+    @Override
     public Object marshal(String arg0) throws Exception {
         if (arg0.equals("66")) {
             Bar bar = new Bar();

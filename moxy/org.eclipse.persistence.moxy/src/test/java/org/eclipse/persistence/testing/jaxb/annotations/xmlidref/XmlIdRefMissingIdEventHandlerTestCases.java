@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
 
     public XmlIdRefMissingIdEventHandlerTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Owner.class});
+        setClasses(new Class<?>[]{Owner.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         jaxbUnmarshaller.setEventHandler(new MyValidationEventHandler());
@@ -45,8 +45,10 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
     }
 
     //Not applicable
+    @Override
     public void testRoundTrip(){}
 
+    @Override
     public void testJSONUnmarshalFromInputSource() throws Exception{
         try{
             super.testJSONUnmarshalFromInputSource();
@@ -58,6 +60,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
     }
 
 
+    @Override
     public void testJSONUnmarshalFromJsonStructureSource() throws Exception{
         try{
             super.testJSONUnmarshalFromJsonStructureSource();
@@ -78,6 +81,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         }
     }
 
+    @Override
     public void testJSONUnmarshalFromInputStream() throws Exception{
         try{
             super.testJSONUnmarshalFromInputStream();
@@ -88,6 +92,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testJSONUnmarshalFromReader() throws Exception{
         try{
             super.testJSONUnmarshalFromReader();
@@ -98,6 +103,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testUnmarshalAutoDetect() throws Exception{
         try{
             super.testUnmarshalAutoDetect();
@@ -108,6 +114,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testJSONUnmarshalFromSource() throws Exception{
         try{
             super.testJSONUnmarshalFromSource();
@@ -118,6 +125,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testJSONUnmarshalFromURL() throws Exception{
         try{
             super.testJSONUnmarshalFromURL();
@@ -128,6 +136,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception{
         try{
             super.testXMLToObjectFromInputStream();
@@ -138,6 +147,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception{
         try{
             super.testXMLToObjectFromNode();
@@ -148,6 +158,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception{
         try{
             super.testXMLToObjectFromURL();
@@ -158,6 +169,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testUnmarshallerHandler() throws Exception{
         try{
             super.testUnmarshallerHandler();
@@ -168,6 +180,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception{
         try{
             super.testXMLToObjectFromXMLEventReader();
@@ -178,6 +191,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReaderEx() throws Exception{
         try{
             super.testXMLToObjectFromXMLStreamReaderEx();
@@ -188,6 +202,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         fail("An Exception should have occurred");
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception{
         try{
             super.testXMLToObjectFromXMLStreamReader();

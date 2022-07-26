@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -30,14 +30,18 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class QueryRedirectorHelper {
 
+    private QueryRedirectorHelper() {
+        // no instance please
+    }
+
     /**
      * This method will cause EclipseLink to check the EclipseLink cache for the object.  EclipseLink
      * always checks the shared cache before executing a query but because the query has been redirected
      * in this case the cache check has also been redirected.  Through this method the redirector can have
      * EclipseLink check the cache in the normal manner.
      */
-    public static Object checkEclipseLinkCache(DatabaseQuery query, Record record, Session session){
-        return query.checkEarlyReturn((AbstractSession)session, (AbstractRecord)record);
+    public static Object checkEclipseLinkCache(DatabaseQuery query, DataRecord dataRecord, Session session){
+        return query.checkEarlyReturn((AbstractSession)session, (AbstractRecord) dataRecord);
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.wls.WebLogicTransactionController;
 
 /**
@@ -49,7 +50,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
      * Cached WLS connection class used to reflectively check connections and
      * unwrap them.
      */
-    protected Class weblogicConnectionClass;
+    protected Class<?> weblogicConnectionClass;
 
     /**
      * Cached WLConnection.getVendorConnection() Method used for
@@ -85,9 +86,9 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     @Override
     public void initializeServerNameAndVersion() {
         try {
-            Class clazz = PrivilegedAccessHelper.getClassForName("weblogic.version");
+            Class<Object> clazz = PrivilegedAccessHelper.getClassForName("weblogic.version");
             Method method = PrivilegedAccessHelper.getMethod(clazz, "getReleaseBuildVersion", null, false);
-            this.serverNameAndVersion = (String) PrivilegedAccessHelper.invokeMethod(method, null, null);
+            this.serverNameAndVersion = PrivilegedAccessHelper.invokeMethod(method, null, null);
             this.shouldClearStatementCache = Helper.compareVersions(this.serverNameAndVersion, "10.3.4") < 0;
         } catch (Exception exception) {
             getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
@@ -106,7 +107,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
     @Override
-    public Class getExternalTransactionControllerClass() {
+    public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {
             externalTransactionControllerClass = WebLogicTransactionController.class;
         }
@@ -116,10 +117,10 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     /**
      * Return the class (interface) for the WebLogic JDBC connection wrapper.
      */
-    protected Class getWebLogicConnectionClass() {
+    protected Class<?> getWebLogicConnectionClass() {
         if (this.weblogicConnectionClass == null) {
             try {
-                this.weblogicConnectionClass = (Class) getDatabaseSession().getPlatform().convertObject("weblogic.jdbc.extensions.WLConnection", Class.class);
+                this.weblogicConnectionClass = getDatabaseSession().getPlatform().convertObject("weblogic.jdbc.extensions.WLConnection", Class.class);
             } catch (Throwable exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
                 this.weblogicConnectionClass = void.class;
@@ -134,7 +135,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     protected Method getVendorConnectionMethod() {
         if ((this.vendorConnectionMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {
-                this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnection", new Class[0]);
+                this.vendorConnectionMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "getVendorConnection", new Class<?>[0]);
             } catch (NoSuchMethodException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
@@ -150,7 +151,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     public Connection unwrapConnection(Connection connection) {
         if (getWebLogicConnectionClass().isInstance(connection) && getVendorConnectionMethod() != null) {
             try {
-                return (Connection) PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), connection);
+                return PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), connection);
             } catch (IllegalAccessException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             } catch (InvocationTargetException exception) {
@@ -167,7 +168,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
     protected Method getClearStatementCacheMethod() {
         if ((this.clearStatementCacheMethod == null) && (!getWebLogicConnectionClass().equals(void.class))) {
             try {
-                this.clearStatementCacheMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "clearStatementCache", new Class[0]);
+                this.clearStatementCacheMethod = PrivilegedAccessHelper.getDeclaredMethod(getWebLogicConnectionClass(), "clearStatementCache", new Class<?>[0]);
             } catch (NoSuchMethodException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }

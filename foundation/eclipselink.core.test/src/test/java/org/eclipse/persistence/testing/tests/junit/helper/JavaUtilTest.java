@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class JavaUtilTest {
     /** Version numbers result mapping. Covers exceptions.
      * See also {@code JavaSEPlatform.stringValuesMap} initialization code
      * and {@link JavaSEPlatform#toValue(int, int)}.
-     * 1.9 -> 9.0
+     * 1.9 -{@literal >} 9.0
      * @param version source version numbers
      * @return result version numbers
      */
@@ -116,10 +116,10 @@ public class JavaUtilTest {
             String versionString = JavaSEPlatform.versionString(major, minor);
             JavaSEPlatform platform = JavaSEPlatform.toValue(versionString);
             assertNotNull("There should exist platform for valid platform"
-                    +" version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", platform);
+                    +" version number ["+ major +","+ minor +"]", platform);
             int[] result = resultMapping(version);
             assertTrue("Returned platform version numbers do not match provided"
-                    + " version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    + " version number ["+ major +","+ minor +"]",
                     result[0] == platform.getMajor() && result[1] == platform.getMinor());
         }
         // Invalid version number pairs.
@@ -129,7 +129,7 @@ public class JavaUtilTest {
             String versionString = JavaSEPlatform.versionString(major, minor);
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
             assertTrue("Returned platform shall be JavaSEPlatform.LATEST for invalid version "
-                    + "number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    + "number ["+ major +","+ minor +"]",
                     LATEST.getMajor() == platform.getMajor() && LATEST.getMinor() == platform.getMinor());
         }
     }
@@ -146,10 +146,10 @@ public class JavaUtilTest {
             int minor = version[1];
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
             assertNotNull("There should exist platform for valid platform"
-                    +" version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]", platform);
+                    +" version number ["+ major +","+ minor +"]", platform);
             int[] result = resultMapping(version);
             assertTrue("Returned platform version numbers do not match provided"
-                    + " version number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    + " version number ["+ major +","+ minor +"]",
                     result[0] == platform.getMajor() && result[1] == platform.getMinor());
         }
         // Invalid version number pairs.
@@ -158,7 +158,7 @@ public class JavaUtilTest {
             int minor = version[1];
             JavaSEPlatform platform = JavaSEPlatform.toValue(major, minor);
             assertTrue("Returned platform shall be JavaSEPlatform.LATEST for invalid version "
-                    + "number ["+Integer.toString(major)+","+Integer.toString(minor)+"]",
+                    + "number ["+ major +","+ minor +"]",
                     LATEST.getMajor() == platform.getMajor() && LATEST.getMinor() == platform.getMinor());
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
@@ -46,24 +47,23 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
      /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
-     */
+      */
     public XmlElementsTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Foo.class });
+        setClasses(new Class<?>[] { Foo.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
 
 
+     @Override
      public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/eclipselink-oxm.xml");
 
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements", new StreamSource(inputStream));
             Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             return properties;
         }
@@ -90,8 +90,8 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
             // setup control objects
             Foo foo = new Foo();
             List theItems = new ArrayList();
-            theItems.add(new Float(2.5));
-            theItems.add(new Integer(1));
+            theItems.add(2.5f);
+            theItems.add(1);
             foo.items = theItems;
             return foo;
         }
@@ -102,22 +102,21 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
      * xml-element-wrapper and xml-idref are used.
      *
      * Positive test.
-     * @throws Exception
      */
 
     public void testXmlElementsWithIdRefSchemaGen() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/eclipselink-oxm-idref.xml");
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         List controlSchemas = new ArrayList();
         InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/schema_idref.xsd");
         controlSchemas.add(is);
 
-        JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Bar.class, Address.class, Phone.class }, properties);
+        JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { Bar.class, Address.class, Phone.class }, properties);
 
          MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
          ctx.generateSchema(outputResolver);
@@ -139,16 +138,16 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         // create context
         boolean exception = false;
         JAXBContext jCtx = null;
         try {
-            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Bar.class, Address.class, Foo.class }, properties);
+            jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { Bar.class, Address.class, Foo.class }, properties);
         } catch (JAXBException e1) {
             exception = true;
         }
@@ -168,6 +167,6 @@ public class XmlElementsTestCases extends JAXBWithJSONTestCases{
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("items");
         assertNotNull("No mapping exists on Foo for attribute [items].", mapping);
         assertTrue("Expected an XMLChoiceCollectionMapping for attribute [items], but was [" + mapping.toString() +"].", mapping instanceof XMLChoiceCollectionMapping);
-        assertTrue("Expected container class [java.util.LinkedList] but was ["+((XMLChoiceCollectionMapping) mapping).getContainerPolicy().getContainerClassName()+"]", ((XMLChoiceCollectionMapping) mapping).getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
+        assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 }

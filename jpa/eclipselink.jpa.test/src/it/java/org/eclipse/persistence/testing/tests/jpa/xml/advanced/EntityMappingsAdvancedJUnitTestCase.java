@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,7 +108,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteri
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.School;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Student;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 
 /**
@@ -1049,8 +1049,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         int lastIndex = firstName.length();
         List employees = em.createQuery("SELECT object(e) FROM XMLEmployee e where e.firstName = substring(:p1, :p2, :p3)").
             setParameter("p1", firstName).
-            setParameter("p2", new Integer(firstIndex)).
-            setParameter("p3", new Integer(lastIndex)).
+            setParameter("p2", firstIndex).
+            setParameter("p3", lastIndex).
             getResultList();
 
         // clean up
@@ -1202,7 +1202,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
         // test
         // clear cache
-        this.clearCache(m_persistenceUnit);
+        clearCache(m_persistenceUnit);
         // read the employee from the db
         em = createEntityManager(m_persistenceUnit);
         employee = em.find(Employee.class,id);
@@ -1299,7 +1299,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
         // verify properties set on Employee instance
         errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "XMLEmployee");
-        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, new Integer(1));
+        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, 1);
         errorMsg += verifyPropertyValue(descriptor, "ToBeOverriddenByXml", Boolean.class, Boolean.TRUE);
         errorMsg += verifyPropertyValue(descriptor, "ToBeProcessed", Boolean.class, Boolean.TRUE);
 
@@ -1311,13 +1311,13 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         // attribute m_lastName has many properties of different types
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
         errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, new Byte((byte)1));
-        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, new Character('A'));
-        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, new Double(1));
-        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, new Float(1));
-        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, new Integer(1));
-        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, new Long(1));
-        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, new Short((short)1));
+        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, (byte) 1);
+        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, 'A');
+        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, 1.0);
+        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, 1F);
+        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, 1);
+        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, 1L);
+        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, (short) 1);
         errorMsg += verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE);
         errorMsg += verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE);
         errorMsg += verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59"));
@@ -1335,13 +1335,13 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class expectedPropertyValueType, Object expectedPropertyValue) {
+    protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
         return verifyPropertyValue(propertyName, descriptor.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, Helper.getShortClassName(descriptor.getJavaClass()) + " descriptor");
     }
-    protected String verifyPropertyValue(DatabaseMapping mapping, String propertyName, Class expectedPropertyValueType, Object expectedPropertyValue) {
+    protected String verifyPropertyValue(DatabaseMapping mapping, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
         return verifyPropertyValue(propertyName, mapping.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, mapping.getAttributeName() + " attribute");
     }
-    protected String verifyPropertyValue(String propertyName, Object propertyValue, Class expectedPropertyValueType, Object expectedPropertyValue, String masterName) {
+    protected String verifyPropertyValue(String propertyName, Object propertyValue, Class<?> expectedPropertyValueType, Object expectedPropertyValue, String masterName) {
         String errorMsg = "";
         String errorPrefix = " property " + propertyName + " for " + masterName;
         if(expectedPropertyValueType == null) {
@@ -1717,9 +1717,9 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         pk.add(dealer.getId());
 
         if (isOnServer()) {
-            return ((Integer)getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession())).intValue();
+            return getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession());
         } else {
-            return ((Integer)((EntityManagerImpl)em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl)em).getServerSession())).intValue();
+            return ((EntityManagerImpl) em).getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, ((EntityManagerImpl) em).getServerSession());
         }
     }
 
@@ -1733,12 +1733,12 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             employees.add(emp);
             for(int j=0; j<n; j++) {
                 Dealer dealer = new Dealer();
-                dealer.setFirstName(emp.getFirstName() + "_" + Integer.toString(j+1));
+                dealer.setFirstName(emp.getFirstName() + "_" + (j + 1));
                 dealer.setLastName(lastName);
                 emp.addDealer(dealer);
                 for(int k=0; k<n; k++) {
                     Customer customer = new Customer();
-                    customer.setFirstName(dealer.getFirstName() + "_" + Integer.toString(k+1));
+                    customer.setFirstName(dealer.getFirstName() + "_" + (k + 1));
                     customer.setLastName(lastName);
                     dealer.addCustomer(customer);
                 }
@@ -1845,7 +1845,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
             // Cost
             Shovel shovel = new Shovel();
-            shovel.setMy("cost", Double.valueOf(9.99));
+            shovel.setMy("cost", 9.99);
 
             // Sections
             ShovelSections shovelSections = new ShovelSections();
@@ -1906,7 +1906,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             beginTransaction(em);
 
             em.merge(refreshedShovel);
-            refreshedShovel.setMy("cost", Double.valueOf(7.99));
+            refreshedShovel.setMy("cost", 7.99);
 
             commitTransaction(em);
 
@@ -2016,7 +2016,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
             XMLEntityMappingsWriter writer = new XMLEntityMappingsWriter();
             FileOutputStream fileOut = new FileOutputStream("XMLWriteOutTest.xml");
-            writer.write(mappings, fileOut);
+            XMLEntityMappingsWriter.write(mappings, fileOut);
             fileOut.close();
 
             FileInputStream fileIn = new FileInputStream(fileOut.getFD());
@@ -2050,8 +2050,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     }
 
     public void testDeleteAll(){
-        Map descriptors = getServerSession(m_persistenceUnit).getDescriptors();
-        ClassDescriptor descriptor = (ClassDescriptor)descriptors.get(Department.class);
+        Map<Class<?>, ClassDescriptor> descriptors = getServerSession(m_persistenceUnit).getDescriptors();
+        ClassDescriptor descriptor = descriptors.get(Department.class);
         OneToManyMapping mapping = (OneToManyMapping)descriptor.getMappingForAttributeName("equipment");
         assertFalse("<delete-all> xml did not work correctly", mapping.mustDeleteReferenceObjectsOneByOne());
     }

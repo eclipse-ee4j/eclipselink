@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public class SessionManager {
 
     protected static volatile SessionManager manager;
     protected AbstractSession defaultSession;
-    protected ConcurrentMap<String, Session> sessions = null;
+    protected ConcurrentMap<String, Session> sessions;
     protected static boolean shouldPerformDTDValidation;
     private static volatile ConcurrentMap<String, SessionManager> managers;
     private static volatile ServerPlatform detectedPlatform;
@@ -207,9 +207,9 @@ public class SessionManager {
             if (session.isConnected()) {
                 ((DatabaseSession) session).logout();
             }
-        } catch (Throwable ignore) {
+        } catch (Throwable ig) {
             // EL Bug 321843 - Must handle errors from logout.
-            LOG.logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ignore);
+            LOG.logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ig);
         }
 
         sessions.remove(session.getName());
@@ -389,7 +389,7 @@ public class SessionManager {
     public org.eclipse.persistence.internal.sessions.AbstractSession getSession(String sessionName, Object objectBean) {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
         loader.setSessionName(sessionName);
-        ClassLoader classLoader = null;
+        ClassLoader classLoader;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
                 classLoader = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(objectBean.getClass()));
@@ -582,8 +582,8 @@ public class SessionManager {
                             // Must handles errors from logout as session maybe hosed.
                             try {
                                 ((DatabaseSession)session).logout();
-                            } catch (Throwable ignore) {
-                                LOG.logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ignore);
+                            } catch (Throwable ig) {
+                                LOG.logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ig);
                             }
                         }
                         getSessions().remove(loader.getSessionName());
@@ -628,7 +628,7 @@ public class SessionManager {
      *
      * @param sessions sessions for this session manager
      */
-    public void setSessions(ConcurrentMap sessions) {
+    public void setSessions(ConcurrentMap<String, Session> sessions) {
         this.sessions = sessions;
     }
 

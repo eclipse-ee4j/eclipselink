@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,10 +100,12 @@ public class Documentary implements ProgramInt {
         return doc;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public Number getDuration() {
         return duration;
     }
@@ -112,14 +114,17 @@ public class Documentary implements ProgramInt {
         return this.id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public void setDuration(BigDecimal duration) {
         this.duration = duration;
     }
@@ -128,6 +133,7 @@ public class Documentary implements ProgramInt {
         this.id = id;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }

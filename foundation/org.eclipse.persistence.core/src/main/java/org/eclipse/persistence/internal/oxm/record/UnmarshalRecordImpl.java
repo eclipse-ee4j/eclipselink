@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,8 +75,8 @@ import org.xml.sax.ext.Locator2Impl;
 
 /**
  * <p><b>Purpose:</b>Provide an implementation of ContentHandler that is used by TopLink OXM to
- * build mapped Java Objects from SAX events.
- * <p><b>Responsibilities:</b>
+ * build mapped Java Objects from SAX events.</p>
+ * <p><b>Responsibilities:</b></p>
  * <ul>
  * <li>Implement the ContentHandler and LexicalHandler interfaces</li>
  * <li>Make calls into the appropriate NodeValues based on the incoming SAXEvents</li>
@@ -552,7 +552,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return;
         }
     CoreInheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
-    Class classValue = treeObjectBuilder.classFromRow(this, session);
+    Class<?> classValue = treeObjectBuilder.classFromRow(this, session);
      if (classValue == null) {
              // no xsi:type attribute - look for type indicator on the default root element
              QName leafElementType = xmlDescriptor.getDefaultRootElementType();
@@ -1050,7 +1050,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             }
             return;
         }
-        Class unmappedContentHandlerClass = unmarshaller.getUnmappedContentHandlerClass();
+        Class<?> unmappedContentHandlerClass = unmarshaller.getUnmappedContentHandlerClass();
         UnmappedContentHandler unmappedContentHandler;
         if (null == unmappedContentHandlerClass) {
             unmappedContentHandler = DEFAULT_UNMAPPED_CONTENT_HANDLER;
@@ -1338,7 +1338,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                     if (null == oldIndex) {
                         newIndex = 1;
                     } else {
-                        newIndex = oldIndex.intValue() + 1;
+                        newIndex = oldIndex + 1;
                     }
                 }
                 indexMap.put(xPathFragment, newIndex);

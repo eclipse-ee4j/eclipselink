@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,16 +36,18 @@ public class AutoDetectSmallDocTestCases extends JAXBWithJSONTestCases {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = TestObjectFactory.class;
         setClasses(classes);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE, true);
     }
 
+    @Override
     public MediaType getXMLUnmarshalMediaType(){
           return MediaType.APPLICATION_XML;
     }
 
+    @Override
     public MediaType getJSONUnmarshalMediaType(){
        return MediaType.APPLICATION_JSON;
     }

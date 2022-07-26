@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,34 +40,42 @@ public class LoadAndSaveImportsElementOrderTestCases extends LoadAndSaveTestCase
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return "Types.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/employee_types.xml");
     }
 
+    @Override
     protected String getControlWriteFileName(){
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/employee_types.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/employee_types.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "http://www.example.org/emp";
     }
 
+    @Override
     protected String getControlRootName() {
         return "employee";
     }
 
+    @Override
     protected String getRootInterfaceName() {
         return "EmployeeType";
     }
 
+    @Override
     protected List defineTypes() {
         try {
             URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -79,16 +87,19 @@ public class LoadAndSaveImportsElementOrderTestCases extends LoadAndSaveTestCase
         }
     }
 
+    @Override
     protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/";
     }
 
+    @Override
     protected List getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("org/example/emp");
         return packages;
     }
 
+    @Override
     protected void generateClasses(String tmpDirName) throws Exception{
 
         URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -102,10 +113,12 @@ public class LoadAndSaveImportsElementOrderTestCases extends LoadAndSaveTestCase
         classGenerator.generate(ss, tmpDirName, schemaResolver);
     }
 
+    @Override
     public void registerTypes() {
 
     }
 
+    @Override
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
     }
 }

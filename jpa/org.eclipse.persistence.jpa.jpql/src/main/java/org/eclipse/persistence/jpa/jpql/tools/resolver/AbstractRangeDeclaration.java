@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,14 +52,11 @@ public abstract class AbstractRangeDeclaration extends Declaration {
      */
     protected void addJoin(Join join) {
         if (joins == null) {
-            joins = new LinkedList<Join>();
+            joins = new LinkedList<>();
         }
         joins.add(join);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<Join> getJoins() {
         if (joins == null) {
@@ -68,9 +65,6 @@ public abstract class AbstractRangeDeclaration extends Declaration {
         return joins;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasJoins() {
         return (joins != null);

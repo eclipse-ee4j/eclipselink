@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ public class XmlMixedTestCases extends JAXBTestCases { // extends JAXBWithJSONTe
 
     public XmlMixedTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Root.class});
+        setClasses(new Class<?>[] {Root.class});
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_WRITE);
         //setControlJSON(JSON_RESOURCE);
@@ -37,6 +37,7 @@ public class XmlMixedTestCases extends JAXBTestCases { // extends JAXBWithJSONTe
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
 
+    @Override
     protected Object getControlObject() {
         Root root = new Root();
         root.setAttr("attribute value");
@@ -47,6 +48,7 @@ public class XmlMixedTestCases extends JAXBTestCases { // extends JAXBWithJSONTe
         return root;
     }
 
+    @Override
     public Object getReadControlObject() {
         Root root = new Root();
         root.setAttr("attribute value");
@@ -60,6 +62,7 @@ public class XmlMixedTestCases extends JAXBTestCases { // extends JAXBWithJSONTe
        return getControlObject();
     }
 
+    @Override
     public void testObjectToXMLDocument() throws Exception {
     }
 

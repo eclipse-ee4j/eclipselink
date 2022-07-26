@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +22,8 @@
 package org.eclipse.persistence.internal.queries;
 
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +38,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
@@ -63,10 +67,10 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
  * for all types of queries.  Most of the work performed by the query framework is
  * performed in the query mechanism.  The query mechanism contains the internal
  * knowledge necessary to perform the specific database operation.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Provide a common protocol for query mechanism objects.
- * Provides all of the database specific work for the assigned query.
+ * Provides all of the database specific work for the assigned query.</p>
  *
  * @author Yvon Lavoie
  * @since TOPLink/Java 1.0
@@ -79,14 +83,14 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Initialize the state of the query.
      */
-    public DatabaseQueryMechanism() {
+    protected DatabaseQueryMechanism() {
     }
 
     /**
      * Initialize the state of the query
      * @param query - owner of mechanism
      */
-    public DatabaseQueryMechanism(DatabaseQuery query) {
+    protected DatabaseQueryMechanism(DatabaseQuery query) {
         this.query = query;
     }
 
@@ -197,7 +201,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Delete an object
      * This should be overridden by subclasses.
-     * @exception DatabaseException
      * @return the row count.
      */
     public abstract Integer deleteObject() throws DatabaseException;
@@ -205,7 +208,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Execute a execute SQL call.
      * This should be overridden by subclasses.
-     * @exception DatabaseException
      * @return true if the first result is a result set and false if it is an
      *   update count or there are no results other than through INOUT and OUT
      *   parameterts, if any.
@@ -215,15 +217,20 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     /**
      * Execute a non selecting SQL call
      * This should be overridden by subclasses.
-     * @exception DatabaseException
      * @return the row count.
      */
-    public abstract Integer executeNoSelect() throws DatabaseException;
+    public abstract Object executeNoSelect() throws DatabaseException;
+
+    /**
+     * Execute a non selecting SQL call, that returns the generated keys
+     * This should be overridden by subclasses.
+     * @exception DatabaseException
+     */
+    public abstract DatabaseCall generateKeysExecuteNoSelect() throws DatabaseException;
 
     /**
      * Execute a select SQL call and return the rows.
      * This should be overriden by subclasses.
-     * @exception DatabaseException
      */
     public abstract Vector executeSelect() throws DatabaseException;
 
@@ -759,7 +766,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             existQuery.setDescriptor(getDescriptor());
             existQuery.setTranslationRow(getTranslationRow());
 
-            doesExist = ((Boolean)getSession().executeQuery(existQuery)).booleanValue();
+            doesExist = (Boolean) getSession().executeQuery(existQuery);
         }
 
         if (!doesExist) {
@@ -846,9 +853,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         Object primaryKey = null;
         if (isFirstCallForInsert) {
             AbstractRecord pkToModify = new DatabaseRecord();
-            List primaryKeyFields = getDescriptor().getPrimaryKeyFields();
+            List<DatabaseField> primaryKeyFields = getDescriptor().getPrimaryKeyFields();
             for (int i = 0; i < primaryKeyFields.size(); i++) {
-                DatabaseField field = (DatabaseField)primaryKeyFields.get(i);
+                DatabaseField field = primaryKeyFields.get(i);
                 if (row.containsKey(field)) {
                     pkToModify.put(field, row.get(field));
                 }
@@ -875,6 +882,64 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     protected void updateObjectAndRowWithSequenceNumber() throws DatabaseException {
         WriteObjectQuery writeQuery = getWriteObjectQuery();
         writeQuery.getDescriptor().getObjectBuilder().assignSequenceNumber(writeQuery);
+    }
+
+    /**
+     * Update the object's primary key by getting the generated keys from the call
+     * If there are no generated keys or the value is NULL, then default back to the {@link #updateObjectAndRowWithSequenceNumber()}
+     */
+    protected void updateObjectAndRowWithSequenceNumber(DatabaseCall call) throws DatabaseException {
+        WriteObjectQuery writeQuery = getWriteObjectQuery();
+        AbstractSession session = writeQuery.getSession();
+        DatabaseAccessor dbAccessor = (DatabaseAccessor)writeQuery.getAccessor();
+
+        Object sequenceValue = null;
+        boolean exceptionOccured = false;
+        ResultSet resultSet = call.getGeneratedKeys();
+        try {
+            if(resultSet.next()) {
+                sequenceValue = resultSet.getObject(1);
+            }
+
+            if(sequenceValue != null) {
+                writeQuery.getDescriptor().getObjectBuilder().assignSequenceNumber(writeQuery, sequenceValue);
+            }
+        }  catch (SQLException exception) {
+            exceptionOccured = true;
+            DatabaseException commException = dbAccessor.processExceptionForCommError(session, exception, call);
+            if (commException != null) {
+                throw commException;
+            }
+            throw DatabaseException.sqlException(exception, call, dbAccessor, session, false);
+        } catch (RuntimeException exception) {
+            exceptionOccured = true;
+            if (exception instanceof DatabaseException) {
+                ((DatabaseException)exception).setCall(call);
+                if(((DatabaseException)exception).getAccessor() == null) {
+                    ((DatabaseException)exception).setAccessor(dbAccessor);
+                }
+            }
+            throw exception;
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException cleanupSQLException) {
+                if (!exceptionOccured) {
+                    throw DatabaseException.sqlException(cleanupSQLException, call, dbAccessor, session, false);
+                }
+            } catch (RuntimeException cleanupException) {
+                if (!exceptionOccured) {
+                    throw cleanupException;
+                }
+            }
+        }
+
+        // Fallback on original implementation if no value was found in the generated keys
+        if(sequenceValue == null) {
+            updateObjectAndRowWithSequenceNumber();
+        }
     }
 
     /**
@@ -937,10 +1002,10 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 OptimisticLockingPolicy policy = descriptor.getOptimisticLockingPolicy();
                 policy.addLockValuesToTranslationRow(writeQuery);
 
-                if (!getModifyRow().isEmpty() || shouldModifyVersionField.booleanValue()) {
+                if (!getModifyRow().isEmpty() || shouldModifyVersionField) {
                     // Update the row with newer lock value.
                     policy.updateRowAndObjectForUpdate(writeQuery, object);
-                } else if (!shouldModifyVersionField.booleanValue() && (policy instanceof VersionLockingPolicy)) {
+                } else if (!shouldModifyVersionField && (policy instanceof VersionLockingPolicy)) {
                     // Add the existing write lock value to the for a "read" lock (requires something to update).
                     ((VersionLockingPolicy)policy).writeLockValueIntoRow(writeQuery, object);
                 }
@@ -959,7 +1024,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             if (QueryMonitor.shouldMonitor()) {
                 QueryMonitor.incrementUpdate(getWriteObjectQuery());
             }
-            int rowCount = updateObject().intValue();
+            int rowCount = updateObject();
 
             if (rowCount < 1) {
                 if (session.hasEventManager()) {
@@ -1093,7 +1158,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             if (QueryMonitor.shouldMonitor()) {
                 QueryMonitor.incrementUpdate(getWriteObjectQuery());
             }
-            int rowCount = updateObject().intValue();
+            int rowCount = updateObject();
 
             if (rowCount < 1) {
                 if (session.hasEventManager()) {

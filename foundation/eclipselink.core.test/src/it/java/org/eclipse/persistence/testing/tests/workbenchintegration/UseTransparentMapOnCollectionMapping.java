@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,20 +42,21 @@ public class UseTransparentMapOnCollectionMapping extends ProjectClassGeneratorR
         setDescription("Test addForeignReferenceMappingLines method ->   isMapPolicy  and policy is instance of TranparentMap true");
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         descriptorToModify = project.getDescriptors().get(Employee.class);
         policy = new TransparentIndirectionPolicy();
         mapPolicy = new MapContainerPolicy();
-        for (Enumeration mappingsEnum = (descriptorToModify.getMappings()).elements();
+        for (Enumeration<DatabaseMapping> mappingsEnum = (descriptorToModify.getMappings()).elements();
              mappingsEnum.hasMoreElements(); ) {
-            mappingToModify = (DatabaseMapping)mappingsEnum.nextElement();
+            mappingToModify = mappingsEnum.nextElement();
 
             if (mappingToModify.isForeignReferenceMapping()) {
-                if (((ForeignReferenceMapping)mappingToModify).isCollectionMapping()) {
+                if (mappingToModify.isCollectionMapping()) {
                     CollectionMapping collectionMapping =
-                        (CollectionMapping)(((ForeignReferenceMapping)mappingToModify));
+                        (CollectionMapping) mappingToModify;
                     collectionMapping.setContainerPolicy(mapPolicy);
                     mapPolicy.setKeyName("testMethod");
                     collectionMapping.getContainerPolicy().setContainerClass(Vector.class);

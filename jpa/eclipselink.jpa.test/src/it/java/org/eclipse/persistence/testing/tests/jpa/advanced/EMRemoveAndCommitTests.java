@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
     public Integer[] addrIDs = new Integer[1];
     public ArrayList<PhoneNumberPK> phoneIDs = new ArrayList<PhoneNumberPK>();
 
+    @Override
     public void setup (){
         super.setup();
         this.reset = true;
@@ -97,6 +98,7 @@ public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
 
     }
 
+    @Override
     public void reset (){
         if (reset){
             phoneIDs.clear();
@@ -105,6 +107,7 @@ public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
         super.reset();
     }
 
+    @Override
     public void test(){
         try {
             beginTransaction();
@@ -125,8 +128,8 @@ public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
                 }
                 employee.getManagedEmployees().remove(report);
             }
-            for (Iterator phones = employee.getPhoneNumbers().iterator(); phones.hasNext();){
-                this.phoneIDs.add(((PhoneNumber)phones.next()).buildPK());
+            for (Iterator<PhoneNumber> phones = employee.getPhoneNumbers().iterator(); phones.hasNext();){
+                this.phoneIDs.add(phones.next().buildPK());
             }
             getEntityManager().remove(employee);
             Address address = getEntityManager().find(Address.class, addrIDs[0]);
@@ -138,6 +141,7 @@ public class EMRemoveAndCommitTests extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void verify(){
         Employee employee = getEntityManager().find(Employee.class, empIDs[1]);
         if ( employee != null){

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue implements ContainerValue {
     private ChoiceCollectionMapping xmlChoiceCollectionMapping;
     private Map<Field, NodeValue> fieldToNodeValues;
-    private Map<Class, List<FieldNodeValue>> classToNodeValues;
+    private Map<Class<?>, List<FieldNodeValue>> classToNodeValues;
     private NodeValue choiceElementNodeValue;
     private Field xmlField;
     private boolean isMixedNodeValue;
@@ -55,14 +55,10 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
      *
      * It is used in getNodeValueForValue method. If we knew only class relationship to nodeValue,
      * there is no way how to say that this nodeValue is related to the first or second field (or any other field with given java class).
-     *
-     * @see AdapterWithElementsTestCases
-     *
-     *
-     * @author Martin Vojtek (martin.vojtek@oracle.com)
-     *
      */
     private static class FieldNodeValue {
+        //author Martin Vojtek (martin.vojtek@oracle.com)
+        //see AdapterWithElementsTestCases
         private final Field field;
         private final NodeValue nodeValue;
         public FieldNodeValue(Field field, NodeValue nodeValue) {
@@ -103,7 +99,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
         this.fieldToNodeValues = fieldToNodeValues;
         this.classToNodeValues = new HashMap<>();
         for(Field nextField:fieldToNodeValues.keySet()) {
-            Class associatedClass = ((Map<Field, Class>)this.xmlChoiceCollectionMapping.getFieldToClassMappings()).get(nextField);
+            Class<?> associatedClass = ((Map<Field, Class<?>>)this.xmlChoiceCollectionMapping.getFieldToClassMappings()).get(nextField);
 
             if (classToNodeValues.containsKey(associatedClass)) {
                 classToNodeValues.get(associatedClass).add(new FieldNodeValue(nextField, fieldToNodeValues.get(nextField)));
@@ -116,8 +112,8 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
 
         }
 
-        Collection classes = this.classToNodeValues.keySet();
-        for(Class nextClass:((Map<Class, Mapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
+        Collection<Class<?>> classes = this.classToNodeValues.keySet();
+        for(Class<?> nextClass:((Map<Class<?>, Mapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
             //Create node values for any classes that aren't already processed
             if(!(classes.contains(nextClass))) {
         Field field = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
@@ -332,7 +328,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                 if(xmlChoiceCollectionMapping.isAny()) {
                     return this.anyNodeValue;
                 }
-                Class theClass = fieldValue.getClass();
+                Class<?> theClass = fieldValue.getClass();
                 while(associatedField == null) {
                     associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                     if(theClass.getSuperclass() != null) {
@@ -346,7 +342,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                 nodeValue = this.fieldToNodeValues.get(associatedField);
             }
         } else {
-            Class theClass = value.getClass();
+            Class<?> theClass = value.getClass();
             while(associatedField == null) {
                 associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                 List<FieldNodeValue> fieldNodes = classToNodeValues.get(theClass);
@@ -378,7 +374,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
         if(associatedField == null) {
             //check the field associations
             List<Field> sourceFields = null;
-            Class theClass = value.getClass();
+            Class<?> theClass = value.getClass();
             while(theClass != null) {
                 sourceFields = (List<Field>) xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(theClass);
                 if(sourceFields != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.oxm.schema.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: Class to represent a Sequence in a Schema
@@ -35,16 +36,16 @@ public class Sequence extends TypeDefParticle implements NestedParticle{
         for (int i = 0; i < newElements.size(); i++) {
             Object next = newElements.get(i);
             if (next instanceof Element) {
-                getElements().add(next);
+                getElements().add((Element) next);
             }
         }
     }
 
     @Override
-    public void setSequences(java.util.List sequences) {
+    public void setSequences(List<Sequence> sequences) {
         if ((sequences != null) && (sequences.size() > 0)) {
             for (int i = 0; i < sequences.size(); i++) {
-                ((Sequence)sequences.get(i)).setOwner(this);
+                sequences.get(i).setOwner(this);
             }
 
             orderedElements.addAll(sequences);
@@ -52,19 +53,19 @@ public class Sequence extends TypeDefParticle implements NestedParticle{
     }
 
     @Override
-    public void setChoices(java.util.List choices) {
+    public void setChoices(List<Choice> choices) {
         if ((choices != null) && (choices.size() > 0)) {
             for (int i = 0; i < choices.size(); i++) {
-                ((Choice)choices.get(i)).setOwner(this);
+                choices.get(i).setOwner(this);
             }
 
             orderedElements.addAll(choices);
         }
     }
 
-    public void setNestedParticles(java.util.List nestedParticles) {
+    public void setNestedParticles(List<? extends NestedParticle> nestedParticles) {
         for (int i = 0; i < nestedParticles.size(); i++) {
-            NestedParticle next = (NestedParticle)nestedParticles.get(i);
+            NestedParticle next = nestedParticles.get(i);
             if (next instanceof Choice) {
                 addChoice((Choice)next);
             } else if (next instanceof Sequence) {
@@ -98,13 +99,13 @@ public class Sequence extends TypeDefParticle implements NestedParticle{
     }
 
     @Override
-    public void setElements(java.util.List elements) {
+    public void setElements(List<Element> elements) {
         orderedElements.addAll(elements);
         getElements().addAll(elements);
     }
 
     @Override
-    public void setAnys(java.util.List anys) {
+    public void setAnys(List<Any> anys) {
         orderedElements.addAll(anys);
     }
 

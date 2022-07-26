@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,7 @@ import org.w3c.dom.Node;
  */
 public class NamespaceResolver implements XMLNamespaceResolver {
     private static final String BASE_PREFIX = "ns";
-    private static final Vector EMPTY_VECTOR = VectorUtils.emptyVector();
+    private static final Vector<Namespace> EMPTY_VECTOR = VectorUtils.emptyVector();
 
     private String defaultNamespaceURI;
     private NamespaceResolverStorage prefixesToNamespaces;
@@ -248,11 +248,11 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * Returns the list of prefixes in the NamespaceResolver
      * @return An Enumeration containing the prefixes in the NamespaceResolver
      */
-    public Enumeration getPrefixes() {
+    public Enumeration<String> getPrefixes() {
         if (hasPrefixesToNamespaces()) {
-            return new IteratorEnumeration(getPrefixesToNamespaces().keySet().iterator());
+            return new IteratorEnumeration<>(getPrefixesToNamespaces().keySet().iterator());
         } else {
-            return new IteratorEnumeration(null);
+            return new IteratorEnumeration<>(null);
         }
     }
 
@@ -262,7 +262,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * Used for deployment XML
      * @return A Vector containing the namespace URIs in the namespace resolver
      */
-    public Vector getNamespaces() {
+    public Vector<Namespace> getNamespaces() {
         if (!hasPrefixesToNamespaces()) {
             return EMPTY_VECTOR;
         }
@@ -275,7 +275,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * Used for deployment XML
      * @param names A Vector of namespace URIs
      */
-    public void setNamespaces(Vector names) {
+    public void setNamespaces(Vector<Namespace> names) {
         prefixesToNamespaces = new NamespaceResolverStorage(names.size());
         prefixesToNamespaces.setNamespaces(names);
     }
@@ -320,11 +320,11 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         return null;
     }
 
-    private static class IteratorEnumeration implements Enumeration {
+    private static class IteratorEnumeration<E> implements Enumeration<E> {
 
-        private Iterator iterator;
+        private final Iterator<E> iterator;
 
-        public IteratorEnumeration(Iterator iterator) {
+        public IteratorEnumeration(Iterator<E> iterator) {
             this.iterator = iterator;
         }
 
@@ -337,7 +337,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         }
 
         @Override
-        public Object nextElement() {
+        public E nextElement() {
             return iterator.next();
         }
 

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     protected EntityManagerFactoryImpl createEntityManagerFactoryImpl(PersistenceUnitInfo puInfo, Map properties, boolean requiresConnection){
         if (puInfo != null) {
             boolean isNew = false;
-            String uniqueName = null; // the name the uniquely defines the pu
+            String uniqueName = null; // the name that uniquely defines the pu
             String sessionName = null;
             EntityManagerSetupImpl emSetupImpl = null;
             String puName = puInfo.getPersistenceUnitName();
@@ -183,7 +183,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      */
     @Override
     public EntityManagerFactory createEntityManagerFactory(String emName, Map properties){
-        Map nonNullProperties = (properties == null) ? new HashMap() : properties;
+        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
 
         if (checkForProviderProperty(nonNullProperties)){
             String name = (emName == null) ? "" : emName;
@@ -201,7 +201,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * <p>
      * Called by the Persistence class when schema generation is to occur as a
      * separate phase from creation of the entity manager factory.
-     * <p>
+     *
      * @param info the name of the persistence unit
      * @param properties properties for schema generation; these may also
      *        contain provider-specific properties. The value of these
@@ -228,7 +228,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * <p>
      * Called by the Persistence class when schema generation is to occur as a
      * separate phase from creation of the entity manager factory.
-     * <p>
+     *
      * @param persistenceUnitName the name of the persistence unit
      * @param properties properties for schema generation; these may also
      *        contain provider-specific properties. The value of these
@@ -243,7 +243,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     @Override
     public boolean generateSchema(String persistenceUnitName, Map properties) {
         String puName = (persistenceUnitName == null) ? "" : persistenceUnitName;
-        Map nonNullProperties = (properties == null) ? new HashMap() : properties;
+        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
 
         // If not EclipseLink, do nothing.
         if (checkForProviderProperty(nonNullProperties)) {
@@ -268,9 +268,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * Return JPAInitializer corresponding to the passed classLoader.
      * Note: This is written as an instance method rather than a static to allow
      * it to be overridden
-     * @param emName
-     * @param m
-     * @return
      */
     public JPAInitializer getInitializer(String emName, Map m){
         ClassLoader classLoader = getClassLoader(emName, m);
@@ -289,7 +286,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 provider = ((Class)provider).getName();
             }
             try{
-                if (!(((String)provider).equals(EntityManagerFactoryProvider.class.getName()) || ((String)provider).equals(PersistenceProvider.class.getName()))){
+                if (!(EntityManagerFactoryProvider.class.getName().equals(provider) || PersistenceProvider.class.getName().equals(provider))){
                     return false;
                     //user has requested another provider so lets ignore this request.
                 }
@@ -320,7 +317,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         // Record that we are inside a JEE container to allow weaving for non managed persistence units.
         JavaSECMPInitializer.setIsInContainer(true);
 
-        Map nonNullProperties = (properties == null) ? new HashMap() : properties;
+        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
 
         String forceTargetServer = EntityManagerFactoryProvider.getConfigPropertyAsString(SystemProperties.ENFORCE_TARGET_SERVER, null);
         if ("true".equalsIgnoreCase(forceTargetServer)) {
@@ -425,7 +422,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * a reference to an attribute value, as this could trigger the
      * loading of entity state if the entity has been provided by a
      * different provider.
-     * @param entity
      * @param attributeName  name of attribute whose load status is
      *        to be determined
      * @return load status of the attribute
@@ -455,29 +451,30 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * attribute state will have already been determined by
      * <code>isLoadedWithoutReference</code>. )
      *
-     * @param entity
      * @param attributeName  name of attribute whose load status is
      *        to be determined
      * @return load status of the attribute
      */
     @Override
-    public LoadState isLoadedWithReference(Object entity, String attributeName){
-        Iterator<EntityManagerSetupImpl> setups = EntityManagerFactoryProvider.getEmSetupImpls().values().iterator();
-        while (setups.hasNext()){
-            EntityManagerSetupImpl setup = setups.next();
-            if (setup.isDeployed()){
-                Boolean isLoaded = EntityManagerFactoryImpl.isLoaded(entity, setup.getSession());
-                if (isLoaded != null){
-                    if (isLoaded.booleanValue() && attributeName != null){
-                        isLoaded = EntityManagerFactoryImpl.isLoaded(entity, attributeName, setup.getSession());
-                    }
+    public LoadState isLoadedWithReference(Object entity, String attributeName) {
+        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+            Iterator<EntityManagerSetupImpl> setups = EntityManagerFactoryProvider.emSetupImpls.values().iterator();
+            while (setups.hasNext()){
+                EntityManagerSetupImpl setup = setups.next();
+                if (setup.isDeployed()){
+                    Boolean isLoaded = EntityManagerFactoryImpl.isLoaded(entity, setup.getSession());
                     if (isLoaded != null){
-                        return isLoaded.booleanValue() ? LoadState.LOADED : LoadState.NOT_LOADED;
+                        if (isLoaded && attributeName != null){
+                            isLoaded = EntityManagerFactoryImpl.isLoaded(entity, attributeName, setup.getSession());
+                        }
+                        if (isLoaded != null){
+                            return isLoaded ? LoadState.LOADED : LoadState.NOT_LOADED;
+                        }
                     }
                 }
             }
+            return LoadState.UNKNOWN;
         }
-        return LoadState.UNKNOWN;
      }
 
     /**
@@ -510,7 +507,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * If a classloader is not found in the properties map then
      * use the current thread classloader.
      *
-     * @param properties
      * @return ClassLoader
      */
     public ClassLoader getClassLoader(String emName, Map properties) {

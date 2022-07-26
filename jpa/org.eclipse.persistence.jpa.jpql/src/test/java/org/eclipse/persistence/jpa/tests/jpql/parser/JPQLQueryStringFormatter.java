@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,14 +27,12 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 public interface JPQLQueryStringFormatter {
 
     /**
-     * The default implementation of {@link QueryStringFormatter}, which returns the JPQL query
+     * The default implementation of {@link JPQLQueryStringFormatter}, which returns the JPQL query
      * without formatting it.
      */
-    public static JPQLQueryStringFormatter DEFAULT = new JPQLQueryStringFormatter() {
+    JPQLQueryStringFormatter DEFAULT = new JPQLQueryStringFormatter() {
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public String format(String query) {
             return query;
         }

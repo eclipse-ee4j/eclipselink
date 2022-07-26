@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
 
-public class XMLParseExceptionResource extends ListResourceBundle {
+public final class XMLParseExceptionResource extends ListResourceBundle {
 
     static final Object[][] contents = {
         { "34000", "An exception occurred while attempting to parse entity-mappings file: {0}. A DocumentBuilder instance could not be created."},
@@ -25,6 +25,13 @@ public class XMLParseExceptionResource extends ListResourceBundle {
         { "34003", "An exception occurred while processing persistence.xml from URL: {0}. An XMLReader instance could not be created."},
         { "34004", "An exception occurred while processing persistence.xml from URL: {0}. The schema source at URL: {1} could not be set."},
     };
+
+    /**
+     * Default constructor.
+     */
+    public XMLParseExceptionResource() {
+        // for reflection
+    }
 
     /**
       * Return the lookup table.

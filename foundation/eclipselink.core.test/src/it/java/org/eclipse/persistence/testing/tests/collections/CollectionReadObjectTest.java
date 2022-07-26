@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.models.collections.Restaurant;
 import org.eclipse.persistence.testing.framework.*;
 
 public class CollectionReadObjectTest extends org.eclipse.persistence.testing.framework.ReadObjectTest {
-    Class collectionClass;
+    Class<?> collectionClass;
 
     public CollectionReadObjectTest() {
         super();
@@ -36,6 +36,7 @@ public class CollectionReadObjectTest extends org.eclipse.persistence.testing.fr
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         super.verify();
         getSession().logMessage("original Restaurant: " + getOriginalObject());

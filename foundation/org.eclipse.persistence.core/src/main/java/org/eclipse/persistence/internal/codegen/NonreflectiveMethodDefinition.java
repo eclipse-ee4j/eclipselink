@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,11 +25,11 @@ import java.util.*;
  * @author Paul Fullbright
  */
 public class NonreflectiveMethodDefinition extends MethodDefinition {
-    protected Vector argumentTypeNames;
+    protected Vector<String> argumentTypeNames;
 
     public NonreflectiveMethodDefinition() {
         super();
-        this.argumentTypeNames = new Vector(5);
+        this.argumentTypeNames = new Vector<>(5);
     }
 
     public void addArgument(String argumentType, String argumentName) {
@@ -37,9 +37,9 @@ public class NonreflectiveMethodDefinition extends MethodDefinition {
         getArgumentTypes().addElement(argumentType);
     }
 
-    private void adjustArgumentTypeNames(Map typeNameMap) {
-        for (Iterator i = new Vector(getArgumentTypeNames()).iterator(); i.hasNext();) {
-            String argumentTypeName = (String)i.next();
+    private void adjustArgumentTypeNames(Map<String, Set<String>> typeNameMap) {
+        for (Iterator<String> i = new Vector<>(getArgumentTypeNames()).iterator(); i.hasNext();) {
+            String argumentTypeName = i.next();
             String adjustedArgumentTypeName = adjustTypeName(argumentTypeName, typeNameMap);
 
             if (!argumentTypeName.equals(adjustedArgumentTypeName)) {
@@ -49,7 +49,7 @@ public class NonreflectiveMethodDefinition extends MethodDefinition {
     }
 
     @Override
-    protected void adjustTypeNames(Map typeNameMap) {
+    protected void adjustTypeNames(Map<String, Set<String>> typeNameMap) {
         super.adjustTypeNames(typeNameMap);
         adjustArgumentTypeNames(typeNameMap);
     }
@@ -70,12 +70,12 @@ public class NonreflectiveMethodDefinition extends MethodDefinition {
     }
 
     @Override
-    protected Vector getArgumentTypeNames() {
+    protected Vector<String> getArgumentTypeNames() {
         return getArgumentTypes();
     }
 
     @Override
-    public Vector getArgumentTypes() {
+    public Vector<String> getArgumentTypes() {
         return this.argumentTypeNames;
     }
 
@@ -89,7 +89,7 @@ public class NonreflectiveMethodDefinition extends MethodDefinition {
     protected void writeArguments(CodeGenerator generator) {
         boolean isFirst = true;
         for (int index = 0; index < getArgumentTypes().size(); ++index) {
-            String argument = (String)getArgumentTypes().elementAt(index);
+            String argument = getArgumentTypes().elementAt(index);
             if (isFirst) {
                 isFirst = false;
             } else {

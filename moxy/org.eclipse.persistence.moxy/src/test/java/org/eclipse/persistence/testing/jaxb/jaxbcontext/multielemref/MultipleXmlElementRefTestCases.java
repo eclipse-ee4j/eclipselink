@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ public class MultipleXmlElementRefTestCases extends TestCase {
     public void testCreateJAXBContextWithMultipleXmlElementRefSameType() throws Exception {
         Exception caughtException = null;
         try {
-            Class[] classes = new Class[] { Root.class, ChildOne.class, ChildTwo.class };
+            Class<?>[] classes = new Class<?>[] { Root.class, ChildOne.class, ChildTwo.class };
             JAXBContext ctx = JAXBContextFactory.createContext(classes, null, this.getClass().getClassLoader());
 
             Root root = new Root();
@@ -61,7 +61,7 @@ public class MultipleXmlElementRefTestCases extends TestCase {
 
     public void testCreateJAXBContextWithMultipleXmlElementRefDifferentType() throws Exception {
         try {
-            Class[] classes = new Class[] { RootTwo.class, ChildOne.class, Data.class };
+            Class<?>[] classes = new Class<?>[] { RootTwo.class, ChildOne.class, Data.class };
             JAXBContext ctx = JAXBContextFactory.createContext(classes, null, this.getClass().getClassLoader());
 
             RootTwo root = new RootTwo();

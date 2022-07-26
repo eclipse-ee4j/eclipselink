@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class DatePrintingTest extends PerformanceComparisonTestCase {
     /**
      * Prints using deprecate APIs.
      */
+    @Override
     @SuppressWarnings("deprecation")
     public void test() throws Exception {
         StringWriter writer = new StringWriter();
@@ -50,6 +51,7 @@ public class DatePrintingTest extends PerformanceComparisonTestCase {
      */
     public void addCalendarPrintTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(DatePrintingTest.this.date);

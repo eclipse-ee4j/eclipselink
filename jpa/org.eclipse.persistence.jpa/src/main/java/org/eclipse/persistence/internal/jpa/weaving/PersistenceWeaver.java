@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,11 +17,11 @@
 package org.eclipse.persistence.internal.jpa.weaving;
 
 // J2SE imports
-import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
 import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.TransformerException;
 
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -47,18 +46,6 @@ public class PersistenceWeaver implements ClassTransformer {
 
     /** Class name in JVM '/' format to {@link ClassDetails} map. */
     protected Map<String, ClassDetails> classDetailsMap;
-
-    /**
-     * INTERNAL:
-     * Creates an instance of dynamic byte code weaver.
-     * @param session EclipseLink session (not used so {@code null} value is OK).
-     * @param classDetailsMap Class name to {@link ClassDetails} map.
-     * @deprecated Session instance is no longer needed for logging. Will be removed in 2.8.
-     */
-    @Deprecated
-    public PersistenceWeaver(final Session session, final Map<String, ClassDetails> classDetailsMap) {
-        this.classDetailsMap = classDetailsMap;
-    }
 
     /**
      * INTERNAL:
@@ -103,12 +90,12 @@ public class PersistenceWeaver implements ClassTransformer {
      */
     @Override
     public byte[] transform(final ClassLoader loader, final String className,
-            final Class classBeingRedefined, final ProtectionDomain protectionDomain,
-            final byte[] classfileBuffer) throws IllegalClassFormatException {
+            final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain,
+            final byte[] classfileBuffer) throws TransformerException {
         final SessionLog log = AbstractSessionLog.getLog();
         // PERF: Is finest logging on weaving turned on?
         final boolean shouldLogFinest = log.shouldLog(SessionLog.FINEST, SessionLog.WEAVER);
-        final Map classDetailsMap = this.classDetailsMap;
+        final Map<String, ClassDetails> classDetailsMap = this.classDetailsMap;
         // Check if cleared already.
         if (classDetailsMap == null) {
             return null;
@@ -120,7 +107,7 @@ public class PersistenceWeaver implements ClassTransformer {
              * Thus, we must check the classDetailsMap to see if we are 'interested'
              * in the class.
              */
-            final ClassDetails classDetails = (ClassDetails)classDetailsMap.get(Helper.toSlashedClassName(className));
+            final ClassDetails classDetails = classDetailsMap.get(Helper.toSlashedClassName(className));
 
             if (classDetails != null) {
                 if (shouldLogFinest) {

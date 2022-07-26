@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -483,27 +483,27 @@ public class Employee implements Serializable {
         }
 
         if (getDesignation().getValue().equals("Executive")) {
-            rank = new Integer(1);
+            rank = 1;
         }
         if (getDesignation().getValue().equals("Non-Executive")) {
-            rank = new Integer(2);
+            rank = 2;
         }
         return rank;
     }
 
-    public String getRankFromRow(org.eclipse.persistence.sessions.Record row, Session aSession) {
-        if (row.get("RANK") == null) {
+    public String getRankFromRow(DataRecord row, Session aSession) {
+        if (row.get("ERANK") == null) {
             return null;
         }
-        Integer value = new Integer(((Number)row.get("RANK")).intValue());
+        Integer value = ((Number) row.get("ERANK")).intValue();
         String rank = null;
         Employee employee = new Employee();
 
         //(Employee) aSession.readObject(Employee.class);
-        if (value.intValue() == 1) {
+        if (value == 1) {
             rank = new String("Executive");
         }
-        if (value.intValue() == 2) {
+        if (value == 2) {
             rank = new String("Non-Executive");
         }
         return rank;
@@ -557,9 +557,9 @@ public class Employee implements Serializable {
         this.computer = computer;
     }
 
-    public java.util.Date setDateAndTime(org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
-        java.sql.Date sqlDateOfBirth = (java.sql.Date)ConversionManager.getDefaultManager().convertObject(row.get("BDAY"), java.sql.Date.class);
-        java.sql.Time timeOfBirth = (java.sql.Time)session.getLogin().getPlatform().convertObject(row.get("BTIME"), java.sql.Time.class);
+    public java.util.Date setDateAndTime(DataRecord row, org.eclipse.persistence.sessions.Session session) {
+        java.sql.Date sqlDateOfBirth = ConversionManager.getDefaultManager().convertObject(row.get("BDAY"), java.sql.Date.class);
+        java.sql.Time timeOfBirth = session.getLogin().getPlatform().convertObject(row.get("BTIME"), java.sql.Time.class);
         if ((timeOfBirth == null) || (sqlDateOfBirth == null)) {
             return null;
         }
@@ -617,7 +617,7 @@ public class Employee implements Serializable {
         definition.addField("BDAY", java.sql.Date.class);
         definition.addField("BTIME", java.sql.Time.class);
         definition.addField("JDAY", java.sql.Date.class);
-        definition.addField("RANK", Integer.class);
+        definition.addField("ERANK", Integer.class);
         definition.addField("GENDER", String.class, 10);
 
         // The JDESC field will be added after a plaftorm check in

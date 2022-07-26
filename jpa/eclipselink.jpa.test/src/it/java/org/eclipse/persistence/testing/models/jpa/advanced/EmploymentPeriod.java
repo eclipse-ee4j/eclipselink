@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.ManyToOne;
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.Objects;
 
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
@@ -83,12 +84,13 @@ public class EmploymentPeriod implements Serializable, Cloneable {
         this.companyAddress = companyAddress;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException{
         return super.clone();
     }
 
     /**
-     * Print the start & end date
+     * Print the start &amp; end date
      */
     public String toString() {
         java.io.StringWriter writer = new java.io.StringWriter();
@@ -114,7 +116,7 @@ public class EmploymentPeriod implements Serializable, Cloneable {
     }
 
     public boolean equals(Object o) {
-        if ((o == null) || (!(o instanceof EmploymentPeriod))) {
+        if (!(o instanceof EmploymentPeriod)) {
             return false;
         }
         EmploymentPeriod empPeriod = (EmploymentPeriod)o;
@@ -143,5 +145,10 @@ public class EmploymentPeriod implements Serializable, Cloneable {
         }
 
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startDate, endDate, companyAddress);
     }
 }

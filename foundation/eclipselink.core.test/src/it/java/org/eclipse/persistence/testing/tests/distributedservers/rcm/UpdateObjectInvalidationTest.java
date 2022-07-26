@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,6 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
  * Test to ensure a remote object is invalidated when updated and its
  * descriptor is configured to INVALIDATE_CHANGED_OBJECTS
  * @author dminsky
- * @date May-01-2008
  */
 public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistributedTest {
 
@@ -35,9 +34,10 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
     public UpdateObjectInvalidationTest() {
         super();
         setDescription("Ensure a remote object is invalidated when its descriptor is set to INVALIDATE_CHANGED_OBJECTS");
-        cacheSyncConfigValues.put(Employee.class, new Integer(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS));
+        cacheSyncConfigValues.put(Employee.class, ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
     }
 
+    @Override
     public void setup() {
         super.setup();
 
@@ -61,6 +61,7 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
         assertNotNull(result);
     }
 
+    @Override
     public void test() {
         // Update the employee and commit (x2)
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -74,6 +75,7 @@ public class UpdateObjectInvalidationTest extends ConfigurableCacheSyncDistribut
         uow.commit();
     }
 
+    @Override
     public void verify() {
         // The employee should exist in the distributed cache, and it should be invalidated
         if (isObjectValidOnDistributedServer(employee) == true) {

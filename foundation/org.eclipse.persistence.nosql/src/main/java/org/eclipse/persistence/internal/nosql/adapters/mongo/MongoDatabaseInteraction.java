@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ import jakarta.resource.ResourceException;
 import jakarta.resource.cci.Connection;
 import jakarta.resource.cci.Interaction;
 import jakarta.resource.cci.InteractionSpec;
-import jakarta.resource.cci.Record;
 import jakarta.resource.cci.ResourceWarning;
 
 import org.bson.Document;
@@ -68,7 +67,7 @@ public class MongoDatabaseInteraction implements Interaction {
      * Output records are not supported/required.
      */
     @Override
-    public boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException {
+    public boolean execute(InteractionSpec spec, jakarta.resource.cci.Record input, jakarta.resource.cci.Record output) throws ResourceException {
         if (!(spec instanceof MongoInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
         }
@@ -104,9 +103,7 @@ public class MongoDatabaseInteraction implements Interaction {
                 throw new ResourceException("Invalid operation: " + operation);
             }
         } catch (Exception exception) {
-            ResourceException resourceException = new ResourceException(exception.toString());
-            resourceException.initCause(exception);
-            throw resourceException;
+            throw new ResourceException(exception);
         }
     }
 
@@ -115,7 +112,7 @@ public class MongoDatabaseInteraction implements Interaction {
      * The spec is either GET, PUT or DELETE interaction.
      */
     @Override
-    public Record execute(InteractionSpec spec, Record record) throws ResourceException {
+    public jakarta.resource.cci.Record execute(InteractionSpec spec, jakarta.resource.cci.Record record) throws ResourceException {
         if (!(spec instanceof MongoInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
         }
@@ -127,8 +124,7 @@ public class MongoDatabaseInteraction implements Interaction {
         MongoOperation operation = mongoSpec.getOperation();
         String collectionName = mongoSpec.getCollection();
         if (operation == null) {
-            ResourceException resourceException = new ResourceException("Mongo operation must be set");
-            throw resourceException;
+            throw new ResourceException("Mongo operation must be set");
         }
         if (operation == MongoOperation.EVAL) {
             Document commandDocument = new Document("$eval", mongoSpec.getCode())/*.append("args", asList(args))*/;
@@ -136,8 +132,7 @@ public class MongoDatabaseInteraction implements Interaction {
             return buildRecordFromDBObject((Document)result.get("retval"));
         }
         if (collectionName == null) {
-            ResourceException resourceException = new ResourceException("DB Collection name must be set");
-            throw resourceException;
+            throw new ResourceException("DB Collection name must be set");
         }
         try {
             MongoCollection<Document> collection = this.connection.getDB().getCollection(collectionName);
@@ -200,9 +195,7 @@ public class MongoDatabaseInteraction implements Interaction {
                 throw new ResourceException("Invalid operation: " + operation);
             }
         } catch (Exception exception) {
-            ResourceException resourceException = new ResourceException(exception.toString());
-            resourceException.initCause(exception);
-            throw resourceException;
+            throw new ResourceException(exception.toString(), exception);
         }
         return null;
     }
@@ -212,12 +205,12 @@ public class MongoDatabaseInteraction implements Interaction {
      */
     public BasicDBObject buildDBObject(MongoRecord record) {
         BasicDBObject object = new BasicDBObject();
-        for (Iterator iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
+        for (Iterator<Map.Entry<String, ?>> iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, ?> entry = iterator.next();
             if (entry.getValue() instanceof MongoRecord) {
-                object.put((String)entry.getKey(), buildDBObject((MongoRecord)entry.getValue()));
+                object.put(entry.getKey(), buildDBObject((MongoRecord)entry.getValue()));
             } else {
-                object.put((String)entry.getKey(), entry.getValue());
+                object.put(entry.getKey(), entry.getValue());
             }
         }
         return object;
@@ -228,12 +221,12 @@ public class MongoDatabaseInteraction implements Interaction {
      */
     public Document buildDocument(MongoRecord record) {
         Document object = new Document();
-        for (Iterator iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
+        for (Iterator<Map.Entry<String, ?>> iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, ?> entry = iterator.next();
             if (entry.getValue() instanceof MongoRecord) {
-                object.put((String)entry.getKey(), buildDBObject((MongoRecord)entry.getValue()));
+                object.put(entry.getKey(), buildDBObject((MongoRecord)entry.getValue()));
             } else {
-                object.put((String)entry.getKey(), entry.getValue());
+                object.put(entry.getKey(), entry.getValue());
             }
         }
         return object;
@@ -244,11 +237,11 @@ public class MongoDatabaseInteraction implements Interaction {
      */
     public MongoRecord buildRecordFromDBObject(Document object) {
         MongoRecord record = new MongoRecord();
-        for (Iterator iterator = object.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
+        for (Iterator<Map.Entry<String, Object>> iterator = object.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, Object> entry = iterator.next();
             if (entry.getValue() instanceof BasicDBList) {
-                List values = new ArrayList();
-                for (Iterator valuesIterator = ((BasicDBList)entry.getValue()).iterator(); valuesIterator.hasNext(); ) {
+                List<Object> values = new ArrayList<>();
+                for (Iterator<Object> valuesIterator = ((BasicDBList)entry.getValue()).iterator(); valuesIterator.hasNext(); ) {
                     Object value = valuesIterator.next();
                     if (value instanceof Document) {
                         values.add(buildRecordFromDBObject((Document)value));

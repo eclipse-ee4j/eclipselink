@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,12 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
 
     public Map<String,java.util.List<MethodSerialImpl>> serializableMethods;
 
+    /**
+     * Default constructor.
+     */
+    public JPAEntityListenerHolder() {
+    }
+
     public void setIsDefaultListener(Boolean isDefaultListener) {
         this.isDefaultListener = isDefaultListener;
     }
@@ -53,12 +59,12 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
 
         if (listener == null) {
             if (listenerClassName !=null) {
-                Class listenerClass = getListenerClass(loader);
+                Class<?> listenerClass = getListenerClass(loader);
 
                 if (DescriptorEventListener.class.isAssignableFrom(listenerClass)){
                     listener = (DescriptorEventListener)constructListenerInstance(listenerClass);
                 } else {
-                    EntityListener entityListener = new EntityListener(listenerClass, descriptor.getJavaClass());
+                    EntityListener<?> entityListener = new EntityListener<>(listenerClass, descriptor.getJavaClass());
                     entityListener.setOwningSession(session);
                     if (!(serializableMethods == null)) {
                         //The user class is not a DescriptorEventListener, so wrap it in a JPA EntityListener instance
@@ -70,7 +76,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
 
             } else {
               //it must be an EntityClassListener
-                EntityListener entityListener = new EntityClassListener(descriptor.getJavaClass());
+                EntityListener<?> entityListener = new EntityClassListener<>(descriptor.getJavaClass());
                 entityListener.setAllEventMethods(this.convertToMethods(loader));
                 listener = entityListener;
             }
@@ -88,21 +94,19 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
 
     }
 
-    protected Object constructListenerInstance(Class listenerClass){
-        Object entityListenerClassInstance = null;
+    protected Object constructListenerInstance(Class<?> listenerClass){
+        Object entityListenerClassInstance;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    entityListenerClassInstance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(listenerClass));
+                    entityListenerClassInstance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(listenerClass));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.errorInstantiatingClass(listenerClass, exception.getException());
                 }
             } else {
                 entityListenerClassInstance = PrivilegedAccessHelper.newInstanceFromClass(listenerClass);
             }
-        } catch (IllegalAccessException exception) {
-            throw ValidationException.errorInstantiatingClass(listenerClass, exception);
-        } catch (InstantiationException exception) {
+        } catch (ReflectiveOperationException exception) {
             throw ValidationException.errorInstantiatingClass(listenerClass, exception);
         }
         return entityListenerClassInstance;
@@ -117,7 +121,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         this.serializableMethods = new ConcurrentHashMap<>();
         for (String event: methods.keySet()){
             java.util.List<Method> methodList = methods.get(event);
-            java.util.List<MethodSerialImpl> newMethodList = new java.util.ArrayList();
+            java.util.List<MethodSerialImpl> newMethodList = new java.util.ArrayList<>();
             for (Method method: methodList) {
                 MethodSerialImpl serializableMethod = new MethodSerialImpl(method);
                 newMethodList.add(serializableMethod);
@@ -131,12 +135,12 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
      * used to return an instance of the listenerClassName
      * @return an instance of listenerClassName
      */
-    private Class getListenerClass(ClassLoader loader){
-        Class entityListenerClass = null;
+    private Class<?> getListenerClass(ClassLoader loader){
+        Class<?> entityListenerClass;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    entityListenerClass = AccessController.doPrivileged(new PrivilegedClassForName(listenerClassName, true, loader));
+                    entityListenerClass = AccessController.doPrivileged(new PrivilegedClassForName<>(listenerClassName, true, loader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.unableToLoadClass(listenerClassName, exception.getException());
                 }
@@ -157,8 +161,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
      */
     public void addEventMethod(String event, Method method) {
         if (!getMethods().containsKey(event)) {
-            List methodsList = new ArrayList<MethodSerialImpl>();
-            methodsList.add(method);
+            List<MethodSerialImpl> methodsList = new ArrayList<>();
             serializableMethods.put(event, methodsList);
         }
 
@@ -170,14 +173,12 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
      * INTERNAL:
      * This returns a hashtable of methods which are used in a JPA EntityListener instance, built from
      * the MethodSerialImpl representation since Methods are not serializable
-     * @param loader
-     * @return
      */
     public Map<String,java.util.List<Method>> convertToMethods(ClassLoader loader) {
         Map<String,java.util.List<Method>> table = new ConcurrentHashMap<>();
         for (String event: serializableMethods.keySet()){
             java.util.List<MethodSerialImpl> methodList = serializableMethods.get(event);
-            java.util.List<Method> newMethodList = new java.util.ArrayList();
+            java.util.List<Method> newMethodList = new java.util.ArrayList<>();
             for (MethodSerialImpl serializedMethod: methodList) {
                 try {
                     Method method = serializedMethod.convertToMethod(loader);
@@ -193,7 +194,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
 
     public Map<String,java.util.List<MethodSerialImpl>> getMethods() {
         if (serializableMethods == null) {
-            serializableMethods = new ConcurrentHashMap<String, List<MethodSerialImpl>>();
+            serializableMethods = new ConcurrentHashMap<>();
         }
         return serializableMethods;
     }

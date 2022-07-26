@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -64,7 +66,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals((double)by, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(by, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //3. purpose: getDouble with Undefined Byte Property
@@ -110,7 +112,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         double delta = 0.0;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((double)db, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(db, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //1. purpose: getBoolean with Defined Boolean Property
@@ -131,7 +133,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDouble(property3, db);
 
-        this.assertEquals(db, dataObject_a.getDouble(property3), delta);
+        assertEquals(db, dataObject_a.getDouble(property3), delta);
 
     }
 
@@ -152,7 +154,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setDouble(property + ".0", db);
 
-        this.assertEquals(db, dataObject_a.getDouble(property + ".0"), delta);
+        assertEquals(db, dataObject_a.getDouble(property + ".0"), delta);
 
     }
 
@@ -169,7 +171,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
 
         dataObject_a.setDouble(property1, db);// c dataobject's a property has value boolean 'true'
 
-        this.assertEquals(db, dataObject_a.getDouble(property1), delta);
+        assertEquals(db, dataObject_a.getDouble(property1), delta);
     }
 
     /*public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
@@ -219,7 +221,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         double delta = 0.0;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((double)fl, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(fl, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //8. purpose: getDouble with Undefined float Property
@@ -250,7 +252,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         double delta = 0.0;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((double)in, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(in, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //10. purpose: getDouble with Undefined int Property
@@ -281,7 +283,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         double delta = 0.0;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((double)lg, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals((double)lg, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //12. purpose: getDouble with Undefined long Property
@@ -312,7 +314,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         double delta = 0.0;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals((double)shr, dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(shr, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //14. purpose: getDouble with Undefined short Property
@@ -340,11 +342,11 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         dataObject_c._setType(type_c);
 
         String str = "12";
-        Double s_d = new Double(str);
+        Double s_d = Double.valueOf(str);
         double delta = 0.0;
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(s_d, dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //16. purpose: getDouble with Undefined string Property
@@ -392,7 +394,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         double delta = 0.0;
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(bd.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //19. purpose: getDouble with Undefined decimal Property
@@ -423,7 +425,7 @@ public class SDODataObjectGetDoubleByPositionalPathTest extends SDODataObjectGet
         double delta = 0.0;
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
+        assertEquals(bi.doubleValue(), dataObject_a.getDouble(propertyPath_a_b_c), delta);
     }
 
     //21. purpose: getDouble with Undefined Integer Property

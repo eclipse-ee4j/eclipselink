@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
  *  That Transformer may be a MethodBasedAttributeTransformer or a user defined implementation.
  *
  */
-public class TransformerBasedValueHolder extends DatabaseValueHolder {
+public class TransformerBasedValueHolder<T> extends DatabaseValueHolder<T> {
 
     /**
      * Stores the method to be executed. The method can take
@@ -88,13 +88,14 @@ public class TransformerBasedValueHolder extends DatabaseValueHolder {
      * Instantiate the object by executing the method on the transformer.
      */
     @Override
-    protected Object instantiate() throws DescriptorException {
+    protected T instantiate() throws DescriptorException {
         return instantiate(getObject(), getSession());
     }
 
-    protected Object instantiate(Object object, AbstractSession session) throws DescriptorException {
+    @SuppressWarnings({"unchecked"})
+    protected T instantiate(Object object, AbstractSession session) throws DescriptorException {
         try {
-            return transformer.buildAttributeValue(getRow(), object, session);
+            return (T) transformer.buildAttributeValue(getRow(), object, session);
         } catch (DescriptorException ex) {
             Throwable nestedException = ex.getInternalException();
             if (nestedException instanceof IllegalAccessException) {
@@ -121,7 +122,7 @@ public class TransformerBasedValueHolder extends DatabaseValueHolder {
      * Note: This method is not thread-safe.  It must be used in a synchronized manner
      */
     @Override
-    public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
+    public T instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder<T> unitOfWorkValueHolder) {
         return instantiate(getObject(), unitOfWorkValueHolder.getUnitOfWork());
     }
 

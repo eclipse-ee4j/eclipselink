@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -108,35 +108,35 @@ public class Buyer implements Serializable {
     }
 
     public void addAmex(long number) {
-        getCreditCards().put(AMEX, new Long(number));
+        getCreditCards().put(AMEX, number);
     }
 
     public void addCanadianImperialCreditLine(long number) {
-        getCreditLines().put(CANADIAN_IMPERIAL, new Long(number));
+        getCreditLines().put(CANADIAN_IMPERIAL, number);
     }
 
     public void addDinersClub(long number) {
-        getCreditCards().put(DINERS, new Long(number));
+        getCreditCards().put(DINERS, number);
     }
 
     public void addMastercard(long number) {
-        getCreditCards().put(MASTERCARD, new Long(number));
+        getCreditCards().put(MASTERCARD, number);
     }
 
     public void addRoyalBankCreditLine(long number) {
-        getCreditLines().put(ROYAL_BANK, new Long(number));
+        getCreditLines().put(ROYAL_BANK, number);
     }
 
     public void addScotiabankCreditLine(long number) {
-        getCreditLines().put(SCOTIABANK, new Long(number));
+        getCreditLines().put(SCOTIABANK, number);
     }
 
     public void addTorontoDominionCreditLine(long number) {
-        getCreditLines().put(TORONTO_DOMINION, new Long(number));
+        getCreditLines().put(TORONTO_DOMINION, number);
     }
 
     public void addVisa(long number) {
-        getCreditCards().put(VISA, new Long(number));
+        getCreditCards().put(VISA, number);
     }
 
     public boolean buysSaturdayToSunday() {
@@ -251,7 +251,7 @@ public class Buyer implements Serializable {
         if (cardNumber == null) {
             return false;
         } else {
-            return cardNumber.longValue() == number;
+            return cardNumber == number;
         }
     }
 
@@ -259,7 +259,7 @@ public class Buyer implements Serializable {
         if (creditLineNumber == null) {
             return false;
         } else {
-            return creditLineNumber.longValue() == number;
+            return creditLineNumber == number;
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,16 +34,16 @@ import org.eclipse.persistence.descriptors.changetracking.*;
 public class Employee implements Serializable, ChangeTracker {
     // implements ChangeTracker for testing
 
-    /** Primary key, mapped as a direct-to-field, BigDecimal -> NUMBER, that makes use of sequence numbers to generate the id. */
+    /** Primary key, mapped as a direct-to-field, BigDecimal -{@literal >} NUMBER, that makes use of sequence numbers to generate the id. */
     public BigDecimal id;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String firstName;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String lastName;
 
-    /** Object-type mapping, maps "Male" -> "M", "Female" -> "F". */
+    /** Object-type mapping, maps "Male" -{@literal >} "M", "Female" -{@literal >} "F". */
     public String gender;
 
     /** One-to-one mapping, employee references its address through a foreign key. */
@@ -60,7 +60,7 @@ public class Employee implements Serializable, ChangeTracker {
     /** Direct-collection mapping, employee stores its collection of plain Strings in an intermediate table. */
     public List<String> responsibilitiesList;
 
-    /** Direct-to-field mapping, int -> NUMBER, salary of the employee in dollars. */
+    /** Direct-to-field mapping, int -{@literal >} NUMBER, salary of the employee in dollars. */
     public int salary;
 
     /** One-to-many mapping, employee references its collection of children arranged by age.
@@ -74,10 +74,12 @@ public class Employee implements Serializable, ChangeTracker {
     public static int getIdCallCount = 0;
     public PropertyChangeListener listener;
 
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return listener;
     }
 
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.listener = listener;
     }
@@ -309,12 +311,12 @@ public class Employee implements Serializable, ChangeTracker {
     }
 
     public void setSalary(int salary) {
-        propertyChange("salary", new Integer(this.salary), new Integer(salary));
+        propertyChange("salary", this.salary, salary);
         this.salary = salary;
     }
 
     /**
-     * Print the first & last name
+     * Print the first &amp; last name
      */
     public String toString() {
         StringWriter writer = new StringWriter();

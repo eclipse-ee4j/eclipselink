@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,7 +88,7 @@ public @interface SerializedObject {
      * The Class that implements org.eclipse.persistence.descriptors.SerializedObjectPolicy interface.
      * This class must be specified.
      */
-    Class value();
+    Class<?> value();
 
     /**
      * (Optional) The column that holds the serialized object. By default it's a BLOB column named "SOP" in entity's main table.

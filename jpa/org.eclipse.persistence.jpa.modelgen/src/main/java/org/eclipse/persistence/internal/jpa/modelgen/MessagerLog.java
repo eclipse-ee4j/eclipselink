@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.jpa.modelgen;
 
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
@@ -42,9 +41,9 @@ final class MessagerLog extends AbstractSessionLog {
     private final Messager out;
     private static final Writer NULL_WRITER = new Writer() {
             //no-op
-            @Override public void write(char[] cbuf, int off, int len) throws IOException {}
-            @Override public void flush() throws IOException {}
-            @Override public void close() throws IOException {}
+            @Override public void write(char[] cbuf, int off, int len) {}
+            @Override public void flush() {}
+            @Override public void close() {}
         };
 
 

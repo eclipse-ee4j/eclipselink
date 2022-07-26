@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyNSTestCases extends JAX
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
+        setClasses(new Class<?>[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
         namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "xsd");
@@ -49,6 +49,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyNSTestCases extends JAX
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, true);
     }
 
+    @Override
     protected Object getControlObject() {
         RootCompositeCollectionObjectOnly root = new RootCompositeCollectionObjectOnly();
         SubType subType = new SubType();
@@ -68,7 +69,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyNSTestCases extends JAX
 
         List objectList = new ArrayList(baseTypes);
         objectList.add(new String("string test"));
-        objectList.add(new Integer(500));
+        objectList.add(500);
         root.objectList = objectList;
 
         return root;

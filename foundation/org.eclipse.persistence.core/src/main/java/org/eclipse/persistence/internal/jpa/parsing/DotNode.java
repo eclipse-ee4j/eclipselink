@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
@@ -26,8 +25,8 @@ import org.eclipse.persistence.queries.ReportQuery;
  * INTERNAL
  * <p><b>Purpose</b>: This node represents an 'DOT' (i.e. '.') on the input
  * stream. The left and right will depend on the input stream.
- * <p><b>Responsibilities</b>:<ul>
- * </ul>
+ * <p><b>Responsibilities</b>:
+ *
  *    @author Jon Driscoll and Joel Lucuik
  *    @since TopLink 4.0
  */
@@ -217,10 +216,10 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      * INTERNAL
      * Returns the attribute type if the right represents a direct-to-field mapping.
      */
-    public Class getTypeOfDirectToField(GenerationContext context) {
+    public Class<?> getTypeOfDirectToField(GenerationContext context) {
         DatabaseMapping mapping = resolveMapping(context);
         if ((mapping != null) && mapping.isDirectToFieldMapping()) {
-            return ((AbstractDirectMapping)mapping).getAttributeClassification();
+            return mapping.getAttributeClassification();
         }
         return null;
     }
@@ -261,7 +260,7 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
      */
     @Override
     public DatabaseMapping resolveMapping(GenerationContext context) {
-        Class leftClass = getLeft().resolveClass(context);
+        Class<?> leftClass = getLeft().resolveClass(context);
         return getRight().resolveMapping(context, leftClass);
     }
 
@@ -269,8 +268,8 @@ public class DotNode extends LogicalOperatorNode implements AliasableNode {
     * resolveClass: Answer the class which results from traversing the mappings for the receiver's nodes
     */
     @Override
-    public Class resolveClass(GenerationContext context) {
-        Class leftClass = getLeft().resolveClass(context);
+    public Class<?> resolveClass(GenerationContext context) {
+        Class<?> leftClass = getLeft().resolveClass(context);
         return getRight().resolveClass(context, leftClass);
     }
 

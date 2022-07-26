@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -955,9 +955,9 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     @Override
     protected void prepareTranslationRow(AbstractRecord translationRow, Object object, ClassDescriptor descriptor, AbstractSession session) {
         // Make sure that each source key field is in the translation row.
-        for (Enumeration sourceFieldsEnum = getSourceKeyFields().elements();
-                 sourceFieldsEnum.hasMoreElements();) {
-            DatabaseField sourceKey = (DatabaseField)sourceFieldsEnum.nextElement();
+        for (Enumeration<DatabaseField> sourceFieldsEnum = getSourceKeyFields().elements();
+             sourceFieldsEnum.hasMoreElements();) {
+            DatabaseField sourceKey = sourceFieldsEnum.nextElement();
             if (!translationRow.containsKey(sourceKey)) {
                 Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
                 translationRow.put(sourceKey, value);
@@ -1003,7 +1003,6 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     /**
      * INTERNAL:
      * Set whether this mapping was originally defined as a OneToMany
-     * @param isDefinedAsOneToManyMapping
      */
     public void setDefinedAsOneToManyMapping(boolean isDefinedAsOneToManyMapping) {
         this.isDefinedAsOneToManyMapping = isDefinedAsOneToManyMapping;

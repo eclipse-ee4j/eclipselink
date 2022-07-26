@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.jaxb.simpledocument;
 import java.io.StringReader;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import jakarta.xml.bind.JAXBElement;
 
@@ -34,7 +33,7 @@ public class SimpleDocumentDateTestCases extends JAXBWithJSONTestCases {
 
         public SimpleDocumentDateTestCases(String name) throws Exception {
             super(name);
-            Class[] classes = new Class[1];
+            Class<?>[] classes = new Class<?>[1];
             classes[0] = DateObjectFactory.class;
             setClasses(classes);
         }
@@ -44,6 +43,7 @@ public class SimpleDocumentDateTestCases extends JAXBWithJSONTestCases {
             return "{\"dateroot\":\"2013-02-20T00:00:00"+TIMEZONE_OFFSET+"\"}";
         }
 
+        @Override
         public boolean isUnmarshalTest() {
              return false;
         }
@@ -63,8 +63,9 @@ public class SimpleDocumentDateTestCases extends JAXBWithJSONTestCases {
             return doc;
         }
 
+        @Override
         protected Object getControlObject() {
-        JAXBElement value = new DateObjectFactory().createDateRoot();
+        JAXBElement<Date> value = new DateObjectFactory().createDateRoot();
 
         Calendar cal = Calendar.getInstance();
         cal.clear();

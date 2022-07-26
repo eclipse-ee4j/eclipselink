@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ import org.eclipse.persistence.platform.server.wls.WebLogicPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.proxyauthentication.Employee;
 import org.eclipse.persistence.testing.models.jpa.proxyauthentication.PhoneNumber;
@@ -406,7 +406,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         try {
             beginTransaction_proxy(em);
             // read
-            employeeRead = (Employee)em.find(Employee.class, employee.getId());
+            employeeRead = em.find(Employee.class, employee.getId());
             if (employeeRead != null) {
                 // clean-up
                 em.remove(employeeRead);
@@ -486,7 +486,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             System.out.println("Currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.");
             return;
         }
-        if(((DatabaseLogin)serverSession.getReadConnectionPool().getLogin()).shouldUseExternalTransactionController()) {
+        if(serverSession.getReadConnectionPool().getLogin().shouldUseExternalTransactionController()) {
             throw new RuntimeException("Test problem: non jta data source is required");
         }
         System.out.println("====testNonJtaDataSource begin");
@@ -535,7 +535,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     }
 
     private Map createConnProperties() {
-        Map newProps = JUnitTestCaseHelper.getDatabaseProperties(PROXY_PU);
+        Map<String, String> newProps = JUnitTestCaseHelper.getDatabaseProperties(PROXY_PU);
         newProps.put(PersistenceUnitProperties.JDBC_USER, ProxyAuthenticationUsersAndProperties.connectionUser);
         newProps.put(PersistenceUnitProperties.JDBC_PASSWORD, ProxyAuthenticationUsersAndProperties.connectionPassword);
         return newProps;
@@ -601,8 +601,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     }
 
     private boolean shouldOverrideGetEntityManager(){
-        if(serverSession.getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform") ||
-           serverSession.getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.jboss.JBossPlatform") ){
+        if(serverSession.getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.jboss.JBossPlatform") ){
             return true;
         } else {
             return false;
@@ -624,6 +623,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         return WebLogicPlatform.class.isAssignableFrom(serverSession.getServerPlatform().getClass()) && Helper.compareVersions(getServerSession(PROXY_PU).getServerPlatform().getServerNameAndVersion(), "10.3.4") >= 0;
     }
 
+    @Override
     protected Properties getServerProperties(){
         String proxy_user=System.getProperty("proxy.user.name");
         Properties p = new Properties();

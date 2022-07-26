@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -183,7 +183,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * PUBLIC:
      * Create a new AbstractSessionLog
      */
-    public AbstractSessionLog() {
+    protected AbstractSessionLog() {
         this.writer = new PrintWriter(System.out);
         this.level = getDefaultLoggingLevel();
     }
@@ -257,7 +257,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     @Override
     public boolean shouldDisplayData() {
         if (this.shouldDisplayData != null) {
-            return shouldDisplayData.booleanValue();
+            return shouldDisplayData;
         } else {
             return this.level < SessionLog.CONFIG;
         }
@@ -595,7 +595,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public boolean shouldPrintSession() {
-        return (shouldPrintSession == null) || shouldPrintSession.booleanValue();
+        return (shouldPrintSession == null) || shouldPrintSession;
     }
 
     /**
@@ -616,7 +616,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public boolean shouldPrintConnection() {
-        return (shouldPrintConnection == null) || shouldPrintConnection.booleanValue();
+        return (shouldPrintConnection == null) || shouldPrintConnection;
     }
 
     /**
@@ -640,7 +640,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (shouldLogExceptionStackTrace == null) {
             return getLevel() <= FINER;
         } else {
-            return shouldLogExceptionStackTrace.booleanValue();
+            return shouldLogExceptionStackTrace;
         }
     }
 
@@ -671,7 +671,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public boolean shouldPrintDate() {
-        return (shouldPrintDate == null) || (shouldPrintDate.booleanValue());
+        return (shouldPrintDate == null) || (shouldPrintDate);
     }
 
     /**
@@ -695,7 +695,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (shouldPrintThread == null) {
             return getLevel() <= FINE;
         } else {
-            return shouldPrintThread.booleanValue();
+            return shouldPrintThread;
         }
     }
 
@@ -830,9 +830,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     protected String getConnectionString(Accessor connection) {
         // Bug 3630182 - if possible, print the actual connection's hashcode instead of just the accessor
         if (connection.getDatasourceConnection() == null){
-            return CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(connection)) + ")";
+            return CONNECTION_STRING + "(" + System.identityHashCode(connection) + ")";
         } else {
-             return CONNECTION_STRING + "(" + String.valueOf(System.identityHashCode(connection.getDatasourceConnection())) + ")";
+             return CONNECTION_STRING + "(" + System.identityHashCode(connection.getDatasourceConnection()) + ")";
         }
     }
 
@@ -840,7 +840,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Return the specified thread information.
      */
     protected String getThreadString(Thread thread) {
-        return THREAD_STRING + "(" + String.valueOf(thread) + ")";
+        return THREAD_STRING + "(" + thread + ")";
     }
 
     /**
@@ -981,7 +981,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void severe(String message) {
-        log(SEVERE, message, (Object[])null);
+        log(SEVERE, message, null);
     }
 
     /**
@@ -994,7 +994,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void warning(String message) {
-        log(WARNING, message, (Object[])null);
+        log(WARNING, message, null);
     }
 
     /**
@@ -1007,7 +1007,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void info(String message) {
-        log(INFO, message, (Object[])null);
+        log(INFO, message, null);
     }
 
     /**
@@ -1020,7 +1020,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void config(String message) {
-        log(CONFIG, message, (Object[])null);
+        log(CONFIG, message, null);
     }
 
     /**
@@ -1033,7 +1033,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void fine(String message) {
-        log(FINE, message, (Object[])null);
+        log(FINE, message, null);
     }
 
     /**
@@ -1046,7 +1046,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void finer(String message) {
-        log(FINER, message, (Object[])null);
+        log(FINER, message, null);
     }
 
     /**
@@ -1059,7 +1059,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void finest(String message) {
-        log(FINEST, message, (Object[])null);
+        log(FINEST, message, null);
     }
 
     /**

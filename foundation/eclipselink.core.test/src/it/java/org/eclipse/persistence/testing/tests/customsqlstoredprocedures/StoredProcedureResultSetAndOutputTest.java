@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,6 +52,7 @@ public class StoredProcedureResultSetAndOutputTest extends TestCase {
         return call;
     }
 
+    @Override
     public void setup() {
         shouldBindAllParametersOriginal = getSession().getLogin().shouldBindAllParameters();
         // Note: Normally we build a stored procedure for execution in the setup method.
@@ -88,6 +89,7 @@ public class StoredProcedureResultSetAndOutputTest extends TestCase {
     /**
      * ReadAllQuery used to determine if correct results obtained from stored procedure call
      */
+    @Override
     public void test() {
         ReportQuery query = new ReportQuery(Employee.class, new org.eclipse.persistence.expressions.ExpressionBuilder());
         query.setCall(call);
@@ -99,6 +101,7 @@ public class StoredProcedureResultSetAndOutputTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() throws Exception {
         if (caughtException != null) {
             throw new TestErrorException("Test to return a ResultSet and an OUT parameter from a stored procedure failed.\n" + "This exception thrown while testing test case.\n" + "----- StoredProcedureResultSetAndOutputTest() -----\n" + caughtException.getMessage());
@@ -112,6 +115,7 @@ public class StoredProcedureResultSetAndOutputTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getLogin().setShouldBindAllParameters(shouldBindAllParametersOriginal);
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

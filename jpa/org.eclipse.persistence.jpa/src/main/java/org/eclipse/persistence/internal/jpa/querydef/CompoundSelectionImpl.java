@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.Selection;
@@ -29,7 +31,6 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * criteria API.
  * <p>
  * <b>Description</b>: The Selection is the expression describing what should be returned by the query.
- * <p>
  *
  * @see jakarta.persistence.criteria Join
  *
@@ -44,18 +45,18 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
     //bug 366386 - track items using duplicate alias names
     protected ArrayList<String> duplicateAliasNames;
 
-    public CompoundSelectionImpl(Class javaType, Selection[] subSelections) {
+    public CompoundSelectionImpl(Class<?> javaType, Selection[] subSelections) {
         this(javaType, subSelections, false);
     }
 
-    public CompoundSelectionImpl(Class javaType, Selection[] subSelections, boolean validate) {
+    public CompoundSelectionImpl(Class<?> javaType, Selection[] subSelections, boolean validate) {
         super(javaType, null);
-        this.subSelections = new ArrayList();
+        this.subSelections = new ArrayList<>();
         //used to validate that an alias is only used once
-        java.util.Map tempMap = new java.util.TreeMap();
+        Map<String, Selection> tempMap = new TreeMap<>();
         for (Selection sel : subSelections) {
             if (validate) {
-                if (((SelectionImpl)sel).isCompoundSelection() && !((SelectionImpl)sel).isConstructor()) {
+                if (sel.isCompoundSelection() && !((SelectionImpl)sel).isConstructor()) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_illegal_tuple_or_array_value", new Object[] { sel }));
                 }
             }

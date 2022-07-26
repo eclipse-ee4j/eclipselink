@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
@@ -41,7 +42,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  * @see org.eclipse.persistence.internal.jpa.weaving.MethodWeaver
  */
 
-public class ClassWeaver extends ClassVisitor implements Opcodes {
+public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
 
     // PersistenceWeaved
     public static final String PERSISTENCE_WEAVED_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeaved";
@@ -215,7 +216,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     }
 
     public ClassWeaver(ClassVisitor classWriter, ClassDetails classDetails) {
-        super(ASM8, classWriter);
+        super(classWriter);
         this.classDetails = classDetails;
     }
 
@@ -542,7 +543,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * _persistence_checkFetchedForSet("variableName");
      * _persistence_initialize_variableName_vh();
      * _persistence_propertyChange("variableName", this.variableName, argument);
-     * // if change tracking enabled, wrapping primitives, i.e. new Long(item)
+     * // if change tracking enabled, wrapping primitives, i.e. Long.valueOf(item)
      * this.variableName = argument;
      * _persistence_variableName_vh.setValue(variableName); // if lazy enabled }
      */
@@ -590,7 +591,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
             cv_set.visitLdcInsn(attribute);
 
             // if the attribute is a primitive, wrap it
-            // e.g. if it is an integer: new Integer(attribute)
+            // e.g. if it is an integer: Integer.valueOf(attribute)
             // This is the first part of the wrapping
             String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
             if (wrapper != null) {
@@ -604,11 +605,11 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
 
             if (wrapper != null) {
                 // invoke the constructor for wrapping
-                // e.g. new Integer(variableName)
+                // e.g. Integer.valueOf(variableName)
                 cv_set.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", false);
 
                 // wrap the method argument
-                // e.g. new Integer(argument)
+                // e.g. Integer.valueOf(argument)
                 cv_set.visitTypeInsn(NEW, wrapper);
                 cv_set.visitInsn(DUP);
                 cv_set.visitVarInsn(opcode, 1);
@@ -747,8 +748,8 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
         }
 
         if (classDetails.shouldWeaveValueHolders()) {
-            for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
-                AttributeDetails attributeDetails = (AttributeDetails) iterator.next();
+            for (Iterator<AttributeDetails> iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
+                AttributeDetails attributeDetails = iterator.next();
                 if (attributeDetails.weaveValueHolders()) { // &&
                                                             // !attributeDetails.isAttributeOnSuperClass())
                                                             // {
@@ -1408,8 +1409,8 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
             boolean attributeAccess = false;
             // For each attribute we need to check what methods and variables to
             // add.
-            for (Iterator iterator = this.classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
-                AttributeDetails attributeDetails = (AttributeDetails) iterator.next();
+            for (Iterator<AttributeDetails> iterator = this.classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
+                AttributeDetails attributeDetails = iterator.next();
                 // Only add to classes that actually contain the attribute we
                 // are
                 // processing

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,17 +23,17 @@ import jakarta.xml.bind.annotation.XmlType;
  * <p>Java class for typeDerivationControl.
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
- * <pre>
- * &lt;simpleType name="typeDerivationControl">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}derivationControl">
- *     &lt;enumeration value="extension"/>
- *     &lt;enumeration value="restriction"/>
- *     &lt;enumeration value="list"/>
- *     &lt;enumeration value="union"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
- * </pre>
+ * <br>
+ * <pre>{@code
+ * <simpleType name="typeDerivationControl">
+ *   <restriction base="{http://www.w3.org/2001/XMLSchema}derivationControl">
+ *     <enumeration value="extension"/>
+ *     <enumeration value="restriction"/>
+ *     <enumeration value="list"/>
+ *     <enumeration value="union"/>
+ *   </restriction>
+ * </simpleType>
+ * }</pre>
  *
  */
 @XmlType(name = "typeDerivationControl")

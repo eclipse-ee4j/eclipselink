@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class XmlVariableNodeInvalidTestCases extends OXTestCase {//extends JAXBW
     }
 
     public void testInvalid(){
-        Class[] classes = new Class[]{RootInvalid.class};
+        Class<?>[] classes = new Class<?>[]{RootInvalid.class};
         try {
             JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
         } catch (JAXBException e) {
@@ -45,7 +45,7 @@ public class XmlVariableNodeInvalidTestCases extends OXTestCase {//extends JAXBW
     }
 
     public void testInvalid2(){
-        Class[] classes = new Class[]{RootInvalid2.class};
+        Class<?>[] classes = new Class<?>[]{RootInvalid2.class};
         try {
             JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
         } catch (JAXBException e) {
@@ -60,7 +60,7 @@ public class XmlVariableNodeInvalidTestCases extends OXTestCase {//extends JAXBW
     }
 
     public void testInvalid3(){
-        Class[] classes = new Class[]{RootInvalid3.class};
+        Class<?>[] classes = new Class<?>[]{RootInvalid3.class};
         try {
             JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
         } catch (JAXBException e) {

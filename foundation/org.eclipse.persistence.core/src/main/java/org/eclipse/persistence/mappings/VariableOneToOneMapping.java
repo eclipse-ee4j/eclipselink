@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * PUBLIC:
      * Add a type indicator conversion to this mapping.
      */
-    public void addClassIndicator(Class implementer, Object typeIndicator) {
+    public void addClassIndicator(Class<?> implementer, Object typeIndicator) {
         if (typeIndicator == null) {
             typeIndicator = Helper.NULL_VALUE;
         }
@@ -194,8 +194,8 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             sourceToTarget.put(clonedField, getSourceToTargetQueryKeyNames().get(field));
         }
 
-        for (Enumeration enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)enumtr.nextElement();
+        for (Enumeration<DatabaseField> enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
+            DatabaseField field = enumtr.nextElement();
             foreignKeys.addElement(setOfKeys.get(field));
         }
         clone.setSourceToTargetQueryKeyFields(sourceToTarget);
@@ -313,7 +313,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * This is used to convert the row value to a consistent java value.
      */
     @Override
-    public Class getFieldClassification(DatabaseField fieldToClassify) {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) {
         if ((getTypeField() != null) && (fieldToClassify.equals(getTypeField()))) {
             return getTypeField().getType();
         }
@@ -323,9 +323,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             return null;
         }
         // Search any of the implementor descriptors for a mapping for the query-key.
-        Iterator iterator = getReferenceDescriptor().getInterfacePolicy().getChildDescriptors().iterator();
+        Iterator<ClassDescriptor> iterator = getReferenceDescriptor().getInterfacePolicy().getChildDescriptors().iterator();
         if (iterator.hasNext()) {
-            ClassDescriptor firstChild = (ClassDescriptor)iterator.next();
+            ClassDescriptor firstChild = iterator.next();
             DatabaseMapping mapping = firstChild.getObjectBuilder().getMappingForAttributeName(queryKey);
             if ((mapping != null) && (mapping.isDirectToFieldMapping())) {
                 return mapping.getAttributeClassification();
@@ -345,9 +345,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      */
     public Vector getForeignKeyFieldNames() {
         Vector fieldNames = new Vector(getForeignKeyFields().size());
-        for (Enumeration fieldsEnum = getForeignKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+        for (Enumeration<DatabaseField> fieldsEnum = getForeignKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -417,7 +417,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * Return the type for a specified implementor
      */
-    protected Object getTypeForImplementor(Class implementor) {
+    protected Object getTypeForImplementor(Class<?> implementor) {
         Object type = getTypeIndicatorTranslation().get(implementor);
         if (type == Helper.NULL_VALUE) {
             type = null;
@@ -471,11 +471,11 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             Map.Entry entry = (Map.Entry)iterator.next();
             String referenceClassName = (String)entry.getKey();
             Object indicator = entry.getValue();
-            Class referenceClass = null;
+            Class<?> referenceClass = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName(referenceClassName, true, classLoader));
+                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(referenceClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(referenceClassName, exception.getException());
                     }
@@ -580,7 +580,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         if (getTypeIndicatorTranslation().isEmpty()) {
             return;
         }
-        Class type = null;
+        Class<?> type = null;
         for (Iterator typeValuesEnum = getTypeIndicatorTranslation().values().iterator();
                  typeValuesEnum.hasNext() && (type == null);) {
             Object value = typeValuesEnum.next();
@@ -763,7 +763,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                     return this.getAttributeValueFromObject(cached);
                 }
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
-                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null));
             }
         }
         if (row.hasSopObject()) {
@@ -788,7 +788,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             if (row.get(getTypeField()) == null) {
                 return getIndirectionPolicy().nullValueFromRow();
             }
-            Class implementerClass = (Class)getImplementorForType(row.get(getTypeField()), executionSession);
+            Class<?> implementerClass = (Class)getImplementorForType(row.get(getTypeField()), executionSession);
             ReadObjectQuery query = (ReadObjectQuery)getSelectionQuery().clone();
             query.setReferenceClass(implementerClass);
             query.setSelectionCriteria(getSelectionCriteria());
@@ -822,9 +822,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             return;
         }
         if (isForeignKeyRelationship()) {
-            Enumeration foreignKeys = getForeignKeyFields().elements();
+            Enumeration<DatabaseField> foreignKeys = getForeignKeyFields().elements();
             while (foreignKeys.hasMoreElements()) {
-                record.put((DatabaseField)foreignKeys.nextElement(), null);
+                record.put(foreignKeys.nextElement(), null);
                 // EL Bug 319759 - if a field is null, then the update call cache should not be used
                 record.setNullValueInFields(true);
             }
@@ -853,10 +853,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             writeFromNullObjectIntoRow(record);
         } else {
             if (isForeignKeyRelationship()) {
-                Enumeration sourceFields = getForeignKeyFields().elements();
+                Enumeration<DatabaseField> sourceFields = getForeignKeyFields().elements();
                 ClassDescriptor descriptor = session.getDescriptor(referenceObject.getClass());
                 while (sourceFields.hasMoreElements()) {
-                    DatabaseField sourceKey = (DatabaseField)sourceFields.nextElement();
+                    DatabaseField sourceKey = sourceFields.nextElement();
                     String targetQueryKey = (String)getSourceToTargetQueryKeyNames().get(sourceKey);
                     DatabaseField targetKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(targetQueryKey);
                     if (targetKeyField == null) {
@@ -894,10 +894,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         } else {
             Object referenceObject = changeSet.getUnitOfWorkClone();
             if (isForeignKeyRelationship()) {
-                Enumeration sourceFields = getForeignKeyFields().elements();
+                Enumeration<DatabaseField> sourceFields = getForeignKeyFields().elements();
                 ClassDescriptor descriptor = session.getDescriptor(referenceObject.getClass());
                 while (sourceFields.hasMoreElements()) {
-                    DatabaseField sourceKey = (DatabaseField)sourceFields.nextElement();
+                    DatabaseField sourceKey = sourceFields.nextElement();
                     String targetQueryKey = (String)getSourceToTargetQueryKeyNames().get(sourceKey);
                     DatabaseField targetKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(targetQueryKey);
                     if (targetKeyField == null) {
@@ -972,10 +972,10 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             writeFromNullObjectIntoRow(record);
         } else {
             if (isForeignKeyRelationship()) {
-                Enumeration sourceFields = getForeignKeyFields().elements();
+                Enumeration<DatabaseField> sourceFields = getForeignKeyFields().elements();
                 ClassDescriptor descriptor = query.getSession().getDescriptor(referenceObject.getClass());
                 while (sourceFields.hasMoreElements()) {
-                    DatabaseField sourceKey = (DatabaseField)sourceFields.nextElement();
+                    DatabaseField sourceKey = sourceFields.nextElement();
                     String targetQueryKey = (String)getSourceToTargetQueryKeyNames().get(sourceKey);
                     DatabaseField targetKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(targetQueryKey);
                     if (targetKeyField == null) {

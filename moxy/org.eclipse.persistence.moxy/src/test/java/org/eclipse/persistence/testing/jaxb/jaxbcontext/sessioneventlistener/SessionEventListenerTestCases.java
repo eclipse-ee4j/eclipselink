@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public class SessionEventListenerTestCases extends TestCase {
     public void testClassArrayMap() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(1);
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
-        JAXBContext jc = (JAXBContext) JAXBContextFactory.createContext(new Class[] {Address.class}, properties);
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Address.class}, properties);
         assertEquals(0, Address.INSTANTIATION_COUNTER);
         unmarshalTest(jc);
     }
@@ -53,7 +53,7 @@ public class SessionEventListenerTestCases extends TestCase {
     public void testClassArrayMapClassLoader() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(1);
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
-        JAXBContext jc = (JAXBContext) JAXBContextFactory.createContext(new Class[] {Address.class}, properties, Address.class.getClassLoader());
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[] {Address.class}, properties, Address.class.getClassLoader());
         assertEquals(0, Address.INSTANTIATION_COUNTER);
         unmarshalTest(jc);
     }
@@ -61,7 +61,7 @@ public class SessionEventListenerTestCases extends TestCase {
     public void testContextPathClassLoaderMap() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(1);
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
-        JAXBContext jc = (JAXBContext) JAXBContextFactory.createContext("org.eclipse.persistence.testing.jaxb.jaxbcontext.sessioneventlistener", Address.class.getClassLoader(), properties);
+        JAXBContext jc = JAXBContextFactory.createContext("org.eclipse.persistence.testing.jaxb.jaxbcontext.sessioneventlistener", Address.class.getClassLoader(), properties);
         assertEquals(0, Address.INSTANTIATION_COUNTER);
         unmarshalTest(jc);
     }
@@ -69,7 +69,7 @@ public class SessionEventListenerTestCases extends TestCase {
     public void testTypeArrayMapClassLoader() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(1);
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
-        JAXBContext jc = (JAXBContext) JAXBContextFactory.createContext(new Type[] {Address.class}, properties, Address.class.getClassLoader());
+        JAXBContext jc = JAXBContextFactory.createContext(new Type[] {Address.class}, properties, Address.class.getClassLoader());
         assertEquals(0, Address.INSTANTIATION_COUNTER);
         unmarshalTest(jc);
     }
@@ -81,7 +81,7 @@ public class SessionEventListenerTestCases extends TestCase {
         TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
         typeMappingInfo.setType(Address.class);
         typeMappingInfos[0] = typeMappingInfo;
-        JAXBContext jc = (JAXBContext) JAXBContextFactory.createContext(typeMappingInfos, properties, Address.class.getClassLoader());
+        JAXBContext jc = JAXBContextFactory.createContext(typeMappingInfos, properties, Address.class.getClassLoader());
         assertEquals(0, Address.INSTANTIATION_COUNTER);
         unmarshalTest(jc);
     }

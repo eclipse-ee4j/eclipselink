@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,10 +49,12 @@ public class QueryParameterForOneToOneValidationTest extends ExceptionTest {
         setDescription("Test that an exception is thrown for 1:1 when using a simple parameter instead of a complex object");
     }
 
+    @Override
     public void setup() {
         expectedException = QueryException.incorrectClassForObjectComparison(null, null, null);
     }
 
+    @Override
     public void test() {
         // find a suitable id
         org.eclipse.persistence.testing.models.employee.domain.Employee empExample =
@@ -78,12 +80,12 @@ public class QueryParameterForOneToOneValidationTest extends ExceptionTest {
         try {
             // doesn't matter what id is queried
             Vector params = new Vector();
-            params.add(new Integer(id));
+            params.add(id);
 
             // special case for conforming
             if (this.shouldConform) {
                 // enable conforming
-                query.setCacheUsage(query.CheckCacheOnly);
+                query.setCacheUsage(ObjectLevelReadQuery.CheckCacheOnly);
                 // preload objects into identitymap
                 getSession().readAllObjects(PhoneNumber.class);
                 getSession().readAllObjects(Employee.class);

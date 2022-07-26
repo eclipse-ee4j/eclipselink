@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -91,7 +91,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * PUBLIC:
      * Default constructor.
      */
-    public CollectionMapping() {
+    protected CollectionMapping() {
         this.selectionQuery = new ReadAllQuery();
         this.hasCustomDeleteAllQuery = false;
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
@@ -945,7 +945,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -1047,7 +1046,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * the corresponding object(s) from the remote session.
      */
     @Override
-    public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixRealObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         //bug 4147755 getRealAttribute... / setReal
         Object attributeValue = getRealAttributeValueFromObject(object, session);
 
@@ -1107,7 +1106,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * maintaining object identity.
      */
     @Override
-    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query) {
         return session.getObjectsCorrespondingToAll(object, objectDescriptors, processedObjects, query, this.containerPolicy);
     }
 
@@ -1459,7 +1458,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord chgRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         Object valueOfTarget = null;
@@ -1524,7 +1523,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation() && !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         if (isTargetUnInitialized) {
@@ -1595,7 +1594,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 if (fireChangeEvents) {
                     // Objects removed from the first position in the list, so the index of the removed object is always 0.
                     // When event is processed the index is used only in listOrderField case, ignored otherwise.
-                    Integer zero = Integer.valueOf(0);
+                    Integer zero = 0;
                     while (containerPolicy.hasNext(iterator)) {
                         CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeSession), CollectionChangeEvent.REMOVE, zero, false);
                         listener.internalPropertyChange(event);
@@ -1795,9 +1794,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         // no need for private owned check.  This code is only registered for private owned mappings.
         // targets are added to and/or removed to/from the source.
         CollectionChangeRecord collectionChangeRecord = (CollectionChangeRecord)changeRecord;
-        Iterator it = collectionChangeRecord.getRemoveObjectList().values().iterator();
+        Iterator<ObjectChangeSet> it = collectionChangeRecord.getRemoveObjectList().values().iterator();
         while(it.hasNext()) {
-            ObjectChangeSet ocs = (ObjectChangeSet)it.next();
+            ObjectChangeSet ocs = it.next();
             containerPolicy.postCalculateChanges(ocs, referenceDescriptor, this, uow);
         }
     }
@@ -2280,7 +2279,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * <code>java.util.Collection</code> interface.
      */
     @Override
-    public void useCollectionClass(Class concreteClass) {
+    public void useCollectionClass(Class<?> concreteClass) {
         ContainerPolicy policy = ContainerPolicy.buildPolicyFor(concreteClass, hasOrderBy() || listOrderField != null);
         setContainerPolicy(policy);
     }
@@ -2292,7 +2291,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * <p>The container class must implement (directly or indirectly) the
      * <code>java.util.SortedSet</code> interface.
      */
-    public void useSortedSetClass(Class concreteClass, Comparator comparator) {
+    public void useSortedSetClass(Class<?> concreteClass, Comparator comparator) {
         try {
             SortedCollectionContainerPolicy policy = (SortedCollectionContainerPolicy)ContainerPolicy.buildPolicyFor(concreteClass);
             policy.setComparator(comparator);
@@ -2360,7 +2359,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * must set before calling this method.
      */
     @Override
-    public void useMapClass(Class concreteClass, String keyName) {
+    public void useMapClass(Class<?> concreteClass, String keyName) {
         // the reference class has to be specified before coming here
         if (getReferenceClassName() == null) {
             throw DescriptorException.referenceClassNotSpecified(this);
@@ -2381,7 +2380,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * <p> The container class must implement (directly or indirectly) the
      * <code>java.util.Map</code> interface.
      */
-    public void useMapClass(Class concreteClass) {
+    public void useMapClass(Class<?> concreteClass) {
         useMapClass(concreteClass, null);
     }
 
@@ -2484,14 +2483,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         this.indirectionPolicy.validateContainerPolicy(session.getIntegrityChecker());
 
         if (getAttributeAccessor() instanceof InstanceVariableAttributeAccessor) {
-            Class attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
+            Class<?> attributeType = ((InstanceVariableAttributeAccessor)getAttributeAccessor()).getAttributeType();
             this.indirectionPolicy.validateDeclaredAttributeTypeForCollection(attributeType, session.getIntegrityChecker());
         } else if (getAttributeAccessor().isMethodAttributeAccessor()) {
             // 323403
-            Class returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
+            Class<?> returnType = ((MethodAttributeAccessor)getAttributeAccessor()).getGetMethodReturnType();
             this.indirectionPolicy.validateGetMethodReturnTypeForCollection(returnType, session.getIntegrityChecker());
 
-            Class parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
+            Class<?> parameterType = ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodParameterType();
             this.indirectionPolicy.validateSetMethodParameterTypeForCollection(parameterType, session.getIntegrityChecker());
         }
     }

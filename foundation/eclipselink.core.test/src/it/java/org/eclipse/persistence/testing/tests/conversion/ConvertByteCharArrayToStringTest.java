@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class ConvertByteCharArrayToStringTest extends AutoVerifyTestCase {
         setDescription("Test if byte[], Byte[], char[] and Character[] are converted to String correctly.");
     }
 
+    @Override
     public void setup() {
         //Convert to an array first
         byteArray = (byte[])ConversionManager.getDefaultManager().convertObject(hexString, ClassConstants.APBYTE);
@@ -42,14 +43,16 @@ public class ConvertByteCharArrayToStringTest extends AutoVerifyTestCase {
         charOArray = (Character[])ConversionManager.getDefaultManager().convertObject(testString, ClassConstants.ACHAR);
     }
 
+    @Override
     public void test() {
         //Convert back to a string
-        byteString = (String)ConversionManager.getDefaultManager().convertObject(byteArray, ClassConstants.STRING);
-        byteOString = (String)ConversionManager.getDefaultManager().convertObject(byteOArray, ClassConstants.STRING);
-        charString = (String)ConversionManager.getDefaultManager().convertObject(charArray, ClassConstants.STRING);
-        charOString = (String)ConversionManager.getDefaultManager().convertObject(charOArray, ClassConstants.STRING);
+        byteString = ConversionManager.getDefaultManager().convertObject(byteArray, ClassConstants.STRING);
+        byteOString = ConversionManager.getDefaultManager().convertObject(byteOArray, ClassConstants.STRING);
+        charString = ConversionManager.getDefaultManager().convertObject(charArray, ClassConstants.STRING);
+        charOString = ConversionManager.getDefaultManager().convertObject(charOArray, ClassConstants.STRING);
     }
 
+    @Override
     public void verify() {
         if (!byteString.equals(hexString)) {
             throw (new TestErrorException("Conversion of string to byte[] then to string failed.  The original string is" + hexString + ", the returned string is " + byteString));

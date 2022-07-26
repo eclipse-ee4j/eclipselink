@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,6 +55,7 @@ public class IntegerArrayTestCases extends TypeMappingInfoWithJSONTestCases{
     }
 
 
+    @Override
     protected Object getControlObject() {
 
         QName qname = new QName("http://jaxb.dev.java.net/array", "testTagName");
@@ -67,6 +68,7 @@ public class IntegerArrayTestCases extends TypeMappingInfoWithJSONTestCases{
         return jaxbElement;
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/integerArray.xsd");
 
@@ -80,7 +82,7 @@ public class IntegerArrayTestCases extends TypeMappingInfoWithJSONTestCases{
     }
 
     public void testTypeMappingInfoToSchemaType() throws Exception{
-        Map theMap =((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeMappingInfoToSchemaType();
+        Map<TypeMappingInfo, QName> theMap =((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeMappingInfoToSchemaType();
         assertNotNull(theMap);
         assertEquals(1, theMap.size());
         assertNotNull(theMap.get(getTypeMappingInfos()[0]));

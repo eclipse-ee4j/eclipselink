@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class VariableOneToOneGetTypeFieldTest extends TestCase {
         setDescription("Verify VariableOneToOneMapping returns the configured type field value when passed a type field");
     }
 
+    @Override
     public void setup() {
         ClassDescriptor employeeDescriptor = getSession().getClassDescriptor(Employee.class);
         assertNotNull(employeeDescriptor);
@@ -44,6 +45,7 @@ public class VariableOneToOneGetTypeFieldTest extends TestCase {
         assertNotNull(contactMapping);
     }
 
+    @Override
     public void test() {
         this.valueReturned1 = contactMapping.valueFromObject(
                 Employee.example1(), // EXAMPLE 1
@@ -56,8 +58,9 @@ public class VariableOneToOneGetTypeFieldTest extends TestCase {
                 (AbstractSession)getSession());
     }
 
+    @Override
     public void verify() {
-        Class actualClass;
+        Class<?> actualClass;
         Object actualValue;
 
         // valueReturned1
@@ -75,6 +78,7 @@ public class VariableOneToOneGetTypeFieldTest extends TestCase {
         assertEquals("Incorrect value returned for type field value", actualValue, valueReturned2);
     }
 
+    @Override
     public void reset() {
         this.valueReturned1 = null;
         this.valueReturned2 = null;

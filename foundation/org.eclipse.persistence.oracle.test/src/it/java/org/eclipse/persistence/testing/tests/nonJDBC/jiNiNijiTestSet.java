@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,7 +91,7 @@ public class jiNiNijiTestSet {
         query.addArgument("AA", BigDecimal.class);
         query.setCall(call);
         project.getDescriptor(Empty.class).getQueryManager().addQuery("jiNiNiji", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);
@@ -188,15 +188,15 @@ public class jiNiNijiTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         DataModifyQuery query = (DataModifyQuery)project.getClassDescriptor(Empty.class).
             getQueryManager().getQuery("jiNiNiji");
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
-        queryArgs.add(Integer.valueOf(14));
-        queryArgs.add(Integer.valueOf(1));
+        queryArgs.add(14);
+        queryArgs.add(1);
         queryArgs.add(Float.parseFloat("123.1"));
         boolean worked = false;
         String msg = null;
@@ -208,6 +208,6 @@ public class jiNiNijiTestSet {
           msg = e.getMessage();
         }
         assertTrue("invocation jiNiNiji failed: " + msg, worked);
-        ((DatabaseSession)s).logout();
+        s.logout();
     }
 }

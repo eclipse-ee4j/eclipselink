@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -319,7 +319,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
     protected List<Expression> getChildren(Expression expression) {
         ChildrenCollectorVisitor visitor = getChildrenCollectorVisitor();
         try {
-            visitor.expressions = new LinkedList<Expression>();
+            visitor.expressions = new LinkedList<>();
             expression.accept(visitor);
             return visitor.expressions;
         }
@@ -500,7 +500,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      * Initializes this validator.
      */
     protected void initialize() {
-        validators = new HashMap<String, JPQLQueryBNFValidator>();
+        validators = new HashMap<>();
     }
 
     /**
@@ -738,9 +738,6 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         this.problems = problems;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void visit(Expression expression) {
         expression.acceptChildren(this);
@@ -764,9 +761,6 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             super();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             for (Expression child : expression.children()) {
@@ -777,17 +771,11 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(Expression expression) {
             expression.accept(visitor);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(NullExpression expression) {
             // Ignore this, it should be validated by another validator
@@ -812,17 +800,11 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             super();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(Expression expression) {
             expression.accept(visitor);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SubExpression expression) {
             expression.getParent().accept(this);
@@ -847,25 +829,16 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             super();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             CollectionTools.addAll(expressions, expression.children());
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(Expression expression) {
             expressions.add(expression);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(NullExpression expression) {
             // Don't add it
@@ -932,7 +905,6 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         /**
          * Sets
          *
-         * @param bypassCompound
          */
         public void setBypassCompound(boolean bypassCompound) {
             this.bypassCompound = bypassCompound;
@@ -958,49 +930,34 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             // Retrieve all the children from the "root" JPQLQueryBNF and
             // check if the BNF to validate is one of those children
             else {
-                Set<String> allQueryBNFIds = new HashSet<String>();
+                Set<String> allQueryBNFIds = new HashSet<>();
                 allJPQLQueryBNFs(allQueryBNFIds, this.queryBNF);
                 valid = allQueryBNFIds.contains(queryBNF.getId());
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(BadExpression expression) {
             // This is not a valid expression
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             // A collection expression is never valid
             valid = false;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(Expression expression) {
-            validate(((AbstractExpression) expression).getQueryBNF());
+            validate(expression.getQueryBNF());
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(NullExpression expression) {
             // The missing expression is validated by GrammarValidator
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SubExpression expression) {
             if (expression.hasExpression()) {
@@ -1008,9 +965,6 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UnknownExpression expression) {
             // This is not a valid expression
@@ -1032,16 +986,16 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         protected boolean subExpression;
 
         /**
-         * {@inheritDoc}
+         * Default constructor.
          */
+        protected NestedArrayVisitor() {
+        }
+
         @Override
         public void visit(CollectionExpression expression) {
             nestedArraySize = subExpression ? expression.childrenSize() : -1;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SubExpression expression) {
             subExpression = true;
@@ -1089,81 +1043,51 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             whereClause        = null;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(DeleteClause expression) {
             deleteClause = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(FromClause expression) {
             fromClause = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(GroupByClause expression) {
             groupByClause = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(HavingClause expression) {
             havingClause = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(OrderByClause expression) {
             orderByClause = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectClause expression) {
             selectClause = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleFromClause expression) {
             simpleFromClause = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectClause expression) {
             simpleSelectClause = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UpdateClause expression) {
             updateClause = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(WhereClause expression) {
             whereClause = expression;
@@ -1181,6 +1105,12 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         public UpdateStatement updateStatement;
 
         /**
+         * Default constructor.
+         */
+        protected OwningStatementVisitor() {
+        }
+
+        /**
          * Disposes the internal data.
          */
         protected void dispose() {
@@ -1190,33 +1120,21 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             updateStatement       = null;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(DeleteStatement expression) {
             deleteStatement = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectStatement expression) {
             selectStatement = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectStatement expression) {
             simpleSelectStatement = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UpdateStatement expression) {
             updateStatement = expression;
@@ -1234,8 +1152,11 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         private SimpleSelectStatement expression;
 
         /**
-         * {@inheritDoc}
+         * Default constructor.
          */
+        protected SubqueryVisitor() {
+        }
+
         @Override
         public void visit(SimpleSelectStatement expression) {
             this.expression = expression;

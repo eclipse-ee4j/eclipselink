@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * Identification variables are case insensitive. An identification variable evaluates to a value of
  * the type of the expression used in declaring the variable.
  *
- * <div><b>BNF:</b> <code>identification_variable_declaration ::= range_variable_declaration { join | fetch_join }*</code><p></div>
+ * <div><p><b>BNF:</b> <code>identification_variable_declaration ::= range_variable_declaration { join | fetch_join }*</code></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration IdentificationVariableDeclaration
  *
@@ -79,9 +79,6 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
         getRangeVariableDeclaration().setDeclaration(entityName, identificationVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -172,9 +169,6 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
         return addJoinFetch(LEFT_OUTER_JOIN_FETCH, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractRangeVariableDeclarationStateObject buildRangeVariableDeclarationStateObject() {
         return new RangeVariableDeclarationStateObject(this);
@@ -198,9 +192,6 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
         return getRootStateObject().getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(StateObject stateObject) {
 
@@ -211,25 +202,16 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public RangeVariableDeclarationStateObject getRangeVariableDeclaration() {
         return (RangeVariableDeclarationStateObject) super.getRangeVariableDeclaration();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSchemaNameStateObject getRootStateObject() {
         return (AbstractSchemaNameStateObject) super.getRootStateObject();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return JOINS_LIST;

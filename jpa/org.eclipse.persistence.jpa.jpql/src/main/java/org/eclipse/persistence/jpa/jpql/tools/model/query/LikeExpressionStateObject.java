@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * Character) and is used to escape the special meaning of the underscore and percent characters in
  * <code>pattern_value</code>.
  *
- * <div><b>BNF:</b> <code>like_expression ::= string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]</code><p></div>
+ * <div><p><b>BNF:</b> <code>like_expression ::= string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]</code></p></div>
  *
  * @see LikeExpression
  *
@@ -150,17 +150,11 @@ public class LikeExpressionStateObject extends AbstractStateObject {
         this(parent, stringStateObject, false, patternValue, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -188,9 +182,6 @@ public class LikeExpressionStateObject extends AbstractStateObject {
         return escapeCharacter.getText();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public LikeExpression getExpression() {
         return (LikeExpression) super.getExpression();
@@ -226,18 +217,12 @@ public class LikeExpressionStateObject extends AbstractStateObject {
         return stringStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         escapeCharacter = new StringLiteralStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -313,9 +298,6 @@ public class LikeExpressionStateObject extends AbstractStateObject {
         setNot(!not);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

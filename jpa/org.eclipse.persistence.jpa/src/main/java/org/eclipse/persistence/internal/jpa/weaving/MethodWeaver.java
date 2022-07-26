@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.Label;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkMethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
@@ -34,7 +35,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  *
  */
 
-public class MethodWeaver extends MethodVisitor implements Opcodes {
+public class MethodWeaver extends EclipseLinkMethodVisitor implements Opcodes {
 
     protected ClassWeaver tcw;
     protected String methodName;
@@ -44,7 +45,7 @@ public class MethodWeaver extends MethodVisitor implements Opcodes {
     protected boolean methodStarted = false;
 
     public MethodWeaver(ClassWeaver tcw, String methodName, String methodDescriptor, MethodVisitor mv) {
-        super(ASM8, mv);
+        super(mv);
         this.tcw = tcw;
         this.methodName = methodName;
         this.methodDescriptor = methodDescriptor;
@@ -237,7 +238,7 @@ public class MethodWeaver extends MethodVisitor implements Opcodes {
      *      AttributeType oldAttribute = getAttribute()
      *      // for primitives
      *      AttributeWrapperType oldAttribute = new AttributeWrapperType(getAttribute());
-     *          e.g. Double oldAttribute = new Double(getAttribute());
+     *          e.g. Double oldAttribute = Double.valueOf(getAttribute());
      *  else
      *      _persistence_checkFetchedForSet("attributeName");
      *  _persistence_propertyChange("attributeName", oldAttribute, argument);
@@ -248,7 +249,7 @@ public class MethodWeaver extends MethodVisitor implements Opcodes {
      *      AttributeType oldAttribute = getAttribute()
      *      // for primitives
      *      AttributeWrapperType oldAttribute = new AttributeWrapperType(getAttribute());
-     *          e.g. Double oldAttribute = new Double(getAttribute());
+     *          e.g. Double oldAttribute = Double.valueOf(getAttribute());
      *  _persistence_propertyChange("attributeName", oldAttribute, argument);
      *
      *  // if not weaving for change tracking, but for fetch groups only:

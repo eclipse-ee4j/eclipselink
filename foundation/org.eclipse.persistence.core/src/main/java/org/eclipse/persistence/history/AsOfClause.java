@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,10 +27,10 @@ import org.eclipse.persistence.internal.helper.*;
  * For Oracle 9R2 Flasback corresponds to the sub clause which appears between
  * the table and alias name in the FROM clause:
  * <code>SELECT ... FROM EMPLOYEE AS OF TIMESTAMP (value) t0, ...</code>
- * <p>For generic historical schema support, a special criteria can be added to
+ * </p><p>For generic historical schema support, a special criteria can be added to
  * the where clause for each table in a select:
  * <code>((t0.ROW_START {@literal <=} value) AND ((t0.END IS NULL) OR (t1.END {@literal >} value)))</code>
- * <p><b>Responsibilities:</b>
+ * </p><p><b>Responsibilities:</b></p>
  * <ul>
  * <li>By default AsOfClause is a timestamp.  To specify a system change number use AsOfSCNClause.
  * <li>For Oracle 9R2 Flashback prints the correct AS OF clause before the alias name in the FROM clause.
@@ -62,7 +63,7 @@ public class AsOfClause implements Serializable {
     }
 
     public AsOfClause(long time) {
-        this.value = Long.valueOf(time);
+        this.value = time;
     }
 
     public AsOfClause(Long time) {
@@ -110,7 +111,7 @@ public class AsOfClause implements Serializable {
         } else {
             ConversionManager converter = ConversionManager.getDefaultManager();
             value = converter.convertObject(value, ClassConstants.TIMESTAMP);
-            printer.printPrimitive(value);
+            printer.printPrimitive(value, true);
         }
         printer.printString(")");
     }

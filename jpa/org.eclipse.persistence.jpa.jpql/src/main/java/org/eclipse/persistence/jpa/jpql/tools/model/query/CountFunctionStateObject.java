@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,9 +22,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * One of the aggregate functions. The return type of this function is a <code>Long</code>.
  *
- * <div><b>BNF:</b> <code>expression ::= COUNT ([DISTINCT] identification_variable |
+ * <div><p><b>BNF:</b> <code>expression ::= COUNT ([DISTINCT] identification_variable |
  *                                                                state_field_path_expression |
- *                                                                single_valued_object_path_expression)</code><p></div>
+ *                                                                single_valued_object_path_expression)</code></p></div>
  *
  * @see CountFunction
  *
@@ -91,33 +91,21 @@ public class CountFunctionStateObject extends AggregateFunctionStateObject {
         super(parent, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CountFunction getExpression() {
         return (CountFunction) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return COUNT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return InternalCountBNF.ID;

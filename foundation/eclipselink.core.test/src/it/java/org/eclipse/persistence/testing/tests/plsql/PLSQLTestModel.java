@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class PLSQLTestModel extends TestModel {
         setDescription("This model tests calling PLSQL stored procedures with PLSQL types.");
     }
 
+    @Override
     public void addRequiredSystems() {
         if (!getSession().getLogin().getPlatform().isOracle()) {
             warning("PLSQL is only supported on Oracle.");
@@ -44,6 +45,7 @@ public class PLSQLTestModel extends TestModel {
         addRequiredSystem(new PLSQLSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getSimpleTestSuite());
         addTest(getRecordTestSuite());
@@ -92,32 +94,32 @@ public class PLSQLTestModel extends TestModel {
 
         List args = new ArrayList();
         args.add("varchar");
-        args.add(new Integer(1));
-        args.add(new Integer(123));
+        args.add(1);
+        args.add(123);
         args.add(new BigDecimal("123.6"));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
         args.add(new BigDecimal("123.5"));
         PLSQLTest test = new PLSQLTest("SimpleIn", Address.class, args);
         test.setName("SimpleInTest");
         suite.addTest(test);
 
         args = new ArrayList();
-        args.add(new Integer(1));
-        args.add(new Integer(123));
+        args.add(1);
+        args.add(123);
         args.add(new BigDecimal("123.6"));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
         args.add(new BigDecimal("123.5"));
         test = new PLSQLTest("SimpleInDefaults", Address.class, args);
         test.setName("SimpleInDefaults");
@@ -147,16 +149,16 @@ public class PLSQLTestModel extends TestModel {
 
         args = new ArrayList();
         args.add("varchar");
-        args.add(new Integer(1));
-        args.add(new Integer(123));
+        args.add(1);
+        args.add(123);
         args.add(new BigDecimal("123.6"));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
         args.add(new BigDecimal("123.5"));
         test = new PLSQLTest("SimpleInOut", Address.class, args);
         test.setName("SimpleInOutTest");
@@ -172,16 +174,16 @@ public class PLSQLTestModel extends TestModel {
 
         List args = new ArrayList();
         args.add("varchar");
-        args.add(new Integer(1));
-        args.add(new Integer(123));
+        args.add(1);
+        args.add(123);
         args.add(new BigDecimal("123.6"));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
-        args.add(new Integer(1));
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
+        args.add(1);
         args.add(new BigDecimal("123.5"));
         PLSQLTest test = new PLSQLTest("SimpleInFunc", Address.class, args);
         test.setName("SimpleInFuncTest");
@@ -364,7 +366,7 @@ public class PLSQLTestModel extends TestModel {
         suite.addTest(test);
 
         args = new ArrayList();
-        collection = new ArrayList(Arrays.asList(new String[] { "Ottawa", "Toronto" }));
+        collection = new ArrayList(Arrays.asList("Ottawa", "Toronto"));
         args.add(collection);
         args.add("Nepean");
         result = new DatabaseRecord();
@@ -390,7 +392,7 @@ public class PLSQLTestModel extends TestModel {
         suite.addTest(test);
 
         args = new ArrayList();
-        collection = new ArrayList(Arrays.asList(new Object[] { address, address }));
+        collection = new ArrayList(Arrays.asList(address, address));
         args.add(collection);
         args.add("Nepean");
         result = new DatabaseRecord();
@@ -416,7 +418,7 @@ public class PLSQLTestModel extends TestModel {
         suite.addTest(test);
 
         args = new ArrayList();
-        collection = new ArrayList(Arrays.asList(new Object[] { employee, employee }));
+        collection = new ArrayList(Arrays.asList(employee, employee));
         args.add(collection);
         args.add("Nepean");
         result = new DatabaseRecord();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -110,7 +110,7 @@ public class ShadowDDLGenerator {
         public void beginVisit(ROWTYPEType rowTYPEType) {
             Integer rowTYPETypeCount = rowTYPETypeCounts.get(rowTYPEType.getTypeName());
             if (rowTYPETypeCount == null) {
-                rowTYPETypeCounts.put(rowTYPEType.getTypeName(), Integer.valueOf(initialRowTYPETypeCount++));
+                rowTYPETypeCounts.put(rowTYPEType.getTypeName(), initialRowTYPETypeCount++);
             }
         }
         public Map<String, Integer> getRowTYPETypeCounts() {
@@ -366,7 +366,7 @@ public class ShadowDDLGenerator {
                     long precision = pDataType.getPrecision();
                     long scale = pDataType.getScale();
                     if (precision != defaultPrecision) {
-                        shadowTypeName += LBRACKET + Long.toString(precision);
+                        shadowTypeName += LBRACKET + precision;
                         if (scale != 0) {
                             shadowTypeName += COMMA + SINGLE_SPACE + scale;
                         }

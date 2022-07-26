@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,12 +36,13 @@ public class UpdateNullManyToManyValueTest extends SwitchableOptimisticLockingPo
     protected GamesConsole original;
     protected GamesConsole original2;
 
-    public UpdateNullManyToManyValueTest(Class optimisticLockingPolicyClass) {
+    public UpdateNullManyToManyValueTest(Class<?> optimisticLockingPolicyClass) {
         super(optimisticLockingPolicyClass);
         addClassToModify(Gamer.class);
         addClassToModify(GamesConsole.class);
     }
 
+    @Override
     public void setup() {
         super.setup();
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -58,6 +59,7 @@ public class UpdateNullManyToManyValueTest extends SwitchableOptimisticLockingPo
         uow.commit();
     }
 
+    @Override
     public void test() throws TestException {
         try {
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -137,6 +139,7 @@ public class UpdateNullManyToManyValueTest extends SwitchableOptimisticLockingPo
         uow.commit();
     }
 
+    @Override
     public void reset() {
         super.reset();
         this.original = null;

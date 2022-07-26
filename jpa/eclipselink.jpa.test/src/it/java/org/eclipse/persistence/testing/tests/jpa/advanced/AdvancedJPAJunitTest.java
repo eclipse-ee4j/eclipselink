@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
@@ -51,6 +50,7 @@ import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
 import jakarta.persistence.metamodel.Bindable.BindableType;
@@ -111,7 +111,7 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Bill;
 import org.eclipse.persistence.testing.models.jpa.advanced.BillLine;
 import org.eclipse.persistence.testing.models.jpa.advanced.BillLineItem;
@@ -160,7 +160,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Ra
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Sandwich;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.School;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Student;
-import org.eclipse.persistence.testing.models.jpa.advanced.MyTestEntity;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -284,6 +283,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInReverseIteration"));
         suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInCustomIteration"));
         suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeInRandomIteration"));
+        suite.addTest(new AdvancedJPAJunitTest("testEmployeeToProjectWithBatchFetchTypeWithSmallFetchSize"));
 
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
@@ -652,7 +652,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     }
 
     public void testValuePKListMissingElement(){
-        if (this.isOnServer()) {
+        if (isOnServer()) {
             return;
         }
         EntityManager em = createEntityManager();
@@ -876,8 +876,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public void testMetamodelMinimalSanityTest() {
         EntityManager em = createEntityManager();
         // pre-clear metamodel to enable test reentry (SE only - not EE)
-        if(!this.isOnServer()) {
-            ((EntityManagerFactoryDelegate)((EntityManagerImpl)em).getEntityManagerFactory()).setMetamodel(null);
+        if(!isOnServer()) {
+            ((EntityManagerFactoryDelegate) em.getEntityManagerFactory()).setMetamodel(null);
         }
         Metamodel metamodel = em.getMetamodel();
         // get declared attributes
@@ -893,7 +893,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         assertEquals(budgetSingularAttribute, budgetAttribute);
         assertTrue(declaredAttributes.contains(budgetSingularAttribute));
         // check the type
-        Class budgetClass = budgetSingularAttribute.getJavaType();
+        Class<?> budgetClass = budgetSingularAttribute.getJavaType();
         // Verify whether we expect a boxed class or not
         assertEquals(double.class, budgetClass);
         //assertEquals(Double.class, budgetClass);
@@ -909,7 +909,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         assertEquals(PersistenceType.ENTITY, entityBuyer.getPersistenceType());
         assertEquals(Buyer.class, entityBuyer.getJavaType());
         // verify EnumSet is a SingularAttribute
-        Attribute buyingDaysAttribute = entityBuyer.getAttribute("buyingDays");
+        Attribute<? super Buyer, ?> buyingDaysAttribute = entityBuyer.getAttribute("buyingDays");
         assertNotNull(buyingDaysAttribute);
         // Check persistent attribute type
         assertEquals(PersistentAttributeType.BASIC, buyingDaysAttribute.getPersistentAttributeType());
@@ -941,7 +941,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         //* @param <K> The type of the key of the represented Map
         //* @param <V> The type of the value of the represented Map
         //public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, java.util.Map<K, V>, V>
-        Attribute buyerCreditCards = entityBuyer.getAttribute("creditCards");
+        Attribute<? super Buyer, ?> buyerCreditCards = entityBuyer.getAttribute("creditCards");
         assertNotNull(buyerCreditCards);
         assertTrue(buyerCreditCards.isCollection());
         assertTrue(buyerCreditCards instanceof MapAttributeImpl);
@@ -1538,13 +1538,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 Employee clone = (Employee)q.getSingleResult();
                 clone.toString();
             }catch (java.lang.NullPointerException e){
-                this.fail("NPE occured building an Entity whos reference in the shared cache was garbage collected: "+e);
+                fail("NPE occured building an Entity whos reference in the shared cache was garbage collected: "+e);
             }
         }finally {
             if (this.isTransactionActive(em)) {
                 this.rollbackTransaction(em);
             }
-            this.getServerSession().getIdentityMapAccessorInstance().initializeAllIdentityMaps();
+            getServerSession().getIdentityMapAccessorInstance().initializeAllIdentityMaps();
         }
     }
 
@@ -1974,7 +1974,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             Object[] objectdata = (Object[])aQuery.getSingleResult();
 
             assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.length==2)) );
-            assertTrue("Address Id data returned doesn't match persisted address", (address1.getID() == ((Long)objectdata[0]).longValue()) );
+            assertTrue("Address Id data returned doesn't match persisted address", (address1.getID() == (Long) objectdata[0]) );
             assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata[1] )) );
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -2179,7 +2179,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
     public void testRelationshipReadDuringClone(){
         EntityManager em = createEntityManager();
-        Session session = getServerSession();
+        AbstractSession session = getServerSession();
         ClassDescriptor departmentDesc = session.getDescriptor(Department.class);
         DescriptorEventAdapter listener = new DescriptorEventAdapter(){
             @Override
@@ -2190,7 +2190,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         departmentDesc.getDescriptorEventManager().addListener(listener);
         em.createQuery("SELECT e from Equipment e where e.department is not null").getResultList();
         departmentDesc.getDescriptorEventManager().removeListener(listener);
-        departmentDesc.getDescriptorEventManager().initialize((AbstractSession) session);
+        departmentDesc.getDescriptorEventManager().initialize(session);
         closeEntityManager(em);
     }
 
@@ -2484,7 +2484,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         // verify properties set on Employee instance
         errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "Employee");
-        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, new Integer(1));
+        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, 1);
 
         // each attribute of Employee was assigned a property attributeName with the value attribute name.
         for(DatabaseMapping mapping : descriptor.getMappings()) {
@@ -2494,13 +2494,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         // attribute m_lastName has many properties of different types
         DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
         errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
-        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, new Byte((byte)1));
-        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, new Character('A'));
-        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, new Double(1));
-        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, new Float(1));
-        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, new Integer(1));
-        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, new Long(1));
-        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, new Short((short)1));
+        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, (byte) 1);
+        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, 'A');
+        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, 1.0);
+        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, 1F);
+        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, 1);
+        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, 1L);
+        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, (short) 1);
         errorMsg += verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE);
         errorMsg += verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE);
         errorMsg += verifyPropertyValue(mapping, "byte[]Property", byte[].class, new byte[]{1, 2, 3, 4});
@@ -2518,13 +2518,13 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class expectedPropertyValueType, Object expectedPropertyValue) {
+    protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
         return verifyPropertyValue(propertyName, descriptor.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, Helper.getShortClassName(descriptor.getJavaClass()) + " descriptor");
     }
-    protected String verifyPropertyValue(DatabaseMapping mapping, String propertyName, Class expectedPropertyValueType, Object expectedPropertyValue) {
+    protected String verifyPropertyValue(DatabaseMapping mapping, String propertyName, Class<?> expectedPropertyValueType, Object expectedPropertyValue) {
         return verifyPropertyValue(propertyName, mapping.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, mapping.getAttributeName() + " attribute");
     }
-    protected String verifyPropertyValue(String propertyName, Object propertyValue, Class expectedPropertyValueType, Object expectedPropertyValue, String masterName) {
+    protected String verifyPropertyValue(String propertyName, Object propertyValue, Class<?> expectedPropertyValueType, Object expectedPropertyValue, String masterName) {
         String errorMsg = "";
         String errorPrefix = " property " + propertyName + " for " + masterName;
         if(expectedPropertyValueType == null) {
@@ -3218,7 +3218,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
             
             // execute a non historical query through JPQL against the Oyster entity
-            oysters = (List<Oyster>)em.createQuery("SELECT e FROM Oyster e", Oyster.class).getResultList();
+            oysters = em.createQuery("SELECT e FROM Oyster e", Oyster.class).getResultList();
             assertTrue("JPA query: Oysters should be non-empty", oysters.size() > 0);
             for (Oyster oysterElem : oysters) {
                 assertNotNull("JPA query: Oyster should have a pearl, historical query executed", oysterElem.getPearl());
@@ -3246,7 +3246,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Bug 470007 - NPE in normalize() when querying on ElementCollection->CollectionTable, with query results caching enabled
+     * Bug 470007 - NPE in normalize() when querying on ElementCollection-{@literal >}CollectionTable, with query results caching enabled
      * Tests querying across an Entity (ToDoList) containing an ElementCollection with a CollectionTable, referencing a
      * basic type (String). A NullPointerException was previously observed when query results caching is enabled on the query.  
      */
@@ -3738,6 +3738,72 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     }
 
     /**
+     * Bug 1148 (GitHub)
+     * Test batch fetch with small fetch size
+     */
+    public void testEmployeeToProjectWithBatchFetchTypeWithSmallFetchSize() {
+        final String lastName = "testRandomEmployeeToProject";
+
+        // Set up
+        Set<Employee> employeesToRemove = new HashSet<>();
+        Set<Integer> employeeIds = new HashSet<>();
+        EntityManager em = createEntityManager();
+        for (int i = 0; i < 100; i++) {
+            beginTransaction(em);
+            Employee employee = new Employee();
+            employee.setLastName(lastName);
+            employeesToRemove.add(employee);
+            em.persist(employee);
+            employeeIds.add(employee.getId());
+            for (int j = 0; j < 20; j++) {
+                Project project = new Project();
+                employee.addProject(project);
+                em.persist(project);
+            }
+            commitTransaction(em);
+        }
+
+        JpaEntityManager jpaEntityManager = (JpaEntityManager) em.getDelegate();
+        jpaEntityManager.getUnitOfWork().getIdentityMapAccessor().initializeAllIdentityMaps();
+        try {
+            String jpql = "SELECT employee FROM Employee employee WHERE employee.id IN :ids";
+            TypedQuery<Employee> query = em.createQuery(jpql, Employee.class)
+                    .setParameter("ids", employeeIds)
+                    .setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN)
+                    .setHint(QueryHints.BATCH, "employee.projects.properties")
+                    .setHint(QueryHints.BATCH_SIZE, 3);
+            List<Employee> employees = query.getResultList();
+
+            // Trigger the bug
+            Collections.shuffle(employees);
+
+            int count = 0;
+            try {
+                for (Employee employee : employees) {
+                    for (Project project : employee.getProjects()) {
+                        count++;
+                    }
+                }
+                Assert.assertEquals("Project objects received are not as many as expected", 2000, count);
+            } catch (ArrayIndexOutOfBoundsException x) {
+                Assert.fail(Helper.printStackTraceToString(x));
+            }
+        } finally {
+            // Clean up
+            beginTransaction(em);
+            for (Employee employee : employeesToRemove) {
+                employee = em.merge(employee);
+                for (Project project : employee.getProjects()) {
+                    em.remove(em.merge(project));
+                }
+                em.remove(employee);
+            }
+            commitTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    /**
      * Bug 502085 - @OneToMany with @OrderColumn contains a null element after specific scenario
      * 
      */
@@ -3863,7 +3929,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         Vector pk = new Vector(1);
         pk.add(dealer.getId());
 
-        return ((Integer)getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession())).intValue();
+        return getServerSession().getDescriptor(Dealer.class).getOptimisticLockingPolicy().getWriteLockValue(dealer, pk, getServerSession());
     }
 
     protected List<Employee> createEmployeesWithUnidirectionalMappings(String lastName) {
@@ -3876,12 +3942,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             employees.add(emp);
             for(int j=0; j<n; j++) {
                 Dealer dealer = new Dealer();
-                dealer.setFirstName(emp.getFirstName() + "_" + Integer.toString(j+1));
+                dealer.setFirstName(emp.getFirstName() + "_" + (j + 1));
                 dealer.setLastName(lastName);
                 emp.addDealer(dealer);
                 for(int k=0; k<n; k++) {
                     Customer customer = new Customer();
-                    customer.setFirstName(dealer.getFirstName() + "_" + Integer.toString(k+1));
+                    customer.setFirstName(dealer.getFirstName() + "_" + (k + 1));
                     customer.setLastName(lastName);
                     dealer.addCustomer(customer);
                 }

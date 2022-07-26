@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
 
     private T m_listener;
     private Class<T> m_listenerClass;
-    private Class m_entityClass;
+    private Class<?> m_entityClass;
     private Map<String, List<Method>> m_methods;
     private final Map<String, Map<Integer, Boolean>> m_overriddenEvents;
     private static final Map<Integer, String> m_eventStrings;
@@ -87,7 +87,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    protected EntityListener(Class entityClass) {
+    protected EntityListener(Class<?> entityClass) {
         m_entityClass = entityClass;
         m_methods = new ConcurrentHashMap<>();
 
@@ -96,7 +96,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
         m_overriddenEvents = new ConcurrentHashMap<>();
     }
 
-    public EntityListener(Class<T> listenerClass, Class entityClass){
+    public EntityListener(Class<T> listenerClass, Class<?> entityClass){
         this(entityClass);
         this.m_listenerClass = listenerClass;
     }
@@ -174,7 +174,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    public Class getEntityClass() {
+    public Class<?> getEntityClass() {
         return m_entityClass;
     }
 
@@ -234,7 +234,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
-    public Class getListenerClass() {
+    public Class<?> getListenerClass() {
         return m_listenerClass;
     }
 
@@ -303,7 +303,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        AccessController.doPrivileged(new PrivilegedMethodInvoker(method, onObject, objectList));
+                        AccessController.doPrivileged(new PrivilegedMethodInvoker<Void>(method, onObject, objectList));
                     } catch (PrivilegedActionException exception) {
                         Exception throwableException = exception.getException();
                         if (throwableException instanceof IllegalAccessException) {
@@ -551,7 +551,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
             // So far so good, now check the method modifiers.
             validateMethodModifiers(method);
         } else {
-            Class parameterClass = (numberOfParameters == 0) ? null : method.getParameterTypes()[0];
+            Class<?> parameterClass = (numberOfParameters == 0) ? null : method.getParameterTypes()[0];
             throw ValidationException.invalidEntityListenerCallbackMethodArguments(m_entityClass, parameterClass, getListenerClass(), method.getName());
         }
     }

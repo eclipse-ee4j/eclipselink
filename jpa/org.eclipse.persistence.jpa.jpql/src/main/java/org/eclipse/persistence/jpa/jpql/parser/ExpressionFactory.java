@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,7 +80,7 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
     /**
      * Adds the given JPQL identifiers to this factory.
      *
-     * @param identifier The JPQL identifiers this factory will parse
+     * @param identifiers The JPQL identifiers this factory will parse
      */
     void addIdentifiers(String... identifiers) {
 
@@ -113,26 +113,16 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
                                                           AbstractExpression expression,
                                                           boolean tolerant);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final int compareTo(ExpressionFactory expressionFactory) {
         return id.compareTo(expressionFactory.getId());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final boolean equals(Object object) {
-                if (object == null) {
-                    return false;
-                }
-        if (this == object) {
-            return true;
+        if (!(object instanceof ExpressionFactory)) {
+            return false;
         }
-
         ExpressionFactory factory = (ExpressionFactory) object;
         return id.equals(factory.id);
     }
@@ -158,9 +148,6 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
         return id;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final int hashCode() {
         return id.hashCode();
@@ -185,9 +172,6 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
         this.expressionRegistry = expressionRegistry;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();

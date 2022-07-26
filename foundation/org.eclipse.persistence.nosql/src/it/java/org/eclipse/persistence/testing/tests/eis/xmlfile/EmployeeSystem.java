@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,6 @@ import org.eclipse.persistence.testing.framework.*;
  * Create and populate the database.
  * </li>
  * </ul>
- * </p>
  */
 public class EmployeeSystem extends TestSystem {
 
@@ -48,6 +47,7 @@ public class EmployeeSystem extends TestSystem {
         project = XMLProjectReader.read("org/eclipse/persistence/testing/models/employee/eis/xmlfile/employee-project.xml", getClass().getClassLoader());
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = XMLProjectReader.read("org/eclipse/persistence/testing/models/employee/eis/xmlfile/employee-project.xml", getClass().getClassLoader());
@@ -56,6 +56,7 @@ public class EmployeeSystem extends TestSystem {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         // Drop tables
         XQueryInteraction interaction = new XQueryInteraction();
@@ -100,12 +101,12 @@ public class EmployeeSystem extends TestSystem {
 
         Vector arguments = new Vector(2);
         arguments.add("EMP_SEQ");
-        arguments.add(new Integer(0));
+        arguments.add(0);
         session.executeQuery(query, arguments);
 
         arguments = new Vector(2);
         arguments.add("PROJ_SEQ");
-        arguments.add(new Integer(0));
+        arguments.add(0);
         session.executeQuery(query, arguments);
     }
 
@@ -113,6 +114,7 @@ public class EmployeeSystem extends TestSystem {
      * This method will instantiate all of the example instances and insert them into the database
      * using the given session.
      */
+    @Override
     public void populate(DatabaseSession session) {
         EmployeePopulator system = new EmployeePopulator();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();

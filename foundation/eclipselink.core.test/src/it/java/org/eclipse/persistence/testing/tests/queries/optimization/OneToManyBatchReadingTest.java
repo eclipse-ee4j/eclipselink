@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,11 +32,13 @@ public class OneToManyBatchReadingTest extends TestCase {
         setDescription("Tests batch reading using 1 to 1 mapping and composite primary key");
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
         if ((batchType == BatchFetchType.IN) && !getSession().getPlatform().isOracle()) {
@@ -44,6 +46,7 @@ public class OneToManyBatchReadingTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         ReadAllQuery q = new ReadAllQuery();
         q.setBatchFetchType(batchType);
@@ -53,6 +56,7 @@ public class OneToManyBatchReadingTest extends TestCase {
         result = (List) uow.executeQuery(q);
     }
 
+    @Override
     public void verify() {
         Shipment shipment = (Shipment)result.get(0);
         strongAssert((shipment.orders.size() > 0), "Test failed. Batched objects were not read");

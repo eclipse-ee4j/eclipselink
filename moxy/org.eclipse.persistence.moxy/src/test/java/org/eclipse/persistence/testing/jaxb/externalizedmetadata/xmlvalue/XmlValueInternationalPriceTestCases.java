@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
@@ -35,7 +36,7 @@ public class XmlValueInternationalPriceTestCases extends JAXBWithJSONTestCases{
 
     public XmlValueInternationalPriceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { InternationalPriceNoAnnotation.class });
+        setClasses(new Class<?>[] { InternationalPriceNoAnnotation.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "value");
@@ -43,13 +44,14 @@ public class XmlValueInternationalPriceTestCases extends JAXBWithJSONTestCases{
     }
 
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlvalue/eclipselink-oxm-intprice.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -68,6 +70,7 @@ public class XmlValueInternationalPriceTestCases extends JAXBWithJSONTestCases{
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }
 
+    @Override
     protected Object getControlObject() {
         InternationalPriceNoAnnotation price = new InternationalPriceNoAnnotation();
         price.currency ="CDN";

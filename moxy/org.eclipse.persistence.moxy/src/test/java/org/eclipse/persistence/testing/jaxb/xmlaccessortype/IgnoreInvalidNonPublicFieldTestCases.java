@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ public class IgnoreInvalidNonPublicFieldTestCases extends SchemaGenTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public IgnoreInvalidNonPublicFieldTestCases(String name) throws Exception {
         super(name);
@@ -28,7 +27,7 @@ public class IgnoreInvalidNonPublicFieldTestCases extends SchemaGenTestCases {
 
     public void testPublicMemberAccess() throws Exception {
         MySchemaOutputResolver outputResolver = new MySchemaOutputResolver();
-        generateSchema(new Class[]{Root.class}, outputResolver, null);
+        generateSchema(new Class<?>[]{Root.class}, outputResolver, null);
         String result = validateAgainstSchema(PATH + "root_public.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
     }

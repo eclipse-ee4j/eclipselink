@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -93,7 +93,7 @@ public class MetadataProcessor {
     protected MetadataFactory m_factory;
     protected MetadataProject m_project;
     protected AbstractSession m_session;
-    protected Map m_predeployProperties;
+    protected Map<String, Object> m_predeployProperties;
     protected MetadataProcessor m_compositeProcessor;
     protected Set<MetadataProcessor> m_compositeMemberProcessors;
     protected MetadataSource m_metadataSource;
@@ -109,7 +109,7 @@ public class MetadataProcessor {
      * Called from EntityManagerSetupImpl. The 'real' EJB 3.0 processing
      * that includes XML and annotations.
      */
-    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, boolean multitenantSharedCache, Map predeployProperties, MetadataProcessor compositeProcessor) {
+    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, boolean multitenantSharedCache, Map<String, Object> predeployProperties, MetadataProcessor compositeProcessor) {
         m_loader = loader;
         m_session = session;
         m_project = new MetadataProject(puInfo, session, weaveLazy, weaveEager, weaveFetchGroups, multitenantSharedEmf, multitenantSharedCache);
@@ -127,7 +127,7 @@ public class MetadataProcessor {
      */
     public void addCompositeMemberProcessor(MetadataProcessor compositeMemberProcessor) {
         if (m_compositeMemberProcessors == null) {
-            m_compositeMemberProcessors = new HashSet();
+            m_compositeMemberProcessors = new HashSet<>();
         }
         m_compositeMemberProcessors.add(compositeMemberProcessor);
     }
@@ -192,7 +192,7 @@ public class MetadataProcessor {
      * Returns projects owned by compositeProcessor minus the passed project.
      */
     public Set<MetadataProject> getPearProjects(MetadataProject project) {
-        Set<MetadataProject> pearProjects = new HashSet();
+        Set<MetadataProject> pearProjects = new HashSet<>();
         if (m_compositeMemberProcessors != null) {
             for(MetadataProcessor processor : m_compositeMemberProcessors) {
                 MetadataProject pearProject = processor.getProject();
@@ -339,7 +339,7 @@ public class MetadataProcessor {
         }
 
         // Add all the classes off the classpath at the persistence unit root url.
-        Set<String> unlistedClasses = Collections.EMPTY_SET;
+        Set<String> unlistedClasses = Collections.emptySet();
         if (! persistenceUnitInfo.excludeUnlistedClasses()) {
             unlistedClasses = PersistenceUnitProcessor.getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), m_loader, m_predeployProperties);
         }
@@ -447,7 +447,8 @@ public class MetadataProcessor {
                     // Read the document through OX and add it to the project.
                     m_project.addEntityMappings(XMLEntityMappingsReader.read(nextURL, m_loader, m_project.getPersistenceUnitInfo().getProperties()));
                 } else {
-                    handleORMException(ValidationException.mappingFileNotFound(puInfo.getPersistenceUnitName(), mappingFileName), mappingFileName, throwExceptionOnFail);
+                    //look into referenced jar files
+                    loadMappingFiles(null, throwExceptionOnFail);
                 }
             } catch (IOException e) {
                 handleORMException(PersistenceUnitLoadingException.exceptionLoadingORMXML(mappingFileName, e), mappingFileName, throwExceptionOnFail);
@@ -459,33 +460,56 @@ public class MetadataProcessor {
      * INTERNAL:
      */
     protected void loadStandardMappingFiles(String ormXMLFile) {
+        loadMappingFiles(ormXMLFile, false);
+    }
+
+    /**
+     *
+     * @param mappingFile null to load all mapping files referenced from the persistence unit (ie custom.xml),
+     *                    specific value to load particular mapping file (ie orm.xml)
+     * @param throwExceptionOnFail false to log warning if referenced mapping file is not found,
+     *                            true to throw an Exception instead
+     */
+    private void loadMappingFiles(String mappingFile, boolean throwExceptionOnFail) {
         PersistenceUnitInfo puInfo = m_project.getPersistenceUnitInfo();
-        Collection<URL> rootUrls = new HashSet<URL>(puInfo.getJarFileUrls());
+        Collection<URL> rootUrls = new HashSet<>(puInfo.getJarFileUrls());
         rootUrls.add(puInfo.getPersistenceUnitRootUrl());
+        Set<String> entries = new HashSet<>();
 
         for (URL rootURL : rootUrls) {
-            getSessionLog().log(SessionLog.FINER, SessionLog.METADATA, "searching_for_default_mapping_file", new Object[] { ormXMLFile, rootURL }, true);
-            URL ormURL = null;
-
             Archive par = null;
             try {
                 par = PersistenceUnitProcessor.getArchiveFactory(m_loader, m_predeployProperties).createArchive(rootURL, null);
 
                 if (par != null) {
-                    ormURL = par.getEntryAsURL(ormXMLFile);
+                    List<String> mappingFileNames = mappingFile != null? List.of(mappingFile) : puInfo.getMappingFileNames();
+                    for (String mappingFileName : mappingFileNames) {
+                        getSessionLog().log(SessionLog.FINER, SessionLog.METADATA, "searching_for_default_mapping_file", new Object[] { mappingFileName, rootURL }, true);
+                        URL ormURL = par.getEntryAsURL(mappingFileName);
 
-                    if (ormURL != null) {
-                        getSessionLog().log(SessionLog.FINER, SessionLog.METADATA, "found_default_mapping_file", new Object[] { ormURL, rootURL }, true);
+                        if (ormURL != null) {
+                            getSessionLog().log(SessionLog.FINER, SessionLog.METADATA, "found_default_mapping_file", new Object[]{ormURL, rootURL}, true);
+                            if (!entries.contains(mappingFileName)) {
+                                entries.add(mappingFileName);
+                            } else {
+                                // Switched to warning, same file can be on the classpath twice in some deployments,
+                                // should not be an error.
+                                Throwable throwable = ValidationException.nonUniqueMappingFileName(puInfo.getPersistenceUnitName(), mappingFileName);
+                                getSessionLog().logThrowable(SessionLog.FINER, SessionLog.METADATA, throwable);
+                            }
 
-                        // Read the document through OX and add it to the project., pass persistence unit properties for any orm properties set there
-                        XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(ormURL, m_loader, m_project.getPersistenceUnitInfo().getProperties());
-                        entityMappings.setIsEclipseLinkORMFile(ormXMLFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE));
-                        m_project.addEntityMappings(entityMappings);
+                            // Read the document through OX and add it to the project., pass persistence unit properties for any orm properties set there
+                            XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(ormURL, m_loader, puInfo.getProperties());
+                            entityMappings.setIsEclipseLinkORMFile(MetadataHelper.ECLIPSELINK_ORM_FILE.equals(mappingFileName));
+                            m_project.addEntityMappings(entityMappings);
+                        } else {
+                            if (mappingFile == null) {
+                                handleORMException(ValidationException.mappingFileNotFound(puInfo.getPersistenceUnitName(), mappingFileName), mappingFileName, throwExceptionOnFail);
+                            }
+                        }
                     }
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (URISyntaxException e) {
+            } catch (IOException | URISyntaxException e) {
                 throw new RuntimeException(e);
             } finally {
                 if (par != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -31,46 +32,46 @@ public class ChangeSummaryGetOldContainerContainmentPropertyTest extends ChangeS
     // purpose: test if containedObject's container is changed, changesummary can still
     // return the former container
     public void testContainerValueAfterDataObjectChangeContainer() {
-        SDODataObject container = (SDODataObject)containedDataObject.getContainer();
+        SDODataObject container = containedDataObject.getContainer();
         changeSummary.beginLogging();
         SDODataObject o = null;
         root.set(rootProperty, o);
-        this.assertNull(containedDataObject.getContainer());
-        this.assertEquals(root, changeSummary.getOldContainer(containedDataObject));
+        assertNull(containedDataObject.getContainer());
+        assertEquals(root, changeSummary.getOldContainer(containedDataObject));
     }
 
     // purpose: test null value as parameter
     public void testContainerValueByPassingNull() {
-        this.assertNull(changeSummary.getOldContainer(null));
+        assertNull(changeSummary.getOldContainer(null));
     }
 
     // purpose: test pass in dataobjec not in the tree as parameter
     public void testContainerValueByPassingNotExistedDataObject() {
         SDODataObject obj = new SDODataObject();
-        this.assertNull(changeSummary.getOldContainer(obj));
+        assertNull(changeSummary.getOldContainer(obj));
     }
 
     // purpose: test if containedObject's containment property is changed, changesummary can still
     // return the former value back
     public void testContainmentPropertyValueAfterDataObjectChangeValue() {
-        SDOProperty containmentProperty = (SDOProperty)containedDataObject.getContainmentProperty();
+        SDOProperty containmentProperty = containedDataObject.getContainmentProperty();
         changeSummary.beginLogging();
-        this.assertTrue(rootProperty.equals(containedDataObject.getContainmentProperty()));// it is the same before modified
+        assertTrue(rootProperty.equals(containedDataObject.getContainmentProperty()));// it is the same before modified
         Object o = null;
         root.set(rootProperty, o);
-        this.assertFalse(rootProperty.equals(containedDataObject.getContainmentProperty()));// current container in root's child should be changed
-        this.assertEquals(containmentProperty, changeSummary.getOldContainmentProperty(containedDataObject));
+        assertFalse(rootProperty.equals(containedDataObject.getContainmentProperty()));// current container in root's child should be changed
+        assertEquals(containmentProperty, changeSummary.getOldContainmentProperty(containedDataObject));
     }
 
     // purpose: test null value as parameter
     public void testContainmentPropertyByPassingNull() {
         SDODataObject o = null;
-        this.assertNull(changeSummary.getOldContainmentProperty(o));
+        assertNull(changeSummary.getOldContainmentProperty(o));
     }
 
     // purpose: test pass in dataobjec not in the tree as parameter
     public void testContainmentPropertyByPassingNotExistedDataObject() {
         SDODataObject obj = new SDODataObject();
-        this.assertNull(changeSummary.getOldContainmentProperty(obj));
+        assertNull(changeSummary.getOldContainmentProperty(obj));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,11 +40,6 @@ public abstract class EclipseLinkLocalization {
      * INTERNAL:
      * Return the message for the given exception class and error number.
      * Based on the state of the translate flag - look up translation for the key:value message
-     * @param localizationClassName
-     * @param key
-     * @param arguments
-     * @param translate
-     * @return
      */
     public static String buildMessage(String localizationClassName, String key, Object[] arguments, boolean translate) {
         String message = key;

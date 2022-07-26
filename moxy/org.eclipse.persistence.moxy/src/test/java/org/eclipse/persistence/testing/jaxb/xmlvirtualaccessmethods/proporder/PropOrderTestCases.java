@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class PropOrderTestCases extends JAXBWithJSONTestCases {
@@ -28,7 +29,7 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument("org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer.json");
-        setTypes(new Class[] {Customer.class, Parent.class, PhoneNumber.class, Address.class});
+        setTypes(new Class<?>[] {Customer.class, Parent.class, PhoneNumber.class, Address.class});
     }
 
 
@@ -38,7 +39,7 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         Map<String, Object> properties = new HashMap<String, Object>();
         Map<String, Object> overrides = new HashMap<String, Object>();
         overrides.put("org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder", "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/binding.xml");
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 
@@ -68,10 +69,12 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         return customer;
     }
 
+     @Override
      public String getWriteControlJSONFormatted(){
          return "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer_formatted.json";
      }
 
+     @Override
      public boolean shouldRemoveWhitespaceFromControlDocJSON(){
          return false;
      }

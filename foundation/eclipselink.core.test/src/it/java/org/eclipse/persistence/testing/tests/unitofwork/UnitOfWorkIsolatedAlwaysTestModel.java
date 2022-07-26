@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,17 +32,19 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
  */
 public class UnitOfWorkIsolatedAlwaysTestModel extends UnitOfWorkClientSessionTestModel {
 
+    @Override
     public void setup() {
-        for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+        for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
         }
         super.setup();
     }
 
+    @Override
     public void reset() {
-        for (Iterator descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+        for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
+            ClassDescriptor descriptor = descriptors.next();
             descriptor.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
         }
         super.reset();
@@ -51,6 +53,7 @@ public class UnitOfWorkIsolatedAlwaysTestModel extends UnitOfWorkClientSessionTe
     /**
      * Add all unit of work test suite tests that are runnable with an isolated unit of work.
      */
+    @Override
     public void addTests() {
         addTest(new MergeCloneWithReferencesWithNullTest());
         addTest(new MergeCloneWithReferencesTransparentIndirectionTest());

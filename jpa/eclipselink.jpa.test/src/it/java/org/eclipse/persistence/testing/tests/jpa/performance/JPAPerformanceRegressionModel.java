@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.spi.PersistenceProvider;
 
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.tests.jpa.performance.misc.JPABootstrapPerformanceTest;
 import org.eclipse.persistence.testing.tests.jpa.performance.misc.JPAMetadataPerformanceTest;
@@ -68,6 +69,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
         setDescription("Performance tests that compare JPA performance.");
     }
 
+    @Override
     public void addTests() {
         addTest(getReadingTestSuite());
         addTest(getWritingTestSuite());
@@ -175,6 +177,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
     /**
      * Create/populate database.
      */
+    @Override
     public void setup() {
         /*
         // Setup DataSource for apples to apples comparison (otherwise we crush them).
@@ -248,14 +251,14 @@ public class JPAPerformanceRegressionModel extends TestModel {
      * Setup the JPA provider.
      */
     public void setupProvider() {
-        if (org.eclipse.persistence.testing.framework.junit.JUnitTestCase.isOnServer()) {
+        if (JUnitTestCase.isOnServer()) {
             return;
         }
         // Configure provider to be EclipseLink.
         String providerClass = "org.eclipse.persistence.jpa.PersistenceProvider";
         PersistenceProvider provider = null;
         try {
-            provider = (PersistenceProvider)Class.forName(providerClass).newInstance();
+            provider = (PersistenceProvider)Class.forName(providerClass).getConstructor().newInstance();
         } catch (Exception error) {
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
@@ -302,6 +305,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
      */
     public TestCase buildChangeTrackingTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() throws Exception {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
@@ -315,7 +319,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                address = manager.find(Address.class, new Long(address.getId()));
+                address = manager.find(Address.class, address.getId());
                 if (address.getStreet().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -332,6 +336,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
      */
     public TestCase buildFieldAccessChangeTrackingTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() throws Exception {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
@@ -343,7 +348,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                address = manager.find(Address.class, new Long(address.getId()));
+                address = manager.find(Address.class, address.getId());
                 if (address.getStreet().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -360,6 +365,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
      */
     public TestCase buildEmployeeChangeTrackingTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() throws Exception {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
@@ -373,7 +379,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                employee = manager.getReference(Employee.class, new Long(employee.getId()));
+                employee = manager.getReference(Employee.class, employee.getId());
                 if (employee.getLastName().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -390,6 +396,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
      */
     public TestCase buildDateChangeTrackingTest() {
         TestCase test = new TestCase() {
+            @Override
             @SuppressWarnings("deprecation")
             public void test() throws Exception {
                 EntityManager manager = createEntityManager();
@@ -402,7 +409,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                employee = manager.getReference(Employee.class, new Long(employee.getId()));
+                employee = manager.getReference(Employee.class, employee.getId());
                 manager.refresh(employee);
                 if (employee.getPeriod().getStartDate().getDate() == 7) {
                     throwError("Change tracking detected the change (not used?).");

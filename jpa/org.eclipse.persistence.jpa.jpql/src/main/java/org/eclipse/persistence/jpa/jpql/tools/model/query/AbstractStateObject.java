@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public abstract class AbstractStateObject implements StateObject {
      * <p>
      * or
      *
-     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></div>
+     * <div><p><code>{public|protected|private} void visit(StateObject stateObject)</code></p></div>
      *
      * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
      * @return <code>true</code> if the call was successfully executed; <code>false</code> otherwise
@@ -138,11 +138,10 @@ public abstract class AbstractStateObject implements StateObject {
      * third-party provider. This method will programmatically invoke the <b>visit</b> method defined
      * on the given visitor which signature should be.
      *
-     * <div><code>{public|protected|private} void visit(ThirdPartyStateObject stateObject)</code></div>
-     * <p>
+     * <div><p><code>{public|protected|private} void visit(ThirdPartyStateObject stateObject)</code></p></div>
      * or
      *
-     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></div>
+     * <div><p><code>{public|protected|private} void visit(StateObject stateObject)</code></p></div>
      *
      * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
      * @param type The type found in the hierarchy of the given {@link StateObjectVisitor} that will
@@ -190,9 +189,6 @@ public abstract class AbstractStateObject implements StateObject {
     protected void addProblems(List<Problem> problems) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void addPropertyChangeListener(String propertyName, IPropertyChangeListener<?> listener) {
         changeSupport.addPropertyChangeListener(propertyName, listener);
@@ -281,7 +277,7 @@ public abstract class AbstractStateObject implements StateObject {
         queryBNF.setFallbackBNFId(queryBNFId);
         queryBNF.registerQueryBNF(queryBNFId);
 
-        final List<StateObject> items = new ArrayList<StateObject>();
+        final List<StateObject> items = new ArrayList<>();
 
         try {
             StateObject stateObject = buildStateObject(jpqlFragment, queryBNF.getId());
@@ -318,35 +314,23 @@ public abstract class AbstractStateObject implements StateObject {
         return parent;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final Iterable<StateObject> children() {
-        List<StateObject> children = new ArrayList<StateObject>();
+        List<StateObject> children = new ArrayList<>();
         addChildren(children);
-        return new SnapshotCloneIterable<StateObject>(children);
+        return new SnapshotCloneIterable<>(children);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void decorate(StateObject decorator) {
         this.decorator = parent(decorator);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final boolean equals(Object object) {
         return super.equals(object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IdentificationVariableStateObject findIdentificationVariable(String identificationVariable) {
         return parent.findIdentificationVariable(identificationVariable);
@@ -374,65 +358,41 @@ public abstract class AbstractStateObject implements StateObject {
         return changeSupport;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DeclarationStateObject getDeclaration() {
         return parent.getDeclaration();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject getDecorator() {
         return decorator;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Expression getExpression() {
         return expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLGrammar getGrammar() {
         return getRoot().getGrammar();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedTypeProvider getManagedTypeProvider() {
         return getRoot().getManagedTypeProvider();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject getParent() {
         return parent;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IJPQLQueryBuilder getQueryBuilder() {
         return getRoot().getQueryBuilder();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryStateObject getRoot() {
         return parent.getRoot();
@@ -476,9 +436,6 @@ public abstract class AbstractStateObject implements StateObject {
         return getManagedTypeProvider().getTypeRepository();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final int hashCode() {
         return super.hashCode();
@@ -491,17 +448,11 @@ public abstract class AbstractStateObject implements StateObject {
         changeSupport = new ChangeSupport(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isDecorated() {
         return decorator != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
         return (this == stateObject) ||
@@ -527,7 +478,9 @@ public abstract class AbstractStateObject implements StateObject {
      * @param stateObjects The list of {@link StateObject} to have this one as its parent
      * @return The given list of {@link StateObject}
      */
-    protected <T extends StateObject> T[] parent(T... stateObjects) {
+    @SafeVarargs
+    @SuppressWarnings({"varargs"})
+    protected final <T extends StateObject> T[] parent(T... stateObjects) {
         for (StateObject stateObject : stateObjects) {
             parent(stateObject);
         }
@@ -547,9 +500,6 @@ public abstract class AbstractStateObject implements StateObject {
         return stateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void removePropertyChangeListener(String propertyName, IPropertyChangeListener<?> listener) {
         changeSupport.removePropertyChangeListener(propertyName, listener);
@@ -565,18 +515,12 @@ public abstract class AbstractStateObject implements StateObject {
         this.expression = expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void setParent(StateObject parent) {
         Assert.isNotNull(parent, "The parent cannot be null");
         this.parent = parent;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
@@ -584,9 +528,6 @@ public abstract class AbstractStateObject implements StateObject {
         return sb.toString();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void toString(Appendable writer) {
         try {
@@ -636,9 +577,6 @@ public abstract class AbstractStateObject implements StateObject {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final void toText(Appendable writer) {
         try {

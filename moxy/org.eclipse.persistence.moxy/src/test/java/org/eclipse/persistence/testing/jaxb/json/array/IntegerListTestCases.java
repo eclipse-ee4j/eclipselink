@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests marshall/unmarshal List of Integer (List<Integer>).
+ * Tests marshall/unmarshal List of Integer ({@code List<Integer>}).
  *
  * @author Radek Felcman
  *
@@ -33,16 +33,18 @@ public class IntegerListTestCases extends JSONTestCases {
 
     public IntegerListTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Integer.class});
+        setClasses(new Class<?>[]{Integer.class});
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
+    @Override
     protected Object getControlObject() {
         List<Integer> integerList = new ArrayList<>();
         integerList.add(-78);

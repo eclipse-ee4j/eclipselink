@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -30,9 +30,8 @@ public class Oracle9Platform extends Oracle8Platform {
      * Build the hint string used for first rows.
      * 
      * Allows it to be overridden
-     * @param max
-     * @return
      */
+    @Override
     protected String buildFirstRowsHint(int max){
         return HINT_START + '(' + max + ')'+ HINT_END;
     }

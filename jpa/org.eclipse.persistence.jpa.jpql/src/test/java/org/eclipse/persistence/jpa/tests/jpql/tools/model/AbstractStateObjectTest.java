@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2280,8 +2280,8 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
      * Tests the injected {@link IJPQLQueryFormatter} and make sure the generated string will be
      * the same as the given JPQL query.
      *
-     * @param jpqlStateObject
-     * @param jpqlQuery
+     * @param jpqlStateObject state object
+     * @param jpqlQuery query
      */
     protected void testFormatter(JPQLQueryStateObject jpqlStateObject, String jpqlQuery) {
 
@@ -2306,7 +2306,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link org.eclipse.persistence.jpa.jpql.parser.JPQLExpression})
      * with the given tester, which is an equivalent representation of the parsed tree.
      * <p>
      * The parsing system will have the tolerance turned on.
@@ -2320,7 +2320,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link org.eclipse.persistence.jpa.jpql.parser.JPQLExpression})
      * with the given tester, which is an equivalent representation of the parsed tree.
      * <p>
      * This method test both parsing modes: tolerant and non-tolerant. When the tolerant mode is
@@ -2338,14 +2338,12 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link org.eclipse.persistence.jpa.jpql.parser.JPQLExpression})
      * with the given tester, which is an equivalent representation of the parsed tree.
      *
      * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
      * @param queryStatement The tester used to verify the parsed tree is correctly representing the
      * JPQL query
-     * @param formatter This formatter is used to personalized the formatting of the JPQL query
-     * before it is used to test the generated string
      * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
      * to parse grammatically invalid or incomplete queries
      */
@@ -2366,7 +2364,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link org.eclipse.persistence.jpa.jpql.parser.JPQLExpression})
      * with the given tester, which is an equivalent representation of the parsed tree.
      * <p>
      * The parsing system will have the tolerance turned off.
@@ -2409,6 +2407,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 
         protected abstract String identifier();
 
+        @Override
         public void test(StateObject stateObject) {
 
             assertInstance(stateObject, expressionType());
@@ -2476,6 +2475,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 
         protected abstract String identifier();
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, expressionType());
         }
@@ -2502,6 +2502,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.declaration = declaration;
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             assertInstance(stateObject, AbstractFromClauseStateObject.class);
@@ -2535,6 +2536,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.joins                    = joins;
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             assertInstance(stateObject, AbstractIdentificationVariableDeclarationStateObject.class);
@@ -2576,6 +2578,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             }
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             assertInstance(stateObject, AbstractPathExpressionStateObject.class);
@@ -2607,6 +2610,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.identificationVariable = identificationVariable;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, AbstractRangeVariableDeclarationStateObject.class);
 
@@ -2643,6 +2647,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.abstractSchemaName = abstractSchemaName;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, AbstractSchemaNameStateObject.class);
         }
@@ -2664,6 +2669,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.selectExpression = selectExpression;
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             assertInstance(stateObject, AbstractSelectClauseStateObject.class);
@@ -2716,6 +2722,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 
         protected abstract Class<? extends AbstractSelectStatementStateObject> expressionType();
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, expressionType());
 
@@ -2787,14 +2794,16 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * The abstract definition of an {@link ExpressionStateObjectTester}.
+     * The abstract definition of an {@link StateObjectTester}.
      */
     protected static abstract class AbstractStateObjectTester implements StateObjectTester {
 
+        @Override
         public final AdditionExpressionStateObjectTester add(StateObjectTester expression) {
             return AbstractStateObjectTest.add(this, expression);
         }
 
+        @Override
         public final AndExpressionStateObjectTester and(StateObjectTester expression) {
             return AbstractStateObjectTest.and(this, expression);
         }
@@ -2817,32 +2826,39 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             }
         }
 
+        @Override
         public final BetweenExpressionStateObjectTester between(StateObjectTester lowerBoundExpression,
                                                                 StateObjectTester upperBoundExpression) {
 
             return AbstractStateObjectTest.between(this, lowerBoundExpression, upperBoundExpression);
         }
 
+        @Override
         public final ComparisonExpressionStateObjectTester different(StateObjectTester expression) {
             return AbstractStateObjectTest.different(this, expression);
         }
 
+        @Override
         public final DivisionExpressionStateObjectTester division(StateObjectTester expression) {
             return AbstractStateObjectTest.division(this, expression);
         }
 
+        @Override
         public final ComparisonExpressionStateObjectTester equal(StateObjectTester expression) {
             return AbstractStateObjectTest.equal(this, expression);
         }
 
+        @Override
         public final ComparisonExpressionStateObjectTester greaterThan(StateObjectTester expression) {
             return AbstractStateObjectTest.greaterThan(this, expression);
         }
 
+        @Override
         public final ComparisonExpressionStateObjectTester greaterThanOrEqual(StateObjectTester expression) {
             return AbstractStateObjectTest.greaterThanOrEqual(this, expression);
         }
 
+        @Override
         public final InExpressionStateObjectTester in(StateObjectTester... inItems) {
             if (inItems.length == 1) {
                 return AbstractStateObjectTest.in(this, inItems[0]);
@@ -2850,54 +2866,66 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             return AbstractStateObjectTest.in(this, collection(inItems));
         }
 
+        @Override
         public final EmptyCollectionComparisonExpressionStateObjectTester isEmpty() {
             return AbstractStateObjectTest.isEmpty(this);
         }
 
+        @Override
         public final EmptyCollectionComparisonExpressionStateObjectTester isNotEmpty() {
             return AbstractStateObjectTest.isNotEmpty(this);
         }
 
+        @Override
         public boolean isNull() {
             return false;
         }
 
+        @Override
         public final LikeExpressionStateObjectTester like(StateObjectTester patternValue) {
             return AbstractStateObjectTest.like(this, patternValue);
         }
 
+        @Override
         public final LikeExpressionStateObjectTester like(StateObjectTester patternValue,
                                                           String escapeCharacter) {
 
             return AbstractStateObjectTest.like(this, patternValue, escapeCharacter);
         }
 
+        @Override
         public final ComparisonExpressionStateObjectTester lowerThan(StateObjectTester expression) {
             return AbstractStateObjectTest.lowerThan(this, expression);
         }
 
+        @Override
         public final ComparisonExpressionStateObjectTester lowerThanOrEqual(StateObjectTester expression) {
             return AbstractStateObjectTest.lowerThanOrEqual(this, expression);
         }
 
+        @Override
         public final CollectionMemberExpressionStateObjectTester member(StateObjectTester collectionPath) {
             return AbstractStateObjectTest.member(this, collectionPath);
         }
 
+        @Override
         public final CollectionMemberExpressionStateObjectTester memberOf(StateObjectTester collectionPath) {
             return AbstractStateObjectTest.memberOf(this, collectionPath);
         }
 
+        @Override
         public final MultiplicationExpressionStateObjectTester multiplication(StateObjectTester expression) {
             return AbstractStateObjectTest.multiplication(this, expression);
         }
 
+        @Override
         public final BetweenExpressionStateObjectTester notBetween(StateObjectTester lowerBoundExpression,
-                                                        StateObjectTester upperBoundExpression) {
+                                                                   StateObjectTester upperBoundExpression) {
 
             return AbstractStateObjectTest.notBetween(this, lowerBoundExpression, upperBoundExpression);
         }
 
+        @Override
         public final InExpressionStateObjectTester notIn(StateObjectTester... inItems) {
             if (inItems.length == 1) {
                 return AbstractStateObjectTest.notIn(this, inItems[0]);
@@ -2905,32 +2933,39 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             return AbstractStateObjectTest.notIn(this, collection(inItems));
         }
 
+        @Override
         public final LikeExpressionStateObjectTester notLike(StateObjectTester expression) {
             return AbstractStateObjectTest.notLike(this, expression);
         }
 
+        @Override
         public final LikeExpressionStateObjectTester notLike(StateObjectTester expression,
                                                              String escapeCharacter) {
 
             return AbstractStateObjectTest.notLike(this, expression, escapeCharacter);
         }
 
+        @Override
         public final StateObjectTester notMember(StateObjectTester collectionPath) {
             return AbstractStateObjectTest.notMember(this, collectionPath);
         }
 
+        @Override
         public final StateObjectTester notMemberOf(StateObjectTester collectionPath) {
             return AbstractStateObjectTest.notMemberOf(this, collectionPath);
         }
 
+        @Override
         public final OrExpressionStateObjectTester or(StateObjectTester expression) {
             return AbstractStateObjectTest.or(this, expression);
         }
 
+        @Override
         public final SubstractionExpressionStateObjectTester substract(StateObjectTester expression) {
             return AbstractStateObjectTest.substract(this, expression);
         }
 
+        @Override
         public void test(ListIterable<? extends StateObject> items) {
             ListIterator<? extends StateObject> iterator = items.iterator();
             if (!iterator.hasNext()) {
@@ -3098,6 +3133,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.expression = expression;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, ArithmeticFactorStateObject.class);
 
@@ -3153,6 +3189,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.upperBoundExpression    = upperBoundExpression;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, BetweenExpressionStateObject.class);
 
@@ -3205,6 +3242,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.elseExpression = elseExpression;
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             assertInstance(stateObject, CaseExpressionStateObject.class);
@@ -3300,6 +3338,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             }
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, AbstractListHolderStateObject.class);
 
@@ -3357,6 +3396,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.identificationVariable = identificationVariable;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, CollectionMemberDeclarationStateObject.class);
 
@@ -3416,6 +3456,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.collectionPath = collectionPath;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, CollectionMemberExpressionStateObject.class);
 
@@ -3483,6 +3524,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.rightExpression = rightExpression;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, ComparisonExpressionStateObject.class);
 
@@ -3527,6 +3569,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 
         protected abstract String identifier();
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, expressionType());
 
@@ -3561,6 +3604,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.stateObject = stateObject;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, ConcatExpressionStateObject.class);
 
@@ -3594,6 +3638,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.constructorItems    = constructorItems;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, ConstructorExpressionStateObject.class);
 
@@ -3642,6 +3687,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.dateTime = dateTime;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, DateTimeStateObject.class);
         }
@@ -3653,7 +3699,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
     }
 
     /**
-     * StateObjectTester for {@link DeleteClause}.
+     * StateObjectTester for {@link org.eclipse.persistence.jpa.jpql.parser.DeleteClause}.
      */
     protected static final class DeleteClauseStateObjectTester extends AbstractStateObjectTester {
 
@@ -3664,6 +3710,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.rangeVariableDeclaration = rangeVariableDeclaration;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, DeleteClauseStateObject.class);
 
@@ -3694,6 +3741,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.whereClause  = whereClause;
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             assertInstance(stateObject, DeleteStatementStateObject.class);
@@ -3778,6 +3826,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.collectionPath = collectionPath;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, EmptyCollectionComparisonExpressionStateObject.class);
 
@@ -3842,6 +3891,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.entityType = entityType;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, EntityTypeLiteralStateObject.class);
         }
@@ -3927,6 +3977,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.funcItems    = funcItems;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, FunctionExpressionStateObject.class);
 
@@ -3961,6 +4012,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.groupByItems = groupByItems;
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             assertInstance(stateObject, GroupByClauseStateObject.class);
@@ -4023,6 +4075,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.identificationVariable = identificationVariable;
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             if (virtual && (stateObject == null)) {
@@ -4088,6 +4141,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.inItems        = inItems;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, InExpressionStateObject.class);
 
@@ -4121,6 +4175,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.inputParameter = inputParameter;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, InputParameterStateObject.class);
 
@@ -4160,6 +4215,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
                    joinType == LEFT_OUTER_JOIN_FETCH;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, JoinStateObject.class);
 
@@ -4203,6 +4259,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.queryStatement = queryStatement;
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             JPQLQueryStateObject jpqlQueryStateObject = (JPQLQueryStateObject) stateObject;
@@ -4243,6 +4300,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.keyword = keyword;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, KeywordExpressionStateObject.class);
         }
@@ -4289,6 +4347,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.escapeCharacter  = escapeCharacter;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, LikeExpressionStateObject.class);
 
@@ -4452,6 +4511,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.stateObject = stateObject;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, NotExpressionStateObject.class);
 
@@ -4484,6 +4544,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.expression = expression;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, NullComparisonExpressionStateObject.class);
 
@@ -4518,6 +4579,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             assertFalse(items.iterator().hasNext());
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertNull(stateObject);
         }
@@ -4556,6 +4618,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.number = number;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, NumericLiteralStateObject.class);
         }
@@ -4592,6 +4655,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.orderByItems = orderByItems;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, OrderByClauseStateObject.class);
 
@@ -4622,6 +4686,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.orderByItem = orderByItem;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, OrderByItemStateObject.class);
 
@@ -4700,6 +4765,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.resultVariable    = resultVariable;
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             assertInstance(stateObject, ResultVariableStateObject.class);
@@ -4897,7 +4963,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
      * of the query. This interface also adds helper method for easily creating a parsed tree
      * representation of the actual query parsed tree.
      */
-    protected static interface StateObjectTester {
+    protected interface StateObjectTester {
 
         AdditionExpressionStateObjectTester add(StateObjectTester expression);
         AndExpressionStateObjectTester and(StateObjectTester expression);
@@ -4912,7 +4978,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
         EmptyCollectionComparisonExpressionStateObjectTester isNotEmpty();
 
         /**
-         * Determines whether this tester represents the {@link NullExpression}.
+         * Determines whether this tester represents the {@link org.eclipse.persistence.jpa.jpql.parser.NullExpression}.
          *
          * @return <code>true</code> if this tester represents a <code>null</code> object; false
          * otherwise
@@ -4958,6 +5024,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             }
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, StringLiteralStateObject.class);
 
@@ -5060,6 +5127,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.collectionValuedPathExpression = collectionValuedPathExpression;
         }
 
+        @Override
         public void test(StateObject stateObject) {
 
             assertTrue(stateObject.isDecorated());
@@ -5171,6 +5239,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.unknownText = unknownText;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, UnknownExpressionStateObject.class);
         }
@@ -5194,6 +5263,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.rangeVariableDeclaration = rangeVariableDeclaration;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, UpdateClauseStateObject.class);
 
@@ -5231,6 +5301,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.newValue = newValue;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, UpdateItemStateObject.class);
 
@@ -5266,6 +5337,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.whereClause  = whereClause;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, UpdateStatementStateObject.class);
 
@@ -5333,6 +5405,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
             this.whenExpression = whenExpression;
         }
 
+        @Override
         public void test(StateObject stateObject) {
             assertInstance(stateObject, WhenClauseStateObject.class);
 

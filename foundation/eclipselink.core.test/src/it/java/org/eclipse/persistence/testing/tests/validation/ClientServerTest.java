@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -48,6 +49,7 @@ public class ClientServerTest extends AutoVerifyTestCase {
         setDescription("This test spawns clients and releases the client sessions many times" + " to ensure that too many connections are not being disconnected.");
     }
 
+    @Override
     public void reset() throws Exception {
         try {
             for (int i = 0; i < numberOfClients; i++) {
@@ -66,6 +68,7 @@ public class ClientServerTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     public void setup() throws Exception {
         try {
             this.login = (DatabaseLogin)getSession().getLogin().clone();
@@ -84,6 +87,7 @@ public class ClientServerTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     public void test() {
         try {
 
@@ -109,13 +113,14 @@ public class ClientServerTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     public void verify() {
         try {
             int counter = 0;
             ConnectionPool pool = server.serverSession.getConnectionPools().get("default");
-            List connections = pool.getConnectionsAvailable();
-            for (Iterator iterator = connections.iterator(); iterator.hasNext(); ) {
-                if (((DatabaseAccessor)iterator.next()).isConnected()) {
+            List<Accessor> connections = pool.getConnectionsAvailable();
+            for (Iterator<Accessor> iterator = connections.iterator(); iterator.hasNext(); ) {
+                if (iterator.next().isConnected()) {
                     counter = counter + 1;
                 }
             }

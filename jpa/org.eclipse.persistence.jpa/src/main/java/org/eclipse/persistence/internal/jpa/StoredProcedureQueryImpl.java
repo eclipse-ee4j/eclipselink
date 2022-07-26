@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,13 +57,12 @@ import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.TemporalType;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
+import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.DataReadQuery;
@@ -126,7 +125,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             executeCall.matchFieldOrder(resultSet, accessor, session);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
-            List result =  new Vector();
+            List<AbstractRecord> result =  new Vector<>();
             while (resultSet.next()) {
                 result.add(accessor.fetchRow(executeCall.getFields(), executeCall.getFieldsArray(), resultSet, metaData, session));
             }
@@ -212,7 +211,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Build a ReadAllQuery from a class and stored procedure call.
      */
-    public static DatabaseQuery buildStoredProcedureQuery(Class resultClass, StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildStoredProcedureQuery(Class<?> resultClass, StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         DatabaseQuery query = new ReadAllQuery(resultClass);
         query.setCall(call);
         query.setIsUserDefined(true);
@@ -430,16 +429,16 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             int index = 0;
 
             for (Object parameter : getCall().getParameters()) {
-                Integer parameterType = getCall().getParameterTypes().get(index);
+                ParameterType parameterType = getCall().getParameterTypes().get(index);
                 String argumentName = getCall().getProcedureArgumentNames().get(index);
 
                 DatabaseField field = null;
 
-                if (parameterType == getCall().INOUT) {
+                if (parameterType == ParameterType.INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
-                } else if (parameterType == getCall().IN) {
+                } else if (parameterType == ParameterType.IN) {
                     field = (DatabaseField) parameter;
-                } else if (parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
+                } else if (parameterType == ParameterType.OUT || parameterType == ParameterType.OUT_CURSOR) {
                     if (parameter instanceof OutputParameterForCallableStatement) {
                         field = ((OutputParameterForCallableStatement) parameter).getOutputField();
                     } else {
@@ -670,9 +669,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                     }
 
                     if (results.size() > 1) {
-                        throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", (Object[]) null));
+                        throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", null));
                     } else if (results.isEmpty()) {
-                        throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", (Object[]) null));
+                        throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
                     }
 
                     // TODO: if hasMoreResults is true, we 'could' and maybe should throw an exception here.
@@ -793,6 +792,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @return the same query instance
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public StoredProcedureQuery registerStoredProcedureParameter(int position, Class type, ParameterMode mode) {
         entityManager.verifyOpenWithSetRollbackOnly();
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
@@ -825,6 +825,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @return the same query instance
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public StoredProcedureQuery registerStoredProcedureParameter(String parameterName, Class type, ParameterMode mode) {
         entityManager.verifyOpenWithSetRollbackOnly();
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
@@ -898,7 +899,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Set the lock mode type to be used for the query execution.
      *
-     * @param lockMode
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
      */
@@ -910,7 +910,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Set the maximum number of results to retrieve.
      *
-     * @param maxResult
      * @return the same query instance
      */
     @Override
@@ -921,9 +920,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Calendar to a positional parameter.
      *
-     * @param position
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if position does not correspond to a
      * positional parameter of the query or if the value argument is of
@@ -938,9 +934,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Date to a positional parameter.
      *
-     * @param position
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if position does not correspond to a
      * positional parameter of the query or if the value argument is of
@@ -955,8 +948,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an argument to a positional parameter.
      *
-     * @param position
-     * @param value
      * @return the same query instance
      * @throws IllegalArgumentException if position does not correspond to a
      * positional parameter of the query or if the argument is of incorrect type
@@ -976,9 +967,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Calendar to a Parameter object.
      *
-     * @param param
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter does not correspond to
      * a parameter of the query
@@ -1003,9 +991,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Date to a Parameter object.
      *
-     * @param param
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter does not correspond to
      * a parameter of the query
@@ -1030,8 +1015,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind the value of a Parameter object.
      *
-     * @param param
-     * @param value
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter does not correspond to
      * a parameter of the query
@@ -1056,9 +1039,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Calendar to a named parameter.
      *
-     * @param name
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter name does not
      * correspond to a parameter of the query or if the value argument is of
@@ -1073,9 +1053,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an instance of java.util.Date to a named parameter.
      *
-     * @param name
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter name does not
      * correspond to a parameter of the query or if the value argument is of
@@ -1090,8 +1067,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Bind an argument to a named parameter.
      *
-     * @param name
-     * @param value
      * @return the same query instance
      * @throws IllegalArgumentException if the parameter name does not
      * correspond to a parameter of the query or if the argument is of incorrect
@@ -1121,7 +1096,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     @Override
     protected void setParameterInternal(String name, Object value, boolean isIndex) {
-        Parameter parameter = this.getInternalParameters().get(name);
+        Parameter<?> parameter = this.getInternalParameters().get(name);
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
         if (parameter == null) {
             if (isIndex) {

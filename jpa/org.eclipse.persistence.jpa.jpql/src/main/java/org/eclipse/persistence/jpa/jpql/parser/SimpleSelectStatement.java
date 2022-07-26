@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * <div><b>BNFL</b> <code>subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause]</code><p></div>
+ * <div><b>BNFL</b> <code>subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause]</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -33,41 +33,26 @@ public final class SimpleSelectStatement extends AbstractSelectStatement {
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected SimpleFromClause buildFromClause() {
         return new SimpleFromClause(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected SimpleSelectClause buildSelectClause() {
         return new SimpleSelectClause(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(SubqueryBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldManageSpaceAfterClause() {
         return false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class SQLResultSetMapping implements Serializable{
      * Defaulting constructor. Will set the name to the result class name
      * and add an EntityResult for the result class.
      */
-    public SQLResultSetMapping(Class resultClass) {
+    public SQLResultSetMapping(Class<?> resultClass) {
         this.name = resultClass.getName();
         this.addResult(new EntityResult(resultClass));
     }
@@ -67,7 +67,6 @@ public class SQLResultSetMapping implements Serializable{
      * Convert all the class-name-based settings in this SQLResultSetMapping to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Iterator<SQLResult> iterator = getResults().iterator();

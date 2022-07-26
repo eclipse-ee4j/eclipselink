@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,8 +41,8 @@ public class MainThread implements Runnable {
 
     public MainThread(SeContainer container, EntityManagerFactory emf, EntityManager em) {
         this.container = container;
-        this.emf = emf;
-        this.em = em;
+        MainThread.emf = emf;
+        MainThread.em = em;
         eventProducer = container.select(EventProducer.class).get();
         queryMaster = em.createNamedQuery("MasterEntity.findById", CacheDeadLockDetectionMaster.class);
         queryMaster.setParameter("id", ID);
@@ -50,6 +50,7 @@ public class MainThread implements Runnable {
         queryDetail.setParameter("id", ID);
     }
 
+    @Override
     public void run() {
         CacheDeadLockDetectionMaster resultsMaster = queryMaster.getSingleResult();
         CacheDeadLockDetectionDetail resultsDetail = queryDetail.getSingleResult();

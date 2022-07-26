@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMapping;
@@ -53,7 +54,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * Default constructor.
      */
-    public AbstractCompositeCollectionMapping() {
+    protected AbstractCompositeCollectionMapping() {
         super();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
     }
@@ -291,7 +292,6 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -329,7 +329,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * with client-side objects.
      */
     @Override
-    protected void fixAttributeValue(Object attributeValue, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    protected void fixAttributeValue(Object attributeValue, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         if (attributeValue == null) {
             return;
         }
@@ -582,7 +582,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
     @Override
-    public void useCollectionClass(Class concreteContainerClass) {
+    public void useCollectionClass(Class<?> concreteContainerClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
     }
 
@@ -608,7 +608,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * <p>The referenceClass must be set before calling this method.
      */
     @Override
-    public void useMapClass(Class concreteContainerClass, String methodName) {
+    public void useMapClass(Class<?> concreteContainerClass, String methodName) {
         // the reference class has to be specified before coming here
         if (this.getReferenceClassName() == null) {
             throw DescriptorException.referenceClassNotSpecified(this);
@@ -681,7 +681,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
 
             ClassDescriptor descriptor = this.getReferenceDescriptor();
             if (descriptor.hasInheritance()) {
-                Class newElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+                Class<?> newElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
                 descriptor = this.getReferenceDescriptor(newElementClass, executionSession);
             }
 

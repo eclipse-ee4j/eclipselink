@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
         this.shouldUseEmulatedDB = false;
     }
 
+    @Override
     public String getName() {
         String name = super.getName();
         if (shouldCache) {
@@ -92,6 +93,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
     /**
      * Configure parameterized SQL.
      */
+    @Override
     public void setup() {
         if (shouldUseParameterizedSQL()) {
             getSession().getLogin().cacheAllStatements();
@@ -158,7 +160,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
         // Load sequence query.
         rows = new Vector();
         record = new DatabaseRecord();
-        record.put("NEXTVAL", new Long(12345));
+        record.put("NEXTVAL", Long.valueOf(12345));
         rows.add(record);
         connection.putRows("SELECT EMP_SEQ.NEXTVAL FROM DUAL", rows);
         connection.putRows("SELECT ADDRESS_SEQ.NEXTVAL FROM DUAL", rows);*/
@@ -169,6 +171,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
     /**
      * Clear cache.
      */
+    @Override
     public void test() throws Exception {
         if (!shouldCache()) {
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -178,6 +181,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
     /**
      * Reset parameterized SQL.
      */
+    @Override
     public void reset() {
         if (shouldUseParameterizedSQL()) {
             getSession().getLogin().dontCacheAllStatements();

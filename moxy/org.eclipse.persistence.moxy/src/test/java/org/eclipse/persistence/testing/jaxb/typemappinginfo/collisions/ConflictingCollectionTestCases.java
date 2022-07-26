@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import java.util.List;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
@@ -103,6 +104,7 @@ public class ConflictingCollectionTestCases  extends TypeMappingInfoWithJSONTest
     }
 
 
+    @Override
     protected Object getControlObject() {
 
         Collection<Object> objects = new ArrayList<Object>();
@@ -118,6 +120,7 @@ public class ConflictingCollectionTestCases  extends TypeMappingInfoWithJSONTest
         return jaxbElement;
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingCollections.xsd");
 
@@ -132,7 +135,7 @@ public class ConflictingCollectionTestCases  extends TypeMappingInfoWithJSONTest
     }
 
     public void testDescriptorsSize(){
-        List descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
+        List<ClassDescriptor> descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
         assertEquals(1, descriptors.size());
     }
 

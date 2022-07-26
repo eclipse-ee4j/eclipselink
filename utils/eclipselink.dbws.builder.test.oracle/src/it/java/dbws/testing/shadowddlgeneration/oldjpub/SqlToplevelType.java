@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,10 +40,12 @@ import static dbws.testing.shadowddlgeneration.oldjpub.Util.POSITION;
 
 public class SqlToplevelType extends SqlTypeWithMethods {
 
+    @Override
     public boolean isPackage() {
         return true;
     }
 
+    @Override
     public boolean isTopLevel() {
         return true;
     }
@@ -53,10 +55,12 @@ public class SqlToplevelType extends SqlTypeWithMethods {
         super(sqlName, OracleTypes.PACKAGE, true, parentType, methodFilter, reflector);
     }
 
+    @Override
     protected List<FieldInfo> getFieldInfo() {
         return null;
     }
 
+    @Override
     protected MethodInfo[] getMethodInfo(String schema, String name) throws SQLException {
         /*
          * POSITION of Nth argument is N SEQUENCE of Nth argument is >= N POSITION of function
@@ -84,7 +88,7 @@ public class SqlToplevelType extends SqlTypeWithMethods {
         names.add(Util.PACKAGE_NAME);
         values.add(null);
         names.add(Util.DATA_LEVEL);
-        values.add(Integer.valueOf(0));
+        values.add(0);
         if (m_methodFilter != null) {
             List<String> methodNames = m_methodFilter.getMethodNames();
             if (methodNames != null) {
@@ -100,32 +104,34 @@ public class SqlToplevelType extends SqlTypeWithMethods {
         return minfo;
     }
 
+    @Override
     protected ResultInfo getResultInfo(String schema, String name, String method, String methodNo)
         throws SQLException {
         Iterator<ViewRow> iter = null;
         if (methodNo == null) {
             iter = m_viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{OWNER,
                 PACKAGE_NAME, PACKAGE_NAME, OBJECT_NAME, DATA_LEVEL,
-                POSITION}, new Object[]{schema, method, null, method, Integer.valueOf(0),
-                Integer.valueOf(0)}, new String[0]);
+                POSITION}, new Object[]{schema, method, null, method, 0,
+                    0}, new String[0]);
 
         }
         else {
             iter = m_viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{OWNER,
                 PACKAGE_NAME, PACKAGE_NAME, OBJECT_NAME, OVERLOAD,
                 DATA_LEVEL, POSITION}, new Object[]{schema, method, null, method,
-                methodNo, Integer.valueOf(0), Integer.valueOf(0)}, new String[0]);
+                methodNo, 0, 0}, new String[0]);
         }
         return ResultInfo.getResultInfo(iter);
     }
 
+    @Override
     protected ParamInfo[] getParamInfo(String schema, String name, String method, String methodNo)
         throws SQLException {
         Iterator<ViewRow> iter = null;
         if (methodNo == null) {
             iter = m_viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{OWNER,
                 PACKAGE_NAME, PACKAGE_NAME, OBJECT_NAME, DATA_LEVEL,
-                ARGUMENT_NAME}, new Object[]{schema, method, null, method, Integer.valueOf(0),
+                ARGUMENT_NAME}, new Object[]{schema, method, null, method, 0,
                 NOT_NULL}, new String[]{POSITION});
 
         }
@@ -133,7 +139,7 @@ public class SqlToplevelType extends SqlTypeWithMethods {
             iter = m_viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{OWNER,
                 PACKAGE_NAME, PACKAGE_NAME, OBJECT_NAME, OVERLOAD,
                 DATA_LEVEL, ARGUMENT_NAME}, new Object[]{schema, method, null, method,
-                methodNo, Integer.valueOf(0), NOT_NULL}, new String[]{POSITION});
+                methodNo, 0, NOT_NULL}, new String[]{POSITION});
         }
         return ParamInfo.getParamInfo(iter);
     }

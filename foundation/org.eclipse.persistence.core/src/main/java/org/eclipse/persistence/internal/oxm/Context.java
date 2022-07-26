@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -129,7 +129,7 @@ public abstract class Context<
          * may be mapped by more that one of the projects used to create the
          * Context, this method will return the first match.
          */
-        protected ABSTRACT_SESSION getSession(Class clazz) {
+        protected ABSTRACT_SESSION getSession(Class<?> clazz) {
             if (null == clazz) {
                 return null;
             }
@@ -266,7 +266,7 @@ public abstract class Context<
 
     }
 
-    private class XPathQueryResult {
+    private static class XPathQueryResult {
         /*
          * Mapping corresponding to the XPath query
          */
@@ -456,7 +456,7 @@ public abstract class Context<
      * may be mapped by more that one of the projects used to create the
      * Context, this method will return the first match.
      */
-    public ABSTRACT_SESSION getSession(Class clazz) {
+    public ABSTRACT_SESSION getSession(Class<?> clazz) {
         return contextState.getSession(clazz);
     }
 
@@ -631,8 +631,8 @@ public abstract class Context<
      * <p>Set values in the object model based on the corresponding document.  The following pairings are equivalent:</p>
      *
      * <i>Set the Customer's ID</i>
-     * <pre> context.setValueByXPath(customer, "@id", null, new Integer(123));
-     * customer.setId(new Integer(123));</pre>
+     * <pre> context.setValueByXPath(customer, "@id", null, Integer.valueOf(123));
+     * customer.setId(Integer.valueOf(123));</pre>
      *
      * <i>Set the Customer's Name</i>
      * <pre> context.setValueByXPath(customer, "ns:personal-info/ns:name/text()", aNamespaceResolver, "Jane Doe");

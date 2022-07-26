@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,7 @@ import java.util.Map;
 
 import jakarta.xml.bind.JAXBException;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jaxb.*;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Address;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Client;
@@ -41,11 +38,12 @@ public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root.class });
+        setClasses(new Class<?>[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root.class });
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "value");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
     }
 
+    @Override
     protected Object getControlObject() {
           Address address1 = new Address("a100", "123 Some Street", "shipping");
           Address address2 = new Address("a101", "66 Dead End Rd.", "home");
@@ -82,11 +80,12 @@ public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
           return ctrlRoot;
     }
 
+    @Override
     public Map getProperties(){
         Map<String, Object> props = new HashMap<String, Object>();
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root-oxm.xml");
 
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputStream);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, inputStream);
         return props;
     }
 
@@ -106,8 +105,8 @@ public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
         try {
             Map<String, Object> props = new HashMap<String, Object>();
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root-invalid-oxm.xml");
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputStream);
-            JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root.class }, props);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, inputStream);
+            JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference.Root.class }, props);
         } catch (JAXBException e1) {
             return;
         }

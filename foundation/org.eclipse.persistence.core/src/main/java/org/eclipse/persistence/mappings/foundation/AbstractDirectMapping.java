@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,11 +69,11 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 public abstract class AbstractDirectMapping extends AbstractColumnMapping implements MapKeyMapping {
 
     /** To specify the conversion type */
-    protected transient Class attributeClassification;
+    protected transient Class<?> attributeClassification;
     protected String attributeClassificationName;
 
     /** PERF: Also store object class of attribute in case of primitive. */
-    protected transient Class attributeObjectClassification;
+    protected transient Class<?> attributeObjectClassification;
 
     /** Support specification of the value to use for null. */
     protected transient Object nullValue;
@@ -95,7 +95,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     /**
      * Default constructor.
      */
-    public AbstractDirectMapping() {
+    protected AbstractDirectMapping() {
         super();
     }
 
@@ -150,7 +150,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (isMutable == null) {
             return false;
         }
-        return isMutable.booleanValue();
+        return isMutable;
     }
 
     /**
@@ -459,11 +459,11 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         super.convertClassNamesToClasses(classLoader);
 
         if (getAttributeClassificationName() != null) {
-            Class attributeClass = null;
+            Class<?> attributeClass = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        attributeClass = AccessController.doPrivileged(new PrivilegedClassForName(getAttributeClassificationName(), true, classLoader));
+                        attributeClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getAttributeClassificationName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getAttributeClassificationName(), exception.getException());
                     }
@@ -477,11 +477,11 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         }
 
         if (fieldClassificationClassName != null){
-            Class fieldClassification = null;
+            Class<?> fieldClassification = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        fieldClassification = AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationClassName, true, classLoader));
+                        fieldClassification = AccessController.doPrivileged(new PrivilegedClassForName<>(fieldClassificationClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationClassName, exception.getException());
                     }
@@ -593,7 +593,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * the instance variable value to that data type.
      */
     @Override
-    public Class getAttributeClassification() {
+    public Class<?> getAttributeClassification() {
         return attributeClassification;
     }
 
@@ -702,7 +702,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * This is used to convert the row value to a consistent Java value.
      */
     @Override
-    public Class getFieldClassification(DatabaseField fieldToClassify) {
+    public Class<?> getFieldClassification(DatabaseField fieldToClassify) {
         // PERF: This method is a major performance code point,
         // so has been micro optimized and uses direct variable access.
         if (fieldToClassify.type != null) {
@@ -723,7 +723,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * This can be used if field value differs from the object value,
      * has specific typing requirements such as usage of java.sql.Blob or NChar.
      */
-    public Class getFieldClassification() {
+    public Class<?> getFieldClassification() {
         if (getField() == null) {
             return null;
         }
@@ -737,7 +737,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * has specific typing requirements such as usage of java.sql.Blob or NChar.
      * This must be called after the field name has been set.
      */
-    public void setFieldClassification(Class fieldType) {
+    public void setFieldClassification(Class<?> fieldType) {
         getField().setType(fieldType);
     }
 
@@ -747,7 +747,6 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Used internally by JPA deployment.
      *
      * @see #setFieldClassification(Class fieldType)
-     * @param className
      */
     public void setFieldClassificationClassName(String className){
         this.fieldClassificationClassName = className;
@@ -790,7 +789,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (this.converter != null) {
             fieldValue = this.converter.convertObjectValueToDataValue(fieldValue, session);
         }
-        Class fieldClassification = this.field.type;
+        Class<?> fieldClassification = this.field.type;
         if (fieldClassification == null) {
             fieldClassification = getFieldClassification(this.field);
         }
@@ -884,11 +883,10 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     /**
      * INTERNAL:
      * Return the class this key mapping maps or the descriptor for it
-     * @return
      */
     @Override
-    public Class getMapKeyTargetType() {
-        Class aClass = getAttributeAccessor().getAttributeClass();
+    public Class<?> getMapKeyTargetType() {
+        Class<?> aClass = getAttributeAccessor().getAttributeClass();
         // 294765: check the attributeClassification when the MapKey annotation is not specified
         if (null == aClass) {
             aClass = getAttributeClassification();
@@ -954,7 +952,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             }
         }
 
-        Map nullValues = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().getDefaultNullValues();
+        Map<Class<?>, Object> nullValues = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().getDefaultNullValues();
         bypassDefaultNullValueCheck = (!this.attributeClassification.isPrimitive()) &&
                 ((nullValues == null) || (!nullValues.containsKey(this.attributeClassification)));
     }
@@ -1102,7 +1100,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
      * the instance variable value to that data type
      */
-    public void setAttributeClassification(Class attributeClassification) {
+    public void setAttributeClassification(Class<?> attributeClassification) {
         this.attributeClassification = attributeClassification;
     }
 
@@ -1362,5 +1360,13 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (isUpdatable() && ! isReadOnly()) {
             databaseRow.add(getField(), null);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Get fieldClassificationClassName. Value usually exist for fields with some kind of embedded converter like <code>@Lob</code> or <code>@Temporal</code>.
+     */
+    public String getFieldClassificationClassName() {
+        return this.fieldClassificationClassName;
     }
 }

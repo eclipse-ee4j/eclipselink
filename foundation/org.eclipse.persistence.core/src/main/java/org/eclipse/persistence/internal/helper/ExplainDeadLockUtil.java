@@ -1,27 +1,27 @@
-/*******************************************************************************
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
 package org.eclipse.persistence.internal.helper;
 
 import org.eclipse.persistence.internal.helper.type.CacheKeyToThreadRelationships;
 import org.eclipse.persistence.internal.helper.type.ConcurrencyManagerState;
 import org.eclipse.persistence.internal.helper.type.DeadLockComponent;
 import org.eclipse.persistence.internal.helper.type.IsBuildObjectCompleteOutcome;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
+import java.io.StringWriter;
 import java.util.*;
-
-import static java.lang.String.format;
 
 /**
  * The purpose of this class is to try explain the nature of a dead lock
@@ -101,7 +101,7 @@ public class ExplainDeadLockUtil {
         Map<Thread, DeadLockComponent> helperMap = new HashMap<>();
 
         // (c) start our correction loop
-        List<DeadLockComponent> deadLockAsSimpleList = new ArrayList<DeadLockComponent>();
+        List<DeadLockComponent> deadLockAsSimpleList = new ArrayList<>();
         while (currentElementToIterate != null) {
 
             // (d) In this chaing of DTOs we built during our recursion
@@ -532,13 +532,6 @@ public class ExplainDeadLockUtil {
      * Expand the recursion exploring the possibility that the reason the current thread cannot acquire the cache key is
      * because there are readers on the cache key.
      *
-     * @param concurrencyManagerState
-     * @param recursionMaxDepth
-     * @param currentRecursionDepth
-     * @param currentCandidateThreadPartOfTheDeadLock
-     * @param threadPartOfCurrentDeadLockExpansion
-     * @param threadsAlreadyExpandedInThePastThatWeDoNotWantToExpandAgain
-     * @param cacheKeyCurrentThreadWantsForWritingButCannotGet
      * @return NULL if dead lock not discovered. Otherwise dead lock component justifying the deadlock.
      */
     protected DeadLockComponent recursiveExplainPossibleDeadLockStep03Scenario02CurrentWriterVsOtherReader(
@@ -600,13 +593,6 @@ public class ExplainDeadLockUtil {
      * basket of writers or in our basket of readers, we are stuck.
      *
      *
-     * @param concurrencyManagerStateDto
-     * @param recursionMaxDepth
-     * @param currentRecursionDepth
-     * @param currentCandidateThreadPartOfTheDeadLock
-     * @param threadPartOfCurrentDeadLockExpansion
-     * @param threadsAlreadyExpandedInThePastThatWeDoNotWantToExpandAgain
-     * @param cacheKeyCurrentThreadWantsForWritingButCannotGet
      * @return NULL if looking at the active thread of the wanted cache key does not bare any fruits, otherwise the dead
      *         lock component object are returned.
      */
@@ -629,14 +615,6 @@ public class ExplainDeadLockUtil {
      * but in this case our candidate thread is trying to get the cache key with the purpose of READING and not for
      * writing.
      *
-     * @param concurrencyManagerStateDto
-     * @param recursionMaxDepth
-     * @param currentRecursionDepth
-     * @param currentCandidateThreadPartOfTheDeadLock
-     * @param threadPartOfCurrentDeadLockExpansion
-     * @param threadsAlreadyExpandedInThePastThatWeDoNotWantToExpandAgain
-     * @param cacheKeyCurrentThreadWantsForWritingButCannotGet
-     * @return
      */
     protected DeadLockComponent recursiveExplainPossibleDeadLockStep05Scenario02CurrentReaderVsCacheKeyActiveThread(
             final ConcurrencyManagerState concurrencyManagerStateDto,
@@ -735,11 +713,13 @@ public class ExplainDeadLockUtil {
                 // this cache key has an active thread that seems to not be tracked by our
                 // ConcurrencyManagerState
                 //
-                AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, "explain_dead_lock_util_current_thread_blocked_active_thread_warning",
+                StringWriter writer = new StringWriter();
+                writer.write(TraceLocalization.buildMessage("explain_dead_lock_util_current_thread_blocked_active_thread_warning",
                         new Object[] {nextCandidateThreadPartOfTheDeadLock.getName(),
                         currentCandidateThreadPartOfTheDeadLock.getName(),
                         ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(
-                        cacheKeyThreadWantsToAcquireButCannotGet)});
+                        cacheKeyThreadWantsToAcquireButCannotGet)}));
+                AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
                 return DEAD_LOCK_NOT_FOUND;
             } else {
                 // The active thread on the cache key is needing some resources we are tracing
@@ -779,12 +759,6 @@ public class ExplainDeadLockUtil {
      * as it wanted during object building and hda to defer making some parts of the object. The thread is stuck because
      * the parts of the object it could not build are apparently not finished either.
      *
-     * @param concurrencyManagerStateDto
-     * @param recursionMaxDepth
-     * @param currentRecursionDepth
-     * @param currentCandidateThreadPartOfTheDeadLock
-     * @param threadPartOfCurrentDeadLockExpansion
-     * @param threadsAlreadyExpandedInThePastThatWeDoNotWantToExpandAgain
      * @return NULL if we are able to explain a dead lock via expanding this the current candidate thread Otherwiser a
      *         DTO component that explains the the dad lock
      */
@@ -798,15 +772,16 @@ public class ExplainDeadLockUtil {
         // is not able to make progress.
         // To understand why we do this one would need to have a good look at the concurrenyc manager implementation
         // at the logic that of the logic of the releaseDeferredLock method
-        IsBuildObjectCompleteOutcome result = isBuildObjectOnThreadComplete(concurrencyManagerStateDto, currentCandidateThreadPartOfTheDeadLock,  new IdentityHashMap());
+        IsBuildObjectCompleteOutcome result = isBuildObjectOnThreadComplete(concurrencyManagerStateDto, currentCandidateThreadPartOfTheDeadLock,  new IdentityHashMap<>());
 
         // (b) Our expectation is that the result of the step above is always different than null
         // after all if this candidate thread is stuck trying to release deferred locks there must be an explanation for it not making progress
         // the only case where it would make sense for this to be null is if the current candidate is actually making progress and
         // was stuck for only a short period
         if(result == null) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, "explain_dead_lock_util_thread_stuck_deferred_locks",
-                    new Object[] {currentCandidateThreadPartOfTheDeadLock.getName()});
+            StringWriter writer = new StringWriter();
+            writer.write(TraceLocalization.buildMessage("explain_dead_lock_util_thread_stuck_deferred_locks", new Object[] {currentCandidateThreadPartOfTheDeadLock.getName()}));
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
             return DEAD_LOCK_NOT_FOUND;
         }
 
@@ -844,14 +819,6 @@ public class ExplainDeadLockUtil {
      * because the cache key is being owned by somebody else. So we need to see what the writer of this cache key is
      * doing.
      *
-     * @param concurrencyManagerStateDto
-     * @param recursionMaxDepth
-     * @param currentRecursionDepth
-     * @param currentCandidateThreadPartOfTheDeadLock
-     * @param threadPartOfCurrentDeadLockExpansion
-     * @param threadsAlreadyExpandedInThePastThatWeDoNotWantToExpandAgain
-     * @param cacheKeyCurrentThreadWantsForReadingButCannotGet
-     * @return
      */
     protected DeadLockComponent recursiveExplainPossibleDeadLockStep05ExpandBasedOnCacheKeyWantedForReading(
             final ConcurrencyManagerState concurrencyManagerStateDto,
@@ -899,7 +866,7 @@ public class ExplainDeadLockUtil {
     /**
      * This method is nothing more than copy paste code from the algorithm
      *
-     * {@link ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map)}
+     * {@link ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map, List, boolean)}
      *
      * We re-write this code to instead of returning true/false return an actual DTO object that can allow our dead lock
      * explanation algorithm to identify the next thread to expand to explain the dead lock.
@@ -916,7 +883,7 @@ public class ExplainDeadLockUtil {
      */
     public static IsBuildObjectCompleteOutcome isBuildObjectOnThreadComplete(
             final ConcurrencyManagerState concurrencyManagerStateDto, Thread thread,
-            Map recursiveSet) {
+            Map<Thread, Thread> recursiveSet) {
         if (recursiveSet.containsKey(thread)) {
             // if the thread we are consider as we go deeper in the recursion is thread in an upper stack of the
             // recursion
@@ -935,9 +902,9 @@ public class ExplainDeadLockUtil {
             return IsBuildObjectCompleteOutcome.BUILD_OBJECT_IS_COMPLETE_TRUE;
         }
 
-        Vector deferredLocks = lockManager.getDeferredLocks();
-        for (Enumeration deferredLocksEnum = deferredLocks.elements(); deferredLocksEnum.hasMoreElements();) {
-            ConcurrencyManager deferedLock = (ConcurrencyManager) deferredLocksEnum.nextElement();
+        Vector<ConcurrencyManager> deferredLocks = lockManager.getDeferredLocks();
+        for (Enumeration<ConcurrencyManager> deferredLocksEnum = deferredLocks.elements(); deferredLocksEnum.hasMoreElements();) {
+            ConcurrencyManager deferedLock = deferredLocksEnum.nextElement();
             Thread activeThread = null;
             if (deferedLock.isAcquired()) {
                 activeThread = deferedLock.getActiveThread();
@@ -1025,8 +992,6 @@ public class ExplainDeadLockUtil {
 
     /**
      * Create a deadlock component for a thread known to be stuck trying to release deferred locks.
-     *
-     * @param nextThreadPartOfDeadLock
      *
      * @param nextThreadPartOfDeadLock
      *            the thread that was participating in the dead lock as we went deeper in the recursion.

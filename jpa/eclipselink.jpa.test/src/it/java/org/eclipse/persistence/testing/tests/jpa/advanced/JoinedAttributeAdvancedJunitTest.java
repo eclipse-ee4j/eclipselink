@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,13 +36,13 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.queries.ReadAllQuery;
 
 public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
 
-    static protected Class[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
+    static protected Class<?>[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
     static protected Vector[] objectVectors = {null, null, null, null};
 
     static protected EmployeePopulator populator = new EmployeePopulator();
@@ -178,6 +178,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         clearCache();
     }
 
+    @Override
     public void tearDown() {
         dbSessionClearCache();
         dbSession = null;
@@ -602,16 +603,16 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("lastName").equal("Way").or(raq.getExpressionBuilder().get("lastName").equal("Jones")));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
         emp.getPhoneNumbers();
-        for (Iterator iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
-            ((PhoneNumber)iterator.next()).getOwner();
+        for (Iterator<PhoneNumber> iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
+            iterator.next().getOwner();
         }
 
         raq = new ReadAllQuery(Address.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            ((Employee)iterator.next()).getAddress();
+        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
+            iterator.next().getAddress();
         }
 
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -667,16 +668,16 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         raq.setSelectionCriteria(raq.getExpressionBuilder().notEmpty("phoneNumbers"));
         Employee emp = (Employee)((Vector)getDbSession().executeQuery(raq)).firstElement();
         emp.getPhoneNumbers();
-        for (Iterator iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
-            ((PhoneNumber)iterator.next()).getOwner();
+        for (Iterator<PhoneNumber> iterator = emp.getPhoneNumbers().iterator(); iterator.hasNext();){
+            iterator.next().getOwner();
         }
 
         raq = new ReadAllQuery(Address.class);
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            Employee addrEmp = (Employee)iterator.next();
+        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
+            Employee addrEmp = iterator.next();
             addrEmp.getAddress();
             addrEmp.getPhoneNumbers().size(); // as the report query will join in all phones to all emps, make sure we can compare.
         }
@@ -748,8 +749,8 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            ((Employee)iterator.next()).getAddress();
+        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
+            iterator.next().getAddress();
         }
 
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -899,8 +900,8 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         raq.setSelectionCriteria(raq.getExpressionBuilder().get("city").like("%ttawa%"));
         Address addr = (Address)((Vector)getDbSession().executeQuery(raq)).firstElement();
         addr.getEmployees();
-        for (Iterator iterator = addr.getEmployees().iterator(); iterator.hasNext();){
-            ((Employee)iterator.next()).getAddress();
+        for (Iterator<Employee> iterator = addr.getEmployees().iterator(); iterator.hasNext();){
+            iterator.next().getAddress();
         }
 
         getDbSession().getIdentityMapAccessor().initializeAllIdentityMaps();

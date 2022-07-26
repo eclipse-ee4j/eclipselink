@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,10 +54,10 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  * @since Oracle TopLink 11<i>g</i> Release 1 (11.1.1)
  */
 public class IsSetNullPolicy extends AbstractNullPolicy {
-    private static final Class[] PARAMETER_TYPES = {};
+    private static final Class<?>[] PARAMETER_TYPES = {};
     private static final Object[] PARAMETERS = {};
     private String isSetMethodName;
-    private Class[] isSetParameterTypes = PARAMETER_TYPES;
+    private Class<?>[] isSetParameterTypes = PARAMETER_TYPES;
     private Object[] isSetParameters = PARAMETERS;
     private Method isSetMethod;
 
@@ -73,7 +73,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      * Specific Constructor to set the name for checking the isSet state of the mapping
-     * @param anIsSetMethodName
      */
     public IsSetNullPolicy(String anIsSetMethodName) {
         this();
@@ -82,10 +81,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      * Specific Constructor to set both the Marshal enum and the Unmarshal flags.
-     * @param anIsSetMethodName
-     * @param bIsNullRepresentedByEmptyNode
-     * @param bIsNullRepresentedByXsiNil
-     * @param aMarshalNullRepresentation
      */
     public IsSetNullPolicy(String anIsSetMethodName, //
             boolean bIsNullRepresentedByEmptyNode, boolean bIsNullRepresentedByXsiNil, //
@@ -162,13 +157,12 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     /**
      * INTERNAL:
      * Indicates if a null value has been set or not.
-     * @param object
      * @return boolean (isSet status)
      */
     private boolean isSet(Object object) {
         try {
-            Boolean isSet = (Boolean) PrivilegedAccessHelper.invokeMethod(getIsSetMethod(object.getClass()), object, isSetParameters);
-            return isSet.booleanValue();
+            Boolean isSet = PrivilegedAccessHelper.invokeMethod(getIsSetMethod(object.getClass()), object, isSetParameters);
+            return isSet;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -176,7 +170,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      *
-     * @return
      */
     public String getIsSetMethodName() {
         return isSetMethodName;
@@ -184,7 +177,6 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      *
-     * @param anIsSetMethodName
      */
     public void setIsSetMethodName(String anIsSetMethodName) {
         isSetMethodName = anIsSetMethodName;
@@ -192,23 +184,20 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      *
-     * @return
      */
-    public Class[] getIsSetParameterTypes() {
+    public Class<?>[] getIsSetParameterTypes() {
         return isSetParameterTypes;
     }
 
     /**
      *
-     * @param parameterTypes
      */
-    public void setIsSetParameterTypes(Class[] parameterTypes) {
+    public void setIsSetParameterTypes(Class<?>[] parameterTypes) {
         isSetParameterTypes = parameterTypes;
     }
 
     /**
      *
-     * @return
      */
     public Object[] getIsSetParameters() {
         return isSetParameters;
@@ -216,13 +205,12 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      *
-     * @param parameters
      */
     public void setIsSetParameters(Object[] parameters) {
         isSetParameters = parameters;
     }
 
-    private Method getIsSetMethod(Class aClass) throws NoSuchMethodException {
+    private Method getIsSetMethod(Class<?> aClass) throws NoSuchMethodException {
         if(null == isSetMethod) {
              isSetMethod = PrivilegedAccessHelper.getPublicMethod(aClass, getIsSetMethodName(), getIsSetParameterTypes(), false);
         }

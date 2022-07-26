@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -179,8 +179,8 @@ public class TestComplexJPQL {
 
     /**
      * Tests EclipseLink's parsing of a LEFT OUTER JOIN when the condition has no matches. 
-     * EclipseLink should account for the NULL values in the right table.
-     * @see Bug 493804
+     * EclipseLink should account for the NULL values in the right table.<br>
+     * see Bug 493804
      */
     @Test
     public void testLeftOuterJoinWithNullResult() {

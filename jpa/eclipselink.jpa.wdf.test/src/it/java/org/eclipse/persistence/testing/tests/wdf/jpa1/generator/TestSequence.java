@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,7 +20,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.eclipse.persistence.platform.database.DerbyPlatform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
@@ -64,7 +64,7 @@ public class TestSequence extends JPA1Base {
             em.getTransaction().begin();
             final Animal firstDove = new Animal("dove ");
             em.persist(firstDove);
-            final int offset = firstDove.getId().intValue();
+            final int offset = firstDove.getId();
             for (int i = 1; i < 100; i++) {
                 final Animal dove = new Animal("dove " + i);
                 em.persist(dove);
@@ -101,14 +101,14 @@ public class TestSequence extends JPA1Base {
             final Element water = new Element("water");
             em.persist(tree); // id 1
             em2.persist(water); // id 4
-            Assert.assertEquals("wrong allocation", ((int) tree.getId() + 3), ((int) water.getId()));
+            Assert.assertEquals("wrong allocation", (tree.getId() + 3), ((int) water.getId()));
             final Plant flower = new Plant("flower");
             final Plant grass = new Plant("grass");
             final Plant bush = new Plant("bush");
             em.persist(flower); // id 2
             em.persist(grass); // id 3
             em.persist(bush); // id 7
-            Assert.assertEquals("wrong allocation", ((int) water.getId() + 3), ((int) bush.getId()));
+            Assert.assertEquals("wrong allocation", (water.getId() + 3), ((int) bush.getId()));
             em.getTransaction().commit();
             em2.getTransaction().commit();
         } finally {

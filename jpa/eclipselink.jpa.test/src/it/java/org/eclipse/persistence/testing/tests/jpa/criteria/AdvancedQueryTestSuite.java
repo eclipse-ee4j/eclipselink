@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
@@ -56,7 +56,7 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
  * <b>Purpose</b>: Test advanced JPA Query functionality.
  * <p>
  * <b>Description</b>: This tests query hints, caching and query optimization.
- * <p>
+ *
  */
 public class AdvancedQueryTestSuite extends JUnitTestCase {
 
@@ -72,12 +72,14 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
 
     // This method is run at the start of EVERY test case method.
 
+    @Override
     public void setUp() {
 
     }
 
     // This method is run at the end of EVERY test case method.
 
+    @Override
     public void tearDown() {
         clearCache();
     }
@@ -143,7 +145,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         try {
             // Load an employee into the cache.
             CriteriaBuilder qb = em.getCriteriaBuilder();
-            CriteriaQuery cq = qb.createQuery(Employee.class);
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
@@ -193,7 +195,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
             CriteriaQuery<Tuple> cq = qb.createQuery(Tuple.class);
-            Root from = cq.from(Employee.class);
+            Root<Employee> from = cq.from(Employee.class);
             cq.multiselect(from.get("id"), from.get("firstName"));
             cq.where(qb.and(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")), qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName"))));
             TypedQuery<Tuple> typedQuery = em.createQuery(cq);
@@ -424,7 +426,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         try {
             // Load an employee into the cache.
             CriteriaBuilder qb = em.getCriteriaBuilder();
-            CriteriaQuery cq = qb.createQuery(Employee.class);
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
             Employee employee = (Employee)result.get(0);
@@ -433,7 +435,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
             cq = qb.createQuery(Employee.class);
-            Root from = cq.from(Employee.class);
+            Root<Employee> from = cq.from(Employee.class);
             cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")));
             query = em.createQuery(cq);
             query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheByExactPrimaryKey);
@@ -463,7 +465,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         try {
             // Load an employee into the cache.
             CriteriaBuilder qb = em.getCriteriaBuilder();
-            CriteriaQuery cq = qb.createQuery(Employee.class);
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
             Employee employee = (Employee)result.get(result.size() - 1);
@@ -472,7 +474,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
             cq = qb.createQuery(Employee.class);
-            Root from = cq.from(Employee.class);
+            Root<Employee> from = cq.from(Employee.class);
             cq.where(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName")));
             query = em.createQuery(cq);
             query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheThenDatabase);
@@ -502,7 +504,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         try {
             // Load an employee into the cache.
             CriteriaBuilder qb = em.getCriteriaBuilder();
-            CriteriaQuery cq = qb.createQuery(Employee.class);
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
             Employee employee = (Employee)result.get(result.size() - 1);
@@ -511,7 +513,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
             cq = qb.createQuery(Employee.class);
-            Root from = cq.from(Employee.class);
+            Root<Employee> from = cq.from(Employee.class);
             cq.where(qb.equal(from.get("firstName"), qb.parameter(from.get("firstName").getModel().getBindableJavaType(), "firstName")));
             query = em.createQuery(cq);
             query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
@@ -539,7 +541,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         try {
             // Load an employee into the cache.
             CriteriaBuilder qb = em.getCriteriaBuilder();
-            CriteriaQuery cq = qb.createQuery(Employee.class);
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Query query = em.createQuery(cq);
             List result = query.getResultList();
             Employee employee = (Employee)result.get(result.size() - 1);
@@ -552,7 +554,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             em = createEntityManager();
             beginTransaction(em);
             cq = qb.createQuery(Employee.class);
-             Root from = cq.from(Employee.class);
+             Root<Employee> from = cq.from(Employee.class);
             cq.where(qb.equal(from.get("id"), qb.parameter(from.get("id").getModel().getBindableJavaType(), "id")));
             query = em.createQuery(cq);
             query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);

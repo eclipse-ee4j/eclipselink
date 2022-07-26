@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,6 @@ public class EntityResolverTestCases extends TestCase {
     /**
      * The main schema simply has a DOCTYPE definition that will trigger the resolveEntity method on the
      * internal SchemaResolver class
-     * @return
      */
     private String getSchema() {
         return "<?xml version='1.0' encoding='UTF-8'?>\n" + "<!DOCTYPE xs:schema PUBLIC \"-//W3C//DTD XMLSCHEMA 200102//EN\" \"SomeSchema.dtd\" []>\n"
@@ -52,7 +51,6 @@ public class EntityResolverTestCases extends TestCase {
     /**
      * The schema dtd simply has an ENTITY declaration that will trigger the resolveEntity method on the
      * internal SchemaResolver class
-     * @return
      */
     private String getSchemaDtd() {
         return "<!ENTITY % xs-datatypes PUBLIC 'somedatatypes' 'SomeDatatypes.dtd' >\n" + "%xs-datatypes;";
@@ -60,7 +58,6 @@ public class EntityResolverTestCases extends TestCase {
 
     /**
      * The datatype dtd simply has an ENTITY declaration that affects nothing
-     * @return
      */
     private String getDatatypesDtd() {
         return "<!ENTITY % simpleThings \"\">";
@@ -70,10 +67,12 @@ public class EntityResolverTestCases extends TestCase {
      * This resolver will handle entity resolution.
      */
     private class SchemaEntityResolver implements SchemaResolver {
+        @Override
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             return null;
         }
 
+        @Override
         public InputSource resolveEntity(String publicId, String systemId) {
             try {
                 if (systemId.endsWith("SomeSchema.dtd")) {

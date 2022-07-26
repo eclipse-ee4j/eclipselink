@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisi
 
 /**
  * This class is used to make sure the parent class {@link AbstractEclipseLinkExpressionVisitor}
- * implements all the methods defined on the interface {@link EclipseLinkExpressionVisitor}.
+ * implements all the methods defined on the interface {@link org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor}.
  *
  * @version 2.4
  * @since 2.4

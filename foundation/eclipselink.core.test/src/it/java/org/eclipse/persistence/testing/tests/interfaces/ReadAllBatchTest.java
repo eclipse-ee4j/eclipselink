@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,23 +21,26 @@ public class ReadAllBatchTest extends ReadAllTest {
     public Exception storedException;
     public int expectedExceptionCode;
 
-    public ReadAllBatchTest(Class aClass, int numberOfObjects) {
+    public ReadAllBatchTest(Class<?> aClass, int numberOfObjects) {
         super(aClass, numberOfObjects);
         setDescription("Test that the correct exception is thrown when a batch query across a variable 1:1 mapping is attempted. Maybe this will be supported someday.");
         storedException = null;
         expectedExceptionCode = org.eclipse.persistence.exceptions.QueryException.BATCH_READING_NOT_SUPPORTED;
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         storedException = null;
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         storedException = null;
     }
 
+    @Override
     public void test() {
         try {
             super.test();
@@ -46,6 +49,7 @@ public class ReadAllBatchTest extends ReadAllTest {
         }
     }
 
+    @Override
     public void verify() {
         if (storedException == null) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("NO EXCEPTION THROWN!!!  EXPECTING QueryException");

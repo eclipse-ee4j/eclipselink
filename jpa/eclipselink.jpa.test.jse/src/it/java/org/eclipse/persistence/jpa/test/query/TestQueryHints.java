@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2017, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,7 +41,6 @@ import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.PUPropertiesProvider;
-import org.eclipse.persistence.jpa.test.query.TestQueryProperties.PreparedStatementInvocationHandler;
 import org.eclipse.persistence.jpa.test.query.model.QueryEmployee;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.Connector;
@@ -217,7 +216,6 @@ public class TestQueryHints implements PUPropertiesProvider {
      * Test that setting the Query Hint: QueryHints.SCROLLABLE_CURSOR on a NamedQuery
      * does not cause subsequent Queries, created using the same name, to throw exception.
      *
-     * @throws Exception
      */
     @Test
     public void testMultipleNamedQueryWithScrollableCursor() {
@@ -292,7 +290,7 @@ public class TestQueryHints implements PUPropertiesProvider {
         }
 
         public static Connector createStatementProxy(Connector toWrap) {
-            return (Connector) Proxy.newProxyInstance(Connector.class.getClassLoader(), new Class[] { Connector.class }, new ConnectorInvocationHandler(toWrap));
+            return (Connector) Proxy.newProxyInstance(Connector.class.getClassLoader(), new Class<?>[] { Connector.class }, new ConnectorInvocationHandler(toWrap));
         }
     }
 
@@ -316,7 +314,7 @@ public class TestQueryHints implements PUPropertiesProvider {
         }
 
         public static Connection createStatementProxy(Connection toWrap) {
-            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[] { Connection.class }, new ConnectionInvocationHandler(toWrap));
+            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class<?>[] { Connection.class }, new ConnectionInvocationHandler(toWrap));
         }
     }
 
@@ -344,7 +342,7 @@ public class TestQueryHints implements PUPropertiesProvider {
         }
 
         public static PreparedStatement createStatementProxy(PreparedStatement toWrap) {
-            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class[] { PreparedStatement.class }, new PreparedStatementInvocationHandler(toWrap));
+            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class<?>[] { PreparedStatement.class }, new PreparedStatementInvocationHandler(toWrap));
         }
     }
 }

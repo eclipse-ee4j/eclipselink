@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,12 +40,13 @@ public class InvalidIndirectionContainerClassTest extends ExceptionTest {
         setDescription("This tests Invalid Indirection Container Class (TL-ERROR 154)");
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         expectedException = DescriptorException.invalidIndirectionContainerClass(new ContainerIndirectionPolicy(), null);
 
-        descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+        descriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
         mapping = (OneToManyMapping)descriptor.getMappingForAttributeName("phoneNumbers");
         orgIndirectionPolicy = mapping.getIndirectionPolicy();
         //An invalid indirection container class
@@ -57,11 +58,13 @@ public class InvalidIndirectionContainerClassTest extends ExceptionTest {
 
     }
 
+    @Override
     public void reset() {
         mapping.setIndirectionPolicy(orgIndirectionPolicy);
         getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         try {
             mapping.initialize((AbstractSession)getSession());

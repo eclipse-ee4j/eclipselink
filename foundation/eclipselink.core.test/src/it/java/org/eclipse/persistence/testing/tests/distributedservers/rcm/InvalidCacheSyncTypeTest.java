@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,9 +30,10 @@ public class InvalidCacheSyncTypeTest extends ConfigurableCacheSyncDistributedTe
         super();
         setName("InvalidCacheSyncTypeTest(" + type + ")");
         cacheSyncType = type;
-        cacheSyncConfigValues.put(Employee.class, new Integer(type));
+        cacheSyncConfigValues.put(Employee.class, type);
     }
 
+    @Override
     public void setup() {
         try {
             super.setup();
@@ -41,6 +42,7 @@ public class InvalidCacheSyncTypeTest extends ConfigurableCacheSyncDistributedTe
         }
     }
 
+    @Override
     public void verify() {
         if ((exception == null) && ((cacheSyncType < 0) || (cacheSyncType > 4))) {
             throw new TestErrorException("An exception is expected when an invalid cache sync type is set.");

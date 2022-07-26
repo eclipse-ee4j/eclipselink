@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
         if(null == javaClass && null == javaClassName) {
             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_typeImpl_javaClass_should_not_be_null", this, null); // exporting (this) outside the constructor breaks concurrency
             // Default to Object to avoid a NPE - in the case where javaClass is not set or not set yet via Project.convertClassNamesToClasses()
-            this.javaClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
+            this.javaClass = (Class<X>) MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
         } else {
             this.javaClassName = javaClassName;
             this.javaClass = javaClass;
@@ -73,17 +73,18 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
      *  Return the represented Java type.
      *  @return Java type
      */
+    @SuppressWarnings({"unchecked"})
     public Class<X> getJavaType(ClassLoader classLoader) {
         if (javaClass == null){
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        javaClass = AccessController.doPrivileged(new PrivilegedClassForName(javaClassName, true, classLoader));
+                        javaClass = (Class<X>) AccessController.doPrivileged(new PrivilegedClassForName(javaClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(javaClassName, exception.getException());
                     }
                 } else {
-                    javaClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(javaClassName, true, classLoader);
+                    javaClass = PrivilegedAccessHelper.getClassForName(javaClassName, true, classLoader);
                 }
             } catch (ClassNotFoundException exc){
                 throw ValidationException.classNotFoundWhileConvertingClassNames(javaClassName, exc);
@@ -114,7 +115,6 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
     /**
      * INTERNAL:
      * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
-     * @return
      */
     public abstract boolean isEntity();
 
@@ -122,7 +122,6 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EntityType and MappedSuperclassType
-     * @return
      */
     protected abstract boolean isIdentifiableType();
 
@@ -130,14 +129,12 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EmbeddableType as well as EntityType and MappedSuperclassType
-     * @return
      */
     protected abstract boolean isManagedType();
 
     /**
      * INTERNAL:
      * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
-     * @return
      */
     public abstract boolean isMappedSuperclass();
 

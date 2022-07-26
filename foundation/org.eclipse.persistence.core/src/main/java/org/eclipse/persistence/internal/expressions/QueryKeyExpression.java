@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -188,12 +188,12 @@ public class QueryKeyExpression extends ObjectExpression {
         }
 
         HashMap tablesJoinExpressions = new HashMap();
-        Vector tables = getDescriptor().getTables();
+        Vector<DatabaseTable> tables = getDescriptor().getTables();
         // skip the main table - start with i=1
         int tablesSize = tables.size();
         if (shouldUseOuterJoin() || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
             for (int i=1; i < tablesSize; i++) {
-                DatabaseTable table = (DatabaseTable)tables.elementAt(i);
+                DatabaseTable table = tables.elementAt(i);
                 Expression joinExpression = getDescriptor().getQueryManager().getTablesJoinExpressions().get(table);
                 joinExpression = this.baseExpression.twist(joinExpression, this);
                 if (getDescriptor().getHistoryPolicy() != null) {
@@ -203,10 +203,10 @@ public class QueryKeyExpression extends ObjectExpression {
             }
         }
         if (isUsingOuterJoinForMultitableInheritance()) {
-            List childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
+            List<DatabaseTable> childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             tablesSize = childrenTables.size();
             for (int i=0; i < tablesSize; i++) {
-                DatabaseTable table = (DatabaseTable)childrenTables.get(i);
+                DatabaseTable table = childrenTables.get(i);
                 Expression joinExpression = getDescriptor().getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                 joinExpression = this.baseExpression.twist(joinExpression, this);
                 tablesJoinExpressions.put(table, joinExpression);
@@ -263,7 +263,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * </pre>
      */
     @Override
-    public Expression treat(Class castClass){
+    public Expression treat(Class<?> castClass){
         //to be used in 'where treat(t as PerformanceTireInfo).speedRating > 100'
         QueryKeyExpression clonedExpression = new TreatAsExpression(castClass, this);
         clonedExpression.shouldQueryToManyRelationship = this.shouldQueryToManyRelationship;
@@ -629,21 +629,21 @@ public class QueryKeyExpression extends ObjectExpression {
             }
             QueryKey queryKey = getQueryKeyOrNull();
             if (queryKey != null) {
-                isAttributeExpression = Boolean.valueOf(queryKey.isDirectQueryKey());
+                isAttributeExpression = queryKey.isDirectQueryKey();
             } else {
                 DatabaseMapping mapping = getMapping();
                 if (mapping != null) {
                     if (mapping.isVariableOneToOneMapping()) {
                         throw QueryException.cannotQueryAcrossAVariableOneToOneMapping(mapping, mapping.getDescriptor());
                     } else {
-                        isAttributeExpression = Boolean.valueOf(mapping.isDirectToFieldMapping());
+                        isAttributeExpression = mapping.isDirectToFieldMapping();
                     }
                 } else {
                     isAttributeExpression = Boolean.FALSE;
                 }
             }
         }
-        return isAttributeExpression.booleanValue();
+        return isAttributeExpression;
     }
 
     @Override

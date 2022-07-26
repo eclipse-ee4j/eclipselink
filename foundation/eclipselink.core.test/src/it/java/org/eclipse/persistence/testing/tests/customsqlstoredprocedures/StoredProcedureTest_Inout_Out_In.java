@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,8 +26,8 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
     boolean useCustomSQL;
     boolean useArgumentNames;
     boolean shouldBindAllParameters;
-    Integer in = new Integer(1);
-    Integer inout = new Integer(2);
+    Integer in = 1;
+    Integer inout = 2;
     static final int PROC = 0;
     static final int FUNC = 1;
 
@@ -80,6 +80,7 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
         }
     }
 
+    @Override
     public void setup() {
         // right now only the stored procedure is set up in Oracle
         if (!(getSession().getPlatform().isOracle())) {
@@ -87,6 +88,7 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         DatabaseCall call = null;
         if (useCustomSQL) {
@@ -140,12 +142,13 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
         row = (DatabaseRecord)((Vector)getSession().executeQuery(query, args)).firstElement();
     }
 
+    @Override
     public void verify() {
         Number inoutExpected = in;
         Number outExpected = inout;
 
-        Integer inoutReturned = new Integer(((Number)row.get("P_INOUT")).intValue());
-        Integer outReturned = new Integer(((Number)row.get("P_OUT")).intValue());
+        Integer inoutReturned = ((Number) row.get("P_INOUT")).intValue();
+        Integer outReturned = ((Number) row.get("P_OUT")).intValue();
 
         if (!inoutExpected.equals(inoutReturned)) {
             throw new TestErrorException("Invalid value P_INOUT = " + inoutReturned + "; should be " + inoutExpected);
@@ -155,7 +158,7 @@ public class StoredProcedureTest_Inout_Out_In extends TestCase {
         }
 
         if (mode == FUNC) {
-            Integer result = new Integer(((Number)row.get("RESULT")).intValue());
+            Integer result = ((Number) row.get("RESULT")).intValue();
 
             if (!result.equals(outReturned)) {
                 throw new TestErrorException("Invalid value RESULT = " + result + "; should be " + outReturned);

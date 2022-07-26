@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * This expression handles parsing a JPQL identifier followed by an expression encapsulated within
  * parenthesis.
  *
- * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code><p></div>
+ * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -48,25 +48,16 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addChildrenTo(Collection<Expression> children) {
         children.add(getExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
         if (expression != null) {
@@ -74,9 +65,6 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -106,9 +94,6 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
         return expression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasEncapsulatedExpression() {
         return hasExpression();
@@ -125,9 +110,6 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
               !expression.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parseEncapsulatedExpression(WordParser wordParser,
                                                int whitespaceCount,
@@ -136,9 +118,6 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
         expression = parse(wordParser, getEncapsulatedExpressionQueryBNFId(), tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void removeEncapsulatedExpression() {
         expression = null;
@@ -156,9 +135,6 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
         this.expression.setParent(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
         if (expression != null) {

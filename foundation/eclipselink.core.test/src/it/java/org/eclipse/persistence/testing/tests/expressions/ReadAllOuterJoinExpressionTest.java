@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import org.eclipse.persistence.expressions.*;
 
 public class ReadAllOuterJoinExpressionTest extends ReadAllExpressionTest {
 
-    public ReadAllOuterJoinExpressionTest(Class referenceClass, int originalObjectsSize) {
+    public ReadAllOuterJoinExpressionTest(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
     }
 
@@ -26,12 +26,14 @@ public class ReadAllOuterJoinExpressionTest extends ReadAllExpressionTest {
         // Most have some level of support, even dbase.
     }
 
+    @Override
     public void reset() throws Exception {
         super.reset();
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         super.setup();
         // Make one of the employees have no address.

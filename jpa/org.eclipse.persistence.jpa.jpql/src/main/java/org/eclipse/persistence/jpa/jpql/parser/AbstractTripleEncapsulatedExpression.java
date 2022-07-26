@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * This {@link Expression} takes care of parsing an expression that encapsulates three expressions
  * separated by a comma.
  *
- * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression, third_expression)</code><p></div>
+ * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression, third_expression)</code></div>
  *
  * @see LocateExpression
  * @see SubstringExpression
@@ -85,9 +85,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getFirstExpression().accept(visitor);
@@ -95,9 +92,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
         getThirdExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getFirstExpression());
@@ -105,9 +99,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
         children.add(getThirdExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
@@ -153,17 +144,17 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
      */
     public final CollectionExpression buildCollectionExpression() {
 
-        List<AbstractExpression> children = new ArrayList<AbstractExpression>(3);
+        List<AbstractExpression> children = new ArrayList<>(3);
         children.add((AbstractExpression) getFirstExpression());
         children.add((AbstractExpression) getSecondExpression());
         children.add((AbstractExpression) getThirdExpression());
 
-        List<Boolean> commas = new ArrayList<Boolean>(3);
+        List<Boolean> commas = new ArrayList<>(3);
         commas.add(hasFirstComma);
         commas.add(hasSecondComma);
         commas.add(Boolean.FALSE);
 
-        List<Boolean> spaces = new ArrayList<Boolean>(3);
+        List<Boolean> spaces = new ArrayList<>(3);
         spaces.add(hasSpaceAfterFirstComma);
         spaces.add(hasSpaceAfterSecondComma);
         spaces.add(Boolean.FALSE);
@@ -171,9 +162,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -238,9 +226,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
         return thirdExpression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasEncapsulatedExpression() {
         return hasFirstExpression()  || hasFirstComma  ||
@@ -321,9 +306,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
               !thirdExpression.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
@@ -351,9 +333,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
      */
     protected abstract boolean isThirdExpressionOptional();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parseEncapsulatedExpression(WordParser wordParser,
                                                int whitespaceCount,
@@ -410,9 +389,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void removeEncapsulatedExpression() {
         hasFirstComma = false;
@@ -424,9 +400,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
         hasSpaceAfterSecondComma = false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 

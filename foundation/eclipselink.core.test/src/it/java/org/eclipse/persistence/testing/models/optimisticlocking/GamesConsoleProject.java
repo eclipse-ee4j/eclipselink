@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public GamesConsoleProject() {
     addDescriptor(buildSkillClassDescriptor());
 }
 
+@Override
 public void applyLogin() {
     DatabaseLogin login = new DatabaseLogin();
     login.usePlatform(new org.eclipse.persistence.platform.database.OraclePlatform());
@@ -381,9 +382,9 @@ public ClassDescriptor buildPowerSupplyUnitClassDescriptor() {
     onMapping.setAttributeName("on");
     onMapping.setFieldName("on->DIRECT");
     ObjectTypeConverter onMappingConverter = new ObjectTypeConverter();
-    onMappingConverter.setDefaultAttributeValue(new java.lang.Boolean("false"));
-    onMappingConverter.addConversionValue(new Character('F'), new java.lang.Boolean("false"));
-    onMappingConverter.addConversionValue(new Character('T'), new java.lang.Boolean("true"));
+    onMappingConverter.setDefaultAttributeValue(Boolean.valueOf("false"));
+    onMappingConverter.addConversionValue('F', Boolean.valueOf("false"));
+    onMappingConverter.addConversionValue('T', Boolean.valueOf("true"));
     onMapping.setConverter(onMappingConverter);
     descriptor.addMapping(onMapping);
 

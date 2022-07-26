@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ public class ClassWithoutConstructor implements IndirectContainer {
     //used for TL-172 testing (work in progress)
 
     private ClassWithoutConstructor() throws java.lang.NoSuchMethodException {
-        Class[] parmClasses = { Integer.class };
+        Class<?>[] parmClasses = { Integer.class };
         ClassWithoutConstructor.class.getDeclaredMethod("invalidMethod", parmClasses);
     }
 
@@ -36,14 +36,17 @@ public class ClassWithoutConstructor implements IndirectContainer {
 
     }
 
+    @Override
     public void setValueHolder(org.eclipse.persistence.indirection.ValueHolderInterface input) {
 
     }
 
+    @Override
     public org.eclipse.persistence.indirection.ValueHolderInterface getValueHolder() {
         return null;
     }
 
+    @Override
     public boolean isInstantiated() {
         return false;
     }

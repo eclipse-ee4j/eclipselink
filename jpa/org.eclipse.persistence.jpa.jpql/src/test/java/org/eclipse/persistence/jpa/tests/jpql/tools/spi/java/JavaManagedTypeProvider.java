@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,8 +60,8 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     private Map<String, IMappedSuperclass> mappedSuperclasses;
 
     /**
-     * The builder that is responsible to create the {@link org.eclipse.persistence.jpa.jpql.tools.spi.
-     * IMapping IMapping} wrapping a persistent attribute or property.
+     * The builder that is responsible to create the
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping} wrapping a persistent attribute or property.
      */
     private IMappingBuilder<Member> mappingBuilder;
 
@@ -73,8 +73,8 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
     /**
      * Creates a new <code>JavaManagedTypeProvider</code>.
      *
-     * @param mappingBuilder The builder that is responsible to create the {@link org.eclipse.
-     * persistence.jpa.jpql.spi.IMapping IMapping} wrapping a persistent attribute or property
+     * @param mappingBuilder The builder that is responsible to create the
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping} wrapping a persistent attribute or property
      * @exception NullPointerException The {@link IMappingBuilder} cannot be <code>null</code>
      */
     public JavaManagedTypeProvider(IMappingBuilder<Member> mappingBuilder) {
@@ -133,44 +133,32 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
         return new JavaMappedSuperclass(this, getTypeRepository().getType(type), mappingBuilder);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Iterable<IEntity> entities() {
-        return new SnapshotCloneIterable<IEntity>(entities.values());
+        return new SnapshotCloneIterable<>(entities.values());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IEmbeddable getEmbeddable(IType type) {
         return getEmbeddable(type.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IEmbeddable getEmbeddable(String typeName) {
         return embeddables.get(typeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IEntity getEntity(IType type) {
         return getEntity(type.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IEntity getEntity(String typeName) {
         return entities.get(typeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IEntity getEntityNamed(String entityName) {
 
         for (IEntity entity : entities.values()) {
@@ -182,30 +170,22 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IManagedType getManagedType(IType type) {
         return getManagedType(type.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IManagedType getManagedType(String typeName) {
         return managedTypes.get(typeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IMappedSuperclass getMappedSuperclass(IType type) {
         return getMappedSuperclass(type.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IMappedSuperclass getMappedSuperclass(String typeName) {
         return mappedSuperclasses.get(typeName);
     }
@@ -214,9 +194,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
         return mappingBuilder;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public JavaTypeRepository getTypeRepository() {
         if (typeRepository == null) {
             typeRepository = new JavaTypeRepository(getClass().getClassLoader());
@@ -235,18 +213,16 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
         Assert.isNotNull(mappingBuilder, "The IMappingBuilder cannot be null");
 
         this.mappingBuilder     = mappingBuilder;
-        this.entities           = new HashMap<String, IEntity>();
-        this.embeddables        = new HashMap<String, IEmbeddable>();
-        this.managedTypes       = new HashMap<String, IManagedType>();
-        this.mappedSuperclasses = new HashMap<String, IMappedSuperclass>();
+        this.entities           = new HashMap<>();
+        this.embeddables        = new HashMap<>();
+        this.managedTypes       = new HashMap<>();
+        this.mappedSuperclasses = new HashMap<>();
 
         initialize();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Iterable<IManagedType> managedTypes() {
-        return new SnapshotCloneIterable<IManagedType>(managedTypes.values());
+        return new SnapshotCloneIterable<>(managedTypes.values());
     }
 }

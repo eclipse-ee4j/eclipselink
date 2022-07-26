@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -186,34 +186,25 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         return rangeDeclaration(entityName, variableName, null, joins);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void setUpClass() throws Exception {
         super.setUpClass();
         virtualQuery = new JavaQuery(getPersistenceUnit(), null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         virtualQuery.setExpression(null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void tearDownClass() throws Exception {
         virtualQuery = null;
         super.tearDownClass();
     }
 
-    private void test_Declaration_01(boolean tolerant) throws Exception {
+    private void test_Declaration_01(boolean tolerant) {
 
         String jpqlQuery = "select e from Employee e";
 
@@ -234,7 +225,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         test_Declaration_01(true);
     }
 
-    private void test_Declaration_02(boolean tolerant) throws Exception {
+    private void test_Declaration_02(boolean tolerant) {
 
         String jpqlQuery = "select e from Employee e, Address a";
 
@@ -256,7 +247,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         test_Declaration_02(true);
     }
 
-    private void test_Declaration_03(boolean tolerant) throws Exception {
+    private void test_Declaration_03(boolean tolerant) {
 
         String jpqlQuery = "select e from Employee e join e.manager m, Address a";
 
@@ -278,7 +269,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         test_Declaration_03(true);
     }
 
-    private void test_Declaration_04(boolean tolerant) throws Exception {
+    private void test_Declaration_04(boolean tolerant) {
 
         String jpqlQuery = "select e from Employee e, in(e.phoneNumbers) p";
 
@@ -301,7 +292,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
     }
 
     @Test
-    public void test_Declaration_05() throws Exception {
+    public void test_Declaration_05() {
 
         String jpqlQuery = "select e from Employee";
 
@@ -312,7 +303,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         );
     }
 
-    private void test_Declaration_06(boolean tolerant) throws Exception {
+    private void test_Declaration_06(boolean tolerant) {
 
         String jpqlQuery = "select e from Employee e where e.address = (select a from Address a)";
 
@@ -320,7 +311,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         queryContext.setTolerant(tolerant);
         queryContext.setQuery(buildQuery(jpqlQuery));
 
-        final Map<Expression, DeclarationTester[]> testers = new HashMap<Expression, DeclarationTester[]>();
+        final Map<Expression, DeclarationTester[]> testers = new HashMap<>();
         testers.put(queryContext.getJPQLExpression(), new DeclarationTester[] { rangeDeclaration("Employee", "e") });
 
         queryContext.getJPQLExpression().accept(new AbstractTraverseChildrenVisitor() {
@@ -344,7 +335,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         test_Declaration_06(true);
     }
 
-    private void test_Declaration_07(boolean tolerant) throws Exception {
+    private void test_Declaration_07(boolean tolerant) {
 
         String jpqlQuery = "select e from Employee e where e.address = (select d from e.dealers d)";
 
@@ -352,7 +343,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         queryContext.setTolerant(tolerant);
         queryContext.setQuery(buildQuery(jpqlQuery));
 
-        final Map<Expression, DeclarationTester[]> testers = new HashMap<Expression, DeclarationTester[]>();
+        final Map<Expression, DeclarationTester[]> testers = new HashMap<>();
         testers.put(queryContext.getJPQLExpression(), new DeclarationTester[] { rangeDeclaration("Employee", "e") });
 
         queryContext.getJPQLExpression().accept(new AbstractTraverseChildrenVisitor() {
@@ -376,7 +367,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         test_Declaration_07(true);
     }
 
-    private void test_Declaration_08(boolean tolerant) throws Exception {
+    private void test_Declaration_08(boolean tolerant) {
 
         String jpqlQuery = "select e from Employee e where e.address = (select d from Buyer b, IN e.dealers)";
 
@@ -384,7 +375,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         queryContext.setTolerant(tolerant);
         queryContext.setQuery(buildQuery(jpqlQuery));
 
-        final Map<Expression, DeclarationTester[]> testers = new HashMap<Expression, DeclarationTester[]>();
+        final Map<Expression, DeclarationTester[]> testers = new HashMap<>();
         testers.put(queryContext.getJPQLExpression(), new DeclarationTester[] { rangeDeclaration("Employee", "e") });
 
         queryContext.getJPQLExpression().accept(new AbstractTraverseChildrenVisitor() {
@@ -411,7 +402,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         test_Declaration_08(true);
     }
 
-    private void test_Declaration_09(final boolean tolerant) throws Exception {
+    private void test_Declaration_09(final boolean tolerant) {
 
         String jpqlQuery = "select e from Employee e where e.address = (select d from e.dealers)";
 
@@ -419,7 +410,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         queryContext.setTolerant(tolerant);
         queryContext.setQuery(buildQuery(jpqlQuery));
 
-        final Map<Expression, DeclarationTester[]> testers = new HashMap<Expression, DeclarationTester[]>();
+        final Map<Expression, DeclarationTester[]> testers = new HashMap<>();
         testers.put(queryContext.getJPQLExpression(), new DeclarationTester[] { rangeDeclaration("Employee", "e") });
 
         queryContext.getJPQLExpression().accept(new AbstractTraverseChildrenVisitor() {
@@ -445,7 +436,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         test_Declaration_09(true);
     }
 
-    private void test_Declaration_10(boolean tolerant) throws Exception {
+    private void test_Declaration_10(boolean tolerant) {
         String jpqlQuery = "select e from";
         testDeclarations(jpqlQuery, tolerant);
     }
@@ -461,7 +452,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
     }
 
     @Test
-    public void test_Declaration_11() throws Exception {
+    public void test_Declaration_11() {
 
         String jpqlQuery = "select e from Employee e, where e.name = 'JPQL'";
 
@@ -473,7 +464,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
     }
 
     @Test
-    public void test_Declaration_12() throws Exception {
+    public void test_Declaration_12() {
 
         String jpqlQuery = "select e from Employee e, a where e.name = 'JPQL'";
 
@@ -485,7 +476,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
         );
     }
 
-    private void test_Declaration_13(boolean tolerant) throws Exception {
+    private void test_Declaration_13(boolean tolerant) {
 
         String jpqlQuery = "update Employee e set e.name = 'JPQL'";
 
@@ -513,7 +504,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
     }
 
     @Test
-    public void test_Declaration_14() throws Exception {
+    public void test_Declaration_14() {
 
         String jpqlQuery = "update set e.name = 'JPQL'";
 
@@ -530,7 +521,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
     }
 
     @Test
-    public void test_Declaration_15() throws Exception {
+    public void test_Declaration_15() {
 
         String jpqlQuery = "delete from where e.name = 'JPQL'";
         DeleteClauseTester deleteClause = delete(nullExpression());

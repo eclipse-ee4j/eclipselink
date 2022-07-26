@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -175,7 +175,7 @@ public final class BadExpressionTest extends JPQLParserTest {
 //                       "   e.name = 'Pascal' ANY(a,)";
     }
 
-    private void testQueries(QueryModifier queryModifier) throws Exception {
+    private void testQueries(QueryModifier queryModifier) {
 
 //        Collection<String> queries = queries();
 //        int queryIndex = 0;
@@ -241,6 +241,7 @@ public final class BadExpressionTest extends JPQLParserTest {
 //    @Test // No Timeout: done internally
     public void testRemoveCharacter() throws Exception {
         testQueries(new QueryModifier() {
+            @Override
             public void modify(StringBuilder query, int position) {
                 // Skip espaced character otherwise the string becomes invalid
                 if ((query.charAt(position) == '\\') ||
@@ -256,6 +257,7 @@ public final class BadExpressionTest extends JPQLParserTest {
 //    @Test // No Timeout: done internally
     public void testZAddCharacter() throws Exception {
         testQueries(new QueryModifier() {
+            @Override
             public void modify(StringBuilder query, int position) {
                 query.insert(position, 'a');
             }
@@ -265,6 +267,7 @@ public final class BadExpressionTest extends JPQLParserTest {
 //    @Test // No Timeout: done internally
     public void testZAddWhitespace() throws Exception {
         testQueries(new QueryModifier() {
+            @Override
             public void modify(StringBuilder query, int position) {
                 // Skip espaced character otherwise the string becomes invalid
                 if ((query.charAt(position) == '\\') ||
@@ -280,6 +283,7 @@ public final class BadExpressionTest extends JPQLParserTest {
 //    @Test // No Timeout: done internally
     public void testZChangeCharacterToAnything() throws Exception {
         testQueries(new QueryModifier() {
+            @Override
             public void modify(StringBuilder query, int position) {
                 // Skip espaced character otherwise the string becomes invalid
                 if ((query.charAt(position) == '\\') ||
@@ -295,6 +299,7 @@ public final class BadExpressionTest extends JPQLParserTest {
 //    @Test // No Timeout: done internally
     public void testZChangeCharacterToCloseParenthesis() throws Exception {
         testQueries(new QueryModifier() {
+            @Override
             public void modify(StringBuilder query, int position) {
                 // Skip espaced character otherwise the string becomes invalid
                 if ((query.charAt(position) == '\\') ||
@@ -310,6 +315,7 @@ public final class BadExpressionTest extends JPQLParserTest {
 //    @Test // No Timeout: done internally
     public void testZChangeCharacterToOpenParenthesis() throws Exception {
         testQueries(new QueryModifier() {
+            @Override
             public void modify(StringBuilder query, int position) {
                 // Skip espaced character otherwise the string becomes invalid
                 if ((query.charAt(position) == '\\') ||
@@ -325,6 +331,7 @@ public final class BadExpressionTest extends JPQLParserTest {
 //    @Test // No Timeout: done internally
     public void testZChangeCharacterToSingleQuote() throws Exception {
         testQueries(new QueryModifier() {
+            @Override
             public void modify(StringBuilder query, int position) {
                 // Skip espaced character otherwise the string becomes invalid
                 if ((query.charAt(position) == '\\') ||

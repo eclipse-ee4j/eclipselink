@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,9 +32,12 @@
 //       - 540929 : 'jdbc.sql-cast' property does not copy
 //     12/06/2018 - Will Dazey
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
+//     13/01/2022-4.0.0 Tomas Kraus
+//       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
+
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -60,14 +63,16 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 import java.util.Vector;
 
-// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -123,7 +128,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 public class DatabasePlatform extends DatasourcePlatform {
 
     /** Holds a map of values used to map JAVA types to database types for table creation */
-    protected transient Map<Class, FieldTypeDefinition> fieldTypes;
+    protected transient Map<Class<?>, FieldTypeDefinition> fieldTypes;
 
     /** Indicates that native SQL should be used for literal values instead of ODBC escape format
     Only used with Oracle, Sybase &amp; DB2 */
@@ -136,10 +141,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected boolean usesBatchWriting;
 
     /** Bind all arguments to any SQL statement. */
-    protected boolean shouldBindAllParameters;
+    protected Boolean shouldBindAllParameters;
 
     /** Bind all arguments to any SQL statement. */
     protected boolean shouldForceBindAllParameters;
+
+    /** Bind some arguments to any SQL statement. */
+    protected boolean shouldBindPartialParameters;
 
     /** Cache all prepared statements, this requires full parameter binding as well. */
     protected boolean shouldCacheAllStatements;
@@ -199,7 +207,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected boolean shouldOptimizeDataConversion;
 
     /** Stores mapping of class types to database types for schema creation. */
-    protected transient Map<String, Class> classTypes;
+    protected transient Map<String, Class<?>> classTypes;
 
     /** Allow for case in field names to be ignored as some databases are not case sensitive and when using custom this can be an issue. */
     public static boolean shouldIgnoreCaseOnFieldComparisons = false;
@@ -223,7 +231,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * They can be looked up by java Class or by Struct type
      */
     protected Map<String, StructConverter> structConverters = null;
-    protected Map<Class, StructConverter> typeConverters = null;
+    protected Map<Class<?>, StructConverter> typeConverters = null;
 
     /**
      * Some platforms allow a query's maxRows and FirstResult settings to be
@@ -266,6 +274,10 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected Boolean useJDBCStoredProcedureSyntax;
     protected String driverName;
 
+    // DatabaseJsonPlatform has lazy initialization
+    /** JSON support for ResultSet data retrieval. */
+    private transient volatile DatabaseJsonPlatform jsonPlatform;
+
     /**
      * Creates an instance of default database platform.
      */
@@ -276,8 +288,9 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.usesStringBinding = false;
         this.stringBindingSize = 255;
         this.shouldTrimStrings = true;
-        this.shouldBindAllParameters = true;
+        this.shouldBindAllParameters = null;
         this.shouldForceBindAllParameters = false;
+        this.shouldBindPartialParameters = false;
         this.shouldCacheAllStatements = false;
         this.shouldOptimizeDataConversion = true;
         this.statementCacheSize = 50;
@@ -293,6 +306,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.endDelimiter = "\"";
         this.useJDBCStoredProcedureSyntax = null;
         this.storedProcedureTerminationToken = ";";
+        this.jsonPlatform = null;
     }
 
     /**
@@ -368,7 +382,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * This map indexes StructConverters by the Java Class they are meant to
      * convert
      */
-    public Map<Class, StructConverter> getTypeConverters() {
+    public Map<Class<?>, StructConverter> getTypeConverters() {
         if (typeConverters == null){
             typeConverters = new HashMap<>();
         }
@@ -381,7 +395,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      * This StructConverter will be invoked for all writes to the database for the class returned
      * by its getJavaType() method and for all reads from the database for the Structs described
      * by its getStructName() method
-     * @param converter
      */
     public void addStructConverter(StructConverter converter) {
         if (structConverters == null){
@@ -412,217 +425,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public boolean allowsSizeInProcedureArguments() {
         return true;
-    }
-
-    /**
-     * Appends a Boolean value as a number
-     */
-    protected void appendBoolean(Boolean bool, Writer writer) throws IOException {
-        if (bool.booleanValue()) {
-            writer.write("1");
-        } else {
-            writer.write("0");
-        }
-    }
-
-    /**
-     * Append the ByteArray in ODBC literal format ({b hexString}).
-     * This limits the amount of Binary data by the length of the SQL. Binding should increase this limit.
-     */
-    protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
-        writer.write("{b '");
-        Helper.writeHexString(bytes, writer);
-        writer.write("'}");
-    }
-
-    /**
-     * Answer a platform correct string representation of a Date, suitable for SQL generation.
-     * The date is printed in the ODBC platform independent format {d 'yyyy-mm-dd'}.
-     */
-    protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
-        writer.write("{d '");
-        writer.write(Helper.printDate(date));
-        writer.write("'}");
-    }
-
-    /**
-     * Write number to SQL string. This is provided so that database which do not support
-     * Exponential format can customize their printing.
-     */
-    protected void appendNumber(Number number, Writer writer) throws IOException {
-        writer.write(number.toString());
-    }
-
-    /**
-     * INTERNAL:
-     * In case shouldBindLiterals is true, instead of null value a DatabaseField
-     * value may be passed (so that it's type could be used for binding null).
-     */
-    public void appendLiteralToCall(Call call, Writer writer, Object literal) {
-        if(shouldBindLiterals()) {
-            appendLiteralToCallWithBinding(call, writer, literal);
-        } else {
-            int nParametersToAdd = appendParameterInternal(call, writer, literal);
-            for (int i = 0; i < nParametersToAdd; i++) {
-                ((DatabaseCall)call).getParameterTypes().add(DatabaseCall.LITERAL);
-            }
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Override this method in case the platform needs to do something special for binding literals.
-     * Note that instead of null value a DatabaseField
-     * value may be passed (so that it's type could be used for binding null).
-     */
-    protected void appendLiteralToCallWithBinding(Call call, Writer writer, Object literal) {
-        ((DatabaseCall)call).appendLiteral(writer, literal);
-    }
-
-    /**
-     * Write a database-friendly representation of the given parameter to the writer.
-     * Determine the class of the object to be written, and invoke the appropriate print method
-     * for that object. The default is "toString".
-     * The platform may decide to bind some types, such as byte arrays and large strings.
-     * Should only be called in case binding is not used.
-     */
-    @Override
-    public void appendParameter(Call call, Writer writer, Object parameter) {
-        appendParameterInternal(call, writer, parameter);
-    }
-
-    /**
-     * Returns the number of parameters that used binding.
-     * Should only be called in case binding is not used.
-     */
-    public int appendParameterInternal(Call call, Writer writer, Object parameter) {
-        int nBoundParameters = 0;
-        DatabaseCall databaseCall = (DatabaseCall)call;
-        try {
-            // PERF: Print Calendars directly avoiding timestamp conversion,
-            // Must be before conversion as you cannot bind calendars.
-            if (parameter instanceof Calendar) {
-                appendCalendar((Calendar)parameter, writer);
-                return nBoundParameters;
-            }
-            Object dbValue = convertToDatabaseType(parameter);
-
-            if (dbValue instanceof String) {// String and number first as they are most common.
-                if (usesStringBinding() && (((String)dbValue).length() >= getStringBindingSize())) {
-                    databaseCall.bindParameter(writer, dbValue);
-                    nBoundParameters = 1;
-                } else {
-                    appendString((String)dbValue, writer);
-                }
-            } else if (dbValue instanceof Number) {
-                appendNumber((Number)dbValue, writer);
-            } else if (dbValue instanceof java.sql.Time) {
-                appendTime((java.sql.Time)dbValue, writer);
-            } else if (dbValue instanceof java.sql.Timestamp) {
-                appendTimestamp((java.sql.Timestamp)dbValue, writer);
-            } else if (dbValue instanceof java.time.LocalDate){
-                appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
-            } else if (dbValue instanceof java.time.LocalDateTime){
-                appendTimestamp(java.sql.Timestamp.valueOf((java.time.LocalDateTime) dbValue), writer);
-            } else if (dbValue instanceof java.time.OffsetDateTime) {
-                appendTimestamp(java.sql.Timestamp.from(((java.time.OffsetDateTime) dbValue).toInstant()), writer);
-            } else if (dbValue instanceof java.time.LocalTime){
-                java.time.LocalTime lt = (java.time.LocalTime) dbValue;
-                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
-                appendTimestamp(ts, writer);
-            } else if (dbValue instanceof java.time.OffsetTime) {
-                java.time.OffsetTime ot = (java.time.OffsetTime) dbValue;
-                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
-                appendTimestamp(ts, writer);
-            } else if (dbValue instanceof java.time.LocalDate){
-                appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
-            } else if (dbValue instanceof java.sql.Date) {
-                appendDate((java.sql.Date)dbValue, writer);
-            } else if (dbValue == null) {
-                writer.write("NULL");
-            } else if (dbValue instanceof Boolean) {
-                appendBoolean((Boolean)dbValue, writer);
-            } else if (dbValue instanceof byte[]) {
-                if (usesByteArrayBinding()) {
-                    databaseCall.bindParameter(writer, dbValue);
-                    nBoundParameters = 1;
-                } else {
-                    appendByteArray((byte[])dbValue, writer);
-                }
-            } else if (dbValue instanceof Collection) {
-                nBoundParameters = printValuelist((Collection)dbValue, databaseCall, writer);
-            } else if (typeConverters != null && typeConverters.containsKey(dbValue.getClass())){
-                dbValue = new BindCallCustomParameter(dbValue);
-                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
-                databaseCall.bindParameter(writer, dbValue);
-            } else if ((parameter instanceof Struct) || (parameter instanceof Array) || (parameter instanceof Ref)) {
-                databaseCall.bindParameter(writer, parameter);
-                nBoundParameters = 1;
-            } else if (dbValue.getClass() == int[].class) {
-                nBoundParameters = printValuelist((int[])dbValue, databaseCall, writer);
-            } else if (dbValue instanceof AppendCallCustomParameter) {
-                // custom append is required (example BLOB, CLOB on Oracle8)
-                ((AppendCallCustomParameter)dbValue).append(writer);
-                nBoundParameters = 1;
-            } else if (dbValue instanceof BindCallCustomParameter) {
-                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
-                databaseCall.bindParameter(writer, dbValue);
-                nBoundParameters = 1;
-            } else {
-                // Assume database driver primitive that knows how to print itself, this is required for drivers
-                // such as Oracle JDBC, Informix JDBC and others, as well as client specific classes.
-                writer.write(dbValue.toString());
-            }
-        } catch (IOException exception) {
-            throw ValidationException.fileError(exception);
-        }
-
-        return nBoundParameters;
-    }
-
-    /**
-     * Write the string.  Quotes must be double quoted.
-     */
-    protected void appendString(String string, Writer writer) throws IOException {
-        writer.write('\'');
-        for (int position = 0; position < string.length(); position++) {
-            if (string.charAt(position) == '\'') {
-                writer.write("''");
-            } else {
-                writer.write(string.charAt(position));
-            }
-        }
-        writer.write('\'');
-    }
-
-    /**
-     * Answer a platform correct string representation of a Time, suitable for SQL generation.
-     * The time is printed in the ODBC platform independent format {t'hh:mm:ss'}.
-     */
-    protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
-        writer.write("{t '");
-        writer.write(Helper.printTime(time));
-        writer.write("'}");
-    }
-
-    /**
-     * Answer a platform correct string representation of a Timestamp, suitable for SQL generation.
-     * The timestamp is printed in the ODBC platform independent timestamp format {ts'YYYY-MM-DD HH:MM:SS.NNNNNNNNN'}.
-     */
-    protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
-        writer.write("{ts '");
-        writer.write(Helper.printTimestamp(timestamp));
-        writer.write("'}");
-    }
-
-    /**
-     * Answer a platform correct string representation of a Calendar as a Timestamp, suitable for SQL generation.
-     * The calendar is printed in the ODBC platform independent timestamp format {ts'YYYY-MM-DD HH:MM:SS.NNNNNNNNN'}.
-     */
-    protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
-        writer.write("{ts '");
-        writer.write(Helper.printCalendar(calendar));
-        writer.write("'}");
     }
 
     /**
@@ -672,15 +474,15 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL
      * Returns null unless the platform supports call with returning
      */
-    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector returnFields) {
+    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector<DatabaseField> returnFields) {
         throw ValidationException.platformDoesNotSupportCallWithReturning(Helper.getShortClassName(this));
     }
 
     /**
      * Return the mapping of class types to database types for the schema framework.
      */
-    protected Map<String, Class> buildClassTypes() {
-        Map<String, Class> classTypeMapping = new HashMap<>();
+    protected Map<String, Class<?>> buildClassTypes() {
+        Map<String, Class<?>> classTypeMapping = new HashMap<>();
         // Key the Map the other way for table creation.
         classTypeMapping.put("NUMBER", java.math.BigInteger.class);
         classTypeMapping.put("DECIMAL", java.math.BigDecimal.class);
@@ -731,10 +533,8 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Return the mapping of class types to database types for the schema framework.
      */
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping;
-
-        fieldTypeMapping = new Hashtable();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("NUMBER", 1));
 
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("NUMBER", 10));
@@ -769,6 +569,8 @@ public class DatabasePlatform extends DatasourcePlatform {
         fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME"));
+        // Mapping for JSON type.
+        getJsonPlatform().updateFieldTypes(fieldTypeMapping);
 
         return fieldTypeMapping;
     }
@@ -828,7 +630,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         for (int index = indexFirst; index < size; index++) {
             String name = call.getProcedureArgumentNames().get(index);
             Object parameter = call.getParameters().get(index);
-            Integer parameterType = call.getParameterTypes().get(index);
+            ParameterType parameterType = call.getParameterTypes().get(index);
             // If the argument is optional and null, ignore it.
             if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
 
@@ -887,9 +689,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      *
      * By default, we assume case 1 and simply return the value of maxResults.  Subclasses
      * may provide an override
-     *
-     * @param firstResultIndex
-     * @param maxResults
      *
      * @see org.eclipse.persistence.platform.database.MySQLPlatform
      */
@@ -985,8 +784,9 @@ public class DatabasePlatform extends DatasourcePlatform {
         databasePlatform.setUsesNativeSQL(usesNativeSQL());
         databasePlatform.setUsesByteArrayBinding(usesByteArrayBinding());
         databasePlatform.setUsesStringBinding(usesStringBinding());
-        databasePlatform.setShouldBindAllParameters(shouldBindAllParameters());
-        databasePlatform.setShouldForceBindAllParameters(shouldForceBindAllParameters());
+        databasePlatform.shouldBindAllParameters = this.shouldBindAllParameters;
+        databasePlatform.shouldForceBindAllParameters = this.shouldForceBindAllParameters;
+        databasePlatform.shouldBindPartialParameters = this.shouldBindPartialParameters;
         databasePlatform.setShouldCacheAllStatements(shouldCacheAllStatements());
         databasePlatform.setStatementCacheSize(getStatementCacheSize());
         databasePlatform.setTransactionIsolation(getTransactionIsolation());
@@ -1158,7 +958,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Return the class type to database type mapping for the schema framework.
      */
-    public Map<String, Class> getClassTypes() {
+    public Map<String, Class<?>> getClassTypes() {
         if (classTypes == null) {
             classTypes = buildClassTypes();
         }
@@ -1233,14 +1033,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Return the field type object describing this databases platform specific representation
      * of the Java primitive class name.
      */
-    public FieldTypeDefinition getFieldTypeDefinition(Class javaClass) {
+    public FieldTypeDefinition getFieldTypeDefinition(Class<?> javaClass) {
         return getFieldTypes().get(javaClass);
     }
 
     /**
      * Return the class type to database type mappings for the schema framework.
      */
-    public Map<Class, FieldTypeDefinition> getFieldTypes() {
+    public Map<Class<?>, FieldTypeDefinition> getFieldTypes() {
         if (this.fieldTypes == null) {
             this.fieldTypes = buildFieldTypes();
         }
@@ -1289,14 +1089,14 @@ public class DatabasePlatform extends DatasourcePlatform {
                 return getJDBCType(ConversionManager.getObjectClass(field.getType()));
             }
         } else {
-            return getJDBCType((Class)null);
+            return getJDBCType((Class<?>)null);
         }
     }
 
     /**
      * Return the JDBC type for the Java type.
      */
-    public int getJDBCType(Class javaType) {
+    public int getJDBCType(Class<?> javaType) {
         if (javaType == null) {
             return Types.VARCHAR;// Best guess, sometimes we cannot determine type from mapping, this may fail on some drivers, other dont care what type it is.
         } else if (javaType == ClassConstants.STRING) {
@@ -1325,7 +1125,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             return Types.SMALLINT;
         } else if (javaType == ClassConstants.CALENDAR ) {
             return Types.TIMESTAMP;
-        } else if (javaType == ClassConstants.UTILDATE ) {
+        } else if (javaType == ClassConstants.UTILDATE ) {//bug 5237080, return TIMESTAMP for java.util.Date as well
             return Types.TIMESTAMP;
         } else if (javaType == ClassConstants.TIME ||
             javaType == ClassConstants.TIME_LTIME) { //bug 546312
@@ -1334,7 +1134,6 @@ public class DatabasePlatform extends DatasourcePlatform {
             javaType == ClassConstants.TIME_LDATE) { //bug 546312
             return Types.DATE;
         } else if (javaType == ClassConstants.TIMESTAMP ||
-            javaType == ClassConstants.UTILDATE || //bug 5237080, return TIMESTAMP for java.util.Date as well
             javaType == ClassConstants.TIME_LDATETIME) { //bug 546312
             return Types.TIMESTAMP;
         } else if(javaType == ClassConstants.TIME_OTIME) { //bug 546312
@@ -1451,8 +1250,6 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * Used to allow platforms to define their own index prefixes
-     * @param isUniqueSetOnField
-     * @return
      */
     public String getIndexNamePrefix(boolean isUniqueSetOnField){
         return "IX_";
@@ -1484,7 +1281,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Obtain the platform specific argument string
      */
-    public String getProcedureArgument(String name, Object parameter, Integer parameterType, StoredProcedureCall call, AbstractSession session) {
+    public String getProcedureArgument(String name, Object parameter, ParameterType parameterType, StoredProcedureCall call, AbstractSession session) {
         if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
             return getProcedureArgumentString() + name + " = " + "?";
         }
@@ -1683,15 +1480,15 @@ public class DatabasePlatform extends DatasourcePlatform {
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger &amp; BigDecimal maximums are dependent upon their precision &amp; Scale
      */
-    public Hashtable maximumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MAX_VALUE));
-        values.put(Long.class, Long.valueOf(Long.MAX_VALUE));
-        values.put(Double.class, Double.valueOf(Double.MAX_VALUE));
-        values.put(Short.class, Short.valueOf(Short.MAX_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MAX_VALUE));
-        values.put(Float.class, Float.valueOf(Float.MAX_VALUE));
+        values.put(Integer.class, Integer.MAX_VALUE);
+        values.put(Long.class, Long.MAX_VALUE);
+        values.put(Double.class, Double.MAX_VALUE);
+        values.put(Short.class, Short.MAX_VALUE);
+        values.put(Byte.class, Byte.MAX_VALUE);
+        values.put(Float.class, Float.MAX_VALUE);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("999999999999999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("99999999999999999999.9999999999999999999"));
         return values;
@@ -1702,15 +1499,15 @@ public class DatabasePlatform extends DatasourcePlatform {
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger &amp; BigDecimal minimums are dependent upon their precision &amp; Scale
      */
-    public Hashtable minimumNumericValues() {
-        Hashtable values = new Hashtable();
+    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
 
-        values.put(Integer.class, Integer.valueOf(Integer.MIN_VALUE));
-        values.put(Long.class, Long.valueOf(Long.MIN_VALUE));
-        values.put(Double.class, Double.valueOf(Double.MIN_VALUE));
-        values.put(Short.class, Short.valueOf(Short.MIN_VALUE));
-        values.put(Byte.class, Byte.valueOf(Byte.MIN_VALUE));
-        values.put(Float.class, Float.valueOf(Float.MIN_VALUE));
+        values.put(Integer.class, Integer.MIN_VALUE);
+        values.put(Long.class, Long.MIN_VALUE);
+        values.put(Double.class, Double.MIN_VALUE);
+        values.put(Short.class, Short.MIN_VALUE);
+        values.put(Byte.class, Byte.MIN_VALUE);
+        values.put(Float.class, Float.MIN_VALUE);
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-99999999999999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-9999999999999999999.9999999999999999999"));
         return values;
@@ -1759,7 +1556,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         int nBoundParameters = 0;
         writer.write("(");
         for (int i = 0; i < theObjects.length; i++) {
-            nBoundParameters = nBoundParameters + appendParameterInternal(call, writer, Integer.valueOf(theObjects[i]));
+            nBoundParameters = nBoundParameters + appendParameterInternal(call, writer, theObjects[i]);
             if (i < (theObjects.length - 1)) {
                 writer.write(", ");
             }
@@ -1768,10 +1565,10 @@ public class DatabasePlatform extends DatasourcePlatform {
         return nBoundParameters;
     }
 
-    public int printValuelist(Collection theObjects, DatabaseCall call, Writer writer) throws IOException {
+    public int printValuelist(Collection<?> theObjects, DatabaseCall call, Writer writer) throws IOException {
         int nBoundParameters = 0;
         writer.write("(");
-        Iterator iterator = theObjects.iterator();
+        Iterator<?> iterator = theObjects.iterator();
         while (iterator.hasNext()) {
             nBoundParameters = nBoundParameters + appendParameterInternal(call, writer, iterator.next());
             if (iterator.hasNext()) {
@@ -1885,8 +1682,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      *
      * On databases where, for some reason we cannot select one of the key fields
      * this method can be overridden
-     * @param subselect
-     *
      * @see SymfowarePlatform
      */
     public void retrieveFirstPrimaryKeyOrOne(ReportQuery subselect){
@@ -1912,7 +1707,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         castSizeForVarcharParameter = maxLength;
     }
 
-    protected void setClassTypes(Hashtable classTypes) {
+    protected void setClassTypes(Map<String, Class<?>> classTypes) {
         this.classTypes = classTypes;
     }
 
@@ -1932,7 +1727,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.driverName = driverName;
     }
 
-    protected void setFieldTypes(Hashtable theFieldTypes) {
+    protected void setFieldTypes(Map<Class<?>, FieldTypeDefinition> theFieldTypes) {
         fieldTypes = theFieldTypes;
     }
 
@@ -1951,7 +1746,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             ((TableSequence)getDefaultSequence()).setCounterFieldName(name);
         } else {
             if (!name.equals((new TableSequence()).getCounterFieldName())) {
-                ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setCounterFieldName");
+                throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setCounterFieldName");
             }
         }
     }
@@ -1995,6 +1790,13 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public void setShouldForceBindAllParameters(boolean shouldForceBindAllParameters) {
         this.shouldForceBindAllParameters = shouldForceBindAllParameters;
+    }
+
+    /**
+     * Used to enable parameter binding and override the platform default
+     */
+    public void setShouldBindPartialParameters(boolean shouldBindPartialParameters) {
+        this.shouldBindPartialParameters = shouldBindPartialParameters;
     }
 
     /**
@@ -2141,7 +1943,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      *  With the value of false, outerjoins are performed in the from clause.
      */
     public void setPrintOuterJoinInWhereClause(boolean printOuterJoinInWhereClause) {
-        this.printOuterJoinInWhereClause = Boolean.valueOf(printOuterJoinInWhereClause);
+        this.printOuterJoinInWhereClause = printOuterJoinInWhereClause;
     }
 
     /**
@@ -2151,7 +1953,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * if false, inner joins are printed in the FROM clause.
      */
     public void setPrintInnerJoinInWhereClause(boolean printInnerJoinInWhereClause) {
-        this.printInnerJoinInWhereClause = Boolean.valueOf(printInnerJoinInWhereClause);
+        this.printInnerJoinInWhereClause = printInnerJoinInWhereClause;
     }
 
     public void setUsesStringBinding(boolean aBool) {
@@ -2162,7 +1964,21 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Bind all arguments to any SQL statement.
      */
     public boolean shouldBindAllParameters() {
-        return shouldBindAllParameters;
+        // Non-null value implies it has been overridden
+        if(this.shouldBindAllParameters != null) {
+            return this.shouldBindAllParameters;
+        }
+        // Default value
+        return true;
+    }
+
+    /**
+     * Used to determine if the platform should perform partial parameter binding or not
+     * <p>
+     * Off by default. Only platforms with the support added should enable this configuration.
+     */
+    public boolean shouldBindPartialParameters() {
+        return false;
     }
 
     /**
@@ -2421,6 +2237,15 @@ public class DatabasePlatform extends DatasourcePlatform {
         return false;
     }
 
+    /**
+     * Used to determine if the platform supports untyped parameters, as ordinal variables, within the Order By clause
+     * <p>
+     * On by default. Only platforms without support added should disable this configuration.
+     */
+    public boolean supportsOrderByParameters() {
+        return true;
+    }
+
     public boolean supportsDeleteOnCascade() {
         return supportsForeignKeyConstraints();
     }
@@ -2520,6 +2345,9 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.pingSQL = pingSQL;
     }
 
+    // Following methods add parameters into PreparedStatement. They are being called when
+    // eclipselink.jdbc.bind-parameters PU property is set to true.
+
     /**
      * INTERNAL
      * Set the parameter in the JDBC statement at the given index.
@@ -2579,16 +2407,18 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (parameter instanceof java.time.LocalTime){
             java.time.LocalTime lt = (java.time.LocalTime) parameter;
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
+            // This may cause cast exceptions, statement.setTime(index, ...) should be here, but some platforms rely on full TIMESTAMP types
+            // overriden to statement.setTime(index, ...) in: SQLServerPlatform
             statement.setTimestamp(index, ts);
         } else if (parameter instanceof java.time.OffsetTime) {
             java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             statement.setTimestamp(index, ts);
         } else if (parameter instanceof Boolean) {
-            statement.setBoolean(index, ((Boolean) parameter).booleanValue());
+            statement.setBoolean(index, (Boolean) parameter);
         } else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
-            statement.setNull(index, getJDBCType((Class)null));
+            statement.setNull(index, getJDBCType((Class<?>)null));
         } else if (parameter instanceof DatabaseField) {
             setNullFromDatabaseField((DatabaseField)parameter, statement, index);
         } else if (parameter instanceof byte[]) {
@@ -2609,7 +2439,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (parameter instanceof char[]) {
             statement.setString(index, new String((char[])parameter));
         } else if (parameter instanceof Character[]) {
-            statement.setString(index, (String)convertObject(parameter, ClassConstants.STRING));
+            statement.setString(index, convertObject(parameter, ClassConstants.STRING));
         } else if (parameter instanceof Byte[]) {
             statement.setBytes(index, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
@@ -2620,6 +2450,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             StructConverter converter = typeConverters.get(parameter.getClass());
             parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             statement.setObject(index, parameter);
+        } else if (parameter instanceof UUID) {
+            statement.setString(index, convertObject(parameter, ClassConstants.STRING));
         } else {
             statement.setObject(index, parameter);
         }
@@ -2690,10 +2522,10 @@ public class DatabasePlatform extends DatasourcePlatform {
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             statement.setTimestamp(name, ts);
         } else if (parameter instanceof Boolean) {
-            statement.setBoolean(name, ((Boolean) parameter).booleanValue());
+            statement.setBoolean(name, (Boolean) parameter);
         } else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
-            statement.setNull(name, getJDBCType((Class)null));
+            statement.setNull(name, getJDBCType((Class<?>)null));
         } else if (parameter instanceof DatabaseField) {
             setNullFromDatabaseField((DatabaseField)parameter, statement, name);
         } else if (parameter instanceof byte[]) {
@@ -2714,7 +2546,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (parameter instanceof char[]) {
             statement.setString(name, new String((char[])parameter));
         } else if (parameter instanceof Character[]) {
-            statement.setString(name, (String)convertObject(parameter, ClassConstants.STRING));
+            statement.setString(name, convertObject(parameter, ClassConstants.STRING));
         } else if (parameter instanceof Byte[]) {
             statement.setBytes(name, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
@@ -2725,6 +2557,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             StructConverter converter = typeConverters.get(parameter.getClass());
             parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             statement.setObject(name, parameter);
+        } else if (parameter instanceof UUID) {
+            statement.setString(name, convertObject(parameter, ClassConstants.STRING));
         } else {
             statement.setObject(name, parameter);
         }
@@ -2773,6 +2607,222 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public Object getParameterValueFromDatabaseCall(CallableStatement statement, String name, AbstractSession session) throws SQLException {
         return statement.getObject(name);
+    }
+
+    // Following method adds parameters values directly into Statement. This method is being called when
+    // eclipselink.jdbc.bind-parameters PU property is set to false.
+
+    /**
+     * Returns the number of parameters that used binding.
+     * Should only be called in case binding is not used.
+     */
+    public int appendParameterInternal(Call call, Writer writer, Object parameter) {
+        int nBoundParameters = 0;
+        DatabaseCall databaseCall = (DatabaseCall)call;
+        try {
+            // PERF: Print Calendars directly avoiding timestamp conversion,
+            // Must be before conversion as you cannot bind calendars.
+            if (parameter instanceof Calendar) {
+                appendCalendar((Calendar)parameter, writer);
+                return nBoundParameters;
+            }
+            Object dbValue = convertToDatabaseType(parameter);
+
+            if (dbValue instanceof String) {// String and number first as they are most common.
+                if (usesStringBinding() && (((String)dbValue).length() >= getStringBindingSize())) {
+                    databaseCall.bindParameter(writer, dbValue);
+                    nBoundParameters = 1;
+                } else {
+                    appendString((String)dbValue, writer);
+                }
+            } else if (dbValue instanceof Number) {
+                appendNumber((Number)dbValue, writer);
+            } else if (dbValue instanceof java.sql.Time) {
+                appendTime((java.sql.Time)dbValue, writer);
+            } else if (dbValue instanceof java.sql.Timestamp) {
+                appendTimestamp((java.sql.Timestamp)dbValue, writer);
+            } else if (dbValue instanceof java.time.LocalDate){
+                appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
+            } else if (dbValue instanceof java.time.LocalDateTime){
+                appendTimestamp(java.sql.Timestamp.valueOf((java.time.LocalDateTime) dbValue), writer);
+            } else if (dbValue instanceof java.time.OffsetDateTime) {
+                appendTimestamp(java.sql.Timestamp.from(((java.time.OffsetDateTime) dbValue).toInstant()), writer);
+            } else if (dbValue instanceof java.time.LocalTime){
+                java.time.LocalTime lt = (java.time.LocalTime) dbValue;
+                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
+                appendTimestamp(ts, writer);
+            } else if (dbValue instanceof java.time.OffsetTime) {
+                java.time.OffsetTime ot = (java.time.OffsetTime) dbValue;
+                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
+                appendTimestamp(ts, writer);
+            } else if (dbValue instanceof java.sql.Date) {
+                appendDate((java.sql.Date)dbValue, writer);
+            } else if (dbValue == null) {
+                writer.write("NULL");
+            } else if (dbValue instanceof Boolean) {
+                appendBoolean((Boolean)dbValue, writer);
+            } else if (dbValue instanceof byte[]) {
+                if (usesByteArrayBinding()) {
+                    databaseCall.bindParameter(writer, dbValue);
+                    nBoundParameters = 1;
+                } else {
+                    appendByteArray((byte[])dbValue, writer);
+                }
+            } else if (dbValue instanceof Collection) {
+                nBoundParameters = printValuelist((Collection<?>)dbValue, databaseCall, writer);
+            } else if (typeConverters != null && typeConverters.containsKey(dbValue.getClass())){
+                dbValue = new BindCallCustomParameter(dbValue);
+                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
+                databaseCall.bindParameter(writer, dbValue);
+            } else if ((parameter instanceof Struct) || (parameter instanceof Array) || (parameter instanceof Ref)) {
+                databaseCall.bindParameter(writer, parameter);
+                nBoundParameters = 1;
+            } else if (dbValue.getClass() == int[].class) {
+                nBoundParameters = printValuelist((int[])dbValue, databaseCall, writer);
+            } else if (dbValue instanceof AppendCallCustomParameter) {
+                // custom append is required (example BLOB, CLOB on Oracle8)
+                ((AppendCallCustomParameter)dbValue).append(writer);
+                nBoundParameters = 1;
+            } else if (dbValue instanceof BindCallCustomParameter) {
+                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
+                databaseCall.bindParameter(writer, dbValue);
+                nBoundParameters = 1;
+            } else if (parameter instanceof UUID) {
+                appendString(((UUID)dbValue).toString(), writer);
+            } else {
+                // Assume database driver primitive that knows how to print itself, this is required for drivers
+                // such as Oracle JDBC, Informix JDBC and others, as well as client specific classes.
+                writer.write(dbValue.toString());
+            }
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+
+        return nBoundParameters;
+    }
+
+    /**
+     * Appends a Boolean value as a number
+     */
+    protected void appendBoolean(Boolean bool, Writer writer) throws IOException {
+        if (bool) {
+            writer.write("1");
+        } else {
+            writer.write("0");
+        }
+    }
+
+    /**
+     * Append the ByteArray in ODBC literal format ({b hexString}).
+     * This limits the amount of Binary data by the length of the SQL. Binding should increase this limit.
+     */
+    protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
+        writer.write("{b '");
+        Helper.writeHexString(bytes, writer);
+        writer.write("'}");
+    }
+
+    /**
+     * Answer a platform correct string representation of a Date, suitable for SQL generation.
+     * The date is printed in the ODBC platform independent format {d 'yyyy-mm-dd'}.
+     */
+    protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
+        writer.write("{d '");
+        writer.write(Helper.printDate(date));
+        writer.write("'}");
+    }
+
+    /**
+     * Write number to SQL string. This is provided so that database which do not support
+     * Exponential format can customize their printing.
+     */
+    protected void appendNumber(Number number, Writer writer) throws IOException {
+        writer.write(number.toString());
+    }
+
+    /**
+     * INTERNAL:
+     * In case shouldBindLiterals is true, instead of null value a DatabaseField
+     * value may be passed (so that it's type could be used for binding null).
+     *
+     * @param canBind - allows higher up the stack (where more context exists) to tell if this literal can be bound
+     */
+    public void appendLiteralToCall(Call call, Writer writer, Object literal, Boolean canBind) {
+        if(!Boolean.FALSE.equals(canBind) && shouldBindLiterals()) {
+            appendLiteralToCallWithBinding(call, writer, literal);
+        } else {
+            int nParametersToAdd = appendParameterInternal(call, writer, literal);
+            for (int i = 0; i < nParametersToAdd; i++) {
+                ((DatabaseCall)call).getParameterTypes().add(ParameterType.LITERAL);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method in case the platform needs to do something special for binding literals.
+     * Note that instead of null value a DatabaseField
+     * value may be passed (so that it's type could be used for binding null).
+     */
+    protected void appendLiteralToCallWithBinding(Call call, Writer writer, Object literal) {
+        ((DatabaseCall)call).appendLiteral(writer, literal);
+    }
+
+    /**
+     * Write a database-friendly representation of the given parameter to the writer.
+     * Determine the class of the object to be written, and invoke the appropriate print method
+     * for that object. The default is "toString".
+     * The platform may decide to bind some types, such as byte arrays and large strings.
+     * Should only be called in case binding is not used.
+     */
+    @Override
+    public void appendParameter(Call call, Writer writer, Object parameter) {
+        appendParameterInternal(call, writer, parameter);
+    }
+
+    /**
+     * Write the string.  Quotes must be double quoted.
+     */
+    protected void appendString(String string, Writer writer) throws IOException {
+        writer.write('\'');
+        for (int position = 0; position < string.length(); position++) {
+            if (string.charAt(position) == '\'') {
+                writer.write("''");
+            } else {
+                writer.write(string.charAt(position));
+            }
+        }
+        writer.write('\'');
+    }
+
+    /**
+     * Answer a platform correct string representation of a Time, suitable for SQL generation.
+     * The time is printed in the ODBC platform independent format {t'hh:mm:ss'}.
+     */
+    protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
+        writer.write("{t '");
+        writer.write(Helper.printTime(time));
+        writer.write("'}");
+    }
+
+    /**
+     * Answer a platform correct string representation of a Timestamp, suitable for SQL generation.
+     * The timestamp is printed in the ODBC platform independent timestamp format {ts'YYYY-MM-DD HH:MM:SS.NNNNNNNNN'}.
+     */
+    protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
+        writer.write("{ts '");
+        writer.write(Helper.printTimestamp(timestamp));
+        writer.write("'}");
+    }
+
+    /**
+     * Answer a platform correct string representation of a Calendar as a Timestamp, suitable for SQL generation.
+     * The calendar is printed in the ODBC platform independent timestamp format {ts'YYYY-MM-DD HH:MM:SS.NNNNNNNNN'}.
+     */
+    protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
+        writer.write("{ts '");
+        writer.write(Helper.printCalendar(calendar));
+        writer.write("'}");
     }
 
     public boolean usesBatchWriting() {
@@ -2972,36 +3022,35 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Precondition: pkFields contained in usedFields contained in allFields
      * @param writer for writing the sql
      * @param table is original table for which temp table is created.
-     * @param session.
      * @param pkFields primary key fields for the original table.
      * @param usedFields fields that will be used by operation for which temp table is created.
      * @param allFields all mapped fields for the original table.
      */
      public void writeCreateTempTableSql(Writer writer, DatabaseTable table, AbstractSession session,
-                                        Collection pkFields,
-                                        Collection usedFields,
-                                        Collection allFields) throws IOException
+                                         Collection<DatabaseField> pkFields,
+                                         Collection<DatabaseField> usedFields,
+                                         Collection<DatabaseField> allFields) throws IOException
     {
         String body = getCreateTempTableSqlBodyForTable(table);
         if(body == null) {
             TableDefinition tableDef = new TableDefinition();
-            Collection fields;
+            Collection<DatabaseField> fields;
             if(supportsLocalTempTables()) {
                 fields = usedFields;
             } else {
                 // supportsGlobalTempTables() == true
                 fields = allFields;
             }
-            Iterator itFields = fields.iterator();
+            Iterator<DatabaseField> itFields = fields.iterator();
             while (itFields.hasNext()) {
-                DatabaseField field = (DatabaseField)itFields.next();
+                DatabaseField field = itFields.next();
                 FieldDefinition fieldDef;
                 //gfbug3307, should use columnDefinition if it was defined.
                 if ((field.getColumnDefinition()!= null) && (field.getColumnDefinition().length() == 0)) {
-                    Class type = ConversionManager.getObjectClass(field.getType());
+                    Class<?> type = ConversionManager.getObjectClass(field.getType());
                     // Default type to VARCHAR, if unknown.
                     if (type == null) {
-                        type = ClassConstants.STRING;
+                        type = ConversionManager.getObjectClass(ClassConstants.STRING);
                     }
                    fieldDef = new FieldDefinition(field.getNameDelimited(this), type);
                 } else {
@@ -3034,7 +3083,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @param table is original table for which temp table is created.
      * @param usedFields fields that will be used by operation for which temp table is created.
      */
-     public void writeInsertIntoTableSql(Writer writer, DatabaseTable table, Collection usedFields) throws IOException {
+     public void writeInsertIntoTableSql(Writer writer, DatabaseTable table, Collection<DatabaseField> usedFields) throws IOException {
         writer.write("INSERT INTO ");
         writer.write(getTempTableForTable(table).getQualifiedNameDelimited(this));
 
@@ -3088,8 +3137,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @param assignedFields fields to be assigned a new value.
      */
      public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
-                                                     Collection pkFields,
-                                                     Collection assignedFields) throws IOException
+                                                     Collection<DatabaseField> pkFields,
+                                                     Collection<DatabaseField> assignedFields) throws IOException
     {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
@@ -3103,7 +3152,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
         writer.write(") WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(this));
+        writer.write(pkFields.iterator().next().getNameDelimited(this));
         writer.write(" FROM ");
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
@@ -3126,14 +3175,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @param targetPkFields primary key fields for the target table.
      */
      public void writeDeleteFromTargetTableUsingTempTableSql(Writer writer, DatabaseTable table, DatabaseTable targetTable,
-                                                     Collection pkFields,
-                                                     Collection targetPkFields, DatasourcePlatform platform) throws IOException
+                                                             Collection<DatabaseField> pkFields,
+                                                             Collection<DatabaseField> targetPkFields, DatasourcePlatform platform) throws IOException
     {
         writer.write("DELETE FROM ");
         String targetTableName = targetTable.getQualifiedNameDelimited(this);
         writer.write(targetTableName);
         writer.write(" WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField)pkFields.iterator().next()).getNameDelimited(platform));
+        writer.write(pkFields.iterator().next().getNameDelimited(platform));
         writer.write(" FROM ");
         String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         writer.write(tempTableName);
@@ -3228,16 +3277,16 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeFieldsList(Writer writer, Collection fields, DatasourcePlatform platform) throws IOException {
+    protected static void writeFieldsList(Writer writer, Collection<DatabaseField> fields, DatasourcePlatform platform) throws IOException {
         boolean isFirst = true;
-        Iterator itFields = fields.iterator();
+        Iterator<DatabaseField> itFields = fields.iterator();
         while(itFields.hasNext()) {
             if(isFirst) {
                 isFirst = false;
             } else {
                 writer.write(", ");
             }
-            DatabaseField field = (DatabaseField)itFields.next();
+            DatabaseField field = itFields.next();
             writer.write(field.getNameDelimited(platform));
         }
     }
@@ -3246,7 +3295,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeAutoAssignmentSetClause(Writer writer, String tableName1, String tableName2, Collection fields, DatasourcePlatform platform) throws IOException {
+    protected static void writeAutoAssignmentSetClause(Writer writer, String tableName1, String tableName2, Collection<DatabaseField> fields, DatasourcePlatform platform) throws IOException {
         writer.write(" SET ");
         writeFieldsAutoClause(writer, tableName1, tableName2, fields, ", ", platform);
     }
@@ -3255,7 +3304,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeAutoJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection pkFields, DatasourcePlatform platform) throws IOException {
+    protected static void writeAutoJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection<DatabaseField> pkFields, DatasourcePlatform platform) throws IOException {
         writer.write(" WHERE ");
         writeFieldsAutoClause(writer, tableName1, tableName2, pkFields, " AND ", platform);
     }
@@ -3264,14 +3313,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeFieldsAutoClause(Writer writer, String tableName1, String tableName2, Collection fields, String separator, DatasourcePlatform platform) throws IOException {
+    protected static void writeFieldsAutoClause(Writer writer, String tableName1, String tableName2, Collection<DatabaseField> fields, String separator, DatasourcePlatform platform) throws IOException {
         writeFields(writer, tableName1, tableName2, fields, fields, separator, platform);
     }
     /**
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection pkFields1, Collection pkFields2, DatasourcePlatform platform) throws IOException {
+    protected static void writeJoinWhereClause(Writer writer, String tableName1, String tableName2, Collection<DatabaseField> pkFields1, Collection<DatabaseField> pkFields2, DatasourcePlatform platform) throws IOException {
         writer.write(" WHERE ");
         writeFields(writer, tableName1, tableName2, pkFields1, pkFields2, " AND ", platform);
     }
@@ -3280,10 +3329,10 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * helper method, don't override.
      */
-    protected static void writeFields(Writer writer, String tableName1, String tableName2, Collection fields1, Collection fields2, String separator, DatasourcePlatform platform) throws IOException {
+    protected static void writeFields(Writer writer, String tableName1, String tableName2, Collection<DatabaseField> fields1, Collection<DatabaseField> fields2, String separator, DatasourcePlatform platform) throws IOException {
         boolean isFirst = true;
-        Iterator itFields1 = fields1.iterator();
-        Iterator itFields2 = fields2.iterator();
+        Iterator<DatabaseField> itFields1 = fields1.iterator();
+        Iterator<DatabaseField> itFields2 = fields2.iterator();
         while(itFields1.hasNext()) {
             if(isFirst) {
                 isFirst = false;
@@ -3294,14 +3343,14 @@ public class DatabasePlatform extends DatasourcePlatform {
                 writer.write(tableName1);
                 writer.write(".");
             }
-            String fieldName1 = ((DatabaseField)itFields1.next()).getNameDelimited(platform);
+            String fieldName1 = itFields1.next().getNameDelimited(platform);
             writer.write(fieldName1);
             writer.write(" = ");
             if(tableName2 != null) {
                 writer.write(tableName2);
                 writer.write(".");
             }
-            String fieldName2 = ((DatabaseField)itFields2.next()).getNameDelimited(platform);
+            String fieldName2 = itFields2.next().getNameDelimited(platform);
             writer.write(fieldName2);
         }
     }
@@ -3316,9 +3365,9 @@ public class DatabasePlatform extends DatasourcePlatform {
 
         boolean shouldAcquireSequenceValueAfterInsert = false;
         DatabaseField field = new DatabaseField(qualifiedFieldName, getStartDelimiter(), getEndDelimiter());
-        Iterator descriptors = session.getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             if (!descriptor.usesSequenceNumbers()) {
                 continue;
             }
@@ -3402,6 +3451,16 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL:
+     * This method builds a Struct using the unwrapped connection within the session
+     * @return Struct
+     */
+    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, Vector<DatabaseField> orderedFields, AbstractSession session, Connection connection) throws SQLException {
+        java.sql.Connection unwrappedConnection = getConnection(session, connection);
+        return createStruct(structTypeName,attributes,unwrappedConnection);
+    }
+
+    /**
+     * INTERNAL:
      * Platforms that support java.sql.Array may override this method.
      * @return Array
      */
@@ -3449,9 +3508,16 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * Some databases have issues with using parameters on certain functions and relations.
      * This allows statements to disable binding only in these cases.
+     * <p>
+     * Alternatively, DatabasePlatforms can override specific ExpressionOperators and add them 
+     * to the platform specific operators. See {@link DatasourcePlatform#initializePlatformOperators()}
      */
     public boolean isDynamicSQLRequiredForFunctions() {
         return false;
+    }
+
+    public boolean allowBindingForSelectClause() {
+        return true;
     }
 
     /**
@@ -3696,7 +3762,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void freeTemporaryObject(Object value) throws SQLException {
     }
 
-
     /**
      * INTERNAL:
      * Allow initialization from the connection.
@@ -3768,6 +3833,25 @@ public class DatabasePlatform extends DatasourcePlatform {
             return true;
         } catch (Exception notFound) {
             return false;
+        }
+    }
+
+    // Eager initialization in constructor causes CORBA Extension tests to fail.
+    /**
+     * Get JSON support extension instance.
+     * This instance is initialized lazily with 1st JSON support request.
+     *
+     * @return JSON support extension instance
+     */
+    public DatabaseJsonPlatform getJsonPlatform() {
+        if (jsonPlatform != null) {
+            return jsonPlatform;
+        }
+        synchronized (this) {
+            if (jsonPlatform == null) {
+                jsonPlatform = JsonPlatformManager.getInstance().createPlatform(this.getClass());
+            }
+            return jsonPlatform;
         }
     }
 

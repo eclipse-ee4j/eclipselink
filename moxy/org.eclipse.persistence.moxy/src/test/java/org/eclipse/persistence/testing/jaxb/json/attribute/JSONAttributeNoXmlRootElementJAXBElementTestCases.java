@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,29 +27,33 @@ public class JSONAttributeNoXmlRootElementJAXBElementTestCases extends JAXBWithJ
 
     public JSONAttributeNoXmlRootElementJAXBElementTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{AddressNoRoot.class});
+        setClasses(new Class<?>[]{AddressNoRoot.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
-    public Class getUnmarshalClass(){
+    @Override
+    public Class<?> getUnmarshalClass(){
         return AddressNoRoot.class;
     }
 
+    @Override
     public Object getReadControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName("street"), AddressNoRoot.class, new AddressNoRoot());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName("street"), AddressNoRoot.class, new AddressNoRoot());
         return jbe;
     }
 
 
+    @Override
     protected Object getJSONReadControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, getAddress());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, getAddress());
         return jbe;
     }
 
+    @Override
     protected Object getControlObject() {
-        JAXBElement jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, getAddress());
+        JAXBElement<AddressNoRoot> jbe = new JAXBElement<AddressNoRoot>(new QName(""), AddressNoRoot.class, getAddress());
         return jbe;
 
 
@@ -64,6 +68,8 @@ public class JSONAttributeNoXmlRootElementJAXBElementTestCases extends JAXBWithJ
         return add;
     }
 
+      @Override
       public void testRoundTrip() throws Exception {}
+      @Override
       public void testUnmarshallerHandler() throws Exception {}
 }

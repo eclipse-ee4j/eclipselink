@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,11 +24,11 @@ package org.eclipse.persistence.testing.tests.proxyindirection;
  * @since        08/24/2000 11:11:05
  */
 public interface LargeProject extends Project {
-    public double getBudget();
+    double getBudget();
 
-    public String getInvestor();
+    String getInvestor();
 
-    public void setBudget(double value);
+    void setBudget(double value);
 
-    public void setInvestor(String value);
+    void setInvestor(String value);
 }

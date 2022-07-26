@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,8 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.framework.*;
 
+import java.util.Iterator;
+
 // To make this test fail, comment a single line of code:
 //   session.clearLastDescriptorAccessed();
 // in org.eclipse.persistence.descriptors.ClassDescriptor.preInterfaceInitialization() method.
@@ -32,14 +34,15 @@ public class AddDescriptorsTest extends AutoVerifyTestCase {
         setDescription("Tests DatabaseSession.addDescriptors() method");
     }
 
+    @Override
     public void reset() {
         if (newProjectDescriptor == oldProjectDescriptor) {
             // The test has failed - at least one "old" descriptor is referenced by a new descriptor.
             // To ensure consistency, remove EmployeeSystem interface descriptors first,
             // then add all EmployeeSystem descriptors again
-            java.util.Iterator iterator = getSession().getDescriptors().keySet().iterator();
+            Iterator<Class<?>> iterator = getSession().getDescriptors().keySet().iterator();
             while (iterator.hasNext()) {
-                Class cls = (Class)iterator.next();
+                Class<?> cls = iterator.next();
                 String packageName = Helper.getPackageName(cls);
                 if (packageName.equals("org.eclipse.persistence.testing.models.employee.interfaces")) {
                     getSession().getDescriptors().remove(cls);
@@ -49,6 +52,7 @@ public class AddDescriptorsTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         oldProjectDescriptor = getSession().getClassDescriptor(Project.class);
         if (oldProjectDescriptor == null) {
@@ -56,10 +60,12 @@ public class AddDescriptorsTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         ((DatabaseSession)getSession()).addDescriptors(new EmployeeProject());
     }
 
+    @Override
     public void verify() {
         newProjectDescriptor = getSession().getDescriptor(SmallProject.class).getInheritancePolicy().getParentDescriptor();
         if (newProjectDescriptor == oldProjectDescriptor) {

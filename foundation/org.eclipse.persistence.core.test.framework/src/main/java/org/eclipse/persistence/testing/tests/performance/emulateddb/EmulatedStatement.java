@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -344,6 +344,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @deprecated
      */
     @Override
+    @Deprecated
     public void setUnicodeStream(int parameterIndex, java.io.InputStream x, int length) throws SQLException {
     }
 
@@ -1266,7 +1267,6 @@ public class EmulatedStatement implements PreparedStatement {
      * <code>BatchUpdateException.getUpdateCounts</code>
      * will contain as many elements as there are commands in the batch, and
      * at least one of the elements will be the following:
-     * <P>
      * <LI>A value of <code>EXECUTE_FAILED</code> -- indicates that the command failed
      * to execute successfully and occurs only if a driver continues to
      * process commands after a command fails

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -27,6 +27,9 @@
 //       - 338610: JPA 2.1 Functionality for Java EE 7 (JSR-338)
 //     09/06/2017-2.7 Jody Grassel
 //       - 521954: Eclipselink is not able to parse ORM XML files using the 2.2 schema
+//     02/10/2022-4.0 Oracle
+//       - JPA 3.1 UUID Support
+
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.io.IOException;
@@ -75,6 +78,8 @@ public class XMLEntityMappingsReader {
     public static final String ORM_2_2_NAMESPACE = "http://xmlns.jcp.org/xml/ns/persistence/orm";
     public static final String ORM_3_0_XSD = "org/eclipse/persistence/jpa/orm_3_0.xsd";
     public static final String ORM_3_0_NAMESPACE = "https://jakarta.ee/xml/ns/persistence/orm";
+    public static final String ORM_3_1_XSD = "org/eclipse/persistence/jpa/orm_3_1.xsd";
+    public static final String ORM_3_1_NAMESPACE = "https://jakarta.ee/xml/ns/persistence/orm";
     public static final String ECLIPSELINK_ORM_XSD = "org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
 
@@ -83,6 +88,7 @@ public class XMLEntityMappingsReader {
     private static XMLContext m_orm2_1Project;
     private static XMLContext m_orm2_2Project;
     private static XMLContext m_orm3_0Project;
+    private static XMLContext m_orm3_1Project;
     private static XMLContext m_eclipseLinkOrmProject;
 
     private static Schema m_orm1_0Schema;
@@ -90,7 +96,11 @@ public class XMLEntityMappingsReader {
     private static Schema m_orm2_1Schema;
     private static Schema m_orm2_2Schema;
     private static Schema m_orm3_0Schema;
+    private static Schema m_orm3_1Schema;
     private static Schema m_eclipseLinkOrmSchema;
+
+    private XMLEntityMappingsReader() {
+    }
 
     /**
      * Check the orm.xml to determine which project and schema to use.
@@ -143,10 +153,15 @@ public class XMLEntityMappingsReader {
                 if (validateSchema) {
                     context[1] = getOrm2_2Schema();
                 }
-            } else {
+            } else if (contentHandler.getVersion().contains("3.0")) {
                 context[0] = getOrm3_0Project();
                 if (validateSchema) {
                     context[1] = getOrm3_0Schema();
+                }
+            } else {
+                context[0] = getOrm3_1Project();
+                if (validateSchema) {
+                    context[1] = getOrm3_1Schema();
                 }
             }
         }
@@ -297,6 +312,28 @@ public class XMLEntityMappingsReader {
     }
 
     /**
+     * @return the JPA 3.1 orm project.
+     */
+    public static XMLContext getOrm3_1Project() {
+        if (m_orm3_1Project == null) {
+            m_orm3_1Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_3_1_NAMESPACE, ORM_3_1_XSD));
+        }
+
+        return m_orm3_1Project;
+    }
+
+    /**
+     * @return the JPA 3.1 orm schema.
+     */
+    public static Schema getOrm3_1Schema() throws IOException, SAXException {
+        if (m_orm3_1Schema == null) {
+            m_orm3_1Schema = loadLocalSchema(ORM_3_1_XSD);
+        }
+
+        return m_orm3_1Schema;
+    }
+
+    /**
      * Free the project and schema objects to avoid holding onto the memory.
      * This can be done post-deployment to conserve memory.
      */
@@ -306,6 +343,7 @@ public class XMLEntityMappingsReader {
         m_orm2_1Project = null;
         m_orm2_2Project = null;
         m_orm3_0Project = null;
+        m_orm3_1Project = null;
         m_eclipseLinkOrmProject = null;
 
         m_orm1_0Schema = null;
@@ -313,6 +351,7 @@ public class XMLEntityMappingsReader {
         m_orm2_1Schema = null;
         m_orm2_2Schema = null;
         m_orm3_0Schema = null;
+        m_orm3_1Schema = null;
         m_eclipseLinkOrmSchema = null;
     }
 
@@ -322,7 +361,6 @@ public class XMLEntityMappingsReader {
      * eclipselink.orm.validate.schema is set to true or false.<br>
      * The default value is false.
      * @param properties - PersistenceUnitInfo properties on the project
-     * @return
      */
     private static boolean isORMSchemaValidationPerformed(Map properties) {
         // Get property from persistence.xml (we are not yet parsing sessions.xml)
@@ -388,11 +426,7 @@ public class XMLEntityMappingsReader {
 
     /**
      * INTERNAL:
-     * @param url
-     * @param classLoader
      * @param properties - PersistenceUnitInfo properties on the project
-     * @return
-     * @throws IOException
      */
     public static XMLEntityMappings read(URL url, ClassLoader classLoader, Properties properties) throws IOException {
         InputStreamReader reader1 = null;
@@ -427,11 +461,6 @@ public class XMLEntityMappingsReader {
      * will get the schema from the same classloader that loaded this class and
      * hence works for the case where the schema is shipped as part of EclipseLink
      *
-     * @param unmarshaller
-     * @param schemaName
-     * @param validateORMSchema
-     * @throws IOException
-     * @throws SAXException
      */
     private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, Schema schema) {
         try {

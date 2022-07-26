@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 public final class AsOfClauseTest extends JPQLParserTest {
 
     @Test
-    public void test_JPQLQuery_01() throws Exception {
+    public void test_JPQLQuery_01() {
 
         // SELECT e
         // FROM Employee e
@@ -54,7 +54,7 @@ public final class AsOfClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_05() throws Exception {
+    public void test_JPQLQuery_05() {
 
         // select e
         // from Employee e
@@ -71,7 +71,7 @@ public final class AsOfClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_06() throws Exception {
+    public void test_JPQLQuery_06() {
 
         String jpqlQuery = "SELECT e FROM Employee e AS OF";
 
@@ -87,7 +87,7 @@ public final class AsOfClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_07() throws Exception {
+    public void test_JPQLQuery_07() {
 
         String jpqlQuery = "SELECT e FROM Employee e AS OF ";
 
@@ -103,7 +103,7 @@ public final class AsOfClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_08() throws Exception {
+    public void test_JPQLQuery_08() {
 
         String jpqlQuery = "SELECT e FROM Employee e AS OF SCN";
 
@@ -119,7 +119,7 @@ public final class AsOfClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_09() throws Exception {
+    public void test_JPQLQuery_09() {
 
         String jpqlQuery = "SELECT e FROM Employee e AS OF SCN ";
 
@@ -136,7 +136,7 @@ public final class AsOfClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_10() throws Exception {
+    public void test_JPQLQuery_10() {
 
         String jpqlQuery = "SELECT e FROM Employee e AS OF TIMESTAMP";
 
@@ -152,7 +152,7 @@ public final class AsOfClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_11() throws Exception {
+    public void test_JPQLQuery_11() {
 
         String jpqlQuery = "SELECT e FROM Employee e AS OF TIMESTAMP ";
 
@@ -169,7 +169,7 @@ public final class AsOfClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_12() throws Exception {
+    public void test_JPQLQuery_12() {
 
         String jpqlQuery = "SELECT e FROM Employee e AS OF WHERE e.name = 'JPQL'";
 
@@ -186,7 +186,7 @@ public final class AsOfClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_13() throws Exception {
+    public void test_JPQLQuery_13() {
 
         String jpqlQuery = "SELECT e FROM Employee e AS OF SCN WHERE e.name = 'JPQL'";
 
@@ -204,7 +204,7 @@ public final class AsOfClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_14() throws Exception {
+    public void test_JPQLQuery_14() {
 
         String jpqlQuery = "SELECT e FROM Employee e AS OF TIMESTAMP WHERE e.name = 'JPQL'";
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.List;
-import java.util.Set;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Parameter;
@@ -27,12 +26,7 @@ import jakarta.persistence.TransactionRequiredException;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.StoredProcedureQueryImpl;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
-import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ColumnResult;
 import org.eclipse.persistence.queries.ConstructorResult;
 import org.eclipse.persistence.queries.EntityResult;
@@ -49,7 +43,7 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa21.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 public class StoredProcedureQueryTestSuite extends JUnitTestCase {
     public StoredProcedureQueryTestSuite() {}
@@ -241,8 +235,8 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.setParameter("old_p_code_v", postalCodeTypo);
 
                 // Make these calls to test the getParameter call with a name.
-                Parameter paramNew = query.getParameter("new_p_code_v");
-                Parameter paramOld = query.getParameter("old_p_code_v");
+                Parameter<?> paramNew = query.getParameter("new_p_code_v");
+                Parameter<?> paramOld = query.getParameter("old_p_code_v");
 
                 Object results = query.getSingleResult();
             } catch (IllegalStateException e) {
@@ -347,7 +341,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // reason MySql returns a Long here. By position is ok, that is,
                 // it returns an Integer (as we registered)
                 if (outputParamValueFromName instanceof Long) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals((long) numberOfEmployes));
                 } else if (outputParamValueFromName instanceof Integer) {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(numberOfEmployes));
                 }
@@ -383,7 +377,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // This test also mixes index and named parameters, so this test my be invalid to begin with.
                 assertNotNull("The output parameter was null.", outputParamValueFromPosition);
                 if (outputParamValueFromName instanceof Long) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(new Long(numberOfEmployes)));
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals((long) numberOfEmployes));
                 } else if (outputParamValueFromName instanceof Integer) {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
                 }
@@ -512,7 +506,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // reason MySql returns a Long here. By position is ok, that is,
                 // it returns an Integer (as we registered)
                 if (outputParamValueFromName instanceof Long) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals((long) numberOfEmployes));
                 } else if (outputParamValueFromName instanceof Integer) {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(numberOfEmployes));
                 }
@@ -547,7 +541,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // This test also mixes index and named parameters, so this test my be invalid to begin with.
                 assertNotNull("The output parameter was null.", outputParamValueFromPosition);
                 if (outputParamValueFromName instanceof Long) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(new Long(numberOfEmployes)));
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals((long) numberOfEmployes));
                 } else if (outputParamValueFromName instanceof Integer) {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
                 }
@@ -676,7 +670,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertTrue("Incorrect number of addresses returned", addresses.size() == 1);
                 Object[] addressContent = (Object[]) addresses.get(0);
                 assertTrue("Incorrect data content size", addressContent.length == 6);
-                assertTrue("Id content incorrect", addressContent[0].equals(new Long(address1.getId())));
+                assertTrue("Id content incorrect", addressContent[0].equals((long) address1.getId()));
                 assertTrue("Steet content incorrect", addressContent[1].equals(address1.getStreet()));
                 assertTrue("City content incorrect", addressContent[2].equals(address1.getCity()));
                 assertTrue("Country content incorrect", addressContent[3].equals(address1.getCountry()));
@@ -953,9 +947,9 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.setParameter(2, 2);
 
                 // Make this call to test the getParameter call with a position.
-                Parameter param1 = query.getParameter(1);
-                Parameter param2 = query.getParameter(2);
-                Parameter param3 = query.getParameter(3);
+                Parameter<?> param1 = query.getParameter(1);
+                Parameter<?> param2 = query.getParameter(2);
+                Parameter<?> param3 = query.getParameter(3);
 
             } catch (IllegalArgumentException e) {
                 if (isTransactionActive(em)){

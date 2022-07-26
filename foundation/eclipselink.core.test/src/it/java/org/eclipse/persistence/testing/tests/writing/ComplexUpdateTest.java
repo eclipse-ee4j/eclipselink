@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,10 +50,12 @@ public class ComplexUpdateTest extends WriteObjectTest {
         this.shouldCommitParent = true;
     }
 
+    @Override
     public String getName() {
-        return super.getName() + new Boolean(usesUnitOfWork) + new Boolean(usesNestedUnitOfWork);
+        return super.getName() + usesUnitOfWork + usesNestedUnitOfWork;
     }
 
+    @Override
     public void reset() {
         if (getExecutor().getSession().isUnitOfWork()) {
             getExecutor().setSession(((UnitOfWork)getSession()).getParent());
@@ -65,6 +67,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
         super.reset();
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -79,6 +82,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         changeObject();
         if (this.usesUnitOfWork) {

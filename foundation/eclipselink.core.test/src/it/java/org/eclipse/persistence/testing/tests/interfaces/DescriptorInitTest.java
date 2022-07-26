@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.interfaces.*;
 
+import java.util.Iterator;
+
 public class DescriptorInitTest extends TestCase {
     public Project project;
     public DatabaseSession dbsession;
@@ -29,11 +31,13 @@ public class DescriptorInitTest extends TestCase {
         setDescription("Tests initialization of descriptors while adding during enumeration.");
     }
 
+    @Override
     public void reset() {
         // Must disconnect the previous session.
         ((org.eclipse.persistence.sessions.DatabaseSession)getSession()).login();
     }
 
+    @Override
     public void setup() {
         project = new InterfaceHashtableProject();
         project.setLogin((DatabaseLogin)getSession().getLogin().clone());
@@ -44,18 +48,19 @@ public class DescriptorInitTest extends TestCase {
         ((org.eclipse.persistence.sessions.DatabaseSession)getSession()).logout();
     }
 
+    @Override
     public void test() {
-        for (java.util.Iterator iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
-            ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
+        for (Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+            ClassDescriptor descriptor = iterator.next();
             String className = descriptor.getJavaClass().toString();
 
             String part1;
             String part2;
-            Character ch = new Character(className.charAt(className.length() - 2));
-            if (ch.equals(new Character('0'))) { //Class100
+            Character ch = className.charAt(className.length() - 2);
+            if (ch.equals('0')) { //Class100
                 part1 = className.substring(6, className.length() - 3);
                 part2 = className.substring(className.length() - 3);
-            } else if (Character.isDigit(ch.charValue())) { //Class##
+            } else if (Character.isDigit(ch)) { //Class##
                 part1 = className.substring(6, className.length() - 2);
                 part2 = className.substring(className.length() - 2);
             } else { //Class#
@@ -75,10 +80,11 @@ public class DescriptorInitTest extends TestCase {
         dbsession.logout();
     }
 
+    @Override
     public void verify() {
         //Make sure all Descriptors have been initialized.
-        for (java.util.Iterator iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
-            ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
+        for (Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator(); iterator.hasNext(); ) {
+            ClassDescriptor descriptor = iterator.next();
             if (!descriptor.isFullyInitialized()) {
                 throw new TestErrorException("Descriptor \"" + descriptor + "\" is NOT INITIALIZED");
             }

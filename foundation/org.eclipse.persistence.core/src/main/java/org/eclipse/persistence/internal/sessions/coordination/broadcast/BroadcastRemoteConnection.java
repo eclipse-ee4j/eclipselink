@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,10 +25,10 @@ import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 /**
  * <p>
  * <b>Purpose</b>: Base class extending RemoteConnection for broadcasting RCM protocols: JMS and Oc4jJGroups.
- * <p>
+ * </p><p>
  * <b>Description</b>: Defines lifecycle states and most of the methods,
  * as well as exception processing and info logging.
- * <p>
+ * </p>
  * @author Andrei Ilitchev
  * @since OracleAS TopLink 11<i>g</i> (11.1.1)
  */
@@ -55,7 +55,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
     // (so that a new array is not created each time).
     protected Object[] infoExt;
 
-    public BroadcastRemoteConnection(RemoteCommandManager rcm) {
+    protected BroadcastRemoteConnection(RemoteCommandManager rcm) {
         this.serviceId = rcm.getServiceId();
         this.rcm = rcm;
         this.topicName = ((BroadcastTransportManager)rcm.getTransportManager()).getTopicName();

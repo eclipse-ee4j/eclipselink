@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class JSONAttributePrefixOnMarshallerTestCases extends JSONAttributePrefi
         super(name);
 
     }
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         //this should override the properties set on the context in getProperties (called during inherited c-tor setClasses call)
@@ -41,6 +42,7 @@ public class JSONAttributePrefixOnMarshallerTestCases extends JSONAttributePrefi
         }
     }
 
+    @Override
     public Map getProperties(){
         Map props = new HashMap();
         props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "CONTEXT_PREFIX");

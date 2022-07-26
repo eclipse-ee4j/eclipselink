@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number in the query" , 3, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
             }
@@ -96,7 +100,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 0, call.getParameters().size());
             }
@@ -114,9 +122,9 @@ public class TestParameterBinding {
             //3: Test COALESCE function with all arguments as parameters
             TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
                     + "WHERE ABS(COALESCE(?1, ?2)) >= ?3", GenericEntity.class);
-            query.setParameter(1, new Integer(1));
-            query.setParameter(2, new Integer(20));
-            query.setParameter(3, new Integer(300));
+            query.setParameter(1, 1);
+            query.setParameter(2, 20);
+            query.setParameter(3, 300);
             query.getResultList();
 
             DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
@@ -128,7 +136,11 @@ public class TestParameterBinding {
             }
 
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
             }
@@ -178,7 +190,11 @@ public class TestParameterBinding {
             }
 
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
             }
@@ -212,7 +228,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 0, call.getParameters().size());
             }
@@ -242,10 +262,31 @@ public class TestParameterBinding {
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
+            if(pl.isDB2Z() || pl.isDerby()) {
+                Assert.fail("Expected a failure from " + pl);
+            }
+
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+            }
+        } catch(PersistenceException e) {
+            Platform pl = forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
+            //When both operands of a CONCAT operator are untyped parameters, error on DB2/z
+            if(pl.isDB2Z()) {
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+                Assert.assertEquals("com.ibm.db2.jcc.am.SqlSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else if(pl.isDerby()) {
+                //When all the operands of '||' expression are untyped parameters, error 42X35 on Derby
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+                Assert.assertEquals("java.sql.SQLSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else {
+                Assert.fail("Unexpected failure: " + e);
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -275,7 +316,11 @@ public class TestParameterBinding {
             }
 
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
             }
@@ -319,7 +364,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
             }
@@ -344,7 +393,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 0, call.getParameters().size());
             }
@@ -474,7 +527,11 @@ public class TestParameterBinding {
             }
 
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
             }
@@ -513,10 +570,31 @@ public class TestParameterBinding {
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
+            if(pl.isDB2Z() || pl.isDerby()) {
+                Assert.fail("Expected a failure from " + pl);
+            }
+
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+            }
+        } catch(PersistenceException e) {
+            Platform pl = forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
+            if(pl.isDB2Z()) {
+                //When all the operands of an IN predicate are untyped parameters, error on DB2/z
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+                Assert.assertEquals("com.ibm.db2.jcc.am.SqlSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else if(pl.isDerby()) {
+                //Use as the left operand of an IN list is not allowed when all operands are untyped parameters, error 42X35 on Derby
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+                Assert.assertEquals("java.sql.SQLSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else {
+                Assert.fail("Unexpected failure: " + e);
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -540,10 +618,31 @@ public class TestParameterBinding {
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
+            if(pl.isDB2Z() || pl.isDerby()) {
+                Assert.fail("Expected a failure from " + pl);
+            }
+
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+            }
+        } catch(PersistenceException e) {
+            Platform pl = forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
+            if(pl.isDB2Z()) {
+                //When all the operands of an IN predicate are untyped parameters, error on DB2/z
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+                Assert.assertEquals("com.ibm.db2.jcc.am.SqlSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else if(pl.isDerby()) {
+                //Use as the left operand of an IN list is not allowed when all operands are untyped parameters, error 42X35 on Derby
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+                Assert.assertEquals("java.sql.SQLSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else {
+                Assert.fail("Unexpected failure: " + e);
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -568,7 +667,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
             }
@@ -600,7 +703,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
             }
@@ -628,7 +735,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 1, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 1, call.getParameters().size());
             }
@@ -657,7 +768,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 1, call.getParameters().size());
             }
@@ -684,7 +799,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 2, call.getParameters().size());
             }
@@ -712,7 +831,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 3, call.getParameters().size());
             }
@@ -742,7 +865,11 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.shouldBindLiterals()) {
-                Assert.assertEquals("The number of parameters found does not match the number supplied" , 7, call.getParameters().size());
+                if(pl.allowBindingForSelectClause()) {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 7, call.getParameters().size());
+                } else {
+                    Assert.assertEquals("The number of parameters found does not match the number supplied" , 6, call.getParameters().size());
+                }
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
             }

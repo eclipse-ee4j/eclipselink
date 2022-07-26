@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,6 @@ import junit.framework.TestCase;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -46,8 +45,17 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "Dynamic JAXB: Context Creation: " + super.getName();
+    }
+
+    public void setUp() {
+        System.setProperty(JAXBContext.JAXB_CONTEXT_FACTORY, DynamicJAXBContextFactory.class.getName());
+    }
+
+    public void tearDown() {
+        System.clearProperty(JAXBContext.JAXB_CONTEXT_FACTORY);
     }
 
     public void testNewInstanceString() throws JAXBException {
@@ -69,7 +77,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceClassesError() throws JAXBException {
-        Class[] classes = new Class[] { this.getClass() };
+        Class<?>[] classes = new Class<?>[] { this.getClass() };
 
         JAXBException caughtException = null;
         try {
@@ -83,7 +91,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceClassesPropsError() throws JAXBException {
-        Class[] classes = new Class[] { this.getClass() };
+        Class<?>[] classes = new Class<?>[] { this.getClass() };
 
         JAXBException ex = null;
         try {
@@ -107,7 +115,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.dynamic", new StreamSource(iStream));
 
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         // Have to include a path to a jaxb.properties, so just reusing a context path that does contain one.
         DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
@@ -133,11 +141,12 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceXSDExternalBinding() throws Exception {
+        System.clearProperty(JAXBContext.JAXB_CONTEXT_FACTORY);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
 
-        InputStream xsdStream = classLoader.getSystemResourceAsStream(EXAMPLE_XSD);
+        InputStream xsdStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
         Source xsdSource = new StreamSource(xsdStream);
         // Set SYSTEM_ID to the filename part of the fully qualified EXAMPLE_XSD
         xsdSource.setSystemId(EXAMPLE_XSD.substring(EXAMPLE_XSD.lastIndexOf('/') + 1));
@@ -150,6 +159,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdSource);
         properties.put(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY, xjbSource);
+        properties.put(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DYNAMIC);
 
         // Have to include a path to a jaxb.properties, so just reusing a context path that does contain one.
         DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
@@ -221,7 +231,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         // To use schema imports, schemas must be given as Sources
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-        InputStream inputStream = classLoader.getSystemResourceAsStream(EXAMPLE_XSD);
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -274,11 +284,12 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
     }
 
     public void testNewInstanceXSDExternalBindings() throws Exception {
+        System.clearProperty(JAXBContext.JAXB_CONTEXT_FACTORY);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
 
-        InputStream xsdStream = classLoader.getSystemResourceAsStream(EXAMPLE_XSD);
+        InputStream xsdStream = ClassLoader.getSystemResourceAsStream(EXAMPLE_XSD);
         Source xsdSource = new StreamSource(xsdStream);
         // Set SYSTEM_ID to the filename part of the fully qualified EXAMPLE_XSD
         xsdSource.setSystemId(EXAMPLE_XSD.substring(EXAMPLE_XSD.lastIndexOf('/') + 1));
@@ -300,6 +311,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdSource);
         properties.put(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY, extBindings);
+        properties.put(JAXBContextProperties.MOXY_FACTORY, JAXBContextProperties.Factory.DYNAMIC);
 
         // Have to include a path to a jaxb.properties, so just reusing a context path that does contain one.
         DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.eclipse.persistence.testing.jaxb.dynamic", classLoader, properties);
@@ -459,7 +471,6 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new HashMap<String, Source>());
 
         DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(classLoader, properties);
 

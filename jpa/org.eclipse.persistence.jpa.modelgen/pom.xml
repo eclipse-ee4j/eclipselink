@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -58,23 +58,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <executions>
-                    <!--Compile CanonicalModelProcessor with disabled annotation processing first-->
                     <execution>
                         <id>default-compile</id>
                         <configuration>
-                            <compilerArgument>-proc:none</compilerArgument>
-                            <includes>
-                                <include>org/eclipse/persistence/internal/jpa/modelgen/CanonicalModelProcessor.java</include>
-                                <!--include dependencies required for CanonicalModelProcessor -->
-                            </includes>
+                            <proc>none</proc>
                         </configuration>
-                    </execution>
-                    <execution>
-                        <id>compile-project</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -106,6 +94,20 @@
                         <configuration>
                             <skipTests>${test-skip-jpa-modelgen}</skipTests>
                             <reportNameSuffix>test-jpa-modelgen</reportNameSuffix>
+                            <includes>
+                                <include>org.eclipse.persistence.jpa.test.modelgen.TestProcessor</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-jpa-modelgen-jpms</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <useModulePath>true</useModulePath>
+                            <skipTests>${test-skip-jpa-modelgen}</skipTests>
+                            <reportNameSuffix>test-jpa-modelgen-jpms</reportNameSuffix>
                             <includes>
                                 <include>org.eclipse.persistence.jpa.test.modelgen.TestProcessor</include>
                             </includes>

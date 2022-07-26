@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,6 @@ import org.eclipse.persistence.exceptions.*;
 /**
  * Generic test to ensure that the correct exceptions are being thrown for bad expressions.
  * @author Peter O'Blenis
- * @date Feb. 3/99
  */
 public class BadExpressionTest extends AutoVerifyTestCase {
     // Expression to test
@@ -43,6 +42,7 @@ public class BadExpressionTest extends AutoVerifyTestCase {
         m_expression = expression;
     }
 
+    @Override
     public void test() {
         if ((m_expression == null) || (m_nExceptionCode == -1)) {
             throw new RuntimeException("BadExpressionTest was invoked without setting all parameters");

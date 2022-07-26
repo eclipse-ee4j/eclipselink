@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,6 +79,7 @@ public class OracleNoSQLInteraction implements Interaction {
      * The spec is either GET, PUT or DELETE interaction.
      */
     @Override
+    @SuppressWarnings({"unchecked"})
     public jakarta.resource.cci.Record execute(InteractionSpec spec, jakarta.resource.cci.Record record) throws ResourceException {
         if (!(spec instanceof OracleNoSQLInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
@@ -92,7 +93,7 @@ public class OracleNoSQLInteraction implements Interaction {
             OracleNoSQLOperation operation = noSqlSpec.getOperation();
             if (operation == OracleNoSQLOperation.GET) {
                 OracleNoSQLRecord output = new OracleNoSQLRecord();
-                for (Map.Entry entry : (Set<Map.Entry>)input.entrySet()) {
+                for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>)input.entrySet()) {
                     Key key = Key.createKey(createMajorKey(entry.getKey()));
                     Map<Key, ValueVersion> values = this.connection.getStore().multiGet(
                             key, null, null, noSqlSpec.getConsistency(), noSqlSpec.getTimeout(), TimeUnit.MILLISECONDS);
@@ -132,7 +133,7 @@ public class OracleNoSQLInteraction implements Interaction {
                 return output;
             } else if (operation == OracleNoSQLOperation.ITERATOR) {
                 OracleNoSQLRecord output = new OracleNoSQLRecord();
-                for (Map.Entry entry : (Set<Map.Entry>)input.entrySet()) {
+                for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>)input.entrySet()) {
                     Key key = Key.createKey(createMajorKey(entry.getKey()));
                     Iterator<KeyValueVersion> values = this.connection.getStore().storeIterator(
                             Direction.UNORDERED, 0, key, null, null, noSqlSpec.getConsistency(), noSqlSpec.getTimeout(), TimeUnit.MILLISECONDS);
@@ -171,11 +172,11 @@ public class OracleNoSQLInteraction implements Interaction {
                 return output;
             } else if ((operation == OracleNoSQLOperation.PUT) || (operation == OracleNoSQLOperation.PUT_IF_ABSENT)
                     || (operation == OracleNoSQLOperation.PUT_IF_PRESENT) || (operation == OracleNoSQLOperation.PUT_IF_VERSION)) {
-                List<Operation> operations = new ArrayList();
-                for (Map.Entry entry : (Set<Map.Entry>)input.entrySet()) {
+                List<Operation> operations = new ArrayList<>();
+                for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>)input.entrySet()) {
                     Object inputValue = entry.getValue();
-                    List majorKeys = createMajorKey(entry.getKey());
-                    List<String> minorKeys = new ArrayList<String>();
+                    List<String> majorKeys = createMajorKey(entry.getKey());
+                    List<String> minorKeys = new ArrayList<>();
                     putValues(inputValue, majorKeys, minorKeys, noSqlSpec, operations);
                 }
                 List<OperationResult> results = this.connection.getStore().execute(operations, noSqlSpec.getDurability(), noSqlSpec.getTimeout(), TimeUnit.MILLISECONDS);
@@ -185,12 +186,12 @@ public class OracleNoSQLInteraction implements Interaction {
                     }
                 }
             } else if (operation == OracleNoSQLOperation.DELETE) {
-                for (Map.Entry entry : (Set<Map.Entry>)input.entrySet()) {
+                for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>)input.entrySet()) {
                     Key key = Key.createKey(createMajorKey(entry.getKey()));
                     this.connection.getStore().multiDelete(key, null, null, noSqlSpec.getDurability(), noSqlSpec.getTimeout(), TimeUnit.MILLISECONDS);
                 }
             } else if (operation == OracleNoSQLOperation.DELETE_IF_VERSION) {
-                for (Map.Entry entry : (Set<Map.Entry>)input.entrySet()) {
+                for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>)input.entrySet()) {
                     Key key = Key.createKey(createMajorKey(entry.getKey()));
                     boolean success = this.connection.getStore().deleteIfVersion(key, noSqlSpec.getVersion(), null, noSqlSpec.getDurability(), noSqlSpec.getTimeout(), TimeUnit.MILLISECONDS);
                     if (!success) {
@@ -201,9 +202,7 @@ public class OracleNoSQLInteraction implements Interaction {
                 throw new ResourceException("Invalid NoSQL operation:" + operation);
             }
         } catch (Exception exception) {
-            ResourceException resourceException = new ResourceException(exception.toString());
-            resourceException.initCause(exception);
-            throw resourceException;
+            throw new ResourceException(exception);
         }
         return null;
     }
@@ -224,12 +223,13 @@ public class OracleNoSQLInteraction implements Interaction {
      * this allows for a special key syntax to be used, or a list.
      * "[&lt;key1&gt;,&lt;key2&gt;,..]"
      */
-    protected List createMajorKey(Object key) {
-        List majorKeys = null;
+    @SuppressWarnings({"unchecked"})
+    protected List<String> createMajorKey(Object key) {
+        List<String> majorKeys = null;
         if (key instanceof List) {
-            majorKeys = (List)key;
+            majorKeys = (List<String>)key;
         } else {
-            majorKeys = new ArrayList<String>();
+            majorKeys = new ArrayList<>();
             String keyString = key.toString();
             if ((keyString.length() > 2) && (keyString.charAt(0) == '[') && (keyString.charAt(keyString.length() - 1) == ']')) {
                 int startIndex = 1;
@@ -255,17 +255,10 @@ public class OracleNoSQLInteraction implements Interaction {
      */
     protected void putValues(Object element, List<String> majorKeys, List<String> minorKeys, OracleNoSQLInteractionSpec spec, List<Operation> operations) {
         if (element instanceof Collection) {
-            element = ((List)element).get(0);
+            element = ((List<?>)element).get(0);
             // Append nested record using minor keys.
-            for (Map.Entry nestedEntry : (Set<Map.Entry>)((OracleNoSQLRecord)element).entrySet()) {
-                List<String> nestedMinorKeys = new ArrayList<String>(minorKeys);
-                nestedMinorKeys.add(nestedEntry.getKey().toString());
-                putValues(nestedEntry.getValue(), majorKeys, nestedMinorKeys, spec, operations);
-            }
-        } else if (element instanceof OracleNoSQLRecord) {
-            // Append nested record using minor keys.
-            for (Map.Entry nestedEntry : (Set<Map.Entry>)((OracleNoSQLRecord)element).entrySet()) {
-                List<String> nestedMinorKeys = new ArrayList<String>(minorKeys);
+            for (Map.Entry<?, ?> nestedEntry : ((Map<?, ?>)element).entrySet()) {
+                List<String> nestedMinorKeys = new ArrayList<>(minorKeys);
                 nestedMinorKeys.add(nestedEntry.getKey().toString());
                 putValues(nestedEntry.getValue(), majorKeys, nestedMinorKeys, spec, operations);
             }

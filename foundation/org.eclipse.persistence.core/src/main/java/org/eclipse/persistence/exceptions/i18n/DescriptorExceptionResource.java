@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,7 +28,7 @@ import java.util.ListResourceBundle;
  * Creation date: (12/8/00 4:47:38 PM)
  * @author Rick Barkhouse
  */
-public class DescriptorExceptionResource extends ListResourceBundle {
+public final class DescriptorExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "1", "The attribute [{0}] is not declared as type ValueHolderInterface, but its mapping uses indirection." },
                                            { "2", "The attribute [{0}] is declared as type ValueHolderInterface, but its mapping does not use indirection." },
@@ -241,6 +241,13 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "222", "An exception was thrown when trying to get a primary key class instance."}
 
     };
+
+    /**
+     * Default constructor.
+     */
+    public DescriptorExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

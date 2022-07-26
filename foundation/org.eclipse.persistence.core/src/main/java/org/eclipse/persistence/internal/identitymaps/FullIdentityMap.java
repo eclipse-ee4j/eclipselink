@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,8 +58,8 @@ public class FullIdentityMap extends AbstractIdentityMap {
         FullIdentityMap clone = (FullIdentityMap)super.clone();
         clone.setCacheKeys(new ConcurrentHashMap(this.cacheKeys.size()));
 
-        for (Iterator cacheKeysIterator = this.cacheKeys.values().iterator(); cacheKeysIterator.hasNext();) {
-            CacheKey key = (CacheKey)((CacheKey)cacheKeysIterator.next()).clone();
+        for (Iterator<CacheKey> cacheKeysIterator = this.cacheKeys.values().iterator(); cacheKeysIterator.hasNext();) {
+            CacheKey key = (CacheKey) cacheKeysIterator.next().clone();
             clone.getCacheKeys().put(key.getKey(), key);
         }
 
@@ -72,9 +72,9 @@ public class FullIdentityMap extends AbstractIdentityMap {
      */
     @Override
     public void collectLocks(HashMap threadList) {
-        Iterator cacheKeyIterator = this.cacheKeys.values().iterator();
+        Iterator<CacheKey> cacheKeyIterator = this.cacheKeys.values().iterator();
         while (cacheKeyIterator.hasNext()) {
-            CacheKey cacheKey = (CacheKey)cacheKeyIterator.next();
+            CacheKey cacheKey = cacheKeyIterator.next();
             if (cacheKey.isAcquired()) {
                 Thread activeThread = cacheKey.getActiveThread();
                 Set set = (Set)threadList.get(activeThread);
@@ -138,12 +138,12 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Recurse = true will include subclasses of myClass in the count.
      */
     @Override
-    public int getSize(Class myClass, boolean recurse) {
+    public int getSize(Class<?> myClass, boolean recurse) {
         int count = 0;
-        Iterator keys = this.cacheKeys.values().iterator();
+        Iterator<CacheKey> keys = this.cacheKeys.values().iterator();
 
         while (keys.hasNext()) {
-            CacheKey key = (CacheKey)keys.next();
+            CacheKey key = keys.next();
             Object object = key.getObject();
 
             if (object != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,17 +19,19 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 public class ByteToExampleEnumAdapter extends XmlAdapter<ExampleEnum, Byte> {
     public ByteToExampleEnumAdapter(){}
 
+    @Override
     public ExampleEnum marshal(Byte v) throws Exception {
         ExampleEnum[] exArray = ExampleEnum.values();
         for(ExampleEnum ex : exArray) {
-            if(ex.getValue() == (int)v.byteValue()) {
+            if(ex.getValue() == (int) v) {
                 return ex;
             }
         }
         return null;
     }
 
+    @Override
     public Byte unmarshal(ExampleEnum v) throws Exception {
-        return new Byte((byte)v.getValue());
+        return (byte) v.getValue();
     }
 }

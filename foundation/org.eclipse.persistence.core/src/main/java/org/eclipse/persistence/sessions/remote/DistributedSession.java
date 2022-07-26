@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * Creates a DistributedSession.
      * @param remoteConnection remote session requires a remote connection. This must be accessed remotely from the client through RMI or CORBA.
      */
-    public DistributedSession(RemoteConnection remoteConnection) {
+    protected DistributedSession(RemoteConnection remoteConnection) {
         this.remoteConnection = remoteConnection;
         this.remoteConnection.initialize(this);
         this.project = new org.eclipse.persistence.sessions.Project();
@@ -133,7 +133,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass) throws DatabaseException {
         return executeQuery(queryName, domainClass, new Vector(1));
     }
 
@@ -146,7 +146,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
     @Override
-    public Object executeQuery(String queryName, Class domainClass, Vector argumentValues) throws DatabaseException {
+    public Object executeQuery(String queryName, Class<?> domainClass, Vector argumentValues) throws DatabaseException {
         startOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
         Transporter transporter = getRemoteConnection().remoteExecuteNamedQuery(queryName, domainClass, argumentValues);
         endOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
@@ -206,7 +206,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * Return the table descriptor specified for the class.
      */
     @Override
-    public ClassDescriptor getDescriptor(Class domainClass) {
+    public ClassDescriptor getDescriptor(Class<?> domainClass) {
         ClassDescriptor descriptor = getDescriptors().get(domainClass);
 
         // If the descriptor is null then this means that descriptor must now be read from the server.
@@ -270,13 +270,13 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * INTERNAL:
      * Return the corresponding objects from the remote session for the objects read from the server.
      */
-    public abstract Object getObjectCorrespondingTo(Object serverSideDomainObject, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query);
+    public abstract Object getObjectCorrespondingTo(Object serverSideDomainObject, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query);
 
     /**
      * INTERNAL:
      * Return the corresponding objects from the remote session for the objects read from the server.
      */
-    public abstract Object getObjectsCorrespondingToAll(Object serverSideDomainObjects, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, ContainerPolicy containerPolicy);
+    public abstract Object getObjectsCorrespondingToAll(Object serverSideDomainObjects, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, ContainerPolicy containerPolicy);
 
     /**
      * INTERNAL:

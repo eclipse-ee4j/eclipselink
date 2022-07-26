@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,18 +36,20 @@ public class IllegalArgumentWhileGettingValueThruMethodAccessorTest extends Exce
         setDescription("This tests Illegal Argument While Getting Value Thru Method Accessor (TL-ERROR 27)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.illegalArgumentWhileGettingValueThruMethodAccessor("getName", "Person", null);
         getAbstractSession().beginTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.tests.validation.PersonMethodAccess.class);
+        orgDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.tests.validation.PersonMethodAccess.class);
         orgIntegrityChecker = getSession().getIntegrityChecker();
     }
     ClassDescriptor orgDescriptor;
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     public void reset() {
-        ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.PersonMethodAccess.class);
+        getSession().getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.PersonMethodAccess.class);
         if (orgDescriptor != null)
             ((DatabaseSession)getSession()).addDescriptor(orgDescriptor);
         if (orgIntegrityChecker != null)
@@ -56,6 +58,7 @@ public class IllegalArgumentWhileGettingValueThruMethodAccessorTest extends Exce
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         PersonMethodAccess person = new PersonMethodAccess();
         person.setName("Person");
@@ -67,7 +70,7 @@ public class IllegalArgumentWhileGettingValueThruMethodAccessorTest extends Exce
 
             //      ((DatabaseSession) getSession()).login();
 
-            UnitOfWork uow = ((DatabaseSession)getSession()).acquireUnitOfWork();
+            UnitOfWork uow = getSession().acquireUnitOfWork();
             uow.registerObject(person);
             uow.commit();
 
@@ -111,7 +114,7 @@ public class IllegalArgumentWhileGettingValueThruMethodAccessorTest extends Exce
         p_idMapping.setGetMethodName("getId");
         p_idMapping.setSetMethodName("setId");
 
-        ((MethodAttributeAccessor)p_idMapping.getAttributeAccessor()).initializeAttributes(PersonMethodAccess.class);
+        p_idMapping.getAttributeAccessor().initializeAttributes(PersonMethodAccess.class);
 
         descriptor.addMapping(p_idMapping);
 
@@ -122,7 +125,7 @@ public class IllegalArgumentWhileGettingValueThruMethodAccessorTest extends Exce
         p_nameMapping.setGetMethodName("getName");
         p_nameMapping.setSetMethodName("setName");
 
-        ((MethodAttributeAccessor)p_nameMapping.getAttributeAccessor()).initializeAttributes(PersonMethodAccess.class);
+        p_nameMapping.getAttributeAccessor().initializeAttributes(PersonMethodAccess.class);
 
         descriptor.addMapping(p_nameMapping);
 

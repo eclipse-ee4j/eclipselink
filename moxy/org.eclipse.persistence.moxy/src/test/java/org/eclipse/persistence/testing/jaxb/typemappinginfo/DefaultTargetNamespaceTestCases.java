@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import java.util.Map;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
@@ -53,17 +53,19 @@ public class DefaultTargetNamespaceTestCases extends TypeMappingInfoWithJSONTest
         return typeMappingInfos;
     }
 
+    @Override
     protected Object getControlObject() {
         Customer cust = new Customer();
         cust.firstName = "John";
         cust.lastName = "Doe";
         cust.phoneNumber = "123-456-7890";
 
-        JAXBElement elem = new JAXBElement<Customer>(new QName("overridden/namespace", "customer"), Customer.class, cust);
+        JAXBElement<Customer> elem = new JAXBElement<Customer>(new QName("overridden/namespace", "customer"), Customer.class, cust);
         return elem;
     }
 
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/customer_dtn.xsd");
 
@@ -75,9 +77,10 @@ public class DefaultTargetNamespaceTestCases extends TypeMappingInfoWithJSONTest
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE;
     }
+    @Override
     protected Map getProperties() {
         HashMap props = new HashMap();
-        props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "overridden/namespace");
+        props.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, "overridden/namespace");
 
         return props;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class LegacyTestModel extends TestModel {
         setDescription("This model tests reading/writing/deleting of the complex legacy model.");
     }
 
+    @Override
     public void addRequiredSystems() {
         //this part is added to help test for possibility of having a # in a field name:
         if (getSession().getLogin().getPlatform().isOracle() || getSession().getLogin().getPlatform().isSybase()  || getSession().getLogin().getPlatform().isSQLAnywhere()) {
@@ -44,6 +45,7 @@ public class LegacyTestModel extends TestModel {
         addRequiredSystem(new LegacySystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getReadAllTestSuite());
@@ -57,7 +59,7 @@ public class LegacyTestModel extends TestModel {
         suite.setName("LegacyDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the mapping model.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new DeleteObjectTest(manager.getObject(employeeClass, "example1")));
@@ -94,7 +96,7 @@ public class LegacyTestModel extends TestModel {
         suite.setName("LegacyReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the mapping model.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "example1")));
@@ -109,7 +111,7 @@ public class LegacyTestModel extends TestModel {
         suite.setName("LegacyUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the mapping model.");
 
-        Class employeeClass = Employee.class;
+        Class<Employee> employeeClass = Employee.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(employeeClass, "example1")));

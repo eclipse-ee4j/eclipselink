@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,28 +16,44 @@
 //     Phillip Ross - LIMIT/OFFSET syntax support
 //     09/14/2011-2.3.1 Guy Pelletier
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     02/01/2022: Tomas Kraus
+//       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.platform.database;
 
-import java.io.*;
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
@@ -73,7 +89,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * not seem to like the JDBC Blob type (PostgreSQL 8.2).
      */
     @Override
-    public int getJDBCType(Class javaType) {
+    public int getJDBCType(Class<?> javaType) {
         if (javaType == ClassConstants.BLOB) {
             return Types.LONGVARBINARY;
         }
@@ -93,7 +109,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      */
     @Override
     protected void appendBoolean(Boolean bool, Writer writer) throws IOException {
-        if (bool.booleanValue()) {
+        if (bool) {
             writer.write("\'1\'");
         } else {
             writer.write("\'0\'");
@@ -110,9 +126,6 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      *
      * PostGreSQL uses case #2 and therefore the maxResults has to be altered
      * based on the firstResultIndex
-     *
-     * @param firstResultIndex
-     * @param maxResults
      *
      * @see org.eclipse.persistence.platform.database.MySQLPlatform
      */
@@ -133,6 +146,84 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         addOperator(operatorLocate2());
         addOperator(toNumberOperator());
         addOperator(regexpOperator());
+        addOperator(pgsqlRoundOperator());
+    }
+
+    // Emulate ROUND(:x,:n) as FLOOR((:x)*10^(:n)+0.5)/10^(:n)
+    private static ExpressionOperator pgsqlRoundOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator() {
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                printer.printString(getDatabaseStrings()[0]);
+                first.printSQL(printer);
+                printer.printString(getDatabaseStrings()[1]);
+                if (second != null) {
+                    second.printSQL(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[2]);
+                if (second != null) {
+                    second.printSQL(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[3]);
+            }
+            @Override
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+                if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
+                    printer.getCall().setUsesBinding(false);
+                }
+                if (items.size() > 0) {
+                    Expression firstItem = items.get(0);
+                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
+                    printDuo(firstItem, secondItem, printer);
+                } else {
+                    throw new IllegalArgumentException("List of items shall contain at least one item");
+                }
+            }
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                printer.printString(getDatabaseStrings()[0]);
+                first.printJava(printer);
+                printer.printString(getDatabaseStrings()[1]);
+                if (second != null) {
+                    second.printJava(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[2]);
+                if (second != null) {
+                    second.printJava(printer);
+                } else {
+                    printer.printString("0");
+                }
+                printer.printString(getDatabaseStrings()[3]);
+            }
+            @Override
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
+                if (items.size() > 0) {
+                    Expression firstItem = items.get(0);
+                    Expression secondItem = items.size() > 1 ? (Expression)items.get(1) : null;
+                    printJavaDuo(firstItem, secondItem, printer);
+                } else {
+                    throw new IllegalArgumentException("List of items shall contain at least one item");
+                }
+            }
+        };
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Round);
+        exOperator.setName("ROUND");
+        List<String> v = new ArrayList<>(4);
+        v.add("FLOOR((");
+        v.add(")*10^(");
+        v.add(")+0.5)/10^(");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
 
     /**
@@ -144,14 +235,14 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Regexp);
         result.setType(ExpressionOperator.FunctionOperator);
-        Vector v = NonSynchronizedVector.newInstance(3);
+        List<String> v = new ArrayList<>(3);
         v.add("");
         v.add(" ~ ");
         v.add("");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
-        v = NonSynchronizedVector.newInstance(2);
+        v = new ArrayList<>(2);
         v.add(".regexp(");
         v.add(")");
         result.printsJavaAs(v);
@@ -165,9 +256,9 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.ToNumber);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        v.addElement("TO_NUMBER(");
-        v.addElement(", '999999999.9999')");
+        List<String> v = new ArrayList<>(2);
+        v.add("TO_NUMBER(");
+        v.add(", '999999999.9999')");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -308,8 +399,8 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping = new Hashtable();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
 
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BOOLEAN", false));
 
@@ -352,7 +443,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     protected ExpressionOperator operatorLocate() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Locate);
-        Vector v = new Vector(3);
+        Vector<String> v = new Vector<>(3);
         v.addElement("STRPOS(");
         v.addElement(", ");
         v.addElement(")");
@@ -368,7 +459,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     protected ExpressionOperator operatorLocate2() {
         ExpressionOperator operator = new ExpressionOperator();
         operator.setSelector(ExpressionOperator.Locate2);
-        Vector v = NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add("COALESCE(NULLIF(STRPOS(SUBSTRING(");
         v.add(" FROM ");
         v.add("), ");
@@ -453,7 +544,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         for (int index = indexFirst; index < size; index++) {
              String name = call.getProcedureArgumentNames().get(index);
              Object parameter = call.getParameters().get(index);
-             Integer parameterType = call.getParameterTypes().get(index);
+             ParameterType parameterType = call.getParameterTypes().get(index);
              // If the argument is optional and null, ignore it.
              if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
                   if (!DatasourceCall.isOutputParameterType(parameterType)) {
@@ -558,16 +649,15 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * for updating the original table from the temporary table. Precondition:
      * supportsTempTables() == true. Precondition: pkFields and assignFields
      * don't intersect.
-     *
-     * @param writer for writing the sql
+     *  @param writer for writing the sql
      * @param table is original table for which temp table is
      *            created.
      * @param pkFields - primary key fields for the original
-     *            table.
+ *            table.
      * @param assignedFields - fields to be assigned a new value.
      */
     @Override
-    public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table, Collection pkFields, Collection assignedFields) throws IOException {
+    public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table, Collection<DatabaseField> pkFields, Collection<DatabaseField> assignedFields) throws IOException {
         writer.write("UPDATE ");
         String tableName = table.getQualifiedNameDelimited(this);
         writer.write(tableName);
@@ -575,14 +665,14 @@ public class PostgreSQLPlatform extends DatabasePlatform {
 
         String tempTableName = getTempTableForTable(table).getQualifiedNameDelimited(this);
         boolean isFirst = true;
-        Iterator itFields = assignedFields.iterator();
+        Iterator<DatabaseField> itFields = assignedFields.iterator();
         while (itFields.hasNext()) {
             if (isFirst) {
                 isFirst = false;
             } else {
                 writer.write(", ");
             }
-            DatabaseField field = (DatabaseField) itFields.next();
+            DatabaseField field = itFields.next();
             String fieldName = field.getNameDelimited(this);
             writer.write(fieldName);
             writer.write(" = (SELECT ");
@@ -594,7 +684,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         }
 
         writer.write(" WHERE EXISTS(SELECT ");
-        writer.write(((DatabaseField) pkFields.iterator().next()).getNameDelimited(this));
+        writer.write(pkFields.iterator().next().getNameDelimited(this));
         writer.write(" FROM ");
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, null, tableName, pkFields, this);
@@ -615,7 +705,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * Uses the returning clause on Postgres.
      */
     @Override
-    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector returnFields) {
+    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector<DatabaseField> returnFields) {
         SQLCall call = new SQLCall();
         call.setParameters(sqlCall.getParameters());
         call.setParameterTypes(sqlCall.getParameterTypes());
@@ -625,7 +715,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
             writer.write(sqlCall.getSQLString());
             writer.write(" RETURNING ");
             for (int i = 0; i < returnFields.size(); i++) {
-                DatabaseField field = (DatabaseField)returnFields.elementAt(i);
+                DatabaseField field = returnFields.elementAt(i);
                 writer.write(field.getNameDelimited(this));
                 if ((i + 1) < returnFields.size()) {
                     writer.write(", ");

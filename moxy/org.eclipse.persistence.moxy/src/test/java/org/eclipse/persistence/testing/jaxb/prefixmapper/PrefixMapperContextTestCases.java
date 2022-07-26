@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,15 +35,16 @@ public class PrefixMapperContextTestCases extends TestCase {
         super(name);
     }
 
+    @Override
     public String getName() {
         return "JAXB set/getProperty Tests: " + super.getName();
     }
 
     public void testMarshalWithContextualNamespaces() throws Exception  {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeContext.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeContext.class}, null);
         Marshaller m = ctx.createMarshaller();
         m.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new ContextPrefixMapper());
-        m.setProperty(XMLConstants.JAXB_FRAGMENT, new Boolean(true));
+        m.setProperty(XMLConstants.JAXB_FRAGMENT, Boolean.TRUE);
         EmployeeContext emp = new EmployeeContext();
         emp.firstName = "Jon";
         emp.lastName = "Doe";

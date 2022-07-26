@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class SecurityWhileInitializingAttributesInMethodAccessorTest extends Exc
         super("This tests Security While Initializing Attributes In Method Accessor (TL-ERROR 87)", MethodAccessor.class);
     }
 
+    @Override
     protected void setup() {
         super.setup();
         expectedException = DescriptorException.securityWhileInitializingAttributesInMethodAccessor("dummy_Method", "dummy_Method", "SecurityWhileInitializingAttributesInMethodAccessorTest");
@@ -41,6 +42,7 @@ public class SecurityWhileInitializingAttributesInMethodAccessorTest extends Exc
         accessor = mapping.getAttributeAccessor();
     }
 
+    @Override
     public void test() {
         try {
             accessor.initializeAttributes(getTestClass());

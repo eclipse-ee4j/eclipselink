@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -28,10 +26,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.descriptors.CoreInstantiationPolicy;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredConstructorFor;
-import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -77,7 +71,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * The class of the factory. The factory is instantiated by either invoking this class's default
      * (zero-argument) constructor or the factoryMethod specified below.
      */
-    protected Class factoryClass;
+    protected Class<?> factoryClass;
     protected String factoryClassName;
 
     /**
@@ -122,40 +116,30 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * Build and return a new instance, using the default (zero-argument) constructor.
      */
     protected Object buildNewInstanceUsingDefaultConstructor() throws DescriptorException {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(getDefaultConstructor(), null));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof InvocationTargetException){
-                        throw DescriptorException.targetInvocationWhileConstructorInstantiation(getDescriptor(), throwableException);
-                    } else if (throwableException instanceof IllegalAccessException){
-                        throw DescriptorException.illegalAccessWhileConstructorInstantiation(getDescriptor(), throwableException);
-                    } else {
-                        throw DescriptorException.instantiationWhileConstructorInstantiation(getDescriptor(), throwableException);
+        // NoSuchMethodError is not an Exception instance so Throwable is required
+        return PrivilegedAccessHelper.callDoPrivilegedWithThrowable(
+                () -> (defaultConstructor != null ? defaultConstructor : getDefaultConstructor()).newInstance((Object[])null),
+                (t) -> {
+                    if (t instanceof DescriptorException) {
+                        return (DescriptorException) t;
+                    } else if (t instanceof InvocationTargetException) {
+                        return DescriptorException.targetInvocationWhileConstructorInstantiation(getDescriptor(), (InvocationTargetException) t);
+                    } else if (t instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileConstructorInstantiation(getDescriptor(), (IllegalAccessException) t);
+                    } else if (t instanceof InstantiationException) {
+                        return DescriptorException.instantiationWhileConstructorInstantiation(getDescriptor(), (InstantiationException) t);
+                    } else if (t instanceof NoSuchMethodError) {
+                        // This exception is not documented but gets thrown.
+                        return DescriptorException.noSuchMethodWhileConstructorInstantiation(getDescriptor(), t);
+                    } else if (t instanceof NullPointerException) {
+                        // Some JVMs will throw a NULL pointer exception here
+                        return DescriptorException.nullPointerWhileConstructorInstantiation(getDescriptor(), t);
                     }
-                 }
-            } else {
-                // PERF: Check lazy init with null check.
-                if (this.defaultConstructor == null) {
-                    getDefaultConstructor();
+                    // This indicates unexpected problem in the code
+                    return new RuntimeException(String.format(
+                            "Invocation of default %s constructor failed", getDescriptor().getJavaClass().getName()), t);
                 }
-                return this.defaultConstructor.newInstance((Object[])null);
-            }
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileConstructorInstantiation(getDescriptor(), exception);
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileConstructorInstantiation(getDescriptor(), exception);
-        } catch (InstantiationException exception) {
-            throw DescriptorException.instantiationWhileConstructorInstantiation(getDescriptor(), exception);
-        } catch (NoSuchMethodError exception) {
-            // This exception is not documented but gets thrown.
-            throw DescriptorException.noSuchMethodWhileConstructorInstantiation(getDescriptor(), exception);
-        } catch (NullPointerException exception) {
-            // Some JVMs will throw a NULL pointer exception here
-            throw DescriptorException.nullPointerWhileConstructorInstantiation(getDescriptor(), exception);
-        }
+        );
     }
 
     /**
@@ -163,30 +147,22 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * The factory can be null, in which case the method is a static method defined by the descriptor class.
      */
     protected Object buildNewInstanceUsingFactory() throws DescriptorException {
-        try {
-            // If the method is static, the first argument is ignored and can be null
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod(), getFactory(), new Object[0]));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), throwableException);
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(getMethod(), getFactory(), new Object[0]),
+                (ex) -> {
+                    if (ex instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), getDescriptor(), ex);
+                    } else if (ex instanceof InvocationTargetException) {
+                        return DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), getDescriptor(), ex);
+                    } else if (ex instanceof NullPointerException) {
+                        // Some JVMs will throw a NULL pointer exception here
+                        return DescriptorException.nullPointerWhileMethodInstantiation(getMethod().toString(), getDescriptor(), ex);
                     }
+                    // This indicates unexpected problem in the code
+                    return new RuntimeException(String.format(
+                            "Invocation of factory %s class %s method failed", getFactory().getClass().getName(), getMethod().getName()), ex);
                 }
-            } else {
-                return PrivilegedAccessHelper.invokeMethod(getMethod(), getFactory(), new Object[0]);
-            }
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), exception);
-        } catch (NullPointerException exception) {
-            // Some JVMs will throw a NULL pointer exception here
-            throw DescriptorException.nullPointerWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), exception);
-        }
+        );
     }
 
     /**
@@ -224,20 +200,11 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
     /**
      * Build and return the default (zero-argument) constructor for the specified class.
      */
-    protected Constructor buildDefaultConstructorFor(Class javaClass) throws DescriptorException {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedGetDeclaredConstructorFor(javaClass, new Class[0], true));
-                } catch (PrivilegedActionException exception) {
-                    throw DescriptorException.noSuchMethodWhileInitializingInstantiationPolicy(javaClass.getName() + ".<Default Constructor>", getDescriptor(), exception.getException());
-                }
-            } else {
-                return PrivilegedAccessHelper.getDeclaredConstructorFor(javaClass, new Class[0], true);
-            }
-        } catch (NoSuchMethodException exception) {
-            throw DescriptorException.noSuchMethodWhileInitializingInstantiationPolicy(javaClass.getName() + ".<Default Constructor>", getDescriptor(), exception);
-        }
+    protected Constructor buildDefaultConstructorFor(final Class<?> javaClass) throws DescriptorException {
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.getDeclaredConstructorFor(javaClass, new Class<?>[0], true),
+                (ex) -> DescriptorException.noSuchMethodWhileInitializingInstantiationPolicy(javaClass.getName() + ".<Default Constructor>", getDescriptor(), ex)
+        );
     }
 
     protected ClassDescriptor getDescriptor() {
@@ -252,7 +219,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         return factory;
     }
 
-    public Class getFactoryClass() {
+    public Class<?> getFactoryClass() {
         return factoryClass;
     }
 
@@ -314,36 +281,28 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * Build and return the factory, using its default constructor.
      */
     protected Object buildFactoryUsingDefaultConstructor() throws DescriptorException {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(buildFactoryDefaultConstructor(), null));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof InvocationTargetException){
-                        throw DescriptorException.targetInvocationWhileConstructorInstantiationOfFactory(getDescriptor(), throwableException);
-                    } else if (throwableException instanceof IllegalAccessException){
-                        throw DescriptorException.illegalAccessWhileConstructorInstantiationOfFactory(getDescriptor(), throwableException);
-                    } else {
-                        throw DescriptorException.instantiationWhileConstructorInstantiationOfFactory(getDescriptor(), throwableException);
+        final Constructor<?> factoryDefaultConstructor = buildFactoryDefaultConstructor();
+        // NoSuchMethodError is not an Exception instance so Throwable is required
+        return PrivilegedAccessHelper.callDoPrivilegedWithThrowable(
+                () -> PrivilegedAccessHelper.invokeConstructor(factoryDefaultConstructor, null),
+                (t) -> {
+                    if (t instanceof InvocationTargetException) {
+                        return DescriptorException.targetInvocationWhileConstructorInstantiationOfFactory(getDescriptor(), (InvocationTargetException) t);
+                    } else if (t instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileConstructorInstantiationOfFactory(getDescriptor(), (IllegalAccessException) t);
+                    } else if (t instanceof InstantiationException) {
+                        return DescriptorException.instantiationWhileConstructorInstantiationOfFactory(getDescriptor(), (InstantiationException) t);
+                    } else if (t instanceof NoSuchMethodError) {
+                        // This exception is not documented but gets thrown.
+                        return DescriptorException.noSuchMethodWhileConstructorInstantiationOfFactory(getDescriptor(), t);
+                    } else if (t instanceof NullPointerException) {
+                        // Some JVMs will throw a NULL pointer exception here
+                        return DescriptorException.nullPointerWhileConstructorInstantiationOfFactory(getDescriptor(), t);
                     }
-                 }
-            } else {
-                return PrivilegedAccessHelper.invokeConstructor(buildFactoryDefaultConstructor(), null);
-            }
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileConstructorInstantiationOfFactory(getDescriptor(), exception);
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileConstructorInstantiationOfFactory(getDescriptor(), exception);
-        } catch (InstantiationException exception) {
-            throw DescriptorException.instantiationWhileConstructorInstantiationOfFactory(getDescriptor(), exception);
-        } catch (NoSuchMethodError exception) {
-            // This exception is not documented but gets thrown.
-            throw DescriptorException.noSuchMethodWhileConstructorInstantiationOfFactory(getDescriptor(), exception);
-        } catch (NullPointerException exception) {
-            // Some JVMs will throw a NULL pointer exception here
-            throw DescriptorException.nullPointerWhileConstructorInstantiationOfFactory(getDescriptor(), exception);
-        }
+                    // This indicates unexpected problem in the code
+                    return new RuntimeException(String.format("Invocation of %s factory constructor failed", factoryClassName), t);
+                }
+        );
     }
 
     /**
@@ -357,33 +316,23 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * Build and return the factory, using the specified static method.
      */
     protected Object buildFactoryUsingStaticMethod() throws DescriptorException {
-        Method factoryMethod = this.buildMethod(this.getFactoryClass(), this.getFactoryMethodName(), new Class[0]);
-
-        try {
-            // it should be static and zero-argument...
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(factoryMethod, null, null));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileMethodInstantiationOfFactory(getFactoryMethodName(), getDescriptor(), throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileMethodInstantiationOfFactory(getFactoryMethodName(), getDescriptor(), throwableException);
+        final Method factoryMethod = buildMethod(getFactoryClass(), factoryMethodName, new Class<?>[0]);
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(factoryMethod, null, null),
+                (ex) -> {
+                    final String factoryMethodName = getFactoryMethodName();
+                    if (ex instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileMethodInstantiationOfFactory(factoryMethodName, getDescriptor(), ex);
+                    } else if (ex instanceof InvocationTargetException) {
+                        return DescriptorException.targetInvocationWhileMethodInstantiationOfFactory(factoryMethodName, getDescriptor(), ex);
+                    } else if (ex instanceof NullPointerException) {
+                        // Some JVMs will throw a NULL pointer exception here
+                        return DescriptorException.nullPointerWhileMethodInstantiationOfFactory(factoryMethodName, getDescriptor(), ex);
                     }
-
+                    // This indicates unexpected problem in the code
+                    return new RuntimeException(String.format("Invocation of %s factory method failed", factoryMethodName), ex);
                 }
-            } else {
-                return PrivilegedAccessHelper.invokeMethod(factoryMethod, null, null);
-            }
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileMethodInstantiationOfFactory(getFactoryMethodName(), getDescriptor(), exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileMethodInstantiationOfFactory(getFactoryMethodName(), getDescriptor(), exception);
-        } catch (NullPointerException exception) {
-            // Some JVMs will throw a NULL pointer exception here
-            throw DescriptorException.nullPointerWhileMethodInstantiationOfFactory(getFactoryMethodName(), getDescriptor(), exception);
-        }
+        );
     }
 
     /**
@@ -391,7 +340,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * It is either a static on the descriptor class, or it is a non-static on the factory.
      */
     protected void initializeMethod() throws DescriptorException {
-        Class tempClass;
+        Class<?> tempClass;
         if (this.getFactory() != null) {
             tempClass = this.getFactory().getClass();
         } else if (this.getFactoryClass() == null) {
@@ -399,13 +348,13 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         } else {
             tempClass = this.getFactoryClass();
         }
-        this.setMethod(this.buildMethod(tempClass, this.getMethodName(), new Class[0]));
+        this.setMethod(this.buildMethod(tempClass, this.getMethodName(), new Class<?>[0]));
     }
 
     /**
      * Build the specified method.
      */
-    protected Method buildMethod(Class methodClass, String methodName, Class[] methodParameterTypes) throws DescriptorException {
+    protected Method buildMethod(Class<?> methodClass, String methodName, Class<?>[] methodParameterTypes) throws DescriptorException {
         try {
             return Helper.getDeclaredMethod(methodClass, methodName, methodParameterTypes);
         } catch (NoSuchMethodException exception) {
@@ -438,7 +387,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         this.factory = factory;
     }
 
-    protected void setFactoryClass(Class factoryClass) {
+    protected void setFactoryClass(Class<?> factoryClass) {
         this.factoryClass = factoryClass;
     }
 
@@ -459,27 +408,17 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
      * Convert all the class-name-based settings in this InstantiationPolicy to actual class-based
      * settings.  This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
-        if (factoryClassName == null){
+    public void convertClassNamesToClasses(final ClassLoader classLoader) {
+        if (factoryClassName == null) {
             return;
         }
-        Class factoryClass = null;
-        try{
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    factoryClass = AccessController.doPrivileged(new PrivilegedClassForName(factoryClassName, true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, exception.getException());
-                }
-            } else {
-                factoryClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(factoryClassName, true, classLoader);
-            }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, exc);
-        }
-        setFactoryClass(factoryClass);
+        setFactoryClass(
+                PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.getClassForName(factoryClassName, true, classLoader),
+                        (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, ex)
+                )
+        );
     }
 
 
@@ -502,7 +441,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         setFactoryMethodName(null);
     }
 
-    public void useFactoryInstantiationPolicy(Class factoryClass, String methodName) {
+    public void useFactoryInstantiationPolicy(Class<?> factoryClass, String methodName) {
         setMethodName(methodName);
         setFactory(null);
         setFactoryClass(factoryClass);
@@ -510,7 +449,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         setFactoryMethodName(null);
     }
 
-    public void useFactoryInstantiationPolicy(Class factoryClass, String methodName, String factoryMethodName) {
+    public void useFactoryInstantiationPolicy(Class<?> factoryClass, String methodName, String factoryMethodName) {
         setMethodName(methodName);
         setFactory(null);
         setFactoryClass(factoryClass);

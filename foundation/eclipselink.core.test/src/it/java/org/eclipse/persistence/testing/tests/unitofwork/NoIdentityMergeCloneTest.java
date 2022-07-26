@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         setDescription("Test that the unit of work mergeClone still works when object identity is lost.");
     }
 
+    @Override
     public void reset() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             return;
@@ -46,7 +47,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         Enumeration enumtr = checkCacheState.keys();
         while (enumtr.hasMoreElements()) {
             ClassDescriptor key = (ClassDescriptor)enumtr.nextElement();
-            key.getQueryManager().getDoesExistQuery().setExistencePolicy(((Integer)checkCacheState.get(key)).intValue());
+            key.getQueryManager().getDoesExistQuery().setExistencePolicy((Integer) checkCacheState.get(key));
         }
         enumtr = identityMapTypes.keys();
         while (enumtr.hasMoreElements()) {
@@ -55,6 +56,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void setup() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             throw new TestWarningException("Not support in remote");
@@ -64,11 +66,11 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         // because it may not be the same for all descriptors.
         this.checkCacheState = new Hashtable(10);
         this.identityMapTypes = new Hashtable(10);
-        Iterator iterator = getSession().getProject().getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> iterator = getSession().getProject().getDescriptors().values().iterator();
         while (iterator.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
+            ClassDescriptor descriptor = iterator.next();
             checkCacheState.put(descriptor,
-                                new Integer(descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy()));
+                    descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy());
             if(descriptor.requiresInitialization((AbstractSession) getSession())) {
                 // identityMapClass is null for AggregateObject, AggregateMapping and Interface descriptors.
                 identityMapTypes.put(descriptor, descriptor.getIdentityMapClass());
@@ -79,6 +81,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         this.objectToBeWritten =
                 (PolicyHolder)(getSession().readAllObjects(org.eclipse.persistence.testing.models.insurance.PolicyHolder.class)).firstElement();
@@ -91,6 +94,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object objectFromDatabase = getSession().readObject(this.objectToBeWritten);

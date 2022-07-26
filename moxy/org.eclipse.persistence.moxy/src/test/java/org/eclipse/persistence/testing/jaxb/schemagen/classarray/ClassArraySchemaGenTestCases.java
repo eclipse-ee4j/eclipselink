@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,6 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public ClassArraySchemaGenTestCases(String name) throws Exception {
         super(name);
@@ -67,7 +66,7 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
                 fail("Additional global element Map setup failed: " + x.toString());
             }
             try {
-                Class[] classesToBeBound = new Class[]{Employee.class};
+                Class<?>[] classesToBeBound = new Class<?>[]{Employee.class};
                 generateSchema(classesToBeBound, outputResolver, additionalGlobalElements);
             } catch (Exception ex) {
                 fail("Schema generation failed unexpectedly: " + ex.toString());
@@ -90,7 +89,6 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation (Employee).
      *
-     * @throws Exception
      */
     public void testSchemaGenFromClassArrayWithElements() throws Exception {
         generateSchema();
@@ -109,7 +107,6 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation (String)
      *
-     * @throws Exception
      */
     public void testSchemaGenFromClassArrayWithStringElement() throws Exception {
         generateSchema();
@@ -120,7 +117,6 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation (int)
      *
-     * @throws Exception
      */
     public void testSchemaGenFromClassArrayWithIntElement() throws Exception {
         generateSchema();
@@ -132,7 +128,7 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
      * Test schema generation from multiple entities with different namespaces and verify generated schemas (by order and content).
      */
     public void testSchemaGenFromClassArrayVerifyOrder() throws Exception {
-        final Class[] inputClasses = new Class[]{SecondType.class, WithoutNamespaceType.class, RootElement.class, FourthType.class, ThirdType.class, FirstType.class};
+        final Class<?>[] inputClasses = new Class<?>[]{SecondType.class, WithoutNamespaceType.class, RootElement.class, FourthType.class, ThirdType.class, FirstType.class};
         final String[] xsdResources = new String[]{"schema1.xsd", "schema2.xsd", "schema3.xsd", "schema4.xsd", "schema5.xsd"};
 
         JAXBContext jaxbContext;

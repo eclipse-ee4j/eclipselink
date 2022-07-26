@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,21 +26,25 @@ public class DontMaintainCacheTest extends TestCase {
         super();
     }
 
+    @Override
     public void reset() {
         // Because the name of the employee was changed, clear the cache.
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         employeeFromDatabase = (Employee)getSession().readObject(Employee.class);
     }
 
+    @Override
     public void test() {
         firstName = employeeFromDatabase.getFirstName();
         employeeFromDatabase.setFirstName("Yvon");
 
     }
 
+    @Override
     protected void verify() {
         Employee employee;
         ReadObjectQuery query = new ReadObjectQuery();

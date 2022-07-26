@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,32 +51,44 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 
         Type mapType2 = new ParameterizedType() {
         Type[] typeArgs = { Calendar.class, Float.class };
+         @Override
          public Type[] getActualTypeArguments() { return typeArgs;}
+         @Override
          public Type getOwnerType() { return null; }
+         @Override
          public Type getRawType() { return Map.class; }
         };
         types[1] = mapType2;
 
         Type mapType3 = new ParameterizedType() {
             Type[] typeArgs = { Person.class, Job.class };
+             @Override
              public Type[] getActualTypeArguments() { return typeArgs;}
+             @Override
              public Type getOwnerType() { return null; }
+             @Override
              public Type getRawType() { return Map.class; }
             };
             types[2] = mapType3;
 
             Type listType = new ParameterizedType() {
                 Type[] typeArgs = { Person.class};
+                 @Override
                  public Type[] getActualTypeArguments() { return typeArgs;}
+                 @Override
                  public Type getOwnerType() { return null; }
+                 @Override
                  public Type getRawType() { return List.class; }
                 };
                 types[3] = listType;
 
             Type listType2 = new ParameterizedType() {
                 Type[] typeArgs = { String.class};
+                 @Override
                  public Type[] getActualTypeArguments() { return typeArgs;}
+                 @Override
                  public Type getOwnerType() { return null; }
+                 @Override
                  public Type getRawType() { return List.class; }
                 };
             types[4] = listType2;
@@ -85,16 +97,19 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
         initXsiType();
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         getXMLComparer().setIgnoreOrder(true);
     }
 
+    @Override
     public void tearDown(){
         super.tearDown();
         getXMLComparer().setIgnoreOrder(false);
     }
 
+    @Override
     public List<InputStream> getControlSchemaFiles() {
         InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps.xsd");
         InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/multipleMaps2.xsd");
@@ -107,11 +122,12 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
     }
 
 
+    @Override
     protected Object getControlObject() {
 
         Map<String, Integer> theMap = new HashMap<String, Integer>();
-        theMap.put("aaa", new Integer(1));
-        theMap.put("bbb", new Integer(2));
+        theMap.put("aaa", 1);
+        theMap.put("bbb", 2);
 
         QName qname = new QName("root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, null);
@@ -119,12 +135,14 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
         return jaxbElement;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         Field fld = getClass().getField("mapField1");
         Type fieldType =  fld.getGenericType();
         return fieldType;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE;
     }

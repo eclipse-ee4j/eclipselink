@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ParameterAndMappingWithTransparentIndirectionMismatchTest extends E
         setDescription("This tests Parameter And Mapping With Transparent Indirection Mismatch (TL-ERROR 140)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.parameterAndMappingWithTransparentIndirectionMismatch(new OneToManyMapping(), null, null);
         orgIntegrityChecker = getSession().getIntegrityChecker();
@@ -44,11 +45,13 @@ public class ParameterAndMappingWithTransparentIndirectionMismatchTest extends E
         getSession().getIntegrityChecker().dontCatchExceptions();
     }
 
+    @Override
     public void reset() {
         if (orgIntegrityChecker != null)
             getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         ForeignReferenceMapping phoneNumbersMapping = (ForeignReferenceMapping)descriptor().getMappingForAttributeName("phoneNumbers");
         try {
@@ -70,7 +73,7 @@ public class ParameterAndMappingWithTransparentIndirectionMismatchTest extends E
         idMapping.setFieldName("EMPLOYEE.EMP_ID");
         idMapping.setGetMethodName("getId");
         idMapping.setSetMethodName("setId");
-        ((MethodAttributeAccessor)idMapping.getAttributeAccessor()).initializeAttributes(PersonWithValueHolder.class);
+        idMapping.getAttributeAccessor().initializeAttributes(PersonWithValueHolder.class);
         descriptor.addMapping(idMapping);
 
         OneToManyMapping phoneNumbersMapping = new OneToManyMapping();
@@ -81,7 +84,7 @@ public class ParameterAndMappingWithTransparentIndirectionMismatchTest extends E
         phoneNumbersMapping.setSetMethodName("setPhones");
         phoneNumbersMapping.setGetMethodName("getPhones");
         phoneNumbersMapping.addTargetForeignKeyFieldName("PHONE.EMP_ID", "EMPLOYEE.EMP_ID");
-        ((MethodAttributeAccessor)phoneNumbersMapping.getAttributeAccessor()).initializeAttributes(PersonWithValueHolder.class);
+        phoneNumbersMapping.getAttributeAccessor().initializeAttributes(PersonWithValueHolder.class);
         descriptor.addMapping(phoneNumbersMapping);
 
         return descriptor;

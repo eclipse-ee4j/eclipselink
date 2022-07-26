@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.transparentindirection.*;
 
 /**
  * Test the IndirectList with assorted DatabaseSessions and UnitsOfWork.
- * @author: Big Country
+ * @author Big Country
  */
 public class IndirectListTestDatabase extends IndirectContainerTestDatabase {
 
@@ -32,18 +32,22 @@ public class IndirectListTestDatabase extends IndirectContainerTestDatabase {
         super(name);
     }
 
+    @Override
     protected AbstractOrder buildOrderShell() {
         return new Order();
     }
 
+    @Override
     protected AbstractOrder buildTestOrderShell(String customerName) {
         return new Order(customerName);
     }
 
+    @Override
     protected AbstractOrderLine newOrderLine(String item, int quanity) {
         return new OrderLine(item, quanity);
     }
 
+    @Override
     protected AbstractSalesRep newSalesRep(String name) {
         return new SalesRep(name);
     }
@@ -59,6 +63,7 @@ public class IndirectListTestDatabase extends IndirectContainerTestDatabase {
      * set up test fixtures:
      *   log in to database
      */
+    @Override
     protected void setUp() {
         super.setUp();
         AbstractOrder order = this.buildTestOrder3();
@@ -66,6 +71,7 @@ public class IndirectListTestDatabase extends IndirectContainerTestDatabase {
         orderId = order.id;
         this.getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
+    @Override
     public void tearDown() {
         Order order = new Order();
         order.id = orderId;

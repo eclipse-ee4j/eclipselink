@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,6 @@ import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date March 11, 2005
  */
 public class ProjectXMLOrderByQueryKeysTest extends TestCase {
     private List m_queryKeyExpressionsAfterWrite;
@@ -45,6 +44,7 @@ public class ProjectXMLOrderByQueryKeysTest extends TestCase {
         setDescription("Tests the order by query keys on a collection mapping.");
     }
 
+    @Override
     public void test() {
         Project project = new EmployeeProject();
         CollectionMapping mapping =
@@ -70,6 +70,7 @@ public class ProjectXMLOrderByQueryKeysTest extends TestCase {
     }
 
 
+    @Override
     protected void verify() {
         if (m_queryKeyExpressionsBeforeWrite.size() != m_queryKeyExpressionsAfterWrite.size()) {
             throw new TestErrorException("The number of query keys read was not equal to the number written.");

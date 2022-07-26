@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,6 +57,7 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         stringType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
@@ -78,14 +79,17 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         return "company";
     }
 
+    @Override
     public String getSchemaToDefine() {
         return XSD_PATH;
     }
 
+    @Override
     public String getControlGeneratedFileName() {
         return XSD_PATH;
     }
 
+    @Override
     protected List<Type> getTypesToGenerateFrom() {
         return getControlTypes();
     }
@@ -107,7 +111,6 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
      * by using the standard spec SDODataObject generation method on page
      *
      * The existing getControlTypes() uses non-public Property constructors
-     * @throws Exception
      */
     public void testDefineAndGenerateUsingSpecMethod() throws Exception {
         boolean useXSD = false;
@@ -226,6 +229,7 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
     }
 
     // this function is overridden above
+    @Override
     public void testDefineAndGenerate() {
     }
 
@@ -525,6 +529,7 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         return types;
     }
 
+    @Override
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
         if(typeHelper.getType(URINAME, COMPANY_TYPENAME) != null) {

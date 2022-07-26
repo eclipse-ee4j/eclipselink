@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,20 +28,24 @@ import org.eclipse.persistence.testing.tests.returning.ProjectAndDatabaseAdapter
 
 public abstract class AdapterWithReturnObjectControl implements ProjectAndDatabaseAdapter, ReturnObjectControl {
 
+    @Override
     public boolean isOriginalSetupRequired() {
         return false;
     }
 
+    @Override
     public abstract void updateProject(Project project, Session session);
 
+    @Override
     public abstract void updateDatabase(Session session);
 
+    @Override
     public Object getObjectForInsert(Session session, Object objectToInsert) {
         ClassDescriptor desc = session.getClassDescriptor(objectToInsert);
-        org.eclipse.persistence.sessions.Record rowToInsert = desc.getObjectBuilder().buildRow(objectToInsert, (AbstractSession)session, WriteType.INSERT);
-        org.eclipse.persistence.sessions.Record rowReturn = getRowForInsert(rowToInsert);
+        DataRecord rowToInsert = desc.getObjectBuilder().buildRow(objectToInsert, (AbstractSession)session, WriteType.INSERT);
+        DataRecord rowReturn = getRowForInsert(rowToInsert);
         if (rowReturn != null && !rowReturn.isEmpty()) {
-            org.eclipse.persistence.sessions.Record row = new DatabaseRecord(rowToInsert.size());
+            DataRecord row = new DatabaseRecord(rowToInsert.size());
             row.putAll(rowToInsert);
             row.putAll(rowReturn);
             return readObjectFromRow(session, desc, row);
@@ -50,15 +54,16 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
         }
     }
 
+    @Override
     public Object getObjectForUpdate(Session session, Object objectToUpdateBeforeChange, Object objectToUpdateAfterChange, boolean useUOW) {
         ClassDescriptor desc = session.getClassDescriptor(objectToUpdateBeforeChange);
-        org.eclipse.persistence.sessions.Record rowBeforeChange = desc.getObjectBuilder().buildRow(objectToUpdateBeforeChange, (AbstractSession)session, WriteType.UPDATE);
-        org.eclipse.persistence.sessions.Record rowAfterChange = desc.getObjectBuilder().buildRow(objectToUpdateAfterChange, (AbstractSession)session, WriteType.UPDATE);
-        org.eclipse.persistence.sessions.Record rowChange = new DatabaseRecord();
+        DataRecord rowBeforeChange = desc.getObjectBuilder().buildRow(objectToUpdateBeforeChange, (AbstractSession)session, WriteType.UPDATE);
+        DataRecord rowAfterChange = desc.getObjectBuilder().buildRow(objectToUpdateAfterChange, (AbstractSession)session, WriteType.UPDATE);
+        DataRecord rowChange = new DatabaseRecord();
         getChange(rowChange, session, objectToUpdateBeforeChange, objectToUpdateAfterChange, desc, useUOW, WriteType.UPDATE);
-        org.eclipse.persistence.sessions.Record rowReturn = getRowForUpdate(rowChange);
+        DataRecord rowReturn = getRowForUpdate(rowChange);
         if (rowReturn != null && !rowReturn.isEmpty()) {
-            org.eclipse.persistence.sessions.Record row = new DatabaseRecord(rowAfterChange.size());
+            DataRecord row = new DatabaseRecord(rowAfterChange.size());
             row.putAll(rowAfterChange);
             row.putAll(rowReturn);
             return readObjectFromRow(session, desc, row);
@@ -67,16 +72,16 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
         }
     }
 
-    public void getChange(org.eclipse.persistence.sessions.Record row, Session session, Object object1, Object object2, ClassDescriptor desc, boolean useUOW, WriteType writeType) {
-        for (Enumeration mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+    public void getChange(DataRecord row, Session session, Object object1, Object object2, ClassDescriptor desc, boolean useUOW, WriteType writeType) {
+        for (Enumeration<DatabaseMapping> mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
+            DatabaseMapping mapping = mappings.nextElement();
             if (!mapping.isReadOnly()) {
                 getChange(row, mapping, session, object1, object2, useUOW, writeType);
             }
         }
     }
 
-    public void getChange(org.eclipse.persistence.sessions.Record row, DatabaseMapping mapping, Session session, Object object1, Object object2, boolean useUOW, WriteType writeType) {
+    public void getChange(DataRecord row, DatabaseMapping mapping, Session session, Object object1, Object object2, boolean useUOW, WriteType writeType) {
         if (mapping.isAggregateObjectMapping()) {
             Object aggregate1 = mapping.getAttributeValueFromObject(object1);
             Object aggregate2 = mapping.getAttributeValueFromObject(object2);
@@ -85,20 +90,20 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
                     mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row, (AbstractSession)session, writeType);
                 }
             } else if (aggregate1 != null && aggregate2 != null && aggregate1.getClass().equals(aggregate2.getClass())) {
-                ClassDescriptor desc = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor desc = mapping.getReferenceDescriptor();
                 getChange(row, session, aggregate1, aggregate2, desc, useUOW, writeType);
             } else {
                 mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row, (AbstractSession)session, writeType);
             }
         } else {
-            org.eclipse.persistence.sessions.Record row1 = new DatabaseRecord();
-            org.eclipse.persistence.sessions.Record row2 = new DatabaseRecord();
-            mapping.writeFromObjectIntoRow(object1, (DatabaseRecord)row1, (AbstractSession)session, writeType);
-            mapping.writeFromObjectIntoRow(object2, (DatabaseRecord)row2, (AbstractSession)session, writeType);
+            DatabaseRecord row1 = new DatabaseRecord();
+            DatabaseRecord row2 = new DatabaseRecord();
+            mapping.writeFromObjectIntoRow(object1, row1, (AbstractSession)session, writeType);
+            mapping.writeFromObjectIntoRow(object2, row2, (AbstractSession)session, writeType);
 
             for (int i = 0; i < row1.size(); i++) {
-                DatabaseField field = (DatabaseField)((DatabaseRecord)row1).getFields().elementAt(i);
-                Object valueBefore = ((DatabaseRecord)row1).getValues().elementAt(i);
+                DatabaseField field = row1.getFields().elementAt(i);
+                Object valueBefore = row1.getValues().elementAt(i);
                 Object valueAfter = row2.get(field);
                 boolean changed;
                 if (valueAfter == null) {
@@ -113,26 +118,26 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
         }
     }
 
-    protected Object readObjectFromRow(Session session, ClassDescriptor desc, org.eclipse.persistence.sessions.Record row) {
+    protected Object readObjectFromRow(Session session, ClassDescriptor desc, DataRecord row) {
         if (desc.hasInheritance()) {
-            Class newClass = desc.getInheritancePolicy().classFromRow((DatabaseRecord)row, (AbstractSession)session);
+            Class<?> newClass = desc.getInheritancePolicy().classFromRow((DatabaseRecord)row, (AbstractSession)session);
             desc = session.getClassDescriptor(newClass);
         }
         Object object = desc.getObjectBuilder().buildNewInstance();
         ReadObjectQuery query = new ReadObjectQuery();
         query.setSession((AbstractSession)session);
-        for (Enumeration mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+        for (Enumeration<DatabaseMapping> mappings = desc.getMappings().elements(); mappings.hasMoreElements(); ) {
+            DatabaseMapping mapping = mappings.nextElement();
             mapping.readFromRowIntoObject((DatabaseRecord)row, query.getJoinedAttributeManager(), object, null, query, query.getSession(), true);
         }
         return object;
     }
 
-    protected org.eclipse.persistence.sessions.Record getRowForInsert(org.eclipse.persistence.sessions.Record rowToInsert) {
+    protected DataRecord getRowForInsert(DataRecord rowToInsert) {
         return null;
     }
 
-    protected org.eclipse.persistence.sessions.Record getRowForUpdate(org.eclipse.persistence.sessions.Record rowChange) {
+    protected DataRecord getRowForUpdate(DataRecord rowChange) {
         return null;
     }
 }

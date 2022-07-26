@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -363,7 +363,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
         Object value;
         if (this.isArray()) {
             int offset = this.getOffset();
-            ArrayList fieldValue = new ArrayList(this.getArraySize());
+            List<String> fieldValue = new ArrayList<>(this.getArraySize());
             for (int i = this.getArraySize(); i > 0; i--) {
                 FieldMetaData fieldCopy = this.deepCopy();
                 fieldCopy.setOffset(offset);
@@ -385,7 +385,7 @@ public class ElementaryFieldMetaData implements FieldMetaData {
     protected void adjustArraySize(CobolRow row) {
         Integer intValue = Helper.integerFromString(row.get(this.getDependentFieldName()).toString());
         if (intValue != null) {
-            this.setArraySize(intValue.intValue());
+            this.setArraySize(intValue);
         }
     }
 
@@ -425,12 +425,13 @@ public class ElementaryFieldMetaData implements FieldMetaData {
                 adjustArraySize(row);
             }
             int offset = this.getOffset();
-            Iterator elements = ((List)value).iterator();
+            @SuppressWarnings({"unchecked"})
+            Iterator<String> elements = ((List<String>)value).iterator();
             for (int i = this.getArraySize(); i > 0; i--) {
                 FieldMetaData fieldCopy = this.deepCopy();
                 fieldCopy.setOffset(offset);
                 converter = new ByteConverter(fieldCopy, recordData);
-                String elementValue = (String)elements.next();
+                String elementValue = elements.next();
                 converter.setBytesToValue(elementValue);
                 offset += mySize;
             }

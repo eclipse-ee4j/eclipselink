@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,12 +20,12 @@ import org.eclipse.persistence.testing.framework.TestSystem;
 /**
  * @author Guy Pelletier
  * @version 1.0
- * @date March 21, 2005
  */
 public class BidirectionalRelationshipSystem extends TestSystem {
     public BidirectionalRelationshipSystem() {
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new BidirectionalRelationshipProject(session);
@@ -34,6 +34,7 @@ public class BidirectionalRelationshipSystem extends TestSystem {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         new BidirectionalRelationshipTableCreator().replaceTables(session);
     }

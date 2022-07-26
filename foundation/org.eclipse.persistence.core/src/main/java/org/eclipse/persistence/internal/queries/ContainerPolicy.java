@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,7 +91,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
     /**
      * Allow the default collection class to be set.
      */
-    protected static Class defaultContainerClass = ClassConstants.Vector_class;
+    protected static Class<? extends Collection> defaultContainerClass = ClassConstants.Vector_class;
 
     /** The descriptor is used to wrap and unwrap objects using the wrapper policy. **/
     protected transient ClassDescriptor elementDescriptor;
@@ -101,7 +101,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * ADVANCED:
      * Return the default collection class.
      */
-    public static Class getDefaultContainerClass() {
+    public static Class<?> getDefaultContainerClass() {
         return defaultContainerClass;
     }
 
@@ -109,14 +109,14 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * ADVANCED:
      * Allow the default collection class to be set.
      */
-    public static void setDefaultContainerClass(Class collectionClass) {
+    public static void setDefaultContainerClass(Class<? extends Collection> collectionClass) {
         defaultContainerClass = collectionClass;
     }
 
     /**
      * Default constructor.
      */
-    public ContainerPolicy() {
+    protected ContainerPolicy() {
     }
 
     /**
@@ -230,10 +230,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      *
      * @see MappedKeyMapContainerPolicy
      *
-     * @param valuesIterator
-     * @param toCollection
-     * @param mapping
-     * @param isExisting
      */
     public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, CacheKey parentCacheKey, Object toCollection, CollectionMapping mapping, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
         Object cloneValue = mapping.buildElementClone(next(valuesIterator, cloningSession), parent, parentCacheKey, refreshCascade, cloningSession, isExisting, isFromSharedCache);
@@ -249,10 +245,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Build a clone for the key of a Map represented by this container policy if necessary.
      * By default, the key is not cloned since in standard EclipseLink Mappings it will not be
      * an Entity
-     * @param key
-     * @param cloningSession
-     * @param isExisting
-     * @return
      */
     public Object buildCloneForKey(Object key, Object parent , CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isCacheCheckComplete){
         return key;
@@ -266,9 +258,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * contains the key and the value
      *
      * @see MappedKeyMapContainerPolicy
-     * @param objectAdded
-     * @param changeSet
-     * @return
      */
     public Object buildCollectionEntry(Object objectAdded, ObjectChangeSet changeSet){
         return objectAdded;
@@ -290,10 +279,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
     /**
      * Extract the key for the map from the provided row
      * overridden by subclasses that deal with map keys
-     * @param row
-     * @param query
-     * @param session
-     * @return
      */
     public Object buildKey(AbstractRecord row, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return null;
@@ -325,10 +310,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
     /**
      * Extract the key for the map from the provided row
      * overridden by subclasses that deal with map keys
-     * @param row
-     * @param query
-     * @param session
-     * @return
      */
     public Object buildKeyFromJoinedRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return null;
@@ -347,7 +328,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Return the appropriate container policy for the specified
      * concrete container class.
      */
-    public static ContainerPolicy buildPolicyFor(Class concreteContainerClass) {
+    public static ContainerPolicy buildPolicyFor(Class<?> concreteContainerClass) {
         return buildPolicyFor(concreteContainerClass, false);
     }
 
@@ -356,7 +337,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Return the appropriate container policy for the specified
      * concrete container class.
      */
-    public static ContainerPolicy buildPolicyFor(Class concreteContainerClass, boolean hasOrdering) {
+    public static ContainerPolicy buildPolicyFor(Class<?> concreteContainerClass, boolean hasOrdering) {
         if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.List_Class)) {
             if (hasOrdering) {
                 return new OrderedListContainerPolicy(concreteContainerClass);
@@ -389,7 +370,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * This
      * Certain key mappings favor different types of selection query.  Return the appropriate
      * type of selectionQuery
-     * @return
      */
     public ReadQuery buildSelectionQueryForDirectCollectionMapping(){
         DirectReadQuery query = new DirectReadQuery();
@@ -480,10 +460,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Create change sets that contain map keys.
      * This method will be overridden by subclasses that handle map keys
-     * @param originalKeyValues
-     * @param changeRecord
-     * @param session
-     * @param referenceDescriptor
      */
     protected void createChangeSetForKeys(Map originalKeyValues, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
     }
@@ -492,12 +468,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Iterate over the list of new objects and create change sets for them
      * This method is overridden by subclasses to handle map keys
-     * @param originalKeyValues
-     * @param cloneKeyValues
-     * @param newCollection
-     * @param changeRecord
-     * @param session
-     * @param referenceDescriptor
      */
     protected void collectObjectForNewCollection(Map originalKeyValues, Map cloneKeyValues, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor){
         Object cloneIter = iteratorFor(newCollection);
@@ -525,7 +495,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
 
                         // CR4172 compare the keys from the back up to the
                         // clone not from the original to the clone.
-                        if (((UnitOfWorkImpl)session).isClassReadOnly(firstObject.getClass())) {
+                        if (session.isClassReadOnly(firstObject.getClass())) {
                             backUpVersion = firstObject;
                         } else {
                             backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(firstObject, referenceDescriptor);
@@ -639,7 +609,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      */
     @Override
     public Object containerInstance() {
-        Class containerClass = getContainerClass();
+        Class<?> containerClass = getContainerClass();
         // PERF: Avoid reflection for common cases.
         if (containerClass == ClassConstants.IndirectList_Class) {
             return IndirectCollectionsFactory.createIndirectList();
@@ -655,7 +625,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(containerClass));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(containerClass));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.couldNotInstantiateContainerClass(containerClass, exception.getException());
                 }
@@ -678,7 +648,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         if (this.constructor == null) {
             return containerInstance();
         }
-        Class containerClass = getContainerClass();
+        Class<?> containerClass = getContainerClass();
         try {
             // PERF: Avoid reflection for common cases.
             if (containerClass == ClassConstants.IndirectList_Class) {
@@ -694,7 +664,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
             }
             Object[] arguments = new Object[1];
             //Code change for 3732.  No longer need to add 1 as this was for JDK 1.1
-            arguments[0] = Integer.valueOf(initialCapacity);
+            arguments[0] = initialCapacity;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
                     return AccessController.doPrivileged(new PrivilegedInvokeConstructor(this.constructor, arguments));
@@ -745,7 +715,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Convert all the class-name-based settings in this ContainerPolicy to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){}
 
@@ -756,11 +725,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * on what is required by the container policy.
      *
      * @see MappedKeyMapContainerPolicy
-     * @param wrappedObject
      * @param parent if this is an aggregate, the owner of the aggregate
-     * @param referenceDescriptor
-     * @param mergeManager
-     * @return
      */
     public Object createWrappedObjectFromExistingWrappedObject(Object wrappedObject, Object parent, ClassDescriptor referenceDescriptor, MergeManager mergeManager, AbstractSession targetSession){
         return referenceDescriptor.getObjectBuilder().wrapObject(mergeManager.getTargetVersionOfSourceObject(unwrapIteratorResult(wrappedObject), referenceDescriptor, targetSession), mergeManager.getSession());
@@ -772,8 +737,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * This may be overridden by subclasses to deal with composite objects
      *
      * @see MappedKeyMapContainerPolicy
-     * @param objectDeleted
-     * @param session
      */
     public void deleteWrappedObject(Object objectDeleted, AbstractSession session){
         session.deleteObject(objectDeleted);
@@ -837,7 +800,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Return the class used for the container.
      */
-    public Class getContainerClass() {
+    public Class<?> getContainerClass() {
         throw QueryException.methodNotValid(this, "getContainerClass()");
     }
 
@@ -943,16 +906,16 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      */
     public void initializeConstructor() {
         try {
-            Constructor constructor = null;
+            Constructor<?> constructor = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), new Class[] { ClassConstants.PINT }, false));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), new Class<?>[] { ClassConstants.PINT }, false));
                 } catch (PrivilegedActionException exception) {
                     // If there is no constructor then the default will be used.
                     return;
                 }
             } else {
-                constructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class[] { ClassConstants.PINT }, false);
+                constructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[] { ClassConstants.PINT }, false);
             }
             setConstructor(constructor);
         } catch (Exception exception) {
@@ -1030,7 +993,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Return whether the specified type is a valid container type.
      */
-    public boolean isValidContainerType(Class containerType) {
+    public boolean isValidContainerType(Class<?> containerType) {
         throw QueryException.methodNotValid(this, "isValidContainerType(Class containerType)");
     }
 
@@ -1094,7 +1057,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
                     // stop the recursion.
                     // CR 3424  - Need to build the right instance based on
                     // class type instead of referenceDescriptor.
-                    Class objectClass = objectChanges.getClassType(mergeManager.getSession());
+                    Class<?> objectClass = objectChanges.getClassType(mergeManager.getSession());
                     object = mergeManager.getSession().getDescriptor(objectClass).getObjectBuilder().buildNewInstance();
                     // Store the change set to prevent us from creating this new object again.
                     mergeManager.recordMerge(objectChanges, object, targetSession);
@@ -1153,9 +1116,9 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
     protected void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession targetSession) {
         ObjectChangeSet objectChanges;
         // Step 1 - iterate over the removed changes and remove them from the container.
-        Iterator removeObjects = changeRecord.getRemoveObjectList().keySet().iterator();
+        Iterator<ObjectChangeSet> removeObjects = changeRecord.getRemoveObjectList().keySet().iterator();
         while (removeObjects.hasNext()) {
-            objectChanges = (ObjectChangeSet) removeObjects.next();
+            objectChanges = removeObjects.next();
             removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager, targetSession), valueOfTarget, targetSession);
             if (!mergeManager.shouldMergeChangesIntoDistributedCache()) {
                 mergeManager.registerRemovedNewObjectIfRequired(objectChanges.getUnitOfWorkClone());
@@ -1163,9 +1126,9 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         }
 
         // Step 2 - iterate over the added changes and add them to the container.
-        Iterator addObjects = changeRecord.getAddObjectList().keySet().iterator();
+        Iterator<ObjectChangeSet> addObjects = changeRecord.getAddObjectList().keySet().iterator();
         while (addObjects.hasNext()) {
-            objectChanges = (ObjectChangeSet) addObjects.next();
+            objectChanges = addObjects.next();
             Object object = null;
             if (shouldMergeCascadeParts) {
                 object = mergeCascadeParts(objectChanges, mergeManager, targetSession);
@@ -1476,7 +1439,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Returns whether this ContainerPolicy should requires data modification events when
      * objects are added or deleted during update
-     * @return
      */
     public boolean requiresDataModificationEvents(){
         return false;
@@ -1495,7 +1457,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Set the class used for the container.
      */
     @Override
-    public void setContainerClass(Class containerClass) {
+    public void setContainerClass(Class<?> containerClass) {
         throw QueryException.methodNotValid(this, "getContainerClass()");
     }
 
@@ -1533,7 +1495,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * An instance of the class is provided in the case when the descriptor is being
      * built in code.
      */
-    public void setKeyName(String instanceVariableName, Class elementClass) {
+    public void setKeyName(String instanceVariableName, Class<?> elementClass) {
         throw ValidationException.containerPolicyDoesNotUseKeys(this, instanceVariableName);
     }
 
@@ -1541,7 +1503,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Indicates whether addAll method should be called to add entire collection,
      * or it's possible to call addInto multiple times instead.
-     * @return
      */
     public boolean shouldAddAll(){
         return false;
@@ -1720,7 +1681,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * convenience method to copy the keys and values from a Map into an AbstractRecord
      * @param mappingData a Map containing a database field as the key and the value of that field as the value
-     * @param databaseRow
      */
     public static void copyMapDataToRow(Map mappingData, AbstractRecord databaseRow){
         if (mappingData != null){

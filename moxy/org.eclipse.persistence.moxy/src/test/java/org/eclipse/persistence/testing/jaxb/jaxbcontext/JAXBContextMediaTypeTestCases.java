@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ import org.eclipse.persistence.oxm.MediaType;
 public class JAXBContextMediaTypeTestCases extends TestCase{
 
     public void testCreateContextWithMediaTypeJSONString() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
         Map props = new HashMap();
         props.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
@@ -64,7 +64,7 @@ public class JAXBContextMediaTypeTestCases extends TestCase{
     }
 
     public void testCreateContextWithMediaTypeJSONEnum() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
         Map props = new HashMap();
         props.put(JAXBContextProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
@@ -84,20 +84,20 @@ public class JAXBContextMediaTypeTestCases extends TestCase{
     }
 
     public void testCreateContextWithNoMediaType() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
 
         JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
         JAXBMarshaller m = (JAXBMarshaller)ctx.createMarshaller();
         assertEquals(MediaType.APPLICATION_XML, m.getProperty(MarshallerProperties.MEDIA_TYPE));
-        assertEquals(MediaType.APPLICATION_XML,((JAXBMarshaller)m).getXMLMarshaller().getMediaType());
+        assertEquals(MediaType.APPLICATION_XML, m.getXMLMarshaller().getMediaType());
         JAXBUnmarshaller u = (JAXBUnmarshaller)ctx.createUnmarshaller();
         assertEquals(MediaType.APPLICATION_XML, u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
-        assertEquals(MediaType.APPLICATION_XML,((JAXBUnmarshaller)u).getXMLUnmarshaller().getMediaType());
+        assertEquals(MediaType.APPLICATION_XML, u.getXMLUnmarshaller().getMediaType());
     }
 
     public void testCreateContextWithNullMediaType() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
         Map props = new HashMap();
         props.put(JAXBContextProperties.MEDIA_TYPE, null);
@@ -106,15 +106,15 @@ public class JAXBContextMediaTypeTestCases extends TestCase{
 
         JAXBMarshaller m = (JAXBMarshaller)ctx.createMarshaller();
         assertEquals(MediaType.APPLICATION_XML, m.getProperty(MarshallerProperties.MEDIA_TYPE));
-        assertEquals(MediaType.APPLICATION_XML,((JAXBMarshaller)m).getXMLMarshaller().getMediaType());
+        assertEquals(MediaType.APPLICATION_XML, m.getXMLMarshaller().getMediaType());
         JAXBUnmarshaller u = (JAXBUnmarshaller)ctx.createUnmarshaller();
         assertEquals(MediaType.APPLICATION_XML, u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
-        assertEquals(MediaType.APPLICATION_XML,((JAXBUnmarshaller)u).getXMLUnmarshaller().getMediaType());
+        assertEquals(MediaType.APPLICATION_XML, u.getXMLUnmarshaller().getMediaType());
 
     }
 
     public void testCreateMarshallerSetMediaTypeJSONString() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
 
         JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
@@ -125,7 +125,7 @@ public class JAXBContextMediaTypeTestCases extends TestCase{
     }
 
     public void testCreateMarshallerSetMediaTypeJSONEnum() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
 
         JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
@@ -136,7 +136,7 @@ public class JAXBContextMediaTypeTestCases extends TestCase{
     }
 
     public void testCreateUnmarshallerSetMediaTypeJSONString() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
 
         JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
@@ -148,7 +148,7 @@ public class JAXBContextMediaTypeTestCases extends TestCase{
 
 
     public void testCreateUnmarshallerSetMediaTypeJSONEnum() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Employee.class;
 
         JAXBContext ctx = JAXBContextFactory.createContext(classes, null);

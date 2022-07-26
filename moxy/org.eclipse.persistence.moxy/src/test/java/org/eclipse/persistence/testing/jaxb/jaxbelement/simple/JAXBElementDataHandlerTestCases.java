@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,29 +39,34 @@ public class JAXBElementDataHandlerTestCases extends JAXBElementTestCases {
     }
 
 
-    public Class getUnmarshalClass(){
+    @Override
+    public Class<?> getUnmarshalClass(){
         return DataHandler.class;
     }
 
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         jaxbMarshaller.setAttachmentMarshaller(new MyJAXBAttachmentMarshaller(new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text")));
         jaxbUnmarshaller.setAttachmentUnmarshaller(new MyJAXBAttachmentUnmarshaller());
     }
 
-    public Class[] getClasses(){
-        Class[] classes = new Class[1];
+    @Override
+    public Class<?>[] getClasses(){
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = DataHandler.class;
         return classes;
     }
 
+    @Override
     protected Object getControlObject() {
         DataHandler value = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
         JAXBElement<DataHandler> jbe = new JAXBElement<DataHandler>(new QName("a", "b"),DataHandler.class, value);
         return jbe;
     }
 
+    @Override
     protected void compareValues(Object controlValue, Object testValue) {
         DataHandler dhControl = (DataHandler)controlValue;
         DataHandler dhTest = (DataHandler)testValue;

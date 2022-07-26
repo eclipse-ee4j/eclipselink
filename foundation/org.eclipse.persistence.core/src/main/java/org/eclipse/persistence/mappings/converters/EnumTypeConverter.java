@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      * Creating an enum converter this way will create the conversion values
      * for you using ordinal or name values.
      */
-    public EnumTypeConverter(DatabaseMapping mapping, Class enumClass, boolean useOrdinalValues) {
+    public EnumTypeConverter(DatabaseMapping mapping, Class<?> enumClass, boolean useOrdinalValues) {
         super(mapping);
         m_enumClass = enumClass;
         m_enumClassName = enumClass.getName();
@@ -93,7 +93,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
         }
     }
 
-    public Class getEnumClass() {
+    public Class<?> getEnumClass() {
         return m_enumClass;
     }
 
@@ -106,7 +106,6 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      * Convert all the class-name-based settings in this converter to actual
      * class-based settings. This method is used when converting a project
      * that has been built with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
@@ -118,7 +117,7 @@ public class EnumTypeConverter extends ObjectTypeConverter {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
                         m_enumClass = AccessController.doPrivileged(
-                            new PrivilegedClassForName(m_enumClassName, true, classLoader));
+                            new PrivilegedClassForName<>(m_enumClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(
                             m_enumClassName, exception.getException());

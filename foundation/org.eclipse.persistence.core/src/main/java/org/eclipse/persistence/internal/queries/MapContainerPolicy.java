@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010 Frank Schwarz. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -57,9 +57,9 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 /**
  * <p><b>Purpose</b>: A MapContainerPolicy is ContainerPolicy whose container class
  * implements the Map interface.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
- * Provide the functionality to operate on an instance of a Map.
+ * Provide the functionality to operate on an instance of a Map.</p>
  *
  * @see ContainerPolicy
  * @see CollectionContainerPolicy
@@ -69,7 +69,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     protected String keyName;
 
     protected String elementClassName;
-    protected Class elementClass;
+    protected Class<?> elementClass;
     protected transient Field keyField;
     protected transient Method keyMethod;
 
@@ -85,7 +85,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public MapContainerPolicy(Class containerClass) {
+    public MapContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 
@@ -283,7 +283,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      */
     @Override
     public boolean compareKeys(Object sourceValue, AbstractSession session) {
-        if (((UnitOfWorkImpl)session).isClassReadOnly(sourceValue.getClass())) {
+        if (session.isClassReadOnly(sourceValue.getClass())) {
             return true;
         }
         Object backUpVersion = ((UnitOfWorkImpl)session).getBackupClone(sourceValue, getElementDescriptor());
@@ -339,7 +339,6 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * Convert all the class-name-based settings in this ContainerPolicy to
      * actual class-based settings. This method is used when converting a
      * project that has been built with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -350,10 +349,10 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         }
 
         try {
-            Class elementClass = null;
+            Class<?> elementClass = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    elementClass = AccessController.doPrivileged(new PrivilegedClassForName(elementClassName, true, classLoader));
+                    elementClass = AccessController.doPrivileged(new PrivilegedClassForName<>(elementClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(containerClassName, exception.getException());
                 }
@@ -425,7 +424,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Returns the element class which defines the map key.
      */
-    public Class getElementClass() {
+    public Class<?> getElementClass() {
         return elementClass;
     }
 
@@ -441,7 +440,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      */
     @Override
-    public Class getInterfaceType() {
+    public Class<?> getInterfaceType() {
         return ClassConstants.Map_Class;
     }
 
@@ -768,7 +767,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Sets the element class which defines the method.
      */
-    public void setElementClass(Class elementClass) {
+    public void setElementClass(Class<?> elementClass) {
         if (elementClass != null) {
             elementClassName = elementClass.getName();
         }
@@ -807,7 +806,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * built in code.
      */
     @Override
-    public void setKeyName(String keyName, Class elementClass) {
+    public void setKeyName(String keyName, Class<?> elementClass) {
         // The key name and class name must be held as the policy is used
         // directly from the mapping.
         this.keyName = keyName;
@@ -827,7 +826,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Sets the Method to be used to generate the key in a Map type container class.
      */
-    public void setKeyMethod(String keyMethodName, Class elementClass) {
+    public void setKeyMethod(String keyMethodName, Class<?> elementClass) {
         this.setKeyName(keyMethodName, elementClass);
     }
 

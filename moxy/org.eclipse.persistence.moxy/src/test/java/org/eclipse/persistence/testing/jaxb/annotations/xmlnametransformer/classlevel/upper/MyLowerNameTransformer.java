@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,18 +20,22 @@ import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 public class MyLowerNameTransformer implements XMLNameTransformer{
 
+    @Override
     public String transformTypeName(String name) {
         return name.toLowerCase();
     }
 
+    @Override
     public String transformElementName(String name) {
         return name.toLowerCase();
     }
 
+    @Override
     public String transformAttributeName(String name) {
         return name.toLowerCase();
     }
 
+    @Override
     public String transformRootElementName(String name) {
          name = name.substring(name.lastIndexOf('.') + 1);
         return name.toLowerCase();

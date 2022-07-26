@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,7 +52,7 @@ public @interface ReadTransformer {
      * be used to create the value to be assigned to the attribute.
      * Either transformerClass or method must be specified, but not both.
      */
-    Class transformerClass() default void.class;
+    Class<?> transformerClass() default void.class;
 
     /**
      * The mapped class must have a method with this name which returns a value

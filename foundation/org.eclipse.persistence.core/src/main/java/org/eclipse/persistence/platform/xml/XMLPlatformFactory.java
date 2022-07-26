@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -29,7 +29,7 @@ public class XMLPlatformFactory {
     public static final String XDK_PLATFORM_CLASS_NAME = "org.eclipse.persistence.platform.xml.xdk.XDKPlatform";
     public static final String JAXP_PLATFORM_CLASS_NAME = "org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform";
     private static XMLPlatformFactory instance;
-    private Class xmlPlatformClass;
+    private Class<? extends XMLPlatform> xmlPlatformClass;
 
     private XMLPlatformFactory() {
         super();
@@ -39,7 +39,6 @@ public class XMLPlatformFactory {
      * INTERNAL:
      * Return the singleton instance of XMLPlatformContext.
      * @return the the singleton instance of XMLPlatformContext.
-     * @throws XMLPlatformException
      */
     public static XMLPlatformFactory getInstance() throws XMLPlatformException {
         if (null == instance) {
@@ -52,9 +51,8 @@ public class XMLPlatformFactory {
      * INTERNAL:
      * Return the implementation class for the XMLPlatform.
      * @return the implementation class for the XMLPlatform.
-     * @throws XMLPlatformException
      */
-    public Class getXMLPlatformClass() throws XMLPlatformException {
+    public Class<? extends XMLPlatform> getXMLPlatformClass() throws XMLPlatformException {
         if (null != xmlPlatformClass) {
             return xmlPlatformClass;
         }
@@ -82,7 +80,8 @@ public class XMLPlatformFactory {
             if (classLoader == null) {
                 classLoader = ClassLoader.getSystemClassLoader();
             }
-            Class newXMLPlatformClass = classLoader.loadClass(newXMLPlatformClassName);
+            @SuppressWarnings({"unchecked"})
+            Class<? extends XMLPlatform> newXMLPlatformClass = (Class<? extends XMLPlatform>) classLoader.loadClass(newXMLPlatformClassName);
             setXMLPlatformClass(newXMLPlatformClass);
             return xmlPlatformClass;
         } catch (ClassNotFoundException e) {
@@ -94,7 +93,7 @@ public class XMLPlatformFactory {
      * PUBLIC:
      * Set the implementation of XMLPlatform.
      */
-    public void setXMLPlatformClass(Class xmlPlatformClass) {
+    public void setXMLPlatformClass(Class<? extends XMLPlatform> xmlPlatformClass) {
         this.xmlPlatformClass = xmlPlatformClass;
     }
 
@@ -102,23 +101,20 @@ public class XMLPlatformFactory {
      * INTERNAL:
      * Return the XMLPlatform based on the toplink.xml.platform System property.
      * @return an instance of XMLPlatform
-     * @throws XMLPlatformException
      */
     public XMLPlatform getXMLPlatform() throws XMLPlatformException {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    return (XMLPlatform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXMLPlatformClass()));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(getXMLPlatformClass()));
                 }catch (PrivilegedActionException ex){
                     throw (RuntimeException) ex.getCause();
                 }
             }else{
-                return (XMLPlatform)PrivilegedAccessHelper.newInstanceFromClass(getXMLPlatformClass());
+                return PrivilegedAccessHelper.newInstanceFromClass(getXMLPlatformClass());
 
             }
-        } catch (IllegalAccessException e) {
-            throw XMLPlatformException.xmlPlatformCouldNotInstantiate(getXMLPlatformClass().getName(), e);
-        } catch (InstantiationException e) {
+        } catch (ReflectiveOperationException e) {
             throw XMLPlatformException.xmlPlatformCouldNotInstantiate(getXMLPlatformClass().getName(), e);
         }
     }

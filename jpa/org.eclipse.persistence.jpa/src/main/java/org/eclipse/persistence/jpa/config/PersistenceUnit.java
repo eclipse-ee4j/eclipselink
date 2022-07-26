@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,21 +25,21 @@ import jakarta.persistence.spi.PersistenceUnitTransactionType;
  */
 public interface PersistenceUnit {
 
-    public Mappings addMappings();
-    public ClassLoader getClassLoader();
-    public PersistenceUnitInfo getPersistenceUnitInfo();
-    public String getName();
-    public PersistenceUnit setClass(String cls);
-    public PersistenceUnit setExcludeUnlistedClasses(Boolean setExcludeUnlistedClasses);
-    public PersistenceUnit setJarFile(String jarFile); // pointless
-    public PersistenceUnit setJtaDataSource(String jtaDataSource);
-    public PersistenceUnit setMappingFile(String mappingFile); // pointless.
-    public PersistenceUnit setName(String name);
-    public PersistenceUnit setNonJtaDataSource(String nonJtaDataSource);
-    public PersistenceUnit setProperty(String name, Object value);
-    public PersistenceUnit setProvider(String provider);
-    public PersistenceUnit setSharedCacheMode(String sharedCacheMode);
-    public PersistenceUnit setTransactionType(PersistenceUnitTransactionType transactionType);
-    public PersistenceUnit setValidationMode(String validationMode);
+    Mappings addMappings();
+    ClassLoader getClassLoader();
+    PersistenceUnitInfo getPersistenceUnitInfo();
+    String getName();
+    PersistenceUnit setClass(String cls);
+    PersistenceUnit setExcludeUnlistedClasses(Boolean setExcludeUnlistedClasses);
+    PersistenceUnit setJarFile(String jarFile); // pointless
+    PersistenceUnit setJtaDataSource(String jtaDataSource);
+    PersistenceUnit setMappingFile(String mappingFile); // pointless.
+    PersistenceUnit setName(String name);
+    PersistenceUnit setNonJtaDataSource(String nonJtaDataSource);
+    PersistenceUnit setProperty(String name, Object value);
+    PersistenceUnit setProvider(String provider);
+    PersistenceUnit setSharedCacheMode(String sharedCacheMode);
+    PersistenceUnit setTransactionType(PersistenceUnitTransactionType transactionType);
+    PersistenceUnit setValidationMode(String validationMode);
 
 }

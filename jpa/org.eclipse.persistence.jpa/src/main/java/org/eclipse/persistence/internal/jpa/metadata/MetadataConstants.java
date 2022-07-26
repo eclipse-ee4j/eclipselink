@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ package org.eclipse.persistence.internal.jpa.metadata;
  * @author Guy Pelletier
  * @since EclipseLink 1.1
  */
-public class MetadataConstants {
+public final class MetadataConstants {
     /** JPA Annotations */
     public static final String JPA_ACCESS = "jakarta.persistence.Access";
     public static final String JPA_ASSOCIATION_OVERRIDE = "jakarta.persistence.AssociationOverride";
@@ -180,9 +180,10 @@ public class MetadataConstants {
     public static final String JPA_GENERATION_SEQUENCE = "SEQUENCE";
     public static final String JPA_GENERATION_IDENTITY = "IDENTITY";
     public static final String JPA_GENERATION_AUTO = "AUTO";
+    public static final String JPA_GENERATION_UUID = "UUID";
 
     /**
-     * Metamodel processing for MappedSuperclasses non-functional names.<p>
+     * Metamodel processing for MappedSuperclasses non-functional names.
      * @see MetadataProject#addMetamodelMappedSuperclass(org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor, MetadataDescriptor)
      **/
     public static final String MAPPED_SUPERCLASS_RESERVED_PK_NAME = "__PK_METAMODEL_RESERVED_IN_MEM_ONLY_FIELD_NAME";
@@ -193,4 +194,6 @@ public class MetadataConstants {
     public static final String ECLIPSELINK_PERSISTENCE_PACKAGE_PREFIX = "org.eclipse.persistence";
     public static final String ECLIPSELINK_OXM_PACKAGE_PREFIX = "org.eclipse.persistence.oxm";
 
+    private MetadataConstants() {
+    }
 }

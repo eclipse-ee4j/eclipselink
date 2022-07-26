@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,16 +20,19 @@ public class PLSQLMap extends Typemap {
         mapInit();
     }
 
+    @Override
     void mapInit() {
         bfileMap = OS_BFILE;
         cursorMap = JS_RESULTSET;
         rowidMap = OS_ROWID;
     }
 
+    @Override
     public String writeTypeName(TypeClass type) {
         return writeTypeName2(type, false);
     }
 
+    @Override
     public String writeTypeName(TypeClass type, boolean intfIfPossible) {
         return writeTypeName2(type, intfIfPossible);
     }
@@ -46,7 +49,7 @@ public class PLSQLMap extends Typemap {
         }
         String sql = (sqlType.getSqlName() == null) ? null : sqlType.getSqlName().toString();
         if (sql != null && m_reflector.getTypeMap().get(sql) != null) {
-            predefinedName = ((SqlType)m_reflector.getTypeMap().get(sql)).getSqlName().getUseClass(
+            predefinedName = m_reflector.getTypeMap().get(sql).getSqlName().getUseClass(
                 m_package);
         }
         else {
@@ -85,11 +88,12 @@ public class PLSQLMap extends Typemap {
     /**
      * Determine the java name for a given SQL field.
      */
+    @Override
     public String getMemberName(String sqlName, boolean wordBoundary, boolean onlyIfRegistered,
-        Name name) {
+                                Name name) {
         String s = null;
 
-        if (m_field_map != null && (s = (String)m_field_map.get(sqlName)) != null) {
+        if (m_field_map != null && (s = m_field_map.get(sqlName)) != null) {
             if (s.equals("null")) {
                 return null;
             }
@@ -100,6 +104,7 @@ public class PLSQLMap extends Typemap {
         }
     }
 
+    @Override
     public String getMemberNameAsSuffix(String sqlName) {
         return getMemberName(sqlName, true, false);
     }

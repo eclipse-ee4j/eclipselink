@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 package org.eclipse.persistence.testing.tests.clientserver;
 
 import java.util.*;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 
@@ -40,7 +42,7 @@ public class Server1 {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator iterator = session.getDescriptors().values().iterator(); iterator.hasNext();) {
+        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext();) {
             descriptors.addElement(iterator.next());
         }
 
@@ -53,7 +55,7 @@ public class Server1 {
         ConnectionPool cp = this.serverSession.getConnectionPool("default");
         try {
             //close off one of the connections.  This part of the test sees if our reconnect on the fly works.
-            ((org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor)cp.getConnectionsAvailable().get(0)).getConnection().close();
+            cp.getConnectionsAvailable().get(0).getConnection().close();
         } catch (java.sql.SQLException e) {
             e.printStackTrace(System.out);
         }

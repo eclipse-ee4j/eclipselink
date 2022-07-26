@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -58,7 +58,7 @@ public class RelationsTest extends JPA1Base {
             env.commitTransaction(em);
             employee = null;
             em.clear();
-            employee = em.find(Employee.class, Integer.valueOf(1234));
+            employee = em.find(Employee.class, 1234);
             verify(employee != null, "employee not found");
             MotorVehicle motorVehicle = employee.getMotorVehicle();
             verify(motorVehicle != null, "no motor vehicle found");
@@ -93,7 +93,7 @@ public class RelationsTest extends JPA1Base {
             env.commitTransaction(em);
             employee = null;
             em.clear();
-            employee = em.find(Employee.class, Integer.valueOf(17));
+            employee = em.find(Employee.class, 17);
             verify(employee != null, "employee not found");
             bicycles = employee.getBicycles();
             verify(bicycles != null, "bicycles is null");

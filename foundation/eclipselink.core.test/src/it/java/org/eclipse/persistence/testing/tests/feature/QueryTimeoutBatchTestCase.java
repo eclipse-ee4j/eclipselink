@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 /**
- * Bug 214910:  Add query timeout support to batched update queries</p>
+ * Bug 214910:  Add query timeout support to batched update queries<br>
  * Test the query timeout feature in batch queries.
  * For data queries , a queryTimeout on the largest DatabaseQuery of the batch will be used.
  * For object queries, a queryTimeout on the largest DescriptorQueryManager (parent) or DatabaseQuery
@@ -123,7 +123,6 @@ public abstract class QueryTimeoutBatchTestCase extends TestCase {
     /**
      * Setup the platform to perform batch inserts
      * Return to previous state after running
-     * @return
      */
     protected UnitOfWork setupPlatform() {
         Session session = getSession();
@@ -176,6 +175,7 @@ public abstract class QueryTimeoutBatchTestCase extends TestCase {
     public void verifyBefore(UnitOfWork uow) {
     }
 
+    @Override
     public void verify() {
         if (!limitExceeded || (verifyErrorCode() && getExpectedErrorCode() != vendorErrorCodeEncountered))  {
             throw new TestErrorException("Batch timeout did not occur.");

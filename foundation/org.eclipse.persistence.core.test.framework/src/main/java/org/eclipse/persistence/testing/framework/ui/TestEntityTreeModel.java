@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.framework.ui;
 import java.util.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
+
+import junit.framework.Test;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -32,9 +34,11 @@ public class TestEntityTreeModel implements TreeModel {
         this.root.addTests(models);
     }
 
+    @Override
     public void addTreeModelListener(TreeModelListener listener) {
     }
 
+    @Override
     public Object getChild(Object parent, int index) {
         if (parent instanceof TestCollection) {
             return ((TestCollection)parent).getTests().elementAt(index);
@@ -45,6 +49,7 @@ public class TestEntityTreeModel implements TreeModel {
         }
     }
 
+    @Override
     public int getChildCount(Object parent) {
         if (parent instanceof TestCollection) {
             return ((TestCollection)parent).getTests().size();
@@ -55,11 +60,12 @@ public class TestEntityTreeModel implements TreeModel {
         }
     }
 
+    @Override
     public int getIndexOfChild(Object parent, Object child) {
         if (parent instanceof TestCollection) {
             return ((TestCollection)parent).getTests().indexOf(child);
         } else if (parent instanceof junit.framework.TestSuite) {
-            Enumeration tests = ((junit.framework.TestSuite)parent).tests();
+            Enumeration<Test> tests = ((junit.framework.TestSuite)parent).tests();
             int index = 0;
             while (tests.hasMoreElements()) {
                 if (tests.nextElement() == child) {
@@ -72,17 +78,21 @@ public class TestEntityTreeModel implements TreeModel {
         }
     }
 
+    @Override
     public Object getRoot() {
         return root;
     }
 
+    @Override
     public boolean isLeaf(Object node) {
         return !(node instanceof junit.framework.TestSuite);
     }
 
+    @Override
     public void removeTreeModelListener(TreeModelListener listner) {
     }
 
+    @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
     }
 }

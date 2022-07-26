@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.expressions.*;
  */
 public class ConcatNode extends StringFunctionNode {
 
-    protected List objects = null;
+    protected List<Node> objects = null;
 
     /**
      * ConcatNode constructor comment.
@@ -47,9 +47,9 @@ public class ConcatNode extends StringFunctionNode {
     public void validate(ParseTreeContext context) {
         super.validate(context);
         TypeHelper typeHelper = context.getTypeHelper();
-        Iterator i = objects.iterator();
+        Iterator<Node> i = objects.iterator();
         while (i.hasNext()){
-            Node node = (Node)i.next();
+            Node node = i.next();
             node.validate(context);
             node.validateParameter(context, typeHelper.getStringType());
         }
@@ -62,14 +62,14 @@ public class ConcatNode extends StringFunctionNode {
      */
     @Override
     public Expression generateExpression(GenerationContext context) {
-        Expression whereClause = ((Node)objects.get(0)).generateExpression(context);
+        Expression whereClause = objects.get(0).generateExpression(context);
         for (int i=1;i<objects.size();i++){
-            whereClause = whereClause.concat(((Node)objects.get(i)).generateExpression(context));
+            whereClause = whereClause.concat(objects.get(i).generateExpression(context));
         }
         return whereClause;
     }
 
-    public void setObjects(List objects){
+    public void setObjects(List<Node> objects){
         this.objects = objects;
     }
 

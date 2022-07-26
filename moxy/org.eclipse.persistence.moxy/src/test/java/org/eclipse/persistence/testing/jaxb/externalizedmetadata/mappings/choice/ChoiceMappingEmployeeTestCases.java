@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
@@ -46,44 +47,49 @@ public class ChoiceMappingEmployeeTestCases extends JAXBWithJSONTestCases{
         setContextPath("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice");
     }
 
+    @Override
     public Object getWriteControlObject() {
         if(ctrlObject ==null){
             Employee emp = new Employee();
-            emp.thing = new Integer(INT_VAL);
-            emp.readOnlyThing = new Float(FLT_VAL);
-            emp.writeOnlyThing = new Integer(INT_VAL);
+            emp.thing = Integer.valueOf(INT_VAL);
+            emp.readOnlyThing = Float.valueOf(FLT_VAL);
+            emp.writeOnlyThing = Integer.valueOf(INT_VAL);
             ctrlObject = emp;
         }
         return ctrlObject;
     }
 
+    @Override
     public Object getControlObject() {
         if(ctrlObject ==null){
             Employee emp = new Employee();
-            emp.thing = new Integer(INT_VAL);
-            emp.readOnlyThing = new Float(FLT_VAL);
+            emp.thing = Integer.valueOf(INT_VAL);
+            emp.readOnlyThing = Float.valueOf(FLT_VAL);
             ctrlObject = emp;
         }
         return ctrlObject;
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/employee-oxm.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
 
         return properties;
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", ctrlObject.wasGetCalled);
     }
 
+    @Override
     public void testRoundTrip() throws Exception{
         //doesn't apply since read and write only mappings are present
     }

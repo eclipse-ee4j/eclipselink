@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -159,6 +159,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * Method to handle events for the ActionListener interface.
      */
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         try {
             if (e.getSource() == getCutMenuItem()) {
@@ -366,7 +367,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC14:
-     * (LogProfileCheckbox.item.itemStateChanged(java.awt.event.ItemEvent) -->
+     * (LogProfileCheckbox.item.itemStateChanged(java.awt.event.ItemEvent) --{@literal >}
      * SessionInspectorPanel.logProfileChanged()V)
      *
      * @param arg1
@@ -382,7 +383,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC15:
-     * (ProfileCheckbox.item.itemStateChanged(java.awt.event.ItemEvent) -->
+     * (ProfileCheckbox.item.itemStateChanged(java.awt.event.ItemEvent) --{@literal >}
      * SessionInspectorPanel.profileChanged()V)
      *
      * @param arg1
@@ -404,7 +405,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC16: (LogCheckbox.item.itemStateChanged(java.awt.event.ItemEvent)
-     * --> SessionInspectorPanel.loggingChanged()V)
+     * --{@literal >} SessionInspectorPanel.loggingChanged()V)
      *
      * @param arg1
      *                java.awt.event.ItemEvent
@@ -424,7 +425,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connEtoC18: (SQLText.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * connEtoC18: (SQLText.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -446,7 +447,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC19: (CacheTable.mouse.mouseReleased(java.awt.event.MouseEvent)
-     * -->
+     * --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -462,7 +463,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC20:
-     * (ResultsScrollPane.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * (ResultsScrollPane.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -483,7 +484,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connEtoC21: (ClassList.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * connEtoC21: (ClassList.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -506,7 +507,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     /**
      * connEtoC3:
-     * (ClassList.listSelection.valueChanged(event.ListSelectionEvent) -->
+     * (ClassList.listSelection.valueChanged(event.ListSelectionEvent) --{@literal >}
      * SessionInspectorPanel.resetCache()V)
      *
      * @param arg1
@@ -521,7 +522,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connEtoC40: (QueryPage.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * connEtoC40: (QueryPage.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -543,7 +544,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connEtoC41: (LogText.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * connEtoC41: (LogText.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -565,7 +566,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connEtoC42: (LoginPage.mouse.mouseReleased(java.awt.event.MouseEvent) -->
+     * connEtoC42: (LoginPage.mouse.mouseReleased(java.awt.event.MouseEvent) --{@literal >}
      * SessionInspectorPanel.genericPopupDisplay(Ljava.awt.event.MouseEvent;LJPopupMenu;)V)
      *
      * @param arg1
@@ -587,7 +588,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connPtoP1SetTarget: (BrowseProfileMenuItem.enabled <-->
+     * connPtoP1SetTarget: (BrowseProfileMenuItem.enabled {@literal <}--{@literal >}
      * BrowseProfileButton.enabled)
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -606,7 +607,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connPtoP2SetTarget: (LogProfileMenuItem.selected <-->
+     * connPtoP2SetTarget: (LogProfileMenuItem.selected {@literal <}--{@literal >}
      * LogProfileCheckbox.selected)
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -625,7 +626,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connPtoP3SetTarget: (ProfileCheckbox.selected <-->
+     * connPtoP3SetTarget: (ProfileCheckbox.selected {@literal <}--{@literal >}
      * LogProfileMenuItem1.selected)
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
@@ -644,7 +645,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     /**
-     * connPtoP4SetTarget: (LogSQLMenuItem.selected <--> LogCheckbox.selected)
+     * connPtoP4SetTarget: (LogSQLMenuItem.selected {@literal <}--{@literal >} LogCheckbox.selected)
      */
     private void connPtoP4SetTarget() {
         try {
@@ -769,22 +770,22 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 // done reflectively to remove dependency on tools jar
                 Object[] params = new Object[1];
                 params[0] = source;
-                Class mainClass = Class.forName("com.sun.tools.javac.Main");
-                Class[] parameterTypes = new Class[1];
+                Class<?> mainClass = Class.forName("com.sun.tools.javac.Main");
+                Class<?>[] parameterTypes = new Class<?>[1];
                 parameterTypes[0] = String[].class;
                 Method method = mainClass.getMethod("compile", parameterTypes);
-                int result = ((Integer) method.invoke(null, params)).intValue();
+                int result = (Integer) method.invoke(null, params);
                 if (result != 0) {
                     throw new RuntimeException(
                             "Java code compile failed. This could either be a legitimate compile "
                                     + "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
                 }
-                Class newClass = Class.forName(className);
-                Object newInstance = newClass.newInstance();
+                Class<?> newClass = Class.forName(className);
+                Object newInstance = newClass.getConstructor().newInstance();
                 newClass.getField("session").set(newInstance, getSession());
                 Object value;
                 try {
-                    value = newClass.getMethod("exec", (Class[]) null).invoke(
+                    value = newClass.getMethod("exec", (Class<?>[]) null).invoke(
                             newInstance, (Object[]) null);
                 } catch (java.lang.reflect.InvocationTargetException exception) {
                     throw exception.getCause();
@@ -3115,6 +3116,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.ItemEvent
      */
+    @Override
     public void itemStateChanged(ItemEvent e) {
         if (e.getSource() == getLogProfileCheckbox()) {
             connEtoC14(e);
@@ -3164,11 +3166,13 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         dialog
                 .setDialogTitle("Select Mapping Workbench project deployment XML file");
         javax.swing.filechooser.FileFilter filer = new javax.swing.filechooser.FileFilter() {
+            @Override
             public boolean accept(File file) {
                 return (file.getName().indexOf(".xml") != -1)
                         || file.isDirectory();
             }
 
+            @Override
             public String getDescription() {
                 return "XML Files (*.xml)";
             }
@@ -3236,9 +3240,9 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 getSession().getSessionLog().setShouldPrintThread(true);
             }
             // Also update all sessions in session manager.
-            Iterator iterator = SessionManager.getManager().getSessions().values().iterator();
+            Iterator<Session> iterator = SessionManager.getManager().getSessions().values().iterator();
             while (iterator.hasNext()) {
-                ((Session)iterator.next()).setSessionLog(getSession().getSessionLog());
+                iterator.next().setSessionLog(getSession().getSessionLog());
             }
         }
     }
@@ -3284,6 +3288,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.MouseEvent
      */
+    @Override
     public void mouseClicked(MouseEvent e) {
     }
 
@@ -3293,6 +3298,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.MouseEvent
      */
+    @Override
     public void mouseEntered(MouseEvent e) {
     }
 
@@ -3302,6 +3308,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.MouseEvent
      */
+    @Override
     public void mouseExited(MouseEvent e) {
     }
 
@@ -3311,6 +3318,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.MouseEvent
      */
+    @Override
     public void mousePressed(MouseEvent e) {
     }
 
@@ -3320,6 +3328,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.MouseEvent
      */
+    @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getSource() == getSQLText()) {
             connEtoC18(e);
@@ -3368,6 +3377,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param evt
      *                java.beans.PropertyChangeEvent
      */
+    @Override
     public void propertyChange(java.beans.PropertyChangeEvent evt) {
         if ((evt.getSource() == getBrowseProfileMenuItem())
                 && (evt.getPropertyName().equals("enabled"))) {
@@ -3399,8 +3409,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         IdentityMap map = ((AbstractSession) getSession())
                 .getIdentityMapAccessorInstance().getIdentityMap(
                         info.descriptor.getJavaClass());
-        for (Enumeration cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
-            CacheKey key = (CacheKey) cacheEnum.nextElement();
+        for (Enumeration<CacheKey> cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
+            CacheKey key = cacheEnum.nextElement();
             if (info.descriptor.getJavaClass().isInstance(key.getObject())) {
                 cacheResults.addElement(key);
             }
@@ -3418,7 +3428,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             CacheKey key = (CacheKey) cacheEnumeration.nextElement();
             String[] values = new String[4];
             values[0] = key.getKey().toString();
-            values[1] = new Integer(key.getObject().hashCode()).toString();
+            values[1] = Integer.valueOf(key.getObject().hashCode()).toString();
             values[2] = String.valueOf(key.getWriteLockValue());
             values[3] = key.getObject().toString();
             model.addRow(values);
@@ -3437,9 +3447,9 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         ClassInfo[] classes = new ClassInfo[(getSession()).getDescriptors()
                 .size()];
         int index = 0;
-        for (Iterator iterator = (getSession()).getDescriptors().values()
+        for (Iterator<ClassDescriptor> iterator = (getSession()).getDescriptors().values()
                 .iterator(); iterator.hasNext();) {
-            classes[index] = new ClassInfo((ClassDescriptor) iterator.next(),
+            classes[index] = new ClassInfo(iterator.next(),
                     useFullNames);
             index = index + 1;
         }
@@ -3535,8 +3545,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         DatabaseRecord firstRow = (DatabaseRecord) resultRows.firstElement();
         String[] columns = new String[firstRow.getFields().size()];
         for (int index = 0; index < firstRow.getFields().size(); index++) {
-            columns[index] = ((DatabaseField) firstRow.getFields().elementAt(
-                    index)).getName();
+            columns[index] = firstRow.getFields().elementAt(
+                    index).getName();
         }
         model.setColumnIdentifiers(columns);
         for (Enumeration rowsEnumeration = resultRows.elements(); rowsEnumeration
@@ -3734,6 +3744,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.ListSelectionEvent
      */
+    @Override
     public void valueChanged(ListSelectionEvent e) {
         if (e.getSource() == getClassList()) {
             connEtoC3(e);
@@ -3744,9 +3755,9 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         if (shouldUseJndiConnector
                 && getLoginEditorPanel().getLogin().getPlatform().isOracle()) {
             try {
-                Class connectionPoolHelperClass = Class
+                Class<?> connectionPoolHelperClass = Class
                         .forName("org.eclipse.persistence.tools.sessionconsole.OracleConnectionPoolHelper");
-                Class[] params = new Class[] { java.lang.String.class };
+                Class<?>[] params = new Class<?>[] { java.lang.String.class };
                 java.lang.reflect.Method method = connectionPoolHelperClass
                         .getDeclaredMethod("getOracleDataSource", params);
                 Object[] args = new Object[] { getLoginEditorPanel().getLogin()

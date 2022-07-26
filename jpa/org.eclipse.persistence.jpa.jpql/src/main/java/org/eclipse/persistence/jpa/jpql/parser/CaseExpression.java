@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * <div><b>BNF:</b> <code>general_case_expression ::= CASE when_clause {when_clause}* ELSE scalar_expression END</code></div>
  * or
- * <div><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code><p></div>
+ * <div><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -100,17 +100,11 @@ public final class CaseExpression extends AbstractExpression {
         super(parent, CASE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getCaseOperand().accept(visitor);
@@ -118,9 +112,6 @@ public final class CaseExpression extends AbstractExpression {
         getElseExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getCaseOperand());
@@ -128,9 +119,6 @@ public final class CaseExpression extends AbstractExpression {
         children.add(getElseExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -183,9 +171,6 @@ public final class CaseExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -260,9 +245,6 @@ public final class CaseExpression extends AbstractExpression {
         return elseExpression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(GeneralCaseExpressionBNF.ID);
@@ -381,9 +363,6 @@ public final class CaseExpression extends AbstractExpression {
               !whenClauses.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
@@ -407,9 +386,6 @@ public final class CaseExpression extends AbstractExpression {
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -447,9 +423,6 @@ public final class CaseExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 
@@ -503,7 +476,7 @@ public final class CaseExpression extends AbstractExpression {
     }
 
     /**
-     * A enumeration used to determine how {@link CaseExpression#isParsingComplete(WordParser, String)}
+     * A enumeration used to determine how {@link CaseExpression#isParsingComplete(WordParser, String, Expression)}
      * should behaves.
      */
     private enum ParsingType {

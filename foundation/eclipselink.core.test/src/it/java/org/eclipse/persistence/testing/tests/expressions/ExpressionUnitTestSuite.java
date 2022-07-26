@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -317,7 +317,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         // The following query will select all employees who will still have a salary under
         // $50,000 after a 15% raise.
         Vector arguments = new Vector();
-        arguments.addElement(new Integer(15));
+        arguments.addElement(15);
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("salary").getFunction(applyRaiseSelector, arguments).lessThan(50000);
 
@@ -912,7 +912,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
 
     protected void _addNotBetween$ObjectTest() {
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression expression = builder.get("salary").notBetween(builder.get("manager").get("salary"), new Integer(500000));
+        Expression expression = builder.get("salary").notBetween(builder.get("manager").get("salary"), 500000);
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 3);
         test.setExpression(expression);
@@ -1485,6 +1485,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         super.addTests();
     }
 
+    @Override
     public void addTests() {
         setManager(PopulationManager.getDefaultManager());
         _addAllOfTest();
@@ -1617,10 +1618,12 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         addTest(new UnitTestCase("ValueFromObjectTest"));
     }
 
+    @Override
     protected PopulationManager getManager() {
         return manager;
     }
 
+    @Override
     protected void setManager(PopulationManager theManager) {
         manager = theManager;
     }

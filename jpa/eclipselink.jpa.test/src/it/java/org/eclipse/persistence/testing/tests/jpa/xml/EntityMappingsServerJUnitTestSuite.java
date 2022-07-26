@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsAdvancedJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsMultiTenantServerTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.complexaggregate.EntityMappingsComplexAggregateJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.inheritance.EntityMappingsInheritanceJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.inherited.EntityMappingsInheritedJUnitTestCase;
@@ -41,7 +40,6 @@ public class EntityMappingsServerJUnitTestSuite extends TestCase {
 
         if (testing.equals(TestingProperties.JPA_ORM_TESTING)) {
             suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite());
-            suite.addTest(EntityMappingsMultiTenantServerTestSuite.suite());
             suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite());
             suite.addTest(EntityMappingsUnidirectionalRelationshipsJUnitTestCase.suite());
             suite.addTest(EntityMappingsInheritanceJUnitTestCase.suite());
@@ -51,7 +49,6 @@ public class EntityMappingsServerJUnitTestSuite extends TestCase {
             //suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());
         } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) { // In the testing browser use -Dorm.testing=eclipselink
             suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite());
-            suite.addTest(EntityMappingsMultiTenantServerTestSuite.suite());
             suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite());
             suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());
         }

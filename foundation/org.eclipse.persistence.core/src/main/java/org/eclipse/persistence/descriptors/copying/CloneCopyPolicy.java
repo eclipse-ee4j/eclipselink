@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors.copying;
 
-import java.lang.reflect.*;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
+import java.lang.reflect.Method;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.queries.ObjectBuildingQuery;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * <p><b>Purpose</b>: Allows a clone of an object to be created with a method that returns
@@ -62,27 +61,17 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
         if (this.getMethodName() == null) {
             return getDescriptor().getObjectBuilder().buildNewInstance();
         }
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(this.getMethod(), domainObject, new Object[0]));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), throwableException);
-
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(this.getMethod(), domainObject, new Object[0]),
+                (ex) -> {
+                    if (ex instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileCloning(
+                                domainObject, this.getMethodName(), this.getDescriptor(), ex);
                     }
+                    return DescriptorException.targetInvocationWhileCloning(
+                            domainObject, this.getMethodName(), this.getDescriptor(), ex);
                 }
-            } else {
-                return PrivilegedAccessHelper.invokeMethod(this.getMethod(), domainObject, new Object[0]);
-            }
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), exception);
-        }
+        );
     }
 
     /**
@@ -94,35 +83,22 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
             //not implemented to perform special operations.
             return this.buildClone(domainObject, session);
         }
-
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(this.getWorkingCopyMethod(), domainObject, new Object[0]));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), throwableException);
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.invokeMethod(this.getWorkingCopyMethod(), domainObject, new Object[0]),
+                (ex) -> {
+                    if (ex instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), ex);
                     }
+                    return DescriptorException.targetInvocationWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), ex);
                 }
-            } else {
-                return PrivilegedAccessHelper.invokeMethod(this.getWorkingCopyMethod(), domainObject, new Object[0]);
-            }
-
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileCloning(domainObject, this.getMethodName(), this.getDescriptor(), exception);
-        }
+        );
     }
 
     /**
      * Create a new instance, unless a workingCopyClone method is specified, then build a new instance and clone it.
      */
     @Override
-    public Object buildWorkingCopyCloneFromRow(org.eclipse.persistence.sessions.Record row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {
+    public Object buildWorkingCopyCloneFromRow(DataRecord row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException {
         // For now must preserve CMP code which builds heavy clones with a context.
         // Also preserve for clients who use the copy policy.
         ObjectBuilder builder = getDescriptor().getObjectBuilder();
@@ -170,11 +146,11 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
      */
     @Override
     public void initialize(Session session) throws DescriptorException {
-        final Class javaClass = this.getDescriptor().getJavaClass();
+        final Class<?> javaClass = this.getDescriptor().getJavaClass();
         try {
             // Must allow for null clone method for 9.0.4 deployment XML.
             if (this.getMethodName() != null) {
-                this.setMethod(Helper.getDeclaredMethod(javaClass, this.getMethodName(), new Class[0]));
+                this.setMethod(Helper.getDeclaredMethod(javaClass, this.getMethodName(), new Class<?>[0]));
             }
         } catch (NoSuchMethodException exception) {
             session.getIntegrityChecker().handleError(DescriptorException.noSuchMethodWhileInitializingCopyPolicy(this.getMethodName(), this.getDescriptor(), exception));
@@ -183,7 +159,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
         }
         if (this.getWorkingCopyMethodName() != null) {
             try {
-                this.setWorkingCopyMethod(Helper.getDeclaredMethod(javaClass, this.getWorkingCopyMethodName(), new Class[0]));
+                this.setWorkingCopyMethod(Helper.getDeclaredMethod(javaClass, this.getWorkingCopyMethodName(), new Class<?>[0]));
             } catch (NoSuchMethodException exception) {
                 session.getIntegrityChecker().handleError(DescriptorException.noSuchMethodWhileInitializingCopyPolicy(this.getMethodName(), this.getDescriptor(), exception));
             } catch (SecurityException exception) {

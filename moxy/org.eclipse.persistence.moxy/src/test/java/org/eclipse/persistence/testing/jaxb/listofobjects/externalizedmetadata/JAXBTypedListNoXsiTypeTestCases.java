@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
 import org.w3c.dom.Document;
 
@@ -48,6 +49,7 @@ public class JAXBTypedListNoXsiTypeTestCases  extends JAXBListOfObjectsTestCases
         init();
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         return Company.class;
     }
@@ -55,18 +57,19 @@ public class JAXBTypedListNoXsiTypeTestCases  extends JAXBListOfObjectsTestCases
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_RESOURCE_NO_XSI_TYPE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Company.class;
 
         setClasses(classes);
     }
 
+    @Override
     protected Map getProperties() {
         String pkg = "org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata";
         HashMap<String, Source> overrides = new HashMap<String, Source>();
         overrides.put(pkg, generateXmlSchemaOxm());
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 
@@ -115,6 +118,7 @@ public class JAXBTypedListNoXsiTypeTestCases  extends JAXBListOfObjectsTestCases
         return null;
     }
 
+    @Override
     protected Object getControlObject() {
         Company company = new Company();
         List depts = new ArrayList();
@@ -131,6 +135,7 @@ public class JAXBTypedListNoXsiTypeTestCases  extends JAXBListOfObjectsTestCases
 
     }
 
+    @Override
     public List< InputStream> getControlSchemaFiles(){
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/externalizedmetadata/typedlist.xsd");
 
@@ -139,6 +144,7 @@ public class JAXBTypedListNoXsiTypeTestCases  extends JAXBListOfObjectsTestCases
         return controlSchema;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }

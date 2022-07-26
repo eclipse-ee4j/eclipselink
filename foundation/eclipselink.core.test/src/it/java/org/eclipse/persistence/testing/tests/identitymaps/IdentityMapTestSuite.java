@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,9 +42,9 @@ public class IdentityMapTestSuite extends TestSuite {
         employees.addElement(employee1);
         employees.addElement(employee2);
         primaryKey1 = new Vector();
-        primaryKey1.addElement(new Integer(99));
+        primaryKey1.addElement(99);
         primaryKey2 = new Vector();
-        primaryKey2.addElement(new Integer(88));
+        primaryKey2.addElement(88);
 
         primaryKeys.addElement(primaryKey1);
         primaryKeys.addElement(primaryKey2);
@@ -53,6 +53,7 @@ public class IdentityMapTestSuite extends TestSuite {
         suite.addTest(new MultipleDeleteFromIdentityMapTest(identityMap, primaryKeys, employees, primaryKeys));
     }
 
+    @Override
     public void addTests() {
         addTest(getFullIdentityMapSuite());
         addTest(getNoIdentityMapSuite());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
 
        boolean isHex = Constants.HEX_BINARY_QNAME.equals(((XMLField)this.mapping.getField()).getSchemaType());
 
-       Class attributeClassification = null;
+       Class<?> attributeClassification = null;
        AbstractNullPolicy nullPolicy;
        boolean isSwaRef = false;
        CoreContainerPolicy cp = null;

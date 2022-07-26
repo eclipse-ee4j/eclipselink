@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class EMCascadingRemoveAndFlushTest extends EntityContainerTestBase  {
     public HashMap persistedItems = new HashMap(4);
     public ArrayList<PhoneNumberPK> phoneIDs = new ArrayList<PhoneNumberPK>();
 
+    @Override
     public void setup (){
         super.setup();
         phoneIDs.clear();
@@ -51,13 +52,14 @@ public class EMCascadingRemoveAndFlushTest extends EntityContainerTestBase  {
         empIDs[0] = employee.getId();
     }
 
+    @Override
     public void test(){
 
         try {
             beginTransaction();
             Employee employee = getEntityManager().find(Employee.class, empIDs[0]);
-            for (Iterator phones = employee.getPhoneNumbers().iterator(); phones.hasNext();){
-                this.phoneIDs.add(((PhoneNumber)phones.next()).buildPK());
+            for (Iterator<PhoneNumber> phones = employee.getPhoneNumbers().iterator(); phones.hasNext();){
+                this.phoneIDs.add(phones.next().buildPK());
             }
             getEntityManager().remove(employee);
 
@@ -82,6 +84,7 @@ public class EMCascadingRemoveAndFlushTest extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void verify(){
         if(persistedItems.get("after flush Employee") != null) {
             throw new TestErrorException("Employee ID :" + empIDs[0] + " was not deleted");

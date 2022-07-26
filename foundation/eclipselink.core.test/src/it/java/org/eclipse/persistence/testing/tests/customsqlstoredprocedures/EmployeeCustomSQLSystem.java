@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem
  * </ul>
  */
 public class EmployeeCustomSQLSystem extends EmployeeSystem {
+    @Override
     public void addDescriptors(DatabaseSession session) {
         session.logout();
         super.addDescriptors(session);
@@ -521,6 +522,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
             this.returnString = theString;
         }
 
+        @Override
         protected void printReturn(Writer writer, AbstractSession session) throws ValidationException {
             try {
                 writer.write(returnString);
@@ -676,6 +678,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
     /**
      * Also creates the procs.
      */
+    @Override
     public void createTables(DatabaseSession session) {
         super.createTables(session);
         org.eclipse.persistence.internal.databaseaccess.DatabasePlatform platform = session.getLogin().getPlatform();
@@ -1094,7 +1097,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         call.addNamedArgument("VERSION");
         call.addNamedArgument("START_TIME");
         call.addNamedArgument("END_TIME");
-        call.addNamedInOutputArgumentValue("OUT_VERSION", new Long(0), "EMPLOYEE.VERSION", Long.class);
+        call.addNamedInOutputArgumentValue("OUT_VERSION", 0L, "EMPLOYEE.VERSION", Long.class);
         insertQuery.setCall(call);
         empDescriptor.getQueryManager().setInsertQuery(insertQuery);
 
@@ -1167,7 +1170,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         // After this is fixed (m.b. in SQLAnywhere 11?) the order of the attributes should be returned to original
         // (where it does NOT follow the order of sp parameters).
         insertEmployeeCall.addNamedArgument("_VERSION", "VERSION");
-        insertEmployeeCall.addNamedInOutputArgumentValue("_OUT_VERSION", new Long(0), "EMPLOYEE.VERSION", Long.class);
+        insertEmployeeCall.addNamedInOutputArgumentValue("_OUT_VERSION", 0L, "EMPLOYEE.VERSION", Long.class);
         employeeDescriptor.getQueryManager().setInsertQuery(new InsertObjectQuery(insertEmployeeCall));
 
         final StoredProcedureCall updateEmployeeCall = new StoredProcedureCall();

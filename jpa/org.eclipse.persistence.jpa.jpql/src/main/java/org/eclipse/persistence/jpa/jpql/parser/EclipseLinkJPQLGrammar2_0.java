@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,9 +59,6 @@ public final class EclipseLinkJPQLGrammar2_0 extends AbstractJPQLGrammar {
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getProvider() {
         return DefaultEclipseLinkJPQLGrammar.PROVIDER_NAME;
@@ -97,33 +94,21 @@ public final class EclipseLinkJPQLGrammar2_0 extends AbstractJPQLGrammar {
         return INSTANCE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected JPQLGrammar buildBaseGrammar() {
         return new JPQLGrammar2_0();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPAVersion getJPAVersion() {
         return JPAVersion.VERSION_2_0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getProviderVersion() {
         return VERSION.getVersion();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initializeBNFs() {
 
@@ -132,23 +117,14 @@ public final class EclipseLinkJPQLGrammar2_0 extends AbstractJPQLGrammar {
         addChildBNF(InExpressionExpressionBNF.ID, InputParameterBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initializeExpressionFactories() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initializeIdentifiers() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return "EclipseLink 2.0";

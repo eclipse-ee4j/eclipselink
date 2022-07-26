@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,15 +38,13 @@ import org.eclipse.persistence.internal.helper.Helper;
 public class JAXBSetMethodAttributeAccessor extends MethodAttributeAccessor {
     String parameterTypeAsString;
     ClassLoader loader;
-    Class attributeClassification = CoreClassConstants.OBJECT;
+    Class<?> attributeClassification = CoreClassConstants.OBJECT;
 
     /**
      * This constructor sets the set method input parameter type (as string) as
      * well as the classloader that will be used to load the associated class
      * during initialization.
      *
-     * @param parameterTypeAsString
-     * @param loader
      */
     public JAXBSetMethodAttributeAccessor(String parameterTypeAsString, ClassLoader loader) {
         this.parameterTypeAsString = parameterTypeAsString;
@@ -57,13 +55,13 @@ public class JAXBSetMethodAttributeAccessor extends MethodAttributeAccessor {
      * Override to avoid exceptions due to lack of get method.
      */
     @Override
-    public void initializeAttributes(Class theJavaClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
         }
         try {
             if (!isWriteOnly()) {
-                Class[] parameterTypes = new Class[1];
+                Class<?>[] parameterTypes = new Class<?>[1];
                 parameterTypes[0] = Helper.getClassFromClasseName(parameterTypeAsString, loader);
                 attributeClassification = parameterTypes[0];
                 setSetMethod(Helper.getDeclaredMethod(theJavaClass, setMethodName, parameterTypes));
@@ -79,7 +77,7 @@ public class JAXBSetMethodAttributeAccessor extends MethodAttributeAccessor {
      * Return the return type of the method accessor.
      */
     @Override
-    public Class getAttributeClass() {
+    public Class<?> getAttributeClass() {
         return attributeClassification;
     }
 }

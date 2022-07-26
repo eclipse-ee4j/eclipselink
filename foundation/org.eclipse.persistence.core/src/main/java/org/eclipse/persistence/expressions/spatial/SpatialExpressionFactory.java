@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.expressions.spatial;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.expressions.Expression;
@@ -36,7 +37,11 @@ import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_NN;
  *
  * @since Oracle TopLink 11.1.1.0.0
  */
-public class SpatialExpressionFactory {
+public final class SpatialExpressionFactory {
+
+    private SpatialExpressionFactory() {
+        // no instance please
+    }
 
     /**
      * PUBLIC:
@@ -127,13 +132,9 @@ public class SpatialExpressionFactory {
      * A utility method to build a SpatialExpression
      *
      * @param operator the ordinal of the operator
-     * @param geom1
-     * @param geom2
-     * @param params
-     * @return
      */
     public static Expression getSpatialExpression(int operator, Expression geom1, Object geom2, String params) {
-        Vector vParameters = new Vector(2);
+        List<Object> vParameters = new Vector<>(2);
         vParameters.add(geom2);
         //Bug 5885276, the empty string either like " " or "" needs to be substituted
         //by null prior to passing to Geometry call.

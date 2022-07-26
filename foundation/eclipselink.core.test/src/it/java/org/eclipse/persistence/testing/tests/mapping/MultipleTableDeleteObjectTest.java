@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,11 +30,12 @@ public class MultipleTableDeleteObjectTest extends org.eclipse.persistence.testi
         setName("MultipleTableDeleteObjectTest(" + amendmentMethodName + "," + originalObject + ")");
     }
 
+    @Override
     protected void setup() {
         super.setup();
         try {
             // Get the Method
-            Class[] parms = new Class[1];
+            Class<?>[] parms = new Class<?>[1];
             parms[0] = DatabaseSessionImpl.class;
             java.lang.reflect.Method method = Employee1.class.getMethod(this.amendmentMethodName, parms);
 

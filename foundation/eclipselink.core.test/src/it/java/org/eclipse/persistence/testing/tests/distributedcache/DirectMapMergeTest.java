@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,18 +25,22 @@ public class DirectMapMergeTest extends DistributedCacheMergeTest {
         super();
     }
 
+    @Override
     protected void modifyCollection(UnitOfWork uow, Object objectToModify) {
-        ((DirectMapMappings)objectToModify).directMap.put(new Integer(11), newItemForCollection());
+        ((DirectMapMappings)objectToModify).directMap.put(11, newItemForCollection());
     }
 
+    @Override
     protected int getCollectionSize(Object rootObject) {
         return ((DirectMapMappings)rootObject).directMap.keySet().size();
     }
 
-    protected Class getRootClass() {
+    @Override
+    protected Class<?> getRootClass() {
         return DirectMapMappings.class;
     }
 
+    @Override
     protected Project getNewProject() {
         Project p = new DirectMapMappingsProject();
         DirectMapMapping mapping = (DirectMapMapping)p.getDescriptor(DirectMapMappings.class).getMappingForAttributeName("directMap");
@@ -44,9 +48,10 @@ public class DirectMapMergeTest extends DistributedCacheMergeTest {
         return p;
     }
 
+    @Override
     protected Object buildOriginalObject() {
         DirectMapMappings dm = new DirectMapMappings();
-        dm.directMap.put(new Integer("1"), "first value");
+        dm.directMap.put(Integer.valueOf("1"), "first value");
         return dm;
     }
 

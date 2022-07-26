@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  * <P><B>Purpose</B>:
@@ -93,7 +93,7 @@ public class DatabaseException extends EclipseLinkException {
         return databaseException;
     }
 
-    public static DatabaseException configurationErrorNewInstanceIllegalAccessException(IllegalAccessException exception, Class javaClass) {
+    public static DatabaseException configurationErrorNewInstanceIllegalAccessException(IllegalAccessException exception, Class<?> javaClass) {
         Object[] args = { javaClass };
 
         DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, CONFIGURATION_ERROR_NEW_INSTANCE_ILLEGAL_ACCESS_EXCEPTION, args));
@@ -102,7 +102,7 @@ public class DatabaseException extends EclipseLinkException {
         return databaseException;
     }
 
-    public static DatabaseException configurationErrorNewInstanceInstantiationException(InstantiationException exception, Class javaClass) {
+    public static DatabaseException configurationErrorNewInstanceInstantiationException(InstantiationException exception, Class<?> javaClass) {
         Object[] args = { javaClass };
 
         DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, CONFIGURATION_ERROR_NEW_INSTANCE_INSTANTIATION_EXCEPTION, args));
@@ -112,7 +112,7 @@ public class DatabaseException extends EclipseLinkException {
     }
 
     public static DatabaseException couldNotConvertObjectType(int type) {
-        Object[] args = { CR, Integer.valueOf(type) };
+        Object[] args = { CR, type};
 
         DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, COULD_NOT_CONVERT_OBJECT_TYPE, args));
         databaseException.setErrorCode(COULD_NOT_CONVERT_OBJECT_TYPE);
@@ -264,7 +264,7 @@ public class DatabaseException extends EclipseLinkException {
      * PUBLIC:
      * Return the query arguments used in the original query when exception is thrown
      */
-    public Record getQueryArgumentsRecord() {
+    public DataRecord getQueryArgumentsRecord() {
         return queryArguments;
     }
 
@@ -377,8 +377,6 @@ public class DatabaseException extends EclipseLinkException {
      * The connection returned from this driver was null, the driver may be
      * missing(using the default) or the wrong one for the database.
      *
-     * @param driver
-     * @return
      */
     public static DatabaseException unableToAcquireConnectionFromDriverException(
             String driver, String user, String url) {
@@ -394,9 +392,6 @@ public class DatabaseException extends EclipseLinkException {
      * The connection returned from this driver was null, the driver may be
      * missing(using the default) or the wrong one for the database.
      *
-     * @param exception
-     * @param driver
-     * @return
      */
     public static DatabaseException unableToAcquireConnectionFromDriverException(SQLException exception,
             String driver, String user, String url) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,10 +25,10 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * </p>
  */
 public class TypeDefinition extends DatabaseObjectDefinition {
-    protected Vector fields;
+    protected List<FieldDefinition> fields;
 
     public TypeDefinition() {
-        this.fields = new Vector();
+        this.fields = new Vector<>();
     }
 
     /**
@@ -36,7 +36,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * Add the field to the type, default sizes are used.
      * @param type is the Java class type coresponding to the database type.
      */
-    public void addField(String fieldName, Class type) {
+    public void addField(String fieldName, Class<?> type) {
         this.addField(new FieldDefinition(fieldName, type));
     }
 
@@ -45,7 +45,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * Add the field to the type.
      * @param type is the Java class type coresponding to the database type.
      */
-    public void addField(String fieldName, Class type, int fieldSize) {
+    public void addField(String fieldName, Class<?> type, int fieldSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize));
     }
 
@@ -54,7 +54,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * Add the field to the type.
      * @param type is the Java class type coresponding to the database type.
      */
-    public void addField(String fieldName, Class type, int fieldSize, int fieldSubSize) {
+    public void addField(String fieldName, Class<?> type, int fieldSize, int fieldSubSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize, fieldSubSize));
     }
 
@@ -72,7 +72,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * Add the field to the type.
      */
     public void addField(FieldDefinition field) {
-        this.getFields().addElement(field);
+        this.getFields().add(field);
     }
 
     /**
@@ -83,10 +83,11 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("CREATE TYPE " + getFullName() + " AS OBJECT (");
-            for (Enumeration fieldsEnum = getFields().elements(); fieldsEnum.hasMoreElements();) {
-                FieldDefinition field = (FieldDefinition)fieldsEnum.nextElement();
+            List<FieldDefinition> fields = getFields();
+            for (int i = 0; i < getFields().size(); i++) {
+                FieldDefinition field = fields.get(i);
                 field.appendTypeString(writer, session);
-                if (fieldsEnum.hasMoreElements()) {
+                if (i + 1 < fields.size()) {
                     writer.write(", ");
                 }
             }
@@ -111,11 +112,11 @@ public class TypeDefinition extends DatabaseObjectDefinition {
         return writer;
     }
 
-    public Vector getFields() {
+    public List<FieldDefinition> getFields() {
         return fields;
     }
 
-    public void setFields(Vector fields) {
+    public void setFields(List<FieldDefinition> fields) {
         this.fields = fields;
     }
 }

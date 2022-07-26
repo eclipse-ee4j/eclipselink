@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,18 +13,18 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 
+package org.eclipse.persistence.internal.jpa.parsing;
+
 /**
  * INTERNAL
  * <p><b>Purpose</b>: this is the superclass of the SELECT, FROM, WHERE and ORDER BY nodes
  * <p><b>Responsibilities</b>:<ul>
  * <li> Maintain a reference to the ParseTreeContext
- * <li>
+ * </ul>
  * User: jdriscol
  * Date: Nov 13, 2002
  * Time: 10:58:20 AM
  */
-package org.eclipse.persistence.internal.jpa.parsing;
-
 public class MajorNode extends Node {
     private ParseTreeContext context;
 

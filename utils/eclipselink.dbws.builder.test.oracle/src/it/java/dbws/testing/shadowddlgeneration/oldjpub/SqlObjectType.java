@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,8 +67,8 @@ public class SqlObjectType extends SqlTypeWithMethods {
 
     /**
      * Determines if this Type represents an object type.
-     * <p/>
      */
+    @Override
     public boolean isObject() {
         // special case BOOLEAN - not really a SqlObjectType
         if ("BOOLEAN".equals(m_name.getSimpleName())) {
@@ -86,6 +86,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
 
     // Type filters and Mode filters is enabled
     // protected boolean acceptMethod(Method method) { return true; }
+    @Override
     public TypeClass getSupertype() throws SQLException, PublisherException {
         if (m_supertypeKnown) {
             return m_supertype;
@@ -117,6 +118,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
      * methods of java.lang.reflect.Modifier. If we ever need additional modifiers for C++, we can
      * subclass this.
      */
+    @Override
     public int getModifiers() throws SQLException {
         if (m_modifiers == 0) {
             m_modifiers = Modifier.PUBLIC;
@@ -152,6 +154,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
      * Returns an array of Field objects reflecting all the accessible fields of this Type object.
      * Returns an array of length 0 if this Type object has no accesible fields.
      */
+    @Override
     public List<AttributeField> getFields(boolean publishedOnly) throws SecurityException,
         SQLException, PublisherException {
         return getFields(0, publishedOnly);
@@ -180,6 +183,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
         return fields;
     }
 
+    @Override
     protected List<FieldInfo> getFieldInfo() throws SQLException {
         SqlName sqlName = getSqlName();
         String schema = sqlName.getSchemaName();
@@ -191,6 +195,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
         return FieldInfo.getFieldInfo(iter);
     }
 
+    @Override
     protected MethodInfo[] getMethodInfo(String schema, String name) throws SQLException {
         Iterator<ViewRow> iter = null;
         if (m_reflector.geqOracle9()) {
@@ -206,6 +211,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
         return MethodInfo.getMethodInfo(iter);
     }
 
+    @Override
     protected ResultInfo getResultInfo(String schema, String name, String method, String methodNo)
         throws SQLException {
         Iterator<ViewRow> iter = m_viewCache.getRows("ALL_METHOD_RESULTS", new String[0],
@@ -214,6 +220,7 @@ public class SqlObjectType extends SqlTypeWithMethods {
         return ResultInfo.getResultInfo(iter);
     }
 
+    @Override
     protected ParamInfo[] getParamInfo(String schema, String name, String method, String methodNo)
         throws SQLException {
         Iterator<ViewRow> iter = m_viewCache.getRows(ALL_METHOD_PARAMS, new String[0],

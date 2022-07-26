@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,9 +39,6 @@ final class SubqueryDeclaration extends Declaration {
         super(queryContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     Expression buildQueryExpression() {
         RangeVariableDeclaration declaration = (RangeVariableDeclaration) getBaseExpression();
@@ -49,26 +46,17 @@ final class SubqueryDeclaration extends Declaration {
         return queryContext.getBaseExpression().getAlias(expressoin);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Type getType() {
         return Type.SUBQUERY;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     ClassDescriptor resolveDescriptor() {
         // A subquery used as a declaration does not have a descriptor
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     DatabaseMapping resolveMapping() {
         // Does not resolve to a mapping

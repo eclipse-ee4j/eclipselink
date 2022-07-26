@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import jakarta.persistence.EntityManager;
  * for instance class names.
  *
  */
-public class EntityManagerProperties {
+public final class EntityManagerProperties {
 
     /**
      * Set to "true" this property forces persistence context to read through JTA-managed ("write") connection
@@ -346,6 +346,10 @@ public class EntityManagerProperties {
             add(COMPOSITE_UNIT_PROPERTIES);
         }
     };
+
+    private EntityManagerProperties() {
+        //no instance please
+    }
 
     public static Set<String> getSupportedProperties() {
         return Collections.unmodifiableSet(supportedProperties);

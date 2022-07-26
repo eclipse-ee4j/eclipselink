@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class DeleteObjectPrivatelyOwningUntriggeredIndirection extends TestCase 
     public DeleteObjectPrivatelyOwningUntriggeredIndirection() {
     }
 
+    @Override
     protected void setup()  {
         // create Employee and PhoneNumber, save them in the db
         Employee employee = new Employee();
@@ -57,6 +58,7 @@ public class DeleteObjectPrivatelyOwningUntriggeredIndirection extends TestCase 
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test () {
         // read the Employee into the cache - don't trigger phones indirection.
         Employee employee = (Employee)getSession().executeQuery(createReadEmployeeQuery());
@@ -67,6 +69,7 @@ public class DeleteObjectPrivatelyOwningUntriggeredIndirection extends TestCase 
         uow.commit();
     }
 
+    @Override
     protected void verify()  {
         // verify that the Employee is gone from the cache
         ReadObjectQuery query = createReadEmployeeQuery();
@@ -90,6 +93,7 @@ public class DeleteObjectPrivatelyOwningUntriggeredIndirection extends TestCase 
 
     }
 
+    @Override
     public void reset() {
         // nothing to do
     }

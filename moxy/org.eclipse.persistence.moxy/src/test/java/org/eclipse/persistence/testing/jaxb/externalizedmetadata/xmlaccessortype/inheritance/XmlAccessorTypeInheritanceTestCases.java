@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,23 +34,25 @@ public class XmlAccessorTypeInheritanceTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlAccessorTypeInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { A.class, B.class });
+        setClasses(new Class<?>[] { A.class, B.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     protected Object getControlObject() {
         return new B();
     }
 
+    @Override
     public Object getWriteControlObject() {
         return new B();
     }
 
+    @Override
     public Map getProperties() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS);
 
@@ -62,6 +64,7 @@ public class XmlAccessorTypeInheritanceTestCases extends JAXBWithJSONTestCases {
         return properties;
     }
 
+    @Override
     public void testRoundTrip() throws Exception {
         // Not applicable since id is a write only mapping
     }

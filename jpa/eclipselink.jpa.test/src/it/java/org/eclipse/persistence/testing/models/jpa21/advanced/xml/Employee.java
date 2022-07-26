@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,17 +17,11 @@ package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
-import org.eclipse.persistence.annotations.TypeConverter;
-
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.sessions.Session;
 
 @ObjectTypeConverter(
         name="sex",
@@ -96,6 +90,7 @@ public class Employee implements Serializable, Cloneable {
         getResponsibilities().add(responsibility);
     }
 
+    @Override
     public Employee clone() {
         Employee clone = null;
         try {

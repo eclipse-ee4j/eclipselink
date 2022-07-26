@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -116,8 +116,8 @@ public class SessionsXMLTestModel extends TestModel {
     public void addSessionsXMLSchemaWriteTest(TestSuite suite){
 
         try{
-            Class testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLSchemaWriteTest");
-            junit.framework.Test testCase = (junit.framework.Test)testCaseClass.newInstance();
+            Class<?> testCaseClass = Class.forName("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLSchemaWriteTest");
+            junit.framework.Test testCase = (junit.framework.Test)testCaseClass.getConstructor().newInstance();
             suite.addTest(testCase);
         } catch (Exception e){
             getSession().logMessage("Unable to load SessionsXMLSchemaWriteTest.  This usually occurs when the tests were compiled " +

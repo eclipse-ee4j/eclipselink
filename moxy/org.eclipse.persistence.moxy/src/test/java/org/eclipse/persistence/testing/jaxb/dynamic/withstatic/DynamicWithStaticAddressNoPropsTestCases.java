@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import java.util.Map;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
@@ -47,6 +48,7 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBWithJSONTestCa
       setControlJSON(JSON_CONTROL_DOC);
   }
 
+  @Override
   public String getName() {
       return "Dynamic JAXB: OXM: " + super.getName();
   }
@@ -86,7 +88,7 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBWithJSONTestCa
       }
 
       Map<String, Object> properties = new HashMap<String, Object>();
-      properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+      properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
 
       jaxbContext = DynamicJAXBContextFactory.createContext(PACKAGE, null, properties);
       xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
@@ -98,6 +100,7 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBWithJSONTestCa
       jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
   }
 
+  @Override
   public void xmlToObjectTest(Object testObject, Object controlObject) throws Exception {
       log("\n**xmlToObjectTest**");
       log("Expected:");
@@ -108,6 +111,7 @@ public class DynamicWithStaticAddressNoPropsTestCases extends JAXBWithJSONTestCa
       compareDynamicEntities(testObject, controlObject);
   }
 
+  @Override
   public void jsonToObjectTest(Object testObject) throws Exception {
       log("\n**xmlToObjectTest**");
       log("Expected:");

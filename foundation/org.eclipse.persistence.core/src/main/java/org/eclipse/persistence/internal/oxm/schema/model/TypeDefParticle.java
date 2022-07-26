@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,23 +27,23 @@ public abstract class TypeDefParticle {
     private TypeDefParticleOwner owner;
     private String minOccurs;
     private String maxOccurs;
-    private java.util.List elements;
+    private java.util.List<Element> elements;
 
     //Group??
-    public TypeDefParticle() {
+    protected TypeDefParticle() {
     }
 
     public void addElement(Element elem) {
         getElements().add(elem);
     }
 
-    public void setElements(List elements) {
+    public void setElements(List<Element> elements) {
         this.elements = elements;
     }
 
-    public List getElements() {
+    public List<Element> getElements() {
         if (elements == null) {
-            elements = new ArrayList();
+            elements = new ArrayList<>();
         }
         return elements;
     }

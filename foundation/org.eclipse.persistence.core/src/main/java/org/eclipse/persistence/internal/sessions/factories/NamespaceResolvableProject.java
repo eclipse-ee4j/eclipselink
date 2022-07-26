@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sessions.Project;
 
@@ -45,14 +46,14 @@ public abstract class NamespaceResolvableProject extends Project {
     protected NamespaceResolverWithPrefixes ns;
     protected QName fieldQname;
 
-    public NamespaceResolvableProject() {
+    protected NamespaceResolvableProject() {
         super();
         fieldQname = new QName(getSecondaryNamespace(), "field");
         buildNamespaceResolver();
         buildDescriptors();
         setNamespaceResolverOnDescriptors();
     }
-    public NamespaceResolvableProject(NamespaceResolverWithPrefixes ns) {
+    protected NamespaceResolvableProject(NamespaceResolverWithPrefixes ns) {
         super();
         fieldQname = new QName(getSecondaryNamespace(), "field");
         this.ns = ns;
@@ -114,7 +115,7 @@ public abstract class NamespaceResolvableProject extends Project {
     protected abstract void buildDescriptors();
 
     protected void setNamespaceResolverOnDescriptors() {
-        for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
+        for (Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
             descriptor.setNamespaceResolver(ns);
         }

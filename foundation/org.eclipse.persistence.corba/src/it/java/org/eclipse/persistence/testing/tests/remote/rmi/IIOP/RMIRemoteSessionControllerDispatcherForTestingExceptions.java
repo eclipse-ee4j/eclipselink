@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.remote.rmi.IIOP;
 
-import java.rmi.RemoteException;
 import org.eclipse.persistence.internal.sessions.remote.Transporter;
-import org.eclipse.persistence.sessions.remote.rmi.iiop.RMIRemoteSessionControllerDispatcher;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.remote.rmi.iiop.RMIRemoteSessionControllerDispatcher;
 import org.eclipse.persistence.testing.tests.remote.TransporterGenerator;
+
+import java.rmi.RemoteException;
 
 /**
  * RemoteSessionController sits between the remote session and the session. Any interaction between these two classes
@@ -47,9 +48,8 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
 
     /**
      * INTERNAL: This method is intended to be used by by sessions that wish to execute a command on a remote session
-     *
-     * @param remoteCommand RemoteCommand The command to be executed on the remote session
      */
+    @Override
     public Transporter processCommand(Transporter remoteTransporter) {
         return handleByMode();
     }
@@ -58,6 +58,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Begin a transaction on the database.
      */
 
+    @Override
     public Transporter beginTransaction() {
         return handleByMode();
     }
@@ -66,6 +67,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Begin a transaction on the database.
      */
 
+    @Override
     public Transporter beginEarlyTransaction() {
         return handleByMode();
     }
@@ -74,6 +76,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Remote unit of work after serialization is commited locally.
      */
 
+    @Override
     public Transporter commitRootUnitOfWork(Transporter remoteUnitOfWork) {
         return handleByMode();
     }
@@ -82,6 +85,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Commit a transaction on the database.
      */
 
+    @Override
     public Transporter commitTransaction() {
         return handleByMode();
     }
@@ -122,6 +126,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Used for closing cursored streams across RMI.
      */
 
+    @Override
     public Transporter cursoredStreamClose(Transporter remoteCursoredStreamID) {
         return handleByMode();
     }
@@ -130,6 +135,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Retrieve next page size of objects from the remote cursored stream
      */
 
+    @Override
     public Transporter cursoredStreamNextPage(Transporter remoteCursoredStream, int pageSize) {
         return handleByMode();
     }
@@ -138,6 +144,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Return the cursored stream size
      */
 
+    @Override
     public Transporter cursoredStreamSize(Transporter remoteCursoredStreamOid) {
         return handleByMode();
     }
@@ -146,6 +153,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Returns a remote cursor stub in a transporter
      */
 
+    @Override
     public Transporter cursorSelectObjects(Transporter remoteTransporter) {
         return handleByMode();
     }
@@ -154,6 +162,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * A remote query after serialization is executed locally.
      */
 
+    @Override
     public Transporter executeNamedQuery(Transporter nameTransporter, Transporter classTransporter, Transporter argumentsTransporter) {
         return handleByMode();
     }
@@ -162,6 +171,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * A remote query after serialization is executed locally.
      */
 
+    @Override
     public Transporter executeQuery(Transporter query) {
         return handleByMode();
     }
@@ -170,6 +180,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Extract descriptor from the session
      */
 
+    @Override
     public Transporter getDescriptor(Transporter theClass) {
         return handleByMode();
     }
@@ -178,15 +189,16 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Extract descriptor from the session
      */
 
+    @Override
     public Transporter getDescriptorForAlias(Transporter theClass) {
         return handleByMode();
     }
 
     /**
      * Get the default read-only classes
- *
      */
 
+    @Override
     public Transporter getDefaultReadOnlyClasses() {
         return handleByMode();
     }
@@ -220,6 +232,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Get the associated session login.
      */
 
+    @Override
     public Transporter getLogin() {
         return handleByMode();
     }
@@ -236,8 +249,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
     /**
      * PUBLIC: Return the writer to which an accessor writes logged messages and SQL. If not set, this reference
      * defaults to a writer on System.out. To enable logging, logMessages must be turned on.
-     *
-     * @see #logMessages()
      */
 
     public Transporter getRemoteLog() {
@@ -248,6 +259,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * INTERNAL: Get the value returned by remote function call
      */
 
+    @Override
     public Transporter getSequenceNumberNamed(Transporter remoteFunctionCall) {
         return handleByMode();
     }
@@ -255,8 +267,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
     /**
      * PUBLIC: Return the session log to which an accessor logs messages and SQL. If not set, this will default to a
      * session log on a writer on System.out. To enable logging, logMessages must be turned on.
-     *
-     * @see #logMessages()
      */
 
     public Transporter getSessionLog() {
@@ -273,6 +283,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
         return handleByMode();
     }
 
+    @Override
     public Transporter initializeIdentityMapsOnServerSession() {
         return handleByMode();
     }
@@ -281,6 +292,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * The corresponding original value holder is instantiated.
      */
 
+    @Override
     public Transporter instantiateRemoteValueHolderOnServer(Transporter remoteValueHolder) {
         return handleByMode();
     }
@@ -341,6 +353,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Rollback a transaction on the database.
      */
 
+    @Override
     public Transporter rollbackTransaction() {
         return handleByMode();
     }
@@ -349,6 +362,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Moves the cursor to the given row number in the result set
      */
 
+    @Override
     public Transporter scrollableCursorAbsolute(Transporter remoteScrollableCursorOid, int rows) {
         return handleByMode();
     }
@@ -357,6 +371,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Moves the cursor to the end of the result set, just after the last row.
      */
 
+    @Override
     public Transporter scrollableCursorAfterLast(Transporter remoteScrollableCursorOid) {
         return handleByMode();
     }
@@ -365,6 +380,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Moves the cursor to the front of the result set, just before the first row
      */
 
+    @Override
     public Transporter scrollableCursorBeforeFirst(Transporter remoteScrollableCursor) {
         return handleByMode();
     }
@@ -373,6 +389,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Used for closing scrollable cursor across RMI.
      */
 
+    @Override
     public Transporter scrollableCursorClose(Transporter remoteScrollableCursorOid) {
         return handleByMode();
     }
@@ -381,6 +398,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Retrieves the current row index number
      */
 
+    @Override
     public Transporter scrollableCursorCurrentIndex(Transporter remoteScrollableCursor) {
         return handleByMode();
     }
@@ -389,6 +407,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Moves the cursor to the first row in the result set
      */
 
+    @Override
     public Transporter scrollableCursorFirst(Transporter remoteScrollableCursor) {
         return handleByMode();
     }
@@ -397,6 +416,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Indicates whether the cursor is after the last row in the result set.
      */
 
+    @Override
     public Transporter scrollableCursorIsAfterLast(Transporter remoteScrollableCursor) {
         return handleByMode();
     }
@@ -405,6 +425,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Indicates whether the cursor is before the first row in the result set.
      */
 
+    @Override
     public Transporter scrollableCursorIsBeforeFirst(Transporter remoteScrollableCursor) {
         return handleByMode();
     }
@@ -413,6 +434,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Indicates whether the cursor is on the first row of the result set.
      */
 
+    @Override
     public Transporter scrollableCursorIsFirst(Transporter remoteScrollableCursor) {
         return handleByMode();
     }
@@ -421,6 +443,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Indicates whether the cursor is on the last row of the result set.
      */
 
+    @Override
     public Transporter scrollableCursorIsLast(Transporter remoteScrollableCursor) {
         return handleByMode();
     }
@@ -429,6 +452,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Moves the cursor to the last row in the result set
      */
 
+    @Override
     public Transporter scrollableCursorLast(Transporter remoteScrollableCursor) {
         return handleByMode();
     }
@@ -437,6 +461,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Retrieve next object from the scrollable cursor
      */
 
+    @Override
     public Transporter scrollableCursorNextObject(Transporter scrollableCursorOid) {
         return handleByMode();
     }
@@ -445,6 +470,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Retrieve previous object from the scrollable cursor
      */
 
+    @Override
     public Transporter scrollableCursorPreviousObject(Transporter scrollableCursorOid) {
         return handleByMode();
     }
@@ -453,6 +479,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Moves the cursor to the given row number in the result set
      */
 
+    @Override
     public Transporter scrollableCursorRelative(Transporter remoteScrollableCursor, int rows) {
         return handleByMode();
     }
@@ -461,6 +488,7 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
      * Return the cursor size
      */
 
+    @Override
     public Transporter scrollableCursorSize(Transporter remoteCursorOid) {
         return handleByMode();
     }
@@ -477,8 +505,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
     /**
      * PUBLIC: Set the writer to which an accessor writes logged messages and SQL. If not set, this reference defaults
      * to a writer on System.out. To enable logging logMessages() is used.
-     *
-     * @see #logMessages()
      */
 
     public Transporter setLog(Transporter log) {
@@ -504,8 +530,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
     /**
      * PUBLIC: Set the session log to which an accessor logs messages and SQL. If not set, this will default to a
      * session log on a writer on System.out. To enable logging, logMessages must be turned on.
-     *
-     * @see #logMessages()
      */
 
     public Transporter setSessionLog(Transporter sessionLog) {
@@ -515,8 +539,6 @@ public class RMIRemoteSessionControllerDispatcherForTestingExceptions extends RM
     /**
      * PUBLIC: Set messages logging. Message logging will dump all SQL executed through TopLink to the session's log. By
      * default this is System.out, but can be set to any Writer.
-     *
-     * @see #setLog(Writer)
      */
 
     public Transporter setShouldLogMessages(Transporter shouldLogMessages) {

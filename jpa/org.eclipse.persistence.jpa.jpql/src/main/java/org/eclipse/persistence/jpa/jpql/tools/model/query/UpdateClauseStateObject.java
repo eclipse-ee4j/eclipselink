@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * single entity class (together with its subclasses, if any). Only one entity abstract schema type
  * may be specified in the <code><b>UPDATE</b></code> clause.
  *
- * <div><b>BNF:</b> <code>update_clause ::= UPDATE abstract_schema_name [[AS] identification_variable] SET update_item {, update_item}*</code><p></div>
+ * <div><p><b>BNF:</b> <code>update_clause ::= UPDATE abstract_schema_name [[AS] identification_variable] SET update_item {, update_item}*</code></p></div>
  *
  * @see UpdateClause
  *
@@ -66,17 +66,11 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -200,27 +194,17 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
         return updateItem;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    @SuppressWarnings("unchecked")
-    public UpdateItemStateObject addItem(UpdateItemStateObject item) {
+    public <S extends UpdateItemStateObject> S addItem(S item) {
         getChangeSupport().addItem(this, items, UPDATE_ITEMS_LIST, parent(item));
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addItems(List<? extends UpdateItemStateObject> items) {
         getChangeSupport().addItems(this, this.items, UPDATE_ITEMS_LIST, parent(items));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addListChangeListener(String listName, IListChangeListener<UpdateItemStateObject> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
@@ -254,74 +238,47 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canMoveDown(UpdateItemStateObject item) {
         return getChangeSupport().canMoveDown(items, item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canMoveUp(UpdateItemStateObject item) {
         return getChangeSupport().canMoveUp(items, item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public UpdateClause getExpression() {
         return (UpdateClause) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return UPDATE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public UpdateItemStateObject getItem(int index) {
         return items.get(index);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public UpdateStatementStateObject getParent() {
         return (UpdateStatementStateObject) super.getParent();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasItems() {
         return !items.isEmpty();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
-        items = new ArrayList<UpdateItemStateObject>();
+        items = new ArrayList<>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
         return super.isEquivalent(stateObject) &&
@@ -338,34 +295,22 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
         return !getIdentificationVariableStateObject().isVirtual();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<UpdateItemStateObject> items() {
-        return new SnapshotCloneListIterable<UpdateItemStateObject>(items);
+        return new SnapshotCloneListIterable<>(items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int itemsSize() {
         return items.size();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public UpdateItemStateObject moveDown(UpdateItemStateObject item) {
         getChangeSupport().moveDown(this, items, UPDATE_ITEMS_LIST, item);
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public UpdateItemStateObject moveUp(UpdateItemStateObject item) {
         getChangeSupport().moveUp(this, items, UPDATE_ITEMS_LIST, item);
@@ -383,25 +328,16 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
         addItem(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeItem(UpdateItemStateObject stateObject) {
         getChangeSupport().removeItem(this, this.items, UPDATE_ITEMS_LIST, stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeItems(Collection<UpdateItemStateObject> items) {
         getChangeSupport().removeItems(this, this.items, UPDATE_ITEMS_LIST, items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeListChangeListener(String listName, IListChangeListener<UpdateItemStateObject> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);
@@ -419,9 +355,6 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
         super.toTextInternal(writer);

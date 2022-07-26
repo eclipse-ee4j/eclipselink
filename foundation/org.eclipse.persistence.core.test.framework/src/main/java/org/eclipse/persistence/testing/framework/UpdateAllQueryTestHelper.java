@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,11 +37,11 @@ import org.eclipse.persistence.internal.expressions.DataExpression;
 
 public class UpdateAllQueryTestHelper {
 
-    public static String execute(Session mainSession, Class referenceClass, HashMap updateClauses, Expression selectionExpression) {
+    public static String execute(Session mainSession, Class<?> referenceClass, HashMap updateClauses, Expression selectionExpression) {
         return execute(mainSession, referenceClass, updateClauses, selectionExpression, true);
     }
 
-    public static String execute(Session mainSession, Class referenceClass, HashMap updateClauses, Expression selectionExpression, boolean handleChildren) {
+    public static String execute(Session mainSession, Class<?> referenceClass, HashMap updateClauses, Expression selectionExpression, boolean handleChildren) {
         return execute(mainSession, createUpdateAllQuery(referenceClass, updateClauses, selectionExpression), true);
     }
 
@@ -60,7 +60,7 @@ public class UpdateAllQueryTestHelper {
         // Find the inheritance root class - the test will compare all instances of this class
         // after traditional TopLink update (one-by-one) with all instances of this class
         // after UpdateAllQuery. The test succeeds if the two collections are equal.
-        Class rootClass = uq.getReferenceClass();
+        Class<?> rootClass = uq.getReferenceClass();
         ClassDescriptor descriptor = mainSession.getClassDescriptor(uq.getReferenceClass());
         if(descriptor.hasInheritance()) {
             ClassDescriptor parentDescriptor = descriptor;
@@ -80,7 +80,7 @@ public class UpdateAllQueryTestHelper {
     }
 
     protected static String execute(Session mainSession, UpdateAllQuery uq, boolean handleChildren,
-                                  Class rootClass) {
+                                  Class<?> rootClass) {
         String errorMsg = "";
         ClassDescriptor descriptor = mainSession.getDescriptor(uq.getReferenceClass());
 
@@ -113,7 +113,7 @@ public class UpdateAllQueryTestHelper {
                 if(value instanceof Expression) {
                     valueExpression = ((Expression)(((Expression)value).clone())).getField(targetField);
                 } else {
-                    ClassDescriptor targetDescriptor = ((OneToOneMapping)mapping).getReferenceDescriptor();
+                    ClassDescriptor targetDescriptor = mapping.getReferenceDescriptor();
                     Object fieldValue = targetDescriptor.getObjectBuilder().extractValueFromObjectForField(value, targetField, (org.eclipse.persistence.internal.sessions.AbstractSession)mainSession);
                     valueExpression = rq.getExpressionBuilder().value(fieldValue);
                 }
@@ -133,12 +133,12 @@ public class UpdateAllQueryTestHelper {
 
         UnitOfWork uow = mainSession.acquireUnitOfWork();
         // mainSession could be a ServerSession
-        Session session = uow.getParent();
+        AbstractSession session = uow.getParent();
 
         // report query results contain the values to be assigned for each object to be updated.
         Vector result = (Vector)session.executeQuery(rq);
         Vector objectsAfterOneByOneUpdate = new Vector(objects.size());
-        ((org.eclipse.persistence.internal.sessions.AbstractSession)session).beginTransaction();
+        session.beginTransaction();
         try {
             for (int i = 0; i < result.size(); i++) {
                 // read through uow the object(clone) to be updated
@@ -172,7 +172,7 @@ public class UpdateAllQueryTestHelper {
             }
         } finally {
             // transaction rolled back - objects back to the original state in the db.
-            ((org.eclipse.persistence.internal.sessions.AbstractSession)session).rollbackTransaction();
+            session.rollbackTransaction();
         }
         clearCache(mainSession);
 
@@ -181,7 +181,7 @@ public class UpdateAllQueryTestHelper {
         // mainSession could be a ServerSession
         session = uow.getParent();
         Vector objectsAfterUpdateAll = new Vector(objects.size());
-        ((org.eclipse.persistence.internal.sessions.AbstractSession)session).beginTransaction();
+        session.beginTransaction();
         try {
             uow.executeQuery(uq);
             // uow committed - objects updated.
@@ -196,7 +196,7 @@ public class UpdateAllQueryTestHelper {
             }
         } finally {
             // transaction rolled back - objects back to the original state in the db.
-            ((org.eclipse.persistence.internal.sessions.AbstractSession)session).rollbackTransaction();
+            session.rollbackTransaction();
         }
         clearCache(mainSession);
 
@@ -206,7 +206,7 @@ public class UpdateAllQueryTestHelper {
             Object obj = objects.elementAt(i);
             Object obj1 = objectsAfterOneByOneUpdate.elementAt(i);
             Object obj2 = objectsAfterUpdateAll.elementAt(i);
-            boolean equal = rq.getDescriptor().getObjectBuilder().compareObjects(obj, obj2, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
+            boolean equal = rq.getDescriptor().getObjectBuilder().compareObjects(obj, obj2, session);
             if(!equal) {
                 classErrorMsg = classErrorMsg + "Difference: original = " + obj.toString() + "; afterOneByOneUpdate = " + obj1.toString() +"; afterUpdateAll = " + obj2.toString() + ";";
             }
@@ -217,10 +217,10 @@ public class UpdateAllQueryTestHelper {
 
         if(handleChildren) {
             if(descriptor.hasInheritance() && descriptor.getInheritancePolicy().hasChildren()) {
-                Iterator it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
+                Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
                 while(it.hasNext()) {
-                    ClassDescriptor childDescriptor = (ClassDescriptor)it.next();
-                    Class childReferenceClass = childDescriptor.getJavaClass();
+                    ClassDescriptor childDescriptor = it.next();
+                    Class<?> childReferenceClass = childDescriptor.getJavaClass();
                     UpdateAllQuery childUq = (UpdateAllQuery)uq.clone();
                     childUq.setReferenceClass(childReferenceClass);
                     childUq.setIsPrepared(false);
@@ -235,7 +235,7 @@ public class UpdateAllQueryTestHelper {
         mainSession.getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
-    public static UpdateAllQuery createUpdateAllQuery(Class referenceClass, HashMap updateClauses, Expression selectionExpression) {
+    public static UpdateAllQuery createUpdateAllQuery(Class<?> referenceClass, HashMap updateClauses, Expression selectionExpression) {
         // Construct UpdateAllQuery
         UpdateAllQuery uq = new UpdateAllQuery(referenceClass, selectionExpression);
         Iterator itEntrySets = updateClauses.entrySet().iterator();
@@ -252,7 +252,7 @@ public class UpdateAllQueryTestHelper {
         return copy;
     }
 
-    static protected String getQualifiedFieldNameFromKey(Object key, Class referenceClass, ClassDescriptor descriptor, Session session) {
+    static protected String getQualifiedFieldNameFromKey(Object key, Class<?> referenceClass, ClassDescriptor descriptor, Session session) {
         DatabaseField field = null;
         if(key instanceof String) {
             // attribute name

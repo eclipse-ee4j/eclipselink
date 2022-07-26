@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -118,9 +118,9 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
 
     public EISOneToManyMapping() {
         this.isForeignKeyRelationship = false;
-        this.sourceForeignKeyFields = new ArrayList(1);
-        this.targetForeignKeyFields = new ArrayList(1);
-        this.sourceForeignKeysToTargetKeys = new HashMap(2);
+        this.sourceForeignKeyFields = new ArrayList<>(1);
+        this.targetForeignKeyFields = new ArrayList<>(1);
+        this.sourceForeignKeysToTargetKeys = new HashMap<>(2);
         this.deleteAllQuery = new DeleteAllQuery();
     }
 
@@ -286,7 +286,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      */
     public void setSourceForeignKeysToTargetKeys(Map<DatabaseField, DatabaseField> sourceToTargetKeyFields) {
         this.sourceForeignKeysToTargetKeys = sourceToTargetKeyFields;
-        if ((sourceToTargetKeyFields != null) && (sourceToTargetKeyFields.keySet() != null) && (sourceToTargetKeyFields.keySet().size() > 0)) {
+        if ((sourceToTargetKeyFields != null) && (sourceToTargetKeyFields.keySet().size() > 0)) {
             this.setIsForeignKeyRelationship(true);
         }
     }
@@ -342,9 +342,9 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
 
         Expression criteria;
         Expression builder = new ExpressionBuilder();
-        Iterator keyIterator = getSourceForeignKeysToTargetKeys().keySet().iterator();
+        Iterator<DatabaseField> keyIterator = getSourceForeignKeysToTargetKeys().keySet().iterator();
         while (keyIterator.hasNext()) {
-            DatabaseField foreignKey = (DatabaseField)keyIterator.next();
+            DatabaseField foreignKey = keyIterator.next();
             DatabaseField targetKey = getSourceForeignKeysToTargetKeys().get(foreignKey);
 
             Expression expression = builder.getField(targetKey).equal(builder.getParameter(foreignKey));
@@ -761,9 +761,10 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Clone the appropriate attributes.
      */
     @Override
+    @SuppressWarnings({"unchecked"})
     public Object clone() {
         EISOneToManyMapping clone = (EISOneToManyMapping)super.clone();
-        clone.setSourceForeignKeysToTargetKeys((Map)((HashMap)getSourceForeignKeysToTargetKeys()).clone());
+        clone.setSourceForeignKeysToTargetKeys((Map<DatabaseField, DatabaseField>)((HashMap<DatabaseField, DatabaseField>)getSourceForeignKeysToTargetKeys()).clone());
         return clone;
     }
 
@@ -771,10 +772,10 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Return all the fields mapped by the mapping.
      */
     @Override
-    protected Vector collectFields() {
+    protected Vector<DatabaseField> collectFields() {
         if (isForeignKeyRelationship()) {
             if (this.getForeignKeyGroupingElement() != null) {
-                Vector fields = new Vector(1);
+                Vector<DatabaseField> fields = new Vector<>(1);
                 fields.addElement(this.getForeignKeyGroupingElement());
                 return fields;
             } else {
@@ -983,7 +984,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                     return getAttributeValueFromObject(cached);
                 }
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
-                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null));
             }
         }
         if (((EISDescriptor) this.getDescriptor()).isXMLFormat()) {
@@ -1011,7 +1012,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                 EISOneToManyQueryBasedValueHolder valueholder = new EISOneToManyQueryBasedValueHolder(this, targetQuery, row, sourceQuery.getSession());
                 return getIndirectionPolicy().buildIndirectObject(valueholder);
             } else {
-                Vector subRows = getForeignKeyRows(row, executionSession);
+                Vector<AbstractRecord> subRows = getForeignKeyRows(row, executionSession);
 
                 if (subRows == null) {
                     return null;
@@ -1025,12 +1026,12 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                     subRow.setSession(executionSession);
                     Object object = getIndirectionPolicy().valueFromQuery(targetQuery, subRow, sourceQuery.getSession());
                     if (object instanceof Collection) {
-                        java.util.Iterator iter = ((Collection)object).iterator();
+                        java.util.Iterator<?> iter = ((Collection<?>)object).iterator();
                         while (iter.hasNext()) {
                             cp.addInto(iter.next(), results, executionSession);
                         }
                     } else if (object instanceof java.util.Map) {
-                        java.util.Iterator iter = ((java.util.Map)object).values().iterator();
+                        java.util.Iterator<?> iter = ((java.util.Map<?, ?>)object).values().iterator();
                         while (iter.hasNext()) {
                             cp.addInto(iter.next(), results, executionSession);
                         }
@@ -1049,18 +1050,20 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     /**
      * INTERNAL:
      */
+    @SuppressWarnings({"unchecked"})
     public Vector getForeignKeyRows(AbstractRecord row, AbstractSession session) {
-        Vector subRows = new Vector();
+        Vector<AbstractRecord> subRows = new Vector<>();
         if (getForeignKeyGroupingElement() == null) {
             if (this.getSourceForeignKeyFields().size() > 0) {
                 Object values = row.getValues(this.getSourceForeignKeyFields().get(0));
 
                 if (values != null) {
                     if (values instanceof Vector) {
-                        int valuesSize = ((Vector)values).size();
+                        Vector<?> vals = (Vector<?>) values;
+                        int valuesSize = vals.size();
                         for (int j = 0; j < valuesSize; j++) {
                             AbstractRecord newRecord = this.descriptor.getObjectBuilder().createRecord(session);
-                            newRecord.put(this.getSourceForeignKeyFields().get(0), ((Vector)values).get(j));
+                            newRecord.put(this.getSourceForeignKeyFields().get(0), vals.get(j));
                             subRows.add(newRecord);
                         }
                     } else {
@@ -1071,7 +1074,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                 }
             }
         } else {
-            subRows = (Vector)row.getValues(getForeignKeyGroupingElement());
+            subRows = (Vector<AbstractRecord>)row.getValues(getForeignKeyGroupingElement());
         }
         return subRows;
     }
@@ -1113,9 +1116,9 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
 
         // extract the keys from the objects
         Object attributeValue = this.getRealCollectionAttributeValueFromObject(object, session);
-        Vector nestedRows = new Vector(cp.sizeFor(attributeValue));
 
         if (getForeignKeyGroupingElement() != null) {
+            Vector<AbstractRecord> nestedRows = new Vector<>(cp.sizeFor(attributeValue));
             for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
                 AbstractRecord nestedRow = extractKeyRowFromReferenceObject(cp.next(iter, session), session, row);
                 nestedRows.add(nestedRow);
@@ -1124,7 +1127,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         } else {
             DatabaseField singleField = getSourceForeignKeyFields().get(0);
             DatabaseField pkField = getSourceForeignKeysToTargetKeys().get(singleField);
-            List foreignKeys = new ArrayList(cp.sizeFor(attributeValue));
+            List<Object> foreignKeys = new ArrayList<>(cp.sizeFor(attributeValue));
             for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
                 Object singleValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(cp.next(iter, session), pkField, session);
                 foreignKeys.add(singleValue);

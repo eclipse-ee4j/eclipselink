@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ public class SDOSRGTestSuite {
 
     /**
      *
-     * @param args
      */
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
@@ -31,10 +30,10 @@ public class SDOSRGTestSuite {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("All SDO SRG Tests");
-        suite.addTest((new org.eclipse.persistence.testing.sdo.helper.datafactory.SDODataFactoryTestSuite()).suite());
-        suite.addTest((new org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.attributes.SDOAttributeXSDTestSuite()).suite());
-        suite.addTest((new org.eclipse.persistence.testing.sdo.model.dataobject.containment.ContainmentTestSuite()).suite());
-        suite.addTest((new org.eclipse.persistence.testing.sdo.model.type.SDOTypeTestSuite()).suite());
+        suite.addTest(org.eclipse.persistence.testing.sdo.helper.datafactory.SDODataFactoryTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.attributes.SDOAttributeXSDTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.sdo.model.dataobject.containment.ContainmentTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.sdo.model.type.SDOTypeTestSuite.suite());
 
         suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectSetGetWithPropertyTest.class));
 /*        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectSetGetWithIndexTest.class));

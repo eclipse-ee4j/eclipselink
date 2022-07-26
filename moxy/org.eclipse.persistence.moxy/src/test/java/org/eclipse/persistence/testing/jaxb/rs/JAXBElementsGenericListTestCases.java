@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,8 +28,6 @@ import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
-import org.eclipse.persistence.testing.jaxb.rs.model.Bar;
-import org.eclipse.persistence.testing.jaxb.rs.model.Foo;
 
 /**
  * Tests {@code List<JAXBElement<String>>} marshal/unmarshal via MOXyJsonPrivder.
@@ -81,8 +79,8 @@ public class JAXBElementsGenericListTestCases extends TestCase {
         }
 
         for (int i = 0; i < list1.size(); i++) {
-            JAXBElement element1 = list1.get(i);
-            JAXBElement element2 = list2.get(i);
+            JAXBElement<String> element1 = list1.get(i);
+            JAXBElement<String> element2 = list2.get(i);
 
             if (!equalsJAXBElements(element1, element2)) {
                 return false;
@@ -119,7 +117,7 @@ public class JAXBElementsGenericListTestCases extends TestCase {
     public void testWriteGenericList() throws Exception {
         Field field = JAXBElementsGenericListTestCases.class.getField("list");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        moxyJsonProvider.writeTo(list, (Class<Object>) field.getType(), field.getGenericType(), null, null, null, outputStream);
+        moxyJsonProvider.writeTo(list, field.getType(), field.getGenericType(), null, null, null, outputStream);
 
         try (InputStream entityStream = jsonResource.openStream();
                 Scanner scanner = new Scanner(entityStream, "UTF-8")) {
@@ -130,13 +128,13 @@ public class JAXBElementsGenericListTestCases extends TestCase {
 
     public void testReadableGenericList() throws Exception {
         Field field = JAXBElementsGenericListTestCases.class.getField("list");
-        boolean test = moxyJsonProvider.isReadable((Class<Object>) field.getType(), field.getGenericType(), null, null);
+        boolean test = moxyJsonProvider.isReadable(field.getType(), field.getGenericType(), null, null);
         assertTrue(test);
     }
 
     public void testWriteableGenericList() throws Exception {
         Field field = JAXBElementsGenericListTestCases.class.getField("list");
-        boolean test = moxyJsonProvider.isWriteable((Class<Object>) field.getType(), field.getGenericType(), null, null);
+        boolean test = moxyJsonProvider.isWriteable(field.getType(), field.getGenericType(), null, null);
         assertTrue(test);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ public class IDResolverTestCases extends JAXBTestCases {
 
     public IDResolverTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { Apple.class, AppleRef.class, Box.class, FruitOrder.class, Orange.class, OrangeRef.class });
+        setClasses(new Class<?>[] { Apple.class, AppleRef.class, Box.class, FruitOrder.class, Orange.class, OrangeRef.class });
         setControlDocument(XML_RESOURCE);
     }
 
@@ -49,6 +49,7 @@ public class IDResolverTestCases extends JAXBTestCases {
         assertTrue("ValidationEventHandler was not set.", idResolver.eventHandlerNotNull);
     }
 
+    @Override
     public Object getControlObject() {
         Apple a1 = new Apple();
         a1.id = "a1";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -152,7 +152,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
         SDOProperty sdoProperty = (SDOProperty) property;
         Object value = sdoProperty.get(SDOConstants.XMLELEMENT_PROPERTY);
         if ((value != null) && value instanceof Boolean) {
-            boolean isElement = ((Boolean)value).booleanValue();
+            boolean isElement = (Boolean) value;
             if (isElement) {
                 return false;
             }
@@ -184,7 +184,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
         SDOProperty sdoProperty = (SDOProperty) property;
         Object value = sdoProperty.get(SDOConstants.XMLELEMENT_PROPERTY);
         if ((value != null) && value instanceof Boolean) {
-            return ((Boolean)value).booleanValue();
+            return (Boolean) value;
         }
 
         if ((sdoProperty.getOpposite() != null) && (sdoProperty.getOpposite().isContainment())) {

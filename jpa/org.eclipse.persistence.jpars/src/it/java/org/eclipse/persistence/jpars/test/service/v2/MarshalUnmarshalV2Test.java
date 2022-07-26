@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
 import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
+import org.eclipse.persistence.jpars.test.service.MarshalUnmarshalTestBase;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -40,8 +41,8 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 /**
- * MarshalUnmarshalTest adapted for JPARS 2.0.
- * {@see MarshalUnmarshalTest}
+ * MarshalUnmarshalTestBase adapted for JPARS 2.0.
+ * {@link MarshalUnmarshalTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0

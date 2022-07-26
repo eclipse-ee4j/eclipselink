@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,31 +27,31 @@ import jakarta.xml.bind.annotation.XmlType;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="all">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}explicitGroup">
- *       &lt;group ref="{http://www.w3.org/2001/XMLSchema}allModel"/>
- *       &lt;attribute name="minOccurs" default="1">
- *         &lt;simpleType>
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger">
- *             &lt;enumeration value="0"/>
- *             &lt;enumeration value="1"/>
- *           &lt;/restriction>
- *         &lt;/simpleType>
- *       &lt;/attribute>
- *       &lt;attribute name="maxOccurs" default="1">
- *         &lt;simpleType>
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}allNNI">
- *             &lt;enumeration value="1"/>
- *           &lt;/restriction>
- *         &lt;/simpleType>
- *       &lt;/attribute>
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="all">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}explicitGroup">
+ *       <group ref="{http://www.w3.org/2001/XMLSchema}allModel"/>
+ *       <attribute name="minOccurs" default="1">
+ *         <simpleType>
+ *           <restriction base="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger">
+ *             <enumeration value="0"/>
+ *             <enumeration value="1"/>
+ *           </restriction>
+ *         </simpleType>
+ *       </attribute>
+ *       <attribute name="maxOccurs" default="1">
+ *         <simpleType>
+ *           <restriction base="{http://www.w3.org/2001/XMLSchema}allNNI">
+ *             <enumeration value="1"/>
+ *           </restriction>
+ *         </simpleType>
+ *       </attribute>
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */

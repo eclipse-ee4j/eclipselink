@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -30,6 +30,12 @@ public class WebSpherePlatformDetector implements ServerPlatformDetector {
     private static final String LIBERTY_PROFILE_INFO_INT = "com.ibm.websphere.config.mbeans.FeatureListMBean";
     private static final String FULL_PROFILE_WAS_DIR_CLS = "com.ibm.websphere.product.WASDirectory";
 
+    /**
+     * Default constructor.
+     */
+    public WebSpherePlatformDetector() {
+    }
+
     @Override
     public String checkPlatform() {
         if (isLiberty()) {
@@ -43,7 +49,7 @@ public class WebSpherePlatformDetector implements ServerPlatformDetector {
 
     private boolean isLiberty() {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            return AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Boolean run() {
                     return isLibertyInternal();
@@ -56,7 +62,7 @@ public class WebSpherePlatformDetector implements ServerPlatformDetector {
 
     private boolean isFullProfile() {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            return AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Boolean run() {
                     return isFullProfileInternal();

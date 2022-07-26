@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,11 +61,13 @@ public class Public1MTest extends DeleteObjectTest {
         super(originalObject);
     }
 
+    @Override
     public void reset() {
         super.reset();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -92,11 +94,13 @@ public class Public1MTest extends DeleteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         unitOfWork.deleteObject(employeeBeingDeleted);
         unitOfWork.commit();
     }
 
+    @Override
     protected void verify() {
         // Test to see if any managed employees were deleted
         Enumeration enumtr = managedEmployees.elements();

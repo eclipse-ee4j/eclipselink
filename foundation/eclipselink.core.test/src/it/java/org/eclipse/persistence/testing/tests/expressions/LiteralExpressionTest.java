@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class LiteralExpressionTest extends TestCase {
         setDescription("Test using a LiteralExpression through ExpressionBuilder.literal()");
     }
 
+    @Override
     public void test() {
         ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
         DatabaseMapping genderMapping = descriptor.getMappingForAttributeName("gender");
@@ -66,6 +67,7 @@ public class LiteralExpressionTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception != null) {
             throw new TestErrorException("An exception occurred executing a ReportQuery with a literal expression", exception);

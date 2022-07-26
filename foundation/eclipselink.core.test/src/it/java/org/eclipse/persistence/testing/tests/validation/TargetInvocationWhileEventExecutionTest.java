@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class TargetInvocationWhileEventExecutionTest extends ExceptionTest {
     DescriptorEventManager eventManager;
     DescriptorEvent event;
 
+    @Override
     protected void setup() {
         descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(TargetInvocationWhileEventExecutionTest.class);
@@ -48,6 +49,7 @@ public class TargetInvocationWhileEventExecutionTest extends ExceptionTest {
         expectedException = DescriptorException.targetInvocationWhileEventExecution("invalidMethod", descriptor, new Exception());
     }
 
+    @Override
     public void test() {
         try {
             eventManager.executeEvent(event);
@@ -58,7 +60,7 @@ public class TargetInvocationWhileEventExecutionTest extends ExceptionTest {
     }
 
     public void invalidMethod(DescriptorEvent event) throws java.lang.IllegalAccessException {
-        throw new java.lang.IllegalAccessException();
+        throw new IllegalAccessException();
     }
 
 }

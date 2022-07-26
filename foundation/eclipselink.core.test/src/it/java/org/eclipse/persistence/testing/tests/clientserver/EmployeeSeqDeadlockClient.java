@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class EmployeeSeqDeadlockClient extends EmployeeClient {
         this.fifoOut = fifoOut;
     }
 
+    @Override
     public void run() {
         int i = 0;
 
@@ -47,7 +48,7 @@ public class EmployeeSeqDeadlockClient extends EmployeeClient {
                     uow.commit();
 
                     if (fifoOut != null) {
-                        fifoOut.insertTail(new Integer(i));
+                        fifoOut.insertTail(i);
                     }
                 }
             } catch (Exception e) {
@@ -63,7 +64,7 @@ public class EmployeeSeqDeadlockClient extends EmployeeClient {
         this.server = null;
 
         if (fifoOut != null) {
-            fifoOut.insertTail(new Integer(-1));
+            fifoOut.insertTail(-1);
         }
     }
 }

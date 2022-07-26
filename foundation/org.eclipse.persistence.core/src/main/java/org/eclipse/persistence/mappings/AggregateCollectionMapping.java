@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1369,7 +1369,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public AbstractRecord getAggregateRow(ObjectLevelModifyQuery query, Object object) {
         Vector referenceObjectKeys = getReferenceObjectKeys(query);
         AbstractRecord aggregateRow = new DatabaseRecord();
-        Vector keys = getTargetForeignKeyFields();
+        Vector<DatabaseField> keys = getTargetForeignKeyFields();
         for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
             aggregateRow.put(keys.elementAt(keyIndex), referenceObjectKeys.elementAt(keyIndex));
         }
@@ -1387,8 +1387,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         Expression criteria = null;
         Expression builder = new ExpressionBuilder();
 
-        for (Iterator keys = getTargetForeignKeyToSourceKeys().keySet().iterator(); keys.hasNext();) {
-            DatabaseField targetForeignKey = (DatabaseField)keys.next();
+        for (Iterator<DatabaseField> keys = getTargetForeignKeyToSourceKeys().keySet().iterator(); keys.hasNext();) {
+            DatabaseField targetForeignKey = keys.next();
             DatabaseField sourceKey = getTargetForeignKeyToSourceKeys().get(targetForeignKey);
 
             expression = builder.getField(targetForeignKey).equal(builder.getParameter(sourceKey));
@@ -1429,7 +1429,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * for inheritance purpose
      */
-    public ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
+    public ClassDescriptor getReferenceDescriptor(Class<?> theClass, AbstractSession session) {
         if (this.referenceDescriptor.getJavaClass() == theClass) {
             return this.referenceDescriptor;
         } else {
@@ -1454,9 +1454,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         //For CR#2587-S.M.  For nested aggregate collections the source keys can easily be read from the original query.
         AbstractRecord translationRow = query.getTranslationRow();
 
-        for (Enumeration sourcekeys = getSourceKeyFields().elements();
-                 sourcekeys.hasMoreElements();) {
-            DatabaseField sourceKey = (DatabaseField)sourcekeys.nextElement();
+        for (Enumeration<DatabaseField> sourcekeys = getSourceKeyFields().elements();
+             sourcekeys.hasMoreElements();) {
+            DatabaseField sourceKey = sourcekeys.nextElement();
 
             // CR#2587.  Try first to get the source key from the original query.  If that fails try to get it from the object.
             Object referenceKey = null;
@@ -1478,9 +1478,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public Vector getSourceKeyFieldNames() {
         Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration fieldsEnum = getSourceKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+        for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -1501,9 +1501,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public Vector getTargetForeignKeyFieldNames() {
         Vector fieldNames = new Vector(getTargetForeignKeyFields().size());
-        for (Enumeration fieldsEnum = getTargetForeignKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+        for (Enumeration<DatabaseField> fieldsEnum = getTargetForeignKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -2029,8 +2029,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         Expression criteria;
         Expression builder = new ExpressionBuilder();
 
-        for (Iterator keys = getTargetForeignKeyToSourceKeys().keySet().iterator(); keys.hasNext();) {
-            DatabaseField targetForeignKey = (DatabaseField)keys.next();
+        for (Iterator<DatabaseField> keys = getTargetForeignKeyToSourceKeys().keySet().iterator(); keys.hasNext();) {
+            DatabaseField targetForeignKey = keys.next();
             DatabaseField sourceKey = getTargetForeignKeyToSourceKeys().get(targetForeignKey);
 
             expression = builder.getField(targetForeignKey).equal(builder.getParameter(sourceKey));
@@ -2203,7 +2203,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation() && !this.isCacheable && !targetSession.isProtectedSession()) {
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         //Check to see if the target has an instantiated collection
@@ -2241,7 +2241,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         ObjectChangeSet objectChanges = null;
         for (int index = 0; index < size; ++index) {
             objectChanges = aggregateObjects.get(index);
-            Class localClassType = objectChanges.getClassType(session);
+            Class<?> localClassType = objectChanges.getClassType(session);
             sourceAggregate = objectChanges.getUnitOfWorkClone();
 
             // cr 4155 Load the target from the UnitOfWork.  This will be the original
@@ -2264,7 +2264,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation() && !this.isCacheable && !targetSession.isProtectedSession()) {
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         if (isTargetUnInitialized) {
@@ -2595,7 +2595,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void prepareModifyQueryForDelete(ObjectLevelModifyQuery originalQuery, ObjectLevelModifyQuery modifyQuery, Object wrappedObject, Map extraData) {
         Object object = getContainerPolicy().unwrapIteratorResult(wrappedObject);
         AbstractRecord aggregateRow = getAggregateRow(originalQuery, object);
-        ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, modifyQuery.getSession()), aggregateRow);
+        ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, originalQuery.getSession()), aggregateRow);
         if(this.listOrderField != null && extraData != null) {
             aggregateRow.put(this.listOrderField, extraData.get(this.listOrderField));
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
      * @param referenceClass java.lang.Class
      * @param originalObjectsSize int
      */
-    public ReadAllExpressionTest(Class referenceClass, int originalObjectsSize) {
+    public ReadAllExpressionTest(Class<?> referenceClass, int originalObjectsSize) {
         super(referenceClass, originalObjectsSize);
     }
 
@@ -85,7 +85,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         }
         if (supportedPlatforms != null) {
             for (Iterator iterator = supportedPlatforms.iterator(); iterator.hasNext();) {
-                Class platformClass = (Class)iterator.next();
+                Class<?> platformClass = (Class)iterator.next();
                 if (platformClass.isInstance(platform)) {
                     supported = true;
                 }
@@ -95,7 +95,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         }
         if (unsupportedPlatforms != null) {
             for (Iterator iterator = unsupportedPlatforms.iterator(); iterator.hasNext();) {
-                Class platformClass = (Class)iterator.next();
+                Class<?> platformClass = (Class)iterator.next();
                 if (platformClass.isInstance(platform)) {
                     notSupported = true;
                 }
@@ -112,6 +112,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         this.supportedInMemory = supportedInMemory;
     }
 
+    @Override
     protected void setup() {
         if (!isPlatformSupported(getSession().getLogin().getPlatform())) {
             throw new TestWarningException("This expression is not supported on this platform.");
@@ -141,11 +142,13 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         }
     }
 
+    @Override
     public void reset() throws Exception {
         super.reset();
         freeHardReferenceToInMemoryObjects();
     }
 
+    @Override
     protected void test() {
         if (shouldTestBatchAttributesOnEmployee()) {
             super.test();
@@ -163,14 +166,14 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         }
     }
 
-    public void addSupportedPlatform(Class platform) {
+    public void addSupportedPlatform(Class<?> platform) {
         if (supportedPlatforms == null) {
             supportedPlatforms = new Vector();
         }
         supportedPlatforms.addElement(platform);
     }
 
-    public void addUnsupportedPlatform(Class platform) {
+    public void addUnsupportedPlatform(Class<?> platform) {
         if (unsupportedPlatforms == null) {
             unsupportedPlatforms = new Vector();
         }
@@ -188,11 +191,11 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
     /**
      * This flag has been added to test adding batch attributes to very
      * complex expressions.  This method assumes that the query is on Employee.
-     * @see ExpressionSubSelectTestSuite#addExistsWithBatchAttributeTest
-     * @see ExpressionSubSelectTestSuite#addObjectComparisonWithBatchAttributeTest
-     * @see ExpressionSubSelectTestSuite#addParallelSelectWithBatchAttributeTest
-     * @see ExpressionSubSelectTestSuite#addSubSelectInWithBatchAttributeTest
-     * @see ExpressionSubSelectTestSuite#addOneToManyJoin2WithBatchReadTest
+     * (see ExpressionSubSelectTestSuite#addOneToManyJoin2WithBatchReadTest)
+     * @see ExpressionSubSelectTestSuite#addExistsWithBatchAttributeTest()
+     * @see ExpressionSubSelectTestSuite#addObjectComparisonWithBatchAttributeTest()
+     * @see ExpressionSubSelectTestSuite#addParallelSelectWithBatchAttributeTest()
+     * @see ExpressionSubSelectTestSuite#addSubSelectInWithBatchAttributeTest()
      */
     public void testBatchAttributesOnEmployee() {
             testBatchAttributesOnEmployee = true;

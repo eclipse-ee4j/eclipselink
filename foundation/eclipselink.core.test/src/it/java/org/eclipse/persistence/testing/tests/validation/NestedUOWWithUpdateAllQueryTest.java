@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,16 +32,19 @@ public class NestedUOWWithUpdateAllQueryTest extends ExceptionTest {
         setDescription("This test tests that you cannot execute an update all query within a nested UOW.");
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         super.reset();
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
         expectedException = ValidationException.nestedUOWNotSupportedForModifyAllQuery();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow1 = getSession().acquireUnitOfWork();
         UnitOfWork uow2 = uow1.acquireUnitOfWork();

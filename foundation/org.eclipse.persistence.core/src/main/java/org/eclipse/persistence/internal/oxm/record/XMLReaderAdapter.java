@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,11 +41,11 @@ public abstract class XMLReaderAdapter extends XMLReader {
     private ErrorHandler errorHandler;
     protected LexicalHandler lexicalHandler;
 
-    public XMLReaderAdapter() {
+    protected XMLReaderAdapter() {
         super();
     }
 
-    public XMLReaderAdapter(Unmarshaller xmlUnmarshaller) {
+    protected XMLReaderAdapter(Unmarshaller xmlUnmarshaller) {
         super();
         if(null != xmlUnmarshaller) {
             Schema schema = xmlUnmarshaller.getSchema();

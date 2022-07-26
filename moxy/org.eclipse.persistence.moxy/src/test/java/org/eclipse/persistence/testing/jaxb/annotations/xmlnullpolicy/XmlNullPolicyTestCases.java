@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
 
@@ -50,15 +51,15 @@ public class XmlNullPolicyTestCases extends JAXBTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlNullPolicyTestCases(String name) throws Exception{
         super(name);
-        setClasses(new Class[] { Employee.class });
+        setClasses(new Class<?>[] { Employee.class });
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
     }
 
+    @Override
     public Object getControlObject() {
         Employee ctrlEmp = new Employee();
         ctrlEmp.firstName = FNAME;
@@ -81,6 +82,7 @@ public class XmlNullPolicyTestCases extends JAXBTestCases {
         return ctrlEmp;
     }
 
+    @Override
     public Object getWriteControlObject() {
         if(ctrlEmp == null){
         ctrlEmp = new Employee();
@@ -108,23 +110,26 @@ public class XmlNullPolicyTestCases extends JAXBTestCases {
            super.testSchemaGen(controlSchemas);
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlnullpolicy/eclipselink-oxm.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception{
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", ctrlEmp.wasGetCalled);
 
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception{
         super.xmlToObjectTest(testObject);
         Employee empObj = (Employee)testObject;
@@ -134,10 +139,12 @@ public class XmlNullPolicyTestCases extends JAXBTestCases {
 
     }
 
+    @Override
     public void testRoundTrip(){
         //not applicable with write only mappings
     }
 
+     @Override
      public void testObjectToContentHandler() throws Exception {
            //See Bug 355143
 

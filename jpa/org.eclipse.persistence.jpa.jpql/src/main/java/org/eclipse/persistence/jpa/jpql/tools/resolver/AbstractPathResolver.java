@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,9 +71,6 @@ public abstract class AbstractPathResolver extends Resolver {
         parent.addChild(path, this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ITypeDeclaration buildTypeDeclaration() {
         IMapping mapping = getMapping();
@@ -83,9 +80,6 @@ public abstract class AbstractPathResolver extends Resolver {
         return getTypeHelper().unknownTypeDeclaration();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType() {
 
@@ -102,9 +96,6 @@ public abstract class AbstractPathResolver extends Resolver {
         return managedType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final IMapping getMapping() {
         if ((mapping == null) && !mappingResolved) {
@@ -146,9 +137,6 @@ public abstract class AbstractPathResolver extends Resolver {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return path;

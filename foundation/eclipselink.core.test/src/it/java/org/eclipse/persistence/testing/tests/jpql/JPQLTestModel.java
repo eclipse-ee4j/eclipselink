@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,13 @@ import org.eclipse.persistence.testing.models.inheritance.InheritanceSystem;
  */
 
 public class JPQLTestModel extends org.eclipse.persistence.testing.framework.TestModel {
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new JPQLSystem());
         addRequiredSystem(new InheritanceSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(new JPQLUnitTestSuite());
         addTest(new JPQLSimpleTestSuite());
@@ -38,6 +40,7 @@ public class JPQLTestModel extends org.eclipse.persistence.testing.framework.Tes
         addTest(new JPQLValidationTestSuite());
     }
 
+    @Override
     public void reset() {
         // Remove the Aliases added
         getAbstractSession().getAliasDescriptors().remove("Employee");
@@ -53,6 +56,7 @@ public class JPQLTestModel extends org.eclipse.persistence.testing.framework.Tes
         getAbstractSession().getAliasDescriptors().remove("IBMPC");
     }
 
+    @Override
     public void setup() {
         // Ensure all the aliases are added to the session.
         getAbstractSession().addAlias("Employee", getSession().getDescriptor(Employee.class));

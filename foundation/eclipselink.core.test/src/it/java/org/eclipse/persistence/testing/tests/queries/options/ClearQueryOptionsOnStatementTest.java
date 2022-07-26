@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         setDescription("This test verifies max rows, query timeout & result set fetch size are cleared on prepared statements");
     }
 
+    @Override
     public void setup() {
         TYPE_SCROLL_INSENSITIVE_isSupported = true;
         CONCUR_UPDATABLE_isSupported = true;
@@ -74,6 +75,7 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void test() {
         DatabaseSession session = getDatabaseSession();
         testQueryTimeoutReset(session);
@@ -143,7 +145,7 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         Map statementCache = null;
         try {
             Method method = PrivilegedAccessHelper.getDeclaredMethod(DatabaseAccessor.class,
-                "getStatementCache", new Class[]{});
+                "getStatementCache", new Class<?>[]{});
             method.setAccessible(true);
             statementCache = (Map) method.invoke(accessor, new Object[] {});
         } catch (Exception nsme) {
@@ -234,6 +236,7 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         getDatabaseSession().getLogin().dontCacheAllStatements();
         UnitOfWork uow = getDatabaseSession().acquireUnitOfWork();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,11 +26,12 @@ public class JDBCBatchUpdatesTestModel extends TopLinkBatchUpdatesTestModel {
         super();
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         DatabasePlatform platform = getSession().getPlatform();
-        wasBatchWriting = Boolean.valueOf(platform.usesBatchWriting());
-        wasJDBCBatchWriting = Boolean.valueOf(platform.usesJDBCBatchWriting());
-        wasParameterBinding = Boolean.valueOf(getSession().getLogin().shouldBindAllParameters());
+        wasBatchWriting = platform.usesBatchWriting();
+        wasJDBCBatchWriting = platform.usesJDBCBatchWriting();
+        wasParameterBinding = getSession().getLogin().shouldBindAllParameters();
 
         try {
             getSession().getLog().write("WARNING, some JDBC drivers may fail BatchUpdates.");
@@ -48,6 +49,7 @@ public class JDBCBatchUpdatesTestModel extends TopLinkBatchUpdatesTestModel {
         addForcedRequiredSystem(new BarSystem());
     }
 
+    @Override
     public void addTests() {
         super.addTests();
         addTest(OptimisticLockingTestModel.getOptimisticLockingTestSuite());

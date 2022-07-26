@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * values that satisfy the expression. The <b>WHERE</b> clause restricts the result of a select
  * statement or the scope of an update or delete operation.
  *
- * <div><b>BNF:</b> <code>where_clause ::= WHERE conditional_expression</code><p></div>
+ * <div><b>BNF:</b> <code>where_clause ::= WHERE conditional_expression</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -39,9 +39,6 @@ public final class WhereClause extends AbstractConditionalClause {
         super(parent, WHERE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
@@ -54,17 +51,11 @@ public final class WhereClause extends AbstractConditionalClause {
         return super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(WhereClauseBNF.ID);

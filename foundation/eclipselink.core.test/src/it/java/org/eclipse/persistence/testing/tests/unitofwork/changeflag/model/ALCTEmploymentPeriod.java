@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
  * <p><b>Purpose</b>: Defines the period an Employee worked for the organization
  * <p><b>Description</b>: The period holds the start date and optionally the end date if the employee has left (null otherwise).
  * Maintained in an aggregate relationship of Employee
- * @see Employee
+ * @see ALCTEmployee
  */
 public class ALCTEmploymentPeriod implements Serializable, ChangeTracker {
     // implements ChangeTracker for testing
@@ -38,10 +38,12 @@ public class ALCTEmploymentPeriod implements Serializable, ChangeTracker {
     public Date endDate;
     public PropertyChangeListener listener;
 
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return listener;
     }
 
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.listener = listener;
     }
@@ -95,7 +97,7 @@ public class ALCTEmploymentPeriod implements Serializable, ChangeTracker {
     }
 
     /**
-     * Print the start & end date
+     * Print the start &amp; end date
      */
     public String toString() {
         StringWriter writer = new StringWriter();

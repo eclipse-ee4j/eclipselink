@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class JAXBArrayAttributeAccessor extends AttributeAccessor {
     private CoreAttributeAccessor nestedAccessor;
     private CoreContainerPolicy containerPolicy;
     private String componentClassName;
-    private Class componentClass;
+    private Class<?> componentClass;
     private String adaptedClassName;
     private Class<? extends ManyValue> adaptedClass;
     private ClassLoader classLoader;
@@ -103,7 +103,7 @@ public class JAXBArrayAttributeAccessor extends AttributeAccessor {
     }
 
     @Override
-    public void initializeAttributes(Class theJavaClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
         nestedAccessor.initializeAttributes(theJavaClass);
         if (adaptedClass == null && adaptedClassName != null) {
             try {
@@ -121,11 +121,11 @@ public class JAXBArrayAttributeAccessor extends AttributeAccessor {
         }
     }
 
-    public void setAdaptedClass(Class adaptedClass) {
-        this.adaptedClass = componentClass;
+    public void setAdaptedClass(Class<? extends ManyValue> adaptedClass) {
+        this.adaptedClass = adaptedClass;
     }
 
-    public void setComponentClass(Class componentClass) {
+    public void setComponentClass(Class<?> componentClass) {
         this.componentClass = componentClass;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,8 +33,8 @@ public class RelationshipsEmployee {
     public String gender;
     public BigDecimal salary;
     public RelationshipsAddress address;
-    public Collection<RelationshipsPhone> phones = new ArrayList<RelationshipsPhone>();
-    public Collection<String> responsibilities = new ArrayList<String>();
+    public Collection<RelationshipsPhone> phones = new ArrayList<>();
+    public Collection<String> responsibilities = new ArrayList<>();
 
     public RelationshipsEmployee() {
     }

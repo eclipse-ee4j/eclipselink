@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -319,7 +319,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * enabled.  This method will typically  be used for unmarshalling
      * when a non-shared cache is desired.
      */
-    public AbstractSession getReadSession(Class clazz) {
+    public AbstractSession getReadSession(Class<?> clazz) {
         return super.getSession(clazz);
     }
 
@@ -370,7 +370,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * Context, this method will return the first match.
      */
     @Override
-    public AbstractSession getSession(Class clazz) {
+    public AbstractSession getSession(Class<?> clazz) {
         return super.getSession(clazz);
     }
 
@@ -425,8 +425,6 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     /**
      * INTERNAL:
      * Return the DocumentPreservationPolicy associated with this session
-     * @param session
-     * @return
      */
     public DocumentPreservationPolicy getDocumentPreservationPolicy(AbstractSession session) {
         if (session == null) {
@@ -456,10 +454,10 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     */
     public void applyORMMetadata(AbstractSession ormSession) {
         //Iterate over the ORM descriptors and check for matching OXM descriptors
-        Iterator ormDescriptors = ormSession.getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> ormDescriptors = ormSession.getDescriptors().values().iterator();
         while(ormDescriptors.hasNext()) {
-            ClassDescriptor ormDescriptor = (ClassDescriptor)ormDescriptors.next();
-            Class javaClass = ormDescriptor.getJavaClass();
+            ClassDescriptor ormDescriptor = ormDescriptors.next();
+            Class<?> javaClass = ormDescriptor.getJavaClass();
             AbstractSession oxmSession = null;
             try {
                 oxmSession = this.getSession(javaClass);
@@ -486,7 +484,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
 
                         //check to see if we need to deal with containerAccessor
                         CoreAttributeAccessor containerAccessor = null;
-                        Class containerClass = null;
+                        Class<?> containerClass = null;
                         if(oxmMapping.isAbstractCompositeObjectMapping()) {
                             containerAccessor = ((CompositeObjectMapping)oxmMapping).getInverseReferenceMapping().getAttributeAccessor();
                             containerClass = ((CompositeObjectMapping)oxmMapping).getReferenceClass();
@@ -581,8 +579,8 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * <p>Set values in the object model based on the corresponding XML document.  The following pairings are equivalent:</p>
      *
      * <i>Set the Customer's ID</i>
-     * <pre> xmlContext.setValueByXPath(customer, "@id", null, new Integer(123));
-     * customer.setId(new Integer(123));</pre>
+     * <pre> xmlContext.setValueByXPath(customer, "@id", null, Integer.valueOf(123));
+     * customer.setId(Integer.valueOf(123));</pre>
      *
      * <i>Set the Customer's Name</i>
      * <pre> xmlContext.setValueByXPath(customer, "ns:personal-info/ns:name/text()", aNamespaceResolver, "Jane Doe");
@@ -734,7 +732,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
          */
         private void addSession(DatabaseSession sessionToAdd) {
             if ((sessionToAdd.getDatasourceLogin() == null) || !(sessionToAdd.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
-                XMLPlatform platform = new SAXPlatform();
+                XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
                 sessionToAdd.setLogin(new XMLLogin(platform));
             }
             DatabaseSession session = sessionToAdd.getProject().createDatabaseSession();
@@ -774,7 +772,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
                 dbSession = (DatabaseSession) SessionManager.getManager().getSession(sessionLoader, sessionName, privilegedGetClassLoaderForClass(this.getClass()), false, false, false);
             }
             if ((dbSession.getDatasourceLogin() == null) || !(dbSession.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
-                XMLPlatform platform = new SAXPlatform();
+                XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
                 dbSession.setLogin(new XMLLogin(platform));
             }
             DatabaseSession session = dbSession.getProject().createDatabaseSession();
@@ -806,7 +804,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
          * Context, this method will return the first match.
          */
         @Override
-        protected AbstractSession getSession(Class clazz) {
+        protected AbstractSession getSession(Class<?> clazz) {
             if (null == clazz) {
                 return null;
             }
@@ -898,7 +896,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         @Override
         protected void preLogin(Project project, ClassLoader classLoader) {
             if ((project.getDatasourceLogin() == null) || !(project.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
-                XMLPlatform platform = new SAXPlatform();
+                XMLPlatform<org.eclipse.persistence.internal.oxm.XMLUnmarshaller> platform = new SAXPlatform();
                 platform.getConversionManager().setLoader(classLoader);
                 project.setLogin(new XMLLogin(platform));
             }
@@ -907,7 +905,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         private void setupDocumentPreservationPolicy(DatabaseSession session) {
             XMLLogin login = (XMLLogin) session.getDatasourceLogin();
             if (login.getDocumentPreservationPolicy() == null) {
-                Iterator iterator = session.getProject().getOrderedDescriptors().iterator();
+                Iterator<ClassDescriptor> iterator = session.getProject().getOrderedDescriptors().iterator();
                 while (iterator.hasNext()) {
                     Descriptor xmlDescriptor = (Descriptor) iterator.next();
                     if (xmlDescriptor.shouldPreserveDocument()) {
@@ -966,7 +964,6 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     /**
      * Returns descriptor for given object.
      *
-     * @param object
      * @return descriptor for given object
      */
     public Descriptor getDescriptorForObject(Object object) {
@@ -978,7 +975,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
         return null;
     }
 
-    private static ClassLoader privilegedGetClassLoaderForClass(final Class clazz) {
+    private static ClassLoader privilegedGetClassLoaderForClass(final Class<?> clazz) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
                 return AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));

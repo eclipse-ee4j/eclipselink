@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,6 +82,7 @@ public class BroadcastEventLock {
     // locks the lock after source uow merges
 
     class SourceListener extends Listener {
+        @Override
         public void postMergeUnitOfWorkChangeSet(SessionEvent event) {
             UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)event.getProperty("UnitOfWorkChangeSet");
             if (uowChangeSet.hasChanges()) {
@@ -92,6 +93,7 @@ public class BroadcastEventLock {
     // unlocks the lock after target uow distributely merges
 
     class TargetListener extends Listener {
+        @Override
         public void postDistributedMergeUnitOfWorkChangeSet(SessionEvent event) {
             unlock(UNLOCKED_BY_TARGET_LISTENER);
         }
@@ -110,6 +112,7 @@ public class BroadcastEventLock {
             session.setExceptionHandler(originalHandler);
         }
 
+        @Override
         public Object handleException(RuntimeException exception) {
             if (exception instanceof RemoteCommandManagerException) {
                 if (((RemoteCommandManagerException)exception).getErrorCode() == RemoteCommandManagerException.ERROR_PROPAGATING_COMMAND) {

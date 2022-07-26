@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.listofobjects.ClassWithInnerClass.MyInner;
 
 public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
@@ -48,6 +49,7 @@ public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
         return namespaces;
     }
 
+    @Override
     protected Type getTypeToUnmarshalTo() throws Exception {
         return getClass().getField("myList").getGenericType();
     }
@@ -60,6 +62,7 @@ public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
         setTypes(types);
     }
 
+    @Override
     protected Object getControlObject() {
         MyInner myInner1 = new MyInner();
         myInner1.innerName = "aaa";
@@ -77,6 +80,7 @@ public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
         return jaxbElement;
     }
 
+    @Override
     public List<InputStream> getControlSchemaFiles() {
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/innerClassList.xsd");
         List<InputStream> controlSchema = new ArrayList<InputStream>();
@@ -84,13 +88,15 @@ public class JAXBListOfInnerClassTestCases extends JAXBListOfObjectsTestCases {
         return controlSchema;
     }
 
+    @Override
     protected String getNoXsiTypeControlResourceName() {
         return XML_RESOURCE_NO_XSI_TYPE;
     }
 
+    @Override
     public Map getProperties() {
         Map props = new HashMap();
-        props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "listOfObjectsNamespace");
+        props.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, "listOfObjectsNamespace");
         return props;
     }
 }

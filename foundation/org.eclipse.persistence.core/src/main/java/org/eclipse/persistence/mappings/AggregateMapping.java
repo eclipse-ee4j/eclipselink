@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;
@@ -59,7 +60,7 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 public abstract class AggregateMapping extends DatabaseMapping {
 
     /** Stores a reference class */
-    protected Class referenceClass;
+    protected Class<?> referenceClass;
     protected String referenceClassName;
 
     /** The descriptor of the reference class */
@@ -76,7 +77,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
     /**
      * Default constructor.
      */
-    public AggregateMapping() {
+    protected AggregateMapping() {
         super();
         this.setWeight(WEIGHT_AGGREGATE);
     }
@@ -368,7 +369,6 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
@@ -378,7 +378,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        setReferenceClass(AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader)));
+                        setReferenceClass(AccessController.doPrivileged(new PrivilegedClassForName<>(getReferenceClassName(), true, classLoader)));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
                     }
@@ -410,7 +410,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    protected void fixAttributeValue(Object attributeValue, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    protected void fixAttributeValue(Object attributeValue, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         if (attributeValue == null) {
             return;
         }
@@ -424,7 +424,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         Object attributeValue = getAttributeValueFromObject(object);
         fixAttributeValue(attributeValue, objectDescriptors, processedObjects, query, session);
     }
@@ -441,7 +441,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
     /**
      * Convenience method
      */
-    protected ObjectBuilder getObjectBuilderForClass(Class javaClass, AbstractSession session) {
+    protected ObjectBuilder getObjectBuilderForClass(Class<?> javaClass, AbstractSession session) {
         return getReferenceDescriptor(javaClass, session).getObjectBuilder();
     }
 
@@ -463,7 +463,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * PUBLIC:
      * Returns the reference class
      */
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
@@ -494,7 +494,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * For inheritance purposes.
      */
-    protected ClassDescriptor getReferenceDescriptor(Class theClass, AbstractSession session) {
+    protected ClassDescriptor getReferenceDescriptor(Class<?> theClass, AbstractSession session) {
         if (this.referenceDescriptor.getJavaClass() == theClass) {
             return this.referenceDescriptor;
         }
@@ -951,7 +951,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * PUBLIC:
      * This is a reference class whose instances this mapping will store in the domain objects.
      */
-    public void setReferenceClass(Class aClass) {
+    public void setReferenceClass(Class<?> aClass) {
         referenceClass = aClass;
     }
 
@@ -1085,9 +1085,9 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return true;
         }
-        for (Enumeration mappings = getReferenceDescriptor(attributeValue, session).getMappings().elements();
-                 mappings.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+        for (Enumeration<DatabaseMapping> mappings = getReferenceDescriptor(attributeValue, session).getMappings().elements();
+             mappings.hasMoreElements();) {
+            DatabaseMapping mapping = mappings.nextElement();
             if (!mapping.verifyDelete(attributeValue, session)) {
                 return false;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,9 +25,9 @@ import java.io.Serializable;
  * Primary key class: ProjectPK
  * Home interface: ProjectHome
  *
- * >Employees have a many-to-many relationship with Projects through the
+ * {@literal >}Employees have a many-to-many relationship with Projects through the
  *  projects attribute.
- * >Projects refer to Employees through the employees attribute.
+ * {@literal >}Projects refer to Employees through the employees attribute.
  */
 public class Project implements Serializable {
     public int pre_update_count = 0;

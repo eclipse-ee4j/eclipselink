@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,14 +43,14 @@ import org.eclipse.persistence.exceptions.JPQLException;
  *    @since TopLink 4.0
  */
 public class ParseTreeContext {
-    private Map variableDecls;
+    private Map<String, VariableDecl> variableDecls;
     private String baseVariable;
     private int currentScope;
-    private Set outerScopeVariables;
-    private Map fetchJoins;
+    private Set<String> outerScopeVariables;
+    private Map<String, List<Node>> fetchJoins;
     private TypeHelper typeHelper;
-    private Map parameterTypes;
-    private List parameterNames;
+    private Map<String, Object> parameterTypes;
+    private List<String> parameterNames;
     private NodeFactory nodeFactory;
     private String queryInfo;
 
@@ -60,12 +60,12 @@ public class ParseTreeContext {
      */
     public ParseTreeContext(NodeFactory nodeFactory, String queryInfo) {
         super();
-        variableDecls = new HashMap();
+        variableDecls = new HashMap<>();
         currentScope = 0;
-        fetchJoins = new HashMap();
+        fetchJoins = new HashMap<>();
         typeHelper = null;
-        parameterTypes = new HashMap();
-        parameterNames = new ArrayList();
+        parameterTypes = new HashMap<>();
+        parameterNames = new ArrayList<>();
         this.nodeFactory = nodeFactory;
         this.queryInfo = queryInfo;
     }
@@ -75,7 +75,7 @@ public class ParseTreeContext {
      * Associate the given schema with the given variable.
      */
     public void registerSchema(String variable, String schema, int line, int column) {
-        VariableDecl decl = (VariableDecl)variableDecls.get(variable);
+        VariableDecl decl = variableDecls.get(variable);
         if (decl == null) {
             decl = new VariableDecl(variable, schema);
             variableDecls.put(variable, decl);
@@ -91,7 +91,7 @@ public class ParseTreeContext {
      * Associate the given path with the given variable.
      */
     public void registerJoinVariable(String variable, Node path, int line, int column) {
-        VariableDecl decl = (VariableDecl)variableDecls.get(variable);
+        VariableDecl decl = variableDecls.get(variable);
         if (decl == null) {
             decl = new VariableDecl(variable, path);
             variableDecls.put(variable, decl);
@@ -113,7 +113,7 @@ public class ParseTreeContext {
      * Returns true if the specified string denotes a variable.
      */
     public boolean isVariable(String variable) {
-        VariableDecl decl = (VariableDecl)variableDecls.get(variable);
+        VariableDecl decl = variableDecls.get(variable);
         return decl != null;
     }
 
@@ -121,9 +121,8 @@ public class ParseTreeContext {
      * INTERNAL
      * Returns true if the specified string denotes a range variable.
      */
-    /** */
     public boolean isRangeVariable(String variable) {
-        VariableDecl decl = (VariableDecl)variableDecls.get(variable);
+        VariableDecl decl = variableDecls.get(variable);
         return (decl != null) && decl.isRangeVariable;
     }
 
@@ -133,7 +132,7 @@ public class ParseTreeContext {
      * range variable.
      */
     public String schemaForVariable(String variable) {
-        VariableDecl decl = (VariableDecl)variableDecls.get(variable);
+        VariableDecl decl = variableDecls.get(variable);
         return (decl != null) ? decl.schema : null;
     }
 
@@ -141,12 +140,12 @@ public class ParseTreeContext {
      * INTERNAL
      * Answer the class associated with the provided schema name
      */
-    public Class classForSchemaName(String schemaName, GenerationContext context) {
+    public Class<?> classForSchemaName(String schemaName, GenerationContext context) {
         ClassDescriptor descriptor = context.getSession().getDescriptorForAlias(schemaName);
         if (descriptor == null) {
             throw JPQLException.entityTypeNotFound(getQueryInfo(), schemaName);
         }
-        Class theClass = descriptor.getJavaClass();
+        Class<?> theClass = descriptor.getJavaClass();
         if (theClass == null) {
             throw JPQLException.resolutionClassNotFoundException(getQueryInfo(), schemaName);
         }
@@ -160,11 +159,11 @@ public class ParseTreeContext {
      * SELECT OBJECT (emp) FROM Employee emp
      *   getVariableNameForClass(Employee.class) =&gt; "emp"
      */
-    public String getVariableNameForClass(Class theClass, GenerationContext context) {
-        for (Iterator i = variableDecls.entrySet().iterator(); i.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)i.next();
-            String nextVariable = (String)entry.getKey();
-            VariableDecl decl = (VariableDecl)entry.getValue();
+    public String getVariableNameForClass(Class<?> theClass, GenerationContext context) {
+        for (Iterator<Map.Entry<String, VariableDecl>> i = variableDecls.entrySet().iterator(); i.hasNext(); ) {
+            Map.Entry<String, VariableDecl> entry = i.next();
+            String nextVariable = entry.getKey();
+            VariableDecl decl = entry.getValue();
             if ((decl.schema != null) &&
                 (theClass == this.classForSchemaName(decl.schema, context))) {
                 return nextVariable;
@@ -179,7 +178,7 @@ public class ParseTreeContext {
      * member variable.
      */
     public Node pathForVariable(String variable) {
-        VariableDecl decl = (VariableDecl)variableDecls.get(variable);
+        VariableDecl decl = variableDecls.get(variable);
         return (decl != null) ? decl.path : null;
     }
 
@@ -209,8 +208,8 @@ public class ParseTreeContext {
      * outer scope.
      */
     public boolean isDeclaredInOuterScope(String variable) {
-        VariableDecl decl = (VariableDecl)variableDecls.get(variable);
-        return (decl != null) ? (decl.scope < currentScope) : false;
+        VariableDecl decl = variableDecls.get(variable);
+        return decl != null && (decl.scope < currentScope);
     }
 
     /**
@@ -218,7 +217,7 @@ public class ParseTreeContext {
      * Sets the scope of the specified variable to the current scope.
      */
     public void setScopeOfVariable(String variable) {
-        VariableDecl decl = (VariableDecl)variableDecls.get(variable);
+        VariableDecl decl = variableDecls.get(variable);
         if (decl != null) {
             decl.scope = currentScope;
         }
@@ -253,7 +252,7 @@ public class ParseTreeContext {
      * INTERNAL
      * Returns the set of outer scope variables.
      */
-    public Set getOuterScopeVariables() {
+    public Set<String> getOuterScopeVariables() {
         return outerScopeVariables;
     }
 
@@ -262,14 +261,14 @@ public class ParseTreeContext {
      * Resets the set of outer scope variables.
      */
     public void resetOuterScopeVariables() {
-        outerScopeVariables = new HashSet();
+        outerScopeVariables = new HashSet<>();
     }
 
     /**
      * INTERNAL
      * Resets the set of outer scope variables.
      */
-    public void resetOuterScopeVariables(Set variables) {
+    public void resetOuterScopeVariables(Set<String> variables) {
         outerScopeVariables = variables;
     }
 
@@ -278,37 +277,39 @@ public class ParseTreeContext {
      * JOIN FETCH node.
      */
     public void registerFetchJoin(String variableName, Node node) {
-        List joins = (List)fetchJoins.get(variableName);
+        List<Node> joins = fetchJoins.get(variableName);
         if (joins == null) {
-            joins = new ArrayList();
+            joins = new ArrayList<>();
             fetchJoins.put(variableName, joins);
         }
         joins.add(node);
     }
 
     /** Returns a list of FETCH JOIN nodes for the specified attached to the
-     * specified variable. */
-    public List getFetchJoins(String variableName) {
-        return (List)fetchJoins.get(variableName);
+     * specified variable.
+     */
+    public List<Node> getFetchJoins(String variableName) {
+        return fetchJoins.get(variableName);
     }
 
     /** Mark the specified variable as used if it is declared in the current
      * scope. */
     public void usedVariable(String variable) {
-        VariableDecl decl = (VariableDecl)variableDecls.get(variable);
+        VariableDecl decl = variableDecls.get(variable);
         if ((decl != null) && (decl.scope == currentScope)) {
             decl.used = true;
         }
     }
 
     /** Returns s set of variables that are declared in the current scope,
-     * but not used in the query. */
-    public Set getUnusedVariables() {
-        Set unused = new HashSet();
-        for (Iterator i = variableDecls.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry)i.next();
-            String variable = (String)entry.getKey();
-            VariableDecl decl = (VariableDecl)entry.getValue();
+     * but not used in the query.
+     */
+    public Set<String> getUnusedVariables() {
+        Set<String> unused = new HashSet<>();
+        for (Iterator<Map.Entry<String, VariableDecl>> i = variableDecls.entrySet().iterator(); i.hasNext();) {
+            Map.Entry<String, VariableDecl> entry = i.next();
+            String variable = entry.getKey();
+            VariableDecl decl = entry.getValue();
             if ((decl.scope == currentScope) && !decl.used) {
                 unused.add(variable);
             }
@@ -320,13 +321,13 @@ public class ParseTreeContext {
     //true => "SELECT OBJECT (emp1) FROM Employee emp1, Employee emp2 WHERE ..."
     //false => "SELECT OBJECT (emp) FROM Employee emp WHERE ..."
     public boolean hasMoreThanOneVariablePerType() {
-        Map typeNamesToVariables = new HashMap();
+        Map<String, String> typeNamesToVariables = new HashMap<>();
         int nrOfRangeVariables = 0;
         //Map the Aliases to the variable names, then check the count
-        for (Iterator i = variableDecls.entrySet().iterator(); i.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)i.next();
-            String variable = (String)entry.getKey();
-            VariableDecl decl = (VariableDecl)entry.getValue();
+        for (Iterator<Map.Entry<String, VariableDecl>> i = variableDecls.entrySet().iterator(); i.hasNext(); ) {
+            Map.Entry<String, VariableDecl> entry = i.next();
+            String variable = entry.getKey();
+            VariableDecl decl = entry.getValue();
             if (decl.isRangeVariable) {
                 nrOfRangeVariables++;
                 typeNamesToVariables.put(decl.schema, variable);
@@ -340,11 +341,11 @@ public class ParseTreeContext {
     //false => "SELECT OBJECT (emp) FROM Employee emp WHERE ..."
     //false => "SELECT OBJECT (emp1) FROM Employee emp1, Employee emp2 WHERE ..."
     public boolean hasMoreThanOneAliasInFrom() {
-        Map typeNamesToVariables = new HashMap();
-        for (Iterator i = variableDecls.entrySet().iterator(); i.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)i.next();
-            String variable = (String)entry.getKey();
-            VariableDecl decl = (VariableDecl)entry.getValue();
+        Map<String, String> typeNamesToVariables = new HashMap<>();
+        for (Iterator<Map.Entry<String, VariableDecl>> i = variableDecls.entrySet().iterator(); i.hasNext(); ) {
+            Map.Entry<String, VariableDecl> entry = i.next();
+            String variable = entry.getKey();
+            VariableDecl decl = entry.getValue();
             if (decl.isRangeVariable) {
                 typeNamesToVariables.put(decl.schema, variable);
             }
@@ -425,7 +426,7 @@ public class ParseTreeContext {
      * INTERNAL
      * Return the parameter names.
      */
-    public List getParameterNames() {
+    public List<String> getParameterNames() {
         return parameterNames;
     }
 

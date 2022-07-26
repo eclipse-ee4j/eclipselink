@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,11 +21,13 @@ public final class MyCalendarExceptionAdapter extends XmlAdapter<Calendar, MyCal
     public static boolean unmarshalHit;
     public static boolean marshalHit;
 
+    @Override
     public MyCalendarType unmarshal(Calendar arg0) throws Exception {
         unmarshalHit = true;
         throw new NullPointerException();
     }
 
+    @Override
     public Calendar marshal(MyCalendarType arg0) throws Exception {
         marshalHit = true;
         throw new NullPointerException();

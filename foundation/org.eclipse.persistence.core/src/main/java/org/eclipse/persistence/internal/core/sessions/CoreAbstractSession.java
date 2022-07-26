@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,12 @@ public abstract class CoreAbstractSession<
     SESSION_EVENT_MANAGER extends CoreSessionEventManager> implements CoreSession<DESCRIPTOR, LOGIN, PLATFORM, PROJECT, SESSION_EVENT_MANAGER> {
 
     /**
+     * Default constructor.
+     */
+    protected CoreAbstractSession() {
+    }
+
+    /**
      * INTERNAL:
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
@@ -43,7 +49,7 @@ public abstract class CoreAbstractSession<
      * Return all registered descriptors.
      */
     @Override
-    public abstract Map<Class, DESCRIPTOR> getDescriptors();
+    public abstract Map<Class<?>, DESCRIPTOR> getDescriptors();
 
     /**
      * INTERNAL:
@@ -51,6 +57,6 @@ public abstract class CoreAbstractSession<
      * for specified class.
      * The platform is used for database specific behavior.
      */
-    public abstract PLATFORM getPlatform(Class domainClass);
+    public abstract PLATFORM getPlatform(Class<?> domainClass);
 
 }

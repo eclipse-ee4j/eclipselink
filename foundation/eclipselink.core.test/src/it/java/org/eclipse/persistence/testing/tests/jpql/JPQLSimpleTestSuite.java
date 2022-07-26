@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ public class JPQLSimpleTestSuite extends TestSuite {
         setDescription("The unit tests for EJBQL");
     }
 
+    @Override
     public void addTests() {
         addTest(JPQLTestCase.getBaseTestCase());
         addSpecialTest(new SimpleAbsTest());
@@ -149,6 +150,7 @@ public class JPQLSimpleTestSuite extends TestSuite {
      */
     public TestCase buildMaxRowsTest() {
         return new TestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.setEJBQLString("Select Object(Emp) from Employee Emp");

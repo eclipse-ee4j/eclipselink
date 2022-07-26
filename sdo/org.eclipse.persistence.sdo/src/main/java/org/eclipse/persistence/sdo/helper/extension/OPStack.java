@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,7 +89,7 @@ public class OPStack {
      * List that will be returned), then push the new token onto the
      * stack.
      *
-     * @param out
+     * @param outList
      * @param t
      */
     private void pushSpew(List outList, Token t) {
@@ -156,7 +156,7 @@ public class OPStack {
                 tok = new Token(sbuf.toString(), Token.ARG);
                 tokens.add(tok);
                 sbuf = new StringBuffer();
-                sbuf.append(Character.toString(ch));
+                sbuf.append(ch);
                 sbuf.append(exp.charAt(++i));
                 tok = new Token(sbuf.toString().trim(), Token.DI, Token.NEQ_PR);
                 tokens.add(tok);
@@ -165,7 +165,7 @@ public class OPStack {
                 tok = new Token(sbuf.toString(), Token.ARG);
                 tokens.add(tok);
                 sbuf = new StringBuffer();
-                sbuf.append(Character.toString(ch));
+                sbuf.append(ch);
                 if (((i + 1) < exp.length()) && (exp.charAt(i + 1) == '=')) {
                     sbuf.append(exp.charAt(++i));
                     tok = new Token(sbuf.toString().trim(), Token.DI, Token.LEQ_PR);
@@ -178,7 +178,7 @@ public class OPStack {
                 tok = new Token(sbuf.toString(), Token.ARG);
                 tokens.add(tok);
                 sbuf = new StringBuffer();
-                sbuf.append(Character.toString(ch));
+                sbuf.append(ch);
                 if (((i + 1) < exp.length()) && (exp.charAt(i + 1) == '=')) {
                     sbuf.append(exp.charAt(++i));
                     tok = new Token(sbuf.toString().trim(), Token.DI, Token.GEQ_PR);

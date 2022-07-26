@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class NestedUnitOfWorkReadOnlyClassTest extends AutoVerifyTestCase {
     private Employee originalEmployee;
     private Address originalAddress;
 
+    @Override
     public void setup() {
         if (!isSequenceNumberEnabled()) {
             throw new TestWarningException("This test uses sequence numbers.");
@@ -49,6 +50,7 @@ public class NestedUnitOfWorkReadOnlyClassTest extends AutoVerifyTestCase {
         originalAddress = address;
     }
 
+    @Override
     public void reset() {
         if (!isSequenceNumberEnabled()) {
             return;
@@ -60,6 +62,7 @@ public class NestedUnitOfWorkReadOnlyClassTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         // start root transaction
@@ -85,6 +88,7 @@ public class NestedUnitOfWorkReadOnlyClassTest extends AutoVerifyTestCase {
         originalEmployee = emp;
     }
 
+    @Override
     protected void verify() {
     }
 

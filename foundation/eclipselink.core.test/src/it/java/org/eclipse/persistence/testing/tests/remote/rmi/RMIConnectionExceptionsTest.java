@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ public RMIConnectionExceptionsTest(int mode) {
     super(mode, RMIConnection.class);
 }
 
+@Override
 public void setup() throws Exception {
     Session session = new org.eclipse.persistence.internal.sessions.DatabaseSessionImpl();
     session.setProperty("TransporterGenerator", generator);
@@ -34,6 +35,7 @@ public void setup() throws Exception {
     setRemoteConnection(rmiConnection);
 }
 
+@Override
 public void reset() throws Exception {
     Naming.unbind(getNameToBind());
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.descriptors.changetracking.*;
 
 /**
- * <b>Purpose</b>: Abstract superclass for Large & Small projects in Employee Demo
+ * <b>Purpose</b>: Abstract superclass for Large &amp; Small projects in Employee Demo
  * <p><b>Description</b>:     Project is an example of an abstract superclass. It demonstrates how class inheritance can be mapped to database tables.
  * It's subclasses are concrete and may or may not add columns through additional tables. The PROJ_TYPE field in the
  * database table indicates which subclass to instantiate. Projects are involved in a M:M relationship with employees.
@@ -38,10 +38,12 @@ public abstract class Project implements Serializable, org.eclipse.persistence.t
     public ValueHolderInterface teamLeader;
     public PropertyChangeListener listener;
 
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return listener;
     }
 
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.listener = listener;
     }
@@ -66,6 +68,7 @@ public abstract class Project implements Serializable, org.eclipse.persistence.t
         this.teamLeader = new ValueHolder();
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -73,18 +76,22 @@ public abstract class Project implements Serializable, org.eclipse.persistence.t
     /**
      * Return the persistent identifier of the receiver.
      */
+    @Override
     public BigDecimal getId() {
         return id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public org.eclipse.persistence.testing.models.employee.interfaces.Employee getTeamLeader() {
         return (Employee)teamLeader.getValue();
     }
 
+    @Override
     public void setDescription(String description) {
         propertyChange("description", this.description, description);
         this.description = description;
@@ -98,11 +105,13 @@ public abstract class Project implements Serializable, org.eclipse.persistence.t
         this.id = id;
     }
 
+    @Override
     public void setName(String name) {
         propertyChange("name", this.name, name);
         this.name = name;
     }
 
+    @Override
     public void setTeamLeader(org.eclipse.persistence.testing.models.employee.interfaces.Employee teamLeader) {
         propertyChange("teamLeader", this.teamLeader.getValue(), teamLeader);
         this.teamLeader.setValue(teamLeader);

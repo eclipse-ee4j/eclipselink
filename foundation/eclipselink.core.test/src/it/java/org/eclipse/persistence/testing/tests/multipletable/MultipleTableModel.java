@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,17 +30,18 @@ import org.eclipse.persistence.testing.models.multipletable.MultipleTableSystem;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date May 28, 2007
  */
 public class MultipleTableModel extends TestModel {
     public MultipleTableModel() {
         setDescription("This model tests multiple tables.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new MultipleTableSystem());
     }
 
+    @Override
     public void addTests() {
         addTestsToTestCollection(this);
     }
@@ -139,12 +140,13 @@ public class MultipleTableModel extends TestModel {
     }
 
     public static class ReadAllTest extends TestCase {
-        Class cls;
-        public ReadAllTest(Class cls) {
+        Class<?> cls;
+        public ReadAllTest(Class<?> cls) {
             super();
             setName(Helper.getShortClassName(cls) + "ReadAllTest");
             this.cls = cls;
         }
+        @Override
         public void test() {
             getSession().readAllObjects(cls);
         }

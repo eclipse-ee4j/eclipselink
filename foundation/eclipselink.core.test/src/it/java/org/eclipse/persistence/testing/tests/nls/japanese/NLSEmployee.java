@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,16 +37,16 @@ import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
 //public class Employee implements org.eclipse.persistence.testing.models.employee.interfaces.Employee, Serializable {
 public class NLSEmployee implements org.eclipse.persistence.testing.models.employee.interfaces.Employee, Serializable {
 
-    /** Primary key, maped as a direct-to-field, BigDecimal -> NUMBER, that makes use of sequence numbers to generate the id. */
+    /** Primary key, maped as a direct-to-field, BigDecimal -{@literal >} NUMBER, that makes use of sequence numbers to generate the id. */
     public BigDecimal id;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String firstName;
 
-    /** Direct-to-field mapping, String -> VARCHAR. */
+    /** Direct-to-field mapping, String -{@literal >} VARCHAR. */
     public String lastName;
 
-    /** Object-type mapping, maps "Male" -> "M", "Female" -> "F". */
+    /** Object-type mapping, maps "Male" -{@literal >} "M", "Female" -{@literal >} "F". */
     public String gender;
 
     /** Aggregate-object mapping, stores the object in the employee's table. */
@@ -70,11 +70,11 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
     /** Direct-collection mapping, employee stores its collection of plain Strings in an intermediate table. */
     public ValueHolderInterface responsibilitiesList;
 
-    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME & END_TIME),
+    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME &amp; END_TIME),
         this is stored into two different fields in the employee table. */
     public Time[] normalHours;
 
-    /** Direct-to-field mapping, int -> NUMBER, salary of the employee in dollars. */
+    /** Direct-to-field mapping, int -{@literal >} NUMBER, salary of the employee in dollars. */
     public int salary;
 
     /**
@@ -97,6 +97,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
     /**
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
+    @Override
     public void addManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
         getManagedEmployees().addElement(employee);
         employee.setManager(this);
@@ -105,15 +106,18 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
     /**
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
+    @Override
     public void addPhoneNumber(PhoneNumber phoneNumber) {
         getPhoneNumbers().addElement(phoneNumber);
         phoneNumber.setOwner(this);
     }
 
+    @Override
     public void addProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
         getProjects().addElement(project);
     }
 
+    @Override
     public void addResponsibility(String responsibility) {
         getResponsibilitiesList().addElement(responsibility);
     }
@@ -123,12 +127,12 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * IMPORTANT: This method builds the value but does not set it.
      * The mapping will set it using method or direct access as defined in the descriptor.
      */
-    public Time[] buildNormalHours(org.eclipse.persistence.sessions.Record row, Session session) {
+    public Time[] buildNormalHours(DataRecord row, Session session) {
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
-        hours[0] = (Time)session.getPlatform().convertObject(row.get("\u3066\u3068\u3042\u3064\u3068_\u3068\u3051\u3059\u304a"), java.sql.Time.class);
-        hours[1] = (Time)session.getPlatform().convertObject(row.get("\u304a\u305b\u3048_\u3068\u3051\u3059\u304a"), java.sql.Time.class);
+        hours[0] = session.getPlatform().convertObject(row.get("\u3066\u3068\u3042\u3064\u3068_\u3068\u3051\u3059\u304a"), Time.class);
+        hours[1] = session.getPlatform().convertObject(row.get("\u304a\u305b\u3048_\u3068\u3051\u3059\u304a"), Time.class);
         return hours;
     }
 
@@ -136,6 +140,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public Address getAddress() {
         return (Address)address.getValue();
     }
@@ -143,14 +148,17 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
     /**
      *    Return the last element of the Transformation mapped normalHours.
      */
+    @Override
     public Time getEndTime() {
         return getNormalHours()[1];
     }
 
+    @Override
     public String getFirstName() {
         return firstName;
     }
 
+    @Override
     public String getGender() {
         return gender;
     }
@@ -158,10 +166,12 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
     /**
      * Return the persistent identifier of the receiver.
      */
+    @Override
     public BigDecimal getId() {
         return id;
     }
 
+    @Override
     public String getLastName() {
         return lastName;
     }
@@ -170,6 +180,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public Vector getManagedEmployees() {
         return (Vector)managedEmployees.getValue();
     }
@@ -178,15 +189,18 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public org.eclipse.persistence.testing.models.employee.interfaces.Employee getManager() {
         //return (Employee) manager.getValue();
         return (NLSEmployee)manager.getValue();
     }
 
+    @Override
     public Time[] getNormalHours() {
         return normalHours;
     }
 
+    @Override
     public EmploymentPeriod getPeriod() {
         return period;
     }
@@ -195,6 +209,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public Vector getPhoneNumbers() {
         return (Vector)phoneNumbers.getValue();
     }
@@ -203,6 +218,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public Vector getProjects() {
         return (Vector)projects.getValue();
     }
@@ -211,10 +227,12 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public Vector getResponsibilitiesList() {
         return (Vector)responsibilitiesList.getValue();
     }
 
+    @Override
     public int getSalary() {
         return salary;
     }
@@ -222,6 +240,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
     /**
      *    Return the first element of the Transformation mapped normalHours.
      */
+    @Override
     public java.sql.Time getStartTime() {
         return getNormalHours()[0];
     }
@@ -229,6 +248,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
     /**
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
+    @Override
     public void removeManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
         getManagedEmployees().removeElement(employee);
         employee.setManager(null);
@@ -240,14 +260,17 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * and you can never change the primary key of an existing object.
      * Only in independent relationships should you null out the back reference.
      */
+    @Override
     public void removePhoneNumber(PhoneNumber phoneNumber) {
         getPhoneNumbers().removeElement(phoneNumber);
     }
 
+    @Override
     public void removeProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
         getProjects().removeElement(project);
     }
 
+    @Override
     public void removeResponsibility(String responsibility) {
         getResponsibilitiesList().removeElement(responsibility);
     }
@@ -256,6 +279,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setAddress(Address address) {
         this.address.setValue(address);
     }
@@ -263,18 +287,22 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
     /**
      *    Set the last element of the Transformation mapped normalHours.
      */
+    @Override
     public void setEndTime(Time endTime) {
         getNormalHours()[1] = endTime;
     }
 
+    @Override
     public void setFemale() {
         setGender("Female");
     }
 
+    @Override
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    @Override
     public void setGender(String gender) {
         this.gender = gender;
     }
@@ -289,10 +317,12 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
         this.id = id;
     }
 
+    @Override
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
+    @Override
     public void setMale() {
         setGender("Male");
     }
@@ -301,6 +331,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setManagedEmployees(Vector managedEmployees) {
         this.managedEmployees.setValue(managedEmployees);
     }
@@ -310,14 +341,17 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setManager(org.eclipse.persistence.testing.models.employee.interfaces.Employee manager) {
         this.manager.setValue(manager);
     }
 
+    @Override
     public void setNormalHours(Time[] normalHours) {
         this.normalHours = normalHours;
     }
 
+    @Override
     public void setPeriod(EmploymentPeriod period) {
         this.period = period;
     }
@@ -326,6 +360,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setPhoneNumbers(Vector phoneNumbers) {
         this.phoneNumbers.setValue(phoneNumbers);
     }
@@ -334,6 +369,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setProjects(Vector projects) {
         this.projects.setValue(projects);
     }
@@ -342,10 +378,12 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setResponsibilitiesList(Vector responsibilitiesList) {
         this.responsibilitiesList.setValue(responsibilitiesList);
     }
 
+    @Override
     public void setSalary(int salary) {
         this.salary = salary;
     }
@@ -353,12 +391,13 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
     /**
      *    Set the first element of the Transformation mapped normalHours.
      */
+    @Override
     public void setStartTime(Time startTime) {
         getNormalHours()[0] = startTime;
     }
 
     /**
-     * Print the first & last name
+     * Print the first &amp; last name
      */
     public String toString() {
         StringWriter writer = new StringWriter();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,21 +44,22 @@ import org.eclipse.persistence.testing.framework.TestCase;
 public class SwitchableOptimisticLockingPolicyTest extends TestCase {
 
     protected Exception tlException;
-    protected Class optimisticLockingPolicyClass;
-    protected Map<Class, OptimisticLockingPolicy> oldOptimisticLockingPolicies;
+    protected Class<?> optimisticLockingPolicyClass;
+    protected Map<Class<?>, OptimisticLockingPolicy> oldOptimisticLockingPolicies;
 
-    public SwitchableOptimisticLockingPolicyTest(Class optimisticLockingPolicyClass) {
+    public SwitchableOptimisticLockingPolicyTest(Class<?> optimisticLockingPolicyClass) {
         super();
         setName(getName() + " (" + Helper.getShortClassName(optimisticLockingPolicyClass) + ")");
         this.optimisticLockingPolicyClass = optimisticLockingPolicyClass;
         this.oldOptimisticLockingPolicies = new HashMap();
     }
 
+    @Override
     public void setup() {
-        Set<Class> keys = getOldOptimisticLockingPolicies().keySet();
-        Iterator<Class> iterator = new ArrayList(keys).iterator();
+        Set<Class<?>> keys = getOldOptimisticLockingPolicies().keySet();
+        Iterator<Class<?>> iterator = new ArrayList(keys).iterator();
         while (iterator.hasNext()) {
-            Class classToModify = iterator.next();
+            Class<?> classToModify = iterator.next();
 
             // Validate usage
             if (!AbstractVideogameObject.class.isAssignableFrom(classToModify)) {
@@ -102,6 +103,7 @@ public class SwitchableOptimisticLockingPolicyTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         if (this.tlException != null) {
@@ -109,12 +111,13 @@ public class SwitchableOptimisticLockingPolicyTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
-        Set<Class> keys = getOldOptimisticLockingPolicies().keySet();
+        Set<Class<?>> keys = getOldOptimisticLockingPolicies().keySet();
 
-        Iterator<Class> iterator = new ArrayList(keys).iterator();
+        Iterator<Class<?>> iterator = new ArrayList(keys).iterator();
         while (iterator.hasNext()) {
-            Class classToModify = iterator.next();
+            Class<?> classToModify = iterator.next();
             ClassDescriptor descriptor = getSession().getDescriptor(classToModify);
 
             // re-init old optimistic locking policy
@@ -134,23 +137,23 @@ public class SwitchableOptimisticLockingPolicyTest extends TestCase {
         this.oldOptimisticLockingPolicies.clear();
     }
 
-    public void addClassToModify(Class clazz) {
+    public void addClassToModify(Class<?> clazz) {
         getOldOptimisticLockingPolicies().put(clazz, null);
     }
 
-    public Class getOptimisticLockingPolicyClass() {
+    public Class<?> getOptimisticLockingPolicyClass() {
         return optimisticLockingPolicyClass;
     }
 
-    public void setOptimisticLockingPolicyClass(Class optimisticLockingPolicyClass) {
+    public void setOptimisticLockingPolicyClass(Class<?> optimisticLockingPolicyClass) {
         this.optimisticLockingPolicyClass = optimisticLockingPolicyClass;
     }
 
-    public Map<Class, OptimisticLockingPolicy> getOldOptimisticLockingPolicies() {
+    public Map<Class<?>, OptimisticLockingPolicy> getOldOptimisticLockingPolicies() {
         return oldOptimisticLockingPolicies;
     }
 
-    public void setOldOptimisticLockingPolicies(Map<Class, OptimisticLockingPolicy> oldOptimisticLockingPolicy) {
+    public void setOldOptimisticLockingPolicies(Map<Class<?>, OptimisticLockingPolicy> oldOptimisticLockingPolicy) {
         this.oldOptimisticLockingPolicies = oldOptimisticLockingPolicy;
     }
 

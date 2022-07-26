@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,8 +24,7 @@ import java.util.Vector;
 import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.queries.ResultSetMappingQuery;
-import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
@@ -33,11 +32,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
-import org.eclipse.persistence.queries.ColumnResult;
-import org.eclipse.persistence.queries.EntityResult;
-import org.eclipse.persistence.queries.FieldResult;
-import org.eclipse.persistence.queries.SQLResultSetMapping;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
@@ -52,6 +47,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp () {
         m_reset = true;
         super.setUp();
@@ -193,7 +189,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         query.addArgument("1");
         Vector params = new Vector();
         //4000 is a more reasonable budget given test data if results are expected
-        params.add(new Integer(4000));
+        params.add(4000);
         List results = (List)getServerSession().executeQuery(query, params);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));
@@ -212,7 +208,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         query.setShouldBindAllParameters(true);
         query.addArgument("1");
         Vector params = new Vector();
-        params.add(new Integer(4000));
+        params.add(4000);
         List results = (List)getServerSession().executeQuery(query, params);
         assertNotNull("No result returned", results);
         assertTrue("Empty list returned", (results.size()!=0));
@@ -253,7 +249,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         SQLCall call = new SQLCall("SELECT t0.PROJ_ID, t0.PROJ_TYPE, t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION FROM CMP3_PROJECT t0 WHERE t0.PROJ_ID = " + smallProject.getId() + " FOR UPDATE");
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
-        query.setLockMode(query.LOCK);
+        query.setLockMode(ObjectBuildingQuery.LOCK);
         beginTransaction(em);
         try{
             List results = (List)((JpaEntityManager)em.getDelegate()).getActiveSession().executeQuery(query);
@@ -302,6 +298,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
     }
 
 
+    @Override
     public void tearDown () {
         if (m_reset) {
             m_reset = false;

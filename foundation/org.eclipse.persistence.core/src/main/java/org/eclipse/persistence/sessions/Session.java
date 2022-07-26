@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -254,7 +254,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    Object executeQuery(String queryName, Class domainClass);
+    Object executeQuery(String queryName, Class<?> domainClass);
 
     /**
      * PUBLIC:
@@ -264,7 +264,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    Object executeQuery(String queryName, Class domainClass, Object arg1);
+    Object executeQuery(String queryName, Class<?> domainClass, Object arg1);
 
     /**
      * PUBLIC:
@@ -274,7 +274,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2);
+    Object executeQuery(String queryName, Class<?> domainClass, Object arg1, Object arg2);
 
     /**
      * PUBLIC:
@@ -284,7 +284,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2, Object arg3);
+    Object executeQuery(String queryName, Class<?> domainClass, Object arg1, Object arg2, Object arg3);
 
     /**
      * PUBLIC:
@@ -294,7 +294,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    Object executeQuery(String queryName, Class domainClass, List argumentValues);
+    Object executeQuery(String queryName, Class<?> domainClass, List argumentValues);
 
     /**
      * PUBLIC:
@@ -393,7 +393,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * by one of the classes stored in the map, that descriptor will be stored under the
      * new class.
      */
-    ClassDescriptor getClassDescriptor(Class theClass);
+    ClassDescriptor getClassDescriptor(Class<?> theClass);
 
     /**
      * ADVANCED:
@@ -433,7 +433,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * by one of the classes stored in the map, that descriptor will be stored under the
      * new class.
      */
-    @Override ClassDescriptor getDescriptor(Class theClass);
+    @Override ClassDescriptor getDescriptor(Class<?> theClass);
 
     /**
      * ADVANCED:
@@ -452,7 +452,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * ADVANCED:
      * Return all registered descriptors.
      */
-    @Override Map<Class, ClassDescriptor> getDescriptors();
+    @Override Map<Class<?>, ClassDescriptor> getDescriptors();
 
     /**
      * ADVANCED:
@@ -548,7 +548,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * ADVANCED:
      * Return the sequence number from the database.
      */
-    Number getNextSequenceNumberValue(Class domainClass);
+    Number getNextSequenceNumberValue(Class<?> domainClass);
 
     /**
      * PUBLIC:
@@ -626,7 +626,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * ADVANCED:
      * Return true if a descriptor exists for the given class.
      */
-    boolean hasDescriptor(Class theClass);
+    boolean hasDescriptor(Class<?> theClass);
 
     /**
      * PUBLIC:
@@ -730,7 +730,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @see ReadAllQuery
      * @see #readAllObjects(Class, Expression)
      */
-    Vector readAllObjects(Class domainClass) throws DatabaseException;
+    Vector readAllObjects(Class<?> domainClass) throws DatabaseException;
 
 
     /**
@@ -742,7 +742,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @see SQLCall
      * @see JPQLCall
      */
-    Vector readAllObjects(Class domainClass, Call aCall) throws DatabaseException;
+    Vector readAllObjects(Class<?> domainClass, Call aCall) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -751,7 +751,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see ReadAllQuery
      */
-    Vector readAllObjects(Class domainClass, Expression selectionCriteria) throws DatabaseException;
+    Vector readAllObjects(Class<?> domainClass, Expression selectionCriteria) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -767,7 +767,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @see ReadObjectQuery
      * @see #readAllObjects(Class, Expression)
      */
-    Object readObject(Class domainClass) throws DatabaseException;
+    Object readObject(Class<?> domainClass) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -778,7 +778,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @see SQLCall
      * @see JPQLCall
      */
-    Object readObject(Class domainClass, Call aCall) throws DatabaseException;
+    Object readObject(Class<?> domainClass, Call aCall) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -787,7 +787,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see ReadObjectQuery
      */
-    Object readObject(Class domainClass, Expression selectionCriteria) throws DatabaseException;
+    Object readObject(Class<?> domainClass, Expression selectionCriteria) throws DatabaseException;
 
     /**
      * PUBLIC:

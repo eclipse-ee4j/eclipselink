@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,7 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
      */
     public void testExternalConstraints() throws Exception {
         JAXBMarshaller marshaller = (JAXBMarshaller) JAXBContextFactory.createContext(new
-                Class[]{ExternallyConstrainedEmployee.class, ExternallyConstrainedEmployee2.class},
+                Class<?>[]{ExternallyConstrainedEmployee.class, ExternallyConstrainedEmployee2.class},
                 null).createMarshaller();
         ExternallyConstrainedEmployee employee = new ExternallyConstrainedEmployee().withId(null).withAge(15);
         ExternallyConstrainedEmployee2 employee2 = new ExternallyConstrainedEmployee2().withId(null).withAge(15);
@@ -134,27 +134,14 @@ public class ValidationXMLTestCase extends junit.framework.TestCase {
         assertTrue(i == 0b1001);
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         classLoader = new ValidationClassLoader(currentThread.getContextClassLoader());
         currentThread.setContextClassLoader(classLoader);
-        resetBeanValidation();
     }
 
-    private void resetBeanValidation() throws Exception {
-        Field beanValidationHelper = JAXBContext.class.getDeclaredField("beanValidationHelper");
-        Field beanValidationPresent = JAXBContext.class.getDeclaredField("beanValidationPresent");
-
-        beanValidationHelper.setAccessible(true);
-        beanValidationPresent.setAccessible(true);
-
-        beanValidationHelper.set(JAXBContext.class, null);
-        beanValidationPresent.set(JAXBContext.class, null);
-
-        beanValidationHelper.setAccessible(false);
-        beanValidationPresent.setAccessible(false);
-    }
-
+    @Override
     @After
     public void tearDown() throws Exception {
         currentThread.setContextClassLoader(classLoader.getParent());

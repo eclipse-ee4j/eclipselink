@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class RepeatedUnmarshalTestCases extends OXTestCase{
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         controlObject = new TestObject();
@@ -46,7 +47,7 @@ public class RepeatedUnmarshalTestCases extends OXTestCase{
         String controlString ="This is testing that if an unmarshal operation fails the unmarshaller will be left in a clean state so it can be reused to unmarshal subsequent documents";
         controlObject.bytes = controlString.getBytes();
 
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = TestObject.class;
         jaxbContext = JAXBContextFactory.createContext(classes, null, Thread.currentThread().getContextClassLoader());
     }

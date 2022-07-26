@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 import static org.junit.Assert.*;
 
 /**
- * This unit-test tests {@link AbstractJPQLQueryHelper} when the queries are on entities managed by
+ * This unit-test tests {@link org.eclipse.persistence.jpa.jpql.tools.AbstractJPQLQueryHelper} when the queries are on entities managed by
  * a persistence unit.
  *
  * @version 2.5
@@ -38,9 +38,6 @@ public final class DefaultJPQLQueryHelperTest extends AbstractJPQLQueryHelperTes
         return entity;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected IQuery namedQuery(String entityName, String queryName) throws Exception {
         IEntity entity = entity(entityName);

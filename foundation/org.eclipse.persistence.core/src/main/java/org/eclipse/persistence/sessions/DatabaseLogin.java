@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -124,7 +124,6 @@ public class DatabaseLogin extends DatasourceLogin {
      * ADVANCED:
      * Add a StructConverter
      * @see org.eclipse.persistence.platform.database.converters.StructConverter
-     * @param converter
      */
     public void addStructConverter(StructConverter converter){
         getPlatform().addStructConverter(converter);
@@ -819,10 +818,10 @@ public class DatabaseLogin extends DatasourceLogin {
      * PUBLIC:
      * The default value to substitute for database NULLs can be configured
      * on a per-class basis.
-     * Example: login.setDefaultNullValue(long.class, new Long(0))
+     * Example: login.setDefaultNullValue(long.class, Long.valueOf(0))
      */
     @Override
-    public void setDefaultNullValue(Class type, Object value) {
+    public void setDefaultNullValue(Class<?> type, Object value) {
         getPlatform().getConversionManager().setDefaultNullValue(type, value);
     }
 
@@ -831,7 +830,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * The driver class is the Java class for the JDBC driver to be used
      * (e.g. sun.jdbc.odbc.JdbcOdbcDriver.class).
      */
-    public void setDriverClass(Class driverClass) {
+    public void setDriverClass(Class<?> driverClass) {
         setDriverClassName(driverClass.getName());
     }
 
@@ -1004,9 +1003,9 @@ public class DatabaseLogin extends DatasourceLogin {
      * the JDBC driver supports batch writing. EclipseLink's internal batch writing is disabled.<p>
      * Calling this method with an argument of false indicates to EclipseLink that the
      * JDBC driver does not support batch writing. This will revert to the default
-     * behavior which is to delegate to EclipseLink's internal batch writing.
+     * behavior which is to delegate to EclipseLink's internal batch writing.</p>
      * @param usesJDBCBatchWriting boolean true delegates batch writing to the
-     * JDBC driver and false delegates batch writing to EclipseLink.</p>
+     * JDBC driver and false delegates batch writing to EclipseLink.
      */
     public void setUsesJDBCBatchWriting(boolean usesJDBCBatchWriting) {
         getPlatform().setUsesJDBCBatchWriting(usesJDBCBatchWriting);

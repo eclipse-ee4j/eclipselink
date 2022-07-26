@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -34,6 +34,7 @@ import java.util.Map;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.TransformerException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
@@ -98,11 +99,11 @@ public class JavaSECMPInitializer extends JPAInitializer {
                     if(!isInitialized) {
                         initializeTopLinkLoggingFile();
                         if(fromAgent) {
-                            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_initialize_from_agent", (Object[])null);
+                            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_initialize_from_agent", null);
                         }
                         usesAgent = true;
                         initializer = new JavaSECMPInitializer(classLoader);
-                        initializer.initialize(m != null ? m : new HashMap(0));
+                        initializer.initialize(m != null ? m : new HashMap<>(0));
                         // all the transformers have been added to instrumentation, don't need it any more.
                         globalInstrumentation = null;
                     }
@@ -179,9 +180,9 @@ public class JavaSECMPInitializer extends JPAInitializer {
         ClassLoader tempLoader = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                Class[] argsClasses = new Class[] { URL[].class, ClassLoader.class, Collection.class, boolean.class };
+                Class<?>[] argsClasses = new Class<?>[] { URL[].class, ClassLoader.class, Collection.class, boolean.class };
                 Object[] args = new Object[] { urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers };
-                Constructor classLoaderConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(TempEntityLoader.class, argsClasses, true));
+                Constructor<TempEntityLoader> classLoaderConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(TempEntityLoader.class, argsClasses, true));
                 tempLoader = (ClassLoader) AccessController.doPrivileged(new PrivilegedInvokeConstructor(classLoaderConstructor, args));
             } catch (PrivilegedActionException privilegedException) {
                 throw new PersistenceException(EntityManagerSetupException.failedToInstantiateTemporaryClassLoader(privilegedException));
@@ -191,7 +192,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
         }
 
         AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_tempLoader_created", tempLoader);
-        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_shouldOverrideLoadClassForCollectionMembers", Boolean.valueOf(shouldOverrideLoadClassForCollectionMembers));
+        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_shouldOverrideLoadClassForCollectionMembers", shouldOverrideLoadClassForCollectionMembers);
 
         return tempLoader;
     }
@@ -236,14 +237,12 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * The version of initializeFromMain that passes an empty map.
      */
     public static void initializeFromMain() {
-        initializeFromMain(new HashMap());
+        initializeFromMain(new HashMap<>());
     }
 
     /**
      * Register a transformer.  In this case, we use the instrumentation to add a transformer for the
      * JavaSE environment
-     * @param transformer
-     * @param persistenceUnitInfo
      */
     @Override
     public void registerTransformer(final ClassTransformer transformer, PersistenceUnitInfo persistenceUnitInfo, Map properties){
@@ -257,7 +256,11 @@ public class JavaSECMPInitializer extends JPAInitializer {
                         Class<?> classBeingRedefined,
                         ProtectionDomain protectionDomain,
                         byte[] classfileBuffer) throws IllegalClassFormatException {
-                    return transformer.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+                    try {
+                        return transformer.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+                    } catch (TransformerException e) {
+                        throw new IllegalClassFormatException(e.getMessage());
+                    }
                 }
             });
         } else if (transformer == null) {
@@ -349,14 +352,14 @@ public class JavaSECMPInitializer extends JPAInitializer {
         }
 
         @Override
-        protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
             if (shouldOverrideLoadClass(name)) {
                 // First, check if the class has already been loaded.
                 // Note that the check only for classes loaded by this loader,
                 // it doesn't return true if the class has been loaded by parent loader
                 // (forced to live with that because findLoadedClass method defined as final protected:
                 //  neither can override it nor call it on the parent loader)
-                Class c = findLoadedClass(name);
+                Class<?> c = findLoadedClass(name);
                 if (c == null) {
                     c = findClass(name);
                 }

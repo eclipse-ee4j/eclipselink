@@ -29,20 +29,11 @@
             <includes>
                 <include>org/eclipse/persistence/testing/models/jpa/advanced/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/cacheable/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/cascadedeletes/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/complexaggregate/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/customer/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/datatypes/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/datetime/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/inheritance/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/inherited/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/lob/**</include>
-                <include>org/eclipse/persistence/testing/models/nativeapitest/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/orphanremoval/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/privateowned/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/relationships/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/sessionbean/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/virtualattribute/**</include>
             </includes>
         </fileSet>
     </fileSets>

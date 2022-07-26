@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 /**
- * Bug 214910:  Add query timeout support to batched update queries (Oracle DB 9.0.1+)</p>
+ * Bug 214910:  Add query timeout support to batched update queries (Oracle DB 9.0.1+)<br>
  * Test the query timeout feature in batch queries.
  * For data queries , a queryTimeout on the largest DatabaseQuery of the batch will be used.
  * For object queries, a queryTimeout on the largest DescriptorQueryManager (parent) or DatabaseQuery
@@ -33,9 +33,12 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  */
 public abstract class QueryTimeoutBatchDescriptorQueryManagerTest extends QueryTimeoutBatchTestCase {
 
+    @Override
     protected  int getParentQueryTimeout() { return 2; }
+    @Override
     protected  int getChildQueryTimeout() { return -1; }
 
+    @Override
     protected String getQuerySQLPostfix() {
         return ", SUM(e.address_id) as version from address e, address b, address b, address c, address c, address c, address b";
     }
@@ -44,6 +47,7 @@ public abstract class QueryTimeoutBatchDescriptorQueryManagerTest extends QueryT
      * Test that the queryTimeout passed by the client to the QueryManager is
      * picked up by the BatchWritingMechanism and set on the Statement.
      */
+    @Override
     public void test() {
         UnitOfWork uow = null;
         try {
@@ -73,8 +77,8 @@ public abstract class QueryTimeoutBatchDescriptorQueryManagerTest extends QueryT
 
        /**
         * Iterate and register a number of objects in the unitOfWork
-        * @param uow
         */
+       @Override
        protected List<Employee>  registerObjects(UnitOfWork uow) {
            List<Employee> objectListForEditing = new ArrayList<Employee>();
            Address address = null;
@@ -126,6 +130,7 @@ public abstract class QueryTimeoutBatchDescriptorQueryManagerTest extends QueryT
      * This is a callback from the object loop in registerObjects that allows the test
      * to set a timeout globally on the DescriptorQueryManager
      */
+    @Override
     public void setDescriptorLevelQueryTimeout(DescriptorQueryManager queryManager) {
         // Set timeout globally on the root object using the last call appended
         queryManager.setQueryTimeout(getParentQueryTimeout());
@@ -135,6 +140,7 @@ public abstract class QueryTimeoutBatchDescriptorQueryManagerTest extends QueryT
      * This is a callback from the object loop in registerObjects that allows the test
      * to set a timeout on individual queries
      */
+    @Override
     public void setQueryLevelQueryTimeout(UnitOfWork uow, Object object) {
     }
 }

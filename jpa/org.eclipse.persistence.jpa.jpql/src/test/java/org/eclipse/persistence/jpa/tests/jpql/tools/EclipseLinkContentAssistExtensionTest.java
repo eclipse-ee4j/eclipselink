@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,21 +37,21 @@ import static org.junit.Assert.*;
 public final class EclipseLinkContentAssistExtensionTest extends AbstractContentAssistExtensionTest {
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ContentAssistExtension buildContentAssistExtension() {
         return new ContentAssistExtension() {
+            @Override
             public Iterable<String> classNames(String prefix, ClassType type) {
                 if (type == ClassType.INSTANTIABLE) {
                     return filter(EclipseLinkContentAssistExtensionTest.this.classNames(), prefix);
                 }
                 return filter(EclipseLinkContentAssistExtensionTest.this.enumTypes(), prefix);
             }
+            @Override
             public Iterable<String> columnNames(String tableName, String prefix) {
                 return filter(EclipseLinkContentAssistExtensionTest.this.columnNames(tableName), prefix);
             }
+            @Override
             public Iterable<String> tableNames(String prefix) {
                 return filter(EclipseLinkContentAssistExtensionTest.this.tableNames(), prefix);
             }
@@ -63,7 +63,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
                                  String proposal,
                                  String expectedJpqlQuery,
                                  int expectedPosition,
-                                 boolean insert) throws Exception {
+                                 boolean insert) {
 
         ContentAssistProposals proposals = buildContentAssistProposals(jpqlQuery, position);
         ResultQuery result = proposals.buildQuery(jpqlQuery, proposal, position, insert);
@@ -306,7 +306,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_classNames_001() throws Exception {
+    public void test_classNames_001() {
 
         String jpqlQuery = "SELECT e FROM Employee e, ";
         int position = jpqlQuery.length();
@@ -314,7 +314,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_classNames_002() throws Exception {
+    public void test_classNames_002() {
 
         String jpqlQuery = "SELECT e FROM Employee e, jpql.query.Employee emp";
         int position = "SELECT e FROM Employee e, jpql.query.Employee".length();
@@ -322,7 +322,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_classNames_003() throws Exception {
+    public void test_classNames_003() {
 
         String jpqlQuery = "SELECT e FROM Employee e, jpql.query.";
         int position = jpqlQuery.length();
@@ -330,7 +330,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_classNames_004() throws Exception {
+    public void test_classNames_004() {
 
         String jpqlQuery = "SELECT e FROM Employee e, jpql.query.Employee emp";
         int position = "SELECT e FROM Employee e, jpql.query.".length();
@@ -343,7 +343,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
         String jpqlQuery = "SELECT e FROM Employee e, jpql.query.Employee emp";
         int position = "SELECT e FROM Employee e, ".length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add(IN);
         CollectionTools.addAll(proposals, entityNames());
         CollectionTools.addAll(proposals, classNames());
@@ -352,7 +352,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_columnNames_01() throws Exception {
+    public void test_columnNames_01() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP WHERE EMP.";
         int position = jpqlQuery.length();
@@ -360,7 +360,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_columnNames_02() throws Exception {
+    public void test_columnNames_02() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP WHERE EMP.F";
         int position = jpqlQuery.length();
@@ -368,7 +368,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_columnNames_03() throws Exception {
+    public void test_columnNames_03() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP WHERE EMP.FIRST_NAME";
         int position = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP WHERE EMP.".length();
@@ -376,7 +376,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_columnNames_04() throws Exception {
+    public void test_columnNames_04() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP WHERE EMP.FIRST_NAME";
         int position = jpqlQuery.length();
@@ -384,7 +384,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_columnNames_05() throws Exception {
+    public void test_columnNames_05() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP WHERE EMP.A";
         int position = jpqlQuery.length();
@@ -392,7 +392,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_columnNames_06() throws Exception {
+    public void test_columnNames_06() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP WHERE e.";
         int position = jpqlQuery.length();
@@ -400,7 +400,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_columnNames_07() throws Exception {
+    public void test_columnNames_07() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP, TABLE('ADDRESS') a WHERE e.name = EMP.LAST_NAME and a.A = 100";
         int position = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP, TABLE('ADDRESS') a WHERE e.name = EMP.LAST_NAME and a.".length();
@@ -408,7 +408,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_columnNames_08() throws Exception {
+    public void test_columnNames_08() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP, TABLE('ADDRESS') a WHERE e.name = EMP.LAST_NAME and a.A = 100";
         int position = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP, TABLE('ADDRESS') a WHERE e.name = EMP.LAST_NAME and a.A".length();
@@ -416,7 +416,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_01() throws Exception {
+    public void test_tableNames_01() {
 
         String jpqlQuery = "SELECT e FROM Employee e, ";
         int position = jpqlQuery.length();
@@ -424,7 +424,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_02() throws Exception {
+    public void test_tableNames_02() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE(";
         int position = jpqlQuery.length();
@@ -432,7 +432,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_03() throws Exception {
+    public void test_tableNames_03() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('";
         int position = jpqlQuery.length();
@@ -440,7 +440,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_04() throws Exception {
+    public void test_tableNames_04() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('')";
         int position = "SELECT e FROM Employee e, TABLE(".length();
@@ -448,7 +448,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_05() throws Exception {
+    public void test_tableNames_05() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('')";
         int position = "SELECT e FROM Employee e, TABLE('".length();
@@ -456,7 +456,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_06() throws Exception {
+    public void test_tableNames_06() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE')";
         int position = "SELECT e FROM Employee e, TABLE(".length();
@@ -464,7 +464,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_07() throws Exception {
+    public void test_tableNames_07() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE')";
         int position = "SELECT e FROM Employee e, TABLE('".length();
@@ -472,7 +472,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_08() throws Exception {
+    public void test_tableNames_08() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('E')";
         int position = "SELECT e FROM Employee e, TABLE('E".length();
@@ -480,7 +480,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_09() throws Exception {
+    public void test_tableNames_09() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE')";
         int position = "SELECT e FROM Employee e, TABLE('EMPLOYEE".length();
@@ -488,7 +488,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_10() throws Exception {
+    public void test_tableNames_10() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE')";
         int position = "SELECT e FROM Employee e, TABLE('EMPLOYEE'".length();
@@ -496,7 +496,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_11() throws Exception {
+    public void test_tableNames_11() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('E";
         int position = "SELECT e FROM Employee e, TABLE('E".length();
@@ -504,7 +504,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_12() throws Exception {
+    public void test_tableNames_12() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('E";
         int position = "SELECT e FROM Employee e, TABLE('".length();
@@ -512,7 +512,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_13() throws Exception {
+    public void test_tableNames_13() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('E";
         int position = "SELECT e FROM Employee e, TABLE(".length();
@@ -520,7 +520,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_14() throws Exception {
+    public void test_tableNames_14() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP";
         int position = "SELECT e FROM Employee e, TABLE('EMPLOYEE'".length();
@@ -528,7 +528,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_15() throws Exception {
+    public void test_tableNames_15() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE() EMP";
         int position = "SELECT e FROM Employee e, TABLE(".length();
@@ -536,7 +536,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_16() throws Exception {
+    public void test_tableNames_16() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE(EMPLOYEE) EMP";
         int position = "SELECT e FROM Employee e, TABLE(".length();
@@ -544,7 +544,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
     }
 
     @Test
-    public void test_tableNames_17() throws Exception {
+    public void test_tableNames_17() {
 
         String jpqlQuery = "SELECT e FROM Employee e, TABLE(EMPLOYEE) EMP";
         int position = "SELECT e FROM Employee e, TABLE(EMPLOYEE".length();

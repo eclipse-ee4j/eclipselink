@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,12 +34,13 @@ public class OpenJPAPerformanceRegressionModel extends JPAPerformanceRegressionM
     /**
      * Setup the JPA provider.
      */
+    @Override
     public void setupProvider() {
         // Configure provider to be OpenJPA.
         String providerClass = "org.apache.openjpa.persistence.PersistenceProviderImpl";
         PersistenceProvider provider = null;
         try {
-            provider = (PersistenceProvider)Class.forName(providerClass).newInstance();
+            provider = (PersistenceProvider)Class.forName(providerClass).getConstructor().newInstance();
         } catch (Exception error) {
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
@@ -56,6 +57,7 @@ public class OpenJPAPerformanceRegressionModel extends JPAPerformanceRegressionM
     }
 
     // Open JPA does not seem to support constraints correctly.
+    @Override
     public void setupDatabase(EntityManager manager) {
         super.setupDatabase(manager);
         new EmployeeTableCreator().dropConstraints(getDatabaseSession());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,55 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
+import java.beans.PropertyChangeEvent;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.*;
-import java.math.*;
-import java.net.URL;
 
-import javax.xml.datatype.Duration;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
-
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.indirection.IndirectContainer;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.indirection.IndirectSet;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.LogicalExpression;
+import org.eclipse.persistence.internal.expressions.RelationExpression;
+import org.eclipse.persistence.internal.identitymaps.CacheIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.FullIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.HardCacheWeakIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.NoIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.WeakIdentityMap;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
+import org.eclipse.persistence.queries.CursoredStream;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.eclipse.persistence.queries.ScrollableCursor;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.DirectConnector;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
@@ -33,122 +72,93 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * INTERNAL:
  */
-public class ClassConstants extends CoreClassConstants {
+@SuppressWarnings({"rawtypes"})
+public final class ClassConstants extends CoreClassConstants {
     // Java classes
-    public static final Class Hashtable_Class = Hashtable.class;
-    public static final Class Enumeration_Class = Enumeration.class;
-    public static final Class JavaSqlTime_Class = java.sql.Time.class;
-    public static final Class JavaSqlDate_Class = java.sql.Date.class;
-    public static final Class JavaSqlTimestamp_Class = java.sql.Timestamp.class;
-    public static final Class List_Class = List.class;
-    public static final Class Map_Entry_Class = Map.Entry.class;
-    public static final Class Object_Class = Object.class;
-    public static final Class SortedSet_Class = SortedSet.class;
-    public static final Class URL_Class = URL.class;
-    public static final Class Vector_class = Vector.class;
-    public static final Class HashSet_class = HashSet.class;
-    public static final Class Void_Class = void.class;
-    public static final Class PropertyChangeEvent_Class = java.beans.PropertyChangeEvent.class;
+
+    public static final Class<Hashtable> Hashtable_Class = Hashtable.class;
+    public static final Class<Enumeration> Enumeration_Class = Enumeration.class;
+    @Deprecated
+    public static final Class<Time> JavaSqlTime_Class = TIME;
+    @Deprecated
+    public static final Class<Date> JavaSqlDate_Class = SQLDATE;
+    @Deprecated
+    public static final Class<Timestamp> JavaSqlTimestamp_Class = TIMESTAMP;
+    public static final Class<Map.Entry> Map_Entry_Class = Map.Entry.class;
+    @Deprecated
+    public static final Class<Object> Object_Class = OBJECT;
+    public static final Class<SortedSet> SortedSet_Class = SortedSet.class;
+    public static final Class<Vector> Vector_class = Vector.class;
+    public static final Class<HashSet> HashSet_class = HashSet.class;
+    public static final Class<Void> Void_Class = void.class;
+    public static final Class<PropertyChangeEvent> PropertyChangeEvent_Class = PropertyChangeEvent.class;
 
     // Eclipselink Classes
-    public static final Class Accessor_Class = org.eclipse.persistence.internal.databaseaccess.Accessor.class;
-    public static final Class ConversionManager_Class = org.eclipse.persistence.internal.helper.ConversionManager.class;
-    public static final Class CursoredStream_Class = org.eclipse.persistence.queries.CursoredStream.class;
-    public static final Class DatabaseQuery_Class = org.eclipse.persistence.queries.DatabaseQuery.class;
-    public static final Class DatabaseRow_Class = org.eclipse.persistence.internal.sessions.AbstractRecord.class;
-    public static final Class OldDescriptorEvent_Class = org.eclipse.persistence.descriptors.DescriptorEvent.class;
-    public static final Class DescriptorEvent_Class = org.eclipse.persistence.descriptors.DescriptorEvent.class;
-    public static final Class DirectConnector_Class = org.eclipse.persistence.sessions.DirectConnector.class;
-    public static final Class Expression_Class = org.eclipse.persistence.expressions.Expression.class;
-    public static final Class FunctionExpression_Class = org.eclipse.persistence.internal.expressions.FunctionExpression.class;
-    public static final Class ArgumentListFunctionExpression_Class = org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression.class;
-    public static final Class IndirectContainer_Class = org.eclipse.persistence.indirection.IndirectContainer.class;
-    public static final Class IndirectList_Class = IndirectCollectionsFactory.IndirectList_Class;
-    public static final Class IndirectSet_Class = IndirectCollectionsFactory.IndirectSet_Class;
-    public static final Class IndirectMap_Class = IndirectCollectionsFactory.IndirectMap_Class;
-    public static final Class LogicalExpression_Class = org.eclipse.persistence.internal.expressions.LogicalExpression.class;
-    public static final Class PublicInterfaceDatabaseSession_Class = DatabaseSessionImpl.class;
-    public static final Class PerformanceProfiler_Class = org.eclipse.persistence.tools.profiler.PerformanceProfiler.class;
-    public static final Class PublicInterfaceSession_Class = AbstractSession.class;
-    public static final Class QueryKey_Class = org.eclipse.persistence.mappings.querykeys.QueryKey.class;
-    public static final Class RelationExpression_Class = org.eclipse.persistence.internal.expressions.RelationExpression.class;
-    public static final Class Record_Class = org.eclipse.persistence.sessions.Record.class;
-    public static final Class ServerSession_Class = org.eclipse.persistence.sessions.server.ServerSession.class;
-    public static final Class SessionsSession_Class = org.eclipse.persistence.sessions.Session.class;
-    public static final Class ScrollableCursor_Class = org.eclipse.persistence.queries.ScrollableCursor.class;
-    public static final Class ValueHolderInterface_Class = org.eclipse.persistence.indirection.ValueHolderInterface.class;
-    public static final Class CollectionChangeEvent_Class = org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent.class;
-    public static final Class MapChangeEvent_Class = org.eclipse.persistence.descriptors.changetracking.MapChangeEvent.class;
-    public static final Class ChangeTracker_Class = org.eclipse.persistence.descriptors.changetracking.ChangeTracker.class;
-    public static final Class WeavedAttributeValueHolderInterface_Class = org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface.class;
-    public static final Class PersistenceWeavedLazy_Class = org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy.class;
+    public static final Class<Accessor> Accessor_Class = Accessor.class;
+    public static final Class<ConversionManager> ConversionManager_Class = ConversionManager.class;
+    public static final Class<CursoredStream> CursoredStream_Class = CursoredStream.class;
+    public static final Class<DatabaseQuery> DatabaseQuery_Class = DatabaseQuery.class;
+    public static final Class<AbstractRecord> DatabaseRow_Class = AbstractRecord.class;
+    public static final Class<DescriptorEvent> OldDescriptorEvent_Class = DescriptorEvent.class;
+    public static final Class<DescriptorEvent> DescriptorEvent_Class = DescriptorEvent.class;
+    public static final Class<DirectConnector> DirectConnector_Class = DirectConnector.class;
+    public static final Class<Expression> Expression_Class = Expression.class;
+    public static final Class<FunctionExpression> FunctionExpression_Class = FunctionExpression.class;
+    public static final Class<ArgumentListFunctionExpression> ArgumentListFunctionExpression_Class = ArgumentListFunctionExpression.class;
+    public static final Class<IndirectContainer> IndirectContainer_Class = IndirectContainer.class;
+    public static final Class<IndirectList> IndirectList_Class = (Class<IndirectList>) IndirectCollectionsFactory.IndirectList_Class;
+    public static final Class<IndirectSet> IndirectSet_Class = (Class<IndirectSet>) IndirectCollectionsFactory.IndirectSet_Class;
+    public static final Class<IndirectMap> IndirectMap_Class = (Class<IndirectMap>) IndirectCollectionsFactory.IndirectMap_Class;
+    public static final Class<LogicalExpression> LogicalExpression_Class = LogicalExpression.class;
+    public static final Class<DatabaseSessionImpl> PublicInterfaceDatabaseSession_Class = DatabaseSessionImpl.class;
+    public static final Class<PerformanceProfiler> PerformanceProfiler_Class = PerformanceProfiler.class;
+    public static final Class<AbstractSession> PublicInterfaceSession_Class = AbstractSession.class;
+    public static final Class<QueryKey> QueryKey_Class = QueryKey.class;
+    public static final Class<RelationExpression> RelationExpression_Class = RelationExpression.class;
+    public static final Class<DataRecord> Record_Class = DataRecord.class;
+    public static final Class<ServerSession> ServerSession_Class = ServerSession.class;
+    public static final Class<Session> SessionsSession_Class = Session.class;
+    public static final Class<ScrollableCursor> ScrollableCursor_Class = ScrollableCursor.class;
+    public static final Class<ValueHolderInterface> ValueHolderInterface_Class = ValueHolderInterface.class;
+    public static final Class<CollectionChangeEvent> CollectionChangeEvent_Class = CollectionChangeEvent.class;
+    public static final Class<MapChangeEvent> MapChangeEvent_Class = MapChangeEvent.class;
+    public static final Class<ChangeTracker> ChangeTracker_Class = ChangeTracker.class;
+    public static final Class<WeavedAttributeValueHolderInterface> WeavedAttributeValueHolderInterface_Class = WeavedAttributeValueHolderInterface.class;
+    public static final Class<PersistenceWeavedLazy> PersistenceWeavedLazy_Class = PersistenceWeavedLazy.class;
 
     // Identity map classes
-    public static final Class CacheIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.CacheIdentityMap.class;
-    public static final Class FullIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.FullIdentityMap.class;
-    public static final Class HardCacheWeakIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.HardCacheWeakIdentityMap.class;
-    public static final Class NoIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.NoIdentityMap.class;
-    public static final Class SoftCacheWeakIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap.class;
-    public static final Class SoftIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.SoftIdentityMap.class;
-    public static final Class WeakIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.WeakIdentityMap.class;
+    public static final Class<CacheIdentityMap> CacheIdentityMap_Class = CacheIdentityMap.class;
+    public static final Class<FullIdentityMap> FullIdentityMap_Class = FullIdentityMap.class;
+    public static final Class<HardCacheWeakIdentityMap> HardCacheWeakIdentityMap_Class = HardCacheWeakIdentityMap.class;
+    public static final Class<NoIdentityMap> NoIdentityMap_Class = NoIdentityMap.class;
+    public static final Class<SoftCacheWeakIdentityMap> SoftCacheWeakIdentityMap_Class = SoftCacheWeakIdentityMap.class;
+    public static final Class<SoftIdentityMap> SoftIdentityMap_Class = SoftIdentityMap.class;
+    public static final Class<WeakIdentityMap> WeakIdentityMap_Class = WeakIdentityMap.class;
 
     //fetch group class
-    public static final Class FetchGroupTracker_class = org.eclipse.persistence.queries.FetchGroupTracker.class;
+    public static final Class<FetchGroupTracker> FetchGroupTracker_class = FetchGroupTracker.class;
 
     // Moved from ConversionManager
-    public static final Class ABYTE = Byte[].class;
-    public static final Class AOBJECT = Object[].class;
-    public static final Class ACHAR = Character[].class;
-    public static final Class APBYTE = byte[].class;
-    public static final Class APCHAR = char[].class;
-    public static final Class BIGDECIMAL = BigDecimal.class;
-    public static final Class BIGINTEGER = BigInteger.class;
-    public static final Class BOOLEAN = Boolean.class;
-    public static final Class BYTE = Byte.class;
-    public static final Class CLASS = Class.class;
-    public static final Class CHAR = Character.class;
-    public static final Class CALENDAR = Calendar.class;
-    public static final Class DOUBLE = Double.class;
-    public static final Class FLOAT = Float.class;
-    public static final Class GREGORIAN_CALENDAR = GregorianCalendar.class;
-    public static final Class INTEGER = Integer.class;
-    public static final Class LONG = Long.class;
-    public static final Class NUMBER = Number.class;
-    public static final Class OBJECT = Object.class;
-    public static final Class PBOOLEAN = boolean.class;
-    public static final Class PBYTE = byte.class;
-    public static final Class PCHAR = char.class;
-    public static final Class PDOUBLE = double.class;
-    public static final Class PFLOAT = float.class;
-    public static final Class PINT = int.class;
-    public static final Class PLONG = long.class;
-    public static final Class PSHORT = short.class;
-    public static final Class SHORT = Short.class;
-    public static final Class SQLDATE = java.sql.Date.class;
-    public static final Class STRING = String.class;
-    public static final Class TIME = java.sql.Time.class;
-    public static final Class TIMESTAMP = java.sql.Timestamp.class;
-    public static final Class UTILDATE = java.util.Date.class;
-    public static final Class TIME_LDATE = java.time.LocalDate.class;
-    public static final Class TIME_LTIME = java.time.LocalTime.class;
-    public static final Class TIME_LDATETIME = java.time.LocalDateTime.class;
-    public static final Class TIME_ODATETIME = java.time.OffsetDateTime.class;
-    public static final Class TIME_OTIME = java.time.OffsetTime.class;
-    public static final Class QNAME = QName.class;
-    public static final Class XML_GREGORIAN_CALENDAR = XMLGregorianCalendar.class;
-    public static final Class DURATION = Duration.class;
+    public static final Class<?> AOBJECT = Object[].class;
+    public static final Class<?> ACHAR = Character[].class;
+    public static final Class<LocalDate> TIME_LDATE = LocalDate.class;
+    public static final Class<LocalTime> TIME_LTIME = LocalTime.class;
+    public static final Class<LocalDateTime> TIME_LDATETIME = LocalDateTime.class;
+    public static final Class<OffsetDateTime> TIME_ODATETIME = OffsetDateTime.class;
+    public static final Class<OffsetTime> TIME_OTIME = OffsetTime.class;
 
     //LOB support types
-    public static final Class BLOB = java.sql.Blob.class;
-    public static final Class CLOB = java.sql.Clob.class;
+    public static final Class<Blob> BLOB = Blob.class;
+    public static final Class<Clob> CLOB = Clob.class;
 
     //Indication to ConversionManager not to convert classes implementing this interface
-    public static final Class NOCONVERSION = NoConversion.class;
+    public static final Class<NoConversion> NOCONVERSION = NoConversion.class;
 
     //XML Classes
-    public static final Class DOCUMENT = Document.class;
-    public static final Class NODE = Node.class;
+    public static final Class<Document> DOCUMENT = Document.class;
 
-    public ClassConstants() {
+
+    private ClassConstants() {
+        //no instance please
     }
 }

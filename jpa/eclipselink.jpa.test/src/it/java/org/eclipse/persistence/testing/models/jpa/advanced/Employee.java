@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -95,7 +95,7 @@ import org.eclipse.persistence.annotations.WriteTransformers;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -312,10 +312,10 @@ public class Employee implements Serializable, Cloneable {
     private String m_lastName;
     private String m_firstName;
 
-    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME & END_TIME),
+    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME &amp; END_TIME),
     this is stored into two different fields in the employee table. */
     private Time[] normalHours;
-    /** Transformation mapping, a two(2) element array holding the employee's overtime hours (OVERTIME_START_TIME & OVERTIME_END_TIME),
+    /** Transformation mapping, a two(2) element array holding the employee's overtime hours (OVERTIME_START_TIME &amp; OVERTIME_END_TIME),
     this is stored into two different fields in the employee table. */
     private Time[] overtimeHours;
 
@@ -391,12 +391,12 @@ public class Employee implements Serializable, Cloneable {
      * IMPORTANT: This method builds the value but does not set it.
      * The mapping will set it using method or direct access as defined in the descriptor.
      */
-    public Time[] buildNormalHours(Record row, Session session) {
+    public Time[] buildNormalHours(DataRecord row, Session session) {
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
-        hours[0] = (Time) session.getDatasourcePlatform().convertObject(row.get("START_TIME"), java.sql.Time.class);
-        hours[1] = (Time) session.getDatasourcePlatform().convertObject(row.get("END_TIME"), java.sql.Time.class);
+        hours[0] = session.getDatasourcePlatform().convertObject(row.get("START_TIME"), Time.class);
+        hours[1] = session.getDatasourcePlatform().convertObject(row.get("END_TIME"), Time.class);
         return hours;
     }
 

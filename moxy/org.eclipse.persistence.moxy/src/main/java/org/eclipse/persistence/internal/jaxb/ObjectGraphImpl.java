@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
         this.attributeNodes = new HashMap<String, AttributeNode>();
     }
     @Override
-    public Class getClassType() {
+    public Class<?> getClassType() {
         return attributeGroup.getType();
     }
 
@@ -65,7 +65,7 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
     }
 
     @Override
-    public Subgraph addSubgraph(String attribute, Class type) {
+    public Subgraph addSubgraph(String attribute, Class<?> type) {
         CoreAttributeGroup group = new CoreAttributeGroup(null, type, true);
         if(attributeGroup.getItem(attribute) == null) {
             AttributeNodeImpl impl = new AttributeNodeImpl(attribute);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,8 +33,8 @@ import java.util.Map;
 public class JsonUnmappedTestCases extends TestCase {
 
     public void testLastNull() throws JAXBException, FileNotFoundException {
-        Map<String, String> jaxbProperties = Collections.singletonMap(JAXBContextProperties.MEDIA_TYPE, "application/json");
-        JAXBContext jc = JAXBContextFactory.createContext(new Class[]{Foo.class}, jaxbProperties);
+        Map<String, Object> jaxbProperties = Collections.singletonMap(JAXBContextProperties.MEDIA_TYPE, "application/json");
+        JAXBContext jc = JAXBContextFactory.createContext(new Class<?>[]{Foo.class}, jaxbProperties);
         Unmarshaller um = jc.createUnmarshaller();
 
         String file = "org/eclipse/persistence/testing/jaxb/json/unmapped/unmapped.json";

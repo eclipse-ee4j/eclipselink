@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public class CollectionHolderPopulatedSingleItemReducedTestCases extends JAXBWit
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = CollectionHolderInitialized.class;
         setClasses(classes);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
@@ -87,6 +87,7 @@ public class CollectionHolderPopulatedSingleItemReducedTestCases extends JAXBWit
         return ch;
     }
 
+    @Override
     public Object getReadControlObject() {
         CollectionHolderInitialized ch  = new CollectionHolderInitialized();
         ch.getCollection1().add(10);
@@ -135,6 +136,7 @@ public class CollectionHolderPopulatedSingleItemReducedTestCases extends JAXBWit
         return ch;
     }
 
+    @Override
     protected Object getJSONReadControlObject() {
         CollectionHolderInitialized obj = (CollectionHolderInitialized)getControlObject();
         obj.collection5.get(0).collection10.put(new QName("type"), "collectionHolderInitialized");
@@ -151,11 +153,13 @@ public class CollectionHolderPopulatedSingleItemReducedTestCases extends JAXBWit
         return obj;
     }
 
+    @Override
     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
         return false;
     }
 
     //not applicable
+    @Override
     public void testRoundTrip(){
 
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sequencing.DefaultSequence;
@@ -313,9 +314,8 @@ public class SchemaManager {
      * @param createSequences - true if the sequence definition should be created,
      *        false if it should be dropped.
      * @param replace - true if table definitions and sequence definitions should be replaced.
-     * @throws EclipseLinkException
      */
-    protected void processSequenceDefinition(SequenceDefinition definition, final boolean createTables, final boolean createSequences, final boolean replace, HashSet<String> createdTableNames, HashSet<String> droppedTableNames) throws EclipseLinkException {
+    protected void processSequenceDefinition(SequenceDefinition definition, final boolean createTables, final boolean createSequences, final boolean replace, Set<String> createdTableNames, Set<String> droppedTableNames) throws EclipseLinkException {
         try {
             // Handle the table definitions first.
             if (definition.isTableSequenceDefinition()) {
@@ -404,14 +404,14 @@ public class SchemaManager {
         // Not required on Sybase native etc.
         if (sequencing != null && sequencing.whenShouldAcquireValueForAll() != Sequencing.AFTER_INSERT) {
             // Build the sequence definitions.
-            HashSet<SequenceDefinition> sequenceDefinitions = buildSequenceDefinitions();
+            Set<SequenceDefinition> sequenceDefinitions = buildSequenceDefinitions();
 
             // Now process the sequence definitions.
             // CR 3870467, do not log stack
             boolean shouldLogExceptionStackTrace = session.getSessionLog().shouldLogExceptionStackTrace();
             session.getSessionLog().setShouldLogExceptionStackTrace(false);
-            HashSet<String> createdSequenceTableNames = new HashSet();
-            HashSet<String> droppedSequenceTableNames = new HashSet();
+            Set<String> createdSequenceTableNames = new HashSet<>();
+            Set<String> droppedSequenceTableNames = new HashSet<>();
 
             for (SequenceDefinition sequenceDefinition : sequenceDefinitions) {
                 processSequenceDefinition(sequenceDefinition, createSequenceTables, createSequences, replaceSequences, createdSequenceTableNames, droppedSequenceTableNames);
@@ -426,10 +426,10 @@ public class SchemaManager {
      * INTERNAL:
      * Build the sequence definitions.
      */
-    protected HashSet<SequenceDefinition> buildSequenceDefinitions() {
+    protected Set<SequenceDefinition> buildSequenceDefinitions() {
         // Remember the processed - to handle each sequence just once.
-        HashSet processedSequenceNames = new HashSet();
-        HashSet<SequenceDefinition> sequenceDefinitions = new HashSet<>();
+        Set<String> processedSequenceNames = new HashSet<>();
+        Set<SequenceDefinition> sequenceDefinitions = new HashSet<>();
 
         for (ClassDescriptor descriptor : getSession().getDescriptors().values()) {
             if (descriptor.usesSequenceNumbers()) {
@@ -709,7 +709,7 @@ public class SchemaManager {
      * @param tableName a table name pattern
      * @return a Vector of Records.
      */
-    public Vector getAllColumnNames(String tableName) throws DatabaseException {
+    public Vector<AbstractRecord> getAllColumnNames(String tableName) throws DatabaseException {
         return getAccessor().getColumnInfo(null, null, tableName, null, getSession());
     }
 
@@ -754,7 +754,7 @@ public class SchemaManager {
      * @param tableName a table name pattern
      * @return a Vector of Records.
      */
-    public Vector getAllColumnNames(String creatorName, String tableName) throws DatabaseException {
+    public Vector<AbstractRecord> getAllColumnNames(String creatorName, String tableName) throws DatabaseException {
         return getAccessor().getColumnInfo(null, creatorName, tableName, null, getSession());
     }
 
@@ -777,7 +777,7 @@ public class SchemaManager {
      *
      * @return a Vector of Records.
      */
-    public Vector getAllTableNames() throws DatabaseException {
+    public Vector<AbstractRecord> getAllTableNames() throws DatabaseException {
         return getAccessor().getTableInfo(null, null, null, null, getSession());
     }
 
@@ -821,7 +821,7 @@ public class SchemaManager {
      * without a schema
      * @return a Vector of Records.
      */
-    public Vector getAllTableNames(String creatorName) throws DatabaseException {
+    public Vector<AbstractRecord> getAllTableNames(String creatorName) throws DatabaseException {
         return getAccessor().getTableInfo(null, creatorName, null, null, getSession());
     }
 
@@ -873,7 +873,7 @@ public class SchemaManager {
      * @param columnName a column name pattern
      * @return a Vector of Records.
      */
-    public Vector getColumnInfo(String catalog, String schema, String tableName, String columnName) throws DatabaseException {
+    public Vector<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName) throws DatabaseException {
         return getAccessor().getColumnInfo(catalog, schema, tableName, columnName, getSession());
     }
 
@@ -910,7 +910,7 @@ public class SchemaManager {
      * @param types a list of table types to include; null returns all types
      * @return a Vector of Records.
      */
-    public Vector getTableInfo(String catalog, String schema, String tableName, String[] types) throws DatabaseException {
+    public Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types) throws DatabaseException {
         return getAccessor().getTableInfo(catalog, schema, tableName, types, getSession());
     }
 

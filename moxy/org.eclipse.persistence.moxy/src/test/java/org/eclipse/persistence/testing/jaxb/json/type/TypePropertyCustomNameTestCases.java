@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,10 +38,11 @@ public class TypePropertyCustomNameTestCases extends JSONMarshalUnmarshalTestCas
 
     public TypePropertyCustomNameTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{PersonWithType.class, Contact.class});
+        setClasses(new Class<?>[]{PersonWithType.class, Contact.class});
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
     }
@@ -64,6 +65,7 @@ public class TypePropertyCustomNameTestCases extends JSONMarshalUnmarshalTestCas
         assertEquals("mytype", jsonUnmarshaller.getProperty(MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME));
     }
 
+    @Override
     protected Object getControlObject() {
 
         Address a = new Address();

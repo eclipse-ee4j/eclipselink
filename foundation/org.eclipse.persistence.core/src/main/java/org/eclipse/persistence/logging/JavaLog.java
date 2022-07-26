@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,19 +57,19 @@ public class JavaLog extends AbstractSessionLog {
      * Represents the HashMap that stores all the name space strings.
      * The keys are category names.  The values are namespace strings.
      */
-    private Map nameSpaceMap  = new HashMap();
+    private final Map<String, String> nameSpaceMap  = new HashMap<>();
 
     /**
-     * Stores the namespace for session, i.e."org.eclipse.persistence.session.<sessionname>".
+     * Stores the namespace for session, i.e."{@code org.eclipse.persistence.session.<sessionname>}".
      */
     private String sessionNameSpace;
 
     /**
-     * Stores the Logger for session namespace, i.e. "org.eclipse.persistence.session.<sessionname>".
+     * Stores the Logger for session namespace, i.e. "{@code org.eclipse.persistence.session.<sessionname>}".
      */
     private Logger sessionLogger;
 
-    private Map categoryloggers = new HashMap<String, Logger>();
+    private final Map<String, Logger> categoryloggers = new HashMap<>();
 
     /**
      * INTERNAL:
@@ -92,7 +92,7 @@ public class JavaLog extends AbstractSessionLog {
      * INTERNAL:
      * Return catagoryloggers
      */
-     public Map getCategoryLoggers() {
+     public Map<String, Logger> getCategoryLoggers() {
          return categoryloggers;
      }
 
@@ -102,10 +102,9 @@ public class JavaLog extends AbstractSessionLog {
      * Return the effective log level for the name space extracted from session and category.
      * If a Logger's level is set to be null then the Logger will use an effective Level that will
      * be obtained by walking up the parent tree and using the first non-null Level.
-     * </p><p>
+     * </p>
      *
      * @return the effective log level.
-     * </p>
      */
     @Override
     public int getLevel(String category) {
@@ -154,15 +153,14 @@ public class JavaLog extends AbstractSessionLog {
      * PUBLIC:
      * <p>
      * Set the output stream  that will receive the formatted log entries.
-     * </p><p>
+     * </p>
      *
      * @param fileOutputStream the file output stream will receive the formatted log entries.
-     * </p>
      */
     @Override
     public void setWriter(OutputStream fileOutputStream){
         StreamHandler sh = new StreamHandler(fileOutputStream,new LogFormatter());
-        ((Logger)categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE)).addHandler(sh);
+        categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE).addHandler(sh);
         if(sessionLogger!=null){
             sessionLogger.addHandler(sh);
         }
@@ -178,7 +176,7 @@ public class JavaLog extends AbstractSessionLog {
         } else if ((category == null) || (category.length() == 0)) {
             return sessionNameSpace;
         } else {
-            return  (String)nameSpaceMap.get(category);
+            return nameSpaceMap.get(category);
         }
     }
 
@@ -188,11 +186,11 @@ public class JavaLog extends AbstractSessionLog {
      */
     protected Logger getLogger(String category) {
         if (session == null) {
-            return (Logger)categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE);
+            return categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE);
         } else if ((category == null) || (category.length() == 0) || !this.categoryloggers.containsKey(category)) {
-            return (Logger) categoryloggers.get(sessionNameSpace);
+            return categoryloggers.get(sessionNameSpace);
         } else {
-            Logger logger = (Logger) categoryloggers.get(category);
+            Logger logger = categoryloggers.get(category);
             // If session != null, categoryloggers should have an entry for this category
             assert logger != null;
             return logger;
@@ -243,9 +241,8 @@ public class JavaLog extends AbstractSessionLog {
      * Check if a message of the given level would actually be logged by the logger
      * with name space built from the given session and category.
      * Return the shouldLog for the given category from
-     * </p><p>
-     * @return true if the given message level will be logged
      * </p>
+     * @return true if the given message level will be logged
      */
     @Override
     public boolean shouldLog(int level, String category) {
@@ -257,9 +254,8 @@ public class JavaLog extends AbstractSessionLog {
      * PUBLIC:
      * <p>
      * Log a SessionLogEntry
-     * </p><p>
-     * @param entry SessionLogEntry that holds all the information for a TopLink logging event
      * </p>
+     * @param entry SessionLogEntry that holds all the information for a TopLink logging event
      */
     @Override
     public void log(SessionLogEntry entry) {
@@ -277,10 +273,9 @@ public class JavaLog extends AbstractSessionLog {
      * INTERNAL:
      * <p>
      * Build a LogRecord
-     * </p><p>
+     * </p>
      * @param entry SessionLogEntry that holds all the information for a TopLink logging event
      * @param javaLevel the message level
-     * </p>
      */
     protected void internalLog(SessionLogEntry entry, Level javaLevel, Logger logger) {
         // Format message so that we do not depend on the bundle
@@ -306,9 +301,8 @@ public class JavaLog extends AbstractSessionLog {
      * PUBLIC:
      * <p>
      * Log a throwable.
-     * </p><p>
-     * @param throwable a throwable
      * </p>
+     * @param throwable a throwable
      */
     @Override
     public void throwing(Throwable throwable) {

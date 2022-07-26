@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,18 +27,20 @@ public class HashMapGetConcurrentTest extends ConcurrentPerformanceComparisonTes
     public HashMapGetConcurrentTest() {
         setDescription("Measure the concurrency of HashMap.");
         for (int index = 0; index < 100; index ++) {
-            this.keys[index] = new Integer(index);
+            this.keys[index] = index;
         }
     }
 
+    @Override
     public void setup() {
         super.setup();
         map = new HashMap(100);
         for (int index = 0; index < 100; index++) {
-            map.put(new Integer(index), new Integer(index));
+            map.put(index, index);
         }
     }
 
+    @Override
     public void runTask() throws Exception {
         for (int index = 0; index < 100; index ++) {
             Integer value = (Integer)this.map.get(this.keys[index]);

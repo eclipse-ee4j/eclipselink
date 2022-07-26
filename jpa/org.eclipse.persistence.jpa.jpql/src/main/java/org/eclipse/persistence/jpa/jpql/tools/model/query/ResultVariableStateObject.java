@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 /**
  * A result variable may be used to name a select item in the query result.
  *
- * <div><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code><p></div>
+ * <div><p><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code></p></div>
  *
  * @see ResultVariable
  *
@@ -111,9 +111,6 @@ public class ResultVariableStateObject extends AbstractStateObject {
         this(parent, stateObject, false, resultVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
@@ -131,9 +128,6 @@ public class ResultVariableStateObject extends AbstractStateObject {
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -143,17 +137,11 @@ public class ResultVariableStateObject extends AbstractStateObject {
         children.add(resultVariable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ResultVariable getExpression() {
         return (ResultVariable) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SelectClauseStateObject getParent() {
         return (SelectClauseStateObject) super.getParent();
@@ -207,18 +195,12 @@ public class ResultVariableStateObject extends AbstractStateObject {
         return stateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         resultVariable = new IdentificationVariableStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -307,9 +289,6 @@ public class ResultVariableStateObject extends AbstractStateObject {
         setAs(!as);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

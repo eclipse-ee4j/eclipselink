@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.platform.server.ServerPlatformDetector;
 import org.eclipse.persistence.platform.server.ServerPlatformUtils;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.junit.After;
 import org.junit.Assert;
@@ -210,7 +211,7 @@ public class SessionManagerTest {
         }
     }
 
-    private Object getField(Class c, String field, Object o) {
+    private Object getField(Class<?> c, String field, Object o) {
         Field f = null;
         try {
             f = c.getDeclaredField(field);
@@ -225,7 +226,7 @@ public class SessionManagerTest {
         }
     }
 
-    private void setStaticField(Class c, String field, Object value) {
+    private void setStaticField(Class<?> c, String field, Object value) {
         Field f = null;
         try {
             f = c.getDeclaredField(field);
@@ -327,7 +328,7 @@ public class SessionManagerTest {
         }
 
         @Override
-        public Class getExternalTransactionControllerClass() {
+        public Class<? extends ExternalTransactionController> getExternalTransactionControllerClass() {
             return null;
         }
 

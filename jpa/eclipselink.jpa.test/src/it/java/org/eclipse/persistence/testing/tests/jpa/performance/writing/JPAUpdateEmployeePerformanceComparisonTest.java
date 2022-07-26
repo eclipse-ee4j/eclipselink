@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class JPAUpdateEmployeePerformanceComparisonTest extends PerformanceRegre
     /**
      * Get an employee id.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         Employee employee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
@@ -46,16 +47,17 @@ public class JPAUpdateEmployeePerformanceComparisonTest extends PerformanceRegre
     /**
      * Update employee.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Employee employee = manager.getReference(Employee.class, new Long(this.employeeId));
+        Employee employee = manager.getReference(Employee.class, this.employeeId);
         count++;
         employee.setFirstName(this.firstName + count);
         try {
             manager.getTransaction().commit();
         } catch (Exception exception) {
-            employee = manager.getReference(Employee.class, new Long(this.employeeId));
+            employee = manager.getReference(Employee.class, this.employeeId);
             manager.refresh(employee);
         }
         manager.close();

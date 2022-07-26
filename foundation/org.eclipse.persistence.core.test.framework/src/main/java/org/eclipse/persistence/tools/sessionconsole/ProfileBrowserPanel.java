@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,22 +28,24 @@ import org.eclipse.persistence.sessions.SessionProfiler;
  * This panel allows for the browsing of performance profiles.
  */
 public class ProfileBrowserPanel extends JPanel {
-    private List<Profile> fieldProfiles = new ArrayList();
+    private List<Profile> fieldProfiles = new ArrayList<>();
     private JScrollPane ivjProfileScrollPane = null;
     private JTable ivjProfilesTable = null;
-    private JComboBox ivjGroupByChoice = null;
+    private JComboBox<String> ivjGroupByChoice = null;
     private JLabel ivjGroupByLabel = null;
     private JCheckBox ivjQualifyClassNameCheckbox = null;
     IvjEventHandler ivjEventHandler = new IvjEventHandler();
 
     class IvjEventHandler implements java.awt.event.ActionListener,
                                      java.awt.event.ItemListener {
+        @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
             if (e.getSource() ==
                 ProfileBrowserPanel.this.getQualifyClassNameCheckbox())
                 connEtoC1(e);
         }
 
+        @Override
         public void itemStateChanged(java.awt.event.ItemEvent e) {
             if (e.getSource() == ProfileBrowserPanel.this.getGroupByChoice())
                 connEtoC2(e);
@@ -68,7 +70,7 @@ public class ProfileBrowserPanel extends JPanel {
         super(isDoubleBuffered);
     }
 
-    public static void browseProfiles(Vector profiles) {
+    public static void browseProfiles(List<Profile> profiles) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             JFrame frame = new JFrame();
@@ -88,16 +90,16 @@ public class ProfileBrowserPanel extends JPanel {
      * INTERNAL:
      * Return a map of summary profiles reporting on the profile contained.
      */
-    public Vector buildProfileSummaryByClass() {
-        Hashtable summaries = new Hashtable();
+    public List<Profile> buildProfileSummaryByClass() {
+        Hashtable<Class<?>, Profile> summaries = new Hashtable<>();
 
         for (Profile profile : getProfiles()) {
-            Class domainClass = profile.getDomainClass();
+            Class<?> domainClass = profile.getDomainClass();
             if (domainClass == null) {
                 domainClass = Void.class;
             }
 
-            Profile summary = (Profile)summaries.get(domainClass);
+            Profile summary = summaries.get(domainClass);
             if (summary == null) {
                 summary = new Profile();
                 summary.setDomainClass(domainClass);
@@ -109,27 +111,24 @@ public class ProfileBrowserPanel extends JPanel {
                                  profile.getLocalTime());
             summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() +
                                                  profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames =
-                 profile.getOperationTimings().keys();
-                 operationNames.hasMoreElements(); ) {
-                String name = (String)operationNames.nextElement();
-                Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime =
-                    ((Long)profile.getOperationTimings().get(name)).longValue();
+            for (Map.Entry<String, Long> entry: profile.getOperationTimings().entrySet()) {
+                String name = entry.getKey();
+                Long oldTime = summary.getOperationTimings().get(name);
+                long profileTime = entry.getValue();
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, new Long(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
-        Vector summary = new Vector();
-        for (Enumeration profilesEnum = summaries.elements();
+        List<Profile> summary = new Vector<>();
+        for (Enumeration<Profile> profilesEnum = summaries.elements();
              profilesEnum.hasMoreElements(); ) {
-            summary.addElement(profilesEnum.nextElement());
+            summary.add(profilesEnum.nextElement());
         }
         return summary;
     }
@@ -138,17 +137,17 @@ public class ProfileBrowserPanel extends JPanel {
      * INTERNAL:
      * Return a map of summary profiles reporting on the profile contained.
      */
-    public Vector buildProfileSummaryByQuery() {
-        Hashtable summaries = new Hashtable();
+    public List<Profile> buildProfileSummaryByQuery() {
+        Hashtable<Class<?>, Profile> summaries = new Hashtable<>();
 
         for (Profile profile : getProfiles()) {
-            Class queryType = profile.getQueryClass();
+            Class<?> queryType = profile.getQueryClass();
             //CR 3050 PWK - If we don't know the query class, we need to use void.
             //This avoids a null pointer exception when adding to the hashtable.
             if (queryType == null) {
                 queryType = Void.class;
             }
-            Profile summary = (Profile)summaries.get(queryType);
+            Profile summary = summaries.get(queryType);
             if (summary == null) {
                 summary = new Profile();
                 summary.setQueryClass(queryType);
@@ -160,27 +159,24 @@ public class ProfileBrowserPanel extends JPanel {
                                  profile.getLocalTime());
             summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() +
                                                  profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames =
-                 profile.getOperationTimings().keys();
-                 operationNames.hasMoreElements(); ) {
-                String name = (String)operationNames.nextElement();
-                Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime =
-                    ((Long)profile.getOperationTimings().get(name)).longValue();
+            for (Map.Entry<String, Long> entry: profile.getOperationTimings().entrySet()) {
+                String name = entry.getKey();
+                Long oldTime = summary.getOperationTimings().get(name);
+                long profileTime = entry.getValue();
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, new Long(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
-        Vector summary = new Vector();
-        for (Enumeration profilesEnum = summaries.elements();
+        Vector<Profile> summary = new Vector<>();
+        for (Enumeration<Profile> profilesEnum = summaries.elements();
              profilesEnum.hasMoreElements(); ) {
-            summary.addElement(profilesEnum.nextElement());
+            summary.add(profilesEnum.nextElement());
         }
         return summary;
     }
@@ -189,12 +185,12 @@ public class ProfileBrowserPanel extends JPanel {
      * INTERNAL:
      * Return a map of summary profiles reporting on the profile contained.
      */
-    public Vector buildProfileSummaryByQueryAndClass() {
-        Hashtable summaries = new Hashtable();
+    public List<Profile> buildProfileSummaryByQueryAndClass() {
+        Map<Class<?>, Map<Class<?>, Profile>> summaries = new Hashtable<>();
 
         for (Profile profile : getProfiles()) {
-            Class queryType = profile.getQueryClass();
-            Class queryClass = profile.getDomainClass();
+            Class<?> queryType = profile.getQueryClass();
+            Class<?> queryClass = profile.getDomainClass();
             if (queryClass == null) {
                 queryClass = Void.class;
             }
@@ -205,12 +201,12 @@ public class ProfileBrowserPanel extends JPanel {
             }
 
 
-            Hashtable summaryByQuery = (Hashtable)summaries.get(queryType);
+            Map<Class<?>, Profile> summaryByQuery = summaries.get(queryType);
             if (summaryByQuery == null) {
-                summaryByQuery = new Hashtable();
+                summaryByQuery = new Hashtable<>();
                 summaries.put(queryType, summaryByQuery);
             }
-            Profile summary = (Profile)summaryByQuery.get(queryClass);
+            Profile summary = summaryByQuery.get(queryClass);
             if (summary == null) {
                 summary = new Profile();
                 summary.setQueryClass(queryType);
@@ -223,37 +219,29 @@ public class ProfileBrowserPanel extends JPanel {
                                  profile.getLocalTime());
             summary.setNumberOfInstancesEffected(summary.getNumberOfInstancesEffected() +
                                                  profile.getNumberOfInstancesEffected());
-            for (Enumeration operationNames =
-                 profile.getOperationTimings().keys();
-                 operationNames.hasMoreElements(); ) {
-                String name = (String)operationNames.nextElement();
-                Long oldTime = (Long)summary.getOperationTimings().get(name);
-                long profileTime =
-                    ((Long)profile.getOperationTimings().get(name)).longValue();
+            for (Map.Entry<String, Long> entry: profile.getOperationTimings().entrySet()) {
+                String name = entry.getKey();
+                Long oldTime = summary.getOperationTimings().get(name);
+                long profileTime = entry.getValue();
                 long newTime;
                 if (oldTime == null) {
                     newTime = profileTime;
                 } else {
-                    newTime = oldTime.longValue() + profileTime;
+                    newTime = oldTime + profileTime;
                 }
-                summary.getOperationTimings().put(name, new Long(newTime));
+                summary.getOperationTimings().put(name, newTime);
             }
         }
 
-        Vector summary = new Vector();
-        for (Enumeration profilesEnum = summaries.elements();
-             profilesEnum.hasMoreElements(); ) {
-            for (Enumeration byQueryEnum =
-                 ((Hashtable)profilesEnum.nextElement()).elements();
-                 byQueryEnum.hasMoreElements(); ) {
-                summary.addElement(byQueryEnum.nextElement());
-            }
+        List<Profile> summary = new Vector<>();
+        for (Map<Class<?>, Profile> m: summaries.values()) {
+            summary.addAll(m.values());
         }
         return summary;
     }
 
     /**
-     * connEtoC1:  (QualifyClassNameCheckbox.action.actionPerformed(java.awt.event.ActionEvent) --> ProfileBrowserPanel.resetProfiles()V)
+     * connEtoC1:  (QualifyClassNameCheckbox.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} ProfileBrowserPanel.resetProfiles()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private void connEtoC1(java.awt.event.ActionEvent arg1) {
@@ -271,7 +259,7 @@ public class ProfileBrowserPanel extends JPanel {
     }
 
     /**
-     * connEtoC2:  (GroupByChoice.item.itemStateChanged(java.awt.event.ItemEvent) --> ProfileBrowserPanel.resetProfiles()V)
+     * connEtoC2:  (GroupByChoice.item.itemStateChanged(java.awt.event.ItemEvent) --{@literal >} ProfileBrowserPanel.resetProfiles()V)
      * @param arg1 java.awt.event.ItemEvent
      */
     private void connEtoC2(java.awt.event.ItemEvent arg1) {
@@ -292,10 +280,10 @@ public class ProfileBrowserPanel extends JPanel {
      * Return the GroupByChoice property value.
      * @return javax.swing.JComboBox
      */
-    private javax.swing.JComboBox getGroupByChoice() {
+    private javax.swing.JComboBox<String> getGroupByChoice() {
         if (ivjGroupByChoice == null) {
             try {
-                ivjGroupByChoice = new javax.swing.JComboBox();
+                ivjGroupByChoice = new javax.swing.JComboBox<>();
                 ivjGroupByChoice.setName("GroupByChoice");
                 ivjGroupByChoice.setBackground(java.awt.SystemColor.window);
                 // user code begin {1}
@@ -477,20 +465,20 @@ public class ProfileBrowserPanel extends JPanel {
 
     public void resetProfiles() {
         DefaultTableModel model = new DefaultTableModel();
-        Vector columns = new Vector();
-        columns.addElement("Query");
-        columns.addElement("Class");
-        columns.addElement("Total Time");
-        columns.addElement("Local Time");
-        columns.addElement("# of Objects");
-        columns.addElement("Object/Second");
-        columns.addElement("SQL Prepare");
-        columns.addElement("SQL Execute");
-        columns.addElement("Row Fetch");
-        columns.addElement("Cache");
-        columns.addElement("Object Building");
-        columns.addElement("Query Prepare");
-        columns.addElement("SQL Generation");
+        Vector<String> columns = new Vector<>();
+        columns.add("Query");
+        columns.add("Class");
+        columns.add("Total Time");
+        columns.add("Local Time");
+        columns.add("# of Objects");
+        columns.add("Object/Second");
+        columns.add("SQL Prepare");
+        columns.add("SQL Execute");
+        columns.add("Row Fetch");
+        columns.add("Cache");
+        columns.add("Object Building");
+        columns.add("Query Prepare");
+        columns.add("SQL Generation");
         model.setColumnIdentifiers(columns);
 
         List<Profile> profiles = getProfiles();
@@ -519,11 +507,11 @@ public class ProfileBrowserPanel extends JPanel {
                             Helper.getShortClassName(profile.getDomainClass());
                 }
             }
-            items[2] = new Long(profile.getTotalTime()).toString();
-            items[3] = new Long(profile.getLocalTime()).toString();
+            items[2] = Long.valueOf(profile.getTotalTime()).toString();
+            items[3] = Long.valueOf(profile.getLocalTime()).toString();
             items[4] =
-                    new Long(profile.getNumberOfInstancesEffected()).toString();
-            items[5] = new Long(profile.getObjectsPerSecond()).toString();
+                    Long.valueOf(profile.getNumberOfInstancesEffected()).toString();
+            items[5] = Long.valueOf(profile.getObjectsPerSecond()).toString();
             if (profile.getOperationTimings().containsKey(SessionProfiler.SqlPrepare)) {
                 items[6] =
                         profile.getOperationTimings().get(SessionProfiler.SqlPrepare).toString();

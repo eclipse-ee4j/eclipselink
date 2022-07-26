@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,13 +41,13 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
     }
 
     public void testDefaultNamespaceOverride() throws Exception {
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[] { Employee.class }, null);
         StringWriter writer = new StringWriter();
         XMLStreamWriter streamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(writer);
         streamWriter.writeStartElement("", "root", "someNamespace");
         streamWriter.writeDefaultNamespace("someNamespace");
         Marshaller marshaller = ctx.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, new Boolean(true));
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 
         marshaller.marshal(new JAXBElement(new QName("employee"), Employee.class, new Employee()), streamWriter);
         streamWriter.writeEndElement();
@@ -68,13 +68,13 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
     public void testDuplicateDefaultNamespace() throws Exception {
         String testXmlData = "<child xmlns=\"someDefaultNameSpace\" xmlns:bi=\"definedBINameSpace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">Test</child>";
         EmployeeLax employeeLax = createEmployeeLax(testXmlData);
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeLax.class}, null);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{EmployeeLax.class}, null);
 
         StringWriter writer = new StringWriter();
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
 
         // Set IS_REPAIRING_NAMESPACES to true.
-        factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(true));
+        factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE);
 
         XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
 

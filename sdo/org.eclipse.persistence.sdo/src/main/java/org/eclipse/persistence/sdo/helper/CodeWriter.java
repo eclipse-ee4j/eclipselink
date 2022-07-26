@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ public interface CodeWriter {
      * @param filename The name of the generated source file including the .java extension
      * @param content StringBuffer containing the contents of the generated interface.
      */
-    public void writeInterface(String dir, String filename, StringBuffer content);
+    void writeInterface(String dir, String filename, StringBuffer content);
 
     /**
       * <p>Called from org.eclipse.persistence.sdo.helper.SDOClassGenerator for each generated interface if a
@@ -40,5 +40,5 @@ public interface CodeWriter {
       * @param filename The name of the generated source file including the .java extension
       * @param content StringBuffer containing the contents of the generated implementation class.
       */
-    public void writeImpl(String dir, String filename, StringBuffer content);
+    void writeImpl(String dir, String filename, StringBuffer content);
 }

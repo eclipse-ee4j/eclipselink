@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,9 +59,10 @@ public class HelperContextTestCases extends SDOTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         try {
-            Class[] classes = new Class[1];
+            Class<?>[] classes = new Class<?>[1];
             classes[0] = Root.class;
             JAXBContext jaxbContext = JAXBContext.newInstance(classes);
             jaxbHelperContext = new JAXBHelperContext(jaxbContext);
@@ -85,19 +86,19 @@ public class HelperContextTestCases extends SDOTestCase {
 
     public void testGetClass() {
         Type rootType = jaxbHelperContext.getTypeHelper().getType("urn:helpercontext", "root");
-        Class pojoClass = jaxbHelperContext.getClass(rootType);
+        Class<?> pojoClass = jaxbHelperContext.getClass(rootType);
         assertSame(Root.class, pojoClass);
     }
 
     public void testGetClassNull() {
-        Class pojoClass = jaxbHelperContext.getClass(null);
+        Class<?> pojoClass = jaxbHelperContext.getClass(null);
         assertNull(pojoClass);
     }
 
     public void testGetClassNegative() {
         try {
             Type propertyType = jaxbHelperContext.getTypeHelper().getType("commonj.sdo", "Property");
-            Class pojoClass = jaxbHelperContext.getClass(propertyType);
+            Class<?> pojoClass = jaxbHelperContext.getClass(propertyType);
         } catch(SDOException e) {
             assertEquals(SDOException.SDO_JAXB_NO_DESCRIPTOR_FOR_TYPE, e.getErrorCode());
             return;
@@ -304,6 +305,7 @@ public class HelperContextTestCases extends SDOTestCase {
         assertEquals(0, entities.size());
     }
 
+    @Override
     public void tearDown() {
     }
 
@@ -315,6 +317,7 @@ public class HelperContextTestCases extends SDOTestCase {
             return schemaWriter.toString();
         }
 
+        @Override
         public Result createOutput(String arg0, String arg1) throws IOException {
             schemaWriter = new StringWriter();
             return new StreamResult(schemaWriter);

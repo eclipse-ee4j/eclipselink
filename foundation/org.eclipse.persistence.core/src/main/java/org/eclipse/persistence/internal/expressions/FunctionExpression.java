@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class FunctionExpression extends BaseExpression {
     protected Vector<Expression> children;
     protected ExpressionOperator operator;
     protected transient ExpressionOperator platformOperator;
-    protected Class resultType;
+    protected Class<?> resultType;
 
     public FunctionExpression() {
         this.children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
@@ -335,7 +335,7 @@ public class FunctionExpression extends BaseExpression {
         return platformOperator;
     }
 
-    public Class getResultType() {
+    public Class<?> getResultType() {
         return resultType;
     }
 
@@ -347,13 +347,15 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      */
     public void initializePlatformOperator(DatabasePlatform platform) {
-        if (this.operator.isComplete()) {
-            platformOperator = this.operator;
-            return;
-        }
+        // First, check that the platform operator doesn't override the operator behavior
         platformOperator = platform.getOperator(this.operator.getSelector());
         if (platformOperator == null) {
-            throw QueryException.invalidOperator(this.operator.toString());
+            // If the platform doesn't specifically override, fallback on the internal operator
+            // This operator should be either user-defined or one from ExpressionOperator.initializeInternalOperators.
+            platformOperator = this.operator;
+            if (platformOperator == null) {
+                throw QueryException.invalidOperator(this.operator);
+            }
         }
     }
 
@@ -483,7 +485,7 @@ public class FunctionExpression extends BaseExpression {
 
                 // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
                 subQuery.getItems().clear();
-                subQuery.addItem("one", new ConstantExpression(Integer.valueOf(1), subQuery.getExpressionBuilder()));
+                subQuery.addItem("one", new ConstantExpression(1, subQuery.getExpressionBuilder()));
 
                 Expression subSelectCriteria = subQuery.getSelectionCriteria();
                 ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
@@ -558,7 +560,10 @@ public class FunctionExpression extends BaseExpression {
      */
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
-        // If all children are parameters, some databases don't allow binding.
+        /*
+         * If this ExpressionOperator does not support binding, and the platform allows,
+         * then disable binding for the whole query
+         */
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !this.children.isEmpty()) {
             boolean allParams = true;
             for (Iterator<Expression> iterator = this.children.iterator(); iterator.hasNext(); ) {
@@ -628,7 +633,7 @@ public class FunctionExpression extends BaseExpression {
         operator = theOperator;
     }
 
-    public void setResultType(Class resultType) {
+    public void setResultType(Class<?> resultType) {
         this.resultType = resultType;
     }
 
@@ -942,8 +947,8 @@ public class FunctionExpression extends BaseExpression {
 
     protected DatabaseMapping getMappingOfFirstPrimaryKey(ClassDescriptor descriptor) {
         if (descriptor != null) {
-            for (Iterator i = descriptor.getMappings().iterator(); i.hasNext(); ) {
-                DatabaseMapping m = (DatabaseMapping)i.next();
+            for (Iterator<DatabaseMapping> i = descriptor.getMappings().iterator(); i.hasNext(); ) {
+                DatabaseMapping m = i.next();
                 if (m.isPrimaryKeyMapping()) {
                     return m;
                 }

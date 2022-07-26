@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,7 @@ public class SDOWrapperType extends SDOType implements Type {
     }
 
     public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName aSchemaType, Class<? extends SDODataObject> implClass) {
-        this(aPropertyType, aTypeName, aSDOTypeHelper, new QName[] { aSchemaType }, new Class[] { implClass });
+        this(aPropertyType, aTypeName, aSDOTypeHelper, new QName[] { aSchemaType }, (Class<? extends SDODataObject>[]) new Class<?>[] { implClass });
     }
 
     public SDOWrapperType(Type aPropertyType, String aTypeName, SDOTypeHelper aSDOTypeHelper, QName[] schemaTypes) {
@@ -276,40 +276,424 @@ public class SDOWrapperType extends SDOType implements Type {
         return str.toString();
     }
 
-    public static class BooleanObjectWrapperImpl extends SDODataObject {}
-    public static class BooleanWrapperImpl extends SDODataObject {}
-    public static class ByteObjectWrapperImpl extends SDODataObject {}
-    public static class BytesWrapperImpl extends SDODataObject {}
-    public static class ByteWrapperImpl extends SDODataObject {}
-    public static class Bytes_hexBunaryWrapperImpl extends SDODataObject {};
-    public static class CharacterObjectWrapperImpl extends SDODataObject {}
-    public static class CharacterWrapperImpl extends SDODataObject {}
-    public static class DateTimeWrapperImpl extends SDODataObject {}
-    public static class DateWrapperImpl extends SDODataObject {}
-    public static class DayWrapperImpl extends SDODataObject {}
-    public static class DecimalWrapperImpl extends SDODataObject {}
-    public static class DoubleObjectWrapperImpl extends SDODataObject {}
-    public static class DoubleWrapperImpl extends SDODataObject {}
-    public static class DurationWrapperImpl extends SDODataObject {}
-    public static class FloatObjectWrapperImpl extends SDODataObject {}
-    public static class FloatWrapperImpl extends SDODataObject {}
-    public static class IntegerWrapperImpl extends SDODataObject {}
-    public static class IntObjectWrapperImpl extends SDODataObject {}
-    public static class IntWrapperImpl extends SDODataObject {}
-    public static class LongObjectWrapperImpl extends SDODataObject {}
-    public static class LongWrapperImpl extends SDODataObject {}
-    public static class MonthDayWrapperImpl extends SDODataObject {}
-    public static class MonthWrapperImpl extends SDODataObject {}
-    public static class ObjectWrapperImpl extends SDODataObject {}
-    public static class ShortObjectWrapperImpl extends SDODataObject {}
-    public static class ShortWrapperImpl extends SDODataObject {}
-    public static class StringsWrapperImpl extends SDODataObject {}
-    public static class StringWrapperImpl extends SDODataObject {}
-    public static class TimeWrapperImpl extends SDODataObject {}
-    public static class URIWrapperImpl extends SDODataObject {}
-    public static class URI_QNameWrapperImpl extends SDODataObject {}
-    public static class YearMonthDayWrapperImpl extends SDODataObject {}
-    public static class YearMonthWrapperImpl extends SDODataObject {}
-    public static class YearWrapperImpl extends SDODataObject {}
+    /**
+     * Wrapper for Boolean Object datatype.
+     */
+    public static class BooleanObjectWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public BooleanObjectWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Boolean datatype.
+     */
+    public static class BooleanWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public BooleanWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Byte Object datatype.
+     */
+    public static class ByteObjectWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public ByteObjectWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Bytes datatype.
+     */
+    public static class BytesWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public BytesWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Byte datatype.
+     */
+    public static class ByteWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public ByteWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for HEX Binary datatype.
+     */
+    public static class Bytes_hexBunaryWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public Bytes_hexBunaryWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Character Object datatype.
+     */
+    public static class CharacterObjectWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public CharacterObjectWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Character datatype.
+     */
+    public static class CharacterWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public CharacterWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Date Time datatype.
+     */
+    public static class DateTimeWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public DateTimeWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Date datatype.
+     */
+    public static class DateWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public DateWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Day datatype.
+     */
+    public static class DayWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public DayWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Decimal datatype.
+     */
+    public static class DecimalWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public DecimalWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Double Object datatype.
+     */
+    public static class DoubleObjectWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public DoubleObjectWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Double datatype.
+     */
+    public static class DoubleWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public DoubleWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Duration datatype.
+     */
+    public static class DurationWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public DurationWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Float Object datatype.
+     */
+    public static class FloatObjectWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public FloatObjectWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for FLoat datatype.
+     */
+    public static class FloatWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public FloatWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Integer datatype.
+     */
+    public static class IntegerWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public IntegerWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Int Object datatype.
+     */
+    public static class IntObjectWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public IntObjectWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Int datatype.
+     */
+    public static class IntWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public IntWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Long Object datatype.
+     */
+    public static class LongObjectWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public LongObjectWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Long datatype.
+     */
+    public static class LongWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public LongWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Month Day datatype.
+     */
+    public static class MonthDayWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public MonthDayWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Month datatype.
+     */
+    public static class MonthWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public MonthWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Object datatype.
+     */
+    public static class ObjectWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public ObjectWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Short object datatype.
+     */
+    public static class ShortObjectWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public ShortObjectWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Short datatype.
+     */
+    public static class ShortWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public ShortWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Strings datatype.
+     */
+    public static class StringsWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public StringsWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for String datatype.
+     */
+    public static class StringWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public StringWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Time datatype.
+     */
+    public static class TimeWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public TimeWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for URI datatype.
+     */
+    public static class URIWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public URIWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for URI QName datatype.
+     */
+    public static class URI_QNameWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public URI_QNameWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for YearMonthDay datatype.
+     */
+    public static class YearMonthDayWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public YearMonthDayWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for YearMonth datatype.
+     */
+    public static class YearMonthWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public YearMonthWrapperImpl() {
+            super();
+        }
+    }
+
+    /**
+     * Wrapper for Year datatype.
+     */
+    public static class YearWrapperImpl extends SDODataObject {
+        /**
+         * Default constructor.
+         */
+        public YearWrapperImpl() {
+            super();
+        }
+    }
 
 }

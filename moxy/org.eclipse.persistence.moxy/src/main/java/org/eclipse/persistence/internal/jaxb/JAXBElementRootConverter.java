@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,10 +33,10 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class JAXBElementRootConverter implements XMLConverter {
 
-    private Class declaredType;
+    private Class<?> declaredType;
     private XMLConverter nestedConverter;
 
-    public JAXBElementRootConverter(Class declaredType) {
+    public JAXBElementRootConverter(Class<?> declaredType) {
         this.declaredType = declaredType;
     }
 
@@ -112,7 +112,7 @@ public class JAXBElementRootConverter implements XMLConverter {
         return false;
     }
 
-    private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
+    private JAXBElement createJAXBElement(QName qname, Class<?> theClass, Object value){
         if(value != null && value instanceof JAXBElement){
             return (JAXBElement)value;
         }

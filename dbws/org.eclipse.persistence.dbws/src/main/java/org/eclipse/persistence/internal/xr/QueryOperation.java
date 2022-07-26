@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -106,7 +106,6 @@ import org.w3c.dom.Element;
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
-@SuppressWarnings({"serial", "unchecked"/*, "rawtypes"*/})
 public class QueryOperation extends Operation {
     public static final String ORACLEOPAQUE_STR = "oracle.sql.OPAQUE";
     private static final String IORACLEOPAQUE_STR = "oracle.jdbc.OracleOpaque";
@@ -203,7 +202,7 @@ public class QueryOperation extends Operation {
 
     // Made static final for performance reasons.
     private static final class DataHandlerInstantiationPolicy extends InstantiationPolicy {
-        protected String mimeType;
+        private final String mimeType;
         public DataHandlerInstantiationPolicy(String mimeType) {
             super();
             this.mimeType = mimeType;
@@ -368,6 +367,7 @@ public class QueryOperation extends Operation {
      * @see  Operation
      */
     @Override
+    @SuppressWarnings({"unchecked"})
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
         DatabaseQuery query = queryHandler.getDatabaseQuery();
 
@@ -418,7 +418,7 @@ public class QueryOperation extends Operation {
                 if (returnedList.size() > 0 && returnedList.get(0) instanceof Object[]) {
                     Object[] objs = (Object[]) returnedList.get(0);
                     if (isCollection()) {
-                        value = new ArrayList<Object>();
+                        value = new ArrayList<>();
                         for (Object obj : objs) {
                             ((ArrayList<Object>) value).add(obj);
                         }
@@ -450,8 +450,8 @@ public class QueryOperation extends Operation {
                         }
                         // handle BLOB types
                         if (value instanceof Blob) {
-                            value = ((XMLConversionManager) xrService.getOXSession().
-                                    getDatasourcePlatform().getConversionManager()).
+                            value = xrService.getOXSession().
+                                    getDatasourcePlatform().getConversionManager().
                                     convertObject(value, ClassConstants.APBYTE);
                         }
                         return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
@@ -506,7 +506,7 @@ public class QueryOperation extends Operation {
                             objs[0] = ((ArrayList<?>)value).get(0);
                             DatabaseRecord dr = new DatabaseRecord();
                             dr.add(new DatabaseField(ITEMS_STR), objs);
-                            populateTargetObjectFromRecord(desc.getMappings(), (AbstractRecord) dr, targetObject, (AbstractSession)xrService.getORSession());
+                            populateTargetObjectFromRecord(desc.getMappings(), dr, targetObject, (AbstractSession)xrService.getORSession());
                         }
                         value = targetObject;
                     }
@@ -525,6 +525,7 @@ public class QueryOperation extends Operation {
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     public Object createSimpleXMLFormat(XRServiceAdapter xrService, Object value) {
         XMLRoot xmlRoot = new XMLRoot();
         SimpleXMLFormat simpleXMLFormat = result.getSimpleXMLFormat();
@@ -547,7 +548,7 @@ public class QueryOperation extends Operation {
             // assumes JPAQuery
             JPAQuery jpaQuery = (JPAQuery) queryHandler.getDatabaseQuery();
             // to match field names with results, we need to gather the database fields from each of the Output parameters
-            List<DatabaseField> paramFlds = new ArrayList<DatabaseField>();
+            List<DatabaseField> paramFlds = new ArrayList<>();
             DatasourceCall dsCall = (DatasourceCall) jpaQuery.getDatabaseQuery().getDatasourceCall();
             for (Object obj : dsCall.getParameters()) {
                 if (obj instanceof OutputParameterForCallableStatement) {
@@ -571,20 +572,20 @@ public class QueryOperation extends Operation {
             } else {
                 dr.add(new DatabaseField(RESULT_STR), ((ArrayList<?>) value).get(0));
             }
-            records = new Vector<DatabaseRecord>();
+            records = new Vector<>();
             records.add(dr);
         } else if (value instanceof Vector) {
             Class<?> vectorContent = ((Vector<?>)value).firstElement().getClass();
             if (DatabaseRecord.class.isAssignableFrom(vectorContent)) {
                 records = (Vector<DatabaseRecord>)value;
             } else {
-                records = new Vector<DatabaseRecord>();
+                records = new Vector<>();
                 DatabaseRecord dr = new DatabaseRecord();
                 dr.add(new DatabaseField(RESULT_STR), ((Vector<?>)value).firstElement());
                 records.add(dr);
             }
         } else {
-            records = new Vector<DatabaseRecord>();
+            records = new Vector<>();
             DatabaseRecord dr = new DatabaseRecord();
             dr.add(new DatabaseField(RESULT_STR), value);
             records.add(dr);
@@ -641,22 +642,20 @@ public class QueryOperation extends Operation {
                             Object xmlTypeFactory;
                             Method getStringMethod;
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                oracleOPAQUE = AccessController.doPrivileged(new PrivilegedClassForName(IORACLEOPAQUE_STR, true, this.getClass().getClassLoader()));
-                                xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader()));
-                                xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlTypeFactoryClass, new Class[0], true));
-                                xmlTypeFactory = AccessController.doPrivileged(new PrivilegedInvokeConstructor(xmlTypeFactoryConstructor, new Object[0]));
-                                getStringMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE}));
-                                fieldValue = AccessController.doPrivileged(new PrivilegedMethodInvoker(getStringMethod, fieldValue, new Object[] {}));
+                                oracleOPAQUE = AccessController.doPrivileged(new PrivilegedClassForName<>(IORACLEOPAQUE_STR, true, this.getClass().getClassLoader()));
+                                xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName<>(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader()));
+                                xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(xmlTypeFactoryClass, new Class<?>[0], true));
+                                xmlTypeFactory = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(xmlTypeFactoryConstructor, new Object[0]));
+                                getStringMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class<?>[] {oracleOPAQUE}));
+                                fieldValue = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getStringMethod, xmlTypeFactory, new Object[] {fieldValue}));
                             } else {
                                 oracleOPAQUE = PrivilegedAccessHelper.getClassForName(IORACLEOPAQUE_STR, false, this.getClass().getClassLoader());
                                 xmlTypeFactoryClass = PrivilegedAccessHelper.getClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader());
-                                xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class[0], true);
+                                xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class<?>[0], true);
                                 xmlTypeFactory = PrivilegedAccessHelper.invokeConstructor(xmlTypeFactoryConstructor, new Object[0]);
-                                getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE});
+                                getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class<?>[] {oracleOPAQUE});
                                 fieldValue = PrivilegedAccessHelper.invokeMethod(getStringMethod, xmlTypeFactory, new Object[] {fieldValue});
                             }
-                        } catch (RuntimeException x) {
-                            throw x;
                         } catch (ReflectiveOperationException | PrivilegedActionException e) {
                             // if the required resources are not available there's nothing we can do...
                             log.logThrowable(SessionLog.FINE, SessionLog.DBWS, e);

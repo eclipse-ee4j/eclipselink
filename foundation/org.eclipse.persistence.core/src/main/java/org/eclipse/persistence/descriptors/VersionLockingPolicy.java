@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -209,12 +209,11 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
     /**
      * INTERNAL:
-
      * Return the default version locking filed java type, default is BigDecimal
-
      */
-    protected Class getDefaultLockingFieldType() {
-        return ClassConstants.LONG;
+    @SuppressWarnings({"unchecked"})
+    protected <T> Class<T> getDefaultLockingFieldType() {
+        return (Class<T>) ClassConstants.LONG;
 
     }
 
@@ -224,8 +223,9 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * null in some situations.
      */
     @Override
-    public Object getBaseValue() {
-        return Long.valueOf(0);
+    @SuppressWarnings({"unchecked"})
+    public <T> T getBaseValue() {
+        return (T) Long.valueOf(0L);
     }
 
     /**
@@ -239,8 +239,9 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * returns the initial locking value
      */
-    protected Object getInitialWriteValue(AbstractSession session) {
-        return Long.valueOf(1);
+    @SuppressWarnings({"unchecked"})
+    protected <T> T getInitialWriteValue(AbstractSession session) {
+        return (T) Long.valueOf(1L);
     }
 
     /**
@@ -260,8 +261,9 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * This method gets the write lock value from either the cache or
      * the object stored in the query.  It then returns the new incremented value.
      */
-    public Object getNewLockValue(ModifyQuery query) {
-        Class objectClass = query.getDescriptor().getJavaClass();
+    @SuppressWarnings({"unchecked"})
+    public <T> T getNewLockValue(ModifyQuery query) {
+        Class<?> objectClass = query.getDescriptor().getJavaClass();
         Number value;
         Number newWriteLockValue = null;
         if (isStoredInCache()) {
@@ -275,7 +277,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
         // Increment the value, this goes to the database
         newWriteLockValue = incrementWriteLockValue(value);
-        return newWriteLockValue;
+        return (T) newWriteLockValue;
     }
 
     /**
@@ -285,8 +287,8 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * cache, a vector with one value is returned.  In the case
      * of being stored in the object, an empty vector is returned.
      */
-    protected Vector getUnmappedFields() {
-        Vector fields = new Vector(1);
+    protected Vector<DatabaseField> getUnmappedFields() {
+        Vector<DatabaseField> fields = new Vector<>(1);
         if (isStoredInCache()) {
             fields.addElement(getWriteLockField());
         }
@@ -299,9 +301,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * If the value is stored in the object, then return a null.
      */
     @Override
-    public Object getValueToPutInCache(AbstractRecord row, AbstractSession session) {
+    @SuppressWarnings({"unchecked"})
+    public <T> T getValueToPutInCache(AbstractRecord row, AbstractSession session) {
         if (isStoredInCache()) {
-            return row.get(getWriteLockField());
+            return (T) row.get(getWriteLockField());
         } else {
             return null;
         }
@@ -322,7 +325,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
         // If null, was an insert, use 0.
         if (newWriteLockFieldValue == null) {
-            newWriteLockFieldValue = Long.valueOf(0);
+            newWriteLockFieldValue = 0L;
         }
 
         if (isStoredInCache()) {
@@ -331,7 +334,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             writeLockFieldValue = (Number)lockValueFromObject(domainObject);
         }
         if (writeLockFieldValue == null){
-            writeLockFieldValue = Long.valueOf(0);
+            writeLockFieldValue = 0L;
         }
         return (int)(newWriteLockFieldValue.longValue() - writeLockFieldValue.longValue());
     }
@@ -367,7 +370,8 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * This method will return the optimistic lock value for the object
      */
     @Override
-    public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
+    @SuppressWarnings({"unchecked"})
+    public <T> T getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         Number writeLockFieldValue;
         if (isStoredInCache()) {
             if (primaryKey == null) {
@@ -377,7 +381,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
         } else {
             writeLockFieldValue = (Number)lockValueFromObject(domainObject);
         }
-        return writeLockFieldValue;
+        return (T) writeLockFieldValue;
     }
 
     /**
@@ -385,7 +389,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * Adds 1 to the value passed in.
      */
     protected Number incrementWriteLockValue(Number numberValue) {
-        return Long.valueOf(numberValue.longValue() + 1);
+        return numberValue.longValue() + 1;
     }
 
     /**
@@ -433,10 +437,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
             // Set the default type, only if un-mapped.
             dbField.setType(getDefaultLockingFieldType());
         }
-        Enumeration enumtr = this.getUnmappedFields().elements();
+        Enumeration<DatabaseField> enumtr = this.getUnmappedFields().elements();
         while (enumtr.hasMoreElements()) {
             DatabaseField lockField;
-            lockField = (DatabaseField)enumtr.nextElement();
+            lockField = enumtr.nextElement();
             descriptor.getFields().addElement(lockField);
         }
     }

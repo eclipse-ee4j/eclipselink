@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,12 +21,14 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package1.Container;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package2.Unmappable;
 import org.w3c.dom.Document;
 
 public class ClassLevelTestCases extends JAXBWithJSONTestCases {
+    @Override
     protected Map getProperties() {
 
         InputStream inStream1 = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/package1/no-adapter.xml");
@@ -47,7 +49,7 @@ public class ClassLevelTestCases extends JAXBWithJSONTestCases {
         metadata.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package2", src2);
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadata);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadata);
 
         return properties;
     }
@@ -55,11 +57,12 @@ public class ClassLevelTestCases extends JAXBWithJSONTestCases {
     public ClassLevelTestCases(String name) throws Exception {
         super(name);
         setUp();
-        setTypes(new Class[]{Container.class});
+        setTypes(new Class<?>[]{Container.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container_class.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/container_class.json");
     }
 
+    @Override
     public Object getControlObject() {
         Container container = new Container();
         container.setContainerProperty(Unmappable.getInstance("aaa"));

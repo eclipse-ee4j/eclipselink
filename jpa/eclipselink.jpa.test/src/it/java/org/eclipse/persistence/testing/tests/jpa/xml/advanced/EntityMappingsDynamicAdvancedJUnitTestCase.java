@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Query;
 import jakarta.persistence.EntityManager;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -54,9 +54,7 @@ import org.eclipse.persistence.dynamic.DynamicType;
 
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 import org.eclipse.persistence.queries.DoesExistQuery;
@@ -65,7 +63,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.TestCase;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.DynamicTableCreator;
@@ -218,7 +216,6 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
 
     /**
      * Return the dynamic test suite.
-     * @return
      */
     public static Test suite() {
         // This test suite should only be called when we are using the
@@ -326,7 +323,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
             em.clear();
 
             // Re-read the employee and verify the data.
-            DynamicEntity emp = (DynamicEntity) em.find(helper.getType("DynamicEmployee").getJavaClass(), employeeId);
+            DynamicEntity emp = em.find(helper.getType("DynamicEmployee").getJavaClass(), employeeId);
             //assertTrue("Employee didn't match after create", getDynamicPUServerSession().compareObjects(emp, employee));
             assertNotNull("The employee was not found", emp);
 
@@ -410,7 +407,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
 
             // Cost
             DynamicEntity shovel = helper.newDynamicEntity("DynamicShovel");
-            shovel.set("cost", Double.valueOf(9.99));
+            shovel.set("cost", 9.99);
 
             // Sections
             DynamicEntity shovelSections = helper.newDynamicEntity("ShovelSections");
@@ -464,21 +461,21 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
             clearDynamicPUCache();
             em.clear();
 
-            DynamicEntity refreshedShovel = (DynamicEntity) em.find(helper.getType("DynamicShovel").getJavaClass(), shovelId);
+            DynamicEntity refreshedShovel = em.find(helper.getType("DynamicShovel").getJavaClass(), shovelId);
             assertTrue("Shovel didn't match after write/read", getDynamicPUServerSession().compareObjects(shovel, refreshedShovel));
 
             // Do an update
             beginTransaction(em);
 
             em.merge(refreshedShovel);
-            refreshedShovel.set("cost", Double.valueOf(7.99));
+            refreshedShovel.set("cost", 7.99);
 
             commitTransaction(em);
 
             clearDynamicPUCache();
             em.clear();
 
-            DynamicEntity refreshedUpdatedShovel = (DynamicEntity) em.find(helper.getType("DynamicShovel").getJavaClass(), shovelId);
+            DynamicEntity refreshedUpdatedShovel = em.find(helper.getType("DynamicShovel").getJavaClass(), shovelId);
             assertTrue("Shovel didn't match after update", getDynamicPUServerSession().compareObjects(refreshedShovel, refreshedUpdatedShovel));
 
             // Now delete it
@@ -748,7 +745,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
 
         try {
             beginTransaction(em);
-            emp = (DynamicEntity) em.find(helper.getType("DynamicEmployee").getJavaClass(), emp.get("id"));
+            emp = em.find(helper.getType("DynamicEmployee").getJavaClass(), emp.get("id"));
 
             if (getDynamicPUServerSession().getPlatform().isSymfoware()) {
                 // Symfoware does not support deleteall with multiple table
@@ -782,8 +779,8 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
 
         if (TestCase.supportsStoredProcedures(session)) {
             SchemaManager schema = new SchemaManager((DatabaseSession) session);
-            schema.replaceObject(buildOracleStoredProcedureReadFromAddress((DatabaseSession) session));
-            schema.replaceObject(buildOracleStoredProcedureReadInOut((DatabaseSession) session));
+            schema.replaceObject(buildOracleStoredProcedureReadFromAddress(session));
+            schema.replaceObject(buildOracleStoredProcedureReadInOut(session));
         }
     }
 
@@ -809,7 +806,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
             em.clear();
 
             List<DynamicEntity> emps = em.createNamedQuery("findDynamicEmployeeById", DynamicEntity.class).setParameter("id", employeeId).getResultList();
-            DynamicEntity emp = (DynamicEntity) emps.get(0);
+            DynamicEntity emp = emps.get(0);
             assertNotNull("The employee was not found", emp);
 
             assertTrue("Error updating Employee", emp.get("salary").equals(50000));
@@ -851,7 +848,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
             em.clear();
 
             // Re-read the runner and verify the data.
-            DynamicEntity r = (DynamicEntity) em.find(helper.getType("DynamicRunner").getJavaClass(), runnerPK);
+            DynamicEntity r = em.find(helper.getType("DynamicRunner").getJavaClass(), runnerPK);
             assertTrue("Runner didn't match after create", getDynamicPUServerSession().compareObjects(r, runner));
             assertNotNull("The runner was not found", r);
         } catch (RuntimeException e) {
@@ -887,9 +884,9 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
 
             // Re-read the walker and see if an exception occurs.
             DynamicWalkerPK pk = new DynamicWalkerPK();
-            pk.setId( (Integer) walker.get("id"));
-            pk.setStyle((String) walker.get("style"));
-            DynamicEntity w = (DynamicEntity) em.find(helper.getType("DynamicWalker").getJavaClass(), pk);
+            pk.setId(walker.get("id"));
+            pk.setStyle(walker.get("style"));
+            DynamicEntity w = em.find(helper.getType("DynamicWalker").getJavaClass(), pk);
             assertNotNull("The walker was not found", w);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -934,11 +931,11 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
             String propertyName = propertyName(mapping.getAttributeName());
 
             @SuppressWarnings("unchecked")
-            Method method = mapping.getDescriptor().getJavaClass().getDeclaredMethod("get" + propertyName, new Class[0]);
+            Method method = mapping.getDescriptor().getJavaClass().getDeclaredMethod("get" + propertyName);
 
             Class<?> expectedReturnType = mapping.getAttributeClassification();
             if (mapping.isCollectionMapping()) {
-                expectedReturnType = ((CollectionMapping) mapping).getContainerPolicy().getContainerClass();
+                expectedReturnType = mapping.getContainerPolicy().getContainerClass();
             }
             if (expectedReturnType == null && mapping.isForeignReferenceMapping()) {
                 ForeignReferenceMapping frMapping = (ForeignReferenceMapping) mapping;

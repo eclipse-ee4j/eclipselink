@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import org.w3c.dom.Document;
@@ -41,9 +42,10 @@ public class XmlCDATAOverrideTestCases extends JAXBWithJSONTestCases {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        setTypes(new Class[]{Employee.class});
+        setTypes(new Class<?>[]{Employee.class});
     }
 
+    @Override
     public Object getControlObject() {
         Employee emp = new Employee();
         emp.name = "Jane Doe";
@@ -59,6 +61,7 @@ public class XmlCDATAOverrideTestCases extends JAXBWithJSONTestCases {
         //CDATA sections don't work with content handlers
     }
 
+    @Override
     protected Map getProperties() {
 
         String bindings =
@@ -88,7 +91,7 @@ public class XmlCDATAOverrideTestCases extends JAXBWithJSONTestCases {
         HashMap<String, Source> overrides = new HashMap<String, Source>();
         overrides.put("org.eclipse.persistence.testing.jaxb.annotations.cdata", src);
         HashMap properties = new HashMap();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 }

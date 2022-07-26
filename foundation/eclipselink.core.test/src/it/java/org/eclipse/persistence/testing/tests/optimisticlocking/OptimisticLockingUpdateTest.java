@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,16 +26,17 @@ import org.eclipse.persistence.testing.models.optimisticlocking.LockObject;
 public class OptimisticLockingUpdateTest extends AutoVerifyTestCase {
     protected UnitOfWork uow;
     protected Object originalObject;
-    protected Class domainClass;
+    protected Class<?> domainClass;
     protected boolean useUOW;
 
-    public OptimisticLockingUpdateTest(Class aClass, boolean useUnitOfWork) {
+    public OptimisticLockingUpdateTest(Class<?> aClass, boolean useUnitOfWork) {
         setName(getName() + "(" + aClass + ")");
         domainClass = aClass;
         this.useUOW = useUnitOfWork;
         setDescription("This test verifies that an object gets updated properly, and that the lock value gets updated in memory");
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         if (useUOW) {
@@ -46,11 +47,13 @@ public class OptimisticLockingUpdateTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         ((LockObject)originalObject).value = "June is hot";
         if (useUOW) {
@@ -60,6 +63,7 @@ public class OptimisticLockingUpdateTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         boolean exceptionCaught = false;
 

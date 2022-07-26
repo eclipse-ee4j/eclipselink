@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,17 +51,11 @@ public class SingleElementListIterable<E> implements ListIterable<E> {
         this.element = element;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterator<E> iterator() {
-        return new SingleElementListIterator<E>(this.element);
+        return new SingleElementListIterator<>(this.element);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return "[" + this.element + "]";

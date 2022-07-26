@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,7 +18,7 @@ package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -30,32 +30,32 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <b>Purpose</b>: Allow a semi-generic way of creating stored procedures.
  */
 public class StoredProcedureDefinition extends DatabaseObjectDefinition {
-    protected Vector variables;
-    protected Vector statements;
-    protected Vector arguments;
-    protected Vector argumentTypes;
-    protected static final Integer IN = Integer.valueOf(1);
-    protected static final Integer OUT = Integer.valueOf(2);
-    protected static final Integer INOUT = Integer.valueOf(3);
+    protected List<FieldDefinition> variables;
+    protected List<String> statements;
+    protected List<FieldDefinition> arguments;
+    protected List<Integer> argumentTypes;
+    protected static final Integer IN = 1;
+    protected static final Integer OUT = 2;
+    protected static final Integer INOUT = 3;
 
     public StoredProcedureDefinition() {
-        this.statements = new Vector();
-        this.variables = new Vector();
-        this.arguments = new Vector();
-        this.argumentTypes = new Vector();
+        this.statements = new Vector<>();
+        this.variables = new Vector<>();
+        this.arguments = new Vector<>();
+        this.argumentTypes = new Vector<>();
     }
 
     /**
      * The arguments are the names of the parameters to the procedure.
      */
-    public void addArgument(String argumentName, Class type) {
+    public void addArgument(String argumentName, Class<?> type) {
         addArgument(new FieldDefinition(argumentName, type));
     }
 
     /**
      * The arguments are the names of the parameters to the procedure.
      */
-    public void addArgument(String argumentName, Class type, int size) {
+    public void addArgument(String argumentName, Class<?> type, int size) {
         addArgument(new FieldDefinition(argumentName, type, size));
     }
 
@@ -70,14 +70,14 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
      * The arguments are the names of the parameters to the procedure.
      */
     public void addArgument(FieldDefinition argument) {
-        getArguments().addElement(argument);
-        getArgumentTypes().addElement(IN);
+        getArguments().add(argument);
+        getArgumentTypes().add(IN);
     }
 
     /**
      * The output arguments are used to get values back from the proc.
      */
-    public void addInOutputArgument(String argumentName, Class type) {
+    public void addInOutputArgument(String argumentName, Class<?> type) {
         addInOutputArgument(new FieldDefinition(argumentName, type));
     }
 
@@ -85,21 +85,21 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
      * The output arguments are used to get values back from the proc, such as cursors.
      */
     public void addInOutputArgument(FieldDefinition argument) {
-        getArguments().addElement(argument);
-        getArgumentTypes().addElement(INOUT);
+        getArguments().add(argument);
+        getArgumentTypes().add(INOUT);
     }
 
     /**
      * The output arguments are used to get values back from the proc.
      */
-    public void addOutputArgument(String argumentName, Class type) {
+    public void addOutputArgument(String argumentName, Class<?> type) {
         addOutputArgument(new FieldDefinition(argumentName, type));
     }
 
     /**
      * The output arguments are used to get values back from the proc.
      */
-    public void addOutputArgument(String argumentName, Class type, int size) {
+    public void addOutputArgument(String argumentName, Class<?> type, int size) {
         addOutputArgument(new FieldDefinition(argumentName, type, size));
     }
 
@@ -114,15 +114,15 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
      * The output arguments are used to get values back from the proc, such as cursors.
      */
     public void addOutputArgument(FieldDefinition argument) {
-        getArguments().addElement(argument);
-        getArgumentTypes().addElement(OUT);
+        getArguments().add(argument);
+        getArgumentTypes().add(OUT);
     }
 
     /**
      * The statements are the SQL lines of code in procedure.
      */
     public void addStatement(String statement) {
-        getStatements().addElement(statement);
+        getStatements().add(statement);
     }
 
     /**
@@ -136,7 +136,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
      * The variables are the names of the declared variables used in the procedure.
      */
     public void addVariable(FieldDefinition variable) {
-        getVariables().addElement(variable);
+        getVariables().add(variable);
     }
 
     /**
@@ -153,8 +153,8 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
             writer.write("\n");
             for (int i = getFirstArgumentIndex(); i < getArguments().size(); i++) {
                 writer.write("\t");
-                FieldDefinition argument = (FieldDefinition)getArguments().elementAt(i);
-                Integer argumentType = (Integer)getArgumentTypes().elementAt(i);
+                FieldDefinition argument = getArguments().get(i);
+                Integer argumentType = getArgumentTypes().get(i);
                 if (argumentType == IN) {
                     printArgument(argument, writer, session);
                 } else if (argumentType == OUT) {
@@ -186,9 +186,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
                 writer.write("DECLARE\n");
             }
 
-            for (Enumeration variablesEnum = getVariables().elements();
-                     variablesEnum.hasMoreElements();) {
-                FieldDefinition field = (FieldDefinition)variablesEnum.nextElement();
+            for (FieldDefinition field: getVariables()) {
                 writer.write("\t");
                 writer.write(field.getName());
                 writer.write(" ");
@@ -202,9 +200,8 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
                 writer.write("\n");
             }
 
-            for (Enumeration statementsEnum = getStatements().elements();
-                     statementsEnum.hasMoreElements();) {
-                writer.write((String)statementsEnum.nextElement());
+            for (String statement: getStatements()) {
+                writer.write(statement);
                 writer.write(platform.getBatchDelimiterString());
                 writer.write("\n");
             }
@@ -231,7 +228,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
      * The arguments are the names of the parameters to the procedure.
      */
-    public Vector getArguments() {
+    public List<FieldDefinition> getArguments() {
         return arguments;
     }
 
@@ -259,21 +256,21 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
          *
          */
-    public Vector getArgumentTypes() {
+    public List<Integer> getArgumentTypes() {
         return argumentTypes;
     }
 
     /**
      * The statements are the SQL lines of code in procedure.
      */
-    public Vector getStatements() {
+    public List<String> getStatements() {
         return statements;
     }
 
     /**
      * The variables are the names of the declared variables used in the procedure.
      */
-    public Vector getVariables() {
+    public List<FieldDefinition> getVariables() {
         return variables;
     }
 
@@ -438,21 +435,21 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
      * The arguments are the field defs of the parameters names and types to the procedure.
      */
-    public void setArguments(Vector arguments) {
+    public void setArguments(List<FieldDefinition> arguments) {
         this.arguments = arguments;
     }
 
     /**
      * The statements are the SQL lines of code in procedure.
      */
-    public void setStatements(Vector statements) {
+    public void setStatements(List<String> statements) {
         this.statements = statements;
     }
 
     /**
      * The variables are the field defs of the declared variables used in the procedure.
      */
-    public void setVariables(Vector variables) {
+    public void setVariables(List<FieldDefinition> variables) {
         this.variables = variables;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * Arithmetic operations use numeric promotion. Standard bracketing () for ordering expression
  * evaluation is supported.
  *
- * <div><b>BNF:</b> <code>expression ::= identifier conditional_expression</code><p></div>
+ * <div><b>BNF:</b> <code>expression ::= identifier conditional_expression</code></div>
  *
  * @see HavingClause
  * @see OnClause
@@ -67,25 +67,16 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getConditionalExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addChildrenTo(Collection<Expression> children) {
         children.add(getConditionalExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addOrderedChildrenTo(List<Expression> children) {
 
@@ -110,21 +101,18 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
      */
     public CollectionExpression buildCollectionExpression() {
 
-        List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+        List<AbstractExpression> children = new ArrayList<>(1);
         children.add((AbstractExpression) getConditionalExpression());
 
-        List<Boolean> commas = new ArrayList<Boolean>(1);
+        List<Boolean> commas = new ArrayList<>(1);
         commas.add(Boolean.FALSE);
 
-        List<Boolean> spaces = new ArrayList<Boolean>(1);
+        List<Boolean> spaces = new ArrayList<>(1);
         spaces.add(Boolean.FALSE);
 
         return new CollectionExpression(this, children, commas, spaces, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -186,18 +174,12 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
         return hasSpaceAfterIdentifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return wordParser.character() == RIGHT_PARENTHESIS ||
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void parse(WordParser wordParser, boolean tolerant) {
 
@@ -210,17 +192,11 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
         conditionalExpression = parse(wordParser, ConditionalExpressionBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean shouldSkipLiteral(AbstractExpression expression) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void toParsedText(StringBuilder writer, boolean actual) {
 

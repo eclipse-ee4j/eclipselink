@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ public class UnitOfWorkRevertWithNewObjectTest extends AutoVerifyTestCase {
     public UnitOfWorkRevertWithNewObjectTest() {
     }
 
+    @Override
     protected void test() {
         //First test to see if it works without registering any objects.
         //The motivation for this is a bug that was found.

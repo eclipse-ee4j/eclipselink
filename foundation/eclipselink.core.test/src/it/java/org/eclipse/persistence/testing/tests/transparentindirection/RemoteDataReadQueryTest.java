@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,12 +37,14 @@ public class RemoteDataReadQueryTest extends AutoVerifyTestCase {
      * set up test fixtures:
      *   check session
      */
+    @Override
     protected void setup() {
         if (!getSession().isRemoteSession()) {
             throw new TestProblemException("session should be a remote session");
         }
     }
 
+    @Override
     public void test() {
         this.testStackContainerPolicy();
         this.testCursoredStreamPolicy();
@@ -63,7 +65,7 @@ public class RemoteDataReadQueryTest extends AutoVerifyTestCase {
         int count = 0;
         while (stream.hasMoreElements()) {
             count++;
-            org.eclipse.persistence.sessions.Record row = (org.eclipse.persistence.sessions.Record)stream.nextElement();
+            DataRecord row = (DataRecord)stream.nextElement();
             if (row.get("CUSTNAME") == null) {
                 throw new TestErrorException("missing data");
             }
@@ -79,7 +81,7 @@ public class RemoteDataReadQueryTest extends AutoVerifyTestCase {
 
         stack = (Stack)getSession().executeQuery(query);
         // if we get here, we must not have generated a ClassCastException
-        org.eclipse.persistence.sessions.Record row = (org.eclipse.persistence.sessions.Record)stack.peek();
+        DataRecord row = (DataRecord)stack.peek();
         if (row.get("CUSTNAME") == null) {
             throw new TestErrorException("missing data");
         }

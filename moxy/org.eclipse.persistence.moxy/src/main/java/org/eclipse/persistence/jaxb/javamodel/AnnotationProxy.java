@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ public class AnnotationProxy implements InvocationHandler {
      * in the <code>Map</code> based on the return type of the associated
      * <code>Method</code> Note that the preferred method of obtaining an
      * instance of this proxy class is via
-     * <code>getProxy(Map, Class<A>, ClassLoader, ConversionManager)</code>
+     * {@code getProxy(Map, Class<A>, ClassLoader, ConversionManager)}
      *
      * @param components
      *            <code>Map</code> of method name to value pairs
@@ -115,7 +115,7 @@ public class AnnotationProxy implements InvocationHandler {
         // Pass the classloader to the ConversionManager as well
         // conversionMgr.setLoader(cl);
 
-        return (A) Proxy.newProxyInstance(cl, new Class[] { annoClass }, new AnnotationProxy(components, conversionMgr));
+        return (A) Proxy.newProxyInstance(cl, new Class<?>[] { annoClass }, new AnnotationProxy(components, conversionMgr));
     }
 
     /**
@@ -151,7 +151,7 @@ public class AnnotationProxy implements InvocationHandler {
             return null;
         }
 
-        Class returnType = method.getReturnType();
+        Class<?> returnType = method.getReturnType();
         Object value = getComponents().get(method.getName());
 
         if (value == null && returnType == boolean.class) {
@@ -169,13 +169,13 @@ public class AnnotationProxy implements InvocationHandler {
         return conversionMgr.convertObject(value, returnType);
     }
 
-    private Object handleArrayData(Class returnType, Object value) {
+    private Object handleArrayData(Class<?> returnType, Object value) {
         if (value == null) {
             return null;
         }
 
         Object[] data = (Object[]) value;
-        Class componentType = returnType.getComponentType();
+        Class<?> componentType = returnType.getComponentType();
         Object[] convertedArray = (Object[]) Array.newInstance(componentType, data.length);
 
         for (int i = 0; i < data.length; i++) {

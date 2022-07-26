@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,18 +52,19 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
     /**
      * Setup by setting the new cache synchronization type values on the appropriate descriptors.
      */
+    @Override
     public void setup() {
         oldCacheSyncConfigValues = new Hashtable();
         Enumeration keys = cacheSyncConfigValues.keys();
         while (keys.hasMoreElements()) {
-            Class keyClass = (Class)keys.nextElement();
+            Class<?> keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
             if (descriptor != null) {
                 int cacheSyncType = descriptor.getCacheSynchronizationType();
                 Object newCacheSyncType = cacheSyncConfigValues.get(keyClass);
                 if (newCacheSyncType != null) {
-                    oldCacheSyncConfigValues.put(keyClass, new Integer(cacheSyncType));
-                    descriptor.setCacheSynchronizationType(((Integer)newCacheSyncType).intValue());
+                    oldCacheSyncConfigValues.put(keyClass, cacheSyncType);
+                    descriptor.setCacheSynchronizationType((Integer) newCacheSyncType);
                 }
             }
         }
@@ -75,6 +76,7 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
      * that the cache synchronization setting will allow the compareObjects call made
      * in the superclass work return true.
      */
+    @Override
     public void verify() {
         this.objectFromDatabase = getSession().executeQuery(this.query);
         if (isObjectValidOnDistributedServer(objectFromDatabase)) {
@@ -86,13 +88,14 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
     /**
      * Reset the cache synchronization types.
      */
+    @Override
     public void reset() {
         super.reset();
         Enumeration keys = oldCacheSyncConfigValues.keys();
         while (keys.hasMoreElements()) {
-            Class keyClass = (Class)keys.nextElement();
+            Class<?> keyClass = (Class)keys.nextElement();
             ClassDescriptor descriptor = getSession().getDescriptor(keyClass);
-            int newCacheSyncType = ((Integer)oldCacheSyncConfigValues.get(keyClass)).intValue();
+            int newCacheSyncType = (Integer) oldCacheSyncConfigValues.get(keyClass);
             descriptor.setCacheSynchronizationType(newCacheSyncType);
         }
     }

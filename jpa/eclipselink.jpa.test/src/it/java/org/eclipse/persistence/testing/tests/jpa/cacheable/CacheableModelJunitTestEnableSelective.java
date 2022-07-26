@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ package org.eclipse.persistence.testing.tests.jpa.cacheable;
 import junit.framework.*;
 
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
 
 /*
@@ -44,6 +44,7 @@ public class CacheableModelJunitTestEnableSelective extends CacheableModelJunitT
         setPuName(PU_NAME);
     }
 
+    @Override
     public void setUp() {
         clearCache(PU_NAME);
     }
@@ -64,6 +65,7 @@ public class CacheableModelJunitTestEnableSelective extends CacheableModelJunitT
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
+    @Override
     public void testSetup() {
         new CacheableTableCreator().replaceTables(JUnitTestCase.getServerSession(PU_NAME));
         clearCache(PU_NAME);

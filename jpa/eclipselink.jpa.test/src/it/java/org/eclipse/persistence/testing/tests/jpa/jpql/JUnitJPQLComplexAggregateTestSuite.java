@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -32,11 +32,9 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
@@ -74,6 +72,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     }
 
     //This method is run at the end of EVERY test case method
+    @Override
     public void tearDown()
     {
         clearCache();
@@ -101,10 +100,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexMinTest"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexSumTest"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountDistinctOnBaseQueryClass"));
-        suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountOnJoinedVariableSimplePK"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountOnJoinedVariableCompositePK"));
-        suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountOnJoinedVariableOverManyToManySelfRefRelationship"));
-        suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountOnJoinedVariableOverManyToManySelfRefRelationshipPortable"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("complexCountOnJoinedCompositePK"));
         suite.addTest(new JUnitJPQLComplexAggregateTestSuite("testMultipleCoalesce"));
 
@@ -125,9 +121,6 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         new AdvancedTableCreator().replaceTables(session);
         new CompositePKTableCreator().replaceTables(session);
 
-        RelationshipsExamples relationshipExamples = new RelationshipsExamples();
-        new RelationshipsTableManager().replaceTables(session);
-
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
 
@@ -140,8 +133,6 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         //Persist the examples in the database
         employeePopulator.persistExample(session);
 
-        //populate the relationships model and persist as well
-        relationshipExamples.buildExamples(session);
     }
 
     public void complexAVGTest()
@@ -528,7 +519,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         beginTransaction(em);
 
-        Long expectedResult = Long.valueOf(getServerSession().readAllObjects(Employee.class).size());
+        Long expectedResult = (long) getServerSession().readAllObjects(Employee.class).size();
 
         String jpql = "SELECT COUNT(DISTINCT e) FROM Employee e";
         Query q = em.createQuery(jpql);
@@ -543,41 +534,13 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     /**
      * Test case glassfish issue 2497:
      */
-    public void complexCountOnJoinedVariableSimplePK()
-    {
-        EntityManager em = createEntityManager();
-
-        // Need to create the expected result manually, because using the
-        // TopLink query API would run into the same issue 2497.
-        List expectedResult = Arrays.asList(new Long[] { Long.valueOf(1), Long.valueOf(0),
-                                                         Long.valueOf(0), Long.valueOf(1) });
-        Collections.sort(expectedResult);
-
-        String jpql = "SELECT COUNT(o) FROM Customer c LEFT JOIN c.orders o GROUP BY c.name";
-        Query q = em.createQuery(jpql);
-        List result = q.getResultList();
-        Collections.sort(result);
-
-        Assert.assertEquals("Complex COUNT on joined variable simple PK", expectedResult, result);
-
-        jpql = "SELECT COUNT(DISTINCT o) FROM Customer c LEFT JOIN c.orders o GROUP BY c.name";
-        q = em.createQuery(jpql);
-        result = q.getResultList();
-        Collections.sort(result);
-
-        Assert.assertEquals("Complex COUNT DISTINCT on joined variable simple PK", expectedResult, result);
-    }
-
-    /**
-     * Test case glassfish issue 2497:
-     */
     public void complexCountOnJoinedVariableCompositePK()
     {
         EntityManager em = createEntityManager();
 
         // Need to create the expected result manually, because using the
         // TopLink query API would run into the same issue 2497.
-        List expectedResult = Arrays.asList(new Long[] { Long.valueOf(2), Long.valueOf(5), Long.valueOf(3) });
+        List<Long> expectedResult = Arrays.asList(2L, 5L, 3L);
         Collections.sort(expectedResult);
 
         String jpql = "SELECT COUNT(p) FROM Employee e LEFT JOIN e.phoneNumbers p WHERE e.lastName LIKE 'S%' GROUP BY e.lastName";
@@ -618,7 +581,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
             // Need to create the expected result manually, because using the
             // TopLink query API would run into the same issue 6155093.
-            List expectedResult = Arrays.asList(new Long[] { Long.valueOf(1) });
+            List<Long> expectedResult = Arrays.asList(1L);
             Collections.sort(expectedResult);
 
             // COUNT DISTINCT with inner join
@@ -631,60 +594,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         }finally{
             rollbackTransaction(em);
         }
-}
-
-    /**
-     * Test case glassfish issue 2440:
-     * On derby a JPQL query including a LEFT JOIN on a ManyToMany
-     * relationship field of the same class (self-referencing relationship)
-     * runs into a NPE in SQLSelectStatement.appendFromClauseForOuterJoin.
-     */
-    public void complexCountOnJoinedVariableOverManyToManySelfRefRelationshipPortable()
-    {
-        EntityManager em = createEntityManager();
-
-        List<Object[]> expectedResult = Arrays.asList(new Object[][] { {0L, "Jane Smith"}, {1L, "John Smith"}, {0L, "Karen McDonald"}, { 0L, "Robert Sampson"} });
-
-        String jpql = "SELECT COUNT(cc), c.name FROM Customer c LEFT JOIN c.CCustomers cc GROUP BY c.name order by c.name";
-        Query q = em.createQuery(jpql);
-        List<Object[]> result = q.getResultList();
-
-        final String description = "Complex COUNT on joined variable over ManyToMany self refrenceing relationship";
-
-        Assert.assertEquals(description + " size mismatch", expectedResult.size(), result.size());
-
-        for (int i = 0; i < result.size(); i++) {
-            Object[] expected = expectedResult.get(i);
-            Object[] actual = result.get(i);
-            Assert.assertEquals(expected[0], actual[0]);
-            Assert.assertEquals(expected[1], actual[1]);
-        }
     }
-
-    /**
-     * Test case glassfish issue 2440:
-     * On derby a JPQL query including a LEFT JOIN on a ManyToMany
-     * relationship field of the same class (self-referencing relationship)
-     * runs into a NPE in SQLSelectStatement.appendFromClauseForOuterJoin.
-     */
-    public void complexCountOnJoinedVariableOverManyToManySelfRefRelationship()
-    {
-        if (getServerSession().getPlatform().isMaxDB()) {
-            return; // bug 327108 MaxDB can't order by non-selec tlist column c.name
-        }
-
-        EntityManager em = createEntityManager();
-
-        List expectedResult = Arrays.asList(new Long[] { 0L, 1L, 0L, 0L });
-
-        String jpql = "SELECT COUNT(cc) FROM Customer c LEFT JOIN c.CCustomers cc GROUP BY c.name order by c.name";
-        Query q = em.createQuery(jpql);
-        List result = q.getResultList();
-
-        Assert.assertEquals("Complex COUNT on joined variable over ManyToMany self refrenceing relationship failed",
-                            expectedResult, result);
-    }
-
 
     public void complexSelectAggregateTest(){
         EntityManager em = createEntityManager();
@@ -706,7 +616,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     public void testMultipleCoalesce() {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("SELECT SUM(COALESCE(e.roomNumber, 20)), SUM(COALESCE(e.salary, 10000)) FROM Employee e");
-        List result = (List) query.getResultList();
+        List result = query.getResultList();
         Assert.assertNotNull("testMultipleCoalesce Test Failed - Unable to fetch employee data", result);
         Assert.assertFalse("testMultipleCoalesce Test Failed - Unable to fetch employee data", result.isEmpty());
         Object[] aggregateResult = (Object[])result.get(0);

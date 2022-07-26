@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,9 +54,6 @@ public abstract class AbstractSelectClauseStateObject extends AbstractStateObjec
         super(parent);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSelectClause getExpression() {
         return (AbstractSelectClause) super.getExpression();
@@ -71,9 +68,6 @@ public abstract class AbstractSelectClauseStateObject extends AbstractStateObjec
         return getParent().getFromClause();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractSelectStatementStateObject getParent() {
         return (AbstractSelectStatementStateObject) super.getParent();
@@ -95,9 +89,6 @@ public abstract class AbstractSelectClauseStateObject extends AbstractStateObjec
      */
     public abstract boolean hasSelectItem();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 

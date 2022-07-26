@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,98 +30,98 @@ import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
  */
 public interface DBWSPackager {
 
-    public enum ArchiveUse {
+    enum ArchiveUse {
         archive, noArchive, ignore;
     }
 
     // attribute methods
-    public void setDBWSBuilder(DBWSBuilder builder);
-    public void setAdditionalArgs(String[] additionalArgs);
-    public File getStageDir();
-    public void setStageDir(File stageDir);
-    public String getSessionsFileName();
-    public void setSessionsFileName(String sessionsFileName);
-    public void setHasAttachments(boolean hasAttachments);
-    public boolean hasAttachments();
-    public String getPackagerLabel();
-    public void setArchiveFilename(String archiveFilename);
-    public String getArchiveFilename();
+    void setDBWSBuilder(DBWSBuilder builder);
+    void setAdditionalArgs(String[] additionalArgs);
+    File getStageDir();
+    void setStageDir(File stageDir);
+    String getSessionsFileName();
+    void setSessionsFileName(String sessionsFileName);
+    void setHasAttachments(boolean hasAttachments);
+    boolean hasAttachments();
+    String getPackagerLabel();
+    void setArchiveFilename(String archiveFilename);
+    String getArchiveFilename();
 
-    public void start(); // lifecycle methods
-    public void end();
+    void start(); // lifecycle methods
+    void end();
 
     // call-backs for stream management
-    public OutputStream getSchemaStream() throws FileNotFoundException;
-    public void closeSchemaStream(OutputStream schemaStream);
+    OutputStream getSchemaStream() throws FileNotFoundException;
+    void closeSchemaStream(OutputStream schemaStream);
 
-    public OutputStream getSessionsStream(String sessionsFileName) throws FileNotFoundException;
-    public SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder);
-    public void closeSessionsStream(OutputStream sessionsStream);
+    OutputStream getSessionsStream(String sessionsFileName) throws FileNotFoundException;
+    SessionConfigs buildSessionsXML(OutputStream dbwsSessionsStream, DBWSBuilder builder);
+    void closeSessionsStream(OutputStream sessionsStream);
 
-    public OutputStream getServiceStream() throws FileNotFoundException;
-    public void closeServiceStream(OutputStream serviceStream);
+    OutputStream getServiceStream() throws FileNotFoundException;
+    void closeServiceStream(OutputStream serviceStream);
 
-    public OutputStream getOrStream() throws FileNotFoundException;
-    public String getOrProjectPathPrefix();
-    public void closeOrStream(OutputStream orStream);
+    OutputStream getOrStream() throws FileNotFoundException;
+    String getOrProjectPathPrefix();
+    void closeOrStream(OutputStream orStream);
 
-    public OutputStream getOxStream() throws FileNotFoundException;
-    public String getOxProjectPathPrefix();
-    public void closeOxStream(OutputStream oxStream);
+    OutputStream getOxStream() throws FileNotFoundException;
+    String getOxProjectPathPrefix();
+    void closeOxStream(OutputStream oxStream);
 
-    public OutputStream getWSDLStream() throws FileNotFoundException;
-    public String getWSDLPathPrefix();
-    public void closeWSDLStream(OutputStream wsdlStream);
+    OutputStream getWSDLStream() throws FileNotFoundException;
+    String getWSDLPathPrefix();
+    void closeWSDLStream(OutputStream wsdlStream);
 
-    public OutputStream getSWARefStream() throws FileNotFoundException;
-    public void closeSWARefStream(OutputStream swarefStream);
+    OutputStream getSWARefStream() throws FileNotFoundException;
+    void closeSWARefStream(OutputStream swarefStream);
 
-    public OutputStream getWebXmlStream() throws FileNotFoundException;
-    public void writeWebXml(OutputStream webXmlStream, DBWSBuilder dbwsBuilder);
-    public void closeWebXmlStream(OutputStream webXmlStream);
+    OutputStream getWebXmlStream() throws FileNotFoundException;
+    void writeWebXml(OutputStream webXmlStream, DBWSBuilder dbwsBuilder);
+    void closeWebXmlStream(OutputStream webXmlStream);
 
-    public OutputStream getProviderSourceStream() throws FileNotFoundException;
-    public void closeProviderSourceStream(OutputStream sourceProviderStream);
-    public OutputStream getProviderClassStream() throws FileNotFoundException;
-    public void closeProviderClassStream(OutputStream classProviderStream);
-    public OutputStream getProviderListenerClassStream() throws FileNotFoundException;
-    public void closeProviderListenerClassStream(OutputStream classProviderListenerStream);
-    public OutputStream getProviderListenerSourceStream() throws FileNotFoundException;
-    public void closeProviderListenerSourceStream(OutputStream sourceProviderListenerStream);
-    public void writeProvider(OutputStream sourceProviderStream, OutputStream codeGenProviderStream,
-        OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream,
-        DBWSBuilder builder);
+    OutputStream getProviderSourceStream() throws FileNotFoundException;
+    void closeProviderSourceStream(OutputStream sourceProviderStream);
+    OutputStream getProviderClassStream() throws FileNotFoundException;
+    void closeProviderClassStream(OutputStream classProviderStream);
+    OutputStream getProviderListenerClassStream() throws FileNotFoundException;
+    void closeProviderListenerClassStream(OutputStream classProviderListenerStream);
+    OutputStream getProviderListenerSourceStream() throws FileNotFoundException;
+    void closeProviderListenerSourceStream(OutputStream sourceProviderListenerStream);
+    void writeProvider(OutputStream sourceProviderStream, OutputStream codeGenProviderStream,
+                       OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream,
+                       DBWSBuilder builder);
 
     /**
      * Write the deployment descriptor contents to the provided OutputStream.
      */
-    public void writeDeploymentDescriptor(OutputStream descriptorOutputStream);
+    void writeDeploymentDescriptor(OutputStream descriptorOutputStream);
     /**
      * Return an OutputStream to the deployment descriptor.
      */
-    public OutputStream getDeploymentDescriptorStream() throws FileNotFoundException;
+    OutputStream getDeploymentDescriptorStream() throws FileNotFoundException;
     /**
      * Closes the provided OutputStream.
      */
-    public void closeDeploymentDescriptorStream(OutputStream descriptorOutputStream);
+    void closeDeploymentDescriptorStream(OutputStream descriptorOutputStream);
     /**
      * Return the name of the deployment descriptor file - this will depend on the
      * target application server.
      */
-    public String getDeploymentDescriptorFileName();
+    String getDeploymentDescriptorFileName();
 
-    public void setArchiveUse(ArchiveUse archiveUse);
-    public String getUsage();
+    void setArchiveUse(ArchiveUse archiveUse);
+    String getUsage();
 
-    public static interface Archiver {
-        public void setPackager(DBWSPackager packager);
-        public DBWSPackager getPackager();
-        public void archive();
-        public String getFilename();
-        public void setFilename(String filename);
-        public String getOrProjectPathPrefix();
-        public String getOxProjectPathPrefix();
-        public String getWSDLPathPrefix();
+    interface Archiver {
+        void setPackager(DBWSPackager packager);
+        DBWSPackager getPackager();
+        void archive();
+        String getFilename();
+        void setFilename(String filename);
+        String getOrProjectPathPrefix();
+        String getOxProjectPathPrefix();
+        String getWSDLPathPrefix();
     }
 
 }

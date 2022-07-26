@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,6 @@ package org.eclipse.persistence.core.queries;
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,7 +29,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.queries.CoreAttributeConverter;
 import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
 /**
  * INTERNAL
@@ -69,7 +66,7 @@ public class CoreAttributeGroup<
      * The class represented by this AttrbuteGroup.  Used to specify overriding
      * groups for subclasses.
      */
-    protected Class type;
+    protected Class<?> type;
 
     /**
      * To add inheritance support the two following attrbutes are used to create a model of the inheritance tree
@@ -117,10 +114,8 @@ public class CoreAttributeGroup<
     /**
      * INTERNAL:
      * This constructer is to only be used by EclipseLink internally
-     * @param name
-     * @param type
      */
-    public CoreAttributeGroup(String name, Class type, boolean isValidated) {
+    public CoreAttributeGroup(String name, Class<?> type, boolean isValidated) {
         this(name);
         this.type = type;
         this.isValidated = isValidated;
@@ -151,7 +146,7 @@ public class CoreAttributeGroup<
     /**
      * Add an attribute and the corresponding list of AttributeGroups.
      * Multiple groups are added in the case of inheritance
-     * <p>
+     *
      * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path
      * @param groups - a collection of AttributeGroups to be added.
@@ -225,11 +220,9 @@ public class CoreAttributeGroup<
     /**
      * INTERNAL:
      *    This method is used internally in the clone processing.
-     * @param cloneMap
-     * @return
      */
     public CoreAttributeGroup clone(Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>> cloneMap){
-        CoreAttributeGroup clone = cloneMap.get(this);
+        CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR> clone = cloneMap.get(this);
         if (clone != null) {
             return clone;
         }
@@ -252,7 +245,7 @@ public class CoreAttributeGroup<
             clone.superClassGroup = this.superClassGroup.clone(cloneMap);
         }
         if (this.subClasses != null){
-            clone.subClasses = new HashSet<CoreAttributeGroup>();
+            clone.subClasses = new HashSet<>();
             for (CoreAttributeGroup group : this.subClasses){
                 clone.subClasses.add(group.clone(cloneMap));
             }
@@ -260,9 +253,9 @@ public class CoreAttributeGroup<
         // all attributes and nested groups should be cloned, too
         clone.items = null;
         if (hasItems()) {
-            clone.items = new HashMap<String, ATTRIBUTE_ITEM>();
+            clone.items = new HashMap<>();
             for (ATTRIBUTE_ITEM item : this.items.values()){
-                clone.items.put(item.getAttributeName(), item.clone(cloneMap, clone));
+                clone.items.put(item.getAttributeName(), (ATTRIBUTE_ITEM) item.clone(cloneMap, clone));
             }
         }
         return clone;
@@ -314,23 +307,13 @@ public class CoreAttributeGroup<
      * Convert all the class-name-based settings in this Descriptor to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        if (this.type == null){
-            try{
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        this.type = AccessController.doPrivileged(new PrivilegedClassForName(this.typeName, true, classLoader));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(this.typeName, exception.getException());
-                    }
-                } else {
-                    this.type = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(this.typeName, true, classLoader);
-                }
-            } catch (ClassNotFoundException exc){
-                throw ValidationException.classNotFoundWhileConvertingClassNames(this.typeName, exc);
-            }
+        if (this.type == null) {
+            this.type = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.getClassForName(this.typeName, true, classLoader),
+                    (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(this.typeName, ex)
+            );
             if (this.items != null){
                 for (ATTRIBUTE_ITEM item : this.items.values()){
                     item.convertClassNamesToClasses(classLoader);
@@ -545,7 +528,7 @@ public class CoreAttributeGroup<
         return this.allsubclasses;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
@@ -574,7 +557,6 @@ public class CoreAttributeGroup<
     /**
      * INTERNAL:
      * This method will insert the group into the entity hierarchy just below this AttributeGroup.
-     * @param group
      */
     public void insertSubClass(CoreAttributeGroup group){
         if (this == group){
@@ -607,7 +589,6 @@ public class CoreAttributeGroup<
     /**
      * INTERNAL:
      *    This method is used internally when converting to a copy group.
-     * @return
      */
     public boolean isCopyGroup() {
         return false;

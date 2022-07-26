@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,10 +21,12 @@ import org.eclipse.persistence.testing.models.aggregate.nested.Student;
 
 public class NestedAggregateTestCase extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
 
+    @Override
     public void reset() {
         rollbackTransaction();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
 
@@ -58,6 +60,7 @@ public class NestedAggregateTestCase extends org.eclipse.persistence.testing.fra
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void test() {
         Student student = (Student)getSession().readObject(Student.class);
 
@@ -71,6 +74,7 @@ public class NestedAggregateTestCase extends org.eclipse.persistence.testing.fra
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void verify() {
     }
 }

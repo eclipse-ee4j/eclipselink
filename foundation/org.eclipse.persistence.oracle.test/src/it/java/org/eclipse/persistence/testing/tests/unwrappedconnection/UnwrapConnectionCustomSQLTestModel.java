@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class UnwrapConnectionCustomSQLTestModel extends CustomSQLTestModel{
     /**
      * Revert the descriptors back to their old state.
      */
+    @Override
     public void reset() {
         DatabaseSession session = (DatabaseSession)getSession();
         session.logout();
@@ -52,6 +53,7 @@ public class UnwrapConnectionCustomSQLTestModel extends CustomSQLTestModel{
         super.reset();
     }
 
+    @Override
     public void setup(){
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("WARNING: This model is not supposed to be run on databases other than Oracle.");

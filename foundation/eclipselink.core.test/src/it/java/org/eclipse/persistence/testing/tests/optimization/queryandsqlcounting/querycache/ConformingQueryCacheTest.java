@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,12 +26,14 @@ public class ConformingQueryCacheTest extends UnitOfWorkQueryCacheTest {
         setDescription("Ensure results can be conformed when a cached query is run in a UnitOfWork.");
     }
 
+    @Override
     public ReadQuery getQueryForTest() {
         ReadQuery query = super.getQueryForTest();
         ((ObjectLevelReadQuery)query).conformResultsInUnitOfWork();
         return query;
     }
 
+    @Override
     public void test() {
         super.test();
         Employee emp = (Employee)((Vector)results).firstElement();
@@ -43,6 +45,7 @@ public class ConformingQueryCacheTest extends UnitOfWorkQueryCacheTest {
         results = getSessionForQueryTest().executeQuery(NamedQueryQueryCacheTest.CACHING_QUERY_NAME);
     }
 
+    @Override
     public void verify() {
         super.verify();
         Iterator employees = ((Vector)results).iterator();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,10 +35,12 @@ public class ParameterHandler implements DomHandler<String, StreamResult> {
     private static final String PARAMETERS_END_TAG = "</parameters>";
     private StringWriter xmlWriter = new StringWriter();
 
+    @Override
     public StreamResult createUnmarshaller(ValidationEventHandler errorHandler) {
         return new StreamResult(xmlWriter);
     }
 
+    @Override
     public String getElement(StreamResult rt) {
         String xml = rt.getWriter().toString();
         int beginIndex = xml.indexOf(PARAMETERS_START_TAG) + PARAMETERS_START_TAG.length();
@@ -46,6 +48,7 @@ public class ParameterHandler implements DomHandler<String, StreamResult> {
         return xml.substring(beginIndex, endIndex);
     }
 
+    @Override
     public Source marshal(String n, ValidationEventHandler errorHandler) {
         try {
             String xml = PARAMETERS_START_TAG + n.trim() + PARAMETERS_END_TAG;

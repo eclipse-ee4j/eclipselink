@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,15 +31,18 @@ public class ProjectClassGeneratorTestModel extends XMLProjectWriterTestModel {
         setDescription("This model tests mapping workbench integration with the foundation library by writing, compiling and instantiating project classes and then running some operations on them.");
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void reset() {
     }
 
     /**
      *  Add the Mapping Workbench Integration test system.
      */
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeWorkbenchIntegrationSubSystem());
         addRequiredSystem(new InheritanceWorkbenchIntegrationSubSystem());
@@ -55,6 +58,7 @@ public class ProjectClassGeneratorTestModel extends XMLProjectWriterTestModel {
         addRequiredSystem(new MultipleTableModelWorkbenchIntegrationSubSystem());
     }
 
+    @Override
     public void addTests() {
         super.addTests();
 

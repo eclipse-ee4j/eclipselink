@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ import org.eclipse.persistence.expressions.*;
  * Generic test to check if any results were returned as the result of a expression query.
  * If result vector is empty then throw an exception with specified message.
  * @author Peter O'Blenis
- * @date Feb. 3/99
  */
 public class SearchTest extends AutoVerifyTestCase {
     // Expression to test
@@ -44,6 +43,7 @@ public class SearchTest extends AutoVerifyTestCase {
         m_expression = expression;
     }
 
+    @Override
     public void test() {
         if ((m_expression == null) || (m_szErrorMessage == null)) {
             throw new RuntimeException("Search Test was invoked without setting all parameters");

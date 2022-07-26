@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,6 +55,7 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -98,13 +99,13 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  */
 
 public class XMLChoiceCollectionMapping extends DatabaseMapping implements ChoiceCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session, XMLUnmarshaller, XMLField, XMLMapping, XMLRecord>, XMLMapping {
-    private Map<XMLField, Class> fieldToClassMappings;
-    private Map<Class, XMLField> classToFieldMappings;
-    private Map<Class, List<XMLField>> classToSourceFieldsMappings;
+    private Map<XMLField, Class<?>> fieldToClassMappings;
+    private Map<Class<?>, XMLField> classToFieldMappings;
+    private Map<Class<?>, List<XMLField>> classToSourceFieldsMappings;
     private Map<String, List<XMLField>> classNameToSourceFieldsMappings;
     private Map<XMLField, XMLMapping> choiceElementMappings;
     private Map<String, XMLMapping> choiceElementMappingsByClassName;
-    private Map<Class, XMLMapping> choiceElementMappingsByClass;
+    private Map<Class<?>, XMLMapping> choiceElementMappingsByClass;
     private Map<XMLField, String> fieldToClassNameMappings;
     private Map<String, XMLField> classNameToFieldMappings;
     private Map<XMLField, Converter> fieldsToConverters;
@@ -224,7 +225,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     * with client-side objects.
     */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
     }
 
@@ -342,11 +343,11 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 }
             }
         }
-        ((DOMRecord)row).put(getFields(), nestedRows);
+        row.put(getFields(), nestedRows);
     }
 
     private XMLField getFieldForName(String localName, String namespaceUri) {
-        Iterator fields = getFields().iterator();
+        Iterator<DatabaseField> fields = getFields().iterator();
         while(fields.hasNext()) {
             XMLField nextField = (XMLField)fields.next();
             XPathFragment fragment = nextField.getXPathFragment();
@@ -387,7 +388,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         return new Vector<>(fieldToClassMappings.keySet());
     }
 
-    public void addChoiceElement(String xpath, Class elementType) {
+    public void addChoiceElement(String xpath, Class<?> elementType) {
         XMLField field = new XMLField(xpath);
         addChoiceElement(field, elementType);
     }
@@ -399,7 +400,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     }
 
 
-    public void addChoiceElement(XMLField xmlField, Class elementType) {
+    public void addChoiceElement(XMLField xmlField, Class<?> elementType) {
         getFieldToClassMappings().put(xmlField, elementType);
         if(!(this.fieldToClassNameMappings.containsKey(xmlField))) {
             this.fieldToClassNameMappings.put(xmlField, elementType.getName());
@@ -410,7 +411,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         addChoiceElementMapping(xmlField, elementType);
     }
 
-    public void addChoiceElement(List<XMLField> srcFields, Class elementType, List<XMLField> tgtFields) {
+    public void addChoiceElement(List<XMLField> srcFields, Class<?> elementType, List<XMLField> tgtFields) {
         for(XMLField sourceField:srcFields) {
             getFieldToClassMappings().put(sourceField, elementType);
             this.fieldToClassNameMappings.put(sourceField, elementType.getName());
@@ -432,7 +433,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         addChoiceElementMapping(srcFields, elementTypeName, tgtFields);
     }
 
-    public void addChoiceElement(String srcXPath, Class elementType, String tgtXPath) {
+    public void addChoiceElement(String srcXPath, Class<?> elementType, String tgtXPath) {
         XMLField srcField = new XMLField(srcXPath);
         XMLField tgtField = new XMLField(tgtXPath);
         addChoiceElement(srcField, elementType, tgtField);
@@ -449,7 +450,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         addChoiceElementMapping(field, elementTypeName, tgtField);
     }
 
-    public void addChoiceElement(XMLField sourceField, Class elementType, XMLField targetField) {
+    public void addChoiceElement(XMLField sourceField, Class<?> elementType, XMLField targetField) {
         getFieldToClassMappings().put(sourceField, elementType);
         this.fieldToClassNameMappings.put(sourceField, elementType.getName());
         if (classToFieldMappings.get(elementType) == null) {
@@ -458,7 +459,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         addChoiceElementMapping(sourceField, elementType, targetField);
     }
 
-    private void addChoiceElementMapping(List<XMLField> sourceFields, Class theClass, List<XMLField> targetFields) {
+    private void addChoiceElementMapping(List<XMLField> sourceFields, Class<?> theClass, List<XMLField> targetFields) {
         XMLCollectionReferenceMapping xmlMapping = new XMLCollectionReferenceMapping();
         xmlMapping.setReferenceClass(theClass);
         xmlMapping.setAttributeAccessor(temporaryAccessor);
@@ -482,7 +483,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         this.choiceElementMappingsByClassName.put(theClass, xmlMapping);
     }
 
-    private void addChoiceElementMapping(XMLField sourceField, Class theClass, XMLField targetField) {
+    private void addChoiceElementMapping(XMLField sourceField, Class<?> theClass, XMLField targetField) {
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setReferenceClass(theClass);
         mapping.setAttributeAccessor(temporaryAccessor);
@@ -511,7 +512,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
 
 
     @Override
-    public Map<XMLField, Class> getFieldToClassMappings() {
+    public Map<XMLField, Class<?>> getFieldToClassMappings() {
         return fieldToClassMappings;
     }
 
@@ -577,7 +578,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     }
 
     @Override
-    public Map<Class, XMLField> getClassToFieldMappings() {
+    public Map<Class<?>, XMLField> getClassToFieldMappings() {
         return classToFieldMappings;
     }
 
@@ -595,7 +596,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         this.containerPolicy = cp;
     }
 
-    public void useCollectionClass(Class concreteContainerClass) {
+    public void useCollectionClass(Class<?> concreteContainerClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
     }
 
@@ -610,11 +611,11 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         while (entries.hasNext()) {
             Map.Entry<XMLField, String> entry = entries.next();
             String className = entry.getValue();
-            Class elementType = null;
+            Class<?> elementType = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                        elementType = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                     }
@@ -633,11 +634,11 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
         for(Entry<String, XMLField> next: this.classNameToFieldMappings.entrySet()) {
             String className = next.getKey();
-            Class elementType = null;
+            Class<?> elementType = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                        elementType = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                     }
@@ -655,11 +656,11 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 Entry<String, List<XMLField>> nextEntry = sourceFieldEntries.next();
                 String className = nextEntry.getKey();
                 List<XMLField> fields = nextEntry.getValue();
-                Class elementType = null;
+                Class<?> elementType = null;
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                            elementType = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                         }
@@ -674,12 +675,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
         if(!choiceElementMappingsByClassName.isEmpty()) {
             for(Entry<String, XMLMapping> next:choiceElementMappingsByClassName.entrySet()) {
-                Class elementType = null;
+                Class<?> elementType = null;
                 String className = next.getKey();
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                            elementType = AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                         }
@@ -771,7 +772,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                  XMLBinaryDataCollectionMapping xmlMapping = new XMLBinaryDataCollectionMapping();
                  xmlMapping.setField(xmlField);
                  xmlMapping.setAttributeAccessor(temporaryAccessor);
-                 Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
+                 Class<Object> theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
                  xmlMapping.setAttributeElementClass(theClass);
                  this.choiceElementMappings.put(xmlField, xmlMapping);
                  this.choiceElementMappingsByClassName.put(className, xmlMapping);
@@ -788,7 +789,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
          }
     }
 
-    private void addChoiceElementMapping(XMLField xmlField, Class theClass){
+    private void addChoiceElementMapping(XMLField xmlField, Class<?> theClass){
 
         if (xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
             XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();
@@ -911,7 +912,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     }
 
     @Override
-    public Map<Class, List<XMLField>> getClassToSourceFieldsMappings() {
+    public Map<Class<?>, List<XMLField>> getClassToSourceFieldsMappings() {
         if(this.classToSourceFieldsMappings == null) {
             this.classToSourceFieldsMappings = new HashMap<>();
         }
@@ -933,7 +934,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         return false;
     }
 
-    private boolean isBinaryType(Class theClass) {
+    private boolean isBinaryType(Class<?> theClass) {
         String className = theClass.getName();
         if(className.equals(byte[].class.getName()) || className.equals(Byte[].class.getName()) || className.equals(DATA_HANDLER)
                 || className.equals(IMAGE) || className.equals(MIME_MULTIPART)) {
@@ -973,7 +974,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         }
         XMLField field = new XMLField(xpath);
         XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();
-        Class theClass = ClassConstants.STRING;
+        Class<String> theClass = ClassConstants.STRING;
         xmlMapping.setAttributeElementClass(theClass);
         xmlMapping.setField(field);
         xmlMapping.setAttributeAccessor(temporaryAccessor);
@@ -1041,11 +1042,11 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     }
 
     @Override
-    public Map<Class, XMLMapping> getChoiceElementMappingsByClass() {
+    public Map<Class<?>, XMLMapping> getChoiceElementMappingsByClass() {
         return choiceElementMappingsByClass;
     }
 
-    public void setChoiceElementMappingsByClass(Map<Class, XMLMapping> choiceElementMappingsByClass) {
+    public void setChoiceElementMappingsByClass(Map<Class<?>, XMLMapping> choiceElementMappingsByClass) {
         this.choiceElementMappingsByClass = choiceElementMappingsByClass;
     }
 

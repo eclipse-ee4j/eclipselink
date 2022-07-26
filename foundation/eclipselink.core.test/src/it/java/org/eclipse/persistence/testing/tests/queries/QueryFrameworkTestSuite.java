@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,14 @@
 package org.eclipse.persistence.testing.tests.queries;
 
 import java.util.*;
+
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.models.employee.domain.Project;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.tests.clientserver.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
@@ -36,6 +37,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         setDescription("This suite tests all of the functionality of the query framework.");
     }
 
+    @Override
     public void addTests() {
         addSRGTests();
         addTest(new QueryTimeoutTest());
@@ -75,6 +77,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.
+    @Override
     public void addSRGTests() {
         ReadAllQuery raq2 = new ReadAllQuery();
         raq2.setReferenceClass(Employee.class);
@@ -307,20 +310,21 @@ public class QueryFrameworkTestSuite extends TestSuite {
      */
     public TestCase buildReadOnlyQueryTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 // Test read alls.
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.setIsReadOnly(true);
                 List result = (List) uow.executeQuery(query);
-                if (((UnitOfWorkImpl)uow).isObjectRegistered(result.get(0))) {
+                if (uow.isObjectRegistered(result.get(0))) {
                     throwError("Read-only result was registered.");
                 }
                 // Test read objects.
                 ReadObjectQuery objectQuery = new ReadObjectQuery(result.get(0));
                 objectQuery.setIsReadOnly(true);
                 Employee employee = (Employee)uow.executeQuery(objectQuery);
-                if (((UnitOfWorkImpl)uow).isObjectRegistered(employee)) {
+                if (uow.isObjectRegistered(employee)) {
                     throwError("Read-only result was registered.");
                 }
                 if (employee != result.get(0)) {
@@ -403,6 +407,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
      */
     public TestCase buildArgumentValuesTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 // Test read alls.
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
@@ -427,14 +432,15 @@ public class QueryFrameworkTestSuite extends TestSuite {
      */
     public TestCase buildGetSQLTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 ExpressionBuilder builder = query.getExpressionBuilder();
                 query.setSelectionCriteria(builder.get("firstName").equal(builder.getParameter("name")));
                 query.addArgument("name");
-                Record record = new DatabaseRecord();
-                record.put("name", "Bob");
-                String sql = query.getTranslatedSQLString(getSession(), record);
+                DataRecord dataRecord = new DatabaseRecord();
+                dataRecord.put("name", "Bob");
+                String sql = query.getTranslatedSQLString(getSession(), dataRecord);
                 if (sql.indexOf("?") != -1) {
                     throwError("SQL was not translated.");
                 }
@@ -449,6 +455,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
      */
     public TestCase buildJoinSubclassesQueryTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 ReadAllQuery query = new ReadAllQuery(Project.class);
@@ -655,7 +662,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         query.setName("findEmployeeByEmployee");
         query.addArgument("employee");
         query.setRedirector(new QueryRedirector() {
-                public Object invokeQuery(DatabaseQuery query, org.eclipse.persistence.sessions.Record arguments, org.eclipse.persistence.sessions.Session session) {
+                @Override
+                public Object invokeQuery(DatabaseQuery query, DataRecord arguments, org.eclipse.persistence.sessions.Session session) {
                     return arguments.get("employee");
                 }
             });
@@ -675,13 +683,14 @@ public class QueryFrameworkTestSuite extends TestSuite {
      */
     public TestCase buildRecordTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 query.setShouldIncludeData(true);
                 ComplexQueryResult result = (ComplexQueryResult) getSession().executeQuery(query);
                 DatabaseRecord record = (DatabaseRecord)((List)result.getData()).get(0);
                 Iterator keySetKeys = record.keySet().iterator();
-                Iterator keys = record.getFields().iterator();
+                Iterator<DatabaseField> keys = record.getFields().iterator();
                 while (keys.hasNext() || keySetKeys.hasNext()) {
                     if (keys.next() != keySetKeys.next()) {
                         throwError("KeySet is incorrect.");

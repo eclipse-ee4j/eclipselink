@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class ObjectReferenceMappingReadOnlyTestCases extends JAXBWithJSONTestCases{
@@ -38,11 +39,10 @@ public class ObjectReferenceMappingReadOnlyTestCases extends JAXBWithJSONTestCas
         /**
          * This is the preferred (and only) constructor.
          *
-         * @param name
          */
         public ObjectReferenceMappingReadOnlyTestCases(String name) throws Exception {
             super(name);
-            setClasses(new Class[]{Root.class});
+            setClasses(new Class<?>[]{Root.class});
             setControlDocument(XML_RESOURCE);
             setWriteControlDocument(XML_WRITE_RESOURCE);
             setControlJSON(JSON_RESOURCE);
@@ -52,6 +52,7 @@ public class ObjectReferenceMappingReadOnlyTestCases extends JAXBWithJSONTestCas
         /**
          * Create the control Root.
          */
+        @Override
         public Object getControlObject() {
             Root root = new Root();
             List<Employee> emps = new ArrayList<Employee>();
@@ -102,17 +103,19 @@ public class ObjectReferenceMappingReadOnlyTestCases extends JAXBWithJSONTestCas
             assertTrue("Instance doc validation (root-marshal.xml) failed unxepectedly: " + result2, result2 == null);
         }
 
+        @Override
         public void testRoundTrip() throws Exception{
             //doesn't apply since read and write only mappings are present
         }
 
+        @Override
         public Map getProperties(){
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/objectreference/read-only-oxm.xml");
 
             HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objectreference", new StreamSource(inputStream));
             Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             return properties;
         }

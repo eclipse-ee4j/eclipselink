@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,14 @@ import com.sun.tools.xjc.*;
  */
 public class MOXyXJC {
 
+    private MOXyXJC() {
+    }
+
+    /**
+     * Entry point
+     * @param args arguments
+     * @throws Throwable for errors
+     */
     public static void main(String[] args) throws Throwable {
         Listener listener = new Listener();
 
@@ -83,6 +91,7 @@ public class MOXyXJC {
         private ConsoleErrorReporter cer = new ConsoleErrorReporter(System.err);
         private String generatedPackagePath = null;
 
+        @Override
         public void generatedFile(String fileName, int count, int total) {
             message(fileName);
             if (this.generatedPackagePath == null) {
@@ -94,22 +103,27 @@ public class MOXyXJC {
             return generatedPackagePath;
         }
 
+        @Override
         public void message(String msg) {
             System.out.println(msg);
         }
 
+        @Override
         public void error(SAXParseException exception) {
             cer.error(exception);
         }
 
+        @Override
         public void fatalError(SAXParseException exception) {
             cer.fatalError(exception);
         }
 
+        @Override
         public void warning(SAXParseException exception) {
             cer.warning(exception);
         }
 
+        @Override
         public void info(SAXParseException exception) {
             cer.info(exception);
         }

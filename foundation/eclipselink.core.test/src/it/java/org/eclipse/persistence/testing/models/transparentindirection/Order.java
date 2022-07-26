@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import java.util.*;
 
 /**
  * Simple order object. Just a test fixture.
- * @author: Big Country
+ * @author Big Country
  */
 public class Order extends AbstractOrder {
     public Collection salesReps;
@@ -39,68 +39,84 @@ public class Order extends AbstractOrder {
         super(customerName);
     }
 
+    @Override
     public void addContact(String contact) {
         contacts.add(contact);
     }
 
+    @Override
     public void addLine(AbstractOrderLine line) {
         lines.add(line);
         line.order = this;
     }
 
+    @Override
     public void addSalesRep(AbstractSalesRep salesRep) {
         salesReps.add(salesRep);
         salesRep.addOrder(this);
     }
 
+    @Override
     public boolean containsContact(String contactName) {
         return contacts.contains(contactName);
     }
 
+    @Override
     public boolean containsLine(AbstractOrderLine line) {
         return lines.contains(line);
     }
 
+    @Override
     public boolean containsSalesRep(AbstractSalesRep salesRep) {
         return salesReps.contains(salesRep);
     }
 
+    @Override
     public Object getContactContainer() {
         return contacts;
     }
 
+    @Override
     public Enumeration getContactStream() {
         return (new Vector(contacts)).elements();
     }
 
+    @Override
     public Object getLineContainer() {
         return lines;
     }
 
+    @Override
     public void clearLines() {
         lines = new Vector();
     }
 
+    @Override
     public Enumeration getLineStream() {
         return (new Vector(lines)).elements();
     }
 
+    @Override
     public int getNumberOfContacts() {
         return contacts.size();
     }
 
+    @Override
     public int getNumberOfLines() {
         return lines.size();
     }
 
+    @Override
     public int getNumberOfSalesReps() {
         return salesReps.size();
     }
 
+    @Override
     public Object getSalesRepContainer() {
         return salesReps;
     }
 
+    @Override
     public Enumeration getSalesRepStream() {
         return (new Vector(salesReps)).elements();
     }
@@ -108,6 +124,7 @@ public class Order extends AbstractOrder {
     /**
      * initialize the instance
      */
+    @Override
     protected void initialize() {
         super.initialize();
         salesReps = new Vector();
@@ -115,15 +132,18 @@ public class Order extends AbstractOrder {
         lines = new Vector();
     }
 
+    @Override
     public void removeContact(String contact) {
         contacts.remove(contact);
     }
 
+    @Override
     public void removeLine(AbstractOrderLine line) {
         lines.remove(line);
         //    line.order = null;
     }
 
+    @Override
     public void removeSalesRep(AbstractSalesRep salesRep) {
         salesReps.remove(salesRep);
         salesRep.removeOrder(this);

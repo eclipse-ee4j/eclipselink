@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
@@ -41,6 +42,7 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             super(name);
         }
 
+        @Override
         public void setUp() throws Exception {
             setControlDocument(XML_RESOURCE);
             setControlJSON(JSON_RESOURCE);
@@ -58,6 +60,7 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             setTypes(types);
         }
 
+        @Override
         protected Object getControlObject() {
             Employee emp = new Employee();
             emp.age = 35;
@@ -85,6 +88,7 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             super.testSchemaGen(controlSchemas);
         }
 
+        @Override
         protected Map getProperties() {
 
             Map overrides = new HashMap();
@@ -97,10 +101,10 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             StreamSource src3 = null;
             StreamSource src4 = null;
 
-            InputStream iStream = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm1.xml");
-            InputStream iStream2 = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm2.xml");
-            InputStream iStream3 = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm3.xml");
-            InputStream iStream4 = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm4.xml");
+            InputStream iStream = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm1.xml");
+            InputStream iStream2 = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm2.xml");
+            InputStream iStream3 = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm3.xml");
+            InputStream iStream4 = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm4.xml");
           //  InputStream iStreamCopy = classLoader.getResourceAsStream("eclipselink-oxm1.xml");
 
             try {
@@ -125,7 +129,7 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple", bindingsList);
 
             Map props = new HashMap();
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
             return props;
         }
 
@@ -159,7 +163,7 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             // verify values
             assertTrue("Expected property value [" + PROPVAL_1 + "] for key [" + PROPKEY_1 + "] but was [" + props.get(PROPKEY_1) + "]", PROPVAL_1.equals(props.get(PROPKEY_1)));
             assertTrue("Expected property value [" + PROPVAL_2 + "] for key [" + PROPKEY_2 + "] but was [" + props.get(PROPKEY_2) + "]", PROPVAL_2.equals(props.get(PROPKEY_2)));
-            assertTrue("Expected property value [" + PROPVAL_3 + "] for key [" + PROPKEY_3 + "] but was [" + props.get(PROPKEY_3) + "]", PROPVAL_3 == (Boolean) props.get(PROPKEY_3));
+            assertTrue("Expected property value [" + PROPVAL_3 + "] for key [" + PROPKEY_3 + "] but was [" + props.get(PROPKEY_3) + "]", PROPVAL_3 == props.get(PROPKEY_3));
 
         }
 

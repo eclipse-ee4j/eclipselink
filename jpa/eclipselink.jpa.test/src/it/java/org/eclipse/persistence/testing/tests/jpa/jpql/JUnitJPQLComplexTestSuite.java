@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,23 +43,20 @@ import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.QueryImpl;
 import org.eclipse.persistence.internal.queries.CallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
-import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AddressType;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
@@ -787,8 +784,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp1 = (Employee) expectedResult.elementAt(0);
         Employee emp2 = (Employee) expectedResult.elementAt(1);
 
-        double salarySquareRoot1 = Math.sqrt((new Double(emp1.getSalary()).doubleValue()));
-        double salarySquareRoot2 = Math.sqrt((new Double(emp2.getSalary()).doubleValue()));
+        double salarySquareRoot1 = Math.sqrt(emp1.getSalary());
+        double salarySquareRoot2 = Math.sqrt(emp2.getSalary());
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + salarySquareRoot1;
@@ -826,8 +823,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp1 = (Employee) expectedResult.elementAt(0);
         Employee emp2 = (Employee) expectedResult.elementAt(1);
 
-        double salarySquareRoot1 = Math.sqrt((new Double(emp1.getSalary()).doubleValue()));
-        double salarySquareRoot2 = Math.sqrt((new Double(emp2.getSalary()).doubleValue()));
+        double salarySquareRoot1 = Math.sqrt(emp1.getSalary());
+        double salarySquareRoot2 = Math.sqrt(emp2.getSalary());
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "(SQRT(emp.salary) = ";
@@ -1038,7 +1035,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         List result = query.getResultList();
-        List expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
+        List<Employee> expectedResult = Arrays.asList(empWithManager.getManager());
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
 
         // Select the related manager of empWithOutManager and empWithManager
@@ -1049,7 +1046,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         result = query.getResultList();
-        expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager(), null});
+        expectedResult = Arrays.asList(empWithManager.getManager(), null);
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
     }
 
@@ -1086,7 +1083,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         List result = query.getResultList();
-        List expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
+        List<Employee> expectedResult = Arrays.asList(empWithManager.getManager());
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
 
         // Select the related manager of empWithOutManager and empWithManager
@@ -1098,7 +1095,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         result = query.getResultList();
-        expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager(), null});
+        expectedResult = Arrays.asList(empWithManager.getManager(), null);
         Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
     }
 
@@ -1365,7 +1362,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // find an employee with managed employees
         for (Iterator i = emps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
-            Collection managed = e.getManagedEmployees();
+            Collection<Employee> managed = e.getManagedEmployees();
             if ((managed != null) && (managed.size() > 0)) {
                 emp = e;
                 break;
@@ -1379,17 +1376,17 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         LongHolder result = (LongHolder)query.getSingleResult();
 
         // calculate expected result
-        Collection managed = emp.getManagedEmployees();
+        Collection<Employee> managed = emp.getManagedEmployees();
         int count = 0;
         int sum = 0;
         if (managed != null) {
             count = managed.size();
-            for (Iterator i = managed.iterator(); i.hasNext();) {
-                Employee e = (Employee)i.next();
+            for (Iterator<Employee> i = managed.iterator(); i.hasNext();) {
+                Employee e = i.next();
                 sum += e.getSalary();
             }
         }
-        LongHolder expectedResult = new LongHolder(new Long(sum), new Long(count));
+        LongHolder expectedResult = new LongHolder((long) sum, (long) count);
 
         Assert.assertTrue("Constructor with aggregates argument Test Case Failed", result.equals(expectedResult));
     }
@@ -1403,10 +1400,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List<EmployeeDetail> expectedResult = new ArrayList<EmployeeDetail>();
         for (Iterator i = emps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
-            Collection managed = e.getManagedEmployees();
+            Collection<Employee> managed = e.getManagedEmployees();
             if ((managed != null) && (managed.size() > 0)) {
                 EmployeeDetail d = new EmployeeDetail(
-                    e.getFirstName(), e.getLastName(), new Long(managed.size()));
+                    e.getFirstName(), e.getLastName(), Long.valueOf(managed.size()));
                 expectedResult.add(d);
             }
         }
@@ -1650,7 +1647,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // find an employees with projects
         for (Iterator i = allEmps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
-            Collection projects = e.getProjects();
+            Collection<Project> projects = e.getProjects();
             if ((projects != null) && (projects.size() > 0)) {
                 expectedResult.add(e.getId());
             }
@@ -1672,7 +1669,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // find an employees with projects
         for (Iterator i = allEmps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
-            Collection projects = e.getProjects();
+            Collection<Project> projects = e.getProjects();
             if ((projects == null) || (projects.size() == 0)) {
                 expectedResult.add(e.getId());
             }
@@ -1714,15 +1711,15 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         for (Iterator i = allEmps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
             // Get Dealers
-            Collection dealers = e.getDealers();
+            Collection<Dealer> dealers = e.getDealers();
             if (dealers != null && dealers.size() > 0) {
-                for (Iterator dealerIter = dealers.iterator(); dealerIter.hasNext();) {
-                    Dealer d = (Dealer)dealerIter.next();
+                for (Iterator<Dealer> dealerIter = dealers.iterator(); dealerIter.hasNext();) {
+                    Dealer d = dealerIter.next();
                     // Get Customers.
-                    Collection customers = d.getCustomers();
+                    Collection<Customer> customers = d.getCustomers();
                     if (customers != null && customers.size() > 0) {
-                        for (Iterator custIter = customers.iterator(); custIter.hasNext();) {
-                            Customer c = (Customer)custIter.next();
+                        for (Iterator<Customer> custIter = customers.iterator(); custIter.hasNext();) {
+                            Customer c = custIter.next();
                             // Verify Budget
                             if (c.getBudget() > 0) {
                                 expectedResult.add(e.getId());
@@ -1783,7 +1780,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // find an employees with projects
         for (Iterator i = allEmps.iterator(); i.hasNext();) {
             Employee e = (Employee)i.next();
-            Collection projects = e.getProjects();
+            Collection<Project> projects = e.getProjects();
             if ((projects != null) && (projects.size() > 0)) {
                 expectedResult.add(e);
             }
@@ -1849,7 +1846,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         EntityManager em = createEntityManager();
 
-        ((AbstractSession) getServerSession()).addAlias("ProjectBaseClass", getServerSession().getDescriptor(Project.class));
+        getServerSession().addAlias("ProjectBaseClass", getServerSession().getDescriptor(Project.class));
 
         Project expectedResult = (Project)getServerSession().readAllObjects(Project.class).firstElement();
         String projectName = expectedResult.getName();
@@ -1859,7 +1856,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        ((AbstractSession)getServerSession()).getAliasDescriptors().remove("ProjectBaseClass");
+        getServerSession().getAliasDescriptors().remove("ProjectBaseClass");
 
         Assert.assertTrue("Complex Inheritance test failed", comparer.compareObjects(result, expectedResult));
 
@@ -1876,7 +1873,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Session uow = getServerSession();
 
         if (!(getServerSession().containsQuery(queryName))) {
-            ((AbstractSession)getServerSession()).addAlias("ProjectBaseClass", getServerSession().getDescriptor(Project.class));
+            getServerSession().addAlias("ProjectBaseClass", getServerSession().getDescriptor(Project.class));
 
             //Named query must be built and registered with the session
             ReadObjectQuery query = new ReadObjectQuery();
@@ -1890,7 +1887,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Project result = (Project)uow.executeQuery("findLargeProjectByNameEJBQL",argument);
 
         getServerSession().removeQuery("findLargeProjectByBudgetEJBQL");
-        ((AbstractSession)getServerSession()).getAliasDescriptors().remove("ProjectBaseClass");
+        getServerSession().getAliasDescriptors().remove("ProjectBaseClass");
 
         Assert.assertTrue("Complex Inheritance using named query test failed", comparer.compareObjects(result, expectedResult));
 
@@ -2097,10 +2094,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mapContainerPolicyMapKeyInSelectTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2138,10 +2131,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mapContainerPolicyMapValueInSelectTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2179,10 +2168,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mapContainerPolicyMapEntryInSelectTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2224,10 +2209,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mapContainerPolicyMapKeyInSelectionCriteriaTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2265,10 +2246,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mapContainerPolicyMapValueInSelectionCriteriaTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2306,10 +2283,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2352,10 +2325,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mappedKeyMapContainerPolicyMapKeyInSelectTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2398,10 +2367,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mappedKeyMapContainerPolicyMapEntryInSelectTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2446,10 +2411,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2492,10 +2453,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mappedKeyMapContainerPolicyElementCollectionSelectionCriteriaTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2536,10 +2493,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mappedKeyMapContainerPolicyNavigateMapKeyInEntityTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2582,10 +2535,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mappedKeyMapContainerPolicyNavigateMapKeyInEmbeddableTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2724,8 +2673,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         em.persist(consumer);
         em.flush();
         List expectedResult = new ArrayList();
-        expectedResult.add(new Integer(0));
-        expectedResult.add(new Integer(1));
+        expectedResult.add(0);
+        expectedResult.add(1);
         clearCache();
         String ejbqlString = "select index(d) from EXPERT_CONSUMER e join e.designations d";
 
@@ -2921,7 +2870,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong absolute value was returned.", ((Integer)result.get(0)).intValue() == 35000);
+        assertTrue("The wrong absolute value was returned.", (Integer) result.get(0) == 35000);
     }
 
     public void modInSelectTest(){
@@ -2931,7 +2880,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong mod value was returned.", ((Integer)result.get(0)).intValue() == 0);
+        assertTrue("The wrong mod value was returned.", (Integer) result.get(0) == 0);
     }
 
     public void sqrtInSelectTest(){
@@ -2946,8 +2895,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong square root value was returned.", ((Double)result.get(0)).doubleValue() > 187);
-        assertTrue("The wrong square root value was returned.", ((Double)result.get(0)).doubleValue() < 188);
+        assertTrue("The wrong square root value was returned.", (Double) result.get(0) > 187);
+        assertTrue("The wrong square root value was returned.", (Double) result.get(0) < 188);
     }
 
     public void sizeInSelectTest(){
@@ -2957,7 +2906,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong absolute value was returned.", ((Integer)result.get(0)).intValue() == 2);
+        assertTrue("The wrong absolute value was returned.", (Integer) result.get(0) == 2);
     }
 
     public void mathInSelectTest(){
@@ -2967,7 +2916,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong value was returned.", ((Integer)result.get(0)).intValue() == 35100);
+        assertTrue("The wrong value was returned.", (Integer) result.get(0) == 35100);
     }
 
     public void paramNoVariableTest(){
@@ -2983,10 +2932,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     public void mappedContainerPolicyCompoundMapKeyTest(){
-        // skip test on OC4j some this test fails on some OC4j versions because of an issue with Timestamp
-        if (getServerSession().getServerPlatform() != null && getServerSession().getServerPlatform() instanceof Oc4jPlatform){
-            return;
-        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -3539,7 +3484,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             String[] jpqlStrings = {"Select e.id from Employee e Order By FUNC('UNHEX', e.firstName)",
                                     "Select FUNC('CRC32', e.lastName) from Employee e",
                                     "Select FUNC('BINARY', e.firstName) from Employee e",
-                                    "Select FUNC('ENCRYPT', e.firstName), FUNC('ENCRYPT', e.lastName) from Employee e",
+                                    "Select FUNC('SHA2', e.firstName, 256), FUNC('SHA2', e.lastName, 256) from Employee e",
                                     "SELECT FUNC('UTC_DATE'), e.id FROM Employee e",
                                     "SELECT FUNC('CONCAT','GroupA', FUNC('SUBSTRING',e.firstName, 1, 2)) FROM Employee e WHERE TRIM(' ' FROM e.firstName) = e.firstName"
                                    };
@@ -4353,7 +4298,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         if(!isOnServer()) {
             ReportQuery rq = (ReportQuery) ((QueryImpl) query).getDatabaseQueryInternal();
             CallQueryMechanism qm = rq != null ? (CallQueryMechanism) rq.getQueryMechanism() : null;
-            DatasourceCall sc = qm != null ? (DatasourceCall) qm.getDatabaseCall() : null;
+            DatasourceCall sc = qm != null ? qm.getDatabaseCall() : null;
             List params = sc != null ? sc.getParameters() : null;
             ParameterExpression pe = params != null && params.size() > 0 ? (ParameterExpression) params.get(0) : null;
             QueryKeyExpression qke = pe != null ? (QueryKeyExpression) pe.getLocalBase() : null;
@@ -4410,7 +4355,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         Employee emp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'John' and e.lastName = 'Way'").getSingleResult();
         Long result = (Long)em.createQuery("select count(pn) from Employee e join e.phoneQK pn where e.id = :id").setParameter("id", emp.getId()).getSingleResult();
-        assertTrue("Incorrect number of results returned", result.equals(Long.valueOf(2)));
+        assertTrue("Incorrect number of results returned", result.equals(2L));
     }
 
     // Bug 306766
@@ -4559,8 +4504,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e where (e.firstName, e.lastName) IN :names");
         List names = new ArrayList();
-        names.add(new ArrayList(Arrays.asList(new String[]{"Bob", "Smith"})));
-        names.add(new ArrayList(Arrays.asList(new String[]{"John", "Doe"})));
+        names.add(new ArrayList(Arrays.asList("Bob", "Smith")));
+        names.add(new ArrayList(Arrays.asList("John", "Doe")));
         query.setParameter("names", names);
         query.getResultList();
         query = em.createQuery("Select e from Employee e where (e.firstName, e.lastName) IN (Select e2.lastName, e2.firstName from Employee e2)");

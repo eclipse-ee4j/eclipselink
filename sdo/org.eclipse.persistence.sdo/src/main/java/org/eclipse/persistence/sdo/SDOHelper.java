@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,6 +60,10 @@ import commonj.sdo.impl.HelperProvider;
  * XMLContext.
  */
 public class SDOHelper {
+
+    private SDOHelper() {
+        //no instance please
+    }
 
     /**
      * Return the EclipseLink implementation of Type. The given Type is assumed to be an instance of
@@ -319,37 +323,38 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(Type type, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == SDOType.class) {
             return (T) getType(type);
         }
         try {
             if (clazz == SDOTypeType.class) {
-                return (T) ((SDOTypeType) type);
+                return (T) type;
             }
             if (clazz == SDOPropertyType.class) {
-                return (T) ((SDOPropertyType) type);
+                return (T) type;
             }
             if (clazz == SDOChangeSummaryType.class) {
-                return (T) ((SDOChangeSummaryType) type);
+                return (T) type;
             }
             if (clazz == SDODataObjectType.class) {
-                return (T) ((SDODataObjectType) type);
+                return (T) type;
             }
             if (clazz == SDODataType.class) {
-                return (T) ((SDODataType) type);
+                return (T) type;
             }
             if (clazz == SDOOpenSequencedType.class) {
-                return (T) ((SDOOpenSequencedType) type);
+                return (T) type;
             }
             if (clazz == SDOWrapperType.class) {
-                return (T) ((SDOWrapperType) type);
+                return (T) type;
             }
             if (clazz == SDOXMLHelperLoadOptionsType.class) {
-                return (T) ((SDOXMLHelperLoadOptionsType) type);
+                return (T) type;
             }
             if (clazz == SDOObjectType.class) {
-                return (T) ((SDOObjectType) type);
+                return (T) type;
             }
             throw new IllegalArgumentException(ExceptionLocalization
                     .buildMessage("sdo_helper_invalid_target_for_type", new Object[] { clazz }));
@@ -370,6 +375,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(Property property, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.SDOProperty.class) {
             return (T) getProperty(property);
@@ -389,6 +395,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(DataObject dataObject, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.SDODataObject.class) {
             return (T) getDataObject(dataObject);
@@ -408,6 +415,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(ChangeSummary changeSummary, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.SDOChangeSummary.class) {
             return (T) getChangeSummary(changeSummary);
@@ -427,6 +435,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(Sequence sequence, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.SDOSequence.class) {
             return (T) getSequence(sequence);
@@ -446,6 +455,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(HelperContext helperContext, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.helper.SDOHelperContext.class) {
             return (T) getHelperContext(helperContext);
@@ -465,6 +475,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(CopyHelper copyHelper, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.helper.SDOCopyHelper.class) {
             return (T) getCopyHelper(copyHelper);
@@ -484,6 +495,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(DataFactory dataFactory, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.helper.SDODataFactory.class) {
             return (T) getDataFactory(dataFactory);
@@ -503,6 +515,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(DataHelper dataHelper, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.helper.SDODataHelper.class) {
             return (T) getDataHelper(dataHelper);
@@ -522,6 +535,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(EqualityHelper equalityHelper, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.helper.SDOEqualityHelper.class) {
             return (T) getEqualityHelper(equalityHelper);
@@ -541,6 +555,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(TypeHelper typeHelper, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.helper.SDOTypeHelper.class) {
             return (T) getTypeHelper(typeHelper);
@@ -562,6 +577,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(XMLHelper xmlHelper, Class<T> clazz) throws IllegalArgumentException {
         try {
             org.eclipse.persistence.sdo.helper.SDOXMLHelper xmlHelperImpl = (org.eclipse.persistence.sdo.helper.SDOXMLHelper) xmlHelper;
@@ -590,6 +606,7 @@ public class SDOHelper {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> T unwrap(XSDHelper xsdHelper, Class<T> clazz) throws IllegalArgumentException {
         if (clazz == org.eclipse.persistence.sdo.helper.SDOXSDHelper.class) {
             return (T) getXSDHelper(xsdHelper);

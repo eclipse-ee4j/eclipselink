@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
 public class JAXBElementEnumTestCases extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/enum/coin.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/enum/coin.json";
-    private final static Class targetClass = Coin.class;
+    private final static Class<Coin> targetClass = Coin.class;
 
     public JAXBElementEnumTestCases(String name) throws Exception {
         super(name);
@@ -36,7 +36,8 @@ public class JAXBElementEnumTestCases extends JAXBElementTestCases {
         setTargetClass(targetClass);
     }
 
-    public Class getUnmarshalClass(){
+    @Override
+    public Class<?> getUnmarshalClass(){
         return targetClass;
     }
 
@@ -45,6 +46,7 @@ public class JAXBElementEnumTestCases extends JAXBElementTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public Document getWriteControlDocument() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/jaxbelement/enum/coin.xml");
         Document writeControlDocument = parser.parse(inputStream);
@@ -53,6 +55,7 @@ public class JAXBElementEnumTestCases extends JAXBElementTestCases {
         return writeControlDocument;
     }
 
+    @Override
     public Object getControlObject() {
         Coin coin = Coin.NICKEL;
 
@@ -60,7 +63,7 @@ public class JAXBElementEnumTestCases extends JAXBElementTestCases {
     }
 
     @Override
-    public Class[] getClasses() {
-        return new Class[]{Coin.class};
+    public Class<?>[] getClasses() {
+        return new Class<?>[]{Coin.class};
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,16 +60,16 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
         private Method getPartitionIdMethod;
         private Method getPartitionNameMethod;
         private Method isGlobalRuntimeMethod;
-        private static final Class cicManagerClass;
+        private static final Class<?> cicManagerClass;
         private static volatile ContextHelper instance;
         private static final String CIC_MANAGER_RESOURCE_NAME = "META-INF/services/weblogic.invocation.ComponentInvocationContextManager";
         private static final String CIC_MANAGER_CLASS_NAME = "weblogic.invocation.ComponentInvocationContextManager";
 
         static {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                cicManagerClass = AccessController.doPrivileged(new PrivilegedAction<Class>() {
+                cicManagerClass = AccessController.doPrivileged(new PrivilegedAction<>() {
                     @Override
-                    public Class run() {
+                    public Class<?> run() {
                         return getCicManagerClass(CIC_MANAGER_RESOURCE_NAME, CIC_MANAGER_CLASS_NAME);
                     }
                 });
@@ -78,7 +78,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
             }
         }
 
-        private static Class getCicManagerClass(String cicManagerResourceName, String cicManagerClassName) {
+        private static Class<?> getCicManagerClass(String cicManagerResourceName, String cicManagerClassName) {
             try {
                 if (WebLogic_12_Platform.class.getClassLoader().getResource(cicManagerResourceName) != null) {
                     return PrivilegedAccessHelper.getClassForName(cicManagerClassName);
@@ -90,7 +90,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
             }
         }
 
-        private ContextHelper(final Class managerClass, final String contextClassName) {
+        private ContextHelper(final Class<?> managerClass, final String contextClassName) {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
                     @Override
@@ -104,17 +104,17 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
             }
         }
 
-        private void initialize(final Class managerClass, final String contextClassName) {
+        private void initialize(final Class<?> managerClass, final String contextClassName) {
             try {
                 // Get component invocation manager
-                final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(managerClass, "getInstance", new Class[]{});
+                final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(managerClass, "getInstance", new Class<?>[]{});
                 cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, managerClass);
                 // Get component invocation context
-                getCurrentCicMethod = PrivilegedAccessHelper.getMethod(managerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
-                final Class cicClass = PrivilegedAccessHelper.getClassForName(contextClassName);
-                getPartitionIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionId", new Class[]{});
-                getPartitionNameMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionName", new Class[]{});
-                isGlobalRuntimeMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "isGlobalRuntime", new Class[]{});
+                getCurrentCicMethod = PrivilegedAccessHelper.getMethod(managerClass, "getCurrentComponentInvocationContext", new Class<?>[]{}, true);
+                final Class<?> cicClass = PrivilegedAccessHelper.getClassForName(contextClassName);
+                getPartitionIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionId", new Class<?>[]{});
+                getPartitionNameMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionName", new Class<?>[]{});
+                isGlobalRuntimeMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "isGlobalRuntime", new Class<?>[]{});
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException ex) {
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
             }
@@ -159,12 +159,12 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
         private String getStringFromMethod(final Method methodToCall) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    return AccessController.doPrivileged(new PrivilegedAction<String>() {
+                    return AccessController.doPrivileged(new PrivilegedAction<>() {
                         @Override
                         public String run() {
                             try {
                                 final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                                return (String) PrivilegedAccessHelper.invokeMethod(methodToCall, cicInstance);
+                                return PrivilegedAccessHelper.invokeMethod(methodToCall, cicInstance);
                             } catch (ReflectiveOperationException ex) {
                                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
                                 return "UNKNOWN";
@@ -173,7 +173,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
                     });
                 } else {
                     final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                    return (String) PrivilegedAccessHelper.invokeMethod(methodToCall, cicInstance);
+                    return PrivilegedAccessHelper.invokeMethod(methodToCall, cicInstance);
                 }
             } catch (ReflectiveOperationException ex) {
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
@@ -188,12 +188,12 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
         boolean isGlobalRuntime() {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+                    return AccessController.doPrivileged(new PrivilegedAction<>() {
                         @Override
                         public Boolean run() {
                             try {
                                 final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                                return (Boolean) PrivilegedAccessHelper.invokeMethod(isGlobalRuntimeMethod, cicInstance);
+                                return PrivilegedAccessHelper.invokeMethod(isGlobalRuntimeMethod, cicInstance);
                             } catch (ReflectiveOperationException ex) {
                                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
                                 return true;
@@ -202,7 +202,7 @@ public class WebLogic_12_Platform extends WebLogic_10_Platform {
                     });
                 } else {
                     final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                    return (boolean) PrivilegedAccessHelper.invokeMethod(isGlobalRuntimeMethod, cicInstance);
+                    return PrivilegedAccessHelper.invokeMethod(isGlobalRuntimeMethod, cicInstance);
                 }
             } catch (ReflectiveOperationException ex) {
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);

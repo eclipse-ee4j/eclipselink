@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * Copyright (c) 2005, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2022 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.framework.server.JEEPlatform;
 import org.eclipse.persistence.testing.framework.server.ServerPlatform;
-import org.eclipse.persistence.testing.tests.feature.TestDataSource;
+import org.eclipse.persistence.testing.framework.TestDataSource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -271,9 +271,9 @@ public abstract class AbstractBaseTest {
                 Method getCacheMethod = emf.getClass().getMethod("getCache");
                 Object cache =  getCacheMethod.invoke(emf);
 
-                Method evictClassMethod = cache.getClass().getMethod("evictAll", new Class[]{});
+                Method evictClassMethod = cache.getClass().getMethod("evictAll");
 
-                evictClassMethod.invoke(cache, new Object[]{});
+                evictClassMethod.invoke(cache);
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
             } catch (IllegalArgumentException e) {
@@ -410,6 +410,10 @@ public abstract class AbstractBaseTest {
 
     protected static void verify(boolean condition, String string) {
         Assert.assertTrue(string, condition);
+    }
+
+    protected static void verifyEquals(Object expected, Object actual, String msg) {
+        Assert.assertEquals(msg, expected, actual);
     }
 
     protected final void flop(final String msg) {
@@ -651,7 +655,7 @@ public abstract class AbstractBaseTest {
         if (ServerInfoHolder.isOnServer()) {
             return getServerPlatform().getEntityManagerFactory(persistenceUnitName);
         } else {
-            EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory) emfNamedPersistenceUnits.get(persistenceUnitName);
+            EntityManagerFactory emfNamedPersistenceUnit = emfNamedPersistenceUnits.get(persistenceUnitName);
             if (emfNamedPersistenceUnit == null) {
                 emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
                 emfNamedPersistenceUnits.put(persistenceUnitName, emfNamedPersistenceUnit);
@@ -669,7 +673,7 @@ public abstract class AbstractBaseTest {
     }
 
     public static void closeEntityManagerFactory(String persistenceUnitName) {
-        EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory) emfNamedPersistenceUnits.get(persistenceUnitName);
+        EntityManagerFactory emfNamedPersistenceUnit = emfNamedPersistenceUnits.get(persistenceUnitName);
         if (emfNamedPersistenceUnit != null) {
             if (emfNamedPersistenceUnit.isOpen()) {
                 emfNamedPersistenceUnit.close();

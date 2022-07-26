@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,7 +109,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Build a DatabaseQuery from an jpql string.
      *
-     * @param jpql
      * @param session
      *            the session to get the descriptors for this query for.
      * @return a DatabaseQuery representing the given jpql.
@@ -164,7 +163,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                         throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
                     }
                 } else {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", null));
                 }
             }
 
@@ -202,7 +201,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Build a ReadAllQuery from a class and sql string.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildSQLDatabaseQuery(Class<?> resultClass, String sqlString, ClassLoader classLoader, AbstractSession session) {
         return buildSQLDatabaseQuery(resultClass, sqlString, null, classLoader, session);
     }
 
@@ -212,7 +211,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @param hints
      *            a list of hints to be applied to the query.
      */
-    public static DatabaseQuery buildSQLDatabaseQuery(Class resultClass, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildSQLDatabaseQuery(Class<?> resultClass, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         ReadAllQuery query = new ReadAllQuery(resultClass);
         query.setCall(((DatasourcePlatform)session.getPlatform(resultClass)).buildNativeCall(sqlString));
         query.setIsUserDefined(true);
@@ -270,8 +269,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * Set an implementation-specific hint. If the hint name is not recognized,
      * it is silently ignored.
      *
-     * @param hintName
-     * @param value
      * @return the same query instance
      * @throws IllegalArgumentException
      *             if the second argument is not valid for the implementation
@@ -291,7 +288,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Set the lock mode type to be used for the query execution.
      *
-     * @param lockMode
      * @throws IllegalStateException
      *             if not a Java Persistence query language SELECT query
      */
@@ -318,12 +314,12 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         DatabaseQuery query = getDatabaseQueryInternal();
         try {
             if (query.isReadAllQuery()) {
-                Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
+                Class<?> containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
                 if (!Helper.classImplementsInterface(containerClass, ClassConstants.Collection_Class)) {
                     throw QueryException.invalidContainerClass(containerClass, ClassConstants.Collection_Class);
                 }
             } else if (query.isReadObjectQuery()) {
-                List resultList = new ArrayList();
+                List<Object> resultList = new ArrayList<>();
                 Object result = executeReadQuery();
                 if (result != null) {
                     resultList.add(executeReadQuery());
@@ -364,7 +360,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             // not the right type
             if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
                 if (!((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().isCursorPolicy()) {
-                    Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
+                    Class<?> containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
                     throw QueryException.invalidContainerClass(containerClass, Cursor.class);
                 }
             } else if (getDatabaseQueryInternal() instanceof ReadObjectQuery) {
@@ -419,7 +415,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Set the flush mode type to be used for the query execution.
      *
-     * @param flushMode
      */
     @Override
     public EJBQueryImpl setFlushMode(FlushModeType flushMode) {
@@ -429,7 +424,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Set the maximum number of results to retrieve.
      *
-     * @param maxResult
      * @return the same query instance
      */
     @Override
@@ -440,9 +434,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Calendar to a positional parameter.
      *
-     * @param position
-     * @param value
-     * @param temporalType
      * @return the same query instance
      */
     @Override
@@ -454,9 +445,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Date to a positional parameter.
      *
-     * @param position
-     * @param value
-     * @param temporalType
      * @return the same query instance
      */
     @Override
@@ -468,8 +456,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an argument to a positional parameter.
      *
-     * @param position
-     * @param value
      * @return the same query instance
      */
     @Override
@@ -487,9 +473,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Calendar to a Parameter object.
      *
-     * @param param
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException
      *             if position does not correspond to a parameter of the query
@@ -516,8 +499,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *
      * @param param
      *            object
-     * @param value
-     * @param temporalType
      * @return the same query instance
      * @throws IllegalArgumentException
      *             if position does not correspond to a parameter of the query
@@ -569,9 +550,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Calendar to a named parameter.
      *
-     * @param name
-     * @param value
-     * @param temporalType
      * @return the same query instance
      */
     @Override
@@ -583,9 +561,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     /**
      * Bind an instance of java.util.Date to a named parameter.
      *
-     * @param name
-     * @param value
-     * @param temporalType
      * @return the same query instance
      */
     @Override
@@ -599,7 +574,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *
      * @param name
      *            the parameter name
-     * @param value
      * @return the same query instance
      */
     @Override
@@ -616,6 +590,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + String.valueOf(this.databaseQuery) + ")";
+        return getClass().getSimpleName() + "(" + this.databaseQuery + ")";
     }
 }

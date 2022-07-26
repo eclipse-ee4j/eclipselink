@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class EmulatedDriver implements Driver {
         this.rows = new HashMap();
     }
 
+    @Override
     public Connection connect(String url, java.util.Properties info) throws SQLException{
         if (fullFailure) throw new SQLException("Connections unavailable");
         return new EmulatedConnection(this);
@@ -45,26 +46,32 @@ public class EmulatedDriver implements Driver {
         this.rows = rows;
     }
 
+    @Override
     public boolean acceptsURL(String url) {
         return true;
     }
 
+    @Override
     public int getMajorVersion() {
         return 1;
     }
 
+    @Override
     public int getMinorVersion() {
         return 0;
     }
 
+    @Override
     public boolean jdbcCompliant() {
         return true;
     }
 
+    @Override
     public DriverPropertyInfo[] getPropertyInfo(String url, java.util.Properties info) {
         return null;
     }
 
+    @Override
     public Logger getParentLogger(){return null;}
 
 }

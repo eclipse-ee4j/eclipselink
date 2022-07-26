@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.identitymaps.WeakIdentityMap;
 import org.eclipse.persistence.queries.InsertObjectQuery;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
@@ -26,7 +27,7 @@ import org.eclipse.persistence.testing.framework.*;
 
 //bug4649617  Test if there is any memory leak in InsertObjectQuery with WeakIdentityMap.
 public class InsertWeakIdentityMapTest extends TestCase {
-    protected Class originalIdentityMapClass;
+    protected Class<? extends IdentityMap> originalIdentityMapClass;
     protected int originalIdentityMapSize;
     protected int identityMapSize = 10;
 
@@ -38,12 +39,14 @@ public class InsertWeakIdentityMapTest extends TestCase {
         return (WeakIdentityMap)getAbstractSession().getIdentityMapAccessorInstance().getIdentityMap(Employee.class);
     }
 
+    @Override
     public void reset() {
         getSession().getDescriptor(Employee.class).setIdentityMapClass(originalIdentityMapClass);
         getSession().getDescriptor(Employee.class).setIdentityMapSize(originalIdentityMapSize);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void setup() {
         originalIdentityMapClass = getSession().getDescriptor(Employee.class).getIdentityMapClass();
         originalIdentityMapSize = getSession().getDescriptor(Employee.class).getIdentityMapSize();
@@ -52,6 +55,7 @@ public class InsertWeakIdentityMapTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         for (int index = 0; index < (identityMapSize * 2); index++) {
             Employee obj = new Employee();
@@ -64,6 +68,7 @@ public class InsertWeakIdentityMapTest extends TestCase {
         System.gc();
     }
 
+    @Override
     public void verify() {
         // Force full GC.
         for (int loops = 0; loops < 10; loops++) {
@@ -88,9 +93,9 @@ public class InsertWeakIdentityMapTest extends TestCase {
         }
         // Check that all the CacheReferences (WeakCacheReferences) are null, since
         // they all should have been garbage collected.
-        Map cache = getIdentityMap().getCacheKeys();
-        for (Iterator iterator = cache.values().iterator(); iterator.hasNext(); ) {
-            CacheKey key = (CacheKey)iterator.next();
+        Map<Object, CacheKey> cache = getIdentityMap().getCacheKeys();
+        for (Iterator<CacheKey> iterator = cache.values().iterator(); iterator.hasNext(); ) {
+            CacheKey key = iterator.next();
             if (key.getObject() != null) {
                 throw new TestErrorException("A WeakCacheKey with a non-empty WeakReference was found. The garbage collection did not clear the cache as expected.");
             }

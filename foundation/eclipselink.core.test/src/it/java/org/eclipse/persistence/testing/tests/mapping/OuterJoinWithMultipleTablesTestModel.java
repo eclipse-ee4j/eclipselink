@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,10 +27,12 @@ public class OuterJoinWithMultipleTablesTestModel extends TestModel {
         setDescription("This model tests reading/writing/deleting of multiple tables using outer joins.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new OuterJoinSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getInsertObjectTestSuite());
         addTest(getReadObjectTestSuite());
@@ -114,6 +116,7 @@ public class OuterJoinWithMultipleTablesTestModel extends TestModel {
         return suite;
     }
 
+    @Override
     public void setup() {
         if (!((getSession().getLogin().getPlatform().isOracle()) || (getSession().getLogin().getPlatform().isTimesTen()))) {
             throw new TestWarningException("This test is not supported on this Database");

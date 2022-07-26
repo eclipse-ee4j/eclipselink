@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Xi Chen
  */
-public class ValidationExceptionResource extends ListResourceBundle {
+public final class ValidationExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "7001", "You must login to the ServerSession before acquiring ClientSessions." },
                                            { "7002", "The pool named [{0}] does not exist." },
@@ -125,8 +125,16 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7099", "The deployment project XML resource [{0}] was not found on the resource path.  Check that the resource name/path and classloader passed to the XMLProjectReader are correct.  The project XML should be included in the root of the application''s deployed jar, if the project XML is deployed in a sub-directory in the application''s jar ensure that the correct resource path using \"/\" not \"\\\" is used." },
                                            { "7100", "Could not find the session with the name [{0}] in the session.xml file [{1}]" },
                                            { "7101", "No \"meta-inf/eclipselink-ejb-jar.xml\" could be found in your classpath.  The CMP session could not be read in from file." },
-                                           { "7102", "Encountered a null value for a cache key while attempting to remove" + "{2}an object from the identity map: [{0}]" + "{2}containing an object of class: [{1}] (or a class in this hierarchy)" + "{2}The most likely cause of this situation is that the object has already been garbage-" + "{2}collected and therefore does not exist within the identity map." + "{2}Consider using an alternative identity map to prevent this situation." + "{2}Refer to the EclipseLink documentation for more details regarding identity maps ." },
-                                           { "7103", "A null reference was encountered while attempting to invoke" + "{1}method: [{0}] on an object which uses proxy indirection." + "{1}Check that this object is not null before invoking its methods." },
+                                           { "7102", "Encountered a null value for a cache key while attempting to remove" +
+                                                   "{2}an object from the identity map: [{0}]" +
+                                                   "{2}containing an object of class: [{1}] (or a class in this hierarchy)" +
+                                                   "{2}The most likely cause of this situation is that the object has already been garbage-" +
+                                                   "{2}collected and therefore does not exist within the identity map." +
+                                                   "{2}Consider using an alternative identity map to prevent this situation." +
+                                                   "{2}Refer to the EclipseLink documentation for more details regarding identity maps ." },
+                                           { "7103", "A null reference was encountered while attempting to invoke" +
+                                                   "{1}method: [{0}] on an object which uses proxy indirection." +
+                                                   "{1}Check that this object is not null before invoking its methods." },
                                            { "7104", "Sequencing login should not use External Transaction Controller." },
                                            { "7105", "Error encountered converting encrypting class: [{0}]" },
                                            { "7106", "Error encountered during string encryption." },
@@ -349,7 +357,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7340", "There are multiple mapping files called [{0}] in classpath."},
                                            { "7341", "No eclipselink-orm.xml was specified for the XMLMetadataSource.  Please specify one using either persistence unit property eclipselink.metadata-source.xml.file or eclipselink.metadata-source.xml.url"},
                                            { "7342", "The specified boolean value [{0}] for setting allow native sql queries is invalid, the value must either be \"true\" or \"false\"."},
-                                           { "7343", "Multiple VPD identifiers (tenant discriminator context property) have been specified. Entity [{1}] uses [{0}] and Entity [{3]} uses [{2}]. When using a Multitenant VPD strategy, there can only be one tenant discriminator column per entity and its context property must be consistent across all the Multitenant VPD entities."},
+                                           { "7343", "Multiple VPD identifiers (tenant discriminator context property) have been specified. Entity [{1}] uses [{0}] and Entity [{3}] uses [{2}]. When using a Multitenant VPD strategy, there can only be one tenant discriminator column per entity and its context property must be consistent across all the Multitenant VPD entities."},
                                            { "7344", "VPD (connections and DDL generation) is not supported for the platform: [{0}]."},
                                            { "7345", "{0} file specified for XMLMetadataSource is not found"},
                                            { "7346", "The multitenant context property [{0}] has not been provided. When the persistence unit property (" + PersistenceUnitProperties.MULTITENANT_SHARED_EMF + ") is set to false, all multitenant context properties must be provided up front. This can be done through the persistence unit definition directly or by passing a properties map containing all the multitenant context properties on the create EntityManagerFactory call."},
@@ -364,6 +372,13 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7356", "Procedure: [{1}] cannot be executed because {0} does not currently support multiple out parameters"},
                                            { "7357", "URL [{0}] for resource [{1}] does not belong to a valid persistence root (as per JPA Specification)"},
  };
+
+    /**
+     * Default constructor.
+     */
+    public ValidationExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

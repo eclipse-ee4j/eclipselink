@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class CycleRecoverableTestCases extends JAXBWithJSONTestCases {
 
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { Company.class, EmployeePointer.class });
+        setClasses(new Class<?>[] { Company.class, EmployeePointer.class });
     }
 
     @Override
@@ -97,7 +97,7 @@ public class CycleRecoverableTestCases extends JAXBWithJSONTestCases {
         }
 
         assertNotNull("No exception caught as expected.", expectedException);
-        XMLMarshalException xmlMarshalException = (XMLMarshalException) expectedException;
+        XMLMarshalException xmlMarshalException = expectedException;
         assertEquals("Incorrect exception code.", xmlMarshalException.getErrorCode(), XMLMarshalException.OBJECT_CYCLE_DETECTED);
     }
 

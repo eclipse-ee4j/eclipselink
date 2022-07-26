@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,7 @@ public class ExpressionPanel extends JPanel {
         String operator = (String)getOperatorCombo().getSelectedItem();
         String method = ExpressionNode.getMethod(operator);
         String value = getValueText().getText();
-        Class[] types = new Class[1];
+        Class<?>[] types = new Class<?>[1];
         types[0] = Object.class;
         Object[] arguments = new Object[1];
         arguments[0] = value;
@@ -132,7 +132,7 @@ public class ExpressionPanel extends JPanel {
     }
 
     /**
-     * connEtoC1:  (OrButton.action.actionPerformed(java.awt.event.ActionEvent) --> ExpressionPanel.orExpression()V)
+     * connEtoC1:  (OrButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} ExpressionPanel.orExpression()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -153,7 +153,7 @@ public class ExpressionPanel extends JPanel {
     }
 
     /**
-     * connEtoC2:  (AndButton.action.actionPerformed(java.awt.event.ActionEvent) --> ExpressionPanel.andExpression()V)
+     * connEtoC2:  (AndButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} ExpressionPanel.andExpression()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -174,7 +174,7 @@ public class ExpressionPanel extends JPanel {
     }
 
     /**
-     * connEtoC3:  (NotBuuton.action.actionPerformed(java.awt.event.ActionEvent) --> ExpressionPanel.notExpression()V)
+     * connEtoC3:  (NotBuuton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} ExpressionPanel.notExpression()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -195,7 +195,7 @@ public class ExpressionPanel extends JPanel {
     }
 
     /**
-     * connEtoC4:  (ClearButton.action.actionPerformed(java.awt.event.ActionEvent) --> ExpressionPanel.clearExpression()V)
+     * connEtoC4:  (ClearButton.action.actionPerformed(java.awt.event.ActionEvent) --{@literal >} ExpressionPanel.clearExpression()V)
      * @param arg1 java.awt.event.ActionEvent
      */
     private
@@ -701,11 +701,11 @@ public class ExpressionPanel extends JPanel {
             getAttributeCombo().removeAllItems();
         }
         if (getDescriptor() != null) {
-            for (Enumeration mappingsEnum =
+            for (Enumeration<DatabaseMapping> mappingsEnum =
                  getDescriptor().getMappings().elements();
                  mappingsEnum.hasMoreElements(); ) {
                 DatabaseMapping mapping =
-                    (DatabaseMapping)mappingsEnum.nextElement();
+                        mappingsEnum.nextElement();
                 if (mapping.isDirectToFieldMapping()) {
                     getAttributeCombo().addItem(mapping.getAttributeName());
                 }
@@ -748,6 +748,7 @@ public class ExpressionPanel extends JPanel {
     }
 
     class IvjEventHandler implements java.awt.event.ActionListener {
+        @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
             if (e.getSource() == ExpressionPanel.this.getOrButton()) {
                 connEtoC1(e);

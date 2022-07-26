@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord.setAttributes(atts);
             CoreAbstractSession session = unmarshalRecord.getSession();
-            Class classValue = ((ObjectBuilder)xmlDescriptor.getObjectBuilder()).classFromRow(unmarshalRecord, session);
+            Class<?> classValue = ((ObjectBuilder)xmlDescriptor.getObjectBuilder()).classFromRow(unmarshalRecord, session);
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element
                 XPathQName leafElementType = unmarshalRecord.getLeafElementType();
@@ -164,7 +164,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                     returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
                     if(returnDescriptor == null){
                         if(policy == null || (!policy.isKeepUnknownAsElement() && !policy.isKeepAllAsElement())){
-                            Class theClass = unmarshalRecord.getConversionManager().javaType(qname);
+                            Class<Object> theClass = unmarshalRecord.getConversionManager().javaType(qname);
                             if(theClass == null){
                                 throw XMLMarshalException.unknownXsiTypeValue(schemaType, mapping);
                             }
@@ -268,7 +268,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 if(qname.equals(Constants.QNAME_QNAME)) {
                     value = conversionManager.buildQNameFromString((String)value, unmarshalRecord);
                 } else {
-                    Class theClass = getClassForQName(qname, conversionManager);
+                    Class<?> theClass = getClassForQName(qname, conversionManager);
                     if (theClass != null) {
                         value = conversionManager.convertObject(value, theClass, qname);
                     }
@@ -279,7 +279,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
     }
 
-    protected Class getClassForQName(QName qname, ConversionManager conversionManager){
+    protected Class<?> getClassForQName(QName qname, ConversionManager conversionManager){
         CoreField field = getMapping().getField();
         if(field != null){
             return ((Field)field).getJavaClass(qname, conversionManager);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class DirectMappingXmlValueTestCases extends JAXBWithJSONTestCases {
@@ -36,16 +37,17 @@ public class DirectMappingXmlValueTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[]{Price.class});
+        setClasses(new Class<?>[]{Price.class});
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/direct/eclipselink-oxm-xml-value.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -64,6 +66,7 @@ public class DirectMappingXmlValueTestCases extends JAXBWithJSONTestCases {
         assertTrue("Instance doc validation (price.xml) failed unxepectedly: " + result, result == null);
     }
 
+    @Override
     public Object getWriteControlObject() {
         Price ctrlPrice = new Price();
         ctrlPrice.currency = CURRENCY;
@@ -71,12 +74,14 @@ public class DirectMappingXmlValueTestCases extends JAXBWithJSONTestCases {
         return ctrlPrice;
     }
 
+    @Override
     protected Object getControlObject() {
         Price ctrlPrice = new Price();
         ctrlPrice.currency = CURRENCY;
         return ctrlPrice;
     }
 
+    @Override
     public void testRoundTrip(){
         //not applicable with write only mappings
     }

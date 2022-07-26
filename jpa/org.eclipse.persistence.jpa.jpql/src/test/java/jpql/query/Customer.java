@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,9 @@ import jakarta.persistence.Transient;
    @NamedQuery(name="customer.new",       query="SELECT new com.titan.domain.Name(c.firstName, c.lastName) FROM Customer c")
 })
 public class Customer implements Serializable {
+
+    private static final long serialVersionUID = 6523341191151363983L;
+
     @Column(name="FIRST_NAME")
     private String firstName;
     @Column(name="HAS_GOOD_CREDIT")

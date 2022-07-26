@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
@@ -44,14 +45,16 @@ public class JAXBContextByClassArrayWithRefInBindingsTestCases  extends JAXBWith
             super(name);
         }
 
+        @Override
         public void setUp() throws Exception {
             setControlDocument(XML_RESOURCE);
             setControlJSON(JSON_RESOURCE);
             super.setUp();
-            Class[] classes = new Class[]{ClassA.class};
+            Class<?>[] classes = new Class<?>[]{ClassA.class};
             setTypes(classes);
         }
 
+        @Override
         protected Object getControlObject() {
             ClassA classA = new ClassA();
 
@@ -67,6 +70,7 @@ public class JAXBContextByClassArrayWithRefInBindingsTestCases  extends JAXBWith
             this.testSchemaGen(controlSchemas);
         }
 
+        @Override
         protected Map getProperties() {
              Map overrides = new HashMap();
                 String overridesString =
@@ -93,7 +97,7 @@ public class JAXBContextByClassArrayWithRefInBindingsTestCases  extends JAXBWith
             overrides.put("org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex", src);
 
             Map props = new HashMap();
-            props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+            props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
             return props;
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -253,7 +254,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     * with client-side objects.
     */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
     }
 
@@ -335,7 +336,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                     return objectValue;
                 }
             } else if (next.getNodeType() == Node.ELEMENT_NODE) {
-                ClassDescriptor referenceDescriptor = null;
+                XMLDescriptor referenceDescriptor = null;
 
                 //In this case it must be an element so we need to dig up the descriptor
                 //make a nested record and build an object from it.
@@ -374,7 +375,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                     // wrap the object in an XMLRoot
                     // if we know the descriptor use it to wrap the Element in an XMLRoot (if necessary)
                     if (referenceDescriptor != null) {
-                        return ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objVal, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false, record.isNamespaceAware(),record.getUnmarshaller());
+                        return referenceDescriptor.wrapObjectInXMLRoot(objVal, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false, record.isNamespaceAware(),record.getUnmarshaller());
                     }
                     // no descriptor, so manually build the XMLRoot
                     return buildXMLRoot(next, objVal);
@@ -573,10 +574,10 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         }
         XMLDescriptor parentDesc = (XMLDescriptor) this.getDescriptor();
         XMLField field = (XMLField) this.getField();
-        Iterator mappings = parentDesc.getMappings().iterator();
+        Iterator<DatabaseMapping> mappings = parentDesc.getMappings().iterator();
         int mappingsInContext = 0;
         while (mappings.hasNext()) {
-            DatabaseMapping next = (DatabaseMapping) mappings.next();
+            DatabaseMapping next = mappings.next();
             if (!(next == this)) {
                 XMLField nextField = (XMLField) next.getField();
                 XPathFragment frag = getFragmentToCompare(nextField, field);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -98,9 +98,6 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
         this.queryContext = queryContext;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AsOfClause expression) {
 
@@ -118,67 +115,43 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
         query.setShouldMaintainCache(false);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CollectionExpression expression) {
         expression.acceptChildren(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(FromClause expression) {
         visitAbstractFromClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(IdentificationVariable expression) {
         visitIdentificationVariable(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ObjectExpression expression) {
         expression.getExpression().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderByClause expression) {
         expression.getOrderByItems().accept(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderByItem expression) {
         Expression queryExpression = queryContext.buildExpression(expression);
         query.addOrdering(queryExpression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectClause expression) {
         // Select couple flags
         visitAbstractSelectClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SelectStatement expression) {
 
@@ -196,35 +169,23 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleFromClause expression) {
         visitAbstractFromClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectClause expression) {
         // Select couple flags
         visitAbstractSelectClause(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(SimpleSelectStatement expression) {
         // Handle SELECT/FROM/WHERE
         visitAbstractSelectStatement(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnionClause expression) {
 
@@ -259,9 +220,6 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
         query.addUnionExpression(union);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(WhereClause expression) {
         query.setSelectionCriteria(queryContext.buildExpression(expression));
@@ -381,33 +339,21 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
          */
         boolean hasCountFunction;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CountFunction expression) {
             hasCountFunction = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
             hasCountFunction = false;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectClause expression) {
             expression.getSelectExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectClause expression) {
             expression.getSelectExpression().accept(this);
@@ -445,17 +391,11 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
             return queryExpression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             expression.acceptChildren(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionMemberDeclaration expression) {
             addNonFetchJoinedAttribute(
@@ -464,17 +404,11 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
             );
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(FromClause expression) {
             expression.getDeclaration().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariableDeclaration expression) {
 
@@ -485,9 +419,6 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(Join expression) {
 
@@ -523,9 +454,6 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(RangeVariableDeclaration expression) {
             baseExpression = addNonFetchJoinedAttribute(
@@ -534,9 +462,6 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
             );
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleFromClause expression) {
             expression.getDeclaration().accept(this);
@@ -551,17 +476,11 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
          */
         boolean oneToOneSelected;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AvgFunction expression) {
             expression.getExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.children()) {
@@ -572,114 +491,72 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ConstructorExpression expression) {
             expression.getConstructorItems().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CountFunction expression) {
             oneToOneSelected = false;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariable expression) {
             oneToOneSelected = !queryContext.isRangeIdentificationVariable(expression.getVariableName());
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(KeyExpression expression) {
             oneToOneSelected = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(MaxFunction expression) {
             expression.getExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(MinFunction expression) {
             expression.getExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ObjectExpression expression) {
             expression.getExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
             oneToOneSelected = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ResultVariable expression) {
             expression.getSelectExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectClause expression) {
             expression.getSelectExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectClause expression) {
             expression.getSelectExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpression expression) {
             DatabaseMapping mapping = queryContext.resolveMapping(expression);
             oneToOneSelected = (mapping != null) && !mapping.isDirectToFieldMapping();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SumFunction expression) {
             expression.getExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ValueExpression expression) {
             oneToOneSelected = true;

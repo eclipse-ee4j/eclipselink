@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,7 +109,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * This is the base value that is older than all other values, it is used in the place of
      * null in some situations.
      */
-    Object getBaseValue();
+    <T> T getBaseValue();
 
     /**
      * ADVANCED:
@@ -125,7 +125,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    Object getValueToPutInCache(AbstractRecord row, AbstractSession session);
+    <T> T getValueToPutInCache(AbstractRecord row, AbstractSession session);
 
     /**
      * PUBLIC:
@@ -147,7 +147,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session);
+    <T> T getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -277,7 +277,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      * @author Gordon Yorke
      * @since EclipseLink 2.0
      */
-    public enum LockOnChange{
+    enum LockOnChange{
         OWNING, // update version when an owning mapping changes
         NONE,
         ALL

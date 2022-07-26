@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class ConnectionIsNullAccessorTest extends ExceptionTest {
     DatabaseAccessor dbAccessor;
+    @Override
     protected void setup() {
         dbAccessor = new DatabaseAccessor();
         expectedException = org.eclipse.persistence.exceptions.DatabaseException.databaseAccessorConnectionIsNull(dbAccessor, null);
     }
 
+    @Override
     public void test() {
         AbstractSession session = (AbstractSession)getSession();
         try {

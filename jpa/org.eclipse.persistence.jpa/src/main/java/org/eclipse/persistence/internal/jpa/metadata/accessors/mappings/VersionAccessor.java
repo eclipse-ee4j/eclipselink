@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,7 +85,7 @@ public class VersionAccessor extends BasicAccessor {
      * Returns true if the given class is a valid timestamp locking type.
      */
     protected boolean isValidTimestampVersionLockingType(MetadataClass cls) {
-        return cls.equals(java.sql.Timestamp.class);
+        return cls.isClass(java.sql.Timestamp.class);
     }
 
     /**
@@ -93,12 +93,12 @@ public class VersionAccessor extends BasicAccessor {
      * Returns true if the given class is a valid version locking type.
      */
     protected boolean isValidVersionLockingType(MetadataClass cls) {
-        return (cls.equals(int.class) ||
-                cls.equals(Integer.class) ||
-                cls.equals(short.class) ||
-                cls.equals(Short.class) ||
-                cls.equals(long.class) ||
-                cls.equals(Long.class));
+        return (cls.isClass(int.class) ||
+                cls.isClass(Integer.class) ||
+                cls.isClass(short.class) ||
+                cls.isClass(Short.class) ||
+                cls.isClass(long.class) ||
+                cls.isClass(Long.class));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,17 +21,18 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 public class ForceWeakReferenceTest extends AutoVerifyTestCase {
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork(ReferenceMode.FORCE_WEAK);
         int size = uow.readAllObjects(Employee.class).size();
         try{
             Long[] arr = new Long[10000000];
             for (int i = 0; i< 10000000; ++i){
-                arr[i] = new Long(i);
+                arr[i] = (long) i;
             }
             System.gc();
             try{
-                Thread.currentThread().sleep(200);
+                Thread.sleep(200);
             }catch (InterruptedException ex){
             }
             System.gc();

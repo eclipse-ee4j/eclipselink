@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,6 +57,7 @@ public class MapStringIntegerTestCases extends TypeMappingInfoWithJSONTestCases{
         return typeMappingInfos;
     }
 
+    @Override
     public Object getReadControlObject() {
         QName qname = new QName("", "root");
         JAXBElement jbe = new JAXBElement(qname, Object.class, null);
@@ -64,14 +65,16 @@ public class MapStringIntegerTestCases extends TypeMappingInfoWithJSONTestCases{
         return jbe;
     }
 
+    @Override
     protected Object getControlObject() {
         HashMap<String, Integer> theMap = new HashMap<String, Integer>();
-        theMap.put("thekey", new Integer(10));
+        theMap.put("thekey", 10);
 
 
         return theMap;
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles() {
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/stringIntegerHashMap.xsd");
 
@@ -81,7 +84,7 @@ public class MapStringIntegerTestCases extends TypeMappingInfoWithJSONTestCases{
     }
 
     public void testTypeMappingInfoToSchemaType() throws Exception{
-        Map theMap =((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeMappingInfoToSchemaType();
+        Map<TypeMappingInfo, QName> theMap =((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeMappingInfoToSchemaType();
         assertNotNull(theMap);
         assertEquals(1, theMap.size());
         assertNotNull(theMap.get(getTypeMappingInfos()[0]));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  *
  * <div><b>BNF:</b> <code>general_case_expression ::= CASE when_clause {when_clause}* ELSE scalar_expression END</code></div>
  * or
- * <div><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code><p></div>
+ * <div><p><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code></p></div>
  *
  * @see WhenClauseStateObject
  * @see org.eclipse.persistence.jpa.jpql.parser.CaseExpression CaseExpression
@@ -120,17 +120,11 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         this.caseOperandStateObject = parent(caseOperandStateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         if (caseOperandStateObject != null) {
@@ -142,9 +136,6 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addProblems(List<Problem> problems) {
         super.addProblems(problems);
@@ -224,9 +215,6 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         return elseStateObject;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public CaseExpression getExpression() {
         return (CaseExpression) super.getExpression();
@@ -252,9 +240,6 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         return elseStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -268,9 +253,6 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String listName() {
         return WHEN_CLAUSE_STATE_OBJECT_LIST;
@@ -343,9 +325,6 @@ public class CaseExpressionStateObject extends AbstractListHolderStateObject<Whe
         super.setExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void toTextInternal(Appendable writer) throws IOException {
 

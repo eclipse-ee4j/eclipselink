@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,33 +44,41 @@ public class CollectionValueTestCases extends LoadAndSaveTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     protected String getSchemaName() {
         return getSchemaLocation() + "SubstitutionGroupCollection.xsd";
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/substitutiongroups/collection_value.xml");
     }
 
+    @Override
     protected String getControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/substitutiongroups/collection_value.xml");
     }
 
+    @Override
     protected String getNoSchemaControlFileName() {
         return "";
     }
 
+    @Override
     protected String getControlRootURI() {
         return "TEST/NS";
     }
 
+    @Override
     protected String getControlRootName() {
         return "employee-data";
     }
+    @Override
     protected String getRootInterfaceName() {
         return "EmployeeType";
     }
 
+    @Override
     public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
     }
 
@@ -97,13 +105,16 @@ public class CollectionValueTestCases extends LoadAndSaveTestCases {
         }
     }*/
 
+    @Override
     protected String getSchemaLocation() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/substitutiongroups/";
     }
 
+    @Override
     public void registerTypes() {
     }
 
+    @Override
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         packages.add("test/ns");

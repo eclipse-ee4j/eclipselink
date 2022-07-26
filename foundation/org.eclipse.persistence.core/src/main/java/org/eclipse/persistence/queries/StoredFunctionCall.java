@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,12 +36,12 @@ public class StoredFunctionCall extends StoredProcedureCall {
         addUnamedOutputArgument("");
     }
 
-    public StoredFunctionCall(int sqlType, String sqlTypeName, Class javaType) {
+    public StoredFunctionCall(int sqlType, String sqlTypeName, Class<?> javaType) {
         super();
         addUnamedOutputArgument("", sqlType, sqlTypeName, javaType);
     }
 
-    public StoredFunctionCall(int sqlType, String sqlTypeName, Class javaType, DatabaseField nestedType) {
+    public StoredFunctionCall(int sqlType, String sqlTypeName, Class<?> javaType, DatabaseField nestedType) {
         super();
         addUnamedOutputArgument("", sqlType, sqlTypeName, javaType, nestedType);
     }
@@ -111,7 +112,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
      * Define the field name to be substitute for the function return.
      * The type is the type of Java class desired back from the function, this is dependent on the type returned from the function.
      */
-    public void setResult(String name, Class type) {
+    public void setResult(String name, Class<?> type) {
         DatabaseField returnField = (DatabaseField)getParameters().get(0);
         returnField.setName(name);
         returnField.setType(type);
@@ -137,7 +138,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
      * The javaType is the mapped Class that has an ObjectRelationalDataTypeDescriptor for the ARRAY
      * or STRUCT type typeName
      */
-    public void setResult(int type, String typeName, Class javaType) {
+    public void setResult(int type, String typeName, Class<?> javaType) {
         ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField("");
         field.setSqlType(type);
         field.setSqlTypeName(typeName);
@@ -155,7 +156,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
      * type typeName
      * The nestedType is a database field representing the type the ARRAY holds onto.
      */
-    public void setResult(int type, String typeName, Class javaType, DatabaseField nestedType) {
+    public void setResult(int type, String typeName, Class<?> javaType, DatabaseField nestedType) {
         ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField("");
         field.setSqlType(type);
         field.setSqlTypeName(typeName);
@@ -180,7 +181,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
      * Define to return cursor as result.
      */
     public void setResultCursor() {
-        getParameterTypes().set(0, OUT_CURSOR);
+        getParameterTypes().set(0, ParameterType.OUT_CURSOR);
         setIsCursorOutputProcedure(!hasOutputCursors());
         setIsMultipleCursorOutputProcedure(hasOutputCursors());
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * This state object takes care of parsing an expression that encapsulates three expressions
  * separated by a comma.
  *
- * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression, third_expression)</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression, third_expression)</code></p></div>
  *
  * @see LocateExpressionStateObject
  * @see SubstringExpressionStateObject
@@ -121,9 +121,6 @@ public abstract class AbstractTripleEncapsulatedExpressionStateObject extends Ab
         parseThird (thirdJpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
 
@@ -142,9 +139,6 @@ public abstract class AbstractTripleEncapsulatedExpressionStateObject extends Ab
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractTripleEncapsulatedExpression getExpression() {
         return (AbstractTripleEncapsulatedExpression) super.getExpression();
@@ -234,9 +228,6 @@ public abstract class AbstractTripleEncapsulatedExpressionStateObject extends Ab
         return thirdStateObject != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -319,9 +310,6 @@ public abstract class AbstractTripleEncapsulatedExpressionStateObject extends Ab
         firePropertyChanged(THIRD_STATE_OBJECT_PROPERTY, oldThirdStateObject, thirdStateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextEncapsulatedExpression(Appendable writer) throws IOException {
 

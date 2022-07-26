@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ public class SubstitutionFrenchTestCases extends JAXBWithJSONTestCases {
 
     public SubstitutionFrenchTestCases(String name) throws Exception {
         super(name);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = ObjectFactory.class;
         classes[1] = Person.class;
         setClasses(classes);
@@ -34,6 +34,7 @@ public class SubstitutionFrenchTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public Object getControlObject() {
         Person personneObj = new Person();
 

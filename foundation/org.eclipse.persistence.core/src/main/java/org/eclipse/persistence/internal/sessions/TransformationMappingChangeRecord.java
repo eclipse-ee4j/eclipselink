@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
 
 /**
  * <p>
  * <b>Purpose</b>: To record the changes for attributes that can be represented as Transformation Mapping
- * <p>
+ * </p>
  */
 public class TransformationMappingChangeRecord extends ChangeRecord implements org.eclipse.persistence.sessions.changesets.TransformationMappingChangeRecord {
     protected AbstractRecord rowCollection;
@@ -47,7 +47,7 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
      * This method is used to access the changes of the fields in a transformation mapping.
      */
     @Override
-    public Record getRecord() {
+    public DataRecord getRecord() {
         if (rowCollection == null) {
             this.rowCollection = new DatabaseRecord();
         }

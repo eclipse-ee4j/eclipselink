@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -33,8 +33,12 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  * Creation date: (12/7/00 10:30:38 AM)
  * @author Rick Barkhouse
  */
-public class ExceptionMessageGenerator {
+public final class ExceptionMessageGenerator {
     private final static String CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
+
+    private ExceptionMessageGenerator() {
+        // for reflection
+    }
 
     /**
      * Return the loader for loading the resource bundles.
@@ -52,7 +56,7 @@ public class ExceptionMessageGenerator {
     /**
      * Return the message for the given exception class and error number.
      */
-    public static String buildMessage(Class exceptionClass, int errorNumber, Object[] arguments) {
+    public static String buildMessage(Class<?> exceptionClass, int errorNumber, Object[] arguments) {
         String shortClassName = Helper.getShortClassName(exceptionClass);
         String message = "";
         ResourceBundle bundle = null;
@@ -90,7 +94,7 @@ public class ExceptionMessageGenerator {
             ResourceBundle bundle = null;
             bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n.ExceptionResource", Locale.getDefault(), getLoader());
             String errorMessage = bundle.getString("ErrorFormattingMessage");
-            Vector vec = new Vector();
+            Vector<Object> vec = new Vector<>();
             if (arguments != null) {
                 for (int index = 0; index < arguments.length; index++) {
                     try {
@@ -100,7 +104,7 @@ public class ExceptionMessageGenerator {
                     }
                 }
             }
-            return MessageFormat.format(errorMessage, new Object[] {message, vec});
+            return MessageFormat.format(errorMessage, message, vec);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class SDODataFactoryCreateSimpleTestCases extends SDOXMLHelperTestCases {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         simpleType = getSDOType();
@@ -46,7 +47,7 @@ public class SDODataFactoryCreateSimpleTestCases extends SDOXMLHelperTestCases {
     }
 
     public void testCreateByInvalidClass() {
-        Class oldClass = simpleType.getInstanceClass();
+        Class<?> oldClass = simpleType.getInstanceClass();
         simpleType.setInstanceClass(String.class);
         try {
             DataObject dataObject = dataFactory.create(simpleType);
@@ -59,7 +60,7 @@ public class SDODataFactoryCreateSimpleTestCases extends SDOXMLHelperTestCases {
     }
 
     public void testCreateByNullClass() {
-        Class oldClass = simpleType.getInstanceClass();
+        Class<?> oldClass = simpleType.getInstanceClass();
         String oldClassName = simpleType.getInstanceClassName();
         simpleType.setInstanceClass(null);
         simpleType.setInstanceClassName(null);

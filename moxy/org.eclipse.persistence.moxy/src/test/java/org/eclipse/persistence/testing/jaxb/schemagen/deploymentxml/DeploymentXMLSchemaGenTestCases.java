@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,7 +52,6 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public DeploymentXMLSchemaGenTestCases(String name) throws Exception {
         super(name);
@@ -99,7 +98,6 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation (Employee).
      *
-     * @throws Exception
      */
     public void testSchemaGenFromProjectXmlWithElements() throws Exception {
         generateSchema();
@@ -118,7 +116,6 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation (String)
      *
-     * @throws Exception
      */
     public void testSchemaGenFromProjectXmlWithStringElement() throws Exception {
         generateSchema();
@@ -129,7 +126,6 @@ public class DeploymentXMLSchemaGenTestCases extends SchemaGenTestCases {
     /**
      * Tests user-set additional global element generation (int)
      *
-     * @throws Exception
      */
     public void testSchemaGenFromProjectXmlWithIntElement() throws Exception {
         generateSchema();

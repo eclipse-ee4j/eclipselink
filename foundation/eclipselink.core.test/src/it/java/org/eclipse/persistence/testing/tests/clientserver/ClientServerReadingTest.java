@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public abstract class ClientServerReadingTest extends TestCase {
         this.type = theType;
     }
 
+    @Override
     public void reset() {
         try {
             for (int index = 0; index < NUM_THREADS; index++) {
@@ -51,6 +52,7 @@ public abstract class ClientServerReadingTest extends TestCase {
         }
     }
 
+    @Override
     public void setup() {
         try {
             this.login = (DatabaseLogin)getSession().getLogin().clone();
@@ -75,6 +77,7 @@ public abstract class ClientServerReadingTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         try {
             for (int index = 0; index < NUM_THREADS; index++) {
@@ -97,6 +100,7 @@ public abstract class ClientServerReadingTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         try {
             if (this.server.errorOccured) {

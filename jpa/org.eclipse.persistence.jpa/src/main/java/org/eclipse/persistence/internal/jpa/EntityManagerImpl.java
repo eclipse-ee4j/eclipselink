@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -157,7 +157,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     protected enum OperationType {FIND, REFRESH, LOCK};
 
     /** Allows transparent transactions across JTA and local transactions. */
-    protected TransactionWrapperImpl transaction;
+    private TransactionWrapperImpl transaction;
 
     /** Store if this entity manager has been closed. */
     protected boolean isOpen;
@@ -186,7 +186,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     protected boolean beginEarlyTransaction;
 
     /** Local properties passed from createEntityManager. */
-    protected Map properties;
+    protected Map<String, Object> properties;
 
     /** Flush mode property, allows flush before query to be avoided. */
     protected FlushModeType flushMode;
@@ -255,7 +255,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     abstract static class PropertyProcessor {
         abstract void process(String name, Object value, EntityManagerImpl em);
     }
-    static Map<String, PropertyProcessor> processors = new HashMap() {
+    static Map<String, PropertyProcessor> processors = new HashMap<>() {
         {
             put(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, new PropertyProcessor() {
             @Override
@@ -377,10 +377,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             @Override
             void process(String name, Object value, EntityManagerImpl em) {
                 if( em.connectionPolicies != null) {
-                    Map mapOfProperties = (Map)value;
-                    Iterator it = mapOfProperties.keySet().iterator();
+                    Map<String, ?> mapOfProperties = (Map<String, ?>) value;
+                    Iterator<String> it = mapOfProperties.keySet().iterator();
                     while (it.hasNext()) {
-                        String sessionName = (String)it.next();
+                        String sessionName = it.next();
                         if (em.connectionPolicies.containsKey(sessionName)) {
                             // Property used to create ConnectionPolicy has changed - already existing ConnectionPolicy should be removed.
                             // A new one will be created when the new active persistence context is created.
@@ -431,7 +431,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * manager will be added here. On rollback or commit any left over open
      * queries should be closed.
      *
-     * @param query
      */
     public void addOpenQuery(QueryImpl query) {
         getOpenQueriesMap().put(query, query);
@@ -508,7 +507,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             this.connectionPolicy = ((ServerSession)this.databaseSession).getDefaultConnectionPolicy();
         } else if (this.databaseSession.isBroker()) {
             SessionBroker broker = (SessionBroker)this.databaseSession;
-            this.connectionPolicies = new HashMap(broker.getSessionsByName().size());
+            this.connectionPolicies = new HashMap<>(broker.getSessionsByName().size());
             Iterator<Map.Entry<String, AbstractSession>> it = broker.getSessionsByName().entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, AbstractSession> entry = it.next();
@@ -518,7 +517,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         // bug 236249: In JPA session.setProperty() throws
         // UnsupportedOperationException.
         if (properties != null) {
-            this.properties = new HashMap(properties);
+            this.properties = new HashMap<>(properties);
             if(!properties.isEmpty()) {
                 processProperties();
             }
@@ -586,7 +585,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * object if it is new. The instance of the entity provided will become
      * managed.
      *
-     * @param entity
      * @throws IllegalArgumentException
      *             if the given Object is not an entity.
      */
@@ -615,7 +613,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Merge the state of the given entity into the current persistence context,
      * using the unqualified class name as the entity name.
      *
-     * @param entity
      * @return the instance that the state was merged to
      */
     @Override
@@ -633,7 +630,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Merge the state of the given entity into the current persistence context,
      * using the unqualified class name as the entity name.
      *
-     * @param entity
      * @return the instance that the state was merged to
      * @throws IllegalArgumentException
      *             if given Object is not an entity or is a removed entity
@@ -655,7 +651,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Remove the instance.
      *
-     * @param entity
      * @throws IllegalArgumentException
      *             if Object passed in is not an entity
      */
@@ -703,8 +698,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * vendor-specific property or hint is not recognized, it is silently
      * ignored.
      *
-     * @param entityClass
-     * @param primaryKey
      * @param properties
      *            standard and vendor-specific properties
      * @return the found entity instance or null if the entity does not exist
@@ -735,9 +728,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * thrown if the database locking failure causes only statement-level
      * rollback
      *
-     * @param entityClass
-     * @param primaryKey
-     * @param lockMode
      * @return the found entity instance or null if the entity does not exist
      * @throws IllegalArgumentException
      *             if the first argument does not denote an entity type or the
@@ -780,9 +770,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * timeout hint. Depending on the database in use and the locking mechanisms
      * used by the provider, the hint may or may not be observed.
      *
-     * @param entityClass
-     * @param primaryKey
-     * @param lockMode
      * @param properties
      *            standard and vendor-specific properties and hints
      * @return the found entity instance or null if the entity does not exist
@@ -901,7 +888,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             primaryKey = id;
         } else {
             CMPPolicy policy = descriptor.getCMPPolicy();
-            Class pkClass = policy.getPKClass();
+            Class<Object> pkClass = policy.getPKClass();
             if ((pkClass != null) && (pkClass != id.getClass()) && (!BasicTypeHelperImpl.getInstance().isStrictlyAssignableFrom(pkClass, id.getClass()))) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), id.getClass() }));
             }
@@ -1048,7 +1035,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * vendor-specific property or hint is not recognized, it is silently
      * ignored.
      *
-     * @param entity
      * @param properties
      *            standard and vendor-specific properties
      * @throws IllegalArgumentException
@@ -1076,8 +1062,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * LockTimeoutException will be thrown if the database locking failure
      * causes only statement-level rollback.
      *
-     * @param entity
-     * @param lockMode
      * @throws IllegalArgumentException
      *             if the instance is not an entity or the entity is not managed
      * @throws TransactionRequiredException
@@ -1111,8 +1095,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * in use and the locking mechanisms used by the provider, the hint may or
      * may not be observed.
      *
-     * @param entity
-     * @param lockMode
      * @param properties
      *            standard and vendor-specific properties and hints
      * @throws IllegalArgumentException
@@ -1170,8 +1152,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Check if the instance belongs to the current persistence context.
      *
-     * @param entity
-     * @return
      * @throws IllegalArgumentException
      *             if given Object is not an entity
      */
@@ -1202,16 +1182,16 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Check if the instance belongs to the current persistence context.
      */
     protected boolean contains(Object entity, UnitOfWork uow) {
-        return ((UnitOfWorkImpl) uow).isObjectRegistered(entity) && !((UnitOfWorkImpl) uow).isObjectDeleted(entity);
+        return uow.isObjectRegistered(entity) && !((UnitOfWorkImpl) uow).isObjectDeleted(entity);
     }
 
     @Override
-    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass) {
+    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass) {
         return createDescriptorNamedQuery(queryName, descriptorClass, null);
     }
 
     @Override
-    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes) {
+    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass, List argumentTypes) {
         try {
             verifyOpen();
             ClassDescriptor descriptor = this.databaseSession.getDescriptor(descriptorClass);
@@ -1310,6 +1290,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * expected return type.
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public Query createNativeQuery(String sqlString, Class resultType) {
         try {
             verifyOpen();
@@ -1451,8 +1432,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * if it is not found then search for it from EntityManagerFactory
      * properties.
      *
-     * @param name
-     * @return
      */
     public Object getProperty(String name) {
         Object propertyValue = null;
@@ -1471,7 +1450,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Build a selection query for the primary key values.
      */
-    protected ReadObjectQuery getReadObjectQuery(Class referenceClass, Object primaryKey, Map properties) {
+    protected ReadObjectQuery getReadObjectQuery(Class<?> referenceClass, Object primaryKey, Map properties) {
         ReadObjectQuery query = getReadObjectQuery(properties);
         query.setReferenceClass(referenceClass);
         query.setSelectionId(primaryKey);
@@ -1508,8 +1487,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * unless it was accessed by the application while the entity manager was
      * open.
      *
-     * @param entityClass
-     * @param primaryKey
      * @return the found entity instance.
      * @throws IllegalArgumentException
      *             if the first argument does not denote an entity type or the
@@ -1604,9 +1581,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Session broker implement composite persistence unit.
      */
     @Override
-    public DatabaseSessionImpl getMemberDatabaseSession(Class cls) {
+    public DatabaseSessionImpl getMemberDatabaseSession(Class<?> cls) {
         if(this.databaseSession.isBroker()) {
-            return (DatabaseSessionImpl)((SessionBroker)this.databaseSession).getSessionForClass(cls);
+            return (DatabaseSessionImpl) this.databaseSession.getSessionForClass(cls);
         } else {
             return null;
         }
@@ -1618,9 +1595,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Session broker implement composite persistence unit.
      */
     @Override
-    public ServerSession getMemberServerSession(Class cls) {
+    public ServerSession getMemberServerSession(Class<?> cls) {
         if(this.databaseSession.isBroker()) {
-            return (ServerSession)((SessionBroker)this.databaseSession).getSessionForClass(cls);
+            return (ServerSession) this.databaseSession.getSessionForClass(cls);
         } else {
             return null;
         }
@@ -1632,9 +1609,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Session broker implement composite persistence unit.
      */
     @Override
-    public String getMemberSessionName(Class cls) {
+    public String getMemberSessionName(Class<?> cls) {
         if(this.databaseSession.isBroker()) {
-            return ((SessionBroker)this.databaseSession).getSessionForClass(cls).getName();
+            return this.databaseSession.getSessionForClass(cls).getName();
         } else {
             return null;
         }
@@ -1645,7 +1622,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * the return type.
      */
     @Override
-    public jakarta.persistence.Query createQuery(Expression expression, Class resultType) {
+    public jakarta.persistence.Query createQuery(Expression expression, Class<?> resultType) {
         try {
             verifyOpen();
             DatabaseQuery query = createQueryInternal(expression, resultType);
@@ -1721,7 +1698,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * This method is used to create a query using a EclipseLink Call.
      */
     @Override
-    public jakarta.persistence.Query createQuery(Call call, Class entityClass) {
+    public jakarta.persistence.Query createQuery(Call call, Class<?> entityClass) {
         try {
             verifyOpen();
             ReadAllQuery query = new ReadAllQuery(entityClass, call);
@@ -1776,7 +1753,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * This method is used to create a query using a EclipseLink Expression and
      * the return type.
      */
-    protected DatabaseQuery createQueryInternal(Expression expression, Class resultType) {
+    protected DatabaseQuery createQueryInternal(Expression expression, Class<?> resultType) {
         ReadAllQuery query = new ReadAllQuery(resultType);
         query.setSelectionCriteria(expression);
         return query;
@@ -1827,6 +1804,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @since EclipseLink 2.5/Java Persistence 2.1
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public StoredProcedureQuery createStoredProcedureQuery(String procedureName, Class... resultClasses) {
         try {
             verifyOpen();
@@ -1835,7 +1813,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             call.setHasMultipleResultSets(resultClasses.length > 1);
 
             List<SQLResultSetMapping> sqlResultSetMappings = new ArrayList<SQLResultSetMapping>();
-            for (Class resultClass : resultClasses) {
+            for (Class<?> resultClass : resultClasses) {
                 sqlResultSetMappings.add(new SQLResultSetMapping(resultClass));
             }
 
@@ -1974,8 +1952,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Set the lock mode for an entity object contained in the persistence
      * context.
      *
-     * @param entity
-     * @param lockMode
      * @throws PersistenceException
      *             if an unsupported lock call is made
      * @throws IllegalArgumentException
@@ -1992,8 +1968,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Set the lock mode for an entity object contained in the persistence
      * context.
      *
-     * @param entity
-     * @param lockMode
      * @throws PersistenceException
      *             if an unsupported lock call is made
      * @throws IllegalArgumentException
@@ -2010,7 +1984,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { null }));
             }
 
-            UnitOfWork uow = getActivePersistenceContext(checkForTransaction(true)); // Throws TransactionRequiredException if no active transaction.
+            UnitOfWorkImpl uow = getActivePersistenceContext(checkForTransaction(true)); // Throws TransactionRequiredException if no active transaction.
 
             if (!contains(entity, uow)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_lock_not_managed_object", new Object[] { entity }));
@@ -2025,7 +1999,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_FORCE_INCREMENT)) {
 
                 // return if the entity has previously been pessimistically locked
-                if (((UnitOfWorkImpl)uow).isPessimisticLocked(entity)) {
+                if (uow.isPessimisticLocked(entity)) {
                     return;
                 }
 
@@ -2157,7 +2131,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 // getProperties method always returns non-null Map
                 this.properties = this.extendedPersistenceContext.getParent().getProperties();
             } else {
-                this.properties = new HashMap();
+                this.properties = new HashMap<>();
             }
         }
 
@@ -2287,7 +2261,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Set the flush mode that applies to all objects contained in the
      * persistence context.
      *
-     * @param flushMode
      */
     @Override
     public void setFlushMode(FlushModeType flushMode) {
@@ -2679,7 +2652,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * database. Entities which previously referenced the detached entity will
      * continue to reference it.
      *
-     * @param entity
      * @throws IllegalArgumentException
      *             if the instance is not an entity
      *
@@ -2746,7 +2718,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 // If the descriptor is isolated then it is not cacheable so ignore
                 // the properties. A null descriptor case will be handled in the
                 // individual operation methods so no need to worry about it here.
-                Class cls = entity instanceof Class ? (Class) entity : entity.getClass();
+                Class<?> cls = entity instanceof Class<?> ? (Class) entity : entity.getClass();
                 ClassDescriptor descriptor = getActiveSession().getDescriptor(cls);
 
                 if (descriptor != null && ! descriptor.isIsolated()) {
@@ -2873,7 +2845,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     @Override
     public Map<String, Object> getProperties() {
-        Map sessionMap = new HashMap(getAbstractSession().getProperties());
+        Map<String, Object> sessionMap = new HashMap<>(getAbstractSession().getProperties());
         if (this.properties != null) {
             sessionMap.putAll(this.properties);
         }
@@ -2992,7 +2964,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * or have a common inheritance hierarchy mapped root class.
      * The AttributeGroup should correspond to the entity type.
      *
-     * @param entityOrEntities
      */
     @Override
     public void load(Object entityOrEntities, AttributeGroup group) {
@@ -3006,7 +2977,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * or have a common inheritance hierarchy mapped root class.
      * The AttributeGroup should correspond to the entity type.
      *
-     * @param entityOrEntities
      */
     @Override
     public Object copy(Object entityOrEntities, AttributeGroup group) {
@@ -3100,13 +3070,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
         List<EntityGraph<? super T>> result = new ArrayList<EntityGraph<? super T>>();
         for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-            result.add(new EntityGraphImpl(group));
+            result.add(new EntityGraphImpl<>(group));
         }
         if (descriptor.hasInheritance()){
             while(descriptor.getInheritancePolicy().getParentDescriptor() != null){
                 descriptor = descriptor.getInheritancePolicy().getParentDescriptor();
                 for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-                    result.add(new EntityGraphImpl(group));
+                    result.add(new EntityGraphImpl<>(group));
                 }
             }
         }

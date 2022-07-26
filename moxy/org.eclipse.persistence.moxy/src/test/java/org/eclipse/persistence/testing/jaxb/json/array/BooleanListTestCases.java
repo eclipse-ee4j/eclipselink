@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests marshall/unmarshal List of Booleans (List<Boolean>).
+ * Tests marshall/unmarshal List of Booleans ({@code List<Boolean>}).
  *
  * @author Radek Felcman
  *
@@ -34,16 +34,18 @@ public class BooleanListTestCases extends JSONTestCases {
 
     public BooleanListTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Boolean.class});
+        setClasses(new Class<?>[]{Boolean.class});
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public void setUp() throws Exception{
         super.setUp();
         jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
+    @Override
     protected Object getControlObject() {
         List<Boolean> booleanList = new ArrayList<>();
         booleanList.add(true);

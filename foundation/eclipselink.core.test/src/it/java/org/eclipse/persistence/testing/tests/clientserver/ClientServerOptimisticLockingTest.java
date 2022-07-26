@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class ClientServerOptimisticLockingTest extends AutoVerifyTestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void reset() {
         try {
             for (int i = 0; i < NUM_CLIENTS; i++) {
@@ -57,6 +58,7 @@ public class ClientServerOptimisticLockingTest extends AutoVerifyTestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void setup() {
         try {
             this.login = (DatabaseLogin)getSession().getLogin().clone();
@@ -78,6 +80,7 @@ public class ClientServerOptimisticLockingTest extends AutoVerifyTestCase {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     public void test() {
         try {
             Session cs = this.server.serverSession.acquireClientSession();
@@ -109,6 +112,7 @@ public class ClientServerOptimisticLockingTest extends AutoVerifyTestCase {
     /**
      * Check if any errors occured.
      */
+    @Override
     public void verify() {
         try {
             for (int i = 0; i < NUM_CLIENTS; i++) {

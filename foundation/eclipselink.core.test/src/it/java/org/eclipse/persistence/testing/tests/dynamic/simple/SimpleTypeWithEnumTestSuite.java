@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,11 +30,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -56,6 +51,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 //domain-specific (testing) imports
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
+import static org.junit.Assert.*;
 
 public class SimpleTypeWithEnumTestSuite {
 
@@ -122,7 +118,7 @@ public class SimpleTypeWithEnumTestSuite {
         DynamicEntity simpleInstance = find(dynamicHelper, session, 1);
         assertNotNull("Could not find simple instance with id = 1", simpleInstance);
 
-        simpleInstance = find(dynamicHelper, session, new Integer(1));
+        simpleInstance = find(dynamicHelper, session, 1);
         assertNotNull("Could not find simple instance with id = Integer(1)", simpleInstance);
     }
 
@@ -165,7 +161,7 @@ public class SimpleTypeWithEnumTestSuite {
             0, simpleInstance.<Integer>get("id").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",
-            false, simpleInstance.<Boolean>get("value2").booleanValue());
+            false, simpleInstance.<Boolean>get("value2"));
         assertEquals("value2 not default value", false, simpleInstance.get("value2"));
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
         assertFalse("value4  set on new instance", simpleInstance.isSet("value4"));
@@ -179,7 +175,7 @@ public class SimpleTypeWithEnumTestSuite {
         DynamicEntity simpleInstance = simpleEntityType.newDynamicEntity();
         simpleInstance.set("id", id);
         simpleInstance.set("value2", true);
-        Enum blue = simpleEnum.valueOf(simpleEnum.getClass(), "BLUE");
+        Enum blue = Enum.valueOf(simpleEnum.getClass(), "BLUE");
         simpleInstance.set("color", blue);
 
         ReportQuery countQuery = dynamicHelper.newReportQuery("Simple", new ExpressionBuilder());
@@ -196,10 +192,10 @@ public class SimpleTypeWithEnumTestSuite {
         DynamicEntity foundEntity = find(dynamicHelper, session, 1);
 
         assertNotNull(foundEntity);
-        assertEquals(simpleInstance.get("id"), foundEntity.get("id"));
-        assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
-        assertEquals(simpleInstance.get("value2"), foundEntity.get("value2"));
-        assertSame(simpleInstance.get("color"), foundEntity.get("color"));
+        assertEquals(simpleInstance.<Integer>get("id"), foundEntity.<Integer>get("id"));
+        assertEquals(simpleInstance.<String>get("value1"), foundEntity.<String>get("value1"));
+        assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
+        assertSame(simpleInstance.<Enum>get("color"), foundEntity.<Enum>get("color"));
 
         session.release();
 

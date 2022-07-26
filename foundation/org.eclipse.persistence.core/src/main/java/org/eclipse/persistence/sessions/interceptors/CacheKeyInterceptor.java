@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.sessions.interceptors;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  * The CacheKeyInterceptor allows a Cache Interceptor implementation to wrap the EclipseLink CacheKey.
@@ -167,13 +167,12 @@ public class CacheKeyInterceptor extends CacheKey{
         }
 
         @Override
-        public Record getRecord() {
+        public DataRecord getRecord() {
             return wrappedKey.getRecord();
         }
 
         /**
          * If a Wrapper subclasses this CacheKey this method will be used to unwrap the cache key.
-         * @return
          */
         @Override
         public CacheKey getWrappedCacheKey(){
@@ -270,8 +269,8 @@ public class CacheKeyInterceptor extends CacheKey{
         }
 
         @Override
-        public void setRecord(Record newRecord) {
-            wrappedKey.setRecord(newRecord);
+        public void setRecord(DataRecord newDataRecord) {
+            wrappedKey.setRecord(newDataRecord);
         }
 
         @Override

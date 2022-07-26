@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -51,7 +51,7 @@ public class TestBasicPropertyTypes extends JPA1Base {
             em.persist(obj);
             env.commitTransactionAndClear(em);
             verify(true, "no Exception");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(0));
+            obj = em.find(BasicTypesPropertyAccess.class, 0);
         } finally {
             closeEntityManager(em);
         }
@@ -68,24 +68,24 @@ public class TestBasicPropertyTypes extends JPA1Base {
             em.persist(obj);
             env.commitTransactionAndClear(em);
             verify(true, "no Exception");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(!validator.isChanged(obj), fieldName + " not persisted");
             // update unchanged object
             env.beginTransaction(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             obj.clearPostUpdate();
             env.commitTransactionAndClear(em);
             verify(!obj.postUpdateWasCalled(), "postUpdate was called -> before image fails");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(!validator.isChanged(obj), fieldName + " is changed");
             // update changed object
             env.beginTransaction(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             obj.clearPostUpdate();
             validator.change(obj);
             env.commitTransactionAndClear(em);
             verify(obj.postUpdateWasCalled(), "postUpdate was not called -> before image fails");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(validator.isChanged(obj), fieldName + " is unchanged");
         } finally {
             closeEntityManager(em);
@@ -101,11 +101,11 @@ public class TestBasicPropertyTypes extends JPA1Base {
             env.beginTransaction(em);
             em.persist(obj);
             env.commitTransactionAndClear(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(validator.isNull(obj), fieldName + " is not null");
             // delete the object again
             env.beginTransaction(em);
-            em.remove(em.find(BasicTypesPropertyAccess.class, new Integer(id)));
+            em.remove(em.find(BasicTypesPropertyAccess.class, id));
             env.commitTransactionAndClear(em);
             // insert object with non-null field
             env.beginTransaction(em);
@@ -113,33 +113,33 @@ public class TestBasicPropertyTypes extends JPA1Base {
             em.persist(obj);
             env.commitTransactionAndClear(em);
             verify(true, "no Exception");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(!validator.isChanged(obj), fieldName + " not persisted");
             // update unchanged
             env.beginTransaction(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             obj.clearPostUpdate();
             env.commitTransactionAndClear(em);
             verify(!obj.postUpdateWasCalled(), "postUpdate was called");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(!validator.isChanged(obj), fieldName + " is changed");
             // update changed object
             env.beginTransaction(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             obj.clearPostUpdate();
             validator.change(obj);
             env.commitTransactionAndClear(em);
             verify(obj.postUpdateWasCalled(), "postUpdate was not called");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(validator.isChanged(obj), fieldName + " is unchanged");
             // update to null
             env.beginTransaction(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             obj.clearPostUpdate();
             validator.setNull(obj);
             env.commitTransactionAndClear(em);
             verify(obj.postUpdateWasCalled(), "postUpdate was not called");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(validator.isNull(obj), fieldName + " is not null");
         } finally {
             closeEntityManager(em);
@@ -155,11 +155,11 @@ public class TestBasicPropertyTypes extends JPA1Base {
             env.beginTransaction(em);
             em.persist(obj);
             env.commitTransactionAndClear(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(validator.isNull(obj), fieldName + " is not null");
             // delete the object again
             env.beginTransaction(em);
-            em.remove(em.find(BasicTypesPropertyAccess.class, new Integer(id)));
+            em.remove(em.find(BasicTypesPropertyAccess.class, id));
             env.commitTransactionAndClear(em);
             // insert object with non-null field
             env.beginTransaction(em);
@@ -167,49 +167,49 @@ public class TestBasicPropertyTypes extends JPA1Base {
             em.persist(obj);
             env.commitTransactionAndClear(em);
             verify(true, "no Exception");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(!validator.isChanged(obj), fieldName + " not persisted");
             // update unchanged
             env.beginTransaction(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             obj.clearPostUpdate();
             env.commitTransactionAndClear(em);
             verify(!obj.postUpdateWasCalled(), "postUpdate was not called");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(!validator.isChanged(obj), fieldName + " is changed");
             // update changed
             env.beginTransaction(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             obj.clearPostUpdate();
             validator.setNull(obj);
             env.commitTransactionAndClear(em);
             verify(obj.postUpdateWasCalled(), "postUpdate was not called");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(validator.isNull(obj), fieldName + " is not null");
             // update original
             env.beginTransaction(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             validator.set(obj);
             env.commitTransactionAndClear(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(!validator.isChanged(obj), fieldName + " not persisted");
             // mutate
             env.beginTransaction(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             obj.clearPostUpdate();
             validator.mutate(obj);
             env.commitTransactionAndClear(em);
             verify(obj.postUpdateWasCalled(), "postUpdate was not called");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(validator.isChanged(obj), fieldName + " not mutated");
             // update to null
             env.beginTransaction(em);
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             obj.clearPostUpdate();
             validator.setNull(obj);
             env.commitTransactionAndClear(em);
             verify(obj.postUpdateWasCalled(), "postUpdate was not called");
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(id));
+            obj = em.find(BasicTypesPropertyAccess.class, id);
             verify(validator.isNull(obj), fieldName + " is not null");
         } finally {
             closeEntityManager(em);
@@ -220,14 +220,17 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testPrimitiveBoolean() {
         Validator validator = new Validator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveBoolean(true);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveBoolean(false);
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveBoolean() != true;
             }
@@ -238,14 +241,17 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testPrimitiveByte() {
         Validator validator = new Validator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimititveByte((byte) 17);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimititveByte((byte) 23);
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getPrimititveByte() != 17;
             }
@@ -256,14 +262,17 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testPrimitiveChar() {
         Validator validator = new Validator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveChar('A');
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveChar('B');
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveChar() != 'A';
             }
@@ -274,14 +283,17 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testPrimitiveShort() {
         Validator validator = new Validator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveShort((short) 19);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveShort((short) 45);
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveShort() != 19;
             }
@@ -292,14 +304,17 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testPrimitiveInt() {
         Validator validator = new Validator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveInt(88);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveInt(77);
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveInt() != 88;
             }
@@ -310,14 +325,17 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testPrimitiveLong() {
         Validator validator = new Validator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveLong(88);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveLong(77);
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveLong() != 88;
             }
@@ -328,14 +346,17 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testPrimitiveFloat() {
         Validator validator = new Validator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveFloat((float) 88.5);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveFloat((float) 77.5);
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveFloat() != 88.5;
             }
@@ -346,14 +367,17 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testPrimitiveDouble() {
         Validator validator = new Validator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveDouble(99.5);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveDouble(77.5);
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveDouble() != 99.5;
             }
@@ -365,22 +389,27 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testWrapperBoolean() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setWrapperBoolean(Boolean.TRUE);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setWrapperBoolean(Boolean.FALSE);
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperBoolean(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.isWrapperBoolean() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !obj.isWrapperBoolean().equals(Boolean.TRUE);
             }
@@ -391,24 +420,29 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testWrapperByte() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
-                obj.setWrapperByte(new Byte((byte) 17));
+                obj.setWrapperByte((byte) 17);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
-                obj.setWrapperByte(new Byte((byte) 18));
+                obj.setWrapperByte((byte) 18);
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperByte(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperByte() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
-                return !obj.getWrapperByte().equals(new Byte((byte) 17));
+                return !obj.getWrapperByte().equals((byte) 17);
             }
         };
         validateReference(12, validator, "wrapperByte");
@@ -417,24 +451,29 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testWrapperCharacter() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
-                obj.setWrapperCharacter(new Character('A'));
+                obj.setWrapperCharacter('A');
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
-                obj.setWrapperCharacter(new Character('B'));
+                obj.setWrapperCharacter('B');
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperCharacter(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperCharacter() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
-                return !obj.getWrapperCharacter().equals(new Character('A'));
+                return !obj.getWrapperCharacter().equals('A');
             }
         };
         validateReference(13, validator, "wrapperCharacter");
@@ -443,24 +482,29 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testWrapperShort() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
-                obj.setWrapperShort(new Short((short) 1));
+                obj.setWrapperShort((short) 1);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
-                obj.setWrapperShort(new Short((short) 2));
+                obj.setWrapperShort((short) 2);
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperShort(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperShort() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
-                return !obj.getWrapperShort().equals(new Short((short) 1));
+                return !obj.getWrapperShort().equals((short) 1);
             }
         };
         validateReference(14, validator, "wrapperShort");
@@ -469,24 +513,29 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testWrapperInteger() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
-                obj.setWrapperInteger(new Integer(1));
+                obj.setWrapperInteger(1);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
-                obj.setWrapperInteger(new Integer(2));
+                obj.setWrapperInteger(2);
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperInteger(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperInteger() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
-                return !obj.getWrapperInteger().equals(new Integer(1));
+                return !obj.getWrapperInteger().equals(1);
             }
         };
         validateReference(15, validator, "wrapperInteger");
@@ -495,24 +544,29 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testWrapperLong() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
-                obj.setWrapperLong(new Long(1));
+                obj.setWrapperLong(1L);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
-                obj.setWrapperLong(new Long(2));
+                obj.setWrapperLong(2L);
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperLong(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperLong() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
-                return !obj.getWrapperLong().equals(new Long(1));
+                return !obj.getWrapperLong().equals(1L);
             }
         };
         validateReference(16, validator, "wrapperLong");
@@ -521,24 +575,29 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testWrapperDouble() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
-                obj.setWrapperDouble(new Double(1));
+                obj.setWrapperDouble(1.0);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
-                obj.setWrapperDouble(new Double(2));
+                obj.setWrapperDouble(2.0);
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperDouble(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperDouble() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
-                return !obj.getWrapperDouble().equals(new Double(1));
+                return !obj.getWrapperDouble().equals(1.0);
             }
         };
         validateReference(18, validator, "wrapperDouble");
@@ -547,24 +606,29 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testWrapperFloat() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
-                obj.setWrapperFloat(new Float(1));
+                obj.setWrapperFloat(1F);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
-                obj.setWrapperFloat(new Float(2));
+                obj.setWrapperFloat(2F);
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperFloat(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperFloat() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
-                return !obj.getWrapperFloat().equals(new Float(1));
+                return !obj.getWrapperFloat().equals(1F);
             }
         };
         validateReference(17, validator, "wrapperFloat");
@@ -574,22 +638,27 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testString2Varchar() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setString2Varchar("VC 1");
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setString2Varchar("VC 2");
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setString2Varchar(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getString2Varchar() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !obj.getString2Varchar().equals("VC 1");
             }
@@ -600,22 +669,27 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testString2Clob() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setString2Clob("VC 1");
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setString2Clob("VC 2");
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setString2Clob(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getString2Clob() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !obj.getString2Clob().equals("VC 1");
             }
@@ -626,22 +700,27 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testBigDecimal() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setBigDecimal(new BigDecimal("1.1"));
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setBigDecimal(new BigDecimal("2.2"));
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setBigDecimal(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getBigDecimal() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getBigDecimal().compareTo(new BigDecimal("1.1")) != 0;
             }
@@ -652,22 +731,27 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testBigInteger() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setBigInteger(new BigInteger("11"));
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setBigInteger(new BigInteger("22"));
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setBigInteger(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getBigInteger() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !obj.getBigInteger().equals(new BigInteger("11"));
             }
@@ -679,26 +763,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testUtilDate() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setUtilDate(new Date(1000));
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setUtilDate(new Date(2000));
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setUtilDate(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getUtilDate() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !obj.getUtilDate().equals(new Date(1000));
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getUtilDate().setTime(2000);
             }
@@ -709,26 +799,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testUtilCalendar() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setUtilCalendar(new GregorianCalendar(2005, 9, 8, 10, 49));
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setUtilCalendar(new GregorianCalendar(2005, 9, 9, 10, 49));
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setUtilCalendar(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getUtilCalendar() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !obj.getUtilCalendar().equals(new GregorianCalendar(2005, 9, 8, 10, 49));
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getUtilCalendar().set(2005, 9, 9);
             }
@@ -739,26 +835,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testSqlDate() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setSqlDate(java.sql.Date.valueOf("2005-09-08"));
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setSqlDate(java.sql.Date.valueOf("2005-09-09"));
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setSqlDate(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getSqlDate() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !obj.getSqlDate().equals(java.sql.Date.valueOf("2005-09-08"));
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getSqlDate().setTime(java.sql.Date.valueOf("2005-09-09").getTime());
             }
@@ -769,26 +871,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testSqlTime() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setSqlTime(java.sql.Time.valueOf("10:49:00"));
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setSqlTime(java.sql.Time.valueOf("11:49:00"));
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setSqlTime(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getSqlTime() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !obj.getSqlTime().equals(java.sql.Time.valueOf("10:49:00"));
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getSqlTime().setTime(java.sql.Time.valueOf("11:49:00").getTime());
             }
@@ -799,26 +907,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testSqlTimestamp() {
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setSqlTimestamp(new java.sql.Timestamp(1000));
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setSqlTimestamp(new java.sql.Timestamp(2000));
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setSqlTimestamp(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getSqlTimestamp() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !obj.getSqlTimestamp().equals(new java.sql.Timestamp(1000));
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getSqlTimestamp().setTime(2000);
             }
@@ -831,26 +945,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     public void testPrimitiveByteArray2Binary() {
         final byte[] UNCHANGED = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveByteArray2Binary(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveByteArray2Binary(new byte[] { 8, 1, 2, 3, 4, 5, 6, 7 });
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveByteArray2Binary(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveByteArray2Binary() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !Arrays.equals(UNCHANGED, obj.getPrimitiveByteArray2Binary());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getPrimitiveByteArray2Binary()[0] = 8;
             }
@@ -863,26 +983,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     public void testPrimitiveByteArray2Longvarbinary() {
         final byte[] UNCHANGED = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveByteArray2Longvarbinary(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveByteArray2Longvarbinary(new byte[] { 8, 1, 2, 3, 4, 5, 6, 7 });
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveByteArray2Longvarbinary(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveByteArray2Longvarbinary() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !Arrays.equals(UNCHANGED, obj.getPrimitiveByteArray2Longvarbinary());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getPrimitiveByteArray2Longvarbinary()[0] = 8;
             }
@@ -894,26 +1020,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     public void testPrimitiveByteArray2Blob() {
         final byte[] UNCHANGED = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveByteArray2Blob(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveByteArray2Blob(new byte[] { 8, 1, 2, 3, 4, 5, 6, 7 });
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveByteArray2Blob(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveByteArray2Blob() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !Arrays.equals(UNCHANGED, obj.getPrimitiveByteArray2Blob());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getPrimitiveByteArray2Blob()[0] = 8;
             }
@@ -925,26 +1057,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     public void testPrimitiveCharArray2Varchar() {
         final char[] UNCHANGED = new char[] { 'U', 'N', 'C', 'H', 'A', 'N', 'G', 'E', 'D' };
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveCharArray2Varchar(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveCharArray2Varchar(new char[] { 'C', 'H', 'A', 'N', 'G', 'E', 'D' });
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveCharArray2Varchar(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveCharArray2Varchar() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !Arrays.equals(UNCHANGED, obj.getPrimitiveCharArray2Varchar());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getPrimitiveCharArray2Varchar()[0] = 'X';
             }
@@ -956,26 +1094,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     public void testPrimitiveCharArray2Clob() {
         final char[] UNCHANGED = new char[] { 'U', 'N', 'C', 'H', 'A', 'N', 'G', 'E', 'D' };
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveCharArray2Clob(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveCharArray2Clob(new char[] { 'C', 'H', 'A', 'N', 'G', 'E', 'D' });
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setPrimitiveCharArray2Clob(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getPrimitiveCharArray2Clob() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !Arrays.equals(UNCHANGED, obj.getPrimitiveCharArray2Clob());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getPrimitiveCharArray2Clob()[0] = 'X';
             }
@@ -985,34 +1129,40 @@ public class TestBasicPropertyTypes extends JPA1Base {
 
     @Test
     public void testWrapperByteArray2Binary() {
-        final Byte[] UNCHANGED = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2),
-                Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6),
-                Byte.valueOf((byte) 7), };
+        final Byte[] UNCHANGED = new Byte[] {(byte) 0, (byte) 1, (byte) 2,
+                (byte) 3, (byte) 4, (byte) 5, (byte) 6,
+                (byte) 7, };
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setWrapperByteArray2Binary(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
-                obj.setWrapperByteArray2Binary(new Byte[] { Byte.valueOf((byte) 8), Byte.valueOf((byte) 1),
-                        Byte.valueOf((byte) 2), Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5),
-                        Byte.valueOf((byte) 6), Byte.valueOf((byte) 7), });
+                obj.setWrapperByteArray2Binary(new Byte[] {(byte) 8, (byte) 1,
+                        (byte) 2, (byte) 3, (byte) 4, (byte) 5,
+                        (byte) 6, (byte) 7, });
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperByteArray2Binary(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperByteArray2Binary() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !Arrays.equals(UNCHANGED, obj.getWrapperByteArray2Binary());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
-                obj.getWrapperByteArray2Binary()[0] = Byte.valueOf((byte) 8);
+                obj.getWrapperByteArray2Binary()[0] = (byte) 8;
             }
         };
         validateMutable(46, validator, "wrapperByteArray2Binary");
@@ -1020,34 +1170,40 @@ public class TestBasicPropertyTypes extends JPA1Base {
 
     @Test
     public void testWrapperByteArray2Longvarbinary() {
-        final Byte[] UNCHANGED = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2),
-                Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6),
-                Byte.valueOf((byte) 7), };
+        final Byte[] UNCHANGED = new Byte[] {(byte) 0, (byte) 1, (byte) 2,
+                (byte) 3, (byte) 4, (byte) 5, (byte) 6,
+                (byte) 7, };
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setWrapperByteArray2Longvarbinary(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
-                obj.setWrapperByteArray2Longvarbinary(new Byte[] { Byte.valueOf((byte) 8), Byte.valueOf((byte) 1),
-                        Byte.valueOf((byte) 2), Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5),
-                        Byte.valueOf((byte) 6), Byte.valueOf((byte) 7), });
+                obj.setWrapperByteArray2Longvarbinary(new Byte[] {(byte) 8, (byte) 1,
+                        (byte) 2, (byte) 3, (byte) 4, (byte) 5,
+                        (byte) 6, (byte) 7, });
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperByteArray2Longvarbinary(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperByteArray2Longvarbinary() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !Arrays.equals(UNCHANGED, obj.getWrapperByteArray2Longvarbinary());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
-                obj.getWrapperByteArray2Longvarbinary()[0] = Byte.valueOf((byte) 8);
+                obj.getWrapperByteArray2Longvarbinary()[0] = (byte) 8;
             }
         };
         validateMutable(47, validator, "wrapperByteArray2Longvarbinary");
@@ -1055,34 +1211,40 @@ public class TestBasicPropertyTypes extends JPA1Base {
 
     @Test
     public void testWrapperByteArray2Blob() {
-        final Byte[] UNCHANGED = new Byte[] { Byte.valueOf((byte) 0), Byte.valueOf((byte) 1), Byte.valueOf((byte) 2),
-                Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5), Byte.valueOf((byte) 6),
-                Byte.valueOf((byte) 7), };
+        final Byte[] UNCHANGED = new Byte[] {(byte) 0, (byte) 1, (byte) 2,
+                (byte) 3, (byte) 4, (byte) 5, (byte) 6,
+                (byte) 7, };
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setWrapperByteArray2Blob(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
-                obj.setWrapperByteArray2Blob(new Byte[] { Byte.valueOf((byte) 8), Byte.valueOf((byte) 1),
-                        Byte.valueOf((byte) 2), Byte.valueOf((byte) 3), Byte.valueOf((byte) 4), Byte.valueOf((byte) 5),
-                        Byte.valueOf((byte) 6), Byte.valueOf((byte) 7) });
+                obj.setWrapperByteArray2Blob(new Byte[] {(byte) 8, (byte) 1,
+                        (byte) 2, (byte) 3, (byte) 4, (byte) 5,
+                        (byte) 6, (byte) 7});
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperByteArray2Blob(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperByteArray2Blob() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !Arrays.equals(UNCHANGED, obj.getWrapperByteArray2Blob());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
-                obj.getWrapperByteArray2Blob()[0] = Byte.valueOf((byte) 8);
+                obj.getWrapperByteArray2Blob()[0] = (byte) 8;
             }
         };
         validateMutable(48, validator, "wrapperByteArray2Blob");
@@ -1093,26 +1255,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     public void testWrapperCharArray2Varchar() {
         final Character[] UNCHANGED = new Character[] { 'U', 'N', 'C', 'H', 'A', 'N', 'G', 'E', 'D' };
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setWrapperCharacterArray2Varchar(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setWrapperCharacterArray2Varchar(new Character[] { 'C', 'H', 'A', 'N', 'G', 'E', 'D' });
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperCharacterArray2Varchar(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperCharacterArray2Varchar() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !Arrays.equals(UNCHANGED, obj.getWrapperCharacterArray2Varchar());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getWrapperCharacterArray2Varchar()[0] = 'X';
             }
@@ -1125,26 +1293,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
     public void testWrapperCharArray2Clob() {
         final Character[] UNCHANGED = new Character[] { 'U', 'N', 'C', 'H', 'A', 'N', 'G', 'E', 'D' };
         MutableValidator validator = new MutableValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setWrapperCharacterArray2Clob(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setWrapperCharacterArray2Clob(new Character[] { 'C', 'H', 'A', 'N', 'G', 'E', 'D' });
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setWrapperCharacterArray2Clob(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getWrapperCharacterArray2Clob() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !Arrays.equals(UNCHANGED, obj.getWrapperCharacterArray2Clob());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 obj.getWrapperCharacterArray2Clob()[0] = 'X';
             }
@@ -1157,26 +1331,32 @@ public class TestBasicPropertyTypes extends JPA1Base {
         MutableValidator validator = new MutableValidator() {
             UserDefinedSerializable UNCHANGED = new UserDefinedSerializable("Unchanged");
 
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setSerializable(UNCHANGED);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setSerializable(new UserDefinedSerializable("Changed"));
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setSerializable(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getSerializable() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return !UNCHANGED.equals(obj.getSerializable());
             }
 
+            @Override
             public void mutate(BasicTypesPropertyAccess obj) {
                 ((UserDefinedSerializable) obj.getSerializable()).setTxt("Changed");
             }
@@ -1187,22 +1367,27 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testEnumString() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setEnumString(UserDefinedEnum.HUGO);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setEnumString(UserDefinedEnum.EMIL);
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setEnumString(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getEnumString() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getEnumString() != UserDefinedEnum.HUGO;
             }
@@ -1213,22 +1398,27 @@ public class TestBasicPropertyTypes extends JPA1Base {
     @Test
     public void testEnumOrdinal() {
         ReferenceValidator validator = new ReferenceValidator() {
+            @Override
             public void set(BasicTypesPropertyAccess obj) {
                 obj.setEnumOrdinal(UserDefinedEnum.HUGO);
             }
 
+            @Override
             public void change(BasicTypesPropertyAccess obj) {
                 obj.setEnumOrdinal(UserDefinedEnum.EMIL);
             }
 
+            @Override
             public void setNull(BasicTypesPropertyAccess obj) {
                 obj.setEnumOrdinal(null);
             }
 
+            @Override
             public boolean isNull(BasicTypesPropertyAccess obj) {
                 return obj.getEnumOrdinal() == null;
             }
 
+            @Override
             public boolean isChanged(BasicTypesPropertyAccess obj) {
                 return obj.getEnumOrdinal() != UserDefinedEnum.HUGO;
             }
@@ -1265,7 +1455,7 @@ public class TestBasicPropertyTypes extends JPA1Base {
                 con.close();
             }
 
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(8888));
+            obj = em.find(BasicTypesPropertyAccess.class, 8888);
             flop("missing exception");
         } catch (PersistenceException iae) {
             // $JL-EXC$ expected behavior
@@ -1303,7 +1493,7 @@ public class TestBasicPropertyTypes extends JPA1Base {
                 con.close();
             }
 
-            obj = em.find(BasicTypesPropertyAccess.class, new Integer(8889));
+            obj = em.find(BasicTypesPropertyAccess.class, 8889);
             flop("missing exception");
         } catch (PersistenceException iae) {
             // $JL-EXC$ expected behavior

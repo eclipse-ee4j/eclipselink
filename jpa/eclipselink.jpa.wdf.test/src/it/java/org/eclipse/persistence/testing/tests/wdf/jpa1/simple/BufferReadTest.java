@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -36,8 +36,8 @@ import org.junit.Test;
 public class BufferReadTest extends JPA1Base {
 
     private static final long SECONDS = 0;
-    private static final Integer KEY = Integer.valueOf(1);
-    private static final Integer MISS = Integer.valueOf(2);
+    private static final Integer KEY = 1;
+    private static final Integer MISS = 2;
     private static final boolean PRINTLN = false;
     private EntityManager em;
 
@@ -67,18 +67,22 @@ public class BufferReadTest extends JPA1Base {
     @Test
     public void testFindOutsideTransaction() {
         Action action = new Action() {
+            @Override
             public void run() {
                 em.clear();
                 em.find(BasicTypesPropertyAccess.class, KEY);
             }
 
+            @Override
             public String description() {
                 return "find outside transaction (large, hit)";
             }
 
+            @Override
             public void prepare() {
             }
 
+            @Override
             public void tearDown() {
             }
         };
@@ -88,18 +92,22 @@ public class BufferReadTest extends JPA1Base {
     @Test
     public void testFindOutsideTransactionSmall() {
         Action action = new Action() {
+            @Override
             public void run() {
                 em.clear();
                 em.find(Department.class, KEY);
             }
 
+            @Override
             public String description() {
                 return "find outside transaction (small, hit)";
             }
 
+            @Override
             public void prepare() {
             }
 
+            @Override
             public void tearDown() {
             }
         };
@@ -111,20 +119,24 @@ public class BufferReadTest extends JPA1Base {
         Action action = new Action() {
             Query query;
 
+            @Override
             public void run() {
                 em.clear();
             }
 
+            @Override
             public String description() {
                 return "query complete outside transaction (small, hit)";
             }
 
+            @Override
             public void prepare() {
                 query = em.createQuery("select d from Department d where d.id = ?1");
-                query.setParameter(1, Integer.valueOf(1));
+                query.setParameter(1, 1);
                 query.getSingleResult();
             }
 
+            @Override
             public void tearDown() {
             }
         };
@@ -138,21 +150,25 @@ public class BufferReadTest extends JPA1Base {
         Action action = new Action() {
             Query query;
 
+            @Override
             public void run() {
                 myEm.clear();
                 query.getSingleResult();
             }
 
+            @Override
             public String description() {
                 return "query execute outside transaction (small, hit)";
             }
 
+            @Override
             public void prepare() {
                 getEnvironment().beginTransaction(myEm);
                 query = myEm.createQuery("select d from Department d where d.id = ?1");
-                query.setParameter(1, Integer.valueOf(1));
+                query.setParameter(1, 1);
             }
 
+            @Override
             public void tearDown() {
             }
 
@@ -167,22 +183,26 @@ public class BufferReadTest extends JPA1Base {
         Action action = new Action() {
             Query query;
 
+            @Override
             public void run() {
                 myEm.clear();
                 query.getSingleResult();
             }
 
+            @Override
             public String description() {
                 return "query execute outside transaction (new, hit)";
             }
 
+            @Override
             public void prepare() {
                 getEnvironment().beginTransaction(myEm);
                 query = myEm
                         .createQuery("select new org.eclipse.persistence.testing.models.wdf.jpa1.employee.Department(d.id, d.name) from Department d where d.id = ?1");
-                query.setParameter(1, Integer.valueOf(1));
+                query.setParameter(1, 1);
             }
 
+            @Override
             public void tearDown() {
                 if (getEnvironment().isTransactionActive(myEm)) {
                     myEm.getTransaction().rollback();
@@ -196,20 +216,24 @@ public class BufferReadTest extends JPA1Base {
     @Test
     public void testNamedQueryCompleteOutsideTransactionSmall() {
         Action action = new Action() {
+            @Override
             public void run() {
                 em.clear();
                 Query query = em.createNamedQuery("getDepartmentById");
-                query.setParameter(1, Integer.valueOf(1));
+                query.setParameter(1, 1);
                 query.getSingleResult();
             }
 
+            @Override
             public String description() {
                 return "query named complete outside transaction (small, hit)";
             }
 
+            @Override
             public void tearDown() {
             }
 
+            @Override
             public void prepare() {
             }
         };
@@ -223,21 +247,25 @@ public class BufferReadTest extends JPA1Base {
         Action action = new Action() {
             Query query;
 
+            @Override
             public void run() {
                 myEm.clear();
                 query.getSingleResult();
             }
 
+            @Override
             public String description() {
                 return "query named execute outside transaction (small, hit)";
             }
 
+            @Override
             public void prepare() {
                 getEnvironment().beginTransaction(myEm);
                 query = myEm.createNamedQuery("getDepartmentById");
-                query.setParameter(1, Integer.valueOf(1));
+                query.setParameter(1, 1);
             }
 
+            @Override
             public void tearDown() {
             }
         };
@@ -251,19 +279,23 @@ public class BufferReadTest extends JPA1Base {
         Action action = new Action() {
             Query query;
 
+            @Override
             public void run() {
                 myEm.clear();
                 query.getSingleResult();
             }
 
+            @Override
             public String description() {
                 return "native entity execute outside transaction (small, hit)";
             }
 
+            @Override
             public void prepare() {
                 query = myEm.createNativeQuery("select ID, NAME, VERSION from TMP_DEP where ID = 1", Department.class);
             }
 
+            @Override
             public void tearDown() {
 
             }
@@ -279,6 +311,7 @@ public class BufferReadTest extends JPA1Base {
         Action action = new Action() {
             Query query;
 
+            @Override
             public void run() {
                 myEm.clear();
                 Object object = query.getSingleResult();
@@ -288,14 +321,17 @@ public class BufferReadTest extends JPA1Base {
                 new Department(id, name);
             }
 
+            @Override
             public String description() {
                 return "native fields execute outside transaction (small, hit)";
             }
 
+            @Override
             public void prepare() {
                 query = myEm.createNamedQuery("getDepartmentFieldByField1");
             }
 
+            @Override
             public void tearDown() {
             }
         };
@@ -313,6 +349,7 @@ public class BufferReadTest extends JPA1Base {
             try {
                 preparedStatement.setInt(1, 1);
                 Action action = new Action() {
+                    @Override
                     public void run() {
                         try {
                             ResultSet rs = preparedStatement.executeQuery();
@@ -327,13 +364,16 @@ public class BufferReadTest extends JPA1Base {
                         }
                     }
 
+                    @Override
                     public void tearDown() {
                     }
 
+                    @Override
                     public String description() {
                         return "JDBC excluding prepare and set (small, hit)";
                     }
 
+                    @Override
                     public void prepare() {
                     }
                 };
@@ -354,6 +394,7 @@ public class BufferReadTest extends JPA1Base {
         connection.setAutoCommit(false);
         try {
             Action action = new Action() {
+                @Override
                 public void run() {
                     try {
                         final PreparedStatement preparedStatement = connection
@@ -376,13 +417,16 @@ public class BufferReadTest extends JPA1Base {
                     }
                 }
 
+                @Override
                 public void tearDown() {
                 }
 
+                @Override
                 public String description() {
                     return "JDBC incuding prepare (small, hit)";
                 }
 
+                @Override
                 public void prepare() {
                 }
             };
@@ -402,18 +446,22 @@ public class BufferReadTest extends JPA1Base {
     @Test
     public void testNotFound() {
         Action action = new Action() {
+            @Override
             public void run() {
                 em.clear();
                 em.find(BasicTypesPropertyAccess.class, MISS);
             }
 
+            @Override
             public String description() {
                 return "find outside transaction (miss)";
             }
 
+            @Override
             public void tearDown() {
             }
 
+            @Override
             public void prepare() {
             }
         };
@@ -423,17 +471,21 @@ public class BufferReadTest extends JPA1Base {
     @Test
     public void testFlush() {
         Action action = new Action() {
+            @Override
             public void run() {
                 em.flush();
             }
 
+            @Override
             public void tearDown() {
             }
 
+            @Override
             public String description() {
                 return "flush (unchanged)";
             }
 
+            @Override
             public void prepare() {
             }
         };

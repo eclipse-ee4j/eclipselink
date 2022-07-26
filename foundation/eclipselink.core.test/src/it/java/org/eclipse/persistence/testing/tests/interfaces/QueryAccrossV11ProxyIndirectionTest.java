@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public class QueryAccrossV11ProxyIndirectionTest extends AutoVerifyTestCase {
         return descriptor;
     }
 
-    public void setDescriptorV11ProxyIndirection(Class cls, String attributeName, Class proxyIndirectClass) {
+    public void setDescriptorV11ProxyIndirection(Class<?> cls, String attributeName, Class<?> proxyIndirectClass) {
         // instruct descriptor to use proxy indirection since
         // VariableOneToOneMapping maping for attribute "program"
         // in InterfaceWithoutTablesProject.java, did not set it;
@@ -68,11 +68,13 @@ public class QueryAccrossV11ProxyIndirectionTest extends AutoVerifyTestCase {
         mappingForAttribute.setIndirectionPolicy(indirectionPolicy);
     }
 
+    @Override
     public void setup() {
         setDescriptorV11ProxyIndirection(Actor.class, "program", ProgramInt.class);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     } // end of setup()
 
+    @Override
     public void test() {
         try {
             java.util.Vector actors = getSession().readAllObjects(Actor.class);
@@ -86,6 +88,7 @@ public class QueryAccrossV11ProxyIndirectionTest extends AutoVerifyTestCase {
         }
     } // end of test()
 
+    @Override
     public void reset() {
         // do not want to keep proxy indirection on maping for
         // attribute "program" - VariableOneToOneMapping
@@ -93,6 +96,7 @@ public class QueryAccrossV11ProxyIndirectionTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     } // end of reset()
 
+    @Override
     public void verify() {
         if (caughtException != null) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("Test that VariableOneToOneMapping mapping with" +

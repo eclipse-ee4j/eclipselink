@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,6 +25,17 @@ import org.eclipse.persistence.transaction.JTATransactionController;
  */
 public class SAPNetWeaverTransactionController extends JTATransactionController {
     public static final String JNDI_TRANSACTION_MANAGER_NAME = "TransactionManager";
+
+    /**
+     * Default constructor.
+     */
+    public SAPNetWeaverTransactionController() {
+        super();
+    }
+
+    public SAPNetWeaverTransactionController(TransactionManager transactionManager) {
+        super(transactionManager);
+    }
 
     @Override
     protected TransactionManager acquireTransactionManager() throws Exception {

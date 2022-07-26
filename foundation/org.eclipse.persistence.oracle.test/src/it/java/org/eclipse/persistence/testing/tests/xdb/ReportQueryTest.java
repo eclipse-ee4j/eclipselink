@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,12 +27,15 @@ public class ReportQueryTest extends TestCase {
         setDescription("Tests using a report query to return element values from an XMLType field");
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public void test() {
         ExpressionBuilder builder = new ExpressionBuilder();
         ReportQuery rq = new ReportQuery(Employee_XML.class, builder);
@@ -41,6 +44,7 @@ public class ReportQueryTest extends TestCase {
         results = (Vector)getSession().executeQuery(rq);
     }
 
+    @Override
     public void verify() {
         ReportQueryResult first = (ReportQueryResult)results.firstElement();
         if (!(first.get("degree").equals("BCS"))) {

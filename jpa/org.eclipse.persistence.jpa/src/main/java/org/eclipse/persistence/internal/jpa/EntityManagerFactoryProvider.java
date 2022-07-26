@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,21 +89,26 @@ public class EntityManagerFactoryProvider {
     };
 
     /**
+     * Default constructor to allow reflection.
+     */
+    public EntityManagerFactoryProvider() {
+    }
+
+    /**
      * Add an EntityManagerSetupImpl to the cached list
      * These are used to ensure all persistence units that are the same get the same underlying session
-     * @param name
-     * @param setup
      */
     public static void addEntityManagerSetupImpl(String name, EntityManagerSetupImpl setup){
-        if (name == null){
-            emSetupImpls.put("", setup);
+        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+            if (name == null){
+                EntityManagerFactoryProvider.emSetupImpls.put("", setup);
+            }
+            EntityManagerFactoryProvider.emSetupImpls.put(name, setup);
         }
-        emSetupImpls.put(name, setup);
     }
 
     /**
      * Calls the appropriate create,replace or alter SchemaManager api.
-     * @param mgr
      * @param ddlType - ddl operation to be performed
      */
     protected static void generateDefaultTables(SchemaManager mgr, TableCreationType ddlType) {
@@ -133,10 +139,6 @@ public class EntityManagerFactoryProvider {
     /**
      * Check the provided map for an object with the given key.  If that object is not available, check the
      * System properties.  If it is not available from either location, return the default value.
-     * @param propertyKey
-     * @param overrides
-     * @param defaultValue
-     * @return
      */
     public static String getConfigPropertyAsString(String propertyKey, Map overrides, String defaultValue){
         String value = getConfigPropertyAsString(propertyKey, overrides);
@@ -221,16 +223,17 @@ public class EntityManagerFactoryProvider {
 
     /**
      * Return the setup class for a given entity manager name
-     * @param emName
      */
-    public static EntityManagerSetupImpl getEntityManagerSetupImpl(String emName){
-        if (emName == null){
-            return emSetupImpls.get("");
+    public static EntityManagerSetupImpl getEntityManagerSetupImpl(String emName) {
+        synchronized (EntityManagerFactoryProvider.emSetupImpls){
+            if (emName == null){
+                return EntityManagerFactoryProvider.emSetupImpls.get("");
+            }
+            return EntityManagerFactoryProvider.emSetupImpls.get(emName);
         }
-        return emSetupImpls.get(emName);
     }
 
-    public static Map<String, EntityManagerSetupImpl>getEmSetupImpls(){
+    public static Map<String, EntityManagerSetupImpl> getEmSetupImpls(){
         return emSetupImpls;
     }
 
@@ -263,12 +266,10 @@ public class EntityManagerFactoryProvider {
     /**
      * Merge the properties from the source object into the target object.  If the property
      * exists in both objects, use the one from the target
-     * @param target
-     * @param source
      * @return the target object
      */
-    public static Map mergeMaps(Map target, Map source){
-        Map map = new HashMap();
+    public static <K, V> Map<K, V> mergeMaps(Map<K, V> target, Map<K, V> source){
+        Map<K, V> map = new HashMap<>();
         if (source != null){
             map.putAll(source);
         }
@@ -281,15 +282,13 @@ public class EntityManagerFactoryProvider {
 
     /**
      * Copies source into target, removes from target all keysToBeRemoved.
-     * @param source
-     * @param keysToBeRemoved
      * @return the target object
      */
-    public static Map removeSpecifiedProperties(Map source, Collection keysToBeRemoved){
-        Map target = new HashMap();
+    public static <K, V> Map<K, V> removeSpecifiedProperties(Map<K, V> source, Collection<K> keysToBeRemoved){
+        Map<K, V> target = new HashMap<>();
         if (source != null){
             target.putAll(source);
-            Iterator it = keysToBeRemoved.iterator();
+            Iterator<K> it = keysToBeRemoved.iterator();
             while(it.hasNext()) {
                 target.remove(it.next());
             }
@@ -299,17 +298,15 @@ public class EntityManagerFactoryProvider {
 
     /**
      * target contains the entries from source with keysToBeKept.
-     * @param source
-     * @param keysToBeKept
      * @return the target object
      */
-    public static Map keepSpecifiedProperties(Map source, Collection keysToBeKept){
-        Map target = new HashMap();
+    public static <K, V> Map<K, V> keepSpecifiedProperties(Map<K, V> source, Collection<K> keysToBeKept){
+        Map<K, V> target = new HashMap<>();
         if (source != null){
             target.putAll(source);
-            Iterator<Map.Entry> it = source.entrySet().iterator();
+            Iterator<Map.Entry<K, V>> it = source.entrySet().iterator();
             while(it.hasNext()) {
-                Map.Entry entry = it.next();
+                Map.Entry<K, V> entry = it.next();
                 if(keysToBeKept.contains(entry.getKey())) {
                     target.put(entry.getKey(), entry.getValue());
                 }
@@ -322,18 +319,16 @@ public class EntityManagerFactoryProvider {
      * target is a array of two Maps
      * the first one contains specified properties;
      * the second all the rest.
-     * @param source
-     * @param keysToBeKept
      * @return the target object
      */
-    public static Map[] splitSpecifiedProperties(Map source, Collection keysToBeKept){
-        HashMap in = new HashMap();
-        HashMap out = new HashMap();
+    public static <K, V> Map<K, V>[] splitSpecifiedProperties(Map<K, V> source, Collection<K> keysToBeKept){
+        HashMap<K, V> in = new HashMap<>();
+        HashMap<K, V> out = new HashMap<>();
         Map[] target = new Map[]{in, out};
         if (source != null){
-            Iterator<Map.Entry> it = source.entrySet().iterator();
+            Iterator<Map.Entry<K, V>> it = source.entrySet().iterator();
             while(it.hasNext()) {
-                Map.Entry entry = it.next();
+                Map.Entry<K, V> entry = it.next();
                 if(keysToBeKept.contains(entry.getKey())) {
                     in.put(entry.getKey(), entry.getValue());
                 } else {
@@ -351,19 +346,19 @@ public class EntityManagerFactoryProvider {
      * Target's size equals keys' size + 1:
      * all the source's Map.Entries not found in any of keys Collections
      * go into the last target's map.
-     * @param source
      * @param keys is array of Maps of size n
      * @return the target object is array of Maps of size n+1
      */
-    public static Map[] splitProperties(Map source, Collection[] keys){
-        Map[] target = new Map[keys.length + 1];
+    public static <K, V> Map<K, V>[] splitProperties(Map<K, V> source, Collection<K>[] keys){
+        @SuppressWarnings({"unchecked"})
+        Map<K, V>[] target = (Map<K, V>[]) new Map[keys.length + 1];
         for (int i=0; i <= keys.length; i++) {
-            target[i] = new HashMap();
+            target[i] = new HashMap<>();
         }
         if (source != null){
-            Iterator<Map.Entry> it = source.entrySet().iterator();
+            Iterator<Map.Entry<K, V>> it = source.entrySet().iterator();
             while(it.hasNext()) {
-                Map.Entry entry = it.next();
+                Map.Entry<K, V> entry = it.next();
                 boolean isFound = false;
                 for (int i=0; i < keys.length && !isFound; i++) {
                     if (keys[i].contains(entry.getKey())) {
@@ -382,8 +377,6 @@ public class EntityManagerFactoryProvider {
     /**
      * This is a TEMPORARY method that will be removed.
      * DON'T USE THIS METHOD - for internal use only.
-     * @param m
-     * @param session
      */
     protected static void translateOldProperties(Map m, AbstractSession session) {
         for(int i=0; i < oldPropertyNames.length; i++) {

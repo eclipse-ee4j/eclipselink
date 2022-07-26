@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,9 +47,9 @@ public class CORBAServerManagerController extends _CORBAServerManagerImplBase {
             controller = new CORBARemoteSessionControllerDispatcher((getSession()));
         } else {
             try {
-                Class cls = Class.forName(controllerClassName);
-                Class[] parameterTypes = { org.eclipse.persistence.sessions.Session.class };
-                Constructor constructor = cls.getConstructor(parameterTypes);
+                Class<?> cls = Class.forName(controllerClassName);
+                Class<?>[] parameterTypes = { org.eclipse.persistence.sessions.Session.class };
+                Constructor<?> constructor = cls.getConstructor(parameterTypes);
                 java.lang.Object[] params = { getSession() };
                 controller = (CORBARemoteSessionController)constructor.newInstance(params);
             } catch (Exception exception) {
@@ -85,7 +85,7 @@ public class CORBAServerManagerController extends _CORBAServerManagerImplBase {
             NameComponent nc = new NameComponent(nameToBind, "");
             NameComponent path[] = { nc };
             ncRef.rebind(path, server);
-            java.lang.Object sync = new java.lang.Object();
+            java.lang.Object sync = new Object();
             if (wait) {
                 synchronized (sync) {
                     sync.wait();

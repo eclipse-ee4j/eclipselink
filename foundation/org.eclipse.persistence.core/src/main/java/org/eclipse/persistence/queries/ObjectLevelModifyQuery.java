@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,9 +17,6 @@ package org.eclipse.persistence.queries;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
@@ -53,7 +50,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * PUBLIC:
      * Initialize the state of the query.
      */
-    public ObjectLevelModifyQuery() {
+    protected ObjectLevelModifyQuery() {
         this.cascadePolicy = CascadePrivateParts;
     }
 
@@ -153,7 +150,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      * Return the domain class associated with this query.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         if (this.object == null) {
             if (this.descriptor != null) {
                 return this.descriptor.getJavaClass();
@@ -171,7 +168,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
      */
     @Override
     public String getReferenceClassName() {
-        Class referenceClass = getReferenceClass();
+        Class<?> referenceClass = getReferenceClass();
         if (referenceClass != null) {
             return referenceClass.getName();
         } else {
@@ -275,6 +272,6 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + String.valueOf(getObject()) + ")";
+        return Helper.getShortClassName(getClass()) + "(" + getObject() + ")";
     }
 }

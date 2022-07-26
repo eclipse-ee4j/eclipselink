@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,8 +46,8 @@ import org.xml.sax.XMLReader;
 
 public class UnmarshalSchemaValidationTestCases extends OXTestCase {
 
-    static String SCHEMA = "org/eclipse/persistence/testing/oxm/jaxb/Employee.xsd";
-    static String DOUBLE_ERROR_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_TwoError.xml";
+    static String SCHEMA = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee.xsd";
+    static String DOUBLE_ERROR_XML = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/Employee_TwoError.xml";
 
     private JAXBUnmarshaller unmarshaller;
 
@@ -59,7 +59,7 @@ public class UnmarshalSchemaValidationTestCases extends OXTestCase {
 
     @Override
     protected void setUp() throws Exception {
-        Class[] classes = {Employee.class};
+        Class<?>[] classes = {Employee.class};
         JAXBContext jc = JAXBContextFactory.createContext(classes, null);
         unmarshaller = (JAXBUnmarshaller) jc.createUnmarshaller();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -27,7 +27,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TransactionRequiredException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
@@ -105,12 +105,12 @@ public class TestMerge extends JPA1Base {
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             // relations of the managed employee
-            Employee empManaged = em.find(Employee.class, new Integer(empDetached.getId()));
+            Employee empManaged = em.find(Employee.class, empDetached.getId());
             empManaged.setFirstName("Adrian");
-            revManaged = em.find(Review.class, new Integer(revManaged.getId()));
-            Review revSamePKAsDetached = em.find(Review.class, new Integer(revDetached.getId()));
+            revManaged = em.find(Review.class, revManaged.getId());
+            Review revSamePKAsDetached = em.find(Review.class, revDetached.getId());
             revSamePKAsDetached.setReviewText("same PK as detached review");
-            revAddedInManagedEmp = em.find(Review.class, new Integer(revAddedInManagedEmp.getId()));
+            revAddedInManagedEmp = em.find(Review.class, revAddedInManagedEmp.getId());
             em.persist(revAddedInManagedEmp);
             empManaged.addReview(revManaged);
             empManaged.addReview(revSamePKAsDetached);
@@ -218,7 +218,7 @@ public class TestMerge extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id)); // object is now in state MANAGED
+            dep = em.find(Department.class, id); // object is now in state MANAGED
             checkDepartment(dep, id, "MANAGED");
             verify(em.contains(dep), "entity manager does not contain object");
             mergeResult = em.merge(dep); // this should be ignored
@@ -247,7 +247,7 @@ public class TestMerge extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id1));
+            dep = em.find(Department.class, id1);
             em.remove(dep);
             // now the entity should be REMOVED
             boolean failed = false;
@@ -277,7 +277,7 @@ public class TestMerge extends JPA1Base {
             em.persist(depEM);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            depEM = em.find(Department.class, new Integer(id));
+            depEM = em.find(Department.class, id);
             checkDepartment(depEM, id, "REMOVE");
             em.remove(depEM); // this is now in state REMOVED
             failed = false;
@@ -302,7 +302,7 @@ public class TestMerge extends JPA1Base {
             em.persist(dep);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            dep = em.find(Department.class, new Integer(id1));
+            dep = em.find(Department.class, id1);
             em.remove(dep);
             em.flush();
             // now the entity should be in state DELETE_EXECUTED
@@ -376,11 +376,11 @@ public class TestMerge extends JPA1Base {
             em.persist(depEM);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            depClient = em.find(Department.class, new Integer(id));
+            depClient = em.find(Department.class, id);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
             depClient.setName(("NEW_NAME"));
-            depEM = em.find(Department.class, new Integer(id)); // this is now in state managed
+            depEM = em.find(Department.class, id); // this is now in state managed
             checkDepartment(depEM, id, "ORIGINAL");
             verify(em.contains(depEM), "entity manager does not contain department -> it cannot be merged");
             mergeResult = em.merge(depClient);
@@ -396,7 +396,7 @@ public class TestMerge extends JPA1Base {
 
     private void verifyExistence(final EntityManager em, int id, String name) {
         Department dep;
-        dep = em.find(Department.class, new Integer(id));
+        dep = em.find(Department.class, id);
         verify(dep != null, "department not found");
         verify(name.equals(dep.getName()), "department has wrong name: " + dep.getName());
     }
@@ -458,8 +458,8 @@ public class TestMerge extends JPA1Base {
             em.persist(hobbyDetachedNotInPC);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            revManaged = em.find(Review.class, new Integer(revManaged.getId()));
-            Review revSamePKAsDetached = em.find(Review.class, new Integer(revDetached.getId()));
+            revManaged = em.find(Review.class, revManaged.getId());
+            Review revSamePKAsDetached = em.find(Review.class, revDetached.getId());
             revSamePKAsDetached.setReviewText("same PK as detached review");
             empNew.addReview(revManaged);
             empNew.addReview(revDetached);
@@ -552,10 +552,10 @@ public class TestMerge extends JPA1Base {
             em.persist(hobby2);
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            Employee empDetached = em.find(Employee.class, new Integer(emp.getId()));
+            Employee empDetached = em.find(Employee.class, emp.getId());
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp = em.find(Employee.class, new Integer(emp.getId()));
+            emp = em.find(Employee.class, emp.getId());
             emp.setFirstName("Managed");
             emp = em.merge(empDetached);
             verify(empDetached.getFirstName().equals(emp.getFirstName()), "Merged employee has wrong first name");
@@ -564,11 +564,11 @@ public class TestMerge extends JPA1Base {
             env.commitTransactionAndClear(em);
             // Case 2: Change observer pending in detached object and loaded but unchanged in managed object
             env.beginTransaction(em);
-            empDetached = em.find(Employee.class, new Integer(emp.getId()));
+            empDetached = em.find(Employee.class, emp.getId());
             emp.setFirstName("Detached");
             env.commitTransactionAndClear(em);
             env.beginTransaction(em);
-            emp = em.find(Employee.class, new Integer(emp.getId()));
+            emp = em.find(Employee.class, emp.getId());
             emp.setFirstName("Managed");
             Set<Review> reviews = emp.getReviews();
             verify(reviews.size() == 2, "Employee has " + reviews.size() + " reviews, expected 2");
@@ -856,7 +856,7 @@ public class TestMerge extends JPA1Base {
             // $JL-EXC$
         }
         Timestamp t = new Timestamp();
-        t.setId(Long.valueOf(1));
+        t.setId(1L);
         //
         verifyMergeNewEntityWithIdSetInPrePersist(t);
     }
@@ -900,7 +900,7 @@ public class TestMerge extends JPA1Base {
             verify(value != null, "id is null");
             try {
                 Nasty n2 = new Nasty();
-                n2.setId(Long.valueOf(2000));
+                n2.setId(2000L);
                 em.merge(n2);
                 env.commitTransaction(em);
                 flop("persisting second nasty timestamp succeeded");

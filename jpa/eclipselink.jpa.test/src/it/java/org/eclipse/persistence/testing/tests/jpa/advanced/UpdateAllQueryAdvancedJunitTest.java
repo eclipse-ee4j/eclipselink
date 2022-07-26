@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,13 +30,13 @@ import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.testing.framework.UpdateAllQueryTestHelper;
 
 public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
 
-    static protected Class[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
+    static protected Class<?>[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
     static protected Vector[] objectVectors = {null, null, null, null};
 
     static protected EmployeePopulator populator = new EmployeePopulator();
@@ -49,6 +49,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         if (getServerSession().getPlatform().isSymfoware()) {
             warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
@@ -106,10 +107,12 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         TestSuite suite = new TestSuite(UpdateAllQueryAdvancedJunitTest.class);
 
         return new TestSetup(suite) {
+            @Override
             protected void setUp(){
                 new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
             }
 
+            @Override
             protected void tearDown() {
                 new UpdateAllQueryAdvancedJunitTest().clearCache();
             }
@@ -134,7 +137,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     public static void testDoubleSalaryForAll() {
         ExpressionBuilder builder = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 
@@ -142,7 +145,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression selectionExpression = builder.get("salary").lessThan(20000);
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 
@@ -150,7 +153,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         ExpressionBuilder builder = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
         updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 
@@ -159,7 +162,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         Expression selectionExpression = builder.get("salary").lessThan(20000);
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
         updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 
@@ -168,7 +171,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         Expression selectionExpression = builder.get("salary").lessThan(20000).and(builder.get("firstName").like("J%"));
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
         updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
-        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), new Integer(2)));
+        updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 
@@ -217,7 +220,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateAllQueryInternal(updateQuery);
     }
 
-    protected static void updateAllQueryInternal(Class referenceClass, HashMap updateClauses, Expression selectionExpression) {
+    protected static void updateAllQueryInternal(Class<?> referenceClass, HashMap updateClauses, Expression selectionExpression) {
         if (getServerSession().getPlatform().isSymfoware()) {
             getServerSession().logMessage("UpdateAllQueryAdvancedJunitTest skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");

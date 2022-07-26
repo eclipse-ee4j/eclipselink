@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class FueledVehicle extends Vehicle implements Cloneable {
     private String fuelType;
     private String colour;
 
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -36,11 +37,13 @@ public class FueledVehicle extends Vehicle implements Cloneable {
         }
     }
 
+    @Override
     public void change() {
-        this.setPassengerCapacity(new Integer(100));
+        this.setPassengerCapacity(100);
         this.setFuelType("HOT AIR");
     }
 
+    @Override
     @Column(name="COLOUR")
     public String getColor() {
         return colour;
@@ -61,6 +64,7 @@ public class FueledVehicle extends Vehicle implements Cloneable {
         return fuelType;
     }
 
+    @Override
     public void setColor(String colour) {
         this.colour = colour;
     }

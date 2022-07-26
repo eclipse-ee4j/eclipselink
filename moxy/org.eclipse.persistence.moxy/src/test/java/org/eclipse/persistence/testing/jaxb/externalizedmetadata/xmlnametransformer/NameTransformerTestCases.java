@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
@@ -44,6 +45,7 @@ public class NameTransformerTestCases extends JAXBWithJSONTestCases{
         super(name);
     }
 
+    @Override
     public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
@@ -70,6 +72,7 @@ public class NameTransformerTestCases extends JAXBWithJSONTestCases{
         types[1] = Address.class;
     }
 
+    @Override
     protected Object getControlObject() {
         ArrayList responsibilities = new ArrayList();
         responsibilities.add(CONTROL_RESPONSIBILITY1);
@@ -113,6 +116,7 @@ public class NameTransformerTestCases extends JAXBWithJSONTestCases{
         super.testSchemaGen(controlSchemas);
     }
 
+    @Override
     protected Map getProperties() {
 
         Map overrides = new HashMap();
@@ -138,7 +142,7 @@ public class NameTransformerTestCases extends JAXBWithJSONTestCases{
         overrides.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer", src);
 
         Map props = new HashMap();
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return props;
     }
 

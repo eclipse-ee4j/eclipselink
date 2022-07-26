@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,9 +43,9 @@ public class BasicTypeHelperImpl {
     /** Set of time classes. */
     private static Set timeClasses = new HashSet();
     /** Maps primtives types to their wrapper classes. */
-    private static Map<Class, Class> primitiveToWrapper = new HashMap();
+    private static Map<Class<?>, Class<?>> primitiveToWrapper = new HashMap<>();
     /** Maps wrapper classes to their primitive types. */
-    private static Map<Class, Class> wrapperToPrimitive = new HashMap();
+    private static Map<Class<?>, Class<?>> wrapperToPrimitive = new HashMap<>();
 
     static {
         // Initialize set of integral types plus their wrapper classes
@@ -116,13 +116,13 @@ public class BasicTypeHelperImpl {
 
     /** Returns the name of the specified type. */
     public String getTypeName(Object type) {
-        Class clazz = getJavaClass(type);
+        Class<?> clazz = getJavaClass(type);
         return (clazz == null) ? null : clazz.getName();
     }
 
     /** Returns the class object of the specified type. */
-    public Class getJavaClass(Object type) {
-        Class clazz = null;
+    public Class<?> getJavaClass(Object type) {
+        Class<?> clazz = null;
         if (type instanceof Class) {
             clazz = (Class)type;
         } else if (type instanceof ClassDescriptor) {
@@ -258,7 +258,7 @@ public class BasicTypeHelperImpl {
 
     /** */
     public boolean isEnumType(Object type) {
-        Class clazz = getJavaClass(type);
+        Class<?> clazz = getJavaClass(type);
         return (clazz != null) && (clazz.isEnum());
     }
 
@@ -426,8 +426,8 @@ public class BasicTypeHelperImpl {
             return true;
         }
 
-        Class leftClass = getJavaClass(left);
-        Class rightClass = getJavaClass(right);
+        Class<?> leftClass = getJavaClass(left);
+        Class<?> rightClass = getJavaClass(right);
         if ( leftClass.isPrimitive() ){
             leftClass = this.getWrapperClass(leftClass);
         }
@@ -481,12 +481,12 @@ public class BasicTypeHelperImpl {
     // Helper methods
 
     /** Returns the primitive for the specified wrapper class. */
-    protected Class getPrimitiveType(Object wrapper) {
+    protected Class<?> getPrimitiveType(Object wrapper) {
         return wrapperToPrimitive.get(wrapper);
     }
 
     /** Returns the wrapper class for the specified primitive. */
-    protected Class getWrapperClass(Object primitive) {
+    protected Class<?> getWrapperClass(Object primitive) {
         return primitiveToWrapper.get(primitive);
     }
 

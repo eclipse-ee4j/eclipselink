@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,7 +65,7 @@ public class InjectionManagerImpl<T> implements InjectionManager<T> {
     @Override
     public T createManagedBeanAndInjectDependencies(final Class<T> managedBeanClass) throws NamingException{
         final AnnotatedType<T> aType = beanManager.createAnnotatedType(managedBeanClass);
-        final InjectionTarget<T> injectionTarget = beanManager.createInjectionTarget(aType);
+        final InjectionTarget<T> injectionTarget = beanManager.getInjectionTargetFactory(aType).createInjectionTarget(null);
         creationalContext = beanManager.createCreationalContext(null);
         final T beanInstance = injectionTarget.produce(creationalContext);
         synchronized (injectionTargets) {

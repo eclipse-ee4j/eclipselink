@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -42,7 +42,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
 import org.junit.Assert;
@@ -50,11 +50,12 @@ import org.junit.Assert;
 /**
  * <p>
  * <b>Purpose</b>: Test EJBQL exceptions.
- * <p>
+ * </p>
  * <b>Description</b>: This class creates a test suite, initializes the database
  * and adds tests to the suite.
  * <p>
  * <b>Responsibilities</b>:
+ * </p>
  * <ul>
  * <li> Run tests for expected EJBQL exceptions thrown
  * </ul>
@@ -77,6 +78,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     }
 
     //This method is run at the end of EVERY test case method
+    @Override
     public void tearDown()
     {
         clearCache();
@@ -129,7 +131,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("testParameterPositionValidation2"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testParameterTypeValidation"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testEjbqlCaseSensitivity"));
-        suite.addTest(new JUnitJPQLValidationTestSuite("testEjbqlUnsupportJoinArgument"));
+        suite.addTest(new JUnitJPQLValidationTestSuite("testEjbqlSupportJoinArgument"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidSetClause"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testUnsupportedCountDistinctOnOuterJoinedCompositePK"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidHint"));
@@ -645,7 +647,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         Query query = em.createQuery("Select e from Employee e where e.firstName = :fname AND e.lastName = :lname ");
         try {
             query.setParameter("fname", "foo");
-            query.setParameter("lname", new Integer(1));
+            query.setParameter("lname", 1);
             query.getResultList();
         } catch (IllegalArgumentException ex) {
             assertTrue("Failed to throw expected IllegalArgumentException, when parameter with incorrect type is used", ex.getMessage().contains("attempted to set a value of type"));
@@ -968,7 +970,6 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
      * This is a known error in the MySQL db, and this method will be removed
      * when this error is resolved.
      *
-     * @param exception
      * @return true if this exception is a specific known MySQL failure
      */
     public boolean isKnownMySQLIssue(Throwable exception) {
@@ -1181,29 +1182,27 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
     }
 
-    public void testEjbqlUnsupportJoinArgument() {
+    public void testEjbqlSupportJoinArgument() {
+        boolean testPass = true;
         String ejbqlString;
-        List result;
 
         try
         {
             ejbqlString = "SELECT e.firstName FROM Employee e JOIN e.period ep";
-            result = createEntityManager().createQuery(ejbqlString).getResultList();
-            fail ("JOINing of embedded entities is not allowed must be thrown");
-        } catch(IllegalArgumentException ex)
-        {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            createEntityManager().createQuery(ejbqlString).getResultList();
+        } catch(Exception ex) {
+            testPass = false;
         }
+        Assert.assertTrue(testPass);
 
         try
         {
             ejbqlString = "SELECT e.firstName FROM Employee e JOIN FETCH e.period";
-            result = createEntityManager().createQuery(ejbqlString).getResultList();
-            fail ("JOINing of embedded entities is not allowed must be thrown");
-        } catch(IllegalArgumentException ex)
-        {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            createEntityManager().createQuery(ejbqlString).getResultList();
+        } catch(Exception ex) {
+            testPass = false;
         }
+        Assert.assertTrue(testPass);
     }
 
     public void testInvalidSetClause() {

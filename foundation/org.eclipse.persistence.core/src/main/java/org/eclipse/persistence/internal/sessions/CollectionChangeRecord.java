@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -263,9 +263,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             }
         }
         Map<ObjectChangeSet, ObjectChangeSet> changeSets = new HashMap<>();
-        Iterator addEnum = ((CollectionChangeRecord)mergeFromRecord).getAddObjectList().keySet().iterator();
+        Iterator<ObjectChangeSet> addEnum = ((CollectionChangeRecord)mergeFromRecord).getAddObjectList().keySet().iterator();
         while (addEnum.hasNext()) {
-            ObjectChangeSet mergingObject = (ObjectChangeSet)addEnum.next();
+            ObjectChangeSet mergingObject = addEnum.next();
             ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
             if (getRemoveObjectList().containsKey(localChangeSet)) {
                 getRemoveObjectList().remove(localChangeSet);
@@ -275,9 +275,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         }
         getAddObjectList().putAll(changeSets);
         changeSets = new HashMap<>();
-        Iterator removeEnum = ((CollectionChangeRecord)mergeFromRecord).getRemoveObjectList().keySet().iterator();
+        Iterator<ObjectChangeSet> removeEnum = ((CollectionChangeRecord)mergeFromRecord).getRemoveObjectList().keySet().iterator();
         while (removeEnum.hasNext()) {
-            ObjectChangeSet mergingObject = (ObjectChangeSet)removeEnum.next();
+            ObjectChangeSet mergingObject = removeEnum.next();
             ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
             if (getAddObjectList().containsKey(localChangeSet)) {
                 getAddObjectList().remove(localChangeSet);
@@ -288,9 +288,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         getRemoveObjectList().putAll(changeSets);
         //237545: merge the changes for ordered list's attribute change tracking. (still need to check if deferred changes need to be merged)
         List<OrderedChangeObject> orderedChangeSets = new ArrayList<>();
-        Iterator orderedChangeObjectEnum = ((CollectionChangeRecord)mergeFromRecord).getOrderedChangeObjectList().iterator();
+        Iterator<OrderedChangeObject> orderedChangeObjectEnum = ((CollectionChangeRecord)mergeFromRecord).getOrderedChangeObjectList().iterator();
         while (orderedChangeObjectEnum.hasNext()) {
-            OrderedChangeObject changeObject = (OrderedChangeObject)orderedChangeObjectEnum.next();
+            OrderedChangeObject changeObject = orderedChangeObjectEnum.next();
             ObjectChangeSet mergingObject = changeObject.getChangeSet();
             ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
 
@@ -360,15 +360,15 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             setOrderedRemoveObjects(orderedRemoveList);
             // Don't need to worry about the vector of indices (Integer's), just leave them as is.
         } else {
-            Iterator changes = getAddObjectList().values().iterator();
+            Iterator<ObjectChangeSet> changes = getAddObjectList().values().iterator();
             while (changes.hasNext()) {
-                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet((ObjectChangeSet)changes.next(), mergeFromChangeSet);
+                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(changes.next(), mergeFromChangeSet);
                 addList.put(localChangeSet, localChangeSet);
             }
 
             changes = getRemoveObjectList().values().iterator();
             while (changes.hasNext()) {
-                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet((ObjectChangeSet)changes.next(), mergeFromChangeSet);
+                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(changes.next(), mergeFromChangeSet);
                 removeList.put(localChangeSet, localChangeSet);
             }
         }
@@ -512,7 +512,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
                     if(index == null) {
                         throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
                     } else {
-                        currentIndexes.add(index.intValue(), newList.indexOf(obj));
+                        currentIndexes.add(index, newList.indexOf(obj));
                     }
                 }
             }
@@ -528,16 +528,16 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
        ContainerPolicy cp = this.mapping.getContainerPolicy();
        if(orderedChangeObjectList == null || orderedChangeObjectList.isEmpty()) {
            if(this.removeObjectList != null) {
-               Iterator it = this.removeObjectList.keySet().iterator();
+               Iterator<ObjectChangeSet> it = this.removeObjectList.keySet().iterator();
                while(it.hasNext()) {
-                   ObjectChangeSet changeSet = (ObjectChangeSet)it.next();
+                   ObjectChangeSet changeSet = it.next();
                    cp.addInto(changeSet.getUnitOfWorkClone(), currentCollection, session);
                }
            }
            if(this.addObjectList != null) {
-               Iterator it = this.addObjectList.keySet().iterator();
+               Iterator<ObjectChangeSet> it = this.addObjectList.keySet().iterator();
                while(it.hasNext()) {
-                   ObjectChangeSet changeSet = (ObjectChangeSet)it.next();
+                   ObjectChangeSet changeSet = it.next();
                    cp.removeFrom(changeSet.getUnitOfWorkClone(), currentCollection, session);
                }
            }
@@ -560,7 +560,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
                    if(index == null) {
                        throw ValidationException.collectionRemoveEventWithNoIndex(getMapping());
                    } else {
-                       originalList.add(index.intValue(), obj);
+                       originalList.add(index, obj);
                    }
                }
            }

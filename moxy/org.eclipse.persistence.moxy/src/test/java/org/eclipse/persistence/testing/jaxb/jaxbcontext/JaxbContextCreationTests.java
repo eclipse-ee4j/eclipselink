@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.persistence.exceptions.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.testing.oxm.classloader.JARClassLoader;
@@ -32,6 +33,7 @@ import org.w3c.dom.Document;
 
 public class JaxbContextCreationTests extends junit.framework.TestCase {
 
+    @Override
     public String getName() {
         return "JAXB Context Creation Tests: " + super.getName();
     }
@@ -51,6 +53,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
 
     public void testCreateContextUnrelatedSessionsXml() throws Exception {
         JAXBContext context = JAXBContextFactory.createContext("org.eclipse.persistence.testing.jaxb.jaxbcontext", new ClassLoader() {
+            @Override
             public URL getResource(String resourceName) {
                 if(resourceName.equals("sessions.xml")) {
                     return getParent().getResource("org/eclipse/persistence/testing/jaxb/jaxbcontext/sessions.xml");
@@ -63,6 +66,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
     public void testCreateContextUnrelatedSessionsXmlInvalidPath() throws Exception {
         try {
             JAXBContext context = JAXBContextFactory.createContext("org.eclipse.persistence.testing.jaxb.jaxbcontext.fake", new ClassLoader() {
+                @Override
                 public URL getResource(String resourceName) {
                     if(resourceName.equals("sessions.xml")) {
                         return getParent().getResource("org/eclipse/persistence/testing/jaxb/jaxbcontext/sessions.xml");
@@ -77,27 +81,27 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
     }
 
     public void testCreateContextWithStringClass() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = String.class;
         JAXBContextFactory.createContext(classes, null);
     }
 
     public void testCreateContextWithIntArrayClass() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         int[] ints = new int[1];
         classes[0] = ints.getClass();
         JAXBContextFactory.createContext(classes, null);
     }
 
     public void testCreateContextWith_ClassArray_NullClassLoader() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         int[] ints = new int[1];
         classes[0] = ints.getClass();
         JAXBContextFactory.createContext(classes, null);
     }
 
     public void testCreateContextWith_ClassArray_Map_NullClassLoader_Map() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         int[] ints = new int[1];
         classes[0] = ints.getClass();
         JAXBContextFactory.createContext(classes, null, null);
@@ -127,14 +131,14 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
     }
 
     public void testCreateAbstractClassWithMultiArgConstructor() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = AbstractClassWithMultiArgConstructor.class;
         JAXBContextFactory.createContext(classes, null);
     }
 
     public void testCreateConcreteClassWithMultiArgConstructor() throws JAXBException {
         try {
-            Class[] classes = new Class[1];
+            Class<?>[] classes = new Class<?>[1];
             classes[0] = ConcreteClassWithMultiArgConstructor.class;
             JAXBContextFactory.createContext(classes, null);
         } catch(JAXBException e) {
@@ -146,7 +150,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
     }
 
     public void testCreateContextWithGenerics() throws JAXBException {
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = ConcreteClassWithGenerics.class;
         JAXBContextFactory.createContext(classes, null);
     }
@@ -156,7 +160,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         InputStream oxm = ClassLoader.getSystemClassLoader().getResourceAsStream(oxmString);
 
         Map<String, Object> props = new HashMap<String, Object>();
-        props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, oxm);
+        props.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
 
         // Specify some other, unrelated context path -- we want to ensure that we don't fail
         // due to lack of ObjectFactory/jaxb.index
@@ -180,7 +184,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
     }
 
     public void testCreateContextXmlAnyAttributeSubTypeMap() throws Exception {
-        JAXBContextFactory.createContext(new Class[]{XmlAnyAttributeSubTypeMapModel.class}, null);
+        JAXBContextFactory.createContext(new Class<?>[]{XmlAnyAttributeSubTypeMapModel.class}, null);
     }
 
     public void testJavaClassImplWildcard() throws Exception{

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.helper.*;
 public class CollectionReadAllTest extends org.eclipse.persistence.testing.framework.ReadAllTest {
     protected Object dbContainter;
 
-    public CollectionReadAllTest(Class referenceClass, int originalObjectsSize, ReadAllQuery query) {
+    public CollectionReadAllTest(Class<?> referenceClass, int originalObjectsSize, ReadAllQuery query) {
         super(referenceClass, originalObjectsSize);
         this.setQuery(query);
         setName("CollectionReadAllTest(" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getQuery().getContainerPolicy().getContainerClass()) + "," + org.eclipse.persistence.internal.helper.Helper.getShortClassName(referenceClass) + ")");
@@ -45,10 +45,12 @@ public class CollectionReadAllTest extends org.eclipse.persistence.testing.frame
         return -1;
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void test() {
         this.dbContainter = getSession().executeQuery(getQuery());
     }
@@ -56,8 +58,9 @@ public class CollectionReadAllTest extends org.eclipse.persistence.testing.frame
     /**
      * Verify that the correct container class was returned.
      */
+    @Override
     protected void verify() {
-        Class queryContainerClass = getQuery().getContainerPolicy().getContainerClass();
+        Class<?> queryContainerClass = getQuery().getContainerPolicy().getContainerClass();
         if (!queryContainerClass.isInstance(dbContainter)) {
             throw new TestErrorException("The container class returned was" + dbContainter.getClass().toString() + " we expected a " + queryContainerClass.toString() + " to be returned.");
         }

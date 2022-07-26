@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2015 Sei Syvalta. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -151,9 +151,9 @@ public class DefaultTableGenerator {
             this.databasePlatform = (DatabasePlatform)project.getDatasourceLogin().getDatasourcePlatform();
             this.generateFKConstraints = this.databasePlatform.supportsForeignKeyConstraints();
         }
-        this.tableMap = new LinkedHashMap();
-        this.fieldMap = new LinkedHashMap();
-        this.databaseFields = new LinkedHashMap();
+        this.tableMap = new LinkedHashMap<>();
+        this.fieldMap = new LinkedHashMap<>();
+        this.databaseFields = new LinkedHashMap<>();
     }
 
     /**
@@ -234,7 +234,7 @@ public class DefaultTableGenerator {
             }
             DatabaseMetaData dbMetaData = conn.getMetaData();
             ResultSet resultSet = dbMetaData.getTables(null, dbMetaData.getUserName(), null, new String[] { "TABLE" });
-            List tablesInDatabase = new ArrayList();
+            List<String> tablesInDatabase = new ArrayList<>();
 
             while (resultSet.next()) {
                 //save all tables from the database
@@ -243,12 +243,12 @@ public class DefaultTableGenerator {
 
             resultSet.close();
 
-            List existedTables = new ArrayList();
-            List existedTableNames = new ArrayList();
-            Iterator tblDefIter = tblCreator.getTableDefinitions().iterator();
+            List<TableDefinition> existedTables = new ArrayList<>();
+            List<String> existedTableNames = new ArrayList<>();
+            Iterator<TableDefinition> tblDefIter = tblCreator.getTableDefinitions().iterator();
 
             while (tblDefIter.hasNext()) {
-                TableDefinition tblDef = (TableDefinition) tblDefIter.next();
+                TableDefinition tblDef = tblDefIter.next();
 
                 //check if the to-be-created table is already in the database
                 if (tablesInDatabase.contains(tblDef.getFullName())) {
@@ -295,7 +295,7 @@ public class DefaultTableGenerator {
                 isPKField = descriptor.getPrimaryKeyFields().contains(dbField);
 
                 //then check if the field is a pk field in the secondary table(s), this is only applied to the multiple tables case.
-                Map secondaryKeyMap = descriptor.getAdditionalTablePrimaryKeyFields().get(dbField.getTable());
+                Map<DatabaseField, DatabaseField> secondaryKeyMap = descriptor.getAdditionalTablePrimaryKeyFields().get(dbField.getTable());
 
                 if (secondaryKeyMap != null) {
                     isPKField = isPKField || secondaryKeyMap.containsValue(dbField);
@@ -448,8 +448,8 @@ public class DefaultTableGenerator {
 
         DatabaseField fkField = null;
         DatabaseField targetField = null;
-        List<String> fkFieldNames = new ArrayList();
-        List<String> targetFieldNames = new ArrayList();
+        List<String> fkFieldNames = new ArrayList<>();
+        List<String> targetFieldNames = new ArrayList<>();
 
         for (int index = 0; index < fkFields.size(); index++) {
             fkField = fkFields.get(index);
@@ -484,8 +484,8 @@ public class DefaultTableGenerator {
 
         DatabaseField dbField = null;
         DatabaseField targetField = null;
-        List<String> fkFieldNames = new ArrayList();
-        List<String> targetFieldNames = new ArrayList();
+        List<String> fkFieldNames = new ArrayList<>();
+        List<String> targetFieldNames = new ArrayList<>();
         List<DatabaseField> fkFields = mapping.getReferenceKeyFields();
         List<DatabaseField> targetFields = mapping.getSourceKeyFields();
         for (int index = 0; index < fkFields.size(); index++) {
@@ -556,14 +556,14 @@ public class DefaultTableGenerator {
      * Reset the transformation mapping field types
      */
     protected void resetTransformedFieldType(TransformationMapping mapping) {
-        Iterator transIter = mapping.getFieldTransformations().iterator();
+        Iterator<FieldTransformation> transIter = mapping.getFieldTransformations().iterator();
         while (transIter.hasNext()) {
-            FieldTransformation transformation = (FieldTransformation) transIter.next();
+            FieldTransformation transformation = transIter.next();
 
             if (transformation instanceof MethodBasedFieldTransformation) {
                 MethodBasedFieldTransformation methodTransformation = (MethodBasedFieldTransformation) transformation;
                 try {
-                    Class returnType = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodTransformation.getMethodName(), null).getReturnType();
+                    Class<?> returnType = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodTransformation.getMethodName(), null).getReturnType();
                     getFieldDefFromDBField(methodTransformation.getField()).setType(returnType);
                 } catch (NoSuchMethodException ex) {
                     // For some reason, the method type could not be retrieved,
@@ -573,10 +573,10 @@ public class DefaultTableGenerator {
                 // Must be a TransformerBasedFieldTransformation
                 TransformerBasedFieldTransformation classTransformation = (TransformerBasedFieldTransformation) transformation;
                 String methodName = "buildFieldValue";
-                Class[] params = new Class[] {Object.class, String.class, Session.class};
+                Class<?>[] params = new Class<?>[] {Object.class, String.class, Session.class};
 
                 try {
-                    Class returnType = Helper.getDeclaredMethod(classTransformation.getTransformerClass(), methodName, params).getReturnType();
+                    Class<?> returnType = Helper.getDeclaredMethod(classTransformation.getTransformerClass(), methodName, params).getReturnType();
 
                     if (returnType.equals(Object.class)) {
                         // User needs to be more specific with their class
@@ -603,9 +603,9 @@ public class DefaultTableGenerator {
         TableDefinition targetTable = getTableDefFromDBTable(mapping.getReferenceDescriptor().getDefaultTable());
         addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targetTable);
 
-        Iterator aggregateFieldIterator = mapping.getReferenceDescriptor().getFields().iterator();
+        Iterator<DatabaseField> aggregateFieldIterator = mapping.getReferenceDescriptor().getFields().iterator();
         while (aggregateFieldIterator.hasNext()) {
-            DatabaseField dbField = (DatabaseField) aggregateFieldIterator.next();
+            DatabaseField dbField = aggregateFieldIterator.next();
             //add the target definition to the table definition
             FieldDefinition fieldDef = getFieldDefFromDBField(dbField);
             if (!targetTable.getFields().contains(fieldDef)) {
@@ -615,8 +615,8 @@ public class DefaultTableGenerator {
 
         //unlike normal one-to-many mapping, aggregate collection mapping does not have 1:1 back reference
         //mapping, so the target foreign key fields are not stored in the target descriptor.
-        List<String> fkFieldNames = new ArrayList();
-        List<String> targetFieldNames = new ArrayList();
+        List<String> fkFieldNames = new ArrayList<>();
+        List<String> targetFieldNames = new ArrayList<>();
         List<DatabaseField> fkFields = mapping.getTargetForeignKeyFields();
         List<DatabaseField> targetFields = mapping.getSourceKeyFields();
         DatabaseField targetField = null;
@@ -816,7 +816,7 @@ public class DefaultTableGenerator {
                 // column like type, size,  "NULL/NOT NULL" clause, unique key clause
                 fieldDef.setTypeDefinition(dbField.getColumnDefinition());
             } else {
-                Class fieldType = dbField.getType();
+                Class<?> fieldType = dbField.getType();
                 FieldTypeDefinition fieldTypeDef = (fieldType == null) ? null : databasePlatform.getFieldTypeDefinition(fieldType);
 
                 // Check if the user field is a String and only then allow the length specified
@@ -874,9 +874,9 @@ public class DefaultTableGenerator {
         }
 
         DatabaseTable databaseTable = null;
-        Iterator dbTblIter = descriptor.getTables().iterator();
+        Iterator<DatabaseTable> dbTblIter = descriptor.getTables().iterator();
         while (dbTblIter.hasNext()) {
-            databaseTable = (DatabaseTable) dbTblIter.next();
+            databaseTable = dbTblIter.next();
             Map<DatabaseField, DatabaseField> srcFields = descriptor.getAdditionalTablePrimaryKeyFields().get(databaseTable);
             if ((null != srcFields) && srcFields.size() > 0) {
                 // srcFields is from the secondary field to the primary key field
@@ -902,8 +902,8 @@ public class DefaultTableGenerator {
 
         DatabaseField fkField = null;
         DatabaseField targetField = null;
-        List<String> fkFieldNames = new ArrayList();
-        List<String> targetFieldNames = new ArrayList();
+        List<String> fkFieldNames = new ArrayList<>();
+        List<String> targetFieldNames = new ArrayList<>();
 
         DatabaseTable sourceTable = fkFields.get(0).getTable();
         TableDefinition sourceTableDef = getTableDefFromDBTable(sourceTable);

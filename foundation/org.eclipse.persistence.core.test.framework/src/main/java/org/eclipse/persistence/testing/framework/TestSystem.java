@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -272,7 +272,7 @@ public class TestSystem {
     }
 
     /**
-     * You must have the DataDirect drivers and oc4j.jar loaded.
+     * You must have the DataDirect drivers loaded.
      */
     public void useDB2DataDirect() {
         DatabaseLogin login = new DatabaseLogin();
@@ -441,7 +441,7 @@ public class TestSystem {
     }
 
     /**
-     * You must have the DataDirect drivers and oc4j.jar loaded..
+     * You must have the DataDirect drivers loaded..
      */
     public void useSQLServerDataDirect() {
         DatabaseLogin login = new DatabaseLogin();
@@ -472,7 +472,7 @@ public class TestSystem {
     }
 
     /**
-     * You must have the DataDirect drivers and oc4j.jar loaded.
+     * You must have the DataDirect drivers loaded.
      */
     public void useSybaseDataDirect() {
         DatabaseLogin login = new DatabaseLogin();
@@ -495,8 +495,8 @@ public class TestSystem {
     public void useOracleThin(String databaseURL, String userName, String password) {
         DatabasePlatform platform = null;
         try{
-            Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
-            platform = (DatabasePlatform)platformClass.newInstance();
+            Class<?> platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
+            platform = (DatabasePlatform)platformClass.getConstructor().newInstance();
         } catch (Exception e){
             platform = new org.eclipse.persistence.platform.database.OraclePlatform();
         }
@@ -519,8 +519,8 @@ public class TestSystem {
     public void useOracle8Thin(String databaseURL, String userName, String password) {
         DatabasePlatform platform = null;
         try{
-            Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
-            platform = (DatabasePlatform)platformClass.newInstance();
+            Class<?> platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
+            platform = (DatabasePlatform)platformClass.getConstructor().newInstance();
         } catch (Exception e){
             platform = new org.eclipse.persistence.platform.database.OraclePlatform();
         }
@@ -628,7 +628,7 @@ public class TestSystem {
     public void useTimesTen(String userName) {
         DatabaseLogin login = new DatabaseLogin();
         try {
-            login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.TimesTenPlatform").newInstance());
+            login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.TimesTenPlatform").getConstructor().newInstance());
         } catch (Exception e) {}
         login.setDriverClassName("com.timesten.jdbc.TimesTenDriver");
         login.setDriverURLHeader("jdbc:timesten:client:");
@@ -647,7 +647,7 @@ public class TestSystem {
     public void useSymfowareRDB2_TCP() {
         DatabaseLogin login = new DatabaseLogin();
         try {
-            login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.SymfowarePlatform").newInstance());
+            login.usePlatform((org.eclipse.persistence.internal.databaseaccess.DatabasePlatform)Class.forName("org.eclipse.persistence.platform.database.SymfowarePlatform").getConstructor().newInstance());
         } catch (Exception e) {
             e.printStackTrace();
         }

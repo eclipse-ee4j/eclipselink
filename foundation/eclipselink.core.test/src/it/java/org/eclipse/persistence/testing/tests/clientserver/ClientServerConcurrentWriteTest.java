@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class ClientServerConcurrentWriteTest extends AutoVerifyTestCase {
         return clients;
     }
 
+    @Override
     public void reset() {
         server.serverSession.rollbackTransaction();
         this.server.logout();
@@ -51,6 +52,7 @@ public class ClientServerConcurrentWriteTest extends AutoVerifyTestCase {
         this.clients = newClients;
     }
 
+    @Override
     public void setup() {
         this.login = (DatabaseLogin)getSession().getLogin().clone();
         this.server = new Server(this.login);
@@ -78,6 +80,7 @@ public class ClientServerConcurrentWriteTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         startThreads(getClients());
 
@@ -85,6 +88,7 @@ public class ClientServerConcurrentWriteTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     public void verify() {
         for (Enumeration enumtr = getClients().elements(); enumtr.hasMoreElements();) {
             EmployeeClient thread = (EmployeeClient)enumtr.nextElement();

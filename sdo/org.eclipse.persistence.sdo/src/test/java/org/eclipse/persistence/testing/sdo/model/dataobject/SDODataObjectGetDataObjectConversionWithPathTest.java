@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import commonj.sdo.Property;
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -33,7 +34,7 @@ public class SDODataObjectGetDataObjectConversionWithPathTest extends SDODataObj
 
     // purpose: pass a/b, to get dataObjcet c
     public void testGetDataObjectConversionFromDefinedProperty() {
-        this.assertEquals(dataObject_c, dataObject_a.getDataObject("PName-a/PName-b"));
+        assertEquals(dataObject_c, dataObject_a.getDataObject("PName-a/PName-b"));
     }
 
     // purpose: opencontent properties
@@ -50,7 +51,7 @@ public class SDODataObjectGetDataObjectConversionWithPathTest extends SDODataObj
 
         dataObject_b.setDataObject(property, b);// add it to instance list
 
-        this.assertEquals(b, dataObject_a.getDataObject("PName-a/openTest"));
+        assertEquals(b, dataObject_a.getDataObject("PName-a/openTest"));
     }
 
     //2. purpose: getDataObject with property value is not dataobject
@@ -62,7 +63,7 @@ public class SDODataObjectGetDataObjectConversionWithPathTest extends SDODataObj
         dataObject_c._setType(type_c);
 
         boolean c = true;
-        Boolean C = new Boolean(c);
+        Boolean C = c;
 
         dataObject_c.set(property_c, C);
 
@@ -76,7 +77,7 @@ public class SDODataObjectGetDataObjectConversionWithPathTest extends SDODataObj
     //3. purpose: getDataObject with property set to boolean value
     public void testGetDataObjectConversionFromProperty() {
         //try {
-        this.assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
+        assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
 
         //fail("IllegalArgumentException should be thrown.");
         //} catch (IllegalArgumentException e) {
@@ -86,6 +87,6 @@ public class SDODataObjectGetDataObjectConversionWithPathTest extends SDODataObj
     //purpose: getDataObject with nul value
     public void testGetDataObjectConversionWithNullArgument() {
         String p = null;
-        this.assertNull(dataObject_a.getDataObject(p));
+        assertNull(dataObject_a.getDataObject(p));
     }
 }

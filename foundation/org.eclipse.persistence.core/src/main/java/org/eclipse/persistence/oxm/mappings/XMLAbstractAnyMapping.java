@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,6 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
 
 /**
  * <p><b>Purpose:</b> An abstract superclass for XMLAnyObjectMapping and XMLAnyCollectionMapping.
@@ -147,14 +146,14 @@ public abstract class XMLAbstractAnyMapping extends DatabaseMapping {
      */
     protected XMLRoot buildXMLRootForText(Node node, QName schemaTypeQName, XMLConverter converter, AbstractSession session, DOMRecord record) {
         XMLRoot rootValue = null;
-        Node textchild = ((Element) node).getFirstChild();
+        Node textchild = node.getFirstChild();
         if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
-            String stringValue = ((Text) textchild).getNodeValue();
+            String stringValue = textchild.getNodeValue();
             if ((stringValue != null) && stringValue.length() > 0) {
                 Object convertedValue = stringValue;
                 if (schemaTypeQName != null) {
                     ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
-                    Class theClass = conversionManager.javaType(schemaTypeQName);
+                    Class<Object> theClass = conversionManager.javaType(schemaTypeQName);
                     if (theClass != null) {
                         convertedValue = conversionManager.convertObject(convertedValue, theClass, schemaTypeQName);
                     }

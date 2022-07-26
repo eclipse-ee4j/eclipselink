@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,9 +22,9 @@ import org.eclipse.persistence.testing.framework.ReadObjectTest;
 
 public class BatchReadingWithAggregateCollectionMapping extends ReadObjectTest {
 
-    Class cls;
+    Class<?> cls;
     // Must be Agent or Builder
-    public BatchReadingWithAggregateCollectionMapping(Class cls) {
+    public BatchReadingWithAggregateCollectionMapping(Class<?> cls) {
         super();
         this.cls = cls;
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
@@ -35,13 +35,16 @@ public class BatchReadingWithAggregateCollectionMapping extends ReadObjectTest {
         super(originalObject);
     }
 
+    @Override
     public void reset() {
 
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         if(cls == null) {
             cls = originalObject.getClass();
@@ -54,6 +57,7 @@ public class BatchReadingWithAggregateCollectionMapping extends ReadObjectTest {
         List houses = AgentBuilderHelper.getHouses(object);
     }
 
+    @Override
     public void verify() {
     }
 }

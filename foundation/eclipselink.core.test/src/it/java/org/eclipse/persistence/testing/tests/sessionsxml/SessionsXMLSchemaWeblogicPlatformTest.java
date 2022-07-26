@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date September 4, 2008
  */
 public class SessionsXMLSchemaWeblogicPlatformTest extends AutoVerifyTestCase {
     Exception m_exceptionCaught;
@@ -40,6 +39,7 @@ public class SessionsXMLSchemaWeblogicPlatformTest extends AutoVerifyTestCase {
         setDescription("Tests loading supported and non supported weblogic platforms from the schema.");
     }
 
+    @Override
     public void reset() {
         if (m_weblogic9Session != null && m_weblogic9Session.isConnected()) {
             m_weblogic9Session.logout();
@@ -54,10 +54,12 @@ public class SessionsXMLSchemaWeblogicPlatformTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void setup() {
         m_exceptionCaught = null;
     }
 
+    @Override
     public void test() {
         try {
             XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSessionWLSPlatform.xml");
@@ -70,6 +72,7 @@ public class SessionsXMLSchemaWeblogicPlatformTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (m_exceptionCaught != null) {
             throw new TestErrorException("Loading of the session failed: " + m_exceptionCaught, m_exceptionCaught);

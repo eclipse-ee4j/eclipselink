@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -207,17 +207,11 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected LiteralVisitor buildLiteralVisitor() {
         return new DefaultLiteralVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected OwningClauseVisitor buildOwningClauseVisitor() {
         return new OwningClauseVisitor();
@@ -274,13 +268,10 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return validator;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
-        validators = new HashMap<Class<? extends TypeValidator>, TypeValidator>();
+        validators = new HashMap<>();
     }
 
     /**
@@ -440,17 +431,11 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected PathType selectClausePathExpressionPathType() {
         return PathType.ANY_FIELD;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean validateAbsExpression(AbsExpression expression) {
 
@@ -464,9 +449,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return valid;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int validateArithmeticExpression(ArithmeticExpression expression,
                                                String leftExpressionWrongTypeMessageKey,
@@ -491,9 +473,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean validateAvgFunction(AvgFunction expression) {
 
@@ -507,9 +486,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return valid;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int validateBetweenExpression(BetweenExpression expression) {
 
@@ -549,9 +525,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int validateCollectionMemberExpression(CollectionMemberExpression expression) {
 
@@ -572,9 +545,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean validateComparisonExpression(ComparisonExpression expression) {
 
@@ -596,9 +566,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return valid;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean validateConcatExpression(ConcatExpression expression) {
 
@@ -619,9 +586,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateConstructorExpression(ConstructorExpression expression) {
 
@@ -689,9 +653,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateCountFunction(CountFunction expression) {
 
@@ -717,18 +678,12 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateEntryExpression(EntryExpression expression) {
         validateMapIdentificationVariable(expression);
         super.validateEntryExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean validateIdentificationVariable(IdentificationVariable expression, String variable) {
 
@@ -778,18 +733,12 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateKeyExpression(KeyExpression expression) {
         validateMapIdentificationVariable(expression);
         super.validateKeyExpression(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean validateLengthExpression(LengthExpression expression) {
 
@@ -802,9 +751,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return valid;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int validateLocateExpression(LocateExpression expression) {
 
@@ -831,9 +777,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean validateLowerExpression(LowerExpression expression) {
 
@@ -872,9 +815,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int validateModExpression(ModExpression expression) {
 
@@ -907,18 +847,12 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateNotExpression(NotExpression expression) {
         super.validateNotExpression(expression);
         validateBooleanType(expression.getExpression(), NotExpression_WrongType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateNullComparisonExpression(NullComparisonExpression expression) {
 
@@ -958,9 +892,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean validateSqrtExpression(SqrtExpression expression) {
 
@@ -996,9 +927,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected int validateSubstringExpression(SubstringExpression expression) {
 
@@ -1040,9 +968,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean validateSumFunction(SumFunction expression) {
 
@@ -1056,9 +981,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return valid;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("null")
     protected boolean validateUpdateItem(UpdateItem expression) {
@@ -1153,9 +1075,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean validateUpperExpression(UpperExpression expression) {
 
@@ -1170,9 +1089,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
         return valid;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateValueExpression(ValueExpression expression) {
         validateMapIdentificationVariable(expression);
@@ -1185,106 +1101,70 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
      */
     protected class BooleanTypeValidator extends TypeValidator {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected boolean isRightType(Object type) {
             return getTypeHelper().isBooleanType(type);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AllOrAnyExpression expression) {
             // ALL|ANY|SOME always returns a boolean value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AndExpression expression) {
             // AND always returns a boolean value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(BetweenExpression expression) {
             // BETWEEN always returns a boolean value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ComparisonExpression expression) {
             // A comparison always returns a boolean value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(EmptyCollectionComparisonExpression expression) {
             // IS EMPTY always returns a boolean value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ExistsExpression expression) {
             // EXISTS always returns a boolean value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(KeywordExpression expression) {
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(LikeExpression expression) {
             // LIKE always returns a boolean value
             valid = true;
         }
 
-         /**
-         * {@inheritDoc}
-         */
-        @Override
+         @Override
         public void visit(NotExpression expression) {
             // NOT always returns a boolean value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(NullComparisonExpression expression) {
             // IS NULL always returns a boolean value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(OrExpression expression) {
             // OR always returns a boolean value
@@ -1299,9 +1179,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
          */
         protected boolean valid;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(KeywordExpression expression) {
             valid = expression.getText() == Expression.NULL;
@@ -1314,170 +1191,113 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
      */
     protected class NumericTypeValidator extends TypeValidator {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected boolean isRightType(Object type) {
             return getTypeHelper().isNumericType(type);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AbsExpression expression) {
             // ABS always returns a numeric value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AdditionExpression expression) {
             // An addition expression always returns a numeric value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ArithmeticFactor expression) {
             // +/- is always numeric value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AvgFunction expression) {
             // AVG always returns a double
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CountFunction expression) {
             // COUNT always returns a long
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(DivisionExpression expression) {
             // A division expression always returns a numeric value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IndexExpression expression) {
             // INDEX always returns an integer
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(LengthExpression expression) {
             // LENGTH always returns an integer
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(LocateExpression expression) {
             // LOCATE always returns an integer
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(MaxFunction expression) {
             // SUM always returns a numeric value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(MinFunction expression) {
             // SUM always returns a numeric value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ModExpression expression) {
             // MOD always returns an integer
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(MultiplicationExpression expression) {
             // A multiplication expression always returns a numeric value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(NumericLiteral expression) {
             // A numeric literal is by definition valid
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SizeExpression expression) {
             // SIZE always returns an integer
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SqrtExpression expression) {
             // SQRT always returns a double
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SubtractionExpression expression) {
             // A subtraction expression always returns a numeric value
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SumFunction expression) {
             // SUM always returns a long
@@ -1489,25 +1309,16 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 
         public boolean result;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariable expression) {
             expression.getParent().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(OrderByClause expression) {
             result = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(OrderByItem expression) {
             expression.getParent().accept(this);
@@ -1520,62 +1331,41 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
      */
     protected class StringTypeValidator extends TypeValidator {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected boolean isRightType(Object type) {
             return getTypeHelper().isStringType(type);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ConcatExpression expression) {
             // CONCAT always returns a string
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(LowerExpression expression) {
             // LOWER always returns a string
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StringLiteral expression) {
             // A string literal is by definition valid
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SubstringExpression expression) {
             // SUBSTRING always returns a string
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(TrimExpression expression) {
             // TRIM always returns a string
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UpperExpression expression) {
             // UPPER always returns a string
@@ -1602,27 +1392,18 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
          */
         protected abstract boolean isRightType(Object type);
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public final void visit(CaseExpression expression) {
             Object type = getType(expression);
             valid = isRightType(type);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public final void visit(CoalesceExpression expression) {
             Object type = getType(expression);
             valid = isRightType(type);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public final void visit(InputParameter expression) {
             // An input parameter can't be validated until the query
@@ -1630,35 +1411,23 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(NullExpression expression) {
             // The missing expression is validated by GrammarValidator
             valid = true;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public final void visit(NullIfExpression expression) {
             expression.getFirstExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public final void visit(StateFieldPathExpression expression) {
             Object type = getType(expression);
             valid = isRightType(type);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public final void visit(SubExpression expression) {
             expression.getExpression().accept(this);
@@ -1669,41 +1438,26 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 
         protected AbstractSchemaName expression;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(AbstractSchemaName expression) {
             this.expression = expression;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             expression.getParent().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(RangeVariableDeclaration expression) {
             expression.getRootObject().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UpdateClause expression) {
             expression.getRangeVariableDeclaration().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(UpdateItem expression) {
             expression.getParent().accept(this);

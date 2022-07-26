@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,11 +50,13 @@ public class EmployeeAttributeChangeTrackingTestModel extends EmployeeChangeFlag
         setDescription("This model tests reading/writing/deleting using the employee demo with AttributeChangeTrackingPolicy flag.");
     }
 
+    @Override
     public void addRequiredSystems() {
         super.addRequiredSystems();
         addRequiredSystem(new ALCTEmployeeSystem());
     }
 
+    @Override
     public void setup() {
         // Save change policies for the all employee demo class in order to restore them at reset time.
         employeeChangePolicy = getSession().getDescriptor(Employee.class).getObjectChangePolicy();
@@ -86,6 +88,7 @@ public class EmployeeAttributeChangeTrackingTestModel extends EmployeeChangeFlag
     /**
      * Add a subset of the UnitOfWork tests in order to test the actual test flag functionality.
      */
+    @Override
     public TestSuite getUnitOfWorkTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("Unit Of Work Update Test Suite");

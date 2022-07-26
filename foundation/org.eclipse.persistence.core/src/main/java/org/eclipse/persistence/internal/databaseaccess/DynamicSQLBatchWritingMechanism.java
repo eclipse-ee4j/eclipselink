@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,8 +32,8 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * INTERNAL:
- *    DynamicSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor.
- *    It provides the required behavior for batching statements, for write, with parameter binding turned off.<p>
+ *    <p>DynamicSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor.
+ *    It provides the required behavior for batching statements, for write, with parameter binding turned off.</p>
  */
 public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
 
@@ -41,7 +42,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      */
     protected List<String> sqlStrings;
 
-    /**
+    /*
      * Stores the statement indexes for statements that are using optimistic locking.  This allows us to check individual
      * statement results on supported platforms
      */
@@ -60,7 +61,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
 
     public DynamicSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
         this.databaseAccessor = databaseAccessor;
-        this.sqlStrings = new ArrayList();
+        this.sqlStrings = new ArrayList<>();
         this.batchSize = 0;
         this.maxBatchSize = this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize();
         if (this.maxBatchSize == 0) {
@@ -90,9 +91,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
             this.usesOptimisticLocking = dbCall.hasOptimisticLock;
             this.statementCount++;
             // Store the largest queryTimeout on a single call for later use by the single statement in prepareJDK12BatchStatement
-            if (dbCall != null) {
-                cacheQueryTimeout(session, dbCall);
-            }
+            cacheQueryTimeout(session, dbCall);
             // feature for bug 4104613, allows users to force statements to flush on execution
             if (((ModifyQuery) dbCall.getQuery()).forceBatchStatementExecution()) {
               executeBatchedStatements(session);
@@ -112,7 +111,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
     public void clear() {
         //Bug#419326 : A clone may be holding a reference to this.parameters.
         //So, instead of clearing the parameters, just initialize with a new reference.
-        this.sqlStrings = new ArrayList();
+        this.sqlStrings = new ArrayList<>();
         this.statementCount = executionCount  = 0;
         this.usesOptimisticLocking = false;
         this.batchSize = 0;
@@ -150,9 +149,9 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
         if (this.sqlStrings.size() == 1) {
             // If only one call, just execute normally.
             try {
-                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.lastCallAppended, null, session, false);
-                if (this.usesOptimisticLocking) {
-                    if (rowCount != 1) {
+                Object rowCount = this.databaseAccessor.basicExecuteCall(this.lastCallAppended, null, session, false);
+                if (this.usesOptimisticLocking && rowCount instanceof Integer) {
+                    if ((Integer)rowCount != 1) {
                         throw OptimisticLockException.batchStatementExecutionFailure();
                     }
                 }

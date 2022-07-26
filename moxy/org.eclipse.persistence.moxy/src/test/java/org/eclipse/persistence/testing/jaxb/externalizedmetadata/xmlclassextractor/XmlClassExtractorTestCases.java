@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -42,22 +43,22 @@ public class XmlClassExtractorTestCases extends JAXBWithJSONTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
      */
     public XmlClassExtractorTestCases(String name) throws Exception{
         super(name);
-        setClasses(new Class[]{Car.class, Vehicle.class, ParkingLot.class });
+        setClasses(new Class<?>[]{Car.class, Vehicle.class, ParkingLot.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlclassextractor/eclipselink-oxm.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -69,7 +70,7 @@ public class XmlClassExtractorTestCases extends JAXBWithJSONTestCases {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -77,6 +78,7 @@ public class XmlClassExtractorTestCases extends JAXBWithJSONTestCases {
     /**
      * Returns the control ParkingLot instance.
      */
+    @Override
     public Object getControlObject() {
         Car car = new Car();
         car.numberOfDoors = 2;
@@ -114,7 +116,7 @@ public class XmlClassExtractorTestCases extends JAXBWithJSONTestCases {
      */
     public void testUnmarshalFailure() throws Exception{
         // create the JAXBContext for this test (metadata file is validated as well)
-        JAXBContext jaxbContextInvalid = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Car.class, Vehicle.class, ParkingLot.class}, getInvalidProperties());
+        JAXBContext jaxbContextInvalid = (JAXBContext) JAXBContextFactory.createContext(new Class<?>[]{Car.class, Vehicle.class, ParkingLot.class}, getInvalidProperties());
         Unmarshaller unmarshaller = jaxbContextInvalid.createUnmarshaller();
         try {
             InputStream iDocStream = getClass().getClassLoader().getResourceAsStream(XML_RESOURCE);

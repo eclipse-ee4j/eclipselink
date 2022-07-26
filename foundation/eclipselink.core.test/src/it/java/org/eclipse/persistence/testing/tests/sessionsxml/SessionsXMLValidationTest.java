@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ public class SessionsXMLValidationTest extends ExceptionTest {
         return sessionXmlFileName;
     }
 
+    @Override
     public void test() throws Exception {
         if (getSessionXmlFileName() != null) {
             SessionManager testManager = new SessionManager();
@@ -90,6 +91,7 @@ public class SessionsXMLValidationTest extends ExceptionTest {
     /**
      * Also verify the number of errors for SessionLoaderException.
      */
+    @Override
     public void verify() {
         // This class can also be used to to test loading a session successfully.
         if (this.expectedException == null) {

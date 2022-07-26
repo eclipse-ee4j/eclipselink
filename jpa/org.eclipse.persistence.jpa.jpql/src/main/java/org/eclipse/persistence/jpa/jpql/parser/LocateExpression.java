@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,13 +23,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * the search is started (by default, the beginning of the string to be searched). The first
  * position in a string is denoted by 1. If the string is not found, 0 is returned. The <b>LOCATE</b>
  * function returns the length of the string in characters as an integer.
- * <p>
+ * <br>
  * JPA 1.0, 2.0:
  * <div><b>BNF:</b> <code>expression ::= LOCATE(string_primary, string_primary [, simple_arithmetic_expression])</code></div>
- * <p>
+ * <br>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= LOCATE(string_expression, string_expression [, arithmetic_expression])</code></div>
- * <p>
  *
  * @version 2.5
  * @since 2.3
@@ -46,17 +45,11 @@ public final class LocateExpression extends AbstractTripleEncapsulatedExpression
         super(parent, LOCATE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getParameterQueryBNFId(int index) {
         switch (index) {
@@ -65,17 +58,11 @@ public final class LocateExpression extends AbstractTripleEncapsulatedExpression
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(FunctionsReturningNumericsBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isThirdExpressionOptional() {
         return true;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,8 +44,8 @@ public class Hockey {
         if(example3.teams.size() != teams.size()) {
             return false;
         }
-        Iterator teams1 = example3.teams.iterator();
-        Iterator teams2 = teams.iterator();
+        Iterator<String> teams1 = example3.teams.iterator();
+        Iterator<String> teams2 = teams.iterator();
         while(teams1.hasNext()) {
             if(!(teams1.next().equals(teams2.next()))) {
                 System.out.println("returning false");

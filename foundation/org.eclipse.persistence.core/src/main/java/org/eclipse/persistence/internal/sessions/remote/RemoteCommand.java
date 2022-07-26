@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,9 +21,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <b>Purpose</b>: This Interfaces provides the reference part of an remote command framework
  * Whereby, TopLink can issue commands to distributed servers.  This framework reduces
  * the size of the ever growing RemoteController and RemoteConnection framework
- * <p>
+ * </p><p>
  * <b>Description</b>: Used as the Interface for making calls to the object
- * <p>
+ * </p>
  */
 public interface RemoteCommand extends java.io.Serializable {
 

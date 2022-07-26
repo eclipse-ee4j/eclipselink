@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,8 +40,6 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
 
     /**
      * INTERNAL:
-     * @param xPathFragment
-     * @return
      */
      @Override
     public boolean isOwningNode(XPathFragment xPathFragment) {
@@ -88,7 +86,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
         Descriptor descriptor = (Descriptor)mapping.getReferenceDescriptor();
 
         if(descriptor.hasInheritance()){
-              Class objectValueClass = value.getClass();
+              Class<?> objectValueClass = value.getClass();
                if(!(objectValueClass == descriptor.getJavaClass())){
                    descriptor = (Descriptor) session.getDescriptor(objectValueClass);
                }

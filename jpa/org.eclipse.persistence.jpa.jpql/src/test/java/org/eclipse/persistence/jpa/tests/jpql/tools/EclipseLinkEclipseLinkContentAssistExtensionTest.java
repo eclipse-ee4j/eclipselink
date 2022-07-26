@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,30 +29,27 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  */
 public final class EclipseLinkEclipseLinkContentAssistExtensionTest extends AbstractContentAssistTest {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ContentAssistExtension buildContentAssistExtension() {
         return new ContentAssistExtension() {
+            @Override
             public Iterable<String> classNames(String prefix, ClassType type) {
                 if (type == ClassType.INSTANTIABLE) {
                     return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.classNames(), prefix);
                 }
                 return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.enumTypes(), prefix);
             }
+            @Override
             public Iterable<String> columnNames(String tableName, String prefix) {
                 return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.columnNames(tableName), prefix);
             }
+            @Override
             public Iterable<String> tableNames(String prefix) {
                 return filter(EclipseLinkEclipseLinkContentAssistExtensionTest.this.tableNames(), prefix);
             }
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> clauses(String afterIdentifier, String beforeIdentifier, boolean subquery) {
 
@@ -147,14 +144,11 @@ public final class EclipseLinkEclipseLinkContentAssistExtensionTest extends Abst
         return proposals;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected List<String> fromClauseInternalClauses(String afterIdentifier) {
 
         if (EclipseLinkVersionTools.isNewerThan2_4(getGrammar())) {
-            List<String> proposals = new ArrayList<String>();
+            List<String> proposals = new ArrayList<>();
 
             if (afterIdentifier == FROM) {
                 proposals.addAll(super.fromClauseInternalClauses(FROM));
@@ -188,9 +182,6 @@ public final class EclipseLinkEclipseLinkContentAssistExtensionTest extends Abst
         return super.fromClauseInternalClauses(afterIdentifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isJoinFetchIdentifiable() {
         return true;

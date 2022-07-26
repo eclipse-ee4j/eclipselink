@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,13 @@ public class QueryCacheHitEnabledAndDescriptorEnabledTest extends QueryAndDescri
         setDescription("Test when cache hit is enabled in both query and descriptor, cache is checked");
     }
 
+    @Override
     protected void setup() {
         super.setup();
         descriptor.setShouldDisableCacheHits(false);
     }
 
+    @Override
     protected Object readObject(ReadObjectQuery query) {
         query.setCacheUsage(ObjectLevelReadQuery.CheckCacheByPrimaryKey);
         return getSession().executeQuery(query);

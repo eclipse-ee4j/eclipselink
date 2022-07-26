@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public class SchemaGenScopeTestCases extends JAXBWithJSONTestCases{
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[2];
+        Class<?>[] classes = new Class<?>[2];
         classes[0] = ClassA.class;
         classes[1] = ObjectFactory.class;
         setClasses(classes);
@@ -50,6 +50,7 @@ public class SchemaGenScopeTestCases extends JAXBWithJSONTestCases{
         testSchemaGen(getControlSchemaFiles());
     }
 
+    @Override
     protected Object getControlObject() {
         ClassA classA = new ClassA();
         classA.setSomeValue("value");

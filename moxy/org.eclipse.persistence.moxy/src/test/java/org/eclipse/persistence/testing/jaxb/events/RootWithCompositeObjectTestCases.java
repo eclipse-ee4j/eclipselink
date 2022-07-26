@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
 
     public RootWithCompositeObjectTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {Employee.class});
+        setClasses(new Class<?>[] {Employee.class});
         setControlDocument("org/eclipse/persistence/testing/jaxb/events/composite_object.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/events/composite_object.json");
 
@@ -67,6 +67,7 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
 
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         listener = new JAXBMarshalListenerImpl();
@@ -77,6 +78,7 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
         this.getJAXBMarshaller().setListener(listener);
         this.getJAXBUnmarshaller().setListener(unmarshalListener);
     }
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
         assertTrue("Class based callbacks not correct", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
@@ -85,6 +87,7 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
 
     }
 
+    @Override
     public void jsonToObjectTest(Object testObject) throws Exception {
           super.jsonToObjectTest(testObject);
        assertTrue("Class based callbacks not correct", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
@@ -92,12 +95,14 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
        unmarshalListener.events = new ArrayList();
    }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Class based callbacks not correct", ((Employee)getWriteControlObject()).triggeredEvents.equals(expectedClassBasedMarshalEvents));
         assertTrue("Expected sequence of Marshal events not found", expectedMarshalEvents.equals(listener.events));
     }
 
+    @Override
     public Object getControlObject() {
         Employee employee = new Employee();
         Address address = new Address();
@@ -105,12 +110,14 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
         employee.address = address;
         return employee;
     }
+    @Override
     public Object getWriteControlObject() {
         if(writeControlObject == null) {
             writeControlObject = getControlObject();
         }
         return writeControlObject;
     }
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         Object testObject = getJAXBUnmarshaller().unmarshal(instream);
@@ -118,11 +125,13 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testObjectToXMLDocument() throws Exception {
         //Document testDocument = getJAXBMarshaller().objectToXML(getWriteControlObject());
         //objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testRoundTrip() throws Exception{
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -152,6 +161,7 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
         }
     }
 
+    @Override
     public void testObjectToXMLStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
         getJAXBMarshaller().marshal(getWriteControlObject(), writer);
@@ -166,6 +176,7 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
 
     }
 
+     @Override
      public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         getJAXBMarshaller().marshal(getWriteControlObject(), builder);
@@ -182,12 +193,14 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
         assertXMLIdentical(controlDocument, testDocument);
     }
 
+    @Override
     public void testXMLToObjectFromURL() throws Exception {
         java.net.URL url = ClassLoader.getSystemResource(resourceName);
         Object testObject = getJAXBUnmarshaller().unmarshal(url);
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testUnmarshallerHandler() throws Exception {
     }
 }

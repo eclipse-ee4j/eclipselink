@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests %ROWTYPE support. If, in a PL/SQL package, you want a record
- * with fields (names & types, but not constraints) that mirror a
+ * with fields (names &amp; types, but not constraints) that mirror a
  * JDBC table, without defining the record in the package, %ROWTYPE
  * can be used, i.e. "PARAM1 OUT MYTABLE%ROWTYPE".
  *
@@ -238,7 +238,7 @@ public class RowTypeTestSuite extends DBWSTestSuite {
     public void rowTypeTest() {
         Invocation invocation = new Invocation("rowtypeTest");
         Operation op = xrService.getOperation(invocation.getName());
-        invocation.setParameter("PARAM1", Integer.valueOf(1));
+        invocation.setParameter("PARAM1", 1);
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
         Document doc = xmlPlatform.createDocument();
@@ -251,7 +251,7 @@ public class RowTypeTestSuite extends DBWSTestSuite {
     public void rowTypeTest2() {
         Invocation invocation = new Invocation("rowtypeTest2");
         Operation op = xrService.getOperation(invocation.getName());
-        invocation.setParameter("PARAM1", Integer.valueOf(1));
+        invocation.setParameter("PARAM1", 1);
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
         Document doc = xmlPlatform.createDocument();

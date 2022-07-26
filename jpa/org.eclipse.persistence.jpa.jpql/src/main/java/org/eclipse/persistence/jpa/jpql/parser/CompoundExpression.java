@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * A compound expression has a left and right expressions combined by an identifier.
  *
- * <div><b>BNF:</b> <code>expression ::= left_expression identifier right_expression</code><p></div>
+ * <div><b>BNF:</b> <code>expression ::= left_expression identifier right_expression</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -60,27 +60,18 @@ public abstract class CompoundExpression extends AbstractExpression {
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getLeftExpression().accept(visitor);
         getRightExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addChildrenTo(Collection<Expression> children) {
         children.add(getLeftExpression());
         children.add(getRightExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void addOrderedChildrenTo(List<Expression> children) {
 
@@ -106,9 +97,6 @@ public abstract class CompoundExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -214,9 +202,6 @@ public abstract class CompoundExpression extends AbstractExpression {
         return hasSpaceAfterIdentifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void parse(WordParser wordParser, boolean tolerant) {
 
@@ -267,9 +252,6 @@ public abstract class CompoundExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final void toParsedText(StringBuilder writer, boolean actual) {
 

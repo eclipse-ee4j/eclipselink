@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.model.changesummary;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -33,7 +34,7 @@ public class ChangeSummaryIsCreatedIsDeletedIsModifiedTest extends ChangeSummary
     // purpose: after logging, create a new DataObject, then check it with isCreated()
     public void testIsCreated() {
         changeSummary.beginLogging();
-        SDODataObject newObj = (SDODataObject)root.createDataObject(rootProperty);
+        SDODataObject newObj = root.createDataObject(rootProperty);
         assertCreated(newObj, changeSummary);
     }
 
@@ -91,7 +92,7 @@ public class ChangeSummaryIsCreatedIsDeletedIsModifiedTest extends ChangeSummary
         p.setType(SDOConstants.SDO_STRING);
         ty.addDeclaredProperty(p);
 
-        o = (SDODataObject)root.createDataObject(rootProperty, ty);
+        o = root.createDataObject(rootProperty, ty);
 
         assertCreated(o, changeSummary);
     }
@@ -169,6 +170,6 @@ public class ChangeSummaryIsCreatedIsDeletedIsModifiedTest extends ChangeSummary
         changeSummary.beginLogging();
         //changeSummary.setChangedDataObjectList(null);
         changeSummary.endLogging();
-        this.assertFalse(changeSummary.isLogging());
+        assertFalse(changeSummary.isLogging());
     }
 }

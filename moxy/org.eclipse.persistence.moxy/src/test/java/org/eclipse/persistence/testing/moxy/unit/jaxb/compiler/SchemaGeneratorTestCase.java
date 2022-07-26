@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -11,117 +11,187 @@
  */
 
 // Contributors:
-//  - Martin Vojtek - 2.6 - Initial implementation
+//     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.moxy.unit.jaxb.compiler;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertFalse;
 
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
-
-import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
-import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.Property;
-import org.eclipse.persistence.jaxb.compiler.SchemaGenerator;
 import org.eclipse.persistence.jaxb.compiler.TypeInfo;
 import org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder;
-import org.eclipse.persistence.jaxb.javamodel.Helper;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
-import org.eclipse.persistence.jaxb.javamodel.JavaField;
-import org.eclipse.persistence.jaxb.javamodel.JavaModel;
-import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
-import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
-import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
-import org.eclipse.persistence.jaxb.javamodel.JavaClassInstanceOf;
+import org.eclipse.persistence.jaxb.javamodel.*;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.Employee;
+import org.eclipse.persistence.testing.moxy.unit.jaxb.compiler.builder.ChildSchemaGenerator;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
- * Tests SchemaGenerator methdos.
- *
- * @author Martin Vojtek
- *
+ * Tests SchemaGenerator methods.
  */
-@RunWith(JMockit.class)
 public class SchemaGeneratorTestCase {
 
-    @Test
-    public void getTransformerPropertyBuilder(final @Mocked Helper helper, final @Mocked Property property, final @Mocked TypeInfo typeInfo) {
-        SchemaGenerator schemaGenerator = new SchemaGenerator(helper);
+    private static final Class<?>[] DOMAIN_CLASSES = new Class<?>[]{Employee.class};
+    private static final String EMPLOYEE_CLASS_NAME = Employee.class.getTypeName();
+    private static final String BINDINGS_DOC = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/eclipselink-oxm.xml";
+    private static final String XML_TRANSFORMATION_PROPERTY_NAME = "normalHours";
 
-        TransformerPropertyBuilder transformerPropertyBuilder = Deencapsulation.invoke(schemaGenerator, "getTransformerPropertyBuilder", property, typeInfo);
+    @Test
+    public void getTransformerPropertyBuilder() {
+        JavaModelInputImpl jModelInput = new JavaModelInputImpl(DOMAIN_CLASSES, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), DOMAIN_CLASSES)));
+        Helper helper = new Helper(jModelInput.getJavaModel());
+        Generator generator = new Generator(jModelInput);
+        TypeInfo typeInfo = generator.getAnnotationsProcessor().getTypeInfos().get(EMPLOYEE_CLASS_NAME);
+        Property normalHoursProperty = typeInfo.getProperties().get(XML_TRANSFORMATION_PROPERTY_NAME);
+        ChildSchemaGenerator childSchemaGenerator = new ChildSchemaGenerator(helper);
+        TransformerPropertyBuilder transformerPropertyBuilder = childSchemaGenerator.getTransformerPropertyBuilder(normalHoursProperty, typeInfo);
         assertNotNull(transformerPropertyBuilder);
     }
 
     @Test
-    public void addTransformerToSchema(final @Mocked Helper helper, final @Mocked Property property, final @Mocked TypeInfo typeInfo, final @Mocked TypeDefParticle typeDefParticle, final @Mocked ComplexType complexType, final @Mocked Schema schema, final @Mocked TransformerPropertyBuilder transformerPropertyBuilder) {
-        final SchemaGenerator schemaGenerator = new SchemaGenerator(helper);
-        final java.util.List<Property> props = new ArrayList<>();
+    public void addTransformerToSchema() {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS_DOC);
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
+        Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, Thread.currentThread().getContextClassLoader());
+        JavaModelInputImpl jModelInput = new JavaModelInputImpl(DOMAIN_CLASSES, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), DOMAIN_CLASSES)));
+        Helper helper = new Helper(jModelInput.getJavaModel());
+        Generator generator = new Generator(jModelInput, bindings, Thread.currentThread().getContextClassLoader(), "", false);
+        TypeInfo typeInfo = generator.getAnnotationsProcessor().getTypeInfos().get(EMPLOYEE_CLASS_NAME);
+        Property normalHoursProperty = typeInfo.getProperties().get(XML_TRANSFORMATION_PROPERTY_NAME);
+        ChildSchemaGenerator childSchemaGenerator = new ChildSchemaGenerator(helper);
+        TransformerPropertyBuilder transformerPropertyBuilder = childSchemaGenerator.getTransformerPropertyBuilder(normalHoursProperty, typeInfo);
+        java.util.List<Property> props = transformerPropertyBuilder.buildProperties();
+        // Indirect call of org.eclipse.persistence.jaxb.compiler.SchemaGenerator.addTransformerToSchema(.....) method.
+        List<Schema> schemas = (List)generator.generateSchema();
 
-        new Expectations(SchemaGenerator.class) {{
-            Deencapsulation.invoke(schemaGenerator, "getTransformerPropertyBuilder", property, typeInfo); result = transformerPropertyBuilder;
-            transformerPropertyBuilder.buildProperties(); result = props;
-            schemaGenerator.addToSchemaType(typeInfo, props, typeDefParticle, complexType, schema);
-         }};
+        XMLContext context = new XMLContext(new SchemaModelProject());
+        XMLMarshaller marshaller = context.createMarshaller();
+        final StringWriter stringWriter = new StringWriter();
+        marshaller.marshal(schemas.get(0), stringWriter);
+        String outputSchema = stringWriter.toString();
 
-        Deencapsulation.invoke(schemaGenerator, "addTransformerToSchema", property, typeInfo, typeDefParticle, complexType, schema);
+        // Verify that XML-Transformation property is added to XML schema
+        for (Property property: props) {
+            assertTrue(outputSchema.contains(property.getPropertyName()));
+        }
     }
-   
+
     @Test
-    public void javaxXmlRpcStringHolderTest(final @Mocked Helper helper) {
-           assertFalse(helper.isBuiltInJavaType(new JavaClass() { public String getRawName() { return "javax.xml.rpc.StringHolder";}
-                                                                  public JavaClassInstanceOf instanceOf() { return null; } 
-                                                                  public boolean isSynthetic() { return false; }
-                                                                  public Collection getActualTypeArguments() { return null; }
-                                                                  public JavaClass getComponentType() { return null; }
-                                                                  public String getQualifiedName() { return null; }
-                                                                  public boolean hasActualTypeArguments() { return false; }
-                                                                  public Collection getDeclaredClasses() { return null; }
-                                                                  public JavaField getDeclaredField(String arg0) { return null; }
-                                                                  public Collection getDeclaredFields() { return null; }
-                                                                  public JavaMethod getDeclaredMethod(String arg0, JavaClass[] arg1) { return null; }
-                                                                  public Collection getDeclaredMethods() { return null; }
-                                                                  public JavaMethod getMethod(String arg0, JavaClass[] arg1) { return null; }
-                                                                  public Collection getMethods() { return null ;}
-                                                                  public JavaConstructor getConstructor(JavaClass[] parameterTypes) { return null; }
-                                                                  public Collection getConstructors() { return null; }
-                                                                  public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes) { return null; }
-                                                                  public Collection getDeclaredConstructors() { return null; }
-                                                                  public int getModifiers() { return 0; }
-                                                                  public String getName() { return null; }
-                                                                  public JavaPackage getPackage() { return null; }
-                                                                  public String getPackageName() { return null; }
-                                                                  public JavaClass getSuperclass() { return null; }
-                                                                  public Type[] getGenericInterfaces() { return null; }
-                                                                  public Type getGenericSuperclass() { return null; }
-                                                                  public boolean isAbstract() { return false; }
-                                                                  public boolean isAnnotation() { return false; }
-                                                                  public boolean isArray() { return false; }
-                                                                  public boolean isAssignableFrom(JavaClass arg0) { return false; }
-                                                                  public boolean isEnum() { return false; }
-                                                                  public boolean isFinal() { return false; }
-                                                                  public boolean isInterface() { return false; }
-                                                                  public boolean isMemberClass() { return false; }
-                                                                  public boolean isPrimitive() { return false; }
-                                                                  public boolean isPrivate() { return false; }
-                                                                  public boolean isProtected() { return false; }
-                                                                  public boolean isPublic() { return false; }
-                                                                  public boolean isStatic() { return false; }
-                                                                  public JavaAnnotation getAnnotation(JavaClass arg0) { return null; }
-                                                                  public Collection getAnnotations() { return null; }
-                                                                  public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) { return null; }
-                                                                  public Collection getDeclaredAnnotations() { return null; }
-                                                                }));
+    public void javaxXmlRpcStringHolderTest() {
+        //Prepare Helper
+        JavaModelInputImpl jModelInput = new JavaModelInputImpl(DOMAIN_CLASSES, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), DOMAIN_CLASSES)));
+        Helper helper = new Helper(jModelInput.getJavaModel());
+
+        assertFalse(helper.isBuiltInJavaType(new JavaClass() { @Override
+        public String getRawName() { return "javax.xml.rpc.StringHolder";}
+            @Override
+            public JavaClassInstanceOf instanceOf() { return null; }
+            @Override
+            public boolean isSynthetic() { return false; }
+            @Override
+            public Collection<JavaClass> getActualTypeArguments() { return null; }
+            @Override
+            public JavaClass getComponentType() { return null; }
+            @Override
+            public String getQualifiedName() { return null; }
+            @Override
+            public boolean hasActualTypeArguments() { return false; }
+            @Override
+            public Collection<JavaClass> getDeclaredClasses() { return null; }
+            @Override
+            public JavaField getDeclaredField(String arg0) { return null; }
+            @Override
+            public Collection<JavaField> getDeclaredFields() { return null; }
+            @Override
+            public JavaMethod getDeclaredMethod(String arg0, JavaClass[] arg1) { return null; }
+            @Override
+            public Collection<JavaMethod> getDeclaredMethods() { return null; }
+            @Override
+            public JavaMethod getMethod(String arg0, JavaClass[] arg1) { return null; }
+            @Override
+            public Collection<JavaMethod> getMethods() { return null ;}
+            @Override
+            public JavaConstructor getConstructor(JavaClass[] parameterTypes) { return null; }
+            @Override
+            public Collection<JavaConstructor> getConstructors() { return null; }
+            @Override
+            public JavaConstructor getDeclaredConstructor(JavaClass[] parameterTypes) { return null; }
+            @Override
+            public Collection<JavaConstructor> getDeclaredConstructors() { return null; }
+            @Override
+            public int getModifiers() { return 0; }
+            @Override
+            public String getName() { return null; }
+            @Override
+            public JavaPackage getPackage() { return null; }
+            @Override
+            public String getPackageName() { return null; }
+            @Override
+            public JavaClass getSuperclass() { return null; }
+            @Override
+            public Type[] getGenericInterfaces() { return null; }
+            @Override
+            public Type getGenericSuperclass() { return null; }
+            @Override
+            public boolean isAbstract() { return false; }
+            @Override
+            public boolean isAnnotation() { return false; }
+            @Override
+            public boolean isArray() { return false; }
+            @Override
+            public boolean isAssignableFrom(JavaClass arg0) { return false; }
+            @Override
+            public boolean isEnum() { return false; }
+            @Override
+            public boolean isFinal() { return false; }
+            @Override
+            public boolean isInterface() { return false; }
+            @Override
+            public boolean isMemberClass() { return false; }
+            @Override
+            public boolean isPrimitive() { return false; }
+            @Override
+            public boolean isPrivate() { return false; }
+            @Override
+            public boolean isProtected() { return false; }
+            @Override
+            public boolean isPublic() { return false; }
+            @Override
+            public boolean isStatic() { return false; }
+            @Override
+            public JavaAnnotation getAnnotation(JavaClass arg0) { return null; }
+            @Override
+            public Collection getAnnotations() { return null; }
+            @Override
+            public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) { return null; }
+            @Override
+            public Collection getDeclaredAnnotations() { return null; }
+        }));
     }
 }

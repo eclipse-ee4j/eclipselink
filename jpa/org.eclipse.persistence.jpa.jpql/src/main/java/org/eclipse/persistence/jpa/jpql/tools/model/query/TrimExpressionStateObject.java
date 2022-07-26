@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * <code><b>BOTH</b></code> is assumed. The <code><b>TRIM</b></code> function returns the trimmed
  * string.
  *
- * <div><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code></p></div>
  *
  * @see TrimExpression
  *
@@ -128,33 +128,21 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
         super(parent, jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public TrimExpression getExpression() {
         return (TrimExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return TRIM;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return StringPrimaryBNF.ID;
@@ -199,9 +187,6 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
         return trimCharacter != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -214,9 +199,6 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void parse(String jpqlFragment) {
 
@@ -295,9 +277,6 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
         firePropertyChanged(SPECIFICATION_PROPERTY, oldSpecification, specification);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);
@@ -316,9 +295,6 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
         firePropertyChanged(TRIM_CHARACTER_PROPERTY, oldTrimCharacter, trimCharacter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextEncapsulatedExpression(Appendable writer) throws IOException {
 

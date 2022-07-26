@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class EntityResult extends SQLResult {
     /** Stores the class name of result  */
     protected String entityClassName;
-    protected transient Class entityClass;
+    protected transient Class<?> entityClass;
 
     /** Stores the list of FieldResult */
     protected Map fieldResults;
@@ -57,7 +57,7 @@ public class EntityResult extends SQLResult {
      */
     protected DatabaseField discriminatorColumn;
 
-    public EntityResult(Class entityClass){
+    public EntityResult(Class<?> entityClass){
         this.entityClass = entityClass;
         if (this.entityClass == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_value_for_entity_result"));
@@ -89,16 +89,15 @@ public class EntityResult extends SQLResult {
      * Convert all the class-name-based settings in this query to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        Class entityClass = null;
+        Class<?> entityClass = null;
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    entityClass = AccessController.doPrivileged(new PrivilegedClassForName(entityClassName, true, classLoader));
+                    entityClass = AccessController.doPrivileged(new PrivilegedClassForName<>(entityClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(entityClassName, exception.getException());
                 }
@@ -177,12 +176,12 @@ public class EntityResult extends SQLResult {
 
             // if multiple types may have been read get the correct descriptor.
             if ( descriptor.getInheritancePolicy().shouldReadSubclasses()) {
-                Class classValue = descriptor.getInheritancePolicy().classFromRow(entityRecord, query.getSession());
+                Class<?> classValue = descriptor.getInheritancePolicy().classFromRow(entityRecord, query.getSession());
                 descriptor = query.getSession().getDescriptor(classValue);
             }
         }
-        for (Iterator mappings = descriptor.getMappings().iterator(); mappings.hasNext();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.next();
+        for (Iterator<DatabaseMapping> mappings = descriptor.getMappings().iterator(); mappings.hasNext();) {
+            DatabaseMapping mapping = mappings.next();
             FieldResult fieldResult = (FieldResult)this.getFieldResults().get(mapping.getAttributeName());
             if (fieldResult != null){
                 if (mapping.getFields().size() == 1 ) {
@@ -191,8 +190,8 @@ public class EntityResult extends SQLResult {
                     getValueFromRecordForMapping(entityRecord,mapping,fieldResult,record);
                 }
             } else {
-                for (Iterator fields = mapping.getFields().iterator(); fields.hasNext();) {
-                    DatabaseField field = (DatabaseField)fields.next();
+                for (Iterator<DatabaseField> fields = mapping.getFields().iterator(); fields.hasNext();) {
+                    DatabaseField field = fields.next();
                     entityRecord.put(field, record.get(field));
                 }
             }
@@ -225,9 +224,9 @@ public class EntityResult extends SQLResult {
             return;
         }
         /** This processes each FieldResult stored in the collection of FieldResults individually */
-        Iterator fieldResults = fieldResult.getFieldResults().iterator();
+        Iterator<FieldResult> fieldResults = fieldResult.getFieldResults().iterator();
         while (fieldResults.hasNext()){
-            FieldResult tempFieldResult = ((FieldResult)fieldResults.next());
+            FieldResult tempFieldResult = fieldResults.next();
             DatabaseField dbfield = processValueFromRecordForMapping(currentDescriptor,tempFieldResult.getMultipleFieldIdentifiers(),1);
              if (mapping.isOneToOneMapping()){
                 dbfield = (((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(dbfield));

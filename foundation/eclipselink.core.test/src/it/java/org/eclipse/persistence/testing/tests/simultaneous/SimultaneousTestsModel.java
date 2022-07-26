@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,9 @@ package org.eclipse.persistence.testing.tests.simultaneous;
 
 import java.util.Vector;
 import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
@@ -42,12 +45,14 @@ public class SimultaneousTestsModel extends TestModel {
         setDescription("This model runs MultithreadTestCases.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
         addRequiredSystem(new EventHookSystem());
         addRequiredSystem(new UOWSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(new ConcurrencyTest());
         addTest(new AppendLockTest());
@@ -79,9 +84,9 @@ public class SimultaneousTestsModel extends TestModel {
         suite.setDescription("This suite tests the reading of all the objects of each class in the employee demo.");
 
         Vector tests = new Vector();
-        Class employeeClass = org.eclipse.persistence.testing.models.employee.domain.Employee.class;
-        Class largeProjectClass = org.eclipse.persistence.testing.models.employee.domain.LargeProject.class;
-        Class smallProjectClass = org.eclipse.persistence.testing.models.employee.domain.SmallProject.class;
+        Class<Employee> employeeClass = org.eclipse.persistence.testing.models.employee.domain.Employee.class;
+        Class<LargeProject> largeProjectClass = org.eclipse.persistence.testing.models.employee.domain.LargeProject.class;
+        Class<SmallProject> smallProjectClass = org.eclipse.persistence.testing.models.employee.domain.SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         tests.add(new ReadObjectTest(manager.getObject(employeeClass, "0001")));

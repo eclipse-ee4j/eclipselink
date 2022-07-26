@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.queries.ValueReadQuery;
 
 public class UUIDSequence extends Sequence {
 
@@ -33,11 +33,16 @@ public class UUIDSequence extends Sequence {
 
     @Override
     public Object getGeneratedValue(Accessor accessor, AbstractSession writeSession, String seqName) {
-        return UUID.randomUUID().toString().toUpperCase();
+        ValueReadQuery query = getDatasourcePlatform().getUUIDQuery();
+        if (query != null) {
+            return writeSession.executeQuery(query);
+        } else {
+            return UUID.randomUUID().toString();
+        }
     }
 
     @Override
-    public Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
+    public Vector<?> getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
         return null;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,11 +32,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBTypeElement;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.jaxb.TypeMappingInfo;
+import org.eclipse.persistence.jaxb.*;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -51,15 +47,17 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         super(name);
     }
 
-    public void setClasses(Class[] newClasses) throws Exception {
+    @Override
+    public void setClasses(Class<?>[] newClasses) throws Exception {
         classLoader = new JaxbClassLoader(Thread.currentThread()
                 .getContextClassLoader());
         JAXBContextFactory factory = new JAXBContextFactory();
-        jaxbContext = factory.createContext(newClasses, null, classLoader);
+        jaxbContext = JAXBContextFactory.createContext(newClasses, null, classLoader);
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     }
 
+    @Override
     public void setTypes(Type[] newTypes) throws Exception {
         classLoader = new JaxbClassLoader(Thread.currentThread()
                 .getContextClassLoader());
@@ -67,7 +65,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
 
          Map props = getProperties();
                 if(props != null){
-            Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            Map overrides = (Map) props.get(JAXBContextProperties.OXM_METADATA_SOURCE);
             if(overrides != null){
                 Iterator valuesIter = overrides.values().iterator();
                 while(valuesIter.hasNext()){
@@ -78,15 +76,17 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         }
 
         types = newTypes;
-        jaxbContext = factory.createContext(newTypes, props, classLoader);
+        jaxbContext = JAXBContextFactory.createContext(newTypes, props, classLoader);
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     }
 
+    @Override
     protected Object getControlObject() {
         return null;
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -127,7 +127,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
-            Object testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(xmlStreamReader, getClassForDeclaredTypeOnUnmarshal());
+            Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader, getClassForDeclaredTypeOnUnmarshal());
             instream.close();
 
             JAXBElement controlObj = (JAXBElement)getControlObject();
@@ -137,6 +137,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
     }
 
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -175,7 +176,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(instream);
-            Object obj = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(reader, getClassForDeclaredTypeOnUnmarshal());
+            Object obj = jaxbUnmarshaller.unmarshal(reader, getClassForDeclaredTypeOnUnmarshal());
 
             JAXBElement controlObj = (JAXBElement)getControlObject();
             JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
@@ -183,6 +184,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         }
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -198,7 +200,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             Node node  = parser.parse(instream);
-            Object obj = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(node, getClassForDeclaredTypeOnUnmarshal());
+            Object obj = jaxbUnmarshaller.unmarshal(node, getClassForDeclaredTypeOnUnmarshal());
 
             JAXBElement controlObj = (JAXBElement)getControlObject();
             JAXBElement newControlObj = new JAXBElement(controlObj.getName(), getClassForDeclaredTypeOnUnmarshal(), controlObj.getScope(), controlObj.getValue());
@@ -208,6 +210,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         }
     }
 
+    @Override
     public void testObjectToXMLStreamWriter() throws Exception {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
@@ -225,6 +228,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToXMLStreamWriterRecord() throws Exception {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
@@ -243,6 +247,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToXMLEventWriter() throws Exception {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
@@ -266,7 +271,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
             StringWriter writer = new StringWriter();
 
             javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             javax.xml.stream.XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -289,7 +294,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
             StringWriter writer = new StringWriter();
 
             javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
-            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, Boolean.valueOf(false));
             javax.xml.stream.XMLEventWriter eventWriter= factory.createXMLEventWriter(writer);
 
             Object objectToWrite = getWriteControlObject();
@@ -310,6 +315,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
 
 
     //Override and don't compare namespaceresolver size
+    @Override
     public void testObjectToXMLStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
@@ -325,6 +331,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         objectToXMLDocumentTest(testDocument);
     }
 
+     @Override
      public void testObjectToOutputStream() throws Exception {
             Object objectToWrite = getWriteControlObject();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -339,6 +346,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
             objectToXMLDocumentTest(testDocument);
         }
 
+        @Override
         public void testObjectToOutputStreamASCIIEncoding() throws Exception {
             Object objectToWrite = getWriteControlObject();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -357,12 +365,14 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         }
 
 
+    @Override
     public void testRoundTrip() throws Exception {
         //This test is not applicable because to Marshal we need a specialized jaxbelement
     }
 
 
     //Override and don't compare namespaceresolver size
+     @Override
      public void testObjectToContentHandler() throws Exception {
             SAXDocumentBuilder builder = new SAXDocumentBuilder();
             Object objectToWrite = getWriteControlObject();
@@ -382,6 +392,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         }
 
         //Override and don't compare namespaceresolver size
+        @Override
         public void testObjectToXMLDocument() throws Exception {
             Object objectToWrite = getWriteControlObject();
 
@@ -416,6 +427,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
         testSchemaGen(getControlSchemaFiles());
     }
 
+    @Override
     public Object getWriteControlObject(){
         JAXBElement jaxbElement = (JAXBElement)getControlObject();
 
@@ -435,7 +447,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
 
     }
 
-    private Class getClassForDeclaredTypeOnUnmarshal() throws Exception{
+    private Class<?> getClassForDeclaredTypeOnUnmarshal() throws Exception{
         Type typeToUse = getTypeToUnmarshalTo();
         if(typeToUse instanceof Class){
             return (Class)typeToUse;
@@ -453,6 +465,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
 
     protected abstract String getNoXsiTypeControlResourceName();
 
+    @Override
     public void xmlToObjectTest(Object testObject, Object controlObject) throws Exception {
             log("\n**xmlToObjectTest**");
             log("Expected:");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,6 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 
 import org.eclipse.persistence.sessions.Project;
 
-import org.eclipse.persistence.testing.models.mapping.Address;
-import org.eclipse.persistence.testing.models.mapping.Computer;
-import org.eclipse.persistence.testing.models.mapping.Employee;
-import org.eclipse.persistence.testing.models.mapping.Monitor;
-import org.eclipse.persistence.testing.models.mapping.Shipment;
 
 public class MappingProject extends Project {
     public MappingProject() {
@@ -210,9 +205,9 @@ public class MappingProject extends Project {
         objecttypemapping.setAttributeName("isMacintosh");
         objecttypemapping.setIsReadOnly(false);
         objecttypemapping.setFieldName("MAP_COM.IS_MAC");
-        objecttypeconverter.addConversionValue("No", new Boolean(false));
-        objecttypeconverter.addConversionValue("Yes", new Boolean(true));
-        objecttypemapping.setNullValue(new Boolean(false));
+        objecttypeconverter.addConversionValue("No", Boolean.FALSE);
+        objecttypeconverter.addConversionValue("Yes", Boolean.TRUE);
+        objecttypemapping.setNullValue(Boolean.FALSE);
         objecttypemapping.setConverter(objecttypeconverter);
         descriptor.addMapping(objecttypemapping);
 
@@ -483,7 +478,7 @@ public class MappingProject extends Project {
         transformationmapping1.setGetMethodName("getDesignation");
         transformationmapping1.setSetMethodName("setDesignation");
         transformationmapping1.setAttributeTransformation("getRankFromRow");
-        transformationmapping1.addFieldTransformation("MAP_EMP.RANK", "getRankFromObject");
+        transformationmapping1.addFieldTransformation("MAP_EMP.ERANK", "getRankFromObject");
         descriptor.addMapping(transformationmapping1);
 
         // SECTION: TYPECONVERSIONMAPPING
@@ -812,8 +807,8 @@ public class MappingProject extends Project {
         validMapping.setAttributeName("valid");
         validMapping.setFieldName("MAP_PERIPHERAL.VALID");
         ObjectTypeConverter validMappingConverter = new ObjectTypeConverter();
-        validMappingConverter.addConversionValue(new Character('N'), new java.lang.Boolean("false"));
-        validMappingConverter.addConversionValue(new Character('Y'), new java.lang.Boolean("true"));
+        validMappingConverter.addConversionValue('N', Boolean.valueOf("false"));
+        validMappingConverter.addConversionValue('Y', Boolean.valueOf("true"));
         validMapping.setConverter(validMappingConverter);
         descriptor.addMapping(validMapping);
 

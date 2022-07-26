@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,6 +55,9 @@ public class MetadataHelper {
     public static final String JPA_ORM_FILE = "META-INF/orm.xml";
     public static final String ECLIPSELINK_ORM_FILE = "META-INF/eclipselink-orm.xml";
 
+    private MetadataHelper() {
+    }
+
     /**
      * INTERNAL:
      * Return the canonical name. This will apply the prefix and suffix
@@ -89,11 +92,11 @@ public class MetadataHelper {
      * INTERNAL:
      * Load a class from a given class name. (XMLEntityMappings calls this one)
      */
-    public static Class getClassForName(String classname, ClassLoader loader) {
+    public static Class<?> getClassForName(String classname, ClassLoader loader) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedClassForName(classname, true, loader));
+                    return AccessController.doPrivileged(new PrivilegedClassForName<>(classname, true, loader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.unableToLoadClass(classname, exception.getException());
                 }
@@ -103,7 +106,7 @@ public class MetadataHelper {
         } catch (ClassNotFoundException exception) {
             if (classname.indexOf('$') != -1) {
                 String outer = classname.substring(0, classname.indexOf('$'));
-                Class outerClass = getClassForName(outer, loader);
+                Class<?> outerClass = getClassForName(outer, loader);
                 for (int index = 0; index < outerClass.getClasses().length; index++)
                 {
                     if (outerClass.getClasses()[index].getName().equals(classname))
@@ -120,7 +123,7 @@ public class MetadataHelper {
      * INTERNAL:
      * Create a new instance of the class given.
      */
-    static Object getClassInstance(Class cls) {
+    static Object getClassInstance(Class<?> cls) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {

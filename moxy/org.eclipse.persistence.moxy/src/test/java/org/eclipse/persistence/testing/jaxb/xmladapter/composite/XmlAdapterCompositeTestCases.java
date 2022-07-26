@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,11 +32,12 @@ public class XmlAdapterCompositeTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = MyMap.class;
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
         MyMap myMap = new MyMap();
         myMap.hashMap = new java.util.LinkedHashMap();
@@ -45,6 +46,7 @@ public class XmlAdapterCompositeTestCases extends JAXBWithJSONTestCases {
         return myMap;
     }
 
+    @Override
     protected Map getProperties(){
         Map props = new HashMap();
         props.put(JAXBContextProperties.JSON_VALUE_WRAPPER, "val");

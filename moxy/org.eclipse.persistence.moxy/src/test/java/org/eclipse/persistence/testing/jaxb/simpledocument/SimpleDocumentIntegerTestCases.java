@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,17 +35,19 @@ public class SimpleDocumentIntegerTestCases extends JAXBWithJSONTestCases {
             super(name);
             setControlDocument(XML_RESOURCE);
             setControlJSON(JSON_RESOURCE);
-            Class[] classes = new Class[1];
+            Class<?>[] classes = new Class<?>[1];
             classes[0] = IntegerObjectFactory.class;
             setClasses(classes);
         }
 
+        @Override
         protected Object getControlObject() {
-            JAXBElement value = new IntegerObjectFactory().createIntegerRoot();
-            value.setValue(new Integer(27));
+            JAXBElement<Integer> value = new IntegerObjectFactory().createIntegerRoot();
+            value.setValue(27);
             return value;
         }
 
+        @Override
         public Map getProperties(){
             Map props = new HashMap();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,11 +34,12 @@ public class XmlValueWithAttributesXpathTestCases extends JAXBWithJSONTestCases 
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = PhoneNumberWithAtts.class;
         setClasses(classes);
     }
 
+    @Override
     public Map getProperties(){
         Map props = new HashMap();
         props.put(JAXBContextProperties.JSON_VALUE_WRAPPER, "value");
@@ -48,6 +49,7 @@ public class XmlValueWithAttributesXpathTestCases extends JAXBWithJSONTestCases 
         return props;
     }
 
+    @Override
     protected Object getControlObject() {
         PhoneNumberWithAtts pn = new PhoneNumberWithAtts();
         pn.number = CONTROL_NUMBER;

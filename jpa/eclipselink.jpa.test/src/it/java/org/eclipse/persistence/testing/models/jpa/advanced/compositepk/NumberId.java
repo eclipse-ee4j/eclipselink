@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class NumberId implements Serializable {
     private Long value;
 
     public NumberId() {
-        this(Long.valueOf(0L));
+        this(0L);
     }
 
     public NumberId(Long value) {
@@ -56,7 +56,7 @@ public class NumberId implements Serializable {
     }
 
     public final int hashCode() {
-        return Objects.hash(new Object[] { this.value });
+        return Objects.hash(this.value);
     }
 
     public final String toString() {

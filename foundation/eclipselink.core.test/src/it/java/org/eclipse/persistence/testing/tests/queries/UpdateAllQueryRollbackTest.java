@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,16 +36,19 @@ public class UpdateAllQueryRollbackTest extends TestCase {
     public UpdateAllQueryRollbackTest() {
     }
 
+    @Override
     public void reset() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         m_session = getSession();
         m_exceptionCaught = false;
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         m_uow = m_session.acquireUnitOfWork();
 
@@ -55,7 +58,7 @@ public class UpdateAllQueryRollbackTest extends TestCase {
         m_uow.executeQuery(uaq1);
 
         UpdateAllQuery uaq2 = new UpdateAllQuery(Employee.class);
-        uaq2.addUpdate(eb.getField("BAD"), new Integer(10000));
+        uaq2.addUpdate(eb.getField("BAD"), 10000);
         m_uow.executeQuery(uaq2);
 
         try {
@@ -65,6 +68,7 @@ public class UpdateAllQueryRollbackTest extends TestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (m_exceptionCaught) {
             Vector emps = m_session.readAllObjects(Employee.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public class CoalesceNode extends Node implements AliasableNode {
 
-    private List clauses = null;
+    private List<Node> clauses = null;
 
     public CoalesceNode(){
         super();
@@ -58,23 +58,22 @@ public class CoalesceNode extends Node implements AliasableNode {
      */
     @Override
     public Expression generateExpression(GenerationContext context) {
-        List expressions = new ArrayList();
-        Iterator i = clauses.iterator();
+        List<Expression> expressions = new ArrayList<>();
+        Iterator<Node> i = clauses.iterator();
         while (i.hasNext()){
-            expressions.add(((Node)i.next()).generateExpression(context));
+            expressions.add(i.next().generateExpression(context));
         }
 
-        Expression whereClause = context.getBaseExpression().coalesce(expressions);
-        return whereClause;
+        return context.getBaseExpression().coalesce(expressions);
     }
 
     @Override
     public void validate(ParseTreeContext context) {
         TypeHelper typeHelper = context.getTypeHelper();
-        Iterator i = clauses.iterator();
+        Iterator<Node> i = clauses.iterator();
         Object type = null;
         while (i.hasNext()){
-            Node node = ((Node)i.next());
+            Node node = i.next();
             node.validate(context);
             if (type == null){
                 type = node.getType();
@@ -82,14 +81,14 @@ public class CoalesceNode extends Node implements AliasableNode {
                 type = typeHelper.getObjectType();
             }
         }
-        setType(((Node)clauses.get(0)).getType());
+        setType(clauses.get(0).getType());
     }
 
-    public List getClauses() {
+    public List<Node> getClauses() {
         return clauses;
     }
 
-    public void setClauses(List clauses) {
+    public void setClauses(List<Node> clauses) {
         this.clauses = clauses;
     }
 
@@ -104,9 +103,9 @@ public class CoalesceNode extends Node implements AliasableNode {
         buffer.append("COALESCE");
         buffer.append("(");
 
-        Iterator i = clauses.iterator();
+        Iterator<Node> i = clauses.iterator();
         while (i.hasNext()) {
-            Node n = (Node) i.next();
+            Node n = i.next();
             buffer.append(n.toString(indent));
             buffer.append("\r\n");
         }

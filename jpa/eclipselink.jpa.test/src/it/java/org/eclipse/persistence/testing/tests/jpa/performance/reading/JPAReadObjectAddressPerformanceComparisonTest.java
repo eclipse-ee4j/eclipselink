@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class JPAReadObjectAddressPerformanceComparisonTest extends PerformanceRe
     /**
      * Get an address id.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         addressId = ((Address)manager.createQuery("Select a from Address a").getResultList().get(0)).getId();
@@ -44,13 +45,14 @@ public class JPAReadObjectAddressPerformanceComparisonTest extends PerformanceRe
     /**
      * Read address.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
         Query query = manager.createQuery("Select a from Address a where a.id = :id");
         query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
         query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheByExactPrimaryKey);
-        query.setParameter("id", new Long(this.addressId));
+        query.setParameter("id", this.addressId);
         Address address = (Address)query.getSingleResult();
         address.toString();
         manager.getTransaction().commit();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,17 +104,11 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         this.extension = extension;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected LiteralVisitor buildLiteralVisitor() {
         return new EclipseLinkLiteralVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected OwningClauseVisitor buildOwningClauseVisitor() {
         return new EclipseLinkOwningClauseVisitor();
@@ -128,9 +122,6 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         return new TableExpressionVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected TopLevelFirstDeclarationVisitor buildTopLevelFirstDeclarationVisitor() {
         return new TopLevelFirstDeclarationVisitor(this);
@@ -186,9 +177,6 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected PathType selectClausePathExpressionPathType() {
         return PathType.ANY_FIELD_INCLUDING_COLLECTION;
@@ -212,9 +200,6 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateFunctionExpression(FunctionExpression expression) {
         super.validateFunctionExpression(expression);
@@ -269,9 +254,6 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateInExpression(InExpression expression) {
         super.validateInExpression(expression);
@@ -292,9 +274,6 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void validateRangeVariableDeclarationRootObject(RangeVariableDeclaration expression) {
 
@@ -317,34 +296,22 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected PathType validPathExpressionTypeForCountFunction() {
         return PathType.ANY_FIELD_INCLUDING_COLLECTION;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected PathType validPathExpressionTypeForInExpression() {
         // Loosen up the JPA spec restriction because ANTLR parser used to allow it
         return PathType.ANY_FIELD_INCLUDING_COLLECTION;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected PathType validPathExpressionTypeForInItem() {
         return PathType.ANY_FIELD_INCLUDING_COLLECTION;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Boolean validateThirdPartyStateFieldPathExpression(StateFieldPathExpression expression) {
 
@@ -412,99 +379,66 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         return valid;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected PathType validPathExpressionTypeForStringExpression() {
         // Loosen up the JPA spec restriction because ANTLR parser used to allow it
         return PathType.ANY_FIELD_INCLUDING_COLLECTION;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(AsOfClause expression) {
         super.visit(expression);
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(CastExpression expression) {
         super.visit(expression);
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ConnectByClause expression) {
         super.visit(expression);
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(DatabaseType expression) {
         super.visit(expression);
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(ExtractExpression expression) {
         super.visit(expression);
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(HierarchicalQueryClause expression) {
         super.visit(expression);
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(OrderSiblingsByClause expression) {
         super.visit(expression);
         // TODO
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(RegexpExpression expression) {
         super.visit(expression);
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(StartWithClause expression) {
         super.visit(expression);
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TableExpression expression) {
         super.visit(expression);
@@ -524,18 +458,12 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(TableVariableDeclaration expression) {
         super.visit(expression);
         // Nothing to validate semantically
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(UnionClause expression) {
         super.visit(expression);
@@ -557,9 +485,6 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
             super();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void dispose() {
             super.dispose();
@@ -577,48 +502,36 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         public int count;
 
         /**
-         * {@inheritDoc}
+         * Default constructor.
          */
+        protected SubquerySelectItemCalculator() {
+        }
+
         @Override
         public void visit(BadExpression expression) {
             count = 0;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             count = expression.childrenSize();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void visit(Expression expression) {
             count = 1;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(NullExpression expression) {
             count = 0;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectClause expression) {
             expression.getSelectExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SimpleSelectStatement expression) {
             expression.getSelectClause().accept(this);
@@ -639,8 +552,11 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
         protected boolean valid;
 
         /**
-         * {@inheritDoc}
+         * Default constructor.
          */
+        protected TableExpressionVisitor() {
+        }
+
         @Override
         public void visit(TableExpression expression) {
             valid = (this.expression == expression);
@@ -656,9 +572,6 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
             this.validator = validator;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpression expression) {
 

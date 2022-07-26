@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sdo.helper;
 
+import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
@@ -221,7 +223,7 @@ public class SDOClassGenerator {
 
     public Map generate(Source xsdSource, CodeWriter aCodeWriter, SchemaResolver schemaResolver, boolean bProcessImports) {
         SDOTypesGenerator gen = new SDOTypesGenerator(aHelperContext);
-        java.util.List types = gen.define(xsdSource, schemaResolver, true, bProcessImports);
+        List<Type> types = gen.define(xsdSource, schemaResolver, true, bProcessImports);
         return generate(aCodeWriter, types);
     }
 
@@ -464,12 +466,6 @@ public class SDOClassGenerator {
 
     /**
      * INTERNAL:
-     * @param uri
-     * @param ownerName
-     * @param name
-     * @param javaType (always represents the processed javaClass name)
-     * @param many
-     * @param annotation
      */
     private void buildGetterAndSetter(ClassBuffer classBuffer, SDOProperty property) {
         pushIndent();
@@ -485,10 +481,6 @@ public class SDOClassGenerator {
     /**
      * INTERNAL:
      * @param classBuffer
-     * @param name
-     * @param javaType (always represents the processed javaClass name)
-     * @param annotation
-     * @param className
      */
     private void buildGetMethodBuffer(ClassBuffer classBuffer, SDOProperty property, java.util.List documentation) {
         String returnType = SDOUtil.getJavaTypeForProperty(property);
@@ -539,10 +531,6 @@ public class SDOClassGenerator {
     /**
      * INTERNAL:
      * @param classBuffer
-     * @param name
-     * @param javaType (always represents the processed javaClass name)
-     * @param annotation
-     * @param className
      */
     private void buildSetMethodBuffer(ClassBuffer classBuffer, SDOProperty property, java.util.List documentation) {
         if (property.getType().isChangeSummaryType()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,20 +24,22 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date June 17, 2005
  */
 public class MultipleTableSystem extends TestSystem {
     public MultipleTableSystem() {
         project = new MultipleTableProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         new MultipleTableTableCreator().replaceTables(session);
     }
+    @Override
     public void populate(DatabaseSession session) {
         PopulationManager manager = PopulationManager.getDefaultManager();
         UnitOfWork uow = session.acquireUnitOfWork();

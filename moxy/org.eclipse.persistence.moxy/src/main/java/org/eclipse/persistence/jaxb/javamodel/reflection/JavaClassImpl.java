@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,8 @@ import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -58,20 +60,20 @@ import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 public class JavaClassImpl implements JavaClass {
 
     protected ParameterizedType jType;
-    protected Class jClass;
+    protected Class<?> jClass;
     protected JavaModelImpl javaModelImpl;
     protected boolean isMetadataComplete;
     protected JavaClass superClassOverride;
 
     protected static final String XML_REGISTRY_CLASS_NAME = "jakarta.xml.bind.annotation.XmlRegistry";
 
-    public JavaClassImpl(Class javaClass, JavaModelImpl javaModelImpl) {
+    public JavaClassImpl(Class<?> javaClass, JavaModelImpl javaModelImpl) {
         this.jClass = javaClass;
         this.javaModelImpl = javaModelImpl;
         isMetadataComplete = false;
     }
 
-    public JavaClassImpl(ParameterizedType javaType, Class javaClass, JavaModelImpl javaModelImpl) {
+    public JavaClassImpl(ParameterizedType javaType, Class<?> javaClass, JavaModelImpl javaModelImpl) {
         this.jType = javaType;
         this.jClass = javaClass;
         this.javaModelImpl = javaModelImpl;
@@ -82,8 +84,8 @@ public class JavaClassImpl implements JavaClass {
         this.javaModelImpl = javaModel;
     }
     @Override
-    public Collection getActualTypeArguments() {
-        ArrayList<JavaClass> argCollection = new ArrayList<JavaClass>();
+    public Collection<JavaClass> getActualTypeArguments() {
+        ArrayList<JavaClass> argCollection = new ArrayList<>();
         if (jType != null) {
             Type[] params = jType.getActualTypeArguments();
             for (Type type : params) {
@@ -101,7 +103,7 @@ public class JavaClassImpl implements JavaClass {
                 } else if (type instanceof Class) {
                     argCollection.add(javaModelImpl.getClass((Class) type));
                 } else if(type instanceof GenericArrayType) {
-                    Class genericTypeClass = (Class)((GenericArrayType)type).getGenericComponentType();
+                    Class<?> genericTypeClass = (Class)((GenericArrayType)type).getGenericComponentType();
                     genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
                     argCollection.add(javaModelImpl.getClass(genericTypeClass));
                 } else if(type instanceof TypeVariable) {
@@ -130,7 +132,7 @@ public class JavaClassImpl implements JavaClass {
     public JavaAnnotation getAnnotation(JavaClass arg0) {
         // the only annotation we will return if isMetadataComplete == true is XmlRegistry
         if (arg0 != null && (!isMetadataComplete || arg0.getQualifiedName().equals(XML_REGISTRY_CLASS_NAME))) {
-            Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
+            Class<?> annotationClass = ((JavaClassImpl) arg0).getJavaClass();
             if (javaModelImpl.getAnnotationHelper().isAnnotationPresent(getAnnotatedElement(), annotationClass)) {
                 return new JavaAnnotationImpl(this.javaModelImpl.getAnnotationHelper().getAnnotation(getAnnotatedElement(), annotationClass));
             }
@@ -140,7 +142,7 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public Collection<JavaAnnotation> getAnnotations() {
-        List<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
+        List<JavaAnnotation> annotationCollection = new ArrayList<>();
         if (!isMetadataComplete) {
             Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {
@@ -152,9 +154,9 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public Collection<JavaClass> getDeclaredClasses() {
-        List<JavaClass> classCollection = new ArrayList<JavaClass>();
-        Class[] classes = jClass.getDeclaredClasses();
-        for (Class javaClass : classes) {
+        List<JavaClass> classCollection = new ArrayList<>();
+        Class<?>[] classes = jClass.getDeclaredClasses();
+        for (Class<?> javaClass : classes) {
             classCollection.add(javaModelImpl.getClass(javaClass));
         }
         return classCollection;
@@ -171,11 +173,14 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public Collection<JavaField> getDeclaredFields() {
-        List<JavaField> fieldCollection = new ArrayList<JavaField>();
+        List<JavaField> fieldCollection = new ArrayList<>();
         Field[] fields = PrivilegedAccessHelper.getDeclaredFields(jClass);
 
         for (Field field : fields) {
-            field.setAccessible(true);
+            if (!field.trySetAccessible()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "field", field.getName(), jClass.getName());
+            }
             fieldCollection.add(getJavaField(field));
         }
         return fieldCollection;
@@ -189,7 +194,7 @@ public class JavaClassImpl implements JavaClass {
         if (arg1 == null) {
             arg1 = new JavaClass[0];
         }
-        Class[] params = new Class[arg1.length];
+        Class<?>[] params = new Class<?>[arg1.length];
         for (int i=0; i<arg1.length; i++) {
             JavaClass jType = arg1[i];
             if (jType != null) {
@@ -204,8 +209,8 @@ public class JavaClassImpl implements JavaClass {
     }
 
     @Override
-    public Collection getDeclaredMethods() {
-        ArrayList<JavaMethod> methodCollection = new ArrayList<JavaMethod>();
+    public Collection<JavaMethod> getDeclaredMethods() {
+        ArrayList<JavaMethod> methodCollection = new ArrayList<>();
         Method[] methods = jClass.getDeclaredMethods();
         for (Method method : methods) {
             methodCollection.add(getJavaMethod(method));
@@ -218,7 +223,7 @@ public class JavaClassImpl implements JavaClass {
         if (paramTypes == null) {
             paramTypes = new JavaClass[0];
         }
-        Class[] params = new Class[paramTypes.length];
+        Class<?>[] params = new Class<?>[paramTypes.length];
         for (int i=0; i<paramTypes.length; i++) {
             JavaClass jType = paramTypes[i];
             if (jType != null) {
@@ -238,7 +243,7 @@ public class JavaClassImpl implements JavaClass {
         if (paramTypes == null) {
             paramTypes = new JavaClass[0];
         }
-        Class[] params = new Class[paramTypes.length];
+        Class<?>[] params = new Class<?>[paramTypes.length];
         for (int i=0; i<paramTypes.length; i++) {
             JavaClass jType = paramTypes[i];
             if (jType != null) {
@@ -253,7 +258,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     @Override
-    public Collection getConstructors() {
+    public Collection<JavaConstructor> getConstructors() {
         Constructor[] constructors = this.jClass.getConstructors();
         ArrayList<JavaConstructor> constructorCollection = new ArrayList(constructors.length);
         for(Constructor next:constructors) {
@@ -263,7 +268,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     @Override
-    public Collection getDeclaredConstructors() {
+    public Collection<JavaConstructor> getDeclaredConstructors() {
         Constructor[] constructors = this.jClass.getDeclaredConstructors();
         ArrayList<JavaConstructor> constructorCollection = new ArrayList(constructors.length);
         for(Constructor next:constructors) {
@@ -282,7 +287,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public Collection getFields() {
-        ArrayList<JavaField> fieldCollection = new ArrayList<JavaField>();
+        ArrayList<JavaField> fieldCollection = new ArrayList<>();
         Field[] fields = PrivilegedAccessHelper.getFields(jClass);
         for (Field field : fields) {
             fieldCollection.add(getJavaField(field));
@@ -290,7 +295,7 @@ public class JavaClassImpl implements JavaClass {
         return fieldCollection;
     }
 
-    public Class getJavaClass() {
+    public Class<?> getJavaClass() {
         return jClass;
     }
 
@@ -302,7 +307,7 @@ public class JavaClassImpl implements JavaClass {
         if (arg1 == null) {
             arg1 = new JavaClass[0];
         }
-        Class[] params = new Class[arg1.length];
+        Class<?>[] params = new Class<?>[arg1.length];
         for (int i=0; i<arg1.length; i++) {
             JavaClass jType = arg1[i];
             if (jType != null) {
@@ -318,8 +323,8 @@ public class JavaClassImpl implements JavaClass {
     }
 
     @Override
-    public Collection getMethods() {
-        ArrayList<JavaMethod> methodCollection = new ArrayList<JavaMethod>();
+    public Collection<JavaMethod> getMethods() {
+        ArrayList<JavaMethod> methodCollection = new ArrayList<>();
         Method[] methods = PrivilegedAccessHelper.getMethods(jClass);
         for (Method method : methods) {
             methodCollection.add(getJavaMethod(method));
@@ -342,8 +347,8 @@ public class JavaClassImpl implements JavaClass {
         if(jClass.getPackage() != null){
             return jClass.getPackage().getName();
         }else{
-            Class nonInnerClass = jClass;
-            Class enclosingClass = jClass.getEnclosingClass();
+            Class<?> nonInnerClass = jClass;
+            Class<?> enclosingClass = jClass.getEnclosingClass();
             while(enclosingClass != null){
                 nonInnerClass = enclosingClass;
                 enclosingClass = nonInnerClass.getEnclosingClass();
@@ -375,13 +380,13 @@ public class JavaClassImpl implements JavaClass {
             return this.superClassOverride;
         }
         if(jClass.isInterface()) {
-            Class[] superInterfaces = jClass.getInterfaces();
+            Class<?>[] superInterfaces = jClass.getInterfaces();
             if(superInterfaces != null) {
                 if(superInterfaces.length == 1) {
                     return javaModelImpl.getClass(superInterfaces[0]);
                 } else {
-                    Class parent = null;
-                    for(Class next:superInterfaces) {
+                    Class<?> parent = null;
+                    for(Class<?> next:superInterfaces) {
                         if(!(next.getName().startsWith("java.")
                                 || next.getName().startsWith("javax.")
                                 || next.getName().startsWith("jakarta."))) {
@@ -453,13 +458,13 @@ public class JavaClassImpl implements JavaClass {
 
     private boolean customIsAssignableFrom(JavaClass arg0) {
         JavaClassImpl jClass = (JavaClassImpl)arg0;
-        Class cls = jClass.getJavaClass();
+        Class<?> cls = jClass.getJavaClass();
 
         if(cls == this.jClass) {
             return true;
         }
-        Class[] interfaces = cls.getInterfaces();
-        for(Class nextInterface:interfaces) {
+        Class<?>[] interfaces = cls.getInterfaces();
+        for(Class<?> nextInterface:interfaces) {
             if(nextInterface == this.jClass) {
                 return true;
             }
@@ -579,7 +584,6 @@ public class JavaClassImpl implements JavaClass {
      * Set the indicator for XML metadata complete - if true,
      * annotations will be ignored.
      *
-     * @param isMetadataComplete
      */
     void setIsMetadataComplete(Boolean isMetadataComplete) {
        if(isMetadataComplete != null){
@@ -591,7 +595,7 @@ public class JavaClassImpl implements JavaClass {
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
         // the only annotation we will return if isMetadataComplete == true is XmlRegistry
         if (arg0 != null && (!isMetadataComplete || arg0.getQualifiedName().equals(XML_REGISTRY_CLASS_NAME))) {
-            Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
+            Class<?> annotationClass = ((JavaClassImpl) arg0).getJavaClass();
             Annotation[] annotations = javaModelImpl.getAnnotationHelper().getDeclaredAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType().equals(annotationClass)) {
@@ -604,7 +608,7 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public Collection getDeclaredAnnotations() {
-        List<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
+        List<JavaAnnotation> annotationCollection = new ArrayList<>();
         if (!isMetadataComplete) {
             Annotation[] annotations = javaModelImpl.getAnnotationHelper().getDeclaredAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {

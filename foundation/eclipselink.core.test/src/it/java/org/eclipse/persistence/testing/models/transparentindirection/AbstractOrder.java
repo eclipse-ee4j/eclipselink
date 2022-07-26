@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.tests.transparentindirection.TestHashtabl
 
 /**
  * Simple order object. Just a test fixture.
- * @author: Big Country
+ * @author Big Country
  */
 public abstract class AbstractOrder implements Serializable {
     public int id;
@@ -150,16 +150,16 @@ public abstract class AbstractOrder implements Serializable {
     }
 
     public int getTotal() {
-        return ((Integer)total.getValue()).intValue();
+        return (Integer) total.getValue();
     }
 
-    public int getTotalFromRow(org.eclipse.persistence.sessions.Record row, Session session) {
+    public int getTotalFromRow(DataRecord row, Session session) {
         int tens = ((Number)row.get("TOTT")).intValue();
         int ones = ((Number)row.get("TOTO")).intValue();
         return (tens * 10) + ones;
     }
 
-    public int getTotalFromRow2(org.eclipse.persistence.sessions.Record row, Session session) {
+    public int getTotalFromRow2(DataRecord row, Session session) {
         int tens = ((Number)row.get("TOTT2")).intValue();
         int ones = ((Number)row.get("TOTO2")).intValue();
         return (tens * 10) + ones;
@@ -187,7 +187,7 @@ public abstract class AbstractOrder implements Serializable {
     protected void initialize() {
         this.contacts2 = new Stack();
         this.salesReps2 = new TestHashtable();
-        this.total = new ValueHolder(new Integer(1));
+        this.total = new ValueHolder(1);
         this.total2 = 0;
     }
 
@@ -214,7 +214,7 @@ public abstract class AbstractOrder implements Serializable {
     }
 
     public void setTotal(int total) {
-        this.total.setValue(new Integer(total));
+        this.total.setValue(total);
     }
 
     public String toString() {

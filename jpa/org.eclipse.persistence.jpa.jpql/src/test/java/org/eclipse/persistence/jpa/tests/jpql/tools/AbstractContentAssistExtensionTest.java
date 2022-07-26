@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ package org.eclipse.persistence.jpa.tests.jpql.tools;
 import java.util.ArrayList;
 import java.util.List;
 import jpql.query.EnumType;
+import org.eclipse.persistence.jpa.jpql.tools.ContentAssistExtension;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals;
 import org.eclipse.persistence.jpa.jpql.tools.ResultQuery;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
@@ -27,8 +28,8 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.junit.Assert.*;
 
 /**
- * The unit-tests for {@link ContentAssistExtension}, which is used by {@link
- * org.eclipse.persistence.jpa.jpql.AbstractJPQLQueryHelper#buildContentAssistProposals(int, org.eclipse.persistence.jpa.jpql.ContentAssistExtension)
+ * The unit-tests for {@link org.eclipse.persistence.jpa.jpql.tools.ContentAssistExtension}, which is used by
+ * {@link org.eclipse.persistence.jpa.jpql.tools.AbstractJPQLQueryHelper#buildContentAssistProposals(int, ContentAssistExtension)}
  * AbstractJPQLQueryHelper.buildContentAssistProposals(int, ContentAssistExtension)}.
  *
  * @version 2.5
@@ -39,7 +40,7 @@ import static org.junit.Assert.*;
 public abstract class AbstractContentAssistExtensionTest extends ContentAssistTest {
 
     @Test
-    public final void test_buildQuery_07() throws Exception {
+    public final void test_buildQuery_07() {
 
         String jpqlQuery = "SELECT e, NEW java.lang.String FROM Employee e";
         int position = "SELECT e, NEW ".length();
@@ -56,7 +57,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_buildQuery_08() throws Exception {
+    public final void test_buildQuery_08() {
 
         String jpqlQuery = "SELECT e, NEW java.lang FROM Employee e";
         int position = "SELECT e, NEW ".length();
@@ -73,7 +74,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_classNames_01() throws Exception {
+    public final void test_classNames_01() {
 
         String jpqlQuery = "SELECT e, NEW  FROM Employee e";
         int position = "SELECT e, NEW ".length();
@@ -81,7 +82,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_classNames_02() throws Exception {
+    public final void test_classNames_02() {
 
         String jpqlQuery = "SELECT e, NEW  FROM Employee e";
         int position = "SELECT e,".length();
@@ -89,7 +90,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_classNames_03() throws Exception {
+    public final void test_classNames_03() {
 
         String jpqlQuery = "SELECT e, NEW  FROM Employee e";
         int position = "SELECT e, ".length();
@@ -97,7 +98,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_classNames_04() throws Exception {
+    public final void test_classNames_04() {
 
         String jpqlQuery = "SELECT e, NEW java.lang. FROM Employee e";
         int position = "SELECT e, NEW java.lang.".length();
@@ -105,7 +106,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_classNames_05() throws Exception {
+    public final void test_classNames_05() {
 
         String jpqlQuery = "SELECT e, NEW java.lang.String FROM Employee e";
         int position = "SELECT e, NEW java.lang.String".length();
@@ -113,7 +114,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_classNames_06() throws Exception {
+    public final void test_classNames_06() {
 
         String jpqlQuery = "SELECT e, NEW java.lang.String FROM Employee e";
         int position = "SELECT e, NEW".length();
@@ -121,7 +122,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_classNames_07() throws Exception {
+    public final void test_classNames_07() {
 
         String jpqlQuery = "SELECT e, NEW java.lang.String FROM Employee e";
         int position = "SELECT e, NEW ".length();
@@ -129,7 +130,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_classNames_08() throws Exception {
+    public final void test_classNames_08() {
 
         String jpqlQuery = "SELECT e, NEW java.lang FROM Employee e";
         int position = "SELECT e, NEW java.lang".length();
@@ -137,7 +138,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_classNames_09() throws Exception {
+    public final void test_classNames_09() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.FIRST_NAME";
         int position = "SELECT e FROM Employee e WHERE e.status = jpql.query.".length();
@@ -145,7 +146,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_classNames_10() throws Exception {
+    public final void test_classNames_10() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.FIRST_NAME";
         int position = "SELECT e FROM Employee e WHERE e.status = jpql.query.E".length();
@@ -153,7 +154,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_enumConstants_01() throws Exception {
+    public final void test_enumConstants_01() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.";
         int position = jpqlQuery.length();
@@ -161,7 +162,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_enumConstants_02() throws Exception {
+    public final void test_enumConstants_02() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.F";
         int position = jpqlQuery.length();
@@ -169,7 +170,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_enumConstants_03() throws Exception {
+    public final void test_enumConstants_03() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.FIRST_NAME";
         int position = jpqlQuery.length();
@@ -177,7 +178,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_enumConstants_04() throws Exception {
+    public final void test_enumConstants_04() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.FIRST_NAME";
         int position = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.".length();
@@ -185,7 +186,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_enumConstants_05() throws Exception {
+    public final void test_enumConstants_05() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.F";
         int position = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.".length();
@@ -193,12 +194,12 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_enumConstants_06() throws Exception {
+    public final void test_enumConstants_06() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE CASE e.status WHEN ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
 
@@ -212,19 +213,19 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
         int position = jpqlQuery.length();
 
         IType type = getPersistenceUnit().getTypeRepository().getType(EnumType.class.getName());
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         CollectionTools.addAll(proposals, type.getEnumConstants());
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
 
     @Test
-    public final void test_enumConstants_08() throws Exception {
+    public final void test_enumConstants_08() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE CASE e.status WHEN jpql.query.EnumType.FIRST_NAME THEN ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
@@ -232,12 +233,12 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
     }
 
     @Test
-    public final void test_enumConstants_09() throws Exception {
+    public final void test_enumConstants_09() {
 
         String jpqlQuery = "SELECT e FROM Employee e WHERE CASE e.status WHEN jpql.query.EnumType.FIRST_NAME THEN 'JPQL' ELSE ";
         int position = jpqlQuery.length();
 
-        List<String> proposals = new ArrayList<String>();
+        List<String> proposals = new ArrayList<>();
         proposals.add("e");
         CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 

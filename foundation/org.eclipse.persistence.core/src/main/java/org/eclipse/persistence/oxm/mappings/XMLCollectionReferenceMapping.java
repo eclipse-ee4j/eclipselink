@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,8 +84,8 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * and sourceToTargetKeys data structures.
      */
     public XMLCollectionReferenceMapping() {
-        sourceToTargetKeyFieldAssociations = new HashMap();
-        sourceToTargetKeys = new NonSynchronizedVector();
+        sourceToTargetKeyFieldAssociations = new HashMap<>();
+        sourceToTargetKeys = new NonSynchronizedVector<>();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.usesSingleNode = false;
     }
@@ -123,8 +123,6 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * source xpath (in the source-target key field association list).
      *
      * @param targetObject - the reference class instance that holds the required pk value
-     * @param xmlFld
-     * @param session
      * @return null if the target object is null, the reference class is null, or
      * a primary key field name does not exist on the reference descriptor that
      * matches the target field name - otherwise, return the associated primary
@@ -223,7 +221,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                 pks = new CacheId(new Object[0]);
                 primaryKeyMap.put(tgtXPath, pks);
             }
-            Class type = descriptor.getTypedField(tgtFld).getType();
+            Class<?> type = descriptor.getTypedField(tgtFld).getType();
             XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
             if(usesSingleNode) {
                 for (StringTokenizer stok = new StringTokenizer((String) object); stok.hasMoreTokens();) {
@@ -276,7 +274,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null) {
             if (cp.getContainerClass() == null) {
-                Class cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
+                Class<Object> cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
                 cp.setContainerClass(cls);
             }
         }
@@ -363,7 +361,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
     @Override
-    public void useCollectionClass(Class concreteContainerClass) {
+    public void useCollectionClass(Class<?> concreteContainerClass) {
         this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
     }
 
@@ -389,7 +387,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * <p>The referenceClass must be set before calling this method.
      */
     @Override
-    public void useMapClass(Class concreteContainerClass, String methodName) {
+    public void useMapClass(Class<?> concreteContainerClass, String methodName) {
         // the reference class has to be specified before coming here
         if (this.getReferenceClass() == null) {
             throw DescriptorException.referenceClassNotSpecified(this);

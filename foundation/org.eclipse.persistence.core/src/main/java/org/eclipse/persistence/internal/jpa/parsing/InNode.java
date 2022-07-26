@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import org.eclipse.persistence.exceptions.JPQLException;
  */
 public class InNode extends SimpleConditionalExpressionNode {
 
-    private List theObjects = null;
+    private List<Node> theObjects = null;
 
     //Was NOT indicated? "WHERE emp.lastName NOT IN (...)
     private boolean notIndicated = false;
@@ -68,14 +68,14 @@ public class InNode extends SimpleConditionalExpressionNode {
         if (left != null) {
             left.validate(context);
             // check to see if the argument is a parameter
-            if (isListParameterOrSubquery && !getTheObjects().isEmpty() && ((Node)getTheObjects().get(0)).isParameterNode()){
+            if (isListParameterOrSubquery && !getTheObjects().isEmpty() && getTheObjects().get(0).isParameterNode()){
                 leftType = Collection.class;
             } else {
                 leftType = left.getType();
             }
         }
-        for (Iterator i = getTheObjects().iterator(); i.hasNext();) {
-            Node node = (Node)i.next();
+        for (Iterator<Node> i = getTheObjects().iterator(); i.hasNext();) {
+            Node node = i.next();
             node.validate(context);
             node.validateParameter(context, leftType);
             Object nodeType = node.getType();
@@ -95,8 +95,8 @@ public class InNode extends SimpleConditionalExpressionNode {
     @Override
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = getLeft().generateExpression(context);
-        List arguments = getTheObjects();
-        Node firstArg = (Node)arguments.get(0);
+        List<Node> arguments = getTheObjects();
+        Node firstArg = arguments.get(0);
         if (firstArg.isSubqueryNode()) {
             SubqueryNode subqueryNode = (SubqueryNode)firstArg;
             ReportQuery reportQuery = subqueryNode.getReportQuery(context);
@@ -113,9 +113,9 @@ public class InNode extends SimpleConditionalExpressionNode {
                 whereClause = whereClause.in(firstArg.generateExpression(context));
             }
         } else {
-            Vector inArguments = new Vector(arguments.size());
-            for (Iterator iter = arguments.iterator(); iter.hasNext();) {
-                Node nextNode = (Node)iter.next();
+            Vector<Expression> inArguments = new Vector<>(arguments.size());
+            for (Iterator<Node> iter = arguments.iterator(); iter.hasNext();) {
+                Node nextNode = iter.next();
                 inArguments.add(nextNode.generateExpression(context));
             }
             if (inArguments.size() > 0) {
@@ -133,9 +133,9 @@ public class InNode extends SimpleConditionalExpressionNode {
      * INTERNAL
      * Return the collection of the objects used as parameters for this node
      */
-    public List getTheObjects() {
+    public List<Node> getTheObjects() {
         if (theObjects == null) {
-            setTheObjects(new Vector());
+            setTheObjects(new Vector<>());
         }
         return theObjects;
     }
@@ -144,7 +144,6 @@ public class InNode extends SimpleConditionalExpressionNode {
      * INTERNAL:
      * This method is called to indicate that the inNode has a single argument.  This will be either a
      * subquery or a single parameter that contains the list of items to test
-     * @param isListParameterOrSubquery
      */
     public void setIsListParameterOrSubquery(boolean isListParameterOrSubquery){
         this.isListParameterOrSubquery = isListParameterOrSubquery;
@@ -154,7 +153,7 @@ public class InNode extends SimpleConditionalExpressionNode {
      * INTERNAL
      * Set this node's object collection to the passed value
      */
-    public void setTheObjects(List newTheObjects) {
+    public void setTheObjects(List<Node> newTheObjects) {
         theObjects = newTheObjects;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,7 +89,7 @@ public abstract class DescriptorIterator {
      *    skip aggregate objects
      *    skip primitives (Strings, Dates, Integers, etc.)
      */
-    public DescriptorIterator() {
+    protected DescriptorIterator() {
         // 2612538 - the default size of Map (32) is appropriate
         this.visitedObjects = new IdentityHashMap();
         this.visitedStack = new Stack();
@@ -685,6 +685,12 @@ public abstract class DescriptorIterator {
     }
 
     public class CascadeCondition{
+        /**
+         * Default constructor.
+         */
+        public CascadeCondition() {
+        }
+
         public boolean shouldNotCascade(DatabaseMapping mapping){
             return !(shouldCascadeAllParts() || (shouldCascadePrivateParts() && mapping.isPrivateOwned()));
         }

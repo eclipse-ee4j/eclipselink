@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,9 +32,9 @@ public class BooleanTester extends TypeTester {
     }
 
     public BooleanTester(boolean testValue) {
-        super(new Boolean(testValue).toString());
+        super(Boolean.valueOf(testValue).toString());
         booleanValue = testValue;
-        booleanClassValue = new Boolean(testValue);
+        booleanClassValue = testValue;
     }
 
     public static RelationalDescriptor descriptor() {
@@ -83,11 +83,11 @@ public class BooleanTester extends TypeTester {
     }
 
     public void setBooleanClassValue(boolean boolValue) {
-        booleanClassValue = new Boolean(boolValue);
+        booleanClassValue = boolValue;
     }
 
     public void setBooleanValue(Boolean boolValue) {
-        booleanValue = boolValue.booleanValue();
+        booleanValue = boolValue;
     }
 
     public void setBooleanValue(boolean boolValue) {

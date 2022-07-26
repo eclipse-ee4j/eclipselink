@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class GetFromNewObjectWithConformTest extends TransactionalTestCase {
         setDescription("Verifies that TopLink will find a new Object when conformed");
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         emp = new Employee();
@@ -46,6 +47,7 @@ public class GetFromNewObjectWithConformTest extends TransactionalTestCase {
     }
     // end of test()
 
+    @Override
     public void verify() {
         if (emp == null) {
             throw new TestErrorException("New Object Not Found");

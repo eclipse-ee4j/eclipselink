@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,11 @@
 package org.eclipse.persistence.internal.descriptors;
 
 import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
-import org.eclipse.persistence.internal.security.PrivilegedSetValueInField;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 
 /**
@@ -42,7 +38,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
      * Returns the class type of the attribute.
      */
     @Override
-    public Class getAttributeClass() {
+    public Class<?> getAttributeClass() {
         if (getAttributeField() == null) {
             return null;
         }
@@ -61,7 +57,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
     /**
      * Returns the declared type of attributeField.
      */
-    public Class getAttributeType() {
+    public Class<?> getAttributeType() {
         return attributeField.getType();
     }
 
@@ -70,37 +66,29 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
      */
     @Override
     public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
-        try {
-            // PERF: Direct variable access.
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedGetValueFromField(this.attributeField, anObject));
-                } catch (PrivilegedActionException exception) {
-                    throw DescriptorException.illegalAccesstWhileGettingValueThruInstanceVaraibleAccessor(getAttributeName(), anObject.getClass().getName(), exception.getException());
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> attributeField.get(anObject),
+                (ex) -> {
+                    if (ex instanceof IllegalArgumentException) {
+                        return DescriptorException.illegalArgumentWhileGettingValueThruInstanceVariableAccessor(
+                                getAttributeName(), getAttributeType().getName(), anObject.getClass().getName(), ex);
+                    } else if (ex instanceof IllegalAccessException) {
+                        return DescriptorException.illegalAccesstWhileGettingValueThruInstanceVaraibleAccessor(getAttributeName(), anObject.getClass().getName(), ex);
+                    } else if (ex instanceof NullPointerException) {
+                        final String className = anObject != null ? anObject.getClass().getName() : null;
+                        return DescriptorException.nullPointerWhileGettingValueThruInstanceVariableAccessor(getAttributeName(), className, ex);
+                    }
+                    // This indicates unexpected problem in the code
+                    throw new RuntimeException(String.format("Getting value from %s field failed", this.attributeField.getName()), ex);
                 }
-            } else {
-                // PERF: Direct-var access.
-                return this.attributeField.get(anObject);
-            }
-        } catch (IllegalArgumentException exception) {
-            throw DescriptorException.illegalArgumentWhileGettingValueThruInstanceVariableAccessor(getAttributeName(), getAttributeType().getName(), anObject.getClass().getName(), exception);
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccesstWhileGettingValueThruInstanceVaraibleAccessor(getAttributeName(), anObject.getClass().getName(), exception);
-        } catch (NullPointerException exception) {
-            String className = null;
-            if (anObject != null) {
-                // Some JVM's throw this exception for some very odd reason
-                className = anObject.getClass().getName();
-            }
-            throw DescriptorException.nullPointerWhileGettingValueThruInstanceVariableAccessor(getAttributeName(), className, exception);
-        }
+        );
     }
 
     /**
      * instanceVariableName is converted to Field type.
      */
     @Override
-    public void initializeAttributes(Class theJavaClass) throws DescriptorException {
+    public void initializeAttributes(Class<?> theJavaClass) throws DescriptorException {
         if (getAttributeName() == null) {
             throw DescriptorException.attributeNameNotSpecified();
         }
@@ -138,59 +126,37 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
      * Sets the value of the instance variable in the object to the value.
      */
     @Override
-    public void setAttributeValueInObject(Object anObject, Object value) throws DescriptorException {
-         try {
+    public void setAttributeValueInObject(final Object anObject, final Object value) throws DescriptorException {
+        try {
             // PERF: Direct variable access.
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, value));
-                } catch (PrivilegedActionException exception) {
-                    throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), value, exception.getException());
-                }
-            } else {
-                // PERF: Direct-var access.
-                this.attributeField.set(anObject, value);
-            }
+            PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> this.attributeField.set(anObject, value)
+            );
         } catch (IllegalArgumentException exception) {
             // This is done to overcome VA Java bug because VA Java does not allow null to be set reflectively.
-            try {
-                // This is done to overcome VA Java bug because VA Java does not allow null to be set reflectively.
-                // Bug2910086 In JDK1.4, IllegalArgumentException is thrown if value is null.
-                // TODO: This code should be removed, it should not be required and may cause unwanted side-effects.
-                if (value == null) {
-                    // cr 3737  If a null pointer was thrown because we attempted to set a null reference into a
-                    // primitive create a primitive of value 0 to set in the object.
-                    Class fieldClass = getAttributeClass();
-                    if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            try {
-                                AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass)));
-                            } catch (PrivilegedActionException exc) {
-                                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, exc.getException());
-                                                        }
-                        } else {
-                            org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass));
-                        }
-                    }
-                    return;
+            // This is done to overcome VA Java bug because VA Java does not allow null to be set reflectively.
+            // Bug2910086 In JDK1.4, IllegalArgumentException is thrown if value is null.
+            // TODO: This code should be removed, it should not be required and may cause unwanted side-effects.
+            if (value == null) {
+                // cr 3737  If a null pointer was thrown because we attempted to set a null reference into a
+                // primitive create a primitive of value 0 to set in the object.
+                final Class<?> fieldClass = getAttributeClass();
+                if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
+                    PrivilegedAccessHelper.callDoPrivilegedWithException(
+                            () -> PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(0, fieldClass)),
+                            (ex) -> DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, ex)
+                    );
                 }
-            } catch (IllegalAccessException accessException) {
-                throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, exception);
+                return;
             }
-
             // TODO: This code should be removed, it should not be required and may cause unwanted side-effects.
             // Allow XML change set to merge correctly since new value in XML change set is always String
             try {
                 if (value instanceof String) {
-                    Object newValue = ConversionManager.getDefaultManager().convertObject(value, getAttributeClass());
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, newValue));
-                        } catch (PrivilegedActionException exc) {
-                        }
-                    } else {
-                        org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, newValue);
-                    }
+                    final Object newValue = ConversionManager.getDefaultManager().convertObject(value, getAttributeClass());
+                    PrivilegedAccessHelper.callDoPrivilegedWithException(
+                            () -> PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, newValue)
+                    );
                     return;
                 }
             } catch (Exception e) {
@@ -203,35 +169,29 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
             }
             throw DescriptorException.illegalAccessWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), anObject.getClass().getName(), value, exception);
         } catch (NullPointerException exception) {
-            try {
-                // TODO: This code should be removed, it should not be required and may cause unwanted side-effects.
-                //Bug2910086 In JDK1.3, NullPointerException is thrown if value is null.  Add a null pointer check so that the TopLink exception is thrown if anObject is null.
-                if (anObject != null) {
-                    // cr 3737  If a null pointer was thrown because we attempted to set a null reference into a
-                    // primitive create a primitive of value 0 to set in the object.
-                    Class fieldClass = getAttributeClass();
-                    if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass) && (value == null)) {
-                        if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
-                            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                                try {
-                                    AccessController.doPrivileged(new PrivilegedSetValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass)));
-                                } catch (PrivilegedActionException exc) {
-                                    throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, exc.getException());
-                                }
-                            } else {
-                                org.eclipse.persistence.internal.security.PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(Integer.valueOf(0), fieldClass));
-                            }
-                        }
-                    } else {
-                        throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), value, exception);
+            // TODO: This code should be removed, it should not be required and may cause unwanted side-effects.
+            //Bug2910086 In JDK1.3, NullPointerException is thrown if value is null.  Add a null pointer check so that the TopLink exception is thrown if anObject is null.
+            if (anObject != null) {
+                // cr 3737  If a null pointer was thrown because we attempted to set a null reference into a
+                // primitive create a primitive of value 0 to set in the object.
+                final Class<?> fieldClass = getAttributeClass();
+                if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass) && (value == null)) {
+                    if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
+                        PrivilegedAccessHelper.callDoPrivilegedWithException(
+                                () -> PrivilegedAccessHelper.setValueInField(this.attributeField, anObject, ConversionManager.getDefaultManager().convertObject(0, fieldClass)),
+                                (ex) -> DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), null, ex)
+                        );
                     }
                 } else {
-                    // Some JVM's throw this exception for some very odd reason
                     throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), value, exception);
                 }
-            } catch (IllegalAccessException accessException) {
+            } else {
+                // Some JVM's throw this exception for some very odd reason
                 throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), value, exception);
             }
+        // This indicates unexpected problem in the code
+        } catch (Exception ex) {
+            throw new RuntimeException(String.format("Setting value in %s field failed", this.attributeField.getName()), ex);
         }
     }
 }

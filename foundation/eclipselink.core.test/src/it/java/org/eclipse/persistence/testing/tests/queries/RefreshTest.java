@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,16 +34,19 @@ public class RefreshTest extends TestCase {
         setDescription("This test verifies the refresh feature works properly");
     }
 
+    @Override
     public void reset() {
         // Because the name of the employee was changed, clear the cache.
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         employeeObject = (Employee)getSession().readObject(Employee.class, new ExpressionBuilder().get("firstName").equal("Charles"));
     }
 
+    @Override
     public void test() throws Exception {
         city = employeeObject.getAddress().getCity();
         employeeObject.getAddress().setCity("Chelmsford");
@@ -66,6 +69,7 @@ public class RefreshTest extends TestCase {
         getSession().refreshObject(employeeObject);
     }
 
+    @Override
     protected void verify() throws Exception {
         if (!(employeeObject.getAddress().getCity().equals(city))) {
             throw new TestErrorException("The refresh test failed.");

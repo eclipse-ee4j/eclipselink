@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,12 @@ public class XmlElementDeclExample1Test extends JAXBTestCases{
     public XmlElementDeclExample1Test(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        Class[] classes = new Class[1];
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = ObjectFactory.class;
         setClasses(classes);
     }
 
+    @Override
     protected Object getControlObject() {
 
         ObjectFactory example = new ObjectFactory();

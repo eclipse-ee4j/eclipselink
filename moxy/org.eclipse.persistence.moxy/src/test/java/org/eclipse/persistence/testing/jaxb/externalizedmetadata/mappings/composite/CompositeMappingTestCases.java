@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
 
@@ -58,23 +59,22 @@ public class CompositeMappingTestCases extends JAXBTestCases {
     /**
      * This is the preferred (and only) constructor.
      *
-     * @param name
-     * @throws Exception
      */
     public CompositeMappingTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Employee.class});
+        setClasses(new Class<?>[]{Employee.class});
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
     }
 
+    @Override
     public Map getProperties(){
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/composite/employee-oxm.xml");
 
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
 
         return properties;
@@ -86,7 +86,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.multiplenamespaces", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -97,7 +97,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         return properties;
     }
@@ -108,7 +108,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.multiplenamespaces", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
 
         return properties;
@@ -127,8 +127,8 @@ public class CompositeMappingTestCases extends JAXBTestCases {
     /**
      * Return the control Employee.
      *
-     * @return
      */
+    @Override
     public Object getControlObject() {
         Address hAddress = new Address();
         hAddress.city = HOME_CITY;
@@ -176,6 +176,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         return emp;
     }
 
+    @Override
     public Object getWriteControlObject(){
         if(writeCtrlObject == null){
             Employee emp = (Employee)getControlObject();
@@ -189,16 +190,19 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         return writeCtrlObject;
     }
 
+    @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
            assertTrue("Accessor method was not called as expected", ((Employee)testObject).wasSetCalled);
            assertTrue("Set was not called for absent node as expected", ((Employee)testObject).isADeptSet);
     }
 
+    @Override
     public void testRoundTrip() throws Exception{
         //doesn't apply since read and write only mappings are present
     }
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", writeCtrlObject.wasGetCalled);
@@ -239,7 +243,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         controlSchemas.add(is2);
 
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.multiplenamespaces.Employee.class}, getPropertiesMultipleNS());
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.multiplenamespaces.Employee.class}, getPropertiesMultipleNS());
         ctx.generateSchema(outputResolver);
 
         compareSchemas(controlSchemas, outputResolver.getSchemaFiles());
@@ -254,7 +258,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         controlSchemas.add(is2);
 
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.Employee.class}, getPropertiesCyclic());
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.Employee.class}, getPropertiesCyclic());
         ctx.generateSchema(outputResolver);
 
         compareSchemas(controlSchemas, outputResolver.getSchemaFiles());
@@ -271,7 +275,7 @@ public class CompositeMappingTestCases extends JAXBTestCases {
         controlSchemas.add(is3);
 
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.multiplenamespaces.Employee.class}, getPropertiesMultipleNamespacesCyclic());
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class<?>[]{org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.composite.cyclic.multiplenamespaces.Employee.class}, getPropertiesMultipleNamespacesCyclic());
         ctx.generateSchema(outputResolver);
 
         compareSchemas(controlSchemas, outputResolver.getSchemaFiles());

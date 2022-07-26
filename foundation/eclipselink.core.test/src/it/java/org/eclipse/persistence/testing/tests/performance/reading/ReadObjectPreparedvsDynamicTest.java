@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class ReadObjectPreparedvsDynamicTest extends PerformanceComparisonTestCa
     /**
      * Find any employee.
      */
+    @Override
     public void setup() {
         query = new ReadObjectQuery(Employee.class);
         query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").equal(query.getExpressionBuilder().getParameter("name")));
@@ -58,6 +59,7 @@ public class ReadObjectPreparedvsDynamicTest extends PerformanceComparisonTestCa
     /**
      * Execute expression query dynamically, disabling the expression cache.
      */
+    @Override
     public void test() throws Exception {
         ClassDescriptor descriptor = getSession().getClassDescriptor(Employee.class);
         int size = descriptor.getQueryManager().getExpressionQueryCacheMaxSize();
@@ -74,6 +76,7 @@ public class ReadObjectPreparedvsDynamicTest extends PerformanceComparisonTestCa
      */
     public PerformanceComparisonTestCase buildPreparedTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 Vector args = new Vector();
                 args.add("Bob");
@@ -90,6 +93,7 @@ public class ReadObjectPreparedvsDynamicTest extends PerformanceComparisonTestCa
      */
     public PerformanceComparisonTestCase buildPreparedEJBQLTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 Vector args = new Vector();
                 args.add("Bob");
@@ -106,6 +110,7 @@ public class ReadObjectPreparedvsDynamicTest extends PerformanceComparisonTestCa
      */
     public PerformanceComparisonTestCase buildDynamicEJBQLTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 ReadObjectQuery ejbQuery = new ReadObjectQuery(Employee.class);
                 ejbQuery.setEJBQLString("Select Object(employee) from Employee employee where employee.firstName = :name");
@@ -126,6 +131,7 @@ public class ReadObjectPreparedvsDynamicTest extends PerformanceComparisonTestCa
      */
     public PerformanceComparisonTestCase buildDynamicNoParseCacheEJBQLTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 int size = getSession().getProject().getJPQLParseCacheMaxSize();
                 getSession().getProject().setJPQLParseCacheMaxSize(0);
@@ -149,6 +155,7 @@ public class ReadObjectPreparedvsDynamicTest extends PerformanceComparisonTestCa
      */
     public PerformanceComparisonTestCase buildDynamicExpressionCachedExpressionTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 ReadObjectQuery query = new ReadObjectQuery(Employee.class);
                 query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").equal("Bob"));

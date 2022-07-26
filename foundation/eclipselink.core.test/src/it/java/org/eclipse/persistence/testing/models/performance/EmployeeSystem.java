@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,15 +37,17 @@ public class EmployeeSystem extends TestSystem {
         project = XMLProjectReader.read("org/eclipse/persistence/testing/models/performance/employee.xml", getClass().getClassLoader());
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         // Configure sequencing to be same as Hibernate defaults.
         session.getLogin().useNativeSequencing();
         session.getLogin().getDefaultSequence().setPreallocationSize(100);
-        ((DatabaseSessionImpl)session).getSequencingControl().resetSequencing();
+        session.getSequencingControl().resetSequencing();
         dropTableConstraints(session);
         // Recreate sequences to help provide more consistent hash values for primary key
         // to improve test consistency.
@@ -131,6 +133,7 @@ public class EmployeeSystem extends TestSystem {
     /**
      * This method will instantiate all of the example instances and insert them into the database using the given session.
      */
+    @Override
     public void populate(DatabaseSession session) {
         EmployeePopulator system = new EmployeePopulator();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();

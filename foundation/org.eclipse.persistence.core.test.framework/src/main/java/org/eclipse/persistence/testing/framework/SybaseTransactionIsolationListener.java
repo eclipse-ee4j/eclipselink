@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,6 +81,7 @@ public class SybaseTransactionIsolationListener extends SessionEventAdapter {
         }
         return version >= requiredVersion;
     }
+    @Override
     public void postAcquireConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor)event.getResult()).getConnection();
         Statement stmt1 = null;
@@ -91,7 +92,7 @@ public class SybaseTransactionIsolationListener extends SessionEventAdapter {
             stmt1 = conn.createStatement();
             result = stmt1.executeQuery("select @@isolation");
             result.next();
-            isolationLevel = new Integer(result.getInt(1));
+            isolationLevel = result.getInt(1);
             if(isolationLevel > 0) {
                 // If conn1 began transaction and updated the row (but hasn't committed the transaction yet),
                 // then conn2 should be able to read the original (not updated) state of the row.
@@ -129,6 +130,7 @@ public class SybaseTransactionIsolationListener extends SessionEventAdapter {
             }
         }
     }
+    @Override
     public void preReleaseConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor)event.getResult()).getConnection();
         Statement stmt = null;

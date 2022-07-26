@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,10 +38,10 @@ public class ReflectiveDynamicClassLoader extends DynamicClassLoader {
     protected Method getDefineClassMethod() {
         if (this.defineClassMethod == null) {
             try {
-                this.defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", new Class<?>[] { String.class, byte[].class, int.class, int.class });
-                this.defineClassMethod.setAccessible(true);
-            } catch (Exception e) {
-                throw new RuntimeException("ReflectiveDynamicClassLoader could not access defineClass method", e);
+                this.defineClassMethod = ReflectionHelper.getMethod(ClassLoader.class, "defineClass",
+                        String.class, byte[].class, Integer.TYPE, Integer.TYPE);
+            } catch (Throwable t) {
+                throw new RuntimeException("ReflectiveDynamicClassLoader could not access defineClass method", t);
             }
         }
         return this.defineClassMethod;
@@ -51,8 +51,8 @@ public class ReflectiveDynamicClassLoader extends DynamicClassLoader {
     protected Class<?> defineDynamicClass(String name, byte[] b) {
         try {
             return (Class<?>) getDefineClassMethod().invoke(getParent(), new Object[] { name, b, 0, b.length });
-        } catch (Exception e) {
-            throw new RuntimeException("ReflectiveDynamicClassLoader falied to create class: " + name, e);
+        } catch (Throwable t) {
+            throw new RuntimeException("ReflectiveDynamicClassLoader failed to create class: " + name, t);
         }
     }
 

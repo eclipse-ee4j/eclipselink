@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -256,6 +256,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             this.schemas = schemas;
         }
 
+        @Override
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             if (namespace.equals("http://www.example.org")) {
                 return new DOMSource(schemas[0], SCHEMA_NAME);
@@ -263,6 +264,7 @@ public class ListPropertyNillableElementTestCases extends LoadAndSaveTestCases {
             return null;
         }
 
+        @Override
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
             return null;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,20 +31,21 @@ import org.eclipse.persistence.queries.FetchGroup;
 /**
  * <p>
  * <b>Purpose</b>: This is the overall collection of changes.
+ * </p>
  * <p>
  * <b>Description</b>: It holds all of the object changes and
  * all ObjectChanges, with the same classType and primary keys, referenced in a changeSet should be
  * the same object.
- * <p>
+ * </p>
  */
 public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet {
 
     /** This is the collection of ObjectChanges held by this ChangeSet */
     // *** TODO fix transients *** */
-    protected Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> objectChanges;
+    protected Map<Class<?>, Map<ObjectChangeSet, ObjectChangeSet>> objectChanges;
 
     // This collection holds the new objects which will have no real identity until inserted.
-    protected Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> newObjectChangeSets;
+    protected Map<Class<?>, Map<ObjectChangeSet, ObjectChangeSet>> newObjectChangeSets;
     protected Map<Object, ObjectChangeSet> cloneToObjectChangeSet;
     protected Map<ObjectChangeSet, Object> objectChangeSetToUOWClone;
     protected Map<ObjectChangeSet, ObjectChangeSet> aggregateChangeSets;
@@ -426,7 +427,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * Returns the ObjectChanges held by this ChangeSet.
      */
-    public Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> getObjectChanges() {
+    public Map<Class<?>, Map<ObjectChangeSet, ObjectChangeSet>> getObjectChanges() {
         if (objectChanges == null) {
             objectChanges = new HashMap<>();
         }
@@ -597,7 +598,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * inserted and added to the objectChangesList
      */
     public void removeObjectChangeSetFromNewList(ObjectChangeSet objectChangeSet, AbstractSession session) {
-        Map table = getNewObjectChangeSets().get(objectChangeSet.getClassType(session));
+        Map<ObjectChangeSet, ObjectChangeSet> table = getNewObjectChangeSets().get(objectChangeSet.getClassType(session));
         if (table != null) {
             table.remove(objectChangeSet);
         }
@@ -615,7 +616,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         if (changeSet.isAggregate()) {
             getAggregateChangeSets().remove(changeSet);
         } else {
-            Map classChanges = getObjectChanges().get(object.getClass());
+            Map<ObjectChangeSet, ObjectChangeSet> classChanges = getObjectChanges().get(object.getClass());
             if (classChanges != null) {
                 classChanges.remove(changeSet);
             }
@@ -689,7 +690,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * This method will return a reference to the new object change set collections.
      */
-    public Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> getNewObjectChangeSets() {
+    public Map<Class<?>, Map<ObjectChangeSet, ObjectChangeSet>> getNewObjectChangeSets() {
         if (this.newObjectChangeSets == null) {
             this.newObjectChangeSets = new HashMap<>();
         }

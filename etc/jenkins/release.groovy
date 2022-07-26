@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved.
 //
 // This program and the accompanying materials are made available under the
 // terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -12,6 +12,8 @@
 //  RELEASE_VERSION        - Version to release
 //  NEXT_VERSION           - Next snapshot version to set (e.g. 3.0.1-SNAPSHOT).
 //  DRY_RUN                - Do not publish artifacts to OSSRH and code changes to GitHub.
+//  OVERWRITE_GIT          - Allows to overwrite existing version in git
+//  OVERWRITE_STAGING      - Allows to overwrite existing version in OSSRH (Jakarta) staging repositories
 
 
 pipeline {
@@ -55,20 +57,20 @@ spec:
   - name: jnlp
     resources:
       limits:
-        memory: "1Gi"
+        memory: "2Gi"
         cpu: "1"
       requests:
-        memory: "1Gi"
+        memory: "2Gi"
         cpu: "500m"
   - name: el-build
     resources:
       limits:
-        memory: "2Gi"
+        memory: "4Gi"
         cpu: "2"
       requests:
-        memory: "2Gi"
+        memory: "4Gi"
         cpu: "1.5"
-    image: tkraus/el-build:1.1.8
+    image: tkraus/el-build:2.0.0
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
@@ -94,6 +96,10 @@ spec:
 """
         }
     }
+    tools {
+        maven 'apache-maven-latest'
+        jdk 'adoptopenjdk-hotspot-jdk11-latest'
+    }
     stages {
 
         // Prepare and promote EclipseLink artifacts to oss.sonatype.org (staging) and to the Eclipse.org Milestone Builds area
@@ -102,13 +108,11 @@ spec:
             steps {
                 container('el-build') {
                     git branch: GIT_BRANCH_RELEASE, credentialsId: SSH_CREDENTIALS_ID, url: GIT_REPOSITORY_URL
-                    sshagent([SSH_CREDENTIALS_ID]) {
-                        sh """
-                            # Directory for JEE server binaries (WildFly, Glassfish)
-                            # Maven build automatically download and unpack them.
-                            mkdir ~/.eclipselinktests
-                            """
-                    }
+                    sh """
+                        # Directory for JEE server binaries (WildFly, Glassfish)
+                        # Maven build automatically download and unpack them.
+                        mkdir ~/.eclipselinktests
+                    """
                     withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
                         sh label: '', script: '''
                             gpg --batch --import "${KEYRING}"
@@ -129,15 +133,30 @@ spec:
         // Build and release EclipseLink by release.sh script
         stage('Build and release EclipseLink') {
             steps {
-                container('el-build') {
-                    git branch: GIT_BRANCH_RELEASE, credentialsId: SSH_CREDENTIALS_ID, url: GIT_REPOSITORY_URL
-                    sshagent([SSH_CREDENTIALS_ID]) {
+                git branch: GIT_BRANCH_RELEASE, credentialsId: SSH_CREDENTIALS_ID, url: GIT_REPOSITORY_URL
+                sshagent([SSH_CREDENTIALS_ID]) {
+                    container('el-build') {
                         sh """
-                            etc/jenkins/release.sh "${RELEASE_VERSION}" "${NEXT_VERSION}" "${DRY_RUN}" "${OVERWRITE}"
+                            etc/jenkins/release.sh "${RELEASE_VERSION}" "${NEXT_VERSION}" "${DRY_RUN}" "${OVERWRITE_GIT}" "${OVERWRITE_STAGING}"
                         """
                     }
                 }
             }
+        }
+    }
+    post {
+        // Send a mail on unsuccessful and fixed builds
+        unsuccessful { // means unstable || failure || aborted
+            emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER failed!',
+                    body: '''Check console output at $BUILD_URL to view the results.''',
+                    recipientProviders: [culprits(), requestor()],
+                    to: '${NOTIFICATION_ADDRESS}'
+        }
+        fixed { // back to normal
+            emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER is back to normal!',
+                    body: '''Check console output at $BUILD_URL to view the results.''',
+                    recipientProviders: [culprits(), requestor()],
+                    to: '${NOTIFICATION_ADDRESS}'
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class SDOXMLComparer extends XMLComparer {
       super();
     }
 
+    @Override
     protected boolean isAttributeEqual(Attr control, Attr test) {
         String name = control.getLocalName();
         if (name.equals("delete") || name.equals("create") || name.equals("unset")) {
@@ -37,8 +38,8 @@ public class SDOXMLComparer extends XMLComparer {
             String testValue = test.getNodeValue();
             if (controlValue.length() == testValue.length()) {
                 try {
-                    List controlList = (List)XMLConversionManager.getDefaultXMLManager().convertObject(controlValue, List.class);
-                    List testList = (List)XMLConversionManager.getDefaultXMLManager().convertObject(testValue, List.class);
+                    List controlList = XMLConversionManager.getDefaultXMLManager().convertObject(controlValue, List.class);
+                    List testList = XMLConversionManager.getDefaultXMLManager().convertObject(testValue, List.class);
                     if (controlList.size() == testList.size()) {
                         if ((controlList.containsAll(testList)) && testList.containsAll(controlList)) {
                             return true;

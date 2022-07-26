@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,8 +30,8 @@ import org.eclipse.persistence.sessions.*;
  */
 public class CleanupCacheKeyCorrectnessTest extends TestCase {
 
-    protected Class originalIdentityMapClass;
-    protected Class newIdentityMapClass;
+    protected Class<? extends IdentityMap> originalIdentityMapClass;
+    protected Class<? extends IdentityMap> newIdentityMapClass;
     protected int originalIdentityMapSize;
     protected int newIdentityMapSize;
     protected int numberOfObjectsToCreate;
@@ -42,6 +42,7 @@ public class CleanupCacheKeyCorrectnessTest extends TestCase {
         setDescription("This test verifies that CacheKeys with null object references aren't removed when calling IdentityMap.put()");
     }
 
+    @Override
     public void setup() {
         originalIdentityMapClass = getSession().getDescriptor(Employee.class).getIdentityMapClass();
         originalIdentityMapSize = getSession().getDescriptor(Employee.class).getIdentityMapSize();
@@ -66,8 +67,9 @@ public class CleanupCacheKeyCorrectnessTest extends TestCase {
      *    IdentityMap; If they are not contained, increment the failure count
      */
 
+    @Override
     public void test() {
-        List employees = new ArrayList<Employee>(numberOfObjectsToCreate);
+        List<Employee> employees = new ArrayList<>(numberOfObjectsToCreate);
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
         for (int i = 0; i < numberOfObjectsToCreate; i++) {
@@ -89,6 +91,7 @@ public class CleanupCacheKeyCorrectnessTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (objectsNotFoundInIdentityMap > 0) {
             StringBuffer buffer = new StringBuffer();
@@ -103,6 +106,7 @@ public class CleanupCacheKeyCorrectnessTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getDescriptor(Employee.class).setIdentityMapClass(originalIdentityMapClass);

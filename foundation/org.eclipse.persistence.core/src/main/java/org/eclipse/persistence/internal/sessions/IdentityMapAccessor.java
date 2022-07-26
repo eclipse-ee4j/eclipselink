@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,8 +39,8 @@ import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 
@@ -89,7 +89,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Deferred lock the identity map for the object, this is used for avoiding deadlock
      * The return cacheKey should be used to release the deferred lock.
      */
-    public CacheKey acquireDeferredLock(Object primarKey, Class javaClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
+    public CacheKey acquireDeferredLock(Object primarKey, Class<?> javaClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         return getIdentityMapManager().acquireDeferredLock(primarKey, javaClass, descriptor, isCacheCheckComplete);
     }
 
@@ -98,7 +98,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Lock the identity map for the object, this must be done when building objects.
      * The return cacheKey should be used to release the lock.
      */
-    public CacheKey acquireLock(Object primarKey, Class javaClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
+    public CacheKey acquireLock(Object primarKey, Class<?> javaClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         return acquireLock(primarKey, javaClass, false, descriptor, isCacheCheckComplete);
     }
 
@@ -107,7 +107,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * Called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
+    public CacheKey acquireLock(Object primaryKey, Class<?> domainClass, boolean forMerge, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         return getIdentityMapManager().acquireLock(primaryKey, domainClass, forMerge, descriptor, isCacheCheckComplete);
     }
 
@@ -116,7 +116,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * Called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLockNoWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
+    public CacheKey acquireLockNoWait(Object primaryKey, Class<?> domainClass, boolean forMerge, ClassDescriptor descriptor) {
         return getIdentityMapManager().acquireLockNoWait(primaryKey, domainClass, forMerge, descriptor);
     }
 
@@ -125,7 +125,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * Called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLockWithWait(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
+    public CacheKey acquireLockWithWait(Object primaryKey, Class<?> domainClass, boolean forMerge, ClassDescriptor descriptor, int wait) {
         return getIdentityMapManager().acquireLockWithWait(primaryKey, domainClass, forMerge, descriptor, wait);
     }
 
@@ -135,7 +135,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * This will allow multiple users to read the same object but prevent writes to
      * the object while the read lock is held.
      */
-    public CacheKey acquireReadLockOnCacheKey(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
+    public CacheKey acquireReadLockOnCacheKey(Object primaryKey, Class<?> domainClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().acquireReadLockOnCacheKey(primaryKey, domainClass, descriptor);
     }
 
@@ -146,7 +146,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * the object while the read lock is held.
      * If no readlock can be acquired then do not wait but return null.
      */
-    public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
+    public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey, Class<?> domainClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().acquireReadLockOnCacheKeyNoWait(primaryKey, domainClass, descriptor);
     }
 
@@ -192,7 +192,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Clear the query cache associated with the named query on the descriptor for the given class
      */
     @Override
-    public void clearQueryCache(String descriptorQueryName, Class queryClass) {
+    public void clearQueryCache(String descriptorQueryName, Class<?> queryClass) {
         getIdentityMapManager().clearQueryCache((ReadQuery)session.getDescriptor(queryClass).getQueryManager().getQuery(descriptorQueryName));
     }
 
@@ -210,7 +210,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return if their is an object for the primary key.
      */
     @Override
-    public boolean containsObjectInIdentityMap(Object primaryKey, Class theClass) {
+    public boolean containsObjectInIdentityMap(Object primaryKey, Class<?> theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         return containsObjectInIdentityMap(primaryKey, theClass, descriptor);
     }
@@ -219,7 +219,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL:
      * Return if their is an object for the primary key.
      */
-    public boolean containsObjectInIdentityMap(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public boolean containsObjectInIdentityMap(Object primaryKey, Class<?> theClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().containsKey(primaryKey, theClass, descriptor);
     }
 
@@ -228,7 +228,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return if their is an object for the row containing primary key and the class.
      */
     @Override
-    public boolean containsObjectInIdentityMap(Record rowContainingPrimaryKey, Class theClass) {
+    public boolean containsObjectInIdentityMap(DataRecord rowContainingPrimaryKey, Class<?> theClass) {
         return containsObjectInIdentityMap(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass);
     }
 
@@ -236,7 +236,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL:
      * Extract primary key from a row.
      */
-    protected Object extractPrimaryKeyFromRow(Record rowContainingPrimaryKey, Class theClass) {
+    protected Object extractPrimaryKeyFromRow(DataRecord rowContainingPrimaryKey, Class<?> theClass) {
         return this.session.getDescriptor(theClass).getObjectBuilder().extractPrimaryKeyFromRow((AbstractRecord)rowContainingPrimaryKey, this.session);
     }
 
@@ -262,7 +262,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Query the cache in-memory.
      * If the expression is too complex an exception will be thrown.
      */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow) throws QueryException {
         return getAllFromIdentityMap(selectionCriteria, theClass, translationRow, InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION, true);
     }
 
@@ -272,7 +272,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException {
         return getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, true);
     }
 
@@ -282,7 +282,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy) throws QueryException {
         return getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, true);
     }
 
@@ -293,7 +293,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return objects that are invalid in the cache if specified.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
         int policy = 0;
         if (valueHolderPolicy != null) {
             policy = valueHolderPolicy.getPolicy();
@@ -308,7 +308,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return objects that are invalid in the cache if specified.
      */
     @Override
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
+    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
         return getIdentityMapManager().getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, shouldReturnInvalidatedObjects);
     }
 
@@ -319,7 +319,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor){
         return getIdentityMapManager().getAllFromIdentityMapWithEntityPK(pkList, descriptor, getSession());
@@ -332,7 +331,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param pkList List of Entity PKs to extract from the cache
      * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
      */
     public Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor){
         return getIdentityMapManager().getAllCacheKeysFromIdentityMapWithEntityPK(pkList, descriptor, getSession());
@@ -362,7 +360,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param primaryKey the primary key of the cache key to be retrieved.
      * @param myClass the class of the cache key to be retrieved.
      */
-    public CacheKey getCacheKeyForObjectForLock(Object primaryKey, Class myClass, ClassDescriptor descriptor) {
+    public CacheKey getCacheKeyForObjectForLock(Object primaryKey, Class<?> myClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().getCacheKeyForObjectForLock(primaryKey, myClass, descriptor);
     }
 
@@ -372,7 +370,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param primaryKey the primary key of the cache key to be retrieved.
      * @param myClass the class of the cache key to be retrieved.
      */
-    public CacheKey getCacheKeyForObject(Object primaryKey, Class myClass, ClassDescriptor descriptor, boolean forMerge) {
+    public CacheKey getCacheKeyForObject(Object primaryKey, Class<?> myClass, ClassDescriptor descriptor, boolean forMerge) {
         return getIdentityMapManager().getCacheKeyForObject(primaryKey, myClass, descriptor, forMerge);
     }
 
@@ -381,7 +379,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      */
     @Override
-    public Object getFromIdentityMap(Object primaryKey, Class theClass) {
+    public Object getFromIdentityMap(Object primaryKey, Class<?> theClass) {
         return getFromIdentityMap(primaryKey, theClass, true);
     }
 
@@ -389,7 +387,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Return the object from the identity with the primary and class.
      */
-    public Object getFromIdentityMap(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Object primaryKey, Class<?> theClass, ClassDescriptor descriptor) {
         return getFromIdentityMap(primaryKey, null, theClass, true, descriptor);
     }
 
@@ -399,7 +397,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return invalidated objects if requested.
      */
     @Override
-    public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
+    public Object getFromIdentityMap(Object primaryKey, Class<?> theClass, boolean shouldReturnInvalidatedObjects) {
         return getFromIdentityMap(primaryKey, null, theClass, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass));
     }
 
@@ -408,7 +406,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      * Only return invalidated objects if requested.
      */
-    public Object getFromIdentityMap(Object primaryKey, Object object, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Object primaryKey, Object object, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
@@ -417,7 +415,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the local identity map with the primary and class.
      * This avoids checking the parent cache for the unit of work.
      */
-    public Object getFromLocalIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromLocalIdentityMap(Object primaryKey, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
@@ -426,7 +424,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the local identity map with the primary and class.
      * This avoids checking the parent cache for the unit of work.
      */
-    public Object getFromLocalIdentityMapWithDeferredLock(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor){
+    public Object getFromLocalIdentityMapWithDeferredLock(Object primaryKey, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor){
         return getIdentityMapManager().getFromIdentityMapWithDeferredLock(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
@@ -435,7 +433,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      */
     @Override
-    public Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass) {
+    public Object getFromIdentityMap(DataRecord rowContainingPrimaryKey, Class<?> theClass) {
         return getFromIdentityMap(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass);
     }
 
@@ -445,7 +443,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return invalidated objects if requested.
      */
     @Override
-    public Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
+    public Object getFromIdentityMap(DataRecord rowContainingPrimaryKey, Class<?> theClass, boolean shouldReturnInvalidatedObjects) {
         return getFromIdentityMap(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass, shouldReturnInvalidatedObjects);
     }
 
@@ -456,7 +454,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow) throws QueryException {
         return getFromIdentityMap(selectionCriteria, theClass, translationRow, InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION);
     }
 
@@ -467,7 +465,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException {
         int policy = 0;
         if (valueHolderPolicy != null) {
             policy = valueHolderPolicy.getPolicy();
@@ -482,7 +480,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the expression is too complex an exception will be thrown.
      */
     @Override
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy) throws QueryException {
         return getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, false);
     }
 
@@ -492,7 +490,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the object is not found null is returned.
      * If the expression is too complex an exception will be thrown.
      */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean conforming) {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming) {
         return getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, conforming, true, getSession().getDescriptor(theClass));
     }
 
@@ -502,7 +500,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the object is not found null is returned.
      * If the expression is too complex an exception will be thrown.
      */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects) {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects) {
         return getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, conforming, shouldReturnInvalidatedObjects, getSession().getDescriptor(theClass));
     }
 
@@ -512,7 +510,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * If the object is not found null is returned.
      * If the expression is too complex an exception will be thrown.
      */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMap(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, int valueHolderPolicy, boolean conforming, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getIdentityMapManager().getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, conforming, shouldReturnInvalidatedObjects, descriptor);
     }
 
@@ -520,7 +518,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL:
      * Return the object from the identity with the primary and class.
      */
-    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class<?> theClass, ClassDescriptor descriptor) {
         return getFromIdentityMapWithDeferredLock(primaryKey, theClass, true, descriptor);
     }
 
@@ -529,7 +527,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      * Only return invalidated objects if requested
      */
-    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
+    public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class<?> theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getIdentityMapManager().getFromIdentityMapWithDeferredLock(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
@@ -550,7 +548,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL: (public to allow test cases to check)
      * Return the identity map for the class, if missing create a new one.
      */
-    public IdentityMap getIdentityMap(Class theClass) {
+    public IdentityMap getIdentityMap(Class<?> theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         if (descriptor == null) {
             throw ValidationException.missingDescriptor(theClass.toString());
@@ -614,7 +612,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Get the wrapper object from the cache key associated with the given primary key,
      * this is used for EJB.
      */
-    public Object getWrapper(Object primaryKey, Class theClass) {
+    public Object getWrapper(Object primaryKey, Class<?> theClass) {
         return getIdentityMapManager().getWrapper(primaryKey, theClass);
     }
 
@@ -640,7 +638,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Extract the write lock value from the identity map.
      */
     @Override
-    public Object getWriteLockValue(Object primaryKey, Class theClass) {
+    public Object getWriteLockValue(Object primaryKey, Class<?> theClass) {
         return getWriteLockValue(primaryKey, theClass, getSession().getDescriptor(theClass));
     }
 
@@ -648,7 +646,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * ADVANCED:
      * Extract the write lock value from the identity map.
      */
-    public Object getWriteLockValue(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
+    public Object getWriteLockValue(Object primaryKey, Class<?> theClass, ClassDescriptor descriptor) {
         return getIdentityMapManager().getWriteLockValue(primaryKey, theClass, descriptor);
     }
 
@@ -675,7 +673,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * are not referenced from other objects of other classes or from the application.
      */
     @Override
-    public void initializeIdentityMap(Class theClass) {
+    public void initializeIdentityMap(Class<?> theClass) {
         getSession().log(SessionLog.FINER, SessionLog.CACHE, "initialize_identitymap", theClass);
         getIdentityMapManager().initializeIdentityMap(theClass);
     }
@@ -725,7 +723,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * without any action.
      */
     @Override
-    public void invalidateObject(Object primaryKey, Class theClass) {
+    public void invalidateObject(Object primaryKey, Class<?> theClass) {
         invalidateObject(primaryKey, theClass, false);
     }
 
@@ -735,7 +733,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
     @Override
-    public void invalidateObject(Object primaryKey, Class theClass, boolean invalidateCluster) {
+    public void invalidateObject(Object primaryKey, Class<?> theClass, boolean invalidateCluster) {
         if (primaryKey == null) {
             return;
         }
@@ -757,6 +755,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
                 rcm.propagateCommand(command);
             }
         }
+        if (session.getProject().allowExtendedCacheLogging()) {
+            session.log(SessionLog.FINEST, SessionLog.CACHE, "cache_item_invalidation", new Object[] {theClass, primaryKey, Thread.currentThread().getId(), Thread.currentThread().getName()});
+        }
     }
 
     /**
@@ -766,7 +767,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * without any action.
      */
     @Override
-    public void invalidateObject(Record rowContainingPrimaryKey, Class theClass) {
+    public void invalidateObject(DataRecord rowContainingPrimaryKey, Class<?> theClass) {
         invalidateObject(rowContainingPrimaryKey, theClass, false);
     }
 
@@ -776,7 +777,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
     @Override
-    public void invalidateObject(Record rowContainingPrimaryKey, Class theClass, boolean invalidateCluster) {
+    public void invalidateObject(DataRecord rowContainingPrimaryKey, Class<?> theClass, boolean invalidateCluster) {
         invalidateObject(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass, invalidateCluster);
     }
 
@@ -799,7 +800,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * @param shouldInvalidateOnException boolean indicates weather to invalidate the object if conform threw exception.
      */
     @Override
-    public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException) {
+    public void invalidateObjects(Expression selectionCriteria, Class<?> theClass, DataRecord translationRow, boolean shouldInvalidateOnException) {
         getIdentityMapManager().invalidateObjects(selectionCriteria, theClass, translationRow, shouldInvalidateOnException);
     }
 
@@ -832,7 +833,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Will set the recurseAndInvalidateToParentRoot flag on inheritance to true.
      */
     @Override
-    public void invalidateClass(Class myClass) {
+    public void invalidateClass(Class<?> myClass) {
         invalidateClass(myClass, true);
     }
 
@@ -846,7 +847,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      *   up the inheritance tree to the root descriptor
      */
     @Override
-    public void invalidateClass(Class myClass, boolean recurseAndInvalidateToParentRoot) {
+    public void invalidateClass(Class<?> myClass, boolean recurseAndInvalidateToParentRoot) {
         //forward the call to getIdentityMap locally in case subclasses overload
         IdentityMap identityMap = this.getIdentityMap(myClass); // will always return the root IdentityMap
 
@@ -854,9 +855,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
         //removed synchronization that would result in deadlock
         //no need to synchronize as changes to identity map will not aversely affect this code
         //bug 275724: IdentityMapAccessor.invalidateClass() should not check ReadLock when invalidating
-        Enumeration keys = identityMap.keys(false); // do not check readlock
+        Enumeration<CacheKey> keys = identityMap.keys(false); // do not check readlock
         while (keys.hasMoreElements()) {
-            CacheKey key = (CacheKey)keys.nextElement();
+            CacheKey key = keys.nextElement();
             Object obj = key.getObject();
             // 312503: When recurse is false we also invalidate all assignable implementing subclasses of [obj]
             if (recurseAndInvalidateToParentRoot || ((obj != null) && (null != myClass) && myClass.isAssignableFrom(obj.getClass()))) {
@@ -864,6 +865,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
             }
         }
         invalidateQueryCache(myClass);
+        if (session.getProject().allowExtendedCacheLogging()) {
+            session.log(SessionLog.FINEST, SessionLog.CACHE, "cache_class_invalidation", new Object[] {myClass, Thread.currentThread().getId(), Thread.currentThread().getName()});
+        }
     }
 
     /**
@@ -871,7 +875,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * This is used to invalidate the query cache on any change.
      */
     @Override
-    public void invalidateQueryCache(Class classThatChanged) {
+    public void invalidateQueryCache(Class<?> classThatChanged) {
         getIdentityMapManager().invalidateQueryCache(classThatChanged);
     }
 
@@ -902,7 +906,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return if this object is valid in the cache.
      */
     @Override
-    public boolean isValid(Object primaryKey, Class theClass) {
+    public boolean isValid(Object primaryKey, Class<?> theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         //forward the call to getCacheKeyForObject locally in case subclasses overload
         CacheKey key = getCacheKeyForObjectForLock(primaryKey, theClass, descriptor);
@@ -917,7 +921,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return if this object is valid in the cache.
      */
     @Override
-    public boolean isValid(Record rowContainingPrimaryKey, Class theClass) {
+    public boolean isValid(DataRecord rowContainingPrimaryKey, Class<?> theClass) {
         return isValid(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass);
     }
 
@@ -927,7 +931,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * The output of this method will be logged to this session's SessionLog at SEVERE level.
      */
     @Override
-    public void printIdentityMap(Class businessClass) {
+    public void printIdentityMap(Class<?> businessClass) {
         if (getSession().shouldLog(SessionLog.SEVERE, SessionLog.CACHE)) {
             getIdentityMapManager().printIdentityMap(businessClass);
         }
@@ -1066,7 +1070,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Override
     public Object removeFromIdentityMap(Object object) {
-        Class theClass = object.getClass();
+        Class<?> theClass = object.getClass();
         return removeFromIdentityMap(getSession().getId(object), theClass, getSession().getDescriptor(theClass), object);
     }
 
@@ -1075,7 +1079,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Remove the object from the object cache.
      */
     @Override
-    public Object removeFromIdentityMap(Object key, Class theClass) {
+    public Object removeFromIdentityMap(Object key, Class<?> theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         if (descriptor == null){
             return null;
@@ -1087,7 +1091,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL:
      * Remove the object from the object cache.
      */
-    public Object removeFromIdentityMap(Object key, Class theClass, ClassDescriptor descriptor, Object object) {
+    public Object removeFromIdentityMap(Object key, Class<?> theClass, ClassDescriptor descriptor, Object object) {
         return getIdentityMapManager().removeFromIdentityMap(key, theClass, descriptor, object);
     }
 
@@ -1104,7 +1108,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Update the wrapper object the cache key associated with the given primary key,
      * this is used for EJB.
      */
-    public void setWrapper(Object primaryKey, Class theClass, Object wrapper) {
+    public void setWrapper(Object primaryKey, Class<?> theClass, Object wrapper) {
         getIdentityMapManager().setWrapper(primaryKey, theClass, wrapper);
     }
 
@@ -1122,7 +1126,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Update the write lock value in the cache.
      */
     @Override
-    public void updateWriteLockValue(Object primaryKey, Class theClass, Object writeLockValue) {
+    public void updateWriteLockValue(Object primaryKey, Class<?> theClass, Object writeLockValue) {
         getIdentityMapManager().setWriteLockValue(primaryKey, theClass, writeLockValue);
     }
 
@@ -1149,9 +1153,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
         };
 
         iterator.setSession(getSession());
-        Iterator descriptors = getSession().getDescriptors().values().iterator();
+        Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator();
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             IdentityMap cache = getIdentityMap(descriptor, true);
             if (cache != null) {
                 for (Enumeration mapEnum = cache.elements(); mapEnum.hasMoreElements();) {

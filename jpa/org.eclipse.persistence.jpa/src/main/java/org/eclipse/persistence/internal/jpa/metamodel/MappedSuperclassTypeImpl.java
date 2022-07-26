@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,18 +57,17 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * The types in this map are keyed on the Java class of the inheriting type.
      * This map acts as the reverse of all superType fields that point to "this" MappedSuperclass.
      **/
-    private Map<Class, IdentifiableTypeImpl> inheritingIdentifiableTypes;
+    private Map<Class<?>, IdentifiableTypeImpl> inheritingIdentifiableTypes;
 
     protected MappedSuperclassTypeImpl(MetamodelImpl metamodel, ClassDescriptor relationalDescriptor) {
         super(metamodel, relationalDescriptor);
-        inheritingIdentifiableTypes = new HashMap<Class, IdentifiableTypeImpl>();
+        inheritingIdentifiableTypes = new HashMap<Class<?>, IdentifiableTypeImpl>();
         // The supertype field will remain uninstantiated until MetamodelImpl.initialize() is complete
     }
 
     /**
      * INTERNAL:
      * Add an inheriting subclass to the map of Identifiable types that inherit from this mappedSuperclass.
-     * @param identifiableType
      */
     protected void addInheritingType(IdentifiableTypeImpl identifiableType) {
         // The Map will always be instantiated in the constructor
@@ -78,9 +77,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     /**
      * INTERNAL:
      * Return an instance of a MappedSuperclassType based on the RelationalDescriptor.
-     * @param metamodel
-     * @param relationalDescriptor
-     * @return
      */
     protected static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, ClassDescriptor relationalDescriptor) {
         MappedSuperclassTypeImpl<?> mappedSuperclassTypeImpl = new MappedSuperclassTypeImpl(metamodel, relationalDescriptor);
@@ -91,8 +87,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * INTERNAL:
      *    MappedSuperclasses need special handling to get their type from an inheriting subclass.
      *    This function determines the type for an attribute by returning the same inherited attribute from a subclass
-     * @param name
-     * @return
      */
     public AttributeImpl getMemberFromInheritingType(String name) {
         AttributeImpl inheritedAttribute = null;
@@ -102,7 +96,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
             Map inheritingTypeMembers = inheritingType.getMembers();
             if ((null == inheritingTypeMembers) && inheritingType.isMappedSuperclass()) {
                //not initialized
-               ((ManagedTypeImpl) inheritingType).initialize();
+               inheritingType.initialize();
                inheritingTypeMembers = inheritingType.getMembers();
             }
 
@@ -139,7 +133,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     /**
      * INTERNAL:
      * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)
-     * @return
      */
     @Override
     public boolean isEntity() {
@@ -149,7 +142,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     /**
      * INTERNAL:
      * Return whether this type is an MappedSuperclass (true) or Entity (false) or Embeddable (false)
-     * @return
      */
     @Override
     public boolean isMappedSuperclass() {

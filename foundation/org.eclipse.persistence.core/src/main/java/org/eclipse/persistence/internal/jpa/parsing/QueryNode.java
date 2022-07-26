@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 public abstract class QueryNode extends MajorNode {
     private ParseTree parseTree;
 
-    public QueryNode() {
+    protected QueryNode() {
         super();
     }
 
@@ -53,10 +53,9 @@ public abstract class QueryNode extends MajorNode {
 
   /**
    * Compute the Reference class for this query
-   * @param genContext
    * @return the class this query is querying for
    */
-    public Class getReferenceClass(GenerationContext genContext) {
+    public Class<?> getReferenceClass(GenerationContext genContext) {
         return resolveClass(genContext);
     }
 
@@ -76,7 +75,7 @@ public abstract class QueryNode extends MajorNode {
      * Return the class represented in this node.
      */
     @Override
-    public abstract Class resolveClass(GenerationContext context);
+    public abstract Class<?> resolveClass(GenerationContext context);
 
     /**
      * Set the parseTree

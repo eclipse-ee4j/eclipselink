@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,8 +51,6 @@ public class JavaORMConfiguration extends JavaManagedTypeProvider
     /**
      * Creates a new <code>JavaORMConfiguration</code>.
      *
-     * @param mappingBuilder
-     * @param ormXmlFileName
      */
     public JavaORMConfiguration(IMappingBuilder<Member> mappingBuilder, String ormXmlFileName) {
         super(mappingBuilder);
@@ -80,44 +78,30 @@ public class JavaORMConfiguration extends JavaManagedTypeProvider
         return url.toURI().toString();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<IEntity> entities() {
         populate();
         return super.entities();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IEntity getEntity(String entityName) {
         populate();
         return super.getEntity(entityName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(IType type) {
         populate();
         return super.getManagedType(type);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IQuery getNamedQuery(String queryName) {
         populate();
         return queries.get(queryName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Iterable<IManagedType> managedTypes() {
         populate();
@@ -173,7 +157,7 @@ public class JavaORMConfiguration extends JavaManagedTypeProvider
 
     protected void populateQueries(Document document) {
 
-        queries = new HashMap<String, IQuery>();
+        queries = new HashMap<>();
         NodeList nodeList = document.getElementsByTagName("named-query");
 
         for (int index = nodeList.getLength(); --index >= 0; ) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
- * <p>Purpose<b></b>:
+ * <p><b>Purpose</b>:
  * All the test cases are subclassed from this class.
  * Each test case tests single feature of TopLink. Ideally a test case consists of five steps.
  * Setup: Performs all the initial setup that is required by the test,
@@ -72,6 +72,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Reset the JUnit name in case serialization looses it.
      */
+    @Override
     public String getName() {
         if (super.getName() == null) {
             setName(this.name);
@@ -82,6 +83,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Store the test name locally to ensure it can serialize.
      */
+    @Override
     public void setName(String name) {
        super.setName(name);
        this.name = name;
@@ -90,6 +92,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Append test case result to the test results summary.
      */
+    @Override
     public void appendTestResult(TestResultsSummary summary) {
         summary.appendTestCaseResult(this);
     }
@@ -97,6 +100,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Computes the level for indentation.
      */
+    @Override
     public void computeNestedLevel() {
         TestEntity testContainer = getContainer();
 
@@ -126,6 +130,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * if no explicit login is done for testing. This method must be overridden in
      * the subclasses if different login is required.
      */
+    @Override
     public Session defaultLogin() {
         return (new TestSystem()).login();
     }
@@ -136,6 +141,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Only RuntimeExceptions are caught because all EclipseLink Exceptions are derived from
      * RuntimeException. This takes care of other java runtime exceptions also.
      */
+    @Override
     public void execute(TestExecutor executor) {
         boolean executeFailed = false;
         setTestResult(new TestResult(this, "Passed"));
@@ -227,6 +233,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * This method is called before a test is executed.
      * Calls old setup method by default.
      */
+    @Override
     protected void setUp() throws Exception {
         try {
             setup();
@@ -244,6 +251,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * This method is called after a test is executed.
      * Calls old reset method by default.
      */
+    @Override
     protected void tearDown() throws Exception {
         try {
             reset();
@@ -261,6 +269,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * If there is no executor,
      * Create a default executor and run the test.
      */
+    @Override
     public void runBare() throws Throwable {
         TestExecutor executor = getExecutor();
         if (executor == null) {
@@ -276,6 +285,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Return test collection which contains this test entity.
      */
+    @Override
     public TestEntity getContainer() {
         return container;
     }
@@ -304,6 +314,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Return the nested counter value
      */
+    @Override
     public int getNestedCounter() {
         return nestedCounter;
     }
@@ -312,6 +323,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Return the test result. The testResult stores the result of this
      * test.
      */
+    @Override
     public ResultInterface getReport() {
         return getTestResult();
     }
@@ -385,6 +397,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         return testResult;
     }
 
+    @Override
     public void incrementNestedCounter() {
         setNestedCounter(getNestedCounter() + 1);
     }
@@ -393,6 +406,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * The result of the test is logged on to the specified print stream.
      * This method is added to migrate tests to Ora*Tst
      */
+    @Override
     public void logRegressionResult(Writer log) {
         computeNestedLevel();
         setIndentationString(Helper.getTabs(getNestedCounter()));
@@ -409,6 +423,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * The result of the test is logged on to the specified print stream.
      */
+    @Override
     public void logResult(Writer log, boolean shouldLogOnlyErrors) {
         logResult(log);
     }
@@ -416,6 +431,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * The result of the test is logged on to the specified print stream.
      */
+    @Override
     public void logResult(Writer log) {
         computeNestedLevel();
         setIndentationString(Helper.getTabs(getNestedCounter()));
@@ -430,6 +446,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         getTestResult().logResult(log);
     }
 
+    @Override
     public boolean requiresDatabase() {
         return true;
     }
@@ -445,6 +462,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Reset the entity.
      */
+    @Override
     public void resetEntity() {
         try {
             reset();
@@ -457,6 +475,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         }
     }
 
+    @Override
     public void resetNestedCounter() {
         setNestedCounter(INITIAL_VALUE);
     }
@@ -470,6 +489,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         return;
     }
 
+    @Override
     public void setContainer(TestEntity testEntity) {
         container = testEntity;
     }
@@ -498,6 +518,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Set the nested counter value.
      */
+    @Override
     public void setNestedCounter(int level) {
         this.nestedCounter = level;
     }
@@ -514,6 +535,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Set the test result.
      */
+    @Override
     public void setReport(ResultInterface testResult) {
         setTestResult((TestResult)testResult);
     }
@@ -539,6 +561,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Override to run the test and assert its state.
      * @exception Throwable if any exception is thrown
      */
+    @Override
     protected void runTest() throws Throwable {
         // Nothing by default.
     }
@@ -617,8 +640,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Same as strongAssert but only throws a warning.  I.e. if the check
      * is how the feature is implemented but not really crucial to how it works,
      * just throw a warning and fix the test later.
-     * @param assertion
-     * @param warningMessage
      */
     public void weakAssert(boolean assertion, String warningMessage) {
         if (!assertion) {
@@ -659,7 +680,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      */
     public void checkNoWaitSupported() {
         DatabasePlatform platform = getSession().getPlatform();
-        if (!(platform.isOracle() || platform.isSQLServer() || platform.isPostgreSQL())) {
+        if (!(platform.isOracle() || platform.isSQLServer() || platform.isPostgreSQL() || platform.isMariaDB())) {
             throw new TestWarningException("This database does not support NOWAIT");
         }
     }

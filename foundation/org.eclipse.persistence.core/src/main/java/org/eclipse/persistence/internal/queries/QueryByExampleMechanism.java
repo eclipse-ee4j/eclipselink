@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,11 +24,11 @@ import org.eclipse.persistence.queries.*;
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for all queries by example.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Builds a selection criteria for this query given an example object and
  * a QueryByExample policy.  Works akin to EBQLMechanism which builds the
- * selection criteria from an EJBQL string.
+ * selection criteria from an EJBQL string.</p>
  *
  * @author Stephen McRitchie
  * @since 9.0.3.5

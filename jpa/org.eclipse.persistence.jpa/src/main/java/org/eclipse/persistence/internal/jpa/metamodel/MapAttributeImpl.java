@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,8 +69,6 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
 
     /**
      * INTERNAL:
-     * @param managedType
-     * @param mapping
      */
     protected MapAttributeImpl(ManagedTypeImpl<X> managedType, CollectionMapping mapping) {
         this(managedType, mapping, false);
@@ -208,9 +206,8 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
      * INTERNAL:
      * Default to the PK of the owning descriptor when no MapKey or MapKey:name attribute is specified.
      * Prerequisites: policy on the mapping is of type MappedKeyMapPolicy
-     * @return
      */
-    private Class getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(MappedKeyMapContainerPolicy policy) {
+    private Class<?> getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(MappedKeyMapContainerPolicy policy) {
         Class<?> javaClass = null;;
         MapKeyMapping mapKeyMapping = policy.getKeyMapping();
         ClassDescriptor descriptor = ((DatabaseMapping)mapKeyMapping).getDescriptor();
@@ -241,6 +238,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
      *  @return Java type
      */
     @Override
+    @SuppressWarnings({"rawtypes"})
     public Class getJavaType() {
         return Map.class;
     }

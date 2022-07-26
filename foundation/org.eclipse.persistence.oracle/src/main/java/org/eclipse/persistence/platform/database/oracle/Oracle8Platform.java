@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,11 +56,18 @@ public class Oracle8Platform extends OraclePlatform {
     protected int lobValueLimits = 0;
 
     /**
+     * Default constructor.
+     */
+    public Oracle8Platform() {
+        super();
+    }
+
+    /**
      * INTERNAL:
      */
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable fieldTypeMapping = super.buildFieldTypes();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = super.buildFieldTypes();
 
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", false));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", false));
@@ -128,7 +135,7 @@ public class Oracle8Platform extends OraclePlatform {
      */
     @Override
     public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind) {
-        Class type = field.getType();
+        Class<?> type = field.getType();
         if (ClassConstants.BLOB.equals(type) || ClassConstants.CLOB.equals(type)) {
             if(value == null) {
                 return null;
@@ -169,7 +176,7 @@ public class Oracle8Platform extends OraclePlatform {
     @Override
     public boolean shouldUseCustomModifyForCall(DatabaseField field) {
         if (shouldUseLocatorForLOBWrite()) {
-            Class type = field.getType();
+            Class<?> type = field.getType();
             if (ClassConstants.BLOB.equals(type) || ClassConstants.CLOB.equals(type)) {
                 return true;
             }
@@ -188,13 +195,13 @@ public class Oracle8Platform extends OraclePlatform {
             Blob blob = (Blob) resultSet.getObject(field.getName());
             blob.setBytes(1, (byte[]) value);
             //impose the localization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", Long.valueOf(blob.length()), field.getName());
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_BLOB", blob.length(), field.getName());
         } else if (isClob(field.getType())) {
             //change for 338585 to use getName instead of getNameDelimited
             Clob clob = (Clob) resultSet.getObject(field.getName());
             clob.setString(1, (String) value);
             //impose the localization
-            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", Long.valueOf(clob.length()), field.getName());
+            session.log(SessionLog.FINEST, SessionLog.SQL, "write_CLOB", clob.length(), field.getName());
         } else {
             //do nothing for now, open to BFILE or NCLOB types
         }
@@ -204,7 +211,7 @@ public class Oracle8Platform extends OraclePlatform {
      * INTERNAL:
      * Used in writeLOB method only to identify a BLOB
      */
-    protected boolean isBlob(Class type) {
+    protected boolean isBlob(Class<?> type) {
         return ClassConstants.BLOB.equals(type);
     }
 
@@ -212,7 +219,7 @@ public class Oracle8Platform extends OraclePlatform {
      * INTERNAL:
      * Used in writeLOB method only to identify a CLOB
      */
-    protected boolean isClob(Class type) {
+    protected boolean isClob(Class<?> type) {
         return ClassConstants.CLOB.equals(type);
     }
 

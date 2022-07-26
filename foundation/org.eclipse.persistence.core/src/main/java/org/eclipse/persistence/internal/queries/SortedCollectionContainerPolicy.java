@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,16 +29,16 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  * <p><b>Purpose</b>: A SortedCollectionContainerPolicy is ContainerPolicy whose
  * container class implements the SortedInterface interface.
  * Added for BUG # 3233263
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
- * Provide the functionality to operate on an instance of a SortedSet.
+ * Provide the functionality to operate on an instance of a SortedSet.</p>
  *
  * @see ContainerPolicy
  * @see MapContainerPolicy
  */
 public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
     protected Comparator m_comparator = null;
-    protected Class  comparatorClass = null ;
+    protected Class<?>  comparatorClass = null ;
     protected String comparatorClassName = null;
 
 
@@ -54,7 +54,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
      * INTERNAL:
      * Construct a new policy for the specified class.
      */
-    public SortedCollectionContainerPolicy(Class containerClass) {
+    public SortedCollectionContainerPolicy(Class<?> containerClass) {
         super(containerClass);
     }
 
@@ -81,7 +81,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
      * Sets a comparator class for this policy to use when instantiating
      * a new SortedSet object.
      */
-    public void setComparatorClass(Class comparatorClass) {
+    public void setComparatorClass(Class<?> comparatorClass) {
         if(Helper.classImplementsInterface(comparatorClass, java.util.Comparator.class)){
             m_comparator=(Comparator)Helper.getInstanceFromClass(comparatorClass);
         }else{
@@ -112,7 +112,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
      * INTERNAL:
      * Return the stored comparator class
      */
-    public Class getComparatorClass() {
+    public Class<?> getComparatorClass() {
         return comparatorClass;
     }
 
@@ -150,12 +150,12 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
             }
             if (m_comparator != null) {
                 Object[] arguments = new Object[] { m_comparator };
-                Class[] constructClass = new Class[] { Comparator.class };
-                Constructor constructor = null;
+                Class<?>[] constructClass = new Class<?>[] { Comparator.class };
+                Constructor<?> constructor = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), constructClass, false));
-                        return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, arguments));
+                        constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), constructClass, false));
+                        return AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, arguments));
                     } catch (PrivilegedActionException exception) {
                         throw QueryException.couldNotInstantiateContainerClass(getContainerClass(), exception.getException());
                     }
@@ -166,7 +166,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
             } else {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getContainerClass()));
+                        return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(getContainerClass()));
                     } catch (PrivilegedActionException exception) {
                         throw QueryException.couldNotInstantiateContainerClass(getContainerClass(), exception.getException());
                     }
@@ -184,7 +184,6 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
      * Convert all the class-name-based settings in this SortedCollectionContainerPolicy to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
@@ -192,7 +191,7 @@ public class SortedCollectionContainerPolicy extends CollectionContainerPolicy {
         if(m_comparator==null){
              if(comparatorClass==null){
                  if(comparatorClassName!=null){
-                      Class comparatorClass = Helper.getClassFromClasseName(comparatorClassName, classLoader);
+                      Class<?> comparatorClass = Helper.getClassFromClasseName(comparatorClassName, classLoader);
                       if(Helper.classImplementsInterface(comparatorClass, java.util.Comparator.class)){
                           m_comparator=(Comparator)Helper.getInstanceFromClass(comparatorClass);
                       }else{

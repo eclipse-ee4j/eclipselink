@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,67 +67,43 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
         this.startIndex = startIndex;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getEndIndex() {
         return endIndex;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EventType getEventType() {
         return eventType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public List<T> getList() {
         return (List<T>) list;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getListName() {
         return listName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public <S extends ListHolderStateObject<? extends T>> S getSource() {
         return (S) source;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getStartIndex() {
         return startIndex;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<T> items() {
-        return new SnapshotCloneListIterable<T>(items);
+        return new SnapshotCloneListIterable<>(items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int itemsSize() {
         return items.size();

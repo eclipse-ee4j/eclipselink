@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import java.util.*;
 public abstract class AttributeDefinition extends CodeDefinition {
     protected String initialValue;
 
-    public AttributeDefinition() {
+    protected AttributeDefinition() {
     }
 
     /**
@@ -34,16 +34,16 @@ public abstract class AttributeDefinition extends CodeDefinition {
      * (and adding the appropriate import) if the type is
      * unambiguous.
      */
-    private void adjustInitialValue(Map typeNameMap) {
+    private void adjustInitialValue(Map<String, Set<String>> typeNameMap) {
         if (getInitialValue() == null) {
             return;
         }
 
         StringBuilder initialValue = new StringBuilder(getInitialValue());
-        Set typeNames = parseForTypeNames(initialValue.toString());
+        Set<String> typeNames = parseForTypeNames(initialValue.toString());
 
-        for (Iterator i = typeNames.iterator(); i.hasNext();) {
-            String typeName = (String)i.next();
+        for (Iterator<String> i = typeNames.iterator(); i.hasNext();) {
+            String typeName = i.next();
             String adjustedTypeName = adjustTypeName(typeName, typeNameMap);
 
             if (!typeName.equals(adjustedTypeName)) {
@@ -59,7 +59,7 @@ public abstract class AttributeDefinition extends CodeDefinition {
         setInitialValue(initialValue.toString());
     }
 
-    protected void adjustTypeNames(Map typeNameMap) {
+    protected void adjustTypeNames(Map<String, Set<String>> typeNameMap) {
         adjustInitialValue(typeNameMap);
     }
 
@@ -72,11 +72,11 @@ public abstract class AttributeDefinition extends CodeDefinition {
     /**
      * Used for calculating imports.  @see org.eclipse.persistence.internal.codegen.ClassDefinition#calculateImports()
      */
-    protected void putTypeNamesInMap(Map typeNameMap) {
+    protected void putTypeNamesInMap(Map<String, Set<String>> typeNameMap) {
         putTypeNameInMap(getTypeName(), typeNameMap);
 
-        for (Iterator i = parseForTypeNames(getInitialValue()).iterator(); i.hasNext();) {
-            putTypeNameInMap((String)i.next(), typeNameMap);
+        for (Iterator<String> i = parseForTypeNames(getInitialValue()).iterator(); i.hasNext();) {
+            putTypeNameInMap(i.next(), typeNameMap);
         }
     }
 

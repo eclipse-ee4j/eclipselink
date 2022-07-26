@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,24 +24,27 @@ import org.eclipse.persistence.testing.models.aggregate.Agent;
 import org.eclipse.persistence.testing.models.aggregate.House;
 
 public class NestedAggregateCollectionAbstractTestCase extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
-    public Class cls;
+    public Class<?> cls;
     public boolean instantiationExceptionOccurred = false;
 
     // Must be Agent or Builder
-    public NestedAggregateCollectionAbstractTestCase(Class cls) {
+    public NestedAggregateCollectionAbstractTestCase(Class<?> cls) {
         super();
         this.cls = cls;
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
     }
 
+    @Override
     public void setup() {
         beginTransaction();
     }
 
+    @Override
     public void test() {
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -67,6 +70,7 @@ public class NestedAggregateCollectionAbstractTestCase extends org.eclipse.persi
         }
     }
 
+    @Override
     public void verify() {
         if (instantiationExceptionOccurred) {
             throw new TestErrorException("EclipseLink attempted to merge an abstract class, when merging an aggregate collection.");

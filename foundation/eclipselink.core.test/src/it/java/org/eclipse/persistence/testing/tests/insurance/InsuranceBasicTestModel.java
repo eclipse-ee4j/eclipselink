@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,11 +39,13 @@ public class InsuranceBasicTestModel extends TestModel {
         setDescription("This model tests reading/writing/deleting using the insurance demo.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new InsuranceSystem());
 
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getReadAllTestSuite());
@@ -76,7 +78,7 @@ public class InsuranceBasicTestModel extends TestModel {
         suite.setName("InsuranceDeleteObjectTestSuite");
         suite.setDescription("This suite tests the deletion of each object in the insurance demo.");
 
-        Class holderClass = PolicyHolder.class;
+        Class<PolicyHolder> holderClass = PolicyHolder.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new DeleteObjectTest(manager.getObject(holderClass, "example1")));
@@ -128,7 +130,7 @@ public class InsuranceBasicTestModel extends TestModel {
         suite.setName("InsuranceReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the insurance demo.");
 
-        Class holderClass = PolicyHolder.class;
+        Class<PolicyHolder> holderClass = PolicyHolder.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(holderClass, "example1")));
@@ -144,7 +146,7 @@ public class InsuranceBasicTestModel extends TestModel {
         suite.setName("InsuranceUpdateObjectTestSuite");
         suite.setDescription("This suite tests the updating of each object in the insurance demo.");
 
-        Class holderClass = PolicyHolder.class;
+        Class<PolicyHolder> holderClass = PolicyHolder.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new WriteObjectTest(manager.getObject(holderClass, "example1")));
@@ -160,6 +162,7 @@ public class InsuranceBasicTestModel extends TestModel {
         public RemovePrivatelyOwnedTestCase() {
             setName("RemovePrivatelyOwnedTestCase");
         }
+        @Override
         public void test() {
             // setup
             UnitOfWork uow = getSession().acquireUnitOfWork();

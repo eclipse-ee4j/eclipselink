@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,10 +17,9 @@ package org.eclipse.persistence.testing.models.inheritance;
 import java.io.*;
 import java.util.Enumeration;
 import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.models.inheritance.PC;
 
 public class Computer implements Serializable {
     public int id;
@@ -35,9 +34,9 @@ public class Computer implements Serializable {
         // As a result, we check for the mapping before adding it.
         // The reason this mapping is not added in the project is that some Mapping Workbench
         // tests rely on the ammendment method.
-        Enumeration mappings = descriptor.getMappings().elements();
+        Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
         while (mappings.hasMoreElements()) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+            DatabaseMapping mapping = mappings.nextElement();
             if (mapping.isTransformationMapping()) {
                 Object ctype = ((TransformationMapping)mapping).getFieldNameToMethodNames().get("CTYPE");
                 if (ctype != null) {
@@ -116,7 +115,7 @@ public class Computer implements Serializable {
         return mainframe;
     }
 
-    public static Class getClassFromRow(org.eclipse.persistence.sessions.Record row) {
+    public static Class<?> getClassFromRow(DataRecord row) {
         if (row.get("CTYPE").equals("PC")) {
             if (row.get("PCTYPE").equals("IBM")) {
                 return org.eclipse.persistence.testing.models.inheritance.IBMPC.class;

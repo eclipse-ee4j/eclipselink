@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,11 +19,11 @@ import java.security.PrivilegedExceptionAction;
 
 public class PrivilegedGetDeclaredField implements PrivilegedExceptionAction<Field> {
 
-    private final Class javaClass;
+    private final Class<?> javaClass;
     private final String fieldName;
     private final boolean shouldSetAccessible;
 
-    public PrivilegedGetDeclaredField(Class javaClass, String fieldName, boolean shouldSetAccessible) {
+    public PrivilegedGetDeclaredField(Class<?> javaClass, String fieldName, boolean shouldSetAccessible) {
         this.javaClass = javaClass;
         this.fieldName = fieldName;
         this.shouldSetAccessible = shouldSetAccessible;

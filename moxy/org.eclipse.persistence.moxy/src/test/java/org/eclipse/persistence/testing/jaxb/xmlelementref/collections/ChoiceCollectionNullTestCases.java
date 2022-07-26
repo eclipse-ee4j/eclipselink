@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,27 +14,20 @@
 //     Denise Smith - February 2012
 package org.eclipse.persistence.testing.jaxb.xmlelementref.collections;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import jakarta.activation.DataHandler;
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
+
 import javax.xml.namespace.QName;
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
-import org.eclipse.persistence.testing.jaxb.xmlelementref.attachment.Employee;
-import org.eclipse.persistence.testing.jaxb.xmlelementref.attachment.ObjectFactory;
 
 public class ChoiceCollectionNullTestCases extends JAXBWithJSONTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/choicecollectionnull.xml";
@@ -44,7 +37,7 @@ public class ChoiceCollectionNullTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[]{Wrapper.class};
+        Class<?>[] classes = new Class<?>[]{Wrapper.class};
         setClasses(classes);
         jaxbUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
 
@@ -59,9 +52,9 @@ public class ChoiceCollectionNullTestCases extends JAXBWithJSONTestCases{
     protected Object getControlObject() {
         Wrapper wrapper = new Wrapper();
         List theList = new ArrayList();
-        JAXBElement jbe = new JAXBElement<DataHandler>(new QName("return"), DataHandler.class, null);
+        JAXBElement<DataHandler> jbe = new JAXBElement<DataHandler>(new QName("return"), DataHandler.class, null);
         theList.add(jbe);
-        JAXBElement jbe2 = new JAXBElement<DataHandler>(new QName("return"), DataHandler.class, null);
+        JAXBElement<DataHandler> jbe2 = new JAXBElement<DataHandler>(new QName("return"), DataHandler.class, null);
         theList.add(jbe2);
         wrapper.content = theList;
         return wrapper;

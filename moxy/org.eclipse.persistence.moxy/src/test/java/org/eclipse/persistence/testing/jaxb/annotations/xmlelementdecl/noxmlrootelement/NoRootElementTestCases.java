@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ public class NoRootElementTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] {Foo.class, ObjectFactory.class});
+        setClasses(new Class<?>[] {Foo.class, ObjectFactory.class});
         jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
     }
 
@@ -47,6 +47,7 @@ public class NoRootElementTestCases extends JAXBWithJSONTestCases{
         return f;
     }
 
+    @Override
     public void setupControlDocs() throws Exception{
 
         Document doc = parser.newDocument();
@@ -62,6 +63,7 @@ public class NoRootElementTestCases extends JAXBWithJSONTestCases{
         controlDocument = doc;
 
     }
+    @Override
     public Document getTestDocument(InputStream is) throws Exception{
 
         byte[] bytes = new byte[is.available()];
@@ -72,6 +74,7 @@ public class NoRootElementTestCases extends JAXBWithJSONTestCases{
         return parser.parse(new InputSource(new StringReader(s)));
      }
 
+     @Override
      public Document getTestDocument(String s) throws Exception{
          s = "<DUMMYROOT>" + s + "</DUMMYROOT>";
          return parser.parse(new InputSource(new StringReader(s)));
@@ -82,6 +85,7 @@ public class NoRootElementTestCases extends JAXBWithJSONTestCases{
         return false;
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception{
         try{
             super.testObjectToContentHandler();
@@ -91,6 +95,7 @@ public class NoRootElementTestCases extends JAXBWithJSONTestCases{
         fail("an error was expected");
     }
 
+    @Override
     public void testObjectToXMLDocument() throws Exception{
         try{
             super.testObjectToXMLDocument();

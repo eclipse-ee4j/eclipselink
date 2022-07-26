@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -91,6 +91,7 @@ import org.eclipse.persistence.internal.sessions.DirectCollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
@@ -175,7 +176,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Referenced by MapAttributeImpl to pick up the BasicMap value parameter type
      * To specify the conversion type
      * */
-    protected transient Class attributeClassification;
+    protected transient Class<?> attributeClassification;
     protected String attributeClassificationName;
 
     /**
@@ -627,9 +628,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 } else {
                     Integer count = (Integer)originalKeyValues.get(secondObject);
                     if (count == null) {
-                        originalKeyValues.put(secondObject, Integer.valueOf(1));
+                        originalKeyValues.put(secondObject, 1);
                     } else {
-                        originalKeyValues.put(secondObject, Integer.valueOf(count.intValue() + 1));
+                        originalKeyValues.put(secondObject, count + 1);
                     }
                 }
             }
@@ -662,15 +663,15 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
                         //Add it to the additions hashtable
                         if (cloneCount == null) {
-                            cloneKeyValues.put(firstObject, Integer.valueOf(1));
+                            cloneKeyValues.put(firstObject, 1);
                         } else {
-                            cloneKeyValues.put(firstObject, Integer.valueOf(cloneCount.intValue() + 1));
+                            cloneKeyValues.put(firstObject, cloneCount + 1);
                         }
-                    } else if (count.intValue() == 1) {
+                    } else if (count == 1) {
                         //There is only one object so remove the whole reference
                         originalKeyValues.remove(firstObject);
                     } else {
-                        originalKeyValues.put(firstObject, Integer.valueOf(count.intValue() - 1));
+                        originalKeyValues.put(firstObject, count - 1);
                     }
                 }
             }
@@ -685,12 +686,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         ((DirectCollectionChangeRecord)changeRecord).setLatestCollection(null);
         //For CR#2258, produce a changeRecord which reflects the addition and removal of null values.
         if (numberOfNewNulls != 0) {
-            ((DirectCollectionChangeRecord)changeRecord).getCommitAddMap().put(null, Integer.valueOf(databaseNullCount));
+            ((DirectCollectionChangeRecord)changeRecord).getCommitAddMap().put(null, databaseNullCount);
             if (numberOfNewNulls > 0) {
-                ((DirectCollectionChangeRecord)changeRecord).addAdditionChange(null, Integer.valueOf(numberOfNewNulls));
+                ((DirectCollectionChangeRecord)changeRecord).addAdditionChange(null, numberOfNewNulls);
             } else {
                 numberOfNewNulls *= -1;
-                ((DirectCollectionChangeRecord)changeRecord).addRemoveChange(null, Integer.valueOf(numberOfNewNulls));
+                ((DirectCollectionChangeRecord)changeRecord).addRemoveChange(null, numberOfNewNulls);
             }
         }
     }
@@ -851,20 +852,20 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                  containerPolicy.hasNext(iter);) {
             Object object = containerPolicy.next(iter, session);
             if (firstCounter.containsKey(object)) {
-                int count = ((Integer)firstCounter.get(object)).intValue();
-                firstCounter.put(object, Integer.valueOf(++count));
+                int count = (Integer) firstCounter.get(object);
+                firstCounter.put(object, ++count);
             } else {
-                firstCounter.put(object, Integer.valueOf(1));
+                firstCounter.put(object, 1);
             }
         }
         for (Object iter = containerPolicy.iteratorFor(secondCollection);
                  containerPolicy.hasNext(iter);) {
             Object object = containerPolicy.next(iter, session);
             if (secondCounter.containsKey(object)) {
-                int count = ((Integer)secondCounter.get(object)).intValue();
-                secondCounter.put(object, Integer.valueOf(++count));
+                int count = (Integer) secondCounter.get(object);
+                secondCounter.put(object, ++count);
             } else {
-                secondCounter.put(object, Integer.valueOf(1));
+                secondCounter.put(object, 1);
             }
         }
         for (Iterator iterator = firstCounter.keySet().iterator(); iterator.hasNext();) {
@@ -936,7 +937,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
@@ -950,19 +950,19 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
         // Instantiate any custom converter class
         if (valueConverterClassName != null) {
-            Class valueConverterClass;
+            Class<?> valueConverterClass;
             Converter valueConverter;
 
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        valueConverterClass = AccessController.doPrivileged(new PrivilegedClassForName(valueConverterClassName, true, classLoader));
+                        valueConverterClass = AccessController.doPrivileged(new PrivilegedClassForName<>(valueConverterClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(valueConverterClassName, exception.getException());
                     }
 
                     try {
-                        valueConverter = (Converter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(valueConverterClass));
+                        valueConverter = (Converter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(valueConverterClass));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(valueConverterClassName, exception.getException());
                     }
@@ -987,7 +987,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
-                            attributeClassification = AccessController.doPrivileged(new PrivilegedClassForName(attributeClassificationName, true, classLoader));
+                            attributeClassification = AccessController.doPrivileged(new PrivilegedClassForName<>(attributeClassificationName, true, classLoader));
                         } catch (PrivilegedActionException pae) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(attributeClassificationName, pae.getException());
                         }
@@ -1147,7 +1147,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * are primitives, so they do not need to be replaced.
      */
     @Override
-    public void fixRealObjectReferences(Object object, Map objectInformation, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixRealObjectReferences(Object object, Map<Object, ObjectDescriptor> objectInformation, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // do nothing
     }
 
@@ -1160,7 +1160,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * @since Java Persistence API 2.0
      */
     @Override
-    public Class getAttributeClassification() {
+    public Class<?> getAttributeClassification() {
         return attributeClassification;
     }
 
@@ -1213,7 +1213,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public Vector getSelectFields() {
-        Vector fields = new NonSynchronizedVector(2);
+        Vector<DatabaseField> fields = new NonSynchronizedVector<>(2);
         fields.add(getDirectField());
         return fields;
     }
@@ -1225,7 +1225,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     @Override
     public Vector getSelectTables() {
-        Vector tables = new NonSynchronizedVector(0);
+        Vector<DatabaseTable> tables = new NonSynchronizedVector<>(0);
         tables.add(getReferenceTable());
         return tables;
     }
@@ -1283,7 +1283,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * maintaining object identity.
      */
     @Override
-    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query) {
         return object;
     }
 
@@ -1326,7 +1326,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * This cannot be used with direct collection mappings.
      */
     @Override
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return null;
     }
 
@@ -1351,9 +1351,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public Vector getReferenceKeyFieldNames() {
         Vector fieldNames = new Vector(getReferenceKeyFields().size());
-        for (Enumeration fieldsEnum = getReferenceKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+        for (Enumeration<DatabaseField> fieldsEnum = getReferenceKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -1418,9 +1418,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public Vector getSourceKeyFieldNames() {
         Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration fieldsEnum = getSourceKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(((DatabaseField)fieldsEnum.nextElement()).getQualifiedName());
+        for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
+             fieldsEnum.hasMoreElements();) {
+            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
         }
 
         return fieldNames;
@@ -1752,9 +1752,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         SQLInsertStatement statement = new SQLInsertStatement();
         statement.setTable(getReferenceTable());
         AbstractRecord directRow = new DatabaseRecord();
-        for (Enumeration referenceEnum = getReferenceKeyFields().elements();
-                 referenceEnum.hasMoreElements();) {
-            directRow.put((DatabaseField)referenceEnum.nextElement(), null);
+        for (Enumeration<DatabaseField> referenceEnum = getReferenceKeyFields().elements();
+             referenceEnum.hasMoreElements();) {
+            directRow.put(referenceEnum.nextElement(), null);
         }
         directRow.put(getDirectField(), null);
         if(listOrderField != null) {
@@ -1781,8 +1781,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             throw DescriptorException.noReferenceKeyIsSpecified(this);
         }
 
-        for (Enumeration referenceEnum = getReferenceKeyFields().elements(); referenceEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)referenceEnum.nextElement();
+        for (Enumeration<DatabaseField> referenceEnum = getReferenceKeyFields().elements(); referenceEnum.hasMoreElements();) {
+            DatabaseField field = referenceEnum.nextElement();
 
             // Update the field first if the mapping is on a table per tenant entity.
             if (getDescriptor().hasTablePerMultitenantPolicy()) {
@@ -1929,7 +1929,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     /**
      * INTERNAL:
      * Return whether this mapping should be traversed when we are locking
-     * @return
      */
     @Override
     public boolean isLockableMapping(){
@@ -1975,7 +1974,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()&& !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         ContainerPolicy containerPolicy = getContainerPolicy();
@@ -2038,7 +2037,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         // Next iterate over the changes and add them to the container
         for (Iterator iterator = addObjects.keySet().iterator(); iterator.hasNext();) {
             Object object = iterator.next();
-            int objectCount = ((Integer)addObjects.get(object)).intValue();
+            int objectCount = (Integer) addObjects.get(object);
             for (int i = 0; i < objectCount; ++i) {
                 if (mergeManager.shouldMergeChangesIntoDistributedCache()) {
                     //bug#4458089 and 4544532- check if collection contains new item before adding during merge into distributed cache
@@ -2052,7 +2051,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
         for (Iterator iterator = removeObjects.keySet().iterator(); iterator.hasNext();) {
             Object object = iterator.next();
-            int objectCount = ((Integer)removeObjects.get(object)).intValue();
+            int objectCount = (Integer) removeObjects.get(object);
             for (int i = 0; i < objectCount; ++i) {
                 containerPolicy.removeFrom(object, valueOfTarget, session);
             }
@@ -2065,7 +2064,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             int oldSize = changeRecord.getOldSize();
             int newSize = changeRecord.getNewSize();
             int delta = newSize - oldSize;
-            Object newTail[] = null;
+            Object[] newTail = null;
             if(delta > 0) {
                 newTail = new Object[delta];
             }
@@ -2106,7 +2105,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation() && !this.isCacheable && !targetSession.isProtectedSession()){
-            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder(null)));
+            setAttributeValueInObject(target, this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null)));
             return;
         }
         if (isTargetUnInitialized) {
@@ -2151,7 +2150,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 fireCollectionChangeEvents = true;
                 //Collections may not be indirect list or may have been replaced with user collection.
                 Object iterator = containerPolicy.iteratorFor(valueOfTarget);
-                Integer zero = Integer.valueOf(0);//remove does not seem to use index.
+                Integer zero = 0;//remove does not seem to use index.
                 while (containerPolicy.hasNext(iterator)) {
                     // Bug304251: let the containerPolicy build the proper remove CollectionChangeEvent
                     CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, containerPolicy.next(iterator, mergeManager.getSession()), CollectionChangeEvent.REMOVE, zero, false);
@@ -2175,7 +2174,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             Object sourceValue = containerPolicy.next(sourceValuesIterator, mergeManager.getSession());
             if (fireCollectionChangeEvents) {
                 // Bug304251: let the containerPolicy build the proper remove CollectionChangeEvent
-                CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, sourceValue, CollectionChangeEvent.ADD, Integer.valueOf(i), false);
+                CollectionChangeEvent event = containerPolicy.createChangeEvent(target, getAttributeName(), valueOfTarget, sourceValue, CollectionChangeEvent.ADD, i, false);
                 listener.internalPropertyChange(event);
             }
             containerPolicy.addInto(sourceValue, valueOfTarget, mergeManager.getSession());
@@ -2429,7 +2428,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             writeQuery.getSession().getCommitManager().addDataModificationEvent(this, event);
             Integer count = (Integer)changeRecord.getCommitAddMap().get(object);
             if (count != null) {
-                for (int counter = count.intValue(); counter > 0; --counter) {
+                for (int counter = count; counter > 0; --counter) {
                     thisRow = writeQuery.getTranslationRow().clone();
                     thisRow.add(getDirectField(), value);
                     // Hey I might actually want to use an inner class here... ok array for now.
@@ -2445,7 +2444,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                  iterator.hasNext();) {
             Object object = iterator.next();
             Integer count = (Integer)changeRecord.getAddObjectMap().get(object);
-            for (int counter = count.intValue(); counter > 0; --counter) {
+            for (int counter = count; counter > 0; --counter) {
                 AbstractRecord thisRow = writeQuery.getTranslationRow().clone();
                 Object value = object;
                 if (getValueConverter() != null) {
@@ -2481,7 +2480,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         }
 
         boolean shouldRepairOrder = false;
-        if((List)changeRecord.getLatestCollection() instanceof IndirectList) {
+        if(changeRecord.getLatestCollection() instanceof IndirectList) {
             shouldRepairOrder = ((IndirectList)changeRecord.getLatestCollection()).isListOrderBrokenInDb();
         }
         if(shouldRepairOrder) {
@@ -2655,9 +2654,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     @Override
     protected void prepareTranslationRow(AbstractRecord translationRow, Object object, ClassDescriptor descriptor, AbstractSession session) {
         // Make sure that each source key field is in the translation row.
-        for (Enumeration sourceFieldsEnum = getSourceKeyFields().elements();
-                 sourceFieldsEnum.hasMoreElements();) {
-            DatabaseField sourceKey = (DatabaseField)sourceFieldsEnum.nextElement();
+        for (Enumeration<DatabaseField> sourceFieldsEnum = getSourceKeyFields().elements();
+             sourceFieldsEnum.hasMoreElements();) {
+            DatabaseField sourceKey = sourceFieldsEnum.nextElement();
             if (!translationRow.containsKey(sourceKey)) {
                 Object value = descriptor.getObjectBuilder().extractValueFromObjectForField(object, sourceKey, session);
                 translationRow.put(sourceKey, value);
@@ -2716,7 +2715,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * @since Java Persistence API 2.0
      * Migrated from AbstractDirectMapping
      */
-    public void setAttributeClassification(Class attributeClassification) {
+    public void setAttributeClassification(Class<?> attributeClassification) {
         this.attributeClassification = attributeClassification;
     }
 
@@ -2821,7 +2820,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * has specific typing requirements such as usage of java.sql.Blob or NChar.
      * This must be called after the field name has been set.
      */
-    public void setDirectFieldClassification(Class fieldType) {
+    public void setDirectFieldClassification(Class<?> fieldType) {
         getDirectField().setType(fieldType);
     }
 
@@ -2877,7 +2876,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * This cannot be used with direct collection mappings.
      */
     @Override
-    public void setReferenceClass(Class referenceClass) {
+    public void setReferenceClass(Class<?> referenceClass) {
         return;
     }
 
@@ -3068,7 +3067,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             }
         }
         if(!collectionChangeRecord.isDeferred() && this.listOrderField == null) {
-            collectionChangeRecord.addAdditionChange(objectToAdd, Integer.valueOf(1));
+            collectionChangeRecord.addAdditionChange(objectToAdd, 1);
         }
     }
 
@@ -3110,7 +3109,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             }
         }
         if(!collectionChangeRecord.isDeferred() && this.listOrderField == null) {
-            collectionChangeRecord.addRemoveChange(objectToRemove, Integer.valueOf(1));
+            collectionChangeRecord.addRemoveChange(objectToRemove, 1);
         }
     }
 
@@ -3171,7 +3170,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * @see org.eclipse.persistence.mappings.DirectMapMapping
      */
     @Override
-    public void useMapClass(Class concreteClass, String methodName) {
+    public void useMapClass(Class<?> concreteClass, String methodName) {
         throw ValidationException.illegalUseOfMapInDirectCollection(this, concreteClass, methodName);
     }
 
@@ -3197,7 +3196,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 }
                 return result;
             } else if (!this.isCacheable && !isTargetProtected && cacheKey != null) {
-                return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
+                return this.indirectionPolicy.buildIndirectObject(new ValueHolder<>(null));
             }
         }
         if (row.hasSopObject()) {

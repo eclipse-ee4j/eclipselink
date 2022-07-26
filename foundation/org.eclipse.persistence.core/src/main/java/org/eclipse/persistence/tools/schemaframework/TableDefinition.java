@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,7 +82,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Add the field to the table, default sizes are used.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addField(String fieldName, Class type) {
+    public void addField(String fieldName, Class<?> type) {
         this.addField(new FieldDefinition(fieldName, type));
     }
 
@@ -91,7 +91,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Add the field to the table.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addField(String fieldName, Class type, int fieldSize) {
+    public void addField(String fieldName, Class<?> type, int fieldSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize));
     }
 
@@ -100,7 +100,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Add the field to the table.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addField(String fieldName, Class type, int fieldSize, int fieldSubSize) {
+    public void addField(String fieldName, Class<?> type, int fieldSize, int fieldSubSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize, fieldSubSize));
     }
 
@@ -209,7 +209,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * The field must be of number type and cannot have a subsize.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addIdentityField(String fieldName, Class type) {
+    public void addIdentityField(String fieldName, Class<?> type) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type);
         fieldDef.setIsIdentity(true);
         fieldDef.setIsPrimaryKey(true);
@@ -223,7 +223,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * The field must be of number type and cannot have a subsize.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addIdentityField(String fieldName, Class type, int fieldSize) {
+    public void addIdentityField(String fieldName, Class<?> type, int fieldSize) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type, fieldSize);
         fieldDef.setIsIdentity(true);
         fieldDef.setIsPrimaryKey(true);
@@ -236,7 +236,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * This field is set as part of the primary key.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addPrimaryKeyField(String fieldName, Class type) {
+    public void addPrimaryKeyField(String fieldName, Class<?> type) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type);
         fieldDef.setIsPrimaryKey(true);
         addField(fieldDef);
@@ -248,7 +248,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * This field is set as part of the primary key.
      * @param type is the Java class type corresponding to the database type.
      */
-    public void addPrimaryKeyField(String fieldName, Class type, int fieldSize) {
+    public void addPrimaryKeyField(String fieldName, Class<?> type, int fieldSize) {
         FieldDefinition fieldDef = new FieldDefinition(fieldName, type, fieldSize);
         fieldDef.setIsPrimaryKey(true);
         addField(fieldDef);
@@ -550,8 +550,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Build a foreign key constraint using FieldDefinition.getForeignKeyFieldName().
      */
     protected ForeignKeyConstraint buildForeignKeyConstraint(FieldDefinition field, DatabasePlatform platform) {
-        Vector sourceFields = new Vector();
-        Vector targetFields = new Vector();
+        List<String> sourceFields = new Vector<>();
+        List<String> targetFields = new Vector<>();
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
         DatabaseField tempTargetField = new DatabaseField(field.getForeignKeyFieldName());
         DatabaseField tempSourceField = new DatabaseField(field.getName());
@@ -791,16 +791,16 @@ public class TableDefinition extends DatabaseObjectDefinition {
     public Object clone() {
         TableDefinition clone = (TableDefinition)super.clone();
         if (fields != null) {
-            clone.setFields(new ArrayList<FieldDefinition>(fields.size()));
+            clone.setFields(new ArrayList<>(fields.size()));
             for (FieldDefinition fieldDef : getFields()) {
                 clone.addField((FieldDefinition)fieldDef.clone());
             }
         }
         if (foreignKeyMap != null) {
-            clone.setForeignKeyMap(new HashMap(this.foreignKeyMap));
+            clone.setForeignKeyMap(new HashMap<>(this.foreignKeyMap));
         }
         if (uniqueKeys != null) {
-            clone.setUniqueKeys(new ArrayList(this.uniqueKeys));
+            clone.setUniqueKeys(new ArrayList<>(this.uniqueKeys));
         }
         return clone;
     }
@@ -1309,8 +1309,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
     /**
      * Execute any statements required after the creation of the object
-     * @param session
-     * @param createSchemaWriter
      */
     @Override
     public void postCreateObject(AbstractSession session, Writer createSchemaWriter, boolean createSQLFiles){
@@ -1321,8 +1319,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
     /**
      * Execute any statements required before the deletion of the object
-     * @param session
-     * @param dropSchemaWriter
      */
     @Override
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,103 +43,128 @@ public class EmployeeImpl implements Employee {
         this.managedEmployees = new Vector();
     }
 
+    @Override
     public void addManagedEmployee(Employee value) {
         getManagedEmployees().add(value);
         value.setManager(this);
     }
 
+    @Override
     public Address getAddress() {
         return this.address;
     }
 
+    @Override
     public int getAge() {
         return this.age;
     }
 
+    @Override
     public Contact getContact() {
         return this.contact;
     }
 
+    @Override
     public int getCubicleID() {
         return this.cubicleID;
     }
 
+    @Override
     public String getFirstName() {
         return this.firstName;
     }
 
+    @Override
     public String getGender() {
         return this.gender;
     }
 
+    @Override
     public int getID() {
         return this.id;
     }
 
+    @Override
     public String getLastName() {
         return this.lastName;
     }
 
+    @Override
     public Collection getManagedEmployees() {
         return this.managedEmployees;
     }
 
+    @Override
     public Employee getManager() {
         return this.manager;
     }
 
+    @Override
     public Project getProject() {
         return this.project;
     }
 
+    @Override
     public LargeProject getLargeProject() {
         return this.largeProject;
     }
 
+    @Override
     public void setAddress(Address value) {
         this.address = value;
     }
 
+    @Override
     public void setAge(int value) {
         this.age = value;
     }
 
+    @Override
     public void setContact(Contact value) {
         this.contact = value;
     }
 
+    @Override
     public void setCubicleID(int value) {
         this.cubicleID = value;
     }
 
+    @Override
     public void setFirstName(String value) {
         this.firstName = value;
     }
 
+    @Override
     public void setGender(String value) {
         this.gender = value;
     }
 
+    @Override
     public void setID(int value) {
         this.id = value;
     }
 
+    @Override
     public void setLastName(String value) {
         this.lastName = value;
     }
 
+    @Override
     public void setManagedEmployees(Collection value) {
         this.managedEmployees = value;
     }
 
+    @Override
     public void setManager(Employee value) {
         this.manager = value;
     }
 
+    @Override
     public void setProject(Project value) {
         this.project = value;
     }
 
+    @Override
     public void setLargeProject(LargeProject value) {
         this.largeProject = value;
     }

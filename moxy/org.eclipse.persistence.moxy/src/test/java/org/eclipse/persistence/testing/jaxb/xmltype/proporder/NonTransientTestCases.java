@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ public class NonTransientTestCases extends TestCase {
 
     public void testCreateContext() {
         try {
-            JAXBContextFactory.createContext(new Class[] {ChildOfRoot.class}, null);
+            JAXBContextFactory.createContext(new Class<?>[] {ChildOfRoot.class}, null);
         } catch(jakarta.xml.bind.JAXBException e) {
             JAXBException jaxbException = (JAXBException) e.getCause();
             assertEquals(JAXBException.NON_EXISTENT_PROPERTY_IN_PROP_ORDER, jaxbException.getErrorCode());

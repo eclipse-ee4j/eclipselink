@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class XmlIdRefExceptionTestCases extends OXTestCase {
@@ -38,15 +39,15 @@ public class XmlIdRefExceptionTestCases extends OXTestCase {
          * Negative test.
          */
     public void testNoIdException(){
-        Class[] classes = new Class[] { Employee2.class, Address2.class };
+        Class<?>[] classes = new Class<?>[] { Employee2.class, Address2.class };
         boolean ex = false;
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlidref/eclipselink-oxm-no-id.xml");
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(classes, properties);
         } catch (JAXBException e) {
@@ -63,15 +64,15 @@ public class XmlIdRefExceptionTestCases extends OXTestCase {
      * Negative test.
      */
     public void testMultipleIdException(){
-        Class[] classes = new Class[] { Employee2.class, Address2.class };
+        Class<?>[] classes = new Class<?>[] { Employee2.class, Address2.class };
         boolean ex = false;
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlidref/eclipselink-oxm-multi-id.xml");
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(classes, properties);
         } catch (JAXBException e) {
@@ -88,15 +89,15 @@ public class XmlIdRefExceptionTestCases extends OXTestCase {
      * Negative test.
      */
     public void testMultipleId2Exception(){
-        Class[] classes = new Class[] { Employee2.class, Address2.class };
+        Class<?>[] classes = new Class<?>[] { Employee2.class, Address2.class };
         boolean ex = false;
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlidref/eclipselink-oxm-multi-id2.xml");
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(classes, properties);
         } catch (JAXBException e) {
@@ -113,15 +114,15 @@ public class XmlIdRefExceptionTestCases extends OXTestCase {
      * Negative test.
      */
       public void testInvalidRefClass() {
-          Class[] classes = new Class[] { Employee2.class, Address2.class };
+          Class<?>[] classes = new Class<?>[] { Employee2.class, Address2.class };
         boolean ex = false;
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlidref/invalid-ref-class-oxm.xml");
 
-            HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+            HashMap<String, Source> metadataSourceMap = new HashMap<>();
             metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref", new StreamSource(inputStream));
-            Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
             JAXBContextFactory.createContext(classes, properties);
         } catch (JAXBException e) {

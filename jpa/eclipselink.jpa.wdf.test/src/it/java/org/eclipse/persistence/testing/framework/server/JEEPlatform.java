@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2015 SAP. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class JEEPlatform implements ServerPlatform {
     /**
      * Return if the JTA transaction is active.
      */
+    @Override
     public boolean isTransactionActive() {
         try {
             return getUserTransaction().getStatus() != Status.STATUS_NO_TRANSACTION;
@@ -48,6 +49,7 @@ public class JEEPlatform implements ServerPlatform {
     /**
      * Return if the JTA transaction is roll back only.
      */
+    @Override
     public boolean getRollbackOnly() {
         try {
             return getUserTransaction().getStatus() != Status.STATUS_ACTIVE;
@@ -59,6 +61,7 @@ public class JEEPlatform implements ServerPlatform {
     /**
      * Start a new JTA transaction.
      */
+    @Override
     public void beginTransaction() {
         try {
             getUserTransaction().begin();
@@ -70,6 +73,7 @@ public class JEEPlatform implements ServerPlatform {
     /**
      * Commit the existing JTA transaction.
      */
+    @Override
     public void commitTransaction() {
         try {
             getUserTransaction().commit();
@@ -81,6 +85,7 @@ public class JEEPlatform implements ServerPlatform {
     /**
      * Roll back the existing JTA transaction.
      */
+    @Override
     public void rollbackTransaction() {
         try {
             getUserTransaction().rollback();
@@ -100,6 +105,7 @@ public class JEEPlatform implements ServerPlatform {
     /**
      * Mark the existing JTA transaction for rollback.
      */
+    @Override
     public void setTransactionForRollback() {
         try {
             getUserTransaction().setRollbackOnly();
@@ -109,15 +115,9 @@ public class JEEPlatform implements ServerPlatform {
     }
 
     /**
-     * Is the platform Oracle?
-     */
-    public boolean isOc4j() {
-        return false;
-    }
-
-    /**
      * Is the platform Weblogic?
      */
+    @Override
     public boolean isWeblogic() {
         return false;
     }
@@ -125,6 +125,7 @@ public class JEEPlatform implements ServerPlatform {
     /**
      * Is the platform JBoss?
      */
+    @Override
     public boolean isJBoss() {
         return false;
     }
@@ -132,6 +133,7 @@ public class JEEPlatform implements ServerPlatform {
     /**
      * Is the platform clustered?
      */
+    @Override
     public boolean isClustered() {
         return false;
     }
@@ -139,6 +141,7 @@ public class JEEPlatform implements ServerPlatform {
     /**
      * Return the managed EntityManager for the persistence unit.
      */
+    @Override
     public EntityManager getEntityManager(String persistenceUnit) {
         if (entityManager != null) {
             return entityManager;
@@ -154,6 +157,7 @@ public class JEEPlatform implements ServerPlatform {
     /**
      * Return the managed EntityManagerFactory for the persistence unit.
      */
+    @Override
     public EntityManagerFactory getEntityManagerFactory(String persistenceUnit) {
         if (entityManagerFactory != null) {
             return entityManagerFactory;

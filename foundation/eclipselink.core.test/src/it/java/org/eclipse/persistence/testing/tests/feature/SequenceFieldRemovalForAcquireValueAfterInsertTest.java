@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
         setDescription("Tests removing the sequence field from an SQL insert statement, when Sequencing shouldAcquireValueAfterInsert is true");
     }
 
+    @Override
     public void setup() {
         this.descriptor = getSession().getDescriptor(SeqTestClass1.class);
 
@@ -70,6 +71,7 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
         beginTransaction();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getDatabaseSession().acquireUnitOfWork();
 
@@ -91,6 +93,7 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         if (sqlListener != null) {
@@ -109,6 +112,7 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
         }
     }
 
+    @Override
     public void verify() {
         String fieldName = descriptor.getSequenceNumberField().getName();
         String qualifiedFieldName = descriptor.getSequenceNumberField().getQualifiedName();
@@ -123,6 +127,7 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
 
         protected String sqlString;
 
+        @Override
         public void postInsert(DescriptorEvent event) {
            sqlString = event.getQuery().getSQLString();
         }
@@ -137,8 +142,9 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
 
         public static final String OMISSION_MARKER = "omit_this_field";
 
+        @Override
         public void aboutToInsert(DescriptorEvent event) {
-            org.eclipse.persistence.sessions.Record modifyRow = event.getRecord();
+            DataRecord modifyRow = event.getRecord();
             Object[] keys = modifyRow.keySet().toArray();
             for (int i = 0; i < keys.length; i++) {
                 Object key = keys[i];

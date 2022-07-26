@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class SDOTypeInstanceClassTestCases extends SDOTestCase {
         type.setInstanceClass(null);
         type.setInstanceClassName("org.eclipse.persistence.testing.sdo.model.type.USAddress");
 
-        Class theClass = type.getInstanceClass();
+        Class<?> theClass = type.getInstanceClass();
         assertNotNull(theClass);
     }
 
@@ -41,7 +41,7 @@ public class SDOTypeInstanceClassTestCases extends SDOTestCase {
         type.setInstanceClass(null);
         type.setInstanceClassName("org.eclipse.persistence.testing.sdo.myInvalidClass");
 
-        Class theClass = type.getInstanceClass();
+        Class<?> theClass = type.getInstanceClass();
         assertNull(theClass);
     }
 
@@ -81,7 +81,7 @@ public class SDOTypeInstanceClassTestCases extends SDOTestCase {
 
         ((SDOTypeHelper)typeHelper).addType(type);
 
-        DataObject address = (DataObject)dataFactory.create(type);
+        DataObject address = dataFactory.create(type);
         boolean isInstance = type.isInstance(address);
         assertTrue(isInstance);
     }

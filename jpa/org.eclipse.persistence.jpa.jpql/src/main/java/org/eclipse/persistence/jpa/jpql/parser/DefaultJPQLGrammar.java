@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     04/21/2022: Tomas Kraus
+//       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -20,20 +21,16 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 /**
  * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined in the
- * latest JPA functional specification. The current version of the functional specification is
- * <a href="http://jcp.org/en/jsr/detail?id=317">JSR-338 - Java Persistence 2.1</a>.
+ * latest Jakarta Persistence functional specification.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @see JPQLGrammar2_1
  * @see DefaultJPQLGrammar
  * @see DefaultEclipseLinkJPQLGrammar
  *
- * @version 2.5
- * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
@@ -57,44 +54,29 @@ public final class DefaultJPQLGrammar implements JPQLGrammar {
      * @return The singleton instance of this {@link DefaultJPQLGrammar}
      */
     public static JPQLGrammar instance() {
-        return JPQLGrammar2_1.instance();
+        return JPQLGrammar3_1.instance();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ExpressionRegistry getExpressionRegistry() {
         return instance().getExpressionRegistry();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPAVersion getJPAVersion() {
         return instance().getJPAVersion();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getProvider() {
         return instance().getProvider();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getProviderVersion() {
         return ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return instance().toString();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,7 @@ public class Main {
             SignatureReportGenerator gen = new SignatureReportGenerator();
             gen.generateReport(properties, "baseline", "latest", false);
         } else {
-            boolean printAlternatives = printAlternativesValue == null ? false : Boolean.valueOf(printAlternativesValue);
+            boolean printAlternatives = printAlternativesValue == null ? false : Boolean.parseBoolean(printAlternativesValue);
 
             SignatureReportGenerator gen = new SignatureReportGenerator();
             gen.generateReport(properties, "2.1.2", "2.2.0", printAlternatives);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,15 +35,15 @@ import java.util.Iterator;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.eclipse.persistence.oxm.sequenced.Setting;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
 import org.eclipse.persistence.sdo.SDOSetting;
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.ValueStore;
-import org.eclipse.persistence.sdo.helper.SDOClassLoader;
 import org.eclipse.persistence.sdo.helper.SDODataHelper;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
@@ -53,7 +53,6 @@ import commonj.sdo.Type;
 import commonj.sdo.impl.HelperProvider;
 import org.eclipse.persistence.Version;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.platform.xml.XMLComparer;
 
 import static org.eclipse.persistence.sdo.SDOConstants.*;
 
@@ -114,6 +113,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         // default to a static context
     }
 
+    @Override
     public void setUp() {
         xmlComparer = new SDOXMLComparer();
         if (customContext) {
@@ -147,6 +147,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         ((SDOXSDHelper) xsdHelper).reset();
     }
 
+    @Override
     public void tearDown() throws Exception {
 
         ((SDOTypeHelper) typeHelper).reset();
@@ -190,6 +191,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     public void assertSchemaIdentical(Document control, Document test) {
         assertTrue("Node " + control + " is not equal to node " + test, xmlComparer.isSchemaEqual(control, test));
     }
+    @Override
     public String getName() {
         String longClassName = getClass().getName();
         String shortClassName = longClassName.substring(longClassName.lastIndexOf(".") + 1, longClassName.length() - 1);
@@ -403,9 +405,9 @@ public class SDOTestCase extends junit.framework.TestCase {
                     } else if (aType.equals(SDO_CHARACTER)) {
                         assertEquals(0, ((Character)aPropertyValue).charValue());
                     } else if (aType.equals(SDO_DOUBLE)) {
-                        assertEquals(0, ((Double)aPropertyValue).doubleValue());
+                        assertEquals(0, aPropertyValue);
                     } else if (aType.equals(SDO_FLOAT)) {
-                        assertEquals(0, ((Float)aPropertyValue).floatValue());
+                        assertEquals(0, aPropertyValue);
                     } else if (aType.equals(SDO_INT)) {
                         assertEquals(0, ((Integer)aPropertyValue).intValue());
                     } else if (aType.equals(SDO_SHORT)) {
@@ -437,14 +439,14 @@ public class SDOTestCase extends junit.framework.TestCase {
         assertFalse(changeSummary.isCreated(dataObject));
         assertFalse(changeSummary.isModified(dataObject));
         if (!isReAttached) {
-            assertTrue(((SDOChangeSummary) changeSummary).isDeleted(dataObject));
+            assertTrue(changeSummary.isDeleted(dataObject));
             if (dataObject.getSequence() != null) {
                 assertNotNull(changeSummary.getOldSequence(dataObject));
             } else {
                 assertNull(changeSummary.getOldSequence(dataObject));
             }
         } else {
-            assertFalse(((SDOChangeSummary) changeSummary).isDeleted(dataObject));
+            assertFalse(changeSummary.isDeleted(dataObject));
         }
 
         int propertySize = dataObject.getType().getProperties().size();
@@ -488,9 +490,9 @@ public class SDOTestCase extends junit.framework.TestCase {
         assertFalse(changeSummary.isCreated(dataobject));
         assertFalse(changeSummary.isModified(dataobject));
         if (!isReAttached) {
-            assertTrue(((SDOChangeSummary) changeSummary).isDeleted(dataobject));
+            assertTrue(changeSummary.isDeleted(dataobject));
         } else {
-            assertFalse(((SDOChangeSummary) changeSummary).isDeleted(dataobject));
+            assertFalse(changeSummary.isDeleted(dataobject));
         }
 
         int propertySize = dataobject.getType().getProperties().size();
@@ -542,8 +544,6 @@ public class SDOTestCase extends junit.framework.TestCase {
      */
     /**
      *
-     * @param currentDO
-     * @param isCSonAncestor
      */
     public void assertChangeSummaryStatusIfClearedIfCSIsAncestor(DataObject currentDO, boolean isCSonAncestor) {
         if (currentDO != null) {
@@ -582,9 +582,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param aChangeSummary
-     * @param undoneDO
-     * @param originalDO
      */
     protected void assertUndoChangesEqualToOriginal(ChangeSummary aChangeSummary,//
     DataObject undoneDO, DataObject originalDO) {
@@ -606,7 +603,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param aRootObject
      */
     // test undo when logging is off (with previous changes)
     protected void assertValueStoresInitializedAfterLoggingOn(DataObject aRootObject) {
@@ -622,8 +618,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param aRootObject
-     * @param aCurrentValueStoreAfterLoggingFirstOnParam
      */
     protected void assertValueStoresCopiedAndSwappedAfterFirstModifyOperation(DataObject aRootObject, ValueStore aCurrentValueStoreAfterLoggingFirstOnParam) {
         // verify logging is on
@@ -649,8 +643,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param aRootObject
-     * @param aCurrentValueStoreAfterLoggingFirstOnParam
      */
     protected void assertValueStoresReturnedToStartStateAfterUndoChanges(DataObject aRootObject, ValueStore aCurrentValueStoreAfterLoggingFirstOnParam) {
         // verify logging is on
@@ -665,14 +657,12 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param aRootObject
-     * @param aCurrentSequenceAfterLoggingFirstOnParam
      */
     protected void assertSequencesReturnedToStartStateAfterUndoChanges(DataObject aRootObject, Sequence aCurrentSequenceAfterLoggingFirstOnParam) {
         // verify logging is on
         assertTrue(aRootObject.getChangeSummary().isLogging());
         SDOSequence anOriginalSequenceAfterUndo = (SDOSequence) ((SDOChangeSummary) aRootObject.getChangeSummary()).getOriginalSequences().get(aRootObject);
-        SDOSequence aCurrentSequenceAfterUndo = (SDOSequence) ((SDODataObject) aRootObject).getSequence();
+        SDOSequence aCurrentSequenceAfterUndo = ((SDODataObject) aRootObject).getSequence();
         assertNull(anOriginalSequenceAfterUndo);
         assertNotNull(aCurrentSequenceAfterUndo);
         // we return the sequence back to the current VS
@@ -688,10 +678,6 @@ public class SDOTestCase extends junit.framework.TestCase {
      * values are ignored but should be defaults. Note: A setting object should
      * handle its own isEqual() behavior
      *
-     * @param aSequence
-     * @param aSequenceCopy
-     * @param isDeep
-     * @return
      */
     public boolean compareSequences(SDOSequence aSequence, SDOSequence aSequenceCopy, boolean isDeep) {
         // corner case: isSequenced set to true after type definition had not
@@ -712,8 +698,8 @@ public class SDOTestCase extends junit.framework.TestCase {
         // the settings inside the sequence must be new objects
         SDOSetting originalSetting = null;
         SDOSetting copySetting = null;
-        List originalSettingsList = aSequence.getSettings();
-        List copySettingsList = aSequenceCopy.getSettings();
+        List<? super Setting> originalSettingsList = aSequence.getSettings();
+        List<? super Setting> copySettingsList = aSequenceCopy.getSettings();
         if (null == originalSettingsList || null == copySettingsList) {
             return false;
         }
@@ -812,8 +798,6 @@ public class SDOTestCase extends junit.framework.TestCase {
      * suite on windows without assertEquals() failing. Use the system property
      * -DignoreCRLF=true
      *
-     * @param control
-     * @param test
      * @param removeCRLF
      *            void
      *
@@ -829,11 +813,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param parentType
-     * @param name
-     * @param propType
-     * @param isContainment
-     * @return
      */
     protected DataObject addProperty(DataObject parentType, String name, Type propType, boolean isContainment) {
         DataObject newProperty = addProperty(parentType, name, propType);
@@ -843,12 +822,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param parentType
-     * @param name
-     * @param propType
-     * @param isContainment
-     * @param isMany
-     * @return
      */
     protected DataObject addProperty(DataObject parentType, String name, Type propType, boolean isContainment, boolean isMany) {
         DataObject newProperty = addProperty(parentType, name, propType, isContainment);
@@ -899,9 +872,6 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     /**
      *
-     * @param uri
-     * @param name
-     * @return
      */
     protected DataObject defineType(String uri, String name) {
         DataObject newType = aHelperContext.getDataFactory().create(SDO_URL, TYPE);
@@ -1044,10 +1014,6 @@ public class SDOTestCase extends junit.framework.TestCase {
      * Write to the output stream and return a success flag if no exceptions
      * thrown
      *
-     * @param anObject
-     * @param uri
-     * @param typename
-     * @param aStream
      * @return success flag
      */
     public boolean writeXML(DataObject anObject, String uri, String typename, OutputStream aStream) {

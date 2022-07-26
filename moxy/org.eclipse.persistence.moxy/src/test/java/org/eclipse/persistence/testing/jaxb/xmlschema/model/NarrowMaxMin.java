@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,39 +26,39 @@ import jakarta.xml.bind.annotation.XmlType;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType name="narrowMaxMin">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}localElement">
- *       &lt;sequence>
- *         &lt;element ref="{http://www.w3.org/2001/XMLSchema}annotation" minOccurs="0"/>
- *         &lt;choice minOccurs="0">
- *           &lt;element name="simpleType" type="{http://www.w3.org/2001/XMLSchema}localSimpleType"/>
- *           &lt;element name="complexType" type="{http://www.w3.org/2001/XMLSchema}localComplexType"/>
- *         &lt;/choice>
- *         &lt;group ref="{http://www.w3.org/2001/XMLSchema}identityConstraint" maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="minOccurs" default="1">
- *         &lt;simpleType>
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger">
- *             &lt;enumeration value="0"/>
- *             &lt;enumeration value="1"/>
- *           &lt;/restriction>
- *         &lt;/simpleType>
- *       &lt;/attribute>
- *       &lt;attribute name="maxOccurs" default="1">
- *         &lt;simpleType>
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}allNNI">
- *             &lt;enumeration value="0"/>
- *             &lt;enumeration value="1"/>
- *           &lt;/restriction>
- *         &lt;/simpleType>
- *       &lt;/attribute>
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType name="narrowMaxMin">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}localElement">
+ *       <sequence>
+ *         <element ref="{http://www.w3.org/2001/XMLSchema}annotation" minOccurs="0"/>
+ *         <choice minOccurs="0">
+ *           <element name="simpleType" type="{http://www.w3.org/2001/XMLSchema}localSimpleType"/>
+ *           <element name="complexType" type="{http://www.w3.org/2001/XMLSchema}localComplexType"/>
+ *         </choice>
+ *         <group ref="{http://www.w3.org/2001/XMLSchema}identityConstraint" maxOccurs="unbounded" minOccurs="0"/>
+ *       </sequence>
+ *       <attribute name="minOccurs" default="1">
+ *         <simpleType>
+ *           <restriction base="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger">
+ *             <enumeration value="0"/>
+ *             <enumeration value="1"/>
+ *           </restriction>
+ *         </simpleType>
+ *       </attribute>
+ *       <attribute name="maxOccurs" default="1">
+ *         <simpleType>
+ *           <restriction base="{http://www.w3.org/2001/XMLSchema}allNNI">
+ *             <enumeration value="0"/>
+ *             <enumeration value="1"/>
+ *           </restriction>
+ *         </simpleType>
+ *       </attribute>
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */

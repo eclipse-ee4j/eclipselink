@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,7 +60,7 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
      * Represents the Map that stores log levels per the name space strings. The
      * keys are category names. The values are log levels.
      */
-    private Map<String, Integer> categoryLogLevelMap = new HashMap();
+    private final Map<String, Integer> categoryLogLevelMap = new HashMap<>();
 
     public DefaultSessionLog() {
         super();
@@ -100,7 +100,6 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
     /**
      * Check if a message of the given level would actually be logged by the
      * logger with name space built from the given session and category.
-     * <p>
      *
      * @return true if the given message level will be logged for the given
      *         category

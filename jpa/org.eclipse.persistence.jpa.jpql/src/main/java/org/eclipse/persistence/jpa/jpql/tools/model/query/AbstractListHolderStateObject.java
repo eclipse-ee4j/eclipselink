@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,7 +60,7 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
      */
     protected AbstractListHolderStateObject(StateObject parent, List<? extends T> items) {
         super(parent);
-        this.items = new ArrayList<T>(items);
+        this.items = new ArrayList<>(items);
         parent(items);
     }
 
@@ -71,41 +71,31 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
      * @param items The list of {@link StateObject StateObjects} to add as children to this one
      * @exception NullPointerException The given parent cannot be <code>null</code>
      */
+    @SafeVarargs
+    @SuppressWarnings({"varargs"})
     protected AbstractListHolderStateObject(StateObject parent, T... items) {
         super(parent);
         this.items = new ArrayList<>();
         Collections.addAll(this.items, parent(items));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
         children.addAll(items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <S extends T> S addItem(S item) {
         getChangeSupport().addItem(this, this.items, listName(), parent(item));
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addItems(List<? extends T> items) {
         getChangeSupport().addItems(this, this.items, listName(), parent(items));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addListChangeListener(String listName, IListChangeListener<T> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
@@ -139,58 +129,37 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canMoveDown(T stateObject) {
         return getChangeSupport().canMoveDown(items, stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canMoveUp(T stateObject) {
         return getChangeSupport().canMoveUp(items, stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public T getItem(int index) {
         return items.get(index);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasItems() {
         return !items.isEmpty();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
-        items = new ArrayList<T>();
+        items = new ArrayList<>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<? extends T> items() {
-        return new SnapshotCloneListIterable<T>(items);
+        return new SnapshotCloneListIterable<>(items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int itemsSize() {
         return items.size();
@@ -203,43 +172,28 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
      */
     protected abstract String listName();
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public T moveDown(T item) {
         getChangeSupport().moveDown(this, items, listName(), item);
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public T moveUp(T item) {
         getChangeSupport().moveUp(this, items, listName(), item);
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeItem(T stateObject) {
         getChangeSupport().removeItem(this, items, listName(), stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeItems(Collection<T> items) {
         getChangeSupport().removeItems(this, this.items, listName(), items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeListChangeListener(String listName, IListChangeListener<T> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);

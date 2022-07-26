@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -97,7 +97,6 @@
     <property name="jboss-logging.lib" value="${extensions.depend.dir}/${jboss-logging.jar}"/>
     <property name="javax.el.lib" value="${extensions.depend.dir}/${javax.el.jar}"/>
     <property name="classmate.lib" value="${extensions.depend.dir}/${classmate.jar}"/>
-    <property name="jmockit.lib" value="${extensions.depend.dir}/${jmockit.jar}"/>
     <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
 
     <condition property="validate.jar.exists">
@@ -141,7 +140,6 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
-        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
@@ -165,7 +163,6 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/org.eclipse.persistence.asm"/>
         <pathelement path="${build.dir}/${classes.dir}"/>
         <pathelement path="${jaxb-core.lib}"/>
-        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${validation-impl.lib}"/>
@@ -184,7 +181,6 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
-        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
@@ -202,7 +198,6 @@
         <pathelement path="${build.dir}/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${jacocoagent.lib}"/>
-        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
@@ -210,7 +205,6 @@
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
     <path id="jaxb.compile.against.jar.path">
         <path refid="xml.parser.path"/>
-        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
@@ -230,7 +224,6 @@
     <path id="jaxb.run.against.jar.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jacocoagent.lib}"/>
-        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
@@ -252,7 +245,6 @@
     <path id="oxm.compile.against.jar.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
@@ -266,7 +258,6 @@
     <path id="oxm.run.against.jar.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jacocoagent.lib}"/>
-        <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
@@ -527,7 +518,6 @@
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
                 <jvmarg value="-ea"/>
                 <jvmarg line="${test.junit.jvm.modules.prop}"/>
-                <jvmarg value="-javaagent:${jmockit.lib}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>

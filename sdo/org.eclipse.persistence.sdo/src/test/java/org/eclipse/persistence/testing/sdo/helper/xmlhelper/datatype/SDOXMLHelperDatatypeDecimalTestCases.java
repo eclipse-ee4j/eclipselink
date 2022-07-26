@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,30 +33,37 @@ public class SDOXMLHelperDatatypeDecimalTestCases extends SDOXMLHelperDatatypeTe
         TestRunner.main(arguments);
     }
 
-    protected Class getDatatypeJavaClass() {
+    @Override
+    protected Class<?> getDatatypeJavaClass() {
         return BigDecimal.class;
     }
 
+    @Override
     protected SDOType getValueType() {
         return SDOConstants.SDO_DECIMAL;
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myDecimal-1.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "myDecimal-NS";
     }
 
+    @Override
     protected String getControlRootName() {
         return "myDecimal";
     }
 
+    @Override
     protected String getSchemaNameForUserDefinedType() {
         return getSchemaLocation() + "myDecimal.xsd";
     }
 
+    @Override
     protected String getSchemaNameForBuiltinType() {
         return getSchemaLocation() + "myDecimal-builtin.xsd";
     }

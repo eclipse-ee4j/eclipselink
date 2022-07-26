@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ public class ExtendedList8ChildTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML);
         setControlJSON(JSON);
-        setClasses(new Class[] {ExtendedList8ChildRoot.class});
+        setClasses(new Class<?>[] {ExtendedList8ChildRoot.class});
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ExtendedList8ChildTestCases extends JAXBWithJSONTestCases {
     }
 
     public void testRI() throws Exception{
-        JAXBContext ctx = JAXBContext.newInstance(new Class[]{ExtendedList8ChildRoot.class});
+        JAXBContext ctx = JAXBContext.newInstance(ExtendedList8ChildRoot.class);
         System.out.println(ctx.getClass());
         Marshaller m = ctx.createMarshaller();
         m.marshal(getControlObject(), System.out);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,10 +38,11 @@ import org.eclipse.persistence.testing.framework.WriteObjectTest;
  * <p>
  * <b>Paths Covered</b>: Within the unit of work, different parts of the employee were set with clones:
  * <ul>
- * <li><i> Think they are equal but are unequal, clones are different
- * <li> Think they are equal and are equal, clones are identical
- * <li> Think they are unequal but are equal, clones are identical
- * <li> Think they are unequal and are unequal, clones are different </i>
+ * <li> <i>Think they are equal but are unequal, clones are different</i>
+ * <li> <i>Think they are equal and are equal, clones are identical</i>
+ * <li> <i>Think they are unequal but are equal, clones are identical</i>
+ * <li> <i>Think they are unequal and are unequal, clones are different</i>
+ * </ul>
  */
 public class RegisterationUnitOfWorkTest extends WriteObjectTest {
     public Object unitOfWorkWorkingCopy;
@@ -63,12 +64,14 @@ public class RegisterationUnitOfWorkTest extends WriteObjectTest {
                        "' registeration works properly by checking if different clones are returned for similar objects");
     }
 
+    @Override
     public void setup() {
         super.setup();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         this.unitOfWork = getSession().acquireUnitOfWork();
     }
 
+    @Override
     protected void test() {
         testRegisteringEqualObjects();
         testRegisteringUnequalObjects();

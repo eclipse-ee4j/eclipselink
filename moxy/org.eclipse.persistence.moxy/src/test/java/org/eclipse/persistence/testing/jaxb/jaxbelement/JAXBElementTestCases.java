@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,15 +41,15 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
     protected final static String CONTROL_PERSON_NAME = "Joe Smith";
     protected final static String CONTROL_NAMESPACE_URI = "test";
     protected String resourceName;
-    protected Class target;
+    protected Class<?> target;
 
     public JAXBElementTestCases(String name) throws Exception {
         super(name);
         setClasses(getClasses());
     }
 
-    public Class[] getClasses(){
-        Class[] classes = new Class[1];
+    public Class<?>[] getClasses(){
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Person.class;
         return classes;
     }
@@ -57,19 +57,22 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
     /**
      * Satisfy the abstract method declaration in JAXBTestCases
      */
+    @Override
     protected Object getControlObject() {
         return null;
     }
 
+    @Override
     protected void setControlDocument(String xmlResource) throws Exception {
         super.setControlDocument(xmlResource);
         resourceName = xmlResource;
     }
 
-    protected void setTargetClass(Class targetCls) {
+    protected void setTargetClass(Class<?> targetCls) {
         target = targetCls;
     }
 
+    @Override
     public void testXMLToObjectFromNode() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         InputSource inputSource = new InputSource(instream);
@@ -80,6 +83,7 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
     }
 
 
+    @Override
     public void testRoundTrip() throws Exception{
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -101,6 +105,7 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
         xmlToObjectTest(testObject);
     }
 
+    @Override
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -127,6 +132,7 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
         }
     }
 
+    @Override
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(null != XML_INPUT_FACTORY) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
@@ -171,12 +177,14 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToXMLDocument() throws Exception {
         Document testDocument = new SAXDocumentBuilder().getInitializedDocument();
         getJAXBMarshaller().marshal(getWriteControlObject(), testDocument);
         objectToXMLDocumentTest(testDocument);
     }
 
+    @Override
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         getJAXBMarshaller().marshal(getWriteControlObject(), builder);
@@ -194,6 +202,7 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
     // TODO:  add support for StAX
     public void testObjectToStreamWriter() throws Exception {}
 
+    @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         log("**testObjectToXMLDocument**");
         log("Expected:");
@@ -205,8 +214,12 @@ public class JAXBElementTestCases extends JAXBWithJSONTestCases {
     }
 
     // THESE TESTS DO NOT APPLY
+    @Override
     public void testXMLToObjectFromInputStream() throws Exception {}
+    @Override
     public void testXMLToObjectFromURL() throws Exception {}
+    @Override
     public void testObjectToXMLStringWriter() throws Exception {}
+    @Override
     public void testUnmarshallerHandler() throws Exception { }
 }

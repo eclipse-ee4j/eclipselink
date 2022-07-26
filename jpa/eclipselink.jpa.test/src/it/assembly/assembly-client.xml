@@ -48,7 +48,7 @@
             <unpackOptions>
                 <includes>
                     <include>org/eclipse/persistence/testing/framework/junit/*.class</include>
-                    <include>org/eclipse/persistence/testing/framework/server/*.class</include>
+                    <include>org/eclipse/persistence/testing/framework/jpa/server/*.class</include>
                 </includes>
             </unpackOptions>
         </dependencySet>

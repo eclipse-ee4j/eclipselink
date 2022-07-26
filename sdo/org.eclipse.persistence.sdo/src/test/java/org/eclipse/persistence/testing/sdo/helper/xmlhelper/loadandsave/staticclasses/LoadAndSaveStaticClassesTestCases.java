@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,50 +43,61 @@ public class LoadAndSaveStaticClassesTestCases extends LoadAndSaveTestCases{
             TestRunner.main(arguments);
         }
 
+        @Override
         protected void verifyAfterLoad(XMLDocument document) {
             super.verifyAfterLoad(document);
         }
 
+        @Override
         protected String getControlFileName() {
             return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/staticclasses/Company.xml";
         }
 
+        @Override
         protected String getSchemaName() {
             return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/staticclasses/Company.xsd";
         }
 
+        @Override
         protected String getNoSchemaControlFileName() {
             return getControlFileName();
         }
 
+        @Override
         protected String getSchemaLocation() {
             return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/loadandsave/staticclasses/";
         }
 
+        @Override
         protected String getControlRootURI() {
             return "http://theUri";
         }
 
+        @Override
         protected String getControlRootName() {
             return "company";
         }
 
+        @Override
         protected String getRootInterfaceName() {
             return "CompanyType";
         }
 
         // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+        @Override
         protected List<String> getPackages() {
             List<String> packages = new ArrayList<String>();
             packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
             return packages;
         }
 
+        @Override
         public void testClassGenerationLoadAndSave(){
              //not applicable since we have static classes there is no need to generate
          }
 
 
+        @Override
         public void registerTypes() {
             SDOType stringType = (SDOType) typeHelper.getType("commonj.sdo", "String");
             SDOType booleanType = (SDOType) typeHelper.getType("commonj.sdo", "Boolean");
@@ -113,10 +124,10 @@ public class LoadAndSaveStaticClassesTestCases extends LoadAndSaveTestCases{
             List types = defineTypes();
             assertTrue(types.size() == 1);
             SDOType theType = (SDOType)types.get(0);
-            Class instanceClass = theType.getInstanceClass();
+            Class<?> instanceClass = theType.getInstanceClass();
             assertTrue(instanceClass != null);
 
-            Class implClass = theType.getImplClass();
+            Class<?> implClass = theType.getImplClass();
             assertTrue(implClass != null);
         }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,11 +41,11 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
     protected DatabaseMapping mapping;
 
     /** Field type */
-    protected Class dataClass;
+    protected Class<?> dataClass;
     protected String dataClassName;
 
     /** Object type */
-    protected Class objectClass;
+    protected Class<?> objectClass;
     protected String objectClassName;
 
     /**
@@ -69,17 +69,16 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
      * This method is implemented by subclasses as necessary.
-     * @param classLoader
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        Class dataClass = null;
-        Class objectClass = null;
+        Class<?> dataClass = null;
+        Class<?> objectClass = null;
         try{
             if (dataClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        dataClass = AccessController.doPrivileged(new PrivilegedClassForName(dataClassName, true, classLoader));
+                        dataClass = AccessController.doPrivileged(new PrivilegedClassForName<>(dataClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(dataClassName, exception.getException());
                     }
@@ -95,7 +94,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
             if (objectClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        objectClass = AccessController.doPrivileged(new PrivilegedClassForName(objectClassName, true, classLoader));
+                        objectClass = AccessController.doPrivileged(new PrivilegedClassForName<>(objectClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(objectClassName, exception.getException());
                     }
@@ -137,7 +136,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * PUBLIC:
      * Returns the class type of the object value.
      */
-    public Class getObjectClass() {
+    public Class<?> getObjectClass() {
         return objectClass;
     }
 
@@ -156,7 +155,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * PUBLIC:
      * Returns the class type of the data value.
      */
-    public Class getDataClass() {
+    public Class<?> getDataClass() {
         return dataClass;
     }
 
@@ -175,7 +174,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * PUBLIC:
      * Set the class type of the data value.
      */
-    public void setDataClass(Class dataClass) {
+    public void setDataClass(Class<?> dataClass) {
         this.dataClass = dataClass;
     }
 
@@ -191,7 +190,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * PUBLIC:
      * Set the class type of the object value.
      */
-    public void setObjectClass(Class objectClass) {
+    public void setObjectClass(Class<?> objectClass) {
         this.objectClass = objectClass;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -596,7 +595,7 @@ public class SDODataHelper implements DataHelper {
      * @param schemaType The schema type if available.
      * @return the original value converted based on the convertClass parameter.
      */
-    public Object convertValue(Object value, Class convertClass, QName schemaType) {
+    public Object convertValue(Object value, Class<?> convertClass, QName schemaType) {
         return getXMLConversionManager().convertObject(value, convertClass, schemaType);
 
     }
@@ -608,7 +607,7 @@ public class SDODataHelper implements DataHelper {
      * @param convertClass The class to convert the value to.
      * @return the original value converted based on the convertClass parameter.
      */
-    public Object convertFromStringValue(String value, Class convertClass) {
+    public Object convertFromStringValue(String value, Class<?> convertClass) {
         if (convertClass == ClassConstants.UTILDATE) {
             return toDate(value);
         } else if (convertClass == ClassConstants.CALENDAR) {
@@ -640,7 +639,7 @@ public class SDODataHelper implements DataHelper {
      * @return the original value converted based on the convertClass parameter.
      */
     public Object convertFromStringValue(String value, Type sdoType, QName schemaType) {
-        Class convertClass = ((SDOTypeHelper) getHelperContext().getTypeHelper()).getJavaWrapperTypeForSDOType(sdoType);
+        Class<?> convertClass = ((SDOTypeHelper) getHelperContext().getTypeHelper()).getJavaWrapperTypeForSDOType(sdoType);
         if (convertClass != null) {
             if (schemaType == null) {
                 return ((SDODataHelper) getHelperContext().getDataHelper()).convertFromStringValue(value, convertClass);
@@ -659,7 +658,7 @@ public class SDODataHelper implements DataHelper {
      * @param schemaType The schema type if available.
      * @return the original value converted based on the convertClass parameter.
      */
-    public Object convertFromStringValue(String value, Class convertClass, QName schemaType) {
+    public Object convertFromStringValue(String value, Class<?> convertClass, QName schemaType) {
         if (convertClass == ClassConstants.UTILDATE) {
             return toDate(value);
         } else if (convertClass == ClassConstants.CALENDAR) {
@@ -734,18 +733,18 @@ public class SDODataHelper implements DataHelper {
             // convert a DataHandler to a string, by getting the bytes and then
             // calling into conversion manager
             try {
-                Class binaryDataHelper = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper");
-                java.lang.reflect.Method getHelperMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "getXMLBinaryDataHelper", new Class[] {}, false);
-                java.lang.reflect.Method stringToDataHandlerMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "stringFromDataHandler", new Class[] { Object.class, QName.class, CoreAbstractSession.class }, false);
+                Class<Object> binaryDataHelper = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper");
+                java.lang.reflect.Method getHelperMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "getXMLBinaryDataHelper", new Class<?>[] {}, false);
+                java.lang.reflect.Method stringToDataHandlerMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "stringFromDataHandler", new Class<?>[] { Object.class, QName.class, CoreAbstractSession.class }, false);
 
                 Object helper = PrivilegedAccessHelper.invokeMethod(getHelperMethod, binaryDataHelper, new Object[] {});
-                String result = (String) PrivilegedAccessHelper.invokeMethod(stringToDataHandlerMethod, helper, new Object[] { value, xsdType, ((SDOXMLHelper) getHelperContext().getXMLHelper()).getXmlContext().getSession() });
+                String result = PrivilegedAccessHelper.invokeMethod(stringToDataHandlerMethod, helper, new Object[] { value, xsdType, ((SDOXMLHelper) getHelperContext().getXMLHelper()).getXmlContext().getSession() });
                 return result;
             } catch (Exception ex) {
-                return (String) getXMLConversionManager().convertObject(value, ClassConstants.STRING, xsdType);
+                return getXMLConversionManager().convertObject(value, ClassConstants.STRING, xsdType);
             }
         }
-        return (String) getXMLConversionManager().convertObject(value, ClassConstants.STRING, xsdType);
+        return getXMLConversionManager().convertObject(value, ClassConstants.STRING, xsdType);
     }
 
     /**
@@ -761,8 +760,8 @@ public class SDODataHelper implements DataHelper {
      */
     @Override
     public Object convert(Type type, Object value) {
-        Class convertClass = null;
-        if (((SDOType) type).isDataType()) {
+        Class<?> convertClass = null;
+        if (type.isDataType()) {
             convertClass = type.getInstanceClass();
         } /*else {
             convertClass = ((org.eclipse.persistence.sdo.SDOType) type).getImplClass();
@@ -826,7 +825,7 @@ public class SDODataHelper implements DataHelper {
     /**
      * INTERNAL:
      */
-    public Object convertValueToClass(Property prop, Object valueToConvert, Class convertToClass) {
+    public Object convertValueToClass(Property prop, Object valueToConvert, Class<?> convertToClass) {
         try {
             if (valueToConvert == null) {
                 return null;

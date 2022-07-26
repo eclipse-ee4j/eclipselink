@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,14 +37,13 @@ import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.GoalieGear
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.NonPersistedSubclassOfChestProtector;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Pads;
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
-import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
+//import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 /**
  * @author DaraniY
@@ -61,6 +60,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         clearCache();
@@ -69,7 +69,6 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     /**
      * Note: These tests are setup with ID generation - but it is not used.
      * We set the Id manually so we can test cache operations like eviction properly.
-     * @return
      */
     public static Test suite() {
         TestSuite suite = new TestSuite();
@@ -104,6 +103,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         return suite;
     }
 
+    @Override
     public String getPersistenceUnitName(){
         return "default1";
     }
@@ -314,7 +314,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             ChestProtector e1 = new ChestProtector();
             e1.setDescription("chest_protector");
-            e1.setSerialNumber(new Integer(ID_PADS));
+            e1.setSerialNumber(ID_PADS);
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
@@ -323,7 +323,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             Pads p1 = new Pads();
             p1.setDescription("pads");
-            p1.setSerialNumber(new Integer(ID_CHESTPROTECTOR));
+            p1.setSerialNumber(ID_CHESTPROTECTOR);
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
@@ -388,7 +388,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             ChestProtector e1 = new ChestProtector();
             e1.setDescription("chest_protector");
-            e1.setSerialNumber(new Integer(ID_PADS));
+            e1.setSerialNumber(ID_PADS);
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
@@ -397,7 +397,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             Pads p1 = new Pads();
             p1.setDescription("pads");
-            p1.setSerialNumber(new Integer(ID_CHESTPROTECTOR));
+            p1.setSerialNumber(ID_CHESTPROTECTOR);
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
@@ -461,7 +461,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             ChestProtector e1 = new ChestProtector();
             e1.setDescription("chest_protector");
-            e1.setSerialNumber(new Integer(ID_PADS));
+            e1.setSerialNumber(ID_PADS);
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
@@ -470,7 +470,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             Pads p1 = new Pads();
             p1.setDescription("pads");
-            p1.setSerialNumber(new Integer(ID_CHESTPROTECTOR));
+            p1.setSerialNumber(ID_CHESTPROTECTOR);
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
@@ -529,7 +529,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             ChestProtector e1 = new ChestProtector();
             e1.setDescription("chest_protector");
-            e1.setSerialNumber(new Integer(ID_PADS));
+            e1.setSerialNumber(ID_PADS);
             em.persist(e1);
             commitTransaction(em);
             // do not close the entityManager between transactions or you will get bug# 307445
@@ -537,7 +537,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             beginTransaction(em);
             Pads p1 = new Pads();
             p1.setDescription("pads");
-            p1.setSerialNumber(new Integer(ID_CHESTPROTECTOR));
+            p1.setSerialNumber(ID_CHESTPROTECTOR);
             em.persist(p1);
             commitTransaction(em);
             closeEntityManager(em);
@@ -589,7 +589,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             // HockeyGear(Abstract Entity) << GoalieGear (Concrete MappedSuperclass) << ChestProtector (Concrete Entity)
             ChestProtector e1 = new ChestProtector();
             e1.setDescription("gear");
-            e1.setSerialNumber(new Integer(ID));
+            e1.setSerialNumber(ID);
             em.persist(e1);
             commitTransaction(em);
             closeEntityManager(em);
@@ -661,7 +661,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
             EntityManager em1 = createEntityManager();
             JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
             try {
-                anEclipseLinkCache.getId(new Integer(1));
+                anEclipseLinkCache.getId(1);
             } catch (IllegalArgumentException iae) {
                 _exceptionThrown = true;
             } finally {
@@ -716,88 +716,88 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         }
     }
 
-    public void testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_and_null_pk_with_weaving_on() {
-        if (!isJPA10()) {
-            //int ID = ID_TEST_BASE + 600;
-            Integer ID = null; // keep object as null for unset testing
-            Object originalId = null;
-            EntityManager em = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
-            beginTransaction(em);
-            // org.eclipse.persistence.testing.models.jpa.metamodel.Person(Concrete MappedSuperclass) <-- Corporation(Abstract MappedSuperclass) <-- Manufacturer (Entity)
-            Manufacturer anEntity = new Manufacturer();
-            //anEntity.setId(ID);
-            // Can we place non-persistable objects into only the cache (non-entities)?
-            em.persist(anEntity);
-            commitTransaction(em);
-            closeEntityManager(em);
-
-            EntityManager em1 = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
-            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory(METAMODEL_PERSISTENCE_UNIT).getCache();
-            Object anId = null;
-            // The originalId will be set by automatic sequence generation - if we require it
-            originalId = anEntity.getId();
-
-            // clear the CMP3Policy to simulate a native pojo
-            ClassDescriptor cdesc = ((EntityManagerImpl)em1).getSession().getClassDescriptor(anEntity.getClass());
-            CMP3Policy policy = (CMP3Policy) (cdesc.getCMPPolicy());
-            assertNotNull("CMP3Policy should exist prior to having been cleared manually for this test", policy);
-            cdesc.setCMPPolicy(null);
-            try {
-                anId = anEclipseLinkCache.getId(anEntity);
-                assertNotNull("Id instance should not be null", anId);
-                assertTrue("Id instance should be of type Integer", anId instanceof Integer);
-                assertEquals(anId, originalId);
-            } finally {
-                // set the CMPPolicy back for out of order testing
-                cdesc.setCMPPolicy(policy);
-                closeEntityManager(em1);
-            }
-        }
-    }
-
-    // We need a MappedSuperclass that is defined by a persistence.xml where eclipselink.weaving="false"
-    // This test requires that weaving is off in persistence.xml for METAMODEL_PERSISTENCE_UNIT
-    public void testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_and_null_pk_with_weaving_off() {
-        if (!isJPA10()) {
-            int ID = ID_TEST_BASE + 700;
-            //Integer ID = null; // keep object as null for unset testing
-            Object originalId = null;
-            EntityManager em = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
-            beginTransaction(em);
-            Manufacturer anEntity = new Manufacturer();
-            anEntity.setName("test");
-            anEntity.setId(ID);
-            // Can we place non-persistable objects into only the cache (non-entities)?
-            em.persist(anEntity);
-            commitTransaction(em);
-            //closeEntityManager(em); // keep the EM open
-
-            EntityManager em1 = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
-            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory(METAMODEL_PERSISTENCE_UNIT).getCache();
-            Object anId = null;
-            // The originalId will be set by automatic sequence generation - if we require it
-            originalId = anEntity.getId();
-
-            // clear the CMP3Policy to simulate a native pojo
-            ClassDescriptor cdesc = ((EntityManagerImpl)em).getSession().getClassDescriptor(anEntity.getClass());
-            assertNotNull("ClassDescriptor for Entity must not be null", cdesc); // check that the entityManager is not null
-            CMP3Policy policy = (CMP3Policy) (cdesc.getCMPPolicy());
-            assertNotNull("CMP3Policy should exist prior to having been cleared manually for this test", policy);
-            cdesc.setCMPPolicy(null);
-            try {
-                anId = anEclipseLinkCache.getId(anEntity);
-                assertNotNull("Id instance should not be null", anId);
-                assertTrue("Id instance should be of type Integer", anId instanceof Integer);
-                assertEquals(anId, ID);
-                assertEquals(anId, originalId);
-            } finally {
-             // set the CMPPolicy back for out of order testing
-                cdesc.setCMPPolicy(policy);
-                closeEntityManager(em1);
-                closeEntityManager(em);
-            }
-        }
-    }
+//    public void testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_and_null_pk_with_weaving_on() {
+//        if (!isJPA10()) {
+//            //int ID = ID_TEST_BASE + 600;
+//            Integer ID = null; // keep object as null for unset testing
+//            Object originalId = null;
+//            EntityManager em = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
+//            beginTransaction(em);
+//            // org.eclipse.persistence.testing.models.jpa.metamodel.Person(Concrete MappedSuperclass) <-- Corporation(Abstract MappedSuperclass) <-- Manufacturer (Entity)
+//            Manufacturer anEntity = new Manufacturer();
+//            //anEntity.setId(ID);
+//            // Can we place non-persistable objects into only the cache (non-entities)?
+//            em.persist(anEntity);
+//            commitTransaction(em);
+//            closeEntityManager(em);
+//
+//            EntityManager em1 = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
+//            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory(METAMODEL_PERSISTENCE_UNIT).getCache();
+//            Object anId = null;
+//            // The originalId will be set by automatic sequence generation - if we require it
+//            originalId = anEntity.getId();
+//
+//            // clear the CMP3Policy to simulate a native pojo
+//            ClassDescriptor cdesc = ((EntityManagerImpl)em1).getSession().getClassDescriptor(anEntity.getClass());
+//            CMP3Policy policy = (CMP3Policy) (cdesc.getCMPPolicy());
+//            assertNotNull("CMP3Policy should exist prior to having been cleared manually for this test", policy);
+//            cdesc.setCMPPolicy(null);
+//            try {
+//                anId = anEclipseLinkCache.getId(anEntity);
+//                assertNotNull("Id instance should not be null", anId);
+//                assertTrue("Id instance should be of type Integer", anId instanceof Integer);
+//                assertEquals(anId, originalId);
+//            } finally {
+//                // set the CMPPolicy back for out of order testing
+//                cdesc.setCMPPolicy(policy);
+//                closeEntityManager(em1);
+//            }
+//        }
+//    }
+//
+//    // We need a MappedSuperclass that is defined by a persistence.xml where eclipselink.weaving="false"
+//    // This test requires that weaving is off in persistence.xml for METAMODEL_PERSISTENCE_UNIT
+//    public void testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_and_null_pk_with_weaving_off() {
+//        if (!isJPA10()) {
+//            int ID = ID_TEST_BASE + 700;
+//            //Integer ID = null; // keep object as null for unset testing
+//            Object originalId = null;
+//            EntityManager em = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
+//            beginTransaction(em);
+//            Manufacturer anEntity = new Manufacturer();
+//            anEntity.setName("test");
+//            anEntity.setId(ID);
+//            // Can we place non-persistable objects into only the cache (non-entities)?
+//            em.persist(anEntity);
+//            commitTransaction(em);
+//            //closeEntityManager(em); // keep the EM open
+//
+//            EntityManager em1 = createEntityManager(METAMODEL_PERSISTENCE_UNIT);
+//            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory(METAMODEL_PERSISTENCE_UNIT).getCache();
+//            Object anId = null;
+//            // The originalId will be set by automatic sequence generation - if we require it
+//            originalId = anEntity.getId();
+//
+//            // clear the CMP3Policy to simulate a native pojo
+//            ClassDescriptor cdesc = ((EntityManagerImpl)em).getSession().getClassDescriptor(anEntity.getClass());
+//            assertNotNull("ClassDescriptor for Entity must not be null", cdesc); // check that the entityManager is not null
+//            CMP3Policy policy = (CMP3Policy) (cdesc.getCMPPolicy());
+//            assertNotNull("CMP3Policy should exist prior to having been cleared manually for this test", policy);
+//            cdesc.setCMPPolicy(null);
+//            try {
+//                anId = anEclipseLinkCache.getId(anEntity);
+//                assertNotNull("Id instance should not be null", anId);
+//                assertTrue("Id instance should be of type Integer", anId instanceof Integer);
+//                assertEquals(anId, ID);
+//                assertEquals(anId, originalId);
+//            } finally {
+//             // set the CMPPolicy back for out of order testing
+//                cdesc.setCMPPolicy(policy);
+//                closeEntityManager(em1);
+//                closeEntityManager(em);
+//            }
+//        }
+//    }
 
     // 20100422: 248780: CacheImpl refactor for non-Entity classes
     public static int ID_TEST_BASE = 3710; // change this value during iterative testing

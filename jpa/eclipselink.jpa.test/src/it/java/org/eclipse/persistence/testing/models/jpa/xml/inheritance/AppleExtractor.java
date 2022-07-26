@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.ClassExtractor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class AppleExtractor extends ClassExtractor {
@@ -30,13 +30,14 @@ public class AppleExtractor extends ClassExtractor {
      * field name, the value is the database value.
      */
     @Override
-    public Class extractClassFromRow(Record databaseRow, Session session) {
+    @SuppressWarnings({"unchecked"})
+    public <T> Class<T> extractClassFromRow(DataRecord databaseRow, Session session) {
         if (databaseRow.containsKey("XML_MACBOOK_PRO.COLOR")) {
-            return MacBookPro.class;
+            return (Class<T>) MacBookPro.class;
         } else if (databaseRow.containsKey("XML_MACBOOK.RAM")) {
-            return MacBook.class;
+            return (Class<T>) MacBook.class;
         } else {
-            return Apple.class;
+            return (Class<T>) Apple.class;
         }
     }
 

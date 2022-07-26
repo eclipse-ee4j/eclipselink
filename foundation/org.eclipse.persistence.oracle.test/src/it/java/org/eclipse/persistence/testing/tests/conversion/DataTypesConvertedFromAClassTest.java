@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.conversion;
 
+import java.util.List;
 import java.util.Vector;
 import java.util.Calendar;
 import java.sql.Timestamp;
@@ -32,23 +33,25 @@ public class DataTypesConvertedFromAClassTest extends AutoVerifyTestCase {
     protected Object cm;
     protected Exception exception1;
     protected Exception exception2;
-    protected Class sourceClass;
-    protected Class targetClass;
+    protected Class<?> sourceClass;
+    protected Class<?> targetClass;
 
     public DataTypesConvertedFromAClassTest() {
         setDescription("Test getDataTypesConvertedFrom() in ConversionManager.");
     }
 
+    @Override
     public void setup() {
         cm = ConversionManager.getDefaultManager();
     }
 
+    @Override
     public void test() {
-        Vector vec;
+        List vec;
         int x;
         int y;
         Object obj;
-        Class type;
+        Class<?> type;
         CMAndPlatformWrapper wrapper = new CMAndPlatformWrapper(cm);
 
         ConversionDataObjectForSupportedTypes example = ConversionDataObjectForSupportedTypes.example();
@@ -65,21 +68,22 @@ public class DataTypesConvertedFromAClassTest extends AutoVerifyTestCase {
                 vec = wrapper.getDataTypesConvertedFrom(type);
                 for (y = 0; y < vec.size(); y++) {
                     //Different string formats are required for number, date and other types
-                    if ((fields[x].getName().equals("stringToInt") && !isNumber((Class)vec.elementAt(y))) || (fields[x].getName().equals("stringToTimestamp") && !isTimestamp((Class)vec.elementAt(y))) || (fields[x].getName().equals("aString") && !isChar((Class)vec.elementAt(y)))) {
+                    if ((fields[x].getName().equals("stringToInt") && !isNumber((Class)vec.get(y))) || (fields[x].getName().equals("stringToTimestamp") && !isTimestamp((Class)vec.get(y))) || (fields[x].getName().equals("aString") && !isChar((Class)vec.get(y)))) {
                         continue;
                     }
                     try {
-                        wrapper.convertObject(obj, (Class)vec.elementAt(y));
+                        wrapper.convertObject(obj, (Class)vec.get(y));
                     } catch (Exception e) {
                         exception2 = e;
                         sourceClass = fields[x].getType();
-                        targetClass = (Class)vec.elementAt(y);
+                        targetClass = (Class)vec.get(y);
                     }
                 }
             }
         }
     }
 
+    @Override
     public void verify() {
         if (exception1 != null) {
             throw (new TestErrorException(exception1.toString()));
@@ -93,15 +97,15 @@ public class DataTypesConvertedFromAClassTest extends AutoVerifyTestCase {
         return (ConversionManager)cm;
     }
 
-    protected boolean isNumber(Class aClass) {
+    protected boolean isNumber(Class<?> aClass) {
         return Number.class.isAssignableFrom(aClass);
     }
 
-    protected boolean isTimestamp(Class aClass) {
+    protected boolean isTimestamp(Class<?> aClass) {
         return (aClass == java.util.Date.class) || (aClass == Timestamp.class) || (aClass == Calendar.class);
     }
 
-    protected boolean isChar(Class aClass) {
+    protected boolean isChar(Class<?> aClass) {
         return (aClass == Character.class) || (aClass == Character[].class) || (aClass == char[].class) || (aClass == String.class) || (aClass == java.sql.Clob.class);
     }
 }

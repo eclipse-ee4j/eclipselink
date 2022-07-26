@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,29 +14,26 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.jaxb.inheritance;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
     private static final String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/inheritance/inheritanceschema.json";
     public JAXBInheritanceTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] { A.class, B.class, C.class, D.class, E.class });
+        setClasses(new Class<?>[] { A.class, B.class, C.class, D.class, E.class });
         setControlDocument("org/eclipse/persistence/testing/jaxb/inheritance/inheritance.xml");
         setControlJSON("org/eclipse/persistence/testing/jaxb/inheritance/inheritance.json");
     }
 
+    @Override
     public Object getControlObject() {
         // reads a document that also contains a value for "ddd" and makes sure
         // we ignore it
@@ -52,6 +49,7 @@ public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
         return jaxbElement;
     }
 
+    @Override
     public Object getReadControlObject() {
         // reads a document that also contains a value for "ddd" and makes sure
         // we ignore it
@@ -83,7 +81,7 @@ public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             StreamSource ss = new StreamSource(instream);
-            JAXBElement testObject = getJAXBUnmarshaller().unmarshal(ss, A.class);
+            JAXBElement<A> testObject = getJAXBUnmarshaller().unmarshal(ss, A.class);
             Object value = testObject.getValue();
             instream.close();
             assertTrue(value instanceof E);
@@ -96,7 +94,7 @@ public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
             log(testObject.toString());
 
             JAXBElement controlObj = (JAXBElement)getControlObject();
-            JAXBElement testObj = (JAXBElement)testObject;
+            JAXBElement<A> testObj = testObject;
             compareJAXBElementObjects(controlObj, testObj);
         }
     }

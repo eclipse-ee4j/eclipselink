@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public interface IJPQLQueryFormatter {
     /**
      * This enumeration determines how the JPQL identifiers are formatted when written out.
      */
-    public enum IdentifierStyle {
+    enum IdentifierStyle {
 
         /**
          * The JPQL identifiers are written out the first letter being uppercase and the rest being

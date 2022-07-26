@@ -1,0 +1,32 @@
+path_classifiers:
+
+  # exclude tests
+  test:
+  - "**/src/test"
+  - "**/src/it"
+  - "**/*.test"
+  - "**/tests"
+  - "performance"
+
+  # exclude docs
+  docs:
+  - "about.html"
+  - "license.html"
+  - "readme.html"
+
+#########################################################################################
+# Use the `queries` block to change the default display of query results.               #
+#########################################################################################
+
+queries:
+  # "by design" - synch is being removed intentionally
+  - exclude: java/non-sync-override
+
+extraction:
+  java:
+    index:
+      java_version: 11
+      maven:
+        version: 3.6.3
+      build_command: "mvn -DskipTests -Denforcer.skip clean package"
+

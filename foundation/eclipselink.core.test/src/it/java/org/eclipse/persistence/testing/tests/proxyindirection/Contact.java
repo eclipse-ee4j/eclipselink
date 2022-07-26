@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,11 +24,11 @@ package org.eclipse.persistence.testing.tests.proxyindirection;
  * @since        08/25/2000 16:31:46
  */
 public interface Contact {
-    public int getID();
+    int getID();
 
-    public boolean isPublic();
+    boolean isPublic();
 
-    public void setID(int value);
+    void setID(int value);
 
-    public void setIsPublic(boolean value);
+    void setIsPublic(boolean value);
 }

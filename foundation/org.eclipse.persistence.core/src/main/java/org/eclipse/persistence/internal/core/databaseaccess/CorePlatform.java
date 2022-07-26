@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ public interface CorePlatform<CONVERSION_MANAGER extends CoreConversionManager> 
      * @exception ConversionException all exceptions will be thrown as this type.
      * @return the newly converted object
      */
-    Object convertObject(Object sourceObject, Class javaClass);
+    <T> T convertObject(Object sourceObject, Class<T> javaClass);
 
     /**
      * The platform hold its own instance of conversion manager to allow customization.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -195,6 +195,7 @@ public class MetadataProject {
     public static final String DEFAULT_TABLE_GENERATOR = "SEQ_GEN_TABLE";
     public static final String DEFAULT_SEQUENCE_GENERATOR = "SEQ_GEN_SEQUENCE";
     public static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
+    public static final String DEFAULT_UUID_GENERATOR = "SEQ_GEN_UUID";
 
     // Boolean to specify if we should weave fetch groups.
     private boolean m_isWeavingFetchGroupsEnabled;
@@ -581,7 +582,7 @@ public class MetadataProject {
      *  This method is referenced by EntityAccessor.addPotentialMappedSuperclass()
      *  during an initial predeploy() and later during a deploy()
      *  </p>
-     * @param accessor - The mappedSuperclass accessor for the field on the mappedSuperclass<p>
+     * @param accessor - The mappedSuperclass accessor for the field on the mappedSuperclass
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public void addMetamodelMappedSuperclass(MappedSuperclassAccessor accessor, MetadataDescriptor childDescriptor) {
@@ -1283,7 +1284,6 @@ public class MetadataProject {
     /**
      * INTERNAL:
      * Return the core API Project associated with this MetadataProject.
-     * @return
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation
      */
     public Project getProject() {
@@ -1321,10 +1321,10 @@ public class MetadataProject {
 
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     method = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null));
-                    m_sharedCacheMode = (SharedCacheMode) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, m_persistenceUnitInfo));
+                    m_sharedCacheMode = AccessController.doPrivileged(new PrivilegedMethodInvoker<SharedCacheMode>(method, m_persistenceUnitInfo));
                 } else {
                     method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null);
-                    m_sharedCacheMode = (SharedCacheMode) PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
+                    m_sharedCacheMode = PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
                 }
             } catch (Throwable exception) {
                 // Swallow any exceptions, shared cache mode will be null.
@@ -1594,8 +1594,8 @@ public class MetadataProject {
      * to be processed will be handled now.
      */
     protected void processAccessorsWithDerivedIDs() {
-        HashSet<ClassAccessor> processed = new HashSet();
-        HashSet<ClassAccessor> processing = new HashSet();
+        HashSet<ClassAccessor> processed = new HashSet<>();
+        HashSet<ClassAccessor> processing = new HashSet<>();
 
         for (ClassAccessor classAccessor : m_accessorsWithDerivedId.values()) {
             classAccessor.processDerivedId(processing, processed);
@@ -1762,6 +1762,10 @@ public class MetadataProject {
 
             if (! sequences.containsKey(DEFAULT_IDENTITY_GENERATOR)) {
                 sequences.put(DEFAULT_IDENTITY_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_IDENTITY_GENERATOR, 1, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), true).process(m_logger));
+            }
+
+            if (! sequences.containsKey(DEFAULT_UUID_GENERATOR)) {
+                sequences.put(DEFAULT_UUID_GENERATOR, new UuidGeneratorMetadata().process(m_logger));
             }
 
             // Use a temporary sequence generator to build a qualifier to set on

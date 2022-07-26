@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,14 +43,14 @@ public class FuelType implements java.io.Serializable {
 
     public static FuelType example1() {
         FuelType example = new FuelType();
-        example.setFuelId(new Integer(1));
+        example.setFuelId(1);
         example.setFuelDescription("Petrol");
         return example;
     }
 
     public static FuelType example2() {
         FuelType example = new FuelType();
-        example.setFuelId(new Integer(2));
+        example.setFuelId(2);
         example.setFuelDescription("Diesel");
         return example;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,8 +71,8 @@ public class DB2MainframePlatform extends DB2Platform {
     }
 
     @Override
-    protected Hashtable buildFieldTypes() {
-        Hashtable<Class<?>, Object> res = super.buildFieldTypes();
+    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
+        Hashtable<Class<?>, FieldTypeDefinition> res = super.buildFieldTypes();
         if (getUseNationalCharacterVaryingTypeForString()) {
             res.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
         }

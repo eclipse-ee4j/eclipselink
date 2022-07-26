@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public abstract class PerformanceRegressionTestCase extends PerformanceCompariso
      * Compare the current test run result with the previous results
      * do determine if the test passes or fails.
      */
+    @Override
     public void verify() {
         super.verify();
         verify(this);
@@ -92,12 +93,12 @@ public abstract class PerformanceRegressionTestCase extends PerformanceCompariso
         TestResult lastResult = (TestResult)stream.nextElement();
         double lastCount = lastResult.getTestTime();
         PerformanceComparisonTestResult testResult = (PerformanceComparisonTestResult)((TestCase)test).getTestResult();
-        testResult.getBaselineVersionResults().add(new Double(lastCount));
+        testResult.getBaselineVersionResults().add(lastCount);
         // Average last 5 runs.
         int numberOfRuns = 0;
         while (stream.hasMoreElements() && (numberOfRuns < 4)) {
             TestResult nextResult = (TestResult)stream.nextElement();
-            testResult.getBaselineVersionResults().add(new Double(nextResult.getTestTime()));
+            testResult.getBaselineVersionResults().add((double) nextResult.getTestTime());
             numberOfRuns++;
         }
         stream.close();
@@ -110,16 +111,16 @@ public abstract class PerformanceRegressionTestCase extends PerformanceCompariso
         // Query the current version last 5 runs for averaging.
         query = new ReadAllQuery(TestResult.class);
         result = new ExpressionBuilder();
-        query.setSelectionCriteria(result.get("name").equal(((TestCase)test).getName()).and(result.get("loadBuildSummary").get("machine").equal(LoadBuildSystem.getSummary().getMachine())).and(result.get("loadBuildSummary").get("loginChoice").equal(LoadBuildSystem.getSummary().getLoginChoice())).and(result.get("loadBuildSummary").get("toplinkVersion").equal(currentVersion)));
+        query.setSelectionCriteria(result.get("name").equal(test.getName()).and(result.get("loadBuildSummary").get("machine").equal(LoadBuildSystem.getSummary().getMachine())).and(result.get("loadBuildSummary").get("loginChoice").equal(LoadBuildSystem.getSummary().getLoginChoice())).and(result.get("loadBuildSummary").get("toplinkVersion").equal(currentVersion)));
         query.addOrdering(result.get("loadBuildSummary").get("timestamp").descending());
         query.useCursoredStream(1, 1);
         stream = (CursoredStream)session.executeQuery(query);
         // Average last 5 runs.
-        testResult.getCurrentVersionResults().add(new Double(currentCount));
+        testResult.getCurrentVersionResults().add(currentCount);
         numberOfRuns = 0;
         while (stream.hasMoreElements() && (numberOfRuns < 4)) {
             TestResult nextResult = (TestResult)stream.nextElement();
-            testResult.getCurrentVersionResults().add(new Double(nextResult.getTestTime()));
+            testResult.getCurrentVersionResults().add((double) nextResult.getTestTime());
             numberOfRuns++;
         }
         stream.close();

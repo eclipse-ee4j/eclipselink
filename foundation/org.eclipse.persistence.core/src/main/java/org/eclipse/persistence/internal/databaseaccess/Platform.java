@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,7 +17,9 @@ package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -51,7 +53,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * @exception ConversionException all exceptions will be thrown as this type.
      * @return the newly converted object
      */
-    @Override Object convertObject(Object sourceObject, Class javaClass) throws ConversionException;
+    @Override <T> T convertObject(Object sourceObject, Class<T> javaClass) throws ConversionException;
 
     /**
      * Copy the state into the new platform.
@@ -86,6 +88,13 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      */
     ValueReadQuery getTimestampQuery();
 
+    /**
+     * This method can be overridden by subclasses to return a
+     * query that will return the UUID from the server.
+     * return null if UUID generation is not available at the server.
+     */
+    ValueReadQuery getUUIDQuery();
+
     boolean isH2();
 
     boolean isAccess();
@@ -109,6 +118,8 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
     boolean isInformix();
 
     boolean isMaxDB();
+
+    boolean isMariaDB();
 
     boolean isMySQL();
 
@@ -152,6 +163,11 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * See: getTimestampFromServer
      */
     void setTimestampQuery(ValueReadQuery tsQuery);
+
+    /**
+     * Can override the default query for returning a UUID from the server.
+     */
+    void setUUIDQuery(ValueReadQuery uuidQuery);
 
     /**
      * Add the parameter.
@@ -246,13 +262,13 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * INTERNAL:
      * Returns a map of sequence names to Sequences (may be null).
      */
-    Map getSequences();
+    Map<String, Sequence> getSequences();
 
     /**
      * INTERNAL:
      * Used only for writing into XML or Java.
      */
-    Map getSequencesToWrite();
+    Map<String, Sequence> getSequencesToWrite();
 
     /**
      * INTERNAL:
@@ -264,7 +280,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * INTERNAL:
      * Used only for reading from XML.
      */
-    void setSequences(Map sequences);
+    void setSequences(Map<String, Sequence> sequences);
 
     /**
      * INTERNAL:
@@ -294,5 +310,14 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      */
     void removeIdentitySequences(
             final Session session, final String defaultIdentityGenerator, final Set<String> tableNames);
+
+    /**
+     * INTERNAL:
+     * Get platform specific connection properties.
+     * @return properties to be added to connection properties
+     */
+    default Map<Object, Object> connectionProperties() {
+        return Collections.emptyMap();
+    }
 
 }

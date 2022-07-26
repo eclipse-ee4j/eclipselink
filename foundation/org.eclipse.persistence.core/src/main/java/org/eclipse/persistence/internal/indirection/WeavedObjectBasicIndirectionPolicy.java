@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,6 @@ package org.eclipse.persistence.internal.indirection;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -26,7 +24,6 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
@@ -93,7 +90,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         if (setMethod == null) {
             ForeignReferenceMapping sourceMapping = (ForeignReferenceMapping)mapping;
             // The parameter type for the set method must always be the return type of the get method.
-            Class[] parameterTypes = new Class[1];
+            Class<?>[] parameterTypes = new Class<?>[1];
             parameterTypes[0] = sourceMapping.getReferenceClass();
 
             try {
@@ -111,7 +108,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
                 }
                 try {
                     // Get the set method type from the get method.
-                    Method getMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), getGetMethodName(), new Class[0]);
+                    Method getMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), getGetMethodName(), new Class<?>[0]);
                     parameterTypes[0] = getMethod.getReturnType();
                     setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
                 } catch (NoSuchMethodException e2) {
@@ -173,26 +170,22 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         Object[] parameters = new Object[1];
         parameters[0] = attributeValue;
         try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                try {
-                    AccessController.doPrivileged(new PrivilegedMethodInvoker(getSetMethod(), target, parameters));
-                } catch (PrivilegedActionException exception) {
-                    Exception throwableException = exception.getException();
-                    if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, throwableException);
-                    } else {
-                        throw DescriptorException.targetInvocationWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, throwableException);
-                     }
-                }
-            } else {
-                PrivilegedAccessHelper.invokeMethod(getSetMethod(), target, parameters);
-            }
-        } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, exception);
-        } catch (IllegalArgumentException exception) {
-              throw DescriptorException.illegalArgumentWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, exception);
-        } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, exception);
+            PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.invokeMethod(getSetMethod(), target, parameters),
+                    (ex) -> {
+                        if (ex instanceof IllegalAccessException) {
+                            return DescriptorException.illegalAccessWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, ex);
+                        } else if (ex instanceof IllegalArgumentException) {
+                            return DescriptorException.illegalArgumentWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, ex);
+                        } else if (ex instanceof InvocationTargetException) {
+                            return DescriptorException.targetInvocationWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, ex);
+                        }
+                        // This indicates unexpected problem in the code
+                        return new RuntimeException(String.format(
+                                "Invocation of %s setter method failed", setMethod.getName()), ex);
+
+                    }
+            );
         } finally {
             if (!trackChanges && trackedObject != null) {
                 trackedObject._persistence_setPropertyChangeListener(listener);

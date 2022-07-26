@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.util.Date;
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class MyDateAdapter extends XmlAdapter<MyDateType, Date> {
+    @Override
     public MyDateType marshal(Date arg0) throws Exception {
         MyDateType dType = new MyDateType();
         dType.day = arg0.getDate();
@@ -26,6 +27,7 @@ public final class MyDateAdapter extends XmlAdapter<MyDateType, Date> {
         return dType;
     }
 
+    @Override
     public Date unmarshal(MyDateType arg0) throws Exception {
         return new Date(arg0.year, arg0.month, arg0.day);
     }

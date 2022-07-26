@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -313,7 +313,7 @@ public class TreatAsExpression extends QueryKeyExpression {
         this.typeExpressionBase = (ObjectExpression)typeExpressionBase.copiedVersionFrom(alreadyDone);
     }
 
-    public TreatAsExpression(Class castClass, ObjectExpression baseExpression) {
+    public TreatAsExpression(Class<?> castClass, ObjectExpression baseExpression) {
         super();
         this.name = "Treat as "+castClass;
         this.typeExpressionBase = baseExpression;
@@ -400,7 +400,7 @@ public class TreatAsExpression extends QueryKeyExpression {
         ClassDescriptor parentDescriptor = this.typeExpressionBase.getDescriptor();
         Vector<DatabaseTable> childTables = new Vector(2);
         if (parentDescriptor.hasInheritance() && parentDescriptor.getInheritancePolicy().hasMultipleTableChild() ) {
-            List parentTables = typeExpressionBase.getOwnedTables();
+            List<DatabaseTable> parentTables = typeExpressionBase.getOwnedTables();
             //All tables for this child, including parent tables
             Vector<DatabaseTable> tables = getDescriptor().getTables();
             for (DatabaseTable table : tables) {
@@ -451,11 +451,11 @@ public class TreatAsExpression extends QueryKeyExpression {
         //outerjoin our parent->child tables
         if (parentDescriptor.hasInheritance() &&
                 parentDescriptor.getInheritancePolicy().hasMultipleTableChild() ) {
-            Vector tables = getDescriptor().getTables();//All this child's tables
+            Vector<DatabaseTable> tables = getDescriptor().getTables();//All this child's tables
             tableSize = tables.size();
             //look up the joins from the parent descriptor to our tables.
             for (int i=0; i < tableSize; i++) {
-                DatabaseTable table = (DatabaseTable)tables.elementAt(i);
+                DatabaseTable table = tables.elementAt(i);
                 Expression joinExpression = parentDescriptor.getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                 //Some of our tables might be the in our parent as well, so ignore the lack of a joinExpression
                 if (joinExpression != null) {
@@ -466,10 +466,10 @@ public class TreatAsExpression extends QueryKeyExpression {
         }
 
         if (isUsingOuterJoinForMultitableInheritance()) {
-            List childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
+            List<DatabaseTable> childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             tableSize = childrenTables.size();
             for (int i=0; i < tableSize; i++) {
-                DatabaseTable table = (DatabaseTable)childrenTables.get(i);
+                DatabaseTable table = childrenTables.get(i);
                 Expression joinExpression = getDescriptor().getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                 joinExpression = this.baseExpression.twist(joinExpression, this);
                 tablesJoinExpressions.put(table, joinExpression);
@@ -492,14 +492,14 @@ public class TreatAsExpression extends QueryKeyExpression {
         //need to build this using just the multiple tables on this descriptor not included in the parent's join expression
         Expression criteria = null;
         if(getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
-            Vector tables = getDescriptor().getTables();//This child's tables
+            Vector<DatabaseTable> tables = getDescriptor().getTables();//This child's tables
             ClassDescriptor parentDescriptor = this.typeExpressionBase.getDescriptor();
             int tablesSize = tables.size();
             if (parentDescriptor.hasInheritance() &&
                     parentDescriptor.getInheritancePolicy().hasMultipleTableChild() ) {
                 //look up the joins from the parent descriptor to our tables.
                 for (int i=0; i < tablesSize; i++) {
-                    DatabaseTable table = (DatabaseTable)tables.elementAt(i);
+                    DatabaseTable table = tables.elementAt(i);
                     Expression joinExpression = parentDescriptor.getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                     //Some of our tables might be the in our parent as well, so ignore the lack of a joinExpression
                     if (joinExpression != null) {

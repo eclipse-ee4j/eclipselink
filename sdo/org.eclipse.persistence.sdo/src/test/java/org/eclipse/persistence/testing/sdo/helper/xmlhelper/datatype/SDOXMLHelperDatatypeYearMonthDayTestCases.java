@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,30 +33,37 @@ public class SDOXMLHelperDatatypeYearMonthDayTestCases extends SDOXMLHelperDatat
         TestRunner.main(arguments);
     }
 
-    protected Class getDatatypeJavaClass() {
+    @Override
+    protected Class<?> getDatatypeJavaClass() {
         return String.class;
     }
 
+    @Override
     protected SDOType getValueType() {
         return SDOConstants.SDO_YEARMONTHDAY;
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myYearMonthDay-1.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "myYearMonthDay-NS";
     }
 
+    @Override
     protected String getControlRootName() {
         return "myYearMonthDay";
     }
 
+    @Override
     protected String getSchemaNameForUserDefinedType() {
         return getSchemaLocation() + "myYearMonthDay.xsd";
     }
 
+    @Override
     protected String getSchemaNameForBuiltinType() {
         return getSchemaLocation() + "myYearMonthDay-builtin.xsd";
     }

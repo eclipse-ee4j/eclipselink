@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,9 +31,9 @@ public class PC extends Computer {
         // As a result, we check for the mapping before adding it.
         // The reason this mapping is not added in the project is that some Mapping Workbench
         // tests rely on the ammendment method.
-        Enumeration mappings = descriptor.getMappings().elements();
+        Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
         while (mappings.hasMoreElements()) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
+            DatabaseMapping mapping = mappings.nextElement();
             if (mapping.isTransformationMapping()) {
                 Object pctype = ((TransformationMapping)mapping).getFieldNameToMethodNames().get("PCTYPE");
                 if (pctype != null) {
@@ -48,6 +48,7 @@ public class PC extends Computer {
 
     }
 
+    @Override
     public String getComputerType() {
         return "PC";
     }

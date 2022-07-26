@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,11 @@
 package org.eclipse.persistence.eis;
 
 import java.lang.reflect.*;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import jakarta.resource.cci.*;
 import org.w3c.dom.*;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
@@ -92,44 +88,23 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
         }
         if (domMethod == null) {
             try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try{
-                        domMethod = AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "getDom", null, false));
-                    }catch (PrivilegedActionException ex){
-                        throw (Exception)ex.getCause();
-                    }
-                }else{
-                    domMethod = PrivilegedAccessHelper.getMethod(record.getClass(), "getDom", null, false);
-                }
+                domMethod = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.getMethod(record.getClass(), "getDom", null, false)
+                );
             } catch (Exception notFound) {
-                try {
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try{
-                            domMethod = AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "getDOM", null, false));
-                        }catch (PrivilegedActionException ex){
-                            throw (Exception)ex.getCause();
-                        }
-                    }else{
-                        domMethod = PrivilegedAccessHelper.getMethod(record.getClass(), "getDOM", null, false);
-                    }
-                 } catch (Exception cantFind) {
-                    throw new EISException(cantFind);
-                }
+                domMethod = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                        () -> PrivilegedAccessHelper.getMethod(record.getClass(), "getDOM", null, false),
+                        EISException::new
+                );
             }
         }
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
-                    setDOM((Element)AccessController.doPrivileged(new PrivilegedMethodInvoker(domMethod, record, null)));
-                }catch (PrivilegedActionException ex){
-                    throw (Exception)ex.getCause();
-                }
-            }else{
-                setDOM((Element)PrivilegedAccessHelper.invokeMethod(domMethod, record, null));
-            }
-        } catch (Exception error) {
-            throw new EISException(error);
-        }
+        PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> {
+                    setDOM(PrivilegedAccessHelper.invokeMethod(domMethod, record, null));
+                    return null;
+                },
+                EISException::new
+        );
     }
 
     /**

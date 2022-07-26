@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -87,7 +89,7 @@ public class XMLProjectReader {
         shouldUseSchemaValidation = value;
     }
 
-    public XMLProjectReader() {
+    private XMLProjectReader() {
         super();
     }
 
@@ -234,12 +236,8 @@ public class XMLProjectReader {
 
         InputStreamReader reader = null;
         try {
-            try {
-                // Bug2631348  Only UTF-8 is supported
-                reader = new InputStreamReader(fileStream, "UTF-8");
-            } catch (UnsupportedEncodingException exception) {
-                throw ValidationException.fatalErrorOccurred(exception);
-            }
+            // Bug2631348  Only UTF-8 is supported
+            reader = new InputStreamReader(fileStream, StandardCharsets.UTF_8);
 
             Project project = read(reader, classLoader);
             return project;
@@ -274,10 +272,6 @@ public class XMLProjectReader {
     /**
      * Read a project in the format of an ObjectPersistenceRuntimeXMLProject.
      * This could include a TopLink 11.1.1 project or a TopLink 10.1.3 project
-     * @param document
-     * @param classLoader
-     * @param opmProject
-     * @return
      */
     public static Project readObjectPersistenceRuntimeFormat(Document document, ClassLoader classLoader, Project opmProject){
         XMLLogin xmlLogin = new XMLLogin();

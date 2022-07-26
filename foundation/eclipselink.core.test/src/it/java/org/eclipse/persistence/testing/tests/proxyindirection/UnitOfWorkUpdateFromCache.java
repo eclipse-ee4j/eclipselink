@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,15 +24,18 @@ public class UnitOfWorkUpdateFromCache extends AutoVerifyTestCase {
         setDescription("Tests replacing a Proxy Indirection object with a new object (from cache) in a UnitOfWork.");
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow1 = getSession().acquireUnitOfWork();
         Employee emp4 = new EmployeeImpl();
@@ -59,6 +62,7 @@ public class UnitOfWorkUpdateFromCache extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         //    getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Employee emp = (Employee)getSession().readObject(Employee.class, new ExpressionBuilder().get("firstName").equal("Jason"));

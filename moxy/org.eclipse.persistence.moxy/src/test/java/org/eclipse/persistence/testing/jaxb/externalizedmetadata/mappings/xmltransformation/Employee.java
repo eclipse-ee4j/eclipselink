@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltr
 
 import jakarta.xml.bind.annotation.XmlTransient;
 
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  *  A simple class that contains a transformation mapping;
@@ -75,10 +75,10 @@ public class Employee {
     /**
      * Used for testing method name based attribute transformer.
      */
-    public String[] buildNormalHoursValue(Record record) {
+    public String[] buildNormalHoursValue(DataRecord dataRecord) {
         String[] hours = new String[2];
-        hours[0] = (String) record.get("normal-hours/start-time/text()");
-        hours[1] = (String) record.get("normal-hours/end-time/text()");
+        hours[0] = (String) dataRecord.get("normal-hours/start-time/text()");
+        hours[1] = (String) dataRecord.get("normal-hours/end-time/text()");
         return hours;
     }
 

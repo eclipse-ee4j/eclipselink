@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,5 +38,5 @@ public interface SchemaResolver extends EntityResolver {
      * @return Source for the referenced Schema or null if processing the referenced schema should be skipped.  If this method
      * throws an exception, processing will stop.
      */
-    public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation);
+    Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation);
 }

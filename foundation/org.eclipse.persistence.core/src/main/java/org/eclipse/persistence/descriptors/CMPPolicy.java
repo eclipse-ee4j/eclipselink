@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -24,7 +24,6 @@
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
-import java.security.AccessController;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +35,6 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
@@ -62,7 +60,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
 
 
     /** Class originally mapped, before anything was generated. */
-    protected Class mappedClass;
+    protected Class<?> mappedClass;
     protected ClassDescriptor descriptor;
 
     /** The object deferral level.  This controls when objects changes will be sent to the Database. */
@@ -127,9 +125,8 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * PUBLIC:
      * Define the mapped class. This is the class which was originally mapped in the MW
      *
-     * @param newMappedClass
      */
-    public void setMappedClass(Class newMappedClass) {
+    public void setMappedClass(Class<?> newMappedClass) {
         mappedClass = newMappedClass;
     }
 
@@ -138,7 +135,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Answer the mapped class. This is the class which was originally mapped in the MW
      *
      */
-    public Class getMappedClass() {
+    public Class<?> getMappedClass() {
         return mappedClass;
     }
 
@@ -156,7 +153,6 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * PUBLIC:
      * Configure bean pessimistic locking
      *
-     * @param policy
      * @see org.eclipse.persistence.descriptors.PessimisticLockingPolicy
      */
     public void setPessimisticLockingPolicy(PessimisticLockingPolicy policy) {
@@ -196,10 +192,9 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * this type.  NOTE: if set to true, then updateAllFields must also be set
      * to true
      *
-     * @param shouldForceUpdate
      */
     public void setForceUpdate(boolean shouldForceUpdate) {
-        this.forceUpdate = Boolean.valueOf(shouldForceUpdate);
+        this.forceUpdate = shouldForceUpdate;
     }
 
     /**
@@ -217,10 +212,9 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Configure whether TopLink should update all fields for an object of this
      * type when an update occurs.
      *
-     * @param shouldUpdatAllFields
      */
     public void setUpdateAllFields(boolean shouldUpdatAllFields) {
-        this.updateAllFields = Boolean.valueOf(shouldUpdatAllFields);
+        this.updateAllFields = shouldUpdatAllFields;
     }
 
     /**
@@ -356,7 +350,6 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Convert all the class-name-based settings in this object to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
     }
@@ -510,26 +503,20 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * INTERNAL:
      * Return a new instance of the class provided.
      */
-    public Object getClassInstance(Class cls) {
-        if (cls != null){
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(cls));
-                } else {
-                    return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(cls);
-                }
-            } catch (Exception e) {
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(cls.getName(), e);
-            }
+    public Object getClassInstance(Class<?> cls) {
+        if (cls != null) {
+            return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.newInstanceFromClass(cls),
+                    (ex) -> ValidationException.reflectiveExceptionWhileCreatingClassInstance(cls.getName(), ex)
+            );
         }
-
         return null;
     }
 
     /**
      * INTERNAL:
      */
-    public Object getPKClassInstance() {
+    public <T> T getPKClassInstance() {
         // TODO fix this exception so that it is more descriptive
         // This method only works in CMP3Policy but was added here for separation
         // of components
@@ -539,7 +526,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Class getPKClass() {
+    public <T> Class<T> getPKClass() {
         // TODO fix this exception so that it is more descriptive
         // This method only works in CMP3Policy but was added here for separation
         // of components
@@ -594,8 +581,6 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Check to see if there is a single key element.  Iterate through the list of primary key elements
      * and count only keys that are not part of the Multitenant identifier.
      *
-     * @param pkElementArray
-     * @return
      */
     protected boolean isSingleKey(KeyElementAccessor[] pkElementArray){
         if ((pkElementArray.length == 1) && (pkElementArray[0] instanceof KeyIsElementAccessor)) {
@@ -620,7 +605,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * INTERNAL:
      * This is the interface used to encapsulate the the type of key class element
      */
-    protected static interface KeyElementAccessor {
+    protected interface KeyElementAccessor {
         String getAttributeName();
         DatabaseField getDatabaseField();
         DatabaseMapping getMapping();

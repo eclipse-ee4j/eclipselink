@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,17 +44,17 @@ public class NumericTester extends TypeTester {
     public NumericTester() {
         super("ZERO");
         intValue = 0;
-        integerClassValue = new Integer(0);
+        integerClassValue = 0;
         floatValue = 0;
-        floatClassValue = new Float(0);
+        floatClassValue = (float) 0;
         longValue = 0;
-        longClassValue = new Long(0);
+        longClassValue = 0L;
         doubleValue = 0;
-        doubleClassValue = new Double(0);
+        doubleClassValue = (double) 0;
         shortValue = (short)0;
-        shortClassValue = new Short((short)0);
+        shortClassValue = (short) 0;
         byteValue = (byte)0;
-        byteClassValue = new Byte((byte)0);
+        byteClassValue = (byte) 0;
         bigIntegerValue = new BigInteger("0");
         bigDecimalValue = new BigDecimal(bigIntegerValue, 19);
     }
@@ -77,7 +77,7 @@ public class NumericTester extends TypeTester {
     /**
      * Assumes that if size is allowed that the sum of the scale and the precision
      * must be less than or equal to the maximum precision.
-     *    If building sizes it splits the number (ie. 38 -> 19,19 or 19 -> 10, 9)
+     *    If building sizes it splits the number (ie. 38 -{@literal >} 19,19 or 19 -{@literal >} 10, 9)
      */
     private static void addDoubleField(TableDefinition definition, DatabasePlatform platform) {
         FieldTypeDefinition fieldDef = platform.getFieldTypes().get(Double.class);
@@ -95,7 +95,7 @@ public class NumericTester extends TypeTester {
     /**
      * Assumes that if size is allowed that the sum of the scale and the precision
      * must be less than or equal to the maximum precision.
-     *    If building sizes it splits the number (ie. 38 -> 19,19 or 19 -> 10, 9)
+     *    If building sizes it splits the number (ie. 38 -{@literal >} 19,19 or 19 -{@literal >} 10, 9)
      */
     private static void addFloatField(TableDefinition definition, DatabasePlatform platform) {
         FieldTypeDefinition fieldDef = platform.getFieldTypes().get(Float.class);
@@ -225,17 +225,17 @@ public class NumericTester extends TypeTester {
         NumericTester tester = new NumericTester("MAXIMUM");
         Hashtable maximums = platform.maximumNumericValues();
 
-        tester.setIntegerValue(((Integer)maximums.get(Integer.class)).intValue());
+        tester.setIntegerValue((Integer) maximums.get(Integer.class));
         tester.setIntegerClassValue((Integer)maximums.get(Integer.class));
-        tester.setFloatValue(((Float)maximums.get(Float.class)).floatValue());
+        tester.setFloatValue((Float) maximums.get(Float.class));
         tester.setFloatClassValue((Float)maximums.get(Float.class));
-        tester.setLongValue(((Long)maximums.get(Long.class)).longValue());
+        tester.setLongValue((Long) maximums.get(Long.class));
         tester.setLongClassValue((Long)maximums.get(Long.class));
-        tester.setDoubleValue(((Double)maximums.get(Double.class)).doubleValue());
+        tester.setDoubleValue((Double) maximums.get(Double.class));
         tester.setDoubleClassValue((Double)maximums.get(Double.class));
-        tester.setShortValue(((Short)maximums.get(Short.class)).shortValue());
+        tester.setShortValue((Short) maximums.get(Short.class));
         tester.setShortClassValue((Short)maximums.get(Short.class));
-        tester.setByteValue(((Byte)maximums.get(Byte.class)).byteValue());
+        tester.setByteValue((Byte) maximums.get(Byte.class));
         tester.setByteClassValue((Byte)maximums.get(Byte.class));
         tester.setBigIntegerValue((BigInteger)maximums.get(BigInteger.class));
         tester.setBigDecimalValue((BigDecimal)maximums.get(BigDecimal.class));
@@ -247,17 +247,17 @@ public class NumericTester extends TypeTester {
         NumericTester tester = new NumericTester("MINIMUM");
         Hashtable minimums = platform.minimumNumericValues();
 
-        tester.setIntegerValue(((Integer)minimums.get(Integer.class)).intValue());
+        tester.setIntegerValue((Integer) minimums.get(Integer.class));
         tester.setIntegerClassValue((Integer)minimums.get(Integer.class));
-        tester.setFloatValue(((Float)minimums.get(Float.class)).floatValue());
+        tester.setFloatValue((Float) minimums.get(Float.class));
         tester.setFloatClassValue((Float)minimums.get(Float.class));
-        tester.setLongValue(((Long)minimums.get(Long.class)).longValue());
+        tester.setLongValue((Long) minimums.get(Long.class));
         tester.setLongClassValue((Long)minimums.get(Long.class));
-        tester.setDoubleValue(((Double)minimums.get(Double.class)).doubleValue());
+        tester.setDoubleValue((Double) minimums.get(Double.class));
         tester.setDoubleClassValue((Double)minimums.get(Double.class));
-        tester.setShortValue(((Short)minimums.get(Short.class)).shortValue());
+        tester.setShortValue((Short) minimums.get(Short.class));
         tester.setShortClassValue((Short)minimums.get(Short.class));
-        tester.setByteValue(((Byte)minimums.get(Byte.class)).byteValue());
+        tester.setByteValue((Byte) minimums.get(Byte.class));
         tester.setByteClassValue((Byte)minimums.get(Byte.class));
         tester.setBigIntegerValue((BigInteger)minimums.get(BigInteger.class));
         tester.setBigDecimalValue((BigDecimal)minimums.get(BigDecimal.class));
@@ -274,7 +274,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setByteClassValue(byte aByte) {
-        byteClassValue = new Byte(aByte);
+        byteClassValue = aByte;
     }
 
     public void setByteClassValue(Byte aByte) {
@@ -286,7 +286,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setDoubleClassValue(double aDouble) {
-        doubleClassValue = new Double(aDouble);
+        doubleClassValue = aDouble;
     }
 
     public void setDoubleClassValue(Double aDouble) {
@@ -298,7 +298,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setFloatClassValue(float aFloat) {
-        floatClassValue = new Float(aFloat);
+        floatClassValue = aFloat;
     }
 
     public void setFloatClassValue(Float aFloat) {
@@ -310,7 +310,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setIntegerClassValue(int anInteger) {
-        integerClassValue = new Integer(anInteger);
+        integerClassValue = anInteger;
     }
 
     public void setIntegerClassValue(Integer anInteger) {
@@ -322,7 +322,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setLongClassValue(long aLong) {
-        longClassValue = new Long(aLong);
+        longClassValue = aLong;
     }
 
     public void setLongClassValue(Long aLong) {
@@ -338,7 +338,7 @@ public class NumericTester extends TypeTester {
     }
 
     public void setShortClassValue(short aShort) {
-        shortClassValue = new Short(aShort);
+        shortClassValue = aShort;
     }
 
     public void setShortValue(short aShort) {
@@ -382,6 +382,7 @@ public class NumericTester extends TypeTester {
         return "NumericTester(" + getTestName() + ")";
     }
 
+    @Override
     protected void verify(WriteTypeObjectTest testCase) throws TestException {
         if(getTestName().equals("MINIMUM") || getTestName().equals("MAXIMUM")) {
             // Bug 210153
@@ -402,17 +403,17 @@ public class NumericTester extends TypeTester {
         NumericTester tester = new NumericTester("ZERO");
 
         tester.setIntegerValue(0);
-        tester.setIntegerClassValue(new Integer(0));
+        tester.setIntegerClassValue(Integer.valueOf(0));
         tester.setFloatValue(0);
-        tester.setFloatClassValue(new Float(0));
+        tester.setFloatClassValue(Float.valueOf(0));
         tester.setLongValue(0);
-        tester.setLongClassValue(new Long(0));
+        tester.setLongClassValue(Long.valueOf(0));
         tester.setDoubleValue(0);
-        tester.setDoubleClassValue(new Double(0));
+        tester.setDoubleClassValue(Double.valueOf(0));
         tester.setShortValue((short)0);
-        tester.setShortClassValue(new Short((short)0));
+        tester.setShortClassValue(Short.valueOf((short)0));
         tester.setByteValue((byte)0);
-        tester.setByteClassValue(new Byte((byte)0));
+        tester.setByteClassValue(Byte.valueOf((byte)0));
         tester.setBigIntegerValue(new BigInteger("0"));
         tester.setBigDecimalValue(new BigDecimal("0"));
 

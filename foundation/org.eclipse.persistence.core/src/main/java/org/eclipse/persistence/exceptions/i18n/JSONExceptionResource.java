@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,14 +20,22 @@ import java.util.ListResourceBundle;
  * INTERNAL:
  * <b>Purpose:</b><p>English ResourceBundle for JSONException.</p>
  */
-public class JSONExceptionResource extends ListResourceBundle {
+public final class JSONExceptionResource extends ListResourceBundle {
     public static final Object[][] contents = {
             {"60001", "Input JSON document is invalid or doesn't match target object graph."},
     };
 
     /**
+     * Default constructor.
+     */
+    public JSONExceptionResource() {
+        // for reflection
+    }
+
+    /**
      * Return the lookup table.
      */
+    @Override
     protected Object[][] getContents() {
         return contents;
     }

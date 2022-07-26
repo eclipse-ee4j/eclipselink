@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,13 +45,14 @@ public class VerifyAggregateCollectionObjectsDeletedFromCacheTest extends Comple
         super(originalObject);
     }
 
+    @Override
     protected void changeObject() {
         Object object = this.workingCopy;
         List customers = AgentBuilderHelper.getCustomers(object);
 
         Customer customerx = (Customer)customers.get(0);
-        Vector dependants = customerx.getDependants();
-        customerx.removeDependant((Dependant)dependants.lastElement());
+        Vector<Dependant> dependants = customerx.getDependants();
+        customerx.removeDependant(dependants.lastElement());
         AgentBuilderHelper.removeCustomer(object, (Customer)customers.get(customers.size()-1));
     }
 
@@ -59,6 +60,7 @@ public class VerifyAggregateCollectionObjectsDeletedFromCacheTest extends Comple
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         this.objectFromDatabase = getSession().executeQuery(this.query);

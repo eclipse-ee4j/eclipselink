@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,45 +14,35 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
-import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
-import org.eclipse.persistence.testing.models.jpa.relationships.CustomerDetails;
-import org.eclipse.persistence.testing.models.jpa.relationships.Order;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
-import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
-import org.eclipse.persistence.testing.models.jpa.relationships.SalesPerson;
+import org.junit.Assert;
+
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     static JUnitDomainObjectComparer comparer;
-    static EmployeePopulator employeePopulator;
 
     public JUnitJPQLExamplesTestSuite() {
         super();
@@ -65,6 +55,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     /**
      * This method is run at the end of EVERY test case method.
      */
+    @Override
     public void tearDown() {
         clearCache();
     }
@@ -76,40 +67,26 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLExamplesTestSuite");
         suite.addTest(new JUnitJPQLExamplesTestSuite("testSetup"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("findAllOrders"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("findEmployeesInOntario"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("findAllProvinceWithEmployees"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("findAllEmployeesWithPhoneNumbers"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("findAllEmployeesWithOutPhoneNumbers"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("findAllEmployeesWithCellPhones"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("findOrdersWithDifferentBilledCustomer"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("findEmployeeWithWorkPhone2258812"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("parameterTest"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("getOrderLargerThan"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("getSalesPersonForOrders"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("getOrderForCustomer"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testOuterJoin"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testExistsExpression"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testAllExpressions"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("testCountInSubQuery"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testGroupByHavingExpression"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testGroupByHavingCount"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("testConstructorQuery"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testSumExpression"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("testAvgExpression"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testOrderByExpression"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("testCountInSubQuery"));
         suite.addTest(new JUnitJPQLExamplesTestSuite("testOrderByExpressionWithSelect"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("testDeleteExpression"));
-        suite.addTest(new JUnitJPQLExamplesTestSuite("testComplexDeleteExpression"));
 
         suite.addTest(new JUnitJPQLExamplesTestSuite("testCountExpression"));    //bug 5166658
-        suite.addTest(new JUnitJPQLExamplesTestSuite("testUpdateExpression"));   //bug 5159164, 5159198
 
         //Bug5097278
         suite.addTest(new JUnitJPQLExamplesTestSuite("updateAllTest"));
-        //Bug5040609
-        suite.addTest(new JUnitJPQLExamplesTestSuite("namedQueryCloneTest"));
         //Bug4924639
         suite.addTest(new JUnitJPQLExamplesTestSuite("aggregateParameterTest"));
         // Bug 5090182
@@ -130,11 +107,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         //create a new EmployeePopulator
         EmployeePopulator employeePopulator = new EmployeePopulator();
 
-        RelationshipsExamples relationshipExamples = new RelationshipsExamples();
-
         new AdvancedTableCreator().replaceTables(session);
-
-        new RelationshipsTableManager().replaceTables(session);
 
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
@@ -144,22 +117,9 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         //Populate the advanced model
         employeePopulator.buildExamples();
-        //populate the relationships model and persist as well
-        relationshipExamples.buildExamples(session);
 
         //Persist the advanced model examples in the database
         employeePopulator.persistExample(session);
-    }
-
-    public void findAllOrders() {
-        EntityManager em = createEntityManager();
-        List expectedResult = getServerSession().readAllObjects(Order.class);
-
-        String ejbqlString = "SELECT o FROM OrderBean o";
-        List result = em.createQuery(ejbqlString).getResultList();
-        // 4 orders returned
-        Assert.assertEquals("Find all orders test failed: data validation error", result.size(), 4);
-        Assert.assertTrue("Find all orders test failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void findEmployeesInOntario() {
@@ -283,26 +243,6 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Assert.assertTrue("Find all employees with cellular phone numbers test failed", comparer.compareObjects(expectedResult, secondResult));
     }
 
-    public void findOrdersWithDifferentBilledCustomer() {
-        EntityManager em = createEntityManager();
-        ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = builder.get("customer").equal(builder.get("billedCustomer")).not();
-
-        ReadAllQuery raq = new ReadAllQuery(Order.class);
-        raq.setSelectionCriteria(whereClause);
-
-        List expectedResult = (List)getServerSession().executeQuery(raq);
-
-        String ejbqlString = "SELECT o FROM OrderBean o WHERE o.customer <> o.billedCustomer";
-        List firstResult = em.createQuery(ejbqlString).getResultList();
-
-        String alternateEjbqlString = "SELECT o FROM OrderBean o WHERE NOT o.customer.customerId = o.billedCustomer.customerId";
-        List secondResult = em.createQuery(alternateEjbqlString).getResultList();
-        //2 orders returned
-        Assert.assertTrue("Find orders with different billed customers test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResult, firstResult));
-        Assert.assertTrue("Find orders with different billed customers test failed", comparer.compareObjects(expectedResult, firstResult));
-    }
-
     public void findEmployeeWithWorkPhone2258812() {
         EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -360,66 +300,6 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Assert.assertTrue("Parameter test failed", comparer.compareObjects(expectedEmployee, firstResult));
     }
 
-
-    public void getOrderLargerThan() {
-        EntityManager em = createEntityManager();
-
-        ExpressionBuilder builder1 = new ExpressionBuilder(Order.class);
-        ExpressionBuilder builder2 = new ExpressionBuilder(Order.class);
-        Expression o1Quantity = builder1.get("quantity");
-        Expression o2Quantity = builder2.get("quantity");
-        Expression quantityComparison = o1Quantity.greaterThan(o2Quantity);
-        Expression o2CustomerName = builder2.get("customer").get("name");
-        Expression nameComparison = o2CustomerName.equal("Jane Smith");
-        Expression whereClause = quantityComparison.and(nameComparison);
-
-        ReadAllQuery raq = new ReadAllQuery();
-        raq.setSelectionCriteria(whereClause);
-        raq.setReferenceClass(Order.class);
-        raq.useDistinct();
-        List expectedResult = (List)getServerSession().executeQuery(raq);
-
-        String ejbqlString = "SELECT DISTINCT o1 FROM OrderBean o1, OrderBean o2 WHERE o1.quantity > o2.quantity AND" + " o2.customer.name = 'Jane Smith' ";
-        List result = em.createQuery(ejbqlString).getResultList();
-        //only 1 order
-        Assert.assertEquals("Get order larger than test failed: data validation error", result.size(), 1);
-        Assert.assertTrue("Get order larger than test failed", comparer.compareObjects(expectedResult, result));
-    }
-
-    public void getOrderForCustomer() {
-        EntityManager em = createEntityManager();
-        ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = builder.get("name").equal("Jane Smith");
-
-        ReadAllQuery raq = new ReadAllQuery(Customer.class);
-        raq.setSelectionCriteria(whereClause);
-
-        Customer expectedCustomer = (Customer)(((List)getServerSession().executeQuery(raq)).get(0));
-        SalesPerson salesPerson = ((Order)(expectedCustomer.getOrders().iterator().next())).getSalesPerson();
-
-        String ejbqlString = "SELECT DISTINCT c FROM Customer c JOIN c.orders o JOIN o.salesPerson s WHERE s.id = " + salesPerson.getId();
-        List firstResult = em.createQuery(ejbqlString).getResultList();
-        String alternateEjbqlString = "SELECT DISTINCT c FROM Customer c, IN(c.orders) o WHERE o.salesPerson.id = " + salesPerson.getId();
-        List secondResuslt = em.createQuery(alternateEjbqlString).getResultList();
-
-        //only 1 order for this customer
-        Assert.assertEquals("Get order for customer test failed: data validation error", firstResult.size(), 1);
-        Assert.assertTrue("Get order for customer test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResuslt, firstResult));
-        Assert.assertTrue("Get order for customer test failed", comparer.compareObjects(expectedCustomer, firstResult));
-    }
-
-    public void getSalesPersonForOrders() {
-        EntityManager em = createEntityManager();
-
-        List expectedResult = getServerSession().readAllObjects(SalesPerson.class);
-
-        String ejbqlString = "SELECT DISTINCT o.salesPerson FROM Customer AS c, IN(c.orders) o";
-        List result = em.createQuery(ejbqlString).getResultList();
-        //2 sales person
-        Assert.assertEquals("Get SalesPerson for Orders test failed: data validation error", result.size(), 2);
-        Assert.assertTrue("Get SalesPerson for Orders test failed", comparer.compareObjects(expectedResult, result));
-    }
-
     public void testOuterJoin() {
         EntityManager em = createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -448,7 +328,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         subQuery.setReferenceClass(Employee.class);
         Expression managerExpression = employeeBuilder.get("manager").get("id").equal(managerBuilder.get("id"));
-        subQuery.addAttribute("one", new ConstantExpression(new Integer(1), subQuery.getExpressionBuilder()));
+        subQuery.addAttribute("one", new ConstantExpression(1, subQuery.getExpressionBuilder()));
         subQuery.setSelectionCriteria(managerExpression);
         Expression employeeExpression = employeeBuilder.exists(subQuery);
 
@@ -502,26 +382,6 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             }
         }
         Assert.assertTrue("All Expression test failed", testPass);
-    }
-
-    public void testCountInSubQuery() {
-        EntityManager em = createEntityManager();
-        boolean testPass = false;
-        ReportQuery mainQuery = new ReportQuery(Customer.class, new ExpressionBuilder());
-        ReportQuery subQuery = new ReportQuery(Order.class, new ExpressionBuilder());
-        subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().get("customer").get("customerId").equal(mainQuery.getExpressionBuilder().get("customerId")));
-        subQuery.addCount("orderId");
-        mainQuery.setSelectionCriteria(mainQuery.getExpressionBuilder().subQuery(subQuery).greaterThan(0));
-        mainQuery.addAttribute("customerId");
-        mainQuery.returnWithoutReportQueryResult();
-        List expectedResult = (List)getServerSession().executeQuery(mainQuery);
-        String ejbqlString = "SELECT c.customerId FROM Customer c WHERE (SELECT COUNT(o) FROM c.orders o) > 0";
-        List result = em.createQuery(ejbqlString).getResultList();
-        if (result.containsAll(expectedResult) && expectedResult.containsAll(result))
-            testPass = true;
-
-        Assert.assertEquals("Count subquery test failed: data validation error", result.size(), 2);
-        Assert.assertTrue("Count subquery test failed", testPass);
     }
 
     public void testGroupByHavingExpression() {
@@ -607,15 +467,6 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Assert.assertTrue("GroupBy Having Count expression test failed", testPass);
     }
 
-    public void testConstructorQuery() {
-        EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.models.jpa.relationships.CustomerDetails(c.customerId, o.quantity) FROM Customer " + "c JOIN c.orders o WHERE o.quantity > 100";
-
-        List custDetails = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Constructor query test failed: not an instance of CustomerDetail", custDetails.get(0) instanceof CustomerDetails);
-        Assert.assertEquals("Constructor query test failed, expecting only 1 customer with order > 100", custDetails.size(), 1);
-    }
-
     public void testSumExpression() {
         EntityManager em = createEntityManager();
 
@@ -627,18 +478,6 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Long expectedResult = (Long)((List)getServerSession().executeQuery(query)).get(0);
         String ejbqlString = "SELECT SUM(p.id) FROM Employee e JOIN e.phoneNumbers p JOIN e.address a" + " WHERE a.province = 'QUE' ";
         Long result = (Long)em.createQuery(ejbqlString).getSingleResult();
-        Assert.assertEquals("Average expression test failed", expectedResult, result);
-    }
-
-    public void testAvgExpression() {
-        EntityManager em = createEntityManager();
-
-        ReportQuery query = new ReportQuery(Order.class, new ExpressionBuilder());
-        query.addAverage("average quantity", query.getExpressionBuilder().get("quantity"), Double.class);
-        query.returnSingleResult();
-        Double expectedResult = (Double)((ReportQueryResult)getServerSession().executeQuery(query)).get("average quantity");
-        String ejbqlString = "SELECT AVG(o.quantity) FROM OrderBean o";
-        Double result = (Double)em.createQuery(ejbqlString).getSingleResult();
         Assert.assertEquals("Average expression test failed", expectedResult, result);
     }
 
@@ -717,102 +556,11 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Assert.assertTrue("OrderBy with Select expression test failed", testPass);
     }
 
-    public void testDeleteExpression() {
-        if (isOnServer()) {
-            // Not work on server.
-            return;
-        }
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testDeleteExpression skipped for this platform, "
-                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
-            return;
-        }
-
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
-        try {
-            beginTransaction(em);
-            String orderString = "DELETE FROM OrderBean o WHERE o.customer.name ='Karen McDonald' ";
-            em.createQuery(orderString).executeUpdate();
-            orderString = "DELETE FROM OrderBean o WHERE o.billedCustomer.name ='Karen McDonald' ";
-            em.createQuery(orderString).executeUpdate();
-            String ejbqlString = "DELETE FROM Customer c WHERE c.name='Karen McDonald' ";
-            int result = em.createQuery(ejbqlString).executeUpdate();
-            Assert.assertEquals("Delete Expression test failed: customer to delete not found", 1, result);
-            em.flush();
-
-            ReadAllQuery raq = new ReadAllQuery(Customer.class, new ExpressionBuilder());
-            Expression whereClause = raq.getExpressionBuilder().get("name").equal("Karen McDonald");
-            raq.setSelectionCriteria(whereClause);
-            List customerFound = (List)em.getActiveSession().executeQuery(raq);
-            Assert.assertEquals("Delete Expression test failed", 0, customerFound.size());
-        } finally {
-            rollbackTransaction(em);
-        }
-    }
-
     // Bug 5090182
 
     public void testEJBQLQueryString() {
         List<Object[]> emps = createEntityManager().createQuery("SELECT e, a FROM Employee e, Address a WHERE e.address = a").getResultList();
         assertFalse("No employees were read, debug and look at the SQL that was generated. ", emps.isEmpty());
-    }
-
-    public void testComplexDeleteExpression() {
-        if (isOnServer()) {
-            // Not work on server.
-            return;
-        }
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testComplexDeleteExpression skipped for this platform, "
-                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
-            return;
-        }
-
-        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
-        try {
-            beginTransaction(em);
-            String orderString = "DELETE FROM OrderBean o WHERE o.customer.name ='Karen McDonald' ";
-            em.createQuery(orderString).executeUpdate();
-            orderString = "DELETE FROM OrderBean o WHERE o.billedCustomer.name ='Karen McDonald' ";
-            em.createQuery(orderString).executeUpdate();
-            String ejbqlString = "DELETE FROM Customer c WHERE c.name='Karen McDonald' AND c.orders IS EMPTY";
-            int result = em.createQuery(ejbqlString).executeUpdate();
-            Assert.assertEquals("Complex Delete Expression test failed: customer to delete not found", 1, result);
-            em.flush();
-
-            ReadAllQuery raq = new ReadAllQuery(Customer.class, new ExpressionBuilder());
-            Expression whereClause1 = raq.getExpressionBuilder().get("name").equal("Karen McDonald");
-            Expression whereClause2 = raq.getExpressionBuilder().isEmpty("orders");
-            raq.setSelectionCriteria(whereClause1.and(whereClause2));
-            List customerFound = (List)em.getActiveSession().executeQuery(raq);
-            Assert.assertEquals("Complex Delete Expression test failed", 0, customerFound.size());
-        } finally {
-            rollbackTransaction(em);
-        }
-    }
-
-    //bug 5159164, 5159198
-
-    public void testUpdateExpression() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testUpdateExpression skipped for this platform, "
-                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
-            return;
-        }
-        EntityManager em = createEntityManager();
-        Number result = null;
-        beginTransaction(em);
-        try {
-            String ejbqlString = "UPDATE Customer c SET c.name = 'Test Case' WHERE c.name = 'Jane Smith' " + "AND 0 < (SELECT COUNT(o) FROM Customer cust JOIN cust.orders o)";
-            result = em.createQuery(ejbqlString).executeUpdate();
-            commitTransaction(em);
-        } finally {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-        }
-
-        Assert.assertEquals("Update expression test failed", 1, result);
     }
 
     //Bug5097278 Test case for updating the manager of ALL employees that have a certain address
@@ -864,23 +612,6 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         beginTransaction(em);
         em.createQuery("UPDATE Employee e SET e.period.startDate= :startDate").setParameter("startDate", startDate).executeUpdate();
         commitTransaction(em);
-    }
-
-
-    //Bug5040609  Test if EJBQuery makes a clone of the original DatabaseQuery from the session
-
-    public void namedQueryCloneTest() {
-        EntityManager em = createEntityManager();
-
-        List result1 = em.createNamedQuery("findAllCustomers").getResultList();
-
-        List result2 = em.createNamedQuery("findAllCustomers").setMaxResults(1).getResultList();
-
-        List result3 = em.createNamedQuery("findAllCustomers").getResultList();
-
-        Assert.assertEquals("Named query clone test failed: the first result should be 4", result1.size(), 4);
-        Assert.assertEquals("Named query clone test failed: the second result should be 1", result2.size(), 1);
-        Assert.assertEquals("Named query clone test failed: the third result should be 4", result3.size(), 4);
     }
 
     //Bug5040609 Test case for aggregates as parameters in EJBQL

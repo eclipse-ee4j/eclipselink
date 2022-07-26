@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * This is part of JPA 2.0.
  * </p>
- * <div><b>BNF:</b> <code>&lt;identifier&gt;(identification_variable)</code><p></div>
+ * <div><b>BNF:</b> <code>&lt;identifier&gt;(identification_variable)</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -41,25 +41,16 @@ public abstract class EncapsulatedIdentificationVariableExpression extends Abstr
         super(parent, identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final String getEncapsulatedExpressionQueryBNFId() {
         return IdentificationVariableBNF.ID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(GeneralIdentificationVariableBNF.ID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 

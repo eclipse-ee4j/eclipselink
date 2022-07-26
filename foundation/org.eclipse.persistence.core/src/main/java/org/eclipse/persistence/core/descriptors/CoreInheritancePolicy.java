@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,12 @@ public abstract class CoreInheritancePolicy<
     FIELD extends CoreField> {
 
     /**
+     * Default constructor.
+     */
+    protected CoreInheritancePolicy() {
+    }
+
+    /**
      * INTERNAL:
      * Add abstract class indicator information to the database row.  This is
      * required when building a row for an insert or an update of a concrete child
@@ -50,7 +56,7 @@ public abstract class CoreInheritancePolicy<
      * INTERNAL:
      * This method is invoked only for the abstract descriptors.
      */
-    public abstract Class classFromRow(ABSTRACT_RECORD record, ABSTRACT_SESSION session);
+    public abstract Class<?> classFromRow(ABSTRACT_RECORD record, ABSTRACT_SESSION session);
 
     /**
      * INTERNAL:
@@ -95,7 +101,7 @@ public abstract class CoreInheritancePolicy<
      * PUBLIC:
      * Return the parent class.
      */
-    public abstract Class getParentClass();
+    public abstract Class<?> getParentClass();
 
     /**
      * INTERNAL:

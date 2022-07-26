@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -83,7 +83,8 @@ public interface IAbstractConditionalExpressionStateObjectBuilder<T extends ISca
     T greaterThanOrEqual(T builder);
     T in(SimpleSelectStatementStateObject subquery);
     T in(String... inItems);
-    T in(T... inItems);
+    T in(T builder);
+    T in(T builder1, T builder2);
     T isEmpty(String path);
     T isNotEmpty(String path);
     T isNotNull(String path);
@@ -104,7 +105,8 @@ public interface IAbstractConditionalExpressionStateObjectBuilder<T extends ISca
     T notExists(SimpleSelectStatementStateObject subquery);
     T notIn(SimpleSelectStatementStateObject subquery);
     T notIn(String... inItems);
-    T notIn(T... inItems);
+    T notIn(T builder);
+    T notIn(T builder1, T builder2);
     T notLike(String patternValue);
     T notLike(T builder);
     T notLike(T builder, String escapeCharacter);

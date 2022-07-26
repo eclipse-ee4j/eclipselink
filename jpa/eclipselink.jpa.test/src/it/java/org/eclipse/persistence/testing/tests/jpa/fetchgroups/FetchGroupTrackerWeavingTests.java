@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.internal.jpa.weaving.ClassWeaver;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
@@ -57,6 +57,7 @@ public class FetchGroupTrackerWeavingTests extends JUnitTestCase {
     /*
      * Fetch Group tests require weaving.
      */
+    @Override
     public void runBare() throws Throwable {
         if (this.shouldRunTestOnServer()) {
             super.runBare();
@@ -82,6 +83,7 @@ public class FetchGroupTrackerWeavingTests extends JUnitTestCase {
         return suite;
     }
 
+    @Override
     public void tearDown() {
         this.checkAttribute = null;
         this.checkForSetAttribute = null;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,18 +33,14 @@ public interface ArchiveFactory {
     /**
      * Return an instance of an implementer of Archive that can process the URL provided
      *
-     * @throws URISyntaxException
-     * @throws IOException
      */
-    public Archive createArchive(URL rootUrl, Map properties) throws URISyntaxException, IOException;
+    Archive createArchive(URL rootUrl, Map properties) throws URISyntaxException, IOException;
 
     /**
      * Return an instance of an implementer of Archive that can process the URL provided
      * This instance will allow access to the persistence descriptor associated with
      * this archive through the getDescriptorStream() method
      *
-     * @throws URISyntaxException
-     * @throws IOException
      */
-    public Archive createArchive(URL rootUrl, String descriptorLocation, Map properties) throws URISyntaxException, IOException;
+    Archive createArchive(URL rootUrl, String descriptorLocation, Map properties) throws URISyntaxException, IOException;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.queries.ReadQuery;
  * For composite source foreign keys EIS 1-m's a query must be performed
  * for each primary key, so a different type of value holder is required.
  */
-public class EISOneToManyQueryBasedValueHolder extends QueryBasedValueHolder {
+public class EISOneToManyQueryBasedValueHolder<T> extends QueryBasedValueHolder<T> {
     private EISOneToManyMapping mapping;
 
     public EISOneToManyQueryBasedValueHolder(EISOneToManyMapping mapping, ReadQuery query, AbstractRecord sourceRow, AbstractSession session) {
@@ -39,24 +39,25 @@ public class EISOneToManyQueryBasedValueHolder extends QueryBasedValueHolder {
     }
 
     @Override
-    protected Object instantiate(AbstractSession session) throws DatabaseException {
-        Vector rows = this.mapping.getForeignKeyRows(this.getRow(), session);
+    protected T instantiate(AbstractSession session) throws DatabaseException {
+        Vector<AbstractRecord> rows = this.mapping.getForeignKeyRows(this.getRow(), session);
 
         int size = rows.size();
         ContainerPolicy cp = ((ReadAllQuery)this.getQuery()).getContainerPolicy();
-        Object returnValue = cp.containerInstance(size);
+        @SuppressWarnings({"unchecked"})
+        T returnValue = (T) cp.containerInstance(size);
 
         for (int i = 0; i < size; i++) {
-            AbstractRecord nextRow = (AbstractRecord)rows.get(i);
+            AbstractRecord nextRow = rows.get(i);
             Object results = session.executeQuery(getQuery(), nextRow);
 
             if (results instanceof Collection) {
-                Iterator iter = ((Collection)results).iterator();
+                Iterator<?> iter = ((Collection<?>)results).iterator();
                 while (iter.hasNext()) {
                     cp.addInto(iter.next(), returnValue, session);
                 }
             } else if (results instanceof java.util.Map) {
-                Iterator iter = ((java.util.Map)results).values().iterator();
+                Iterator<?> iter = ((java.util.Map<?, ?>)results).values().iterator();
                 while (iter.hasNext()) {
                     cp.addInto(iter.next(), returnValue, session);
                 }

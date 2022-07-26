@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.Root;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
@@ -52,7 +53,7 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementRefsSchemaGen() throws URISyntaxException {
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
-        generateSchemaWithFileName(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2, outputResolver);
+        generateSchemaWithFileName(new Class<?>[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml", 2, outputResolver);
         // validate schema
         URI controlSchema = Thread.currentThread().getContextClassLoader().getResource(PATH + "schema.xsd").toURI();
         compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE).toString(), new File(controlSchema));
@@ -62,11 +63,10 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
      * Tests @XmlElementRefs via eclipselink-oxm.xml.
      *
      * Positive test.
-     * @throws JAXBException
      */
     public void testXmlElementRefs() throws JAXBException {
         // load XML metadata
-        generateSchema(new Class[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH, 2);
+        generateSchema(new Class<?>[] { Foos.class, ObjectFactory.class }, CONTEXT_PATH, PATH, 2);
 
         // load instance doc
         String src = PATH + "foos.xml";
@@ -127,8 +127,8 @@ public class XmlElementRefsTestCases extends ExternalizedMetadataTestCases {
     public void testCollectionType() {
         try {
             Map<String, Object> properties = new HashMap<>();
-            properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new File(Thread.currentThread().getContextClassLoader().getResource(PATH + "collectiontype/oxm.xml").toURI()));
-            JAXBContextFactory.createContext(new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.ObjectFactory.class, Root.class }, properties);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, new File(Thread.currentThread().getContextClassLoader().getResource(PATH + "collectiontype/oxm.xml").toURI()));
+            JAXBContextFactory.createContext(new Class<?>[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.collectiontype.ObjectFactory.class, Root.class }, properties);
         } catch (Exception e) {
             e.printStackTrace();
             fail("An unexpected exception was thrown while attempting to create the JAXBContext: " + e.getMessage());

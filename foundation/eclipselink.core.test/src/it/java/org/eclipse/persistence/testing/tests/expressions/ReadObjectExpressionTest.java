@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.framework.ReadObjectTest;
 public class ReadObjectExpressionTest extends ReadObjectTest {
     Expression expression;
     /** The class of the target objects to be read from the database. */
-    private Class referenceClass;
+    private Class<?> referenceClass;
 
     public ReadObjectExpressionTest(Object theOriginalObject, Expression theExpression) {
         originalObject = theOriginalObject;
@@ -34,7 +34,7 @@ public class ReadObjectExpressionTest extends ReadObjectTest {
         }
     }
 
-    public ReadObjectExpressionTest(Class theReferenceClass, Expression theExpression) {
+    public ReadObjectExpressionTest(Class<?> theReferenceClass, Expression theExpression) {
         referenceClass = theReferenceClass;
         expression = theExpression;
     }
@@ -47,6 +47,7 @@ public class ReadObjectExpressionTest extends ReadObjectTest {
         expression = theExpression;
     }
 
+    @Override
     protected void setup() {
         // Access and DB2 do not support UPPER and LOWER
         if (getQuery() == null) {

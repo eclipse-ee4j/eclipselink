@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,57 +50,36 @@ public final class EclipseLinkJPQLQueryBuilder extends AbstractJPQLQueryBuilder 
         this.jpqlGrammar = jpqlGrammar;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected EclipseLinkStateObjectBuilder buildStateObjectBuilder() {
         return new EclipseLinkStateObjectBuilder();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IConditionalExpressionStateObjectBuilder buildStateObjectBuilder(AbstractConditionalClauseStateObject stateObject) {
         return new EclipseLinkConditionalStateObjectBuilder(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EclipseLinkSelectExpressionStateObjectBuilder buildStateObjectBuilder(SelectClauseStateObject stateObject) {
         return new EclipseLinkSelectExpressionStateObjectBuilder(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EclipseLinkSimpleSelectExpressionStateObjectBuilder buildStateObjectBuilder(SimpleSelectClauseStateObject stateObject) {
         return new EclipseLinkSimpleSelectExpressionStateObjectBuilder(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public INewValueStateObjectBuilder buildStateObjectBuilder(UpdateItemStateObject stateObject) {
         return new DefaultNewValueStateObjectBuilder(stateObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLGrammar getGrammar() {
         return jpqlGrammar;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return "EclipseLinkJPQLQueryBuilder using " + jpqlGrammar.toString();

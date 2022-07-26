@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,45 +22,45 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface ManyToMany {
 
-    public JoinField addJoinField();
-    public AssociationOverride addMapKeyAssociationOverride();
-    public AttributeOverride addMapKeyAttributeOverride();
-    public Convert addMapKeyConvert();
-    public JoinColumn addMapKeyJoinColumn();
-    public Property addProperty();
-    public ManyToMany setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public ManyToMany setAttributeType(String attributeType);
-    public BatchFetch setBatchFetch();
-    public Cascade setCascade();
-    public ManyToMany setCascadeOnDelete(Boolean cascadeOnDelete);
-    public Converter setConverter();
-    public ManyToMany setFetch(String fetch);
-    public HashPartitioning setHashPartitioning();
-    public ManyToMany setJoinFetch(String joinFetch);
-    public JoinTable setJoinTable();
-    public MapKey setMapKey();
-    public ManyToMany setMapKeyClass(String mapKeyClass);
-    public Column setMapKeyColumn();
-    public ManyToMany setMapKeyConvert(String mapKeyConvert);
-    public Enumerated setMapKeyEnumerated();
-    public ForeignKey setMapKeyForeignKey();
-    public Temporal setMapKeyTemporal();
-    public ManyToMany setMappedBy(String mappedBy);
-    public ManyToMany setName(String name);
-    public ManyToMany setNonCacheable(Boolean nonCacheable);
-    public ObjectTypeConverter setObjectTypeConverter();
-    public ManyToMany setOrderBy(String orderBy);
-    public OrderColumn setOrderColumn();
-    public Partitioning setPartitioning();
-    public PinnedPartitioning setPinnedPartitioning();
-    public RangePartitioning setRangePartitioning();
-    public ReplicationPartitioning setReplicationPartitioning();
-    public RoundRobinPartitioning setRoundRobinPartitioning();
-    public StructConverter setStructConverter();
-    public ManyToMany setTargetEntity(String targetEntity);
-    public TypeConverter setTypeConverter();
-    public UnionPartitioning setUnionPartitioning();
-    public ValuePartitioning setValuePartitioning();
+    JoinField addJoinField();
+    AssociationOverride addMapKeyAssociationOverride();
+    AttributeOverride addMapKeyAttributeOverride();
+    Convert addMapKeyConvert();
+    JoinColumn addMapKeyJoinColumn();
+    Property addProperty();
+    ManyToMany setAccess(String access);
+    AccessMethods setAccessMethods();
+    ManyToMany setAttributeType(String attributeType);
+    BatchFetch setBatchFetch();
+    Cascade setCascade();
+    ManyToMany setCascadeOnDelete(Boolean cascadeOnDelete);
+    Converter setConverter();
+    ManyToMany setFetch(String fetch);
+    HashPartitioning setHashPartitioning();
+    ManyToMany setJoinFetch(String joinFetch);
+    JoinTable setJoinTable();
+    MapKey setMapKey();
+    ManyToMany setMapKeyClass(String mapKeyClass);
+    Column setMapKeyColumn();
+    ManyToMany setMapKeyConvert(String mapKeyConvert);
+    Enumerated setMapKeyEnumerated();
+    ForeignKey setMapKeyForeignKey();
+    Temporal setMapKeyTemporal();
+    ManyToMany setMappedBy(String mappedBy);
+    ManyToMany setName(String name);
+    ManyToMany setNonCacheable(Boolean nonCacheable);
+    ObjectTypeConverter setObjectTypeConverter();
+    ManyToMany setOrderBy(String orderBy);
+    OrderColumn setOrderColumn();
+    Partitioning setPartitioning();
+    PinnedPartitioning setPinnedPartitioning();
+    RangePartitioning setRangePartitioning();
+    ReplicationPartitioning setReplicationPartitioning();
+    RoundRobinPartitioning setRoundRobinPartitioning();
+    StructConverter setStructConverter();
+    ManyToMany setTargetEntity(String targetEntity);
+    TypeConverter setTypeConverter();
+    UnionPartitioning setUnionPartitioning();
+    ValuePartitioning setValuePartitioning();
 
 }

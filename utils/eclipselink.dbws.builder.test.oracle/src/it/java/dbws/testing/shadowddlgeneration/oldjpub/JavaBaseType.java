@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,14 +40,17 @@ public class JavaBaseType extends JavaType {
         // System.out.println("[JavaBaseType] " + m_fields.length); //D+
     };
 
+    @Override
     public List<AttributeField> getFields(boolean publishedOnly) {
         return m_fields;
     }
 
+    @Override
     public List<AttributeField> getDeclaredFields(boolean publishedOnly) {
         return m_fields;
     }
 
+    @Override
     public List<ProcedureMethod> getDeclaredMethods() {
         return m_methods;
     }
@@ -56,6 +59,7 @@ public class JavaBaseType extends JavaType {
         return m_fields != null && m_fields.size() > 0;
     }
 
+    @Override
     public boolean hasMethods() {
         return m_methods != null && m_methods.size() > 0;
     }

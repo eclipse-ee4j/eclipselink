@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.testing.framework.*;
 
 public class ModTest extends JPQLTestCase {
-    private static ModTest getNewTestCaseNamed(String name, String ejbql, Class referenceClass) {
+    private static ModTest getNewTestCaseNamed(String name, String ejbql, Class<?> referenceClass) {
         ModTest test = new ModTest();
 
         test.setName(name);
@@ -53,6 +53,7 @@ public class ModTest extends JPQLTestCase {
         return test;
     }
 
+    @Override
     public void setup() {
         if (getSession().getLogin().getPlatform().isSQLServer() || getSession().getLogin().getPlatform().isSybase()) {
             throw new TestWarningException("This test is not supported on SQL Server and Sybase. Because 'MOD' is not a recognized function name on SQL Server and Sybase.");

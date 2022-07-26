@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,13 @@ public class ReferenceDescriptorIsNotAggregateTest extends ExceptionTestSaveDesc
         setDescription("This tests Reference Descriptor Is Not Aggregate (TL-ERROR 77) " + "");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.referenceDescriptorIsNotAggregate(null, null);
         super.setup();
     }
 
+    @Override
     public void test() {
         try {
             ((DatabaseSession)getSession()).addDescriptor(buildEmployeeDescriptor());

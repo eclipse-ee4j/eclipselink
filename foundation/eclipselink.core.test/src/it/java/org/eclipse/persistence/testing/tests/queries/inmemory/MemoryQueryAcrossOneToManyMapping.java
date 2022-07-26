@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class MemoryQueryAcrossOneToManyMapping extends TestCase {
         super();
     }
 
+    @Override
     public void reset() {
         //clear the cache.
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -42,6 +43,7 @@ public class MemoryQueryAcrossOneToManyMapping extends TestCase {
     /**
      * This is  still in the works.
      */
+    @Override
     public void setup() {
         allEmployees = new Vector();
         employees = new Vector();
@@ -58,6 +60,7 @@ public class MemoryQueryAcrossOneToManyMapping extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         //all the employees with work type phonenumbers should be
         //in the cache right now.

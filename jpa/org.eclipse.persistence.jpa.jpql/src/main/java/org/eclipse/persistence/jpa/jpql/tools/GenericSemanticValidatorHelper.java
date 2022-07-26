@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +17,7 @@
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.persistence.jpa.jpql.Assert;
@@ -29,6 +31,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.tools.model.JPQLQueryBuilderWrapper;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.Declaration;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.DeclarationResolver;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.Resolver;
@@ -92,7 +95,7 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
             List<IdentificationVariable> variables = identificationVariables.get(variableName);
 
             if (variables == null) {
-                variables = new ArrayList<IdentificationVariable>();
+                variables = new ArrayList<>();
                 identificationVariables.put(variableName, variables);
             }
 
@@ -104,9 +107,6 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
         return new IdentificationVariableVisitor();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void collectAllDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
 
@@ -143,29 +143,20 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void collectLocalDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
         collectLocalDeclarationIdentificationVariables(queryContext.getCurrentContext(), identificationVariables);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void disposeSubqueryContext() {
         queryContext.disposeSubqueryContext();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String[] entityNames() {
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
 
         for (IEntity entity : queryContext.getProvider().entities()) {
             names.add(entity.getName());
@@ -174,13 +165,10 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
         return names.toArray(new String[names.size()]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<JPQLQueryDeclaration> getAllDeclarations() {
 
-        List<JPQLQueryDeclaration> declarations = new ArrayList<JPQLQueryDeclaration>();
+        List<JPQLQueryDeclaration> declarations = new ArrayList<>();
         JPQLQueryContext context = queryContext.getCurrentContext();
 
         while (context != null) {
@@ -191,50 +179,31 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
         return declarations;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IConstructor[] getConstructors(Object type) {
         return CollectionTools.array(IConstructor.class, ((IType) type).constructors());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public List getDeclarations() {
-        return queryContext.getDeclarations();
+    public List<JPQLQueryDeclaration> getDeclarations() {
+        return new ArrayList<>(queryContext.getDeclarations());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getEmbeddable(Object type) {
         return queryContext.getProvider().getEmbeddable((IType) type);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IEntity getEntityNamed(String entityName) {
         return queryContext.getProvider().getEntityNamed(entityName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String[] getEnumConstants(Object type) {
         return ((IType) type).getEnumConstants();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLGrammar getGrammar() {
         return queryContext.getGrammar();
@@ -258,33 +227,21 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
         return identificationVariableVisitor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getManagedType(Expression expression) {
         return queryContext.getResolver(expression).getManagedType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IMapping getMappingNamed(Object managedType, String path) {
         return ((IManagedType) managedType).getMappingNamed(path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IType getMappingType(Object mapping) {
         return (mapping != null) ? ((IMapping) mapping).getType() : queryContext.getTypeHelper().unknownType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ITypeDeclaration[] getMethodParameterTypeDeclarations(Object constructor) {
         return ((IConstructor) constructor).getParameterTypes();
@@ -299,9 +256,6 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
         return queryContext;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IManagedType getReferenceManagedType(Object relationshipMapping) {
 
@@ -313,41 +267,26 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
         return mapping.getParent().getProvider().getManagedType(mapping.getType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IType getType(Expression expression) {
         return queryContext.getType(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IType getType(Object typeDeclaration) {
         return ((ITypeDeclaration) typeDeclaration).getType();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IType getType(String typeName) {
         return queryContext.getType(typeName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ITypeDeclaration getTypeDeclaration(Expression expression) {
         return queryContext.getTypeDeclaration(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ITypeHelper getTypeHelper() {
         if (typeHelper == null) {
@@ -356,97 +295,66 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
         return typeHelper;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getTypeName(Object type) {
         return ((IType) type).getName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isAssignableTo(Object type1, Object type2) {
         return ((IType) type1).isAssignableTo((IType) type2) ;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isCollectionIdentificationVariable(String variableName) {
         return queryContext.isCollectionIdentificationVariable(variableName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isCollectionMapping(Object mapping) {
         return (mapping != null) && ((IMapping) mapping).isCollection();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public boolean isEmbeddableMapping(Object mapping) {
+        return (mapping != null) && ((IMapping) mapping).isEmbeddable();
+    }
+
     @Override
     public boolean isEnumType(Object type) {
         return ((IType) type).isEnum();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isIdentificationVariableValidInComparison(IdentificationVariable expression) {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isManagedTypeResolvable(Object managedType) {
         return ((IManagedType) managedType).getType().isResolvable();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isPropertyMapping(Object mapping) {
         return (mapping != null) && ((IMapping) mapping).isProperty();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isRelationshipMapping(Object mapping) {
         return (mapping != null) && ((IMapping) mapping).isRelationship();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isResultVariable(String variableName) {
         return queryContext.isResultVariable(variableName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isTransient(Object mapping) {
         return (mapping != null) && ((IMapping) mapping).isTransient();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isTypeDeclarationAssignableTo(Object typeDeclaration1, Object typeDeclaration2) {
 
@@ -468,33 +376,21 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
         return isAssignableTo(declaration1.getType(), declaration2.getType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isTypeResolvable(Object type) {
         return ((IType) type).isResolvable();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void newSubqueryContext(SimpleSelectStatement expression) {
         queryContext.newSubqueryContext(expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IMapping resolveMapping(Expression expression) {
         return queryContext.getResolver(expression).getMapping();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IMapping resolveMapping(String variableName, String name) {
 
@@ -516,9 +412,6 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
          */
         protected IdentificationVariable identificationVariable;
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(IdentificationVariable expression) {
             identificationVariable = expression;

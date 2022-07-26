@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,33 +86,33 @@ public class ExpressionNode {
     }
 
     public static String getOperator(int anOperator) {
-        return (String)getOperators().get(new Integer(anOperator));
+        return (String)getOperators().get(anOperator);
     }
 
     public static Hashtable getOperators() {
         if (operators == null) {
             operators = new Hashtable();
-            operators.put(new Integer(ExpressionOperator.Equal), Equals);
-            operators.put(new Integer(ExpressionOperator.NotEqual), NotEquals);
-            operators.put(new Integer(ExpressionOperator.LessThan), LessThan);
-            operators.put(new Integer(ExpressionOperator.LessThanEqual),
+            operators.put(ExpressionOperator.Equal, Equals);
+            operators.put(ExpressionOperator.NotEqual, NotEquals);
+            operators.put(ExpressionOperator.LessThan, LessThan);
+            operators.put(ExpressionOperator.LessThanEqual,
                           LessThanEqual);
-            operators.put(new Integer(ExpressionOperator.GreaterThan),
+            operators.put(ExpressionOperator.GreaterThan,
                           GreaterThan);
-            operators.put(new Integer(ExpressionOperator.GreaterThanEqual),
+            operators.put(ExpressionOperator.GreaterThanEqual,
                           GreaterThanEqual);
-            operators.put(new Integer(ExpressionOperator.Like), Like);
-            operators.put(new Integer(ExpressionOperator.NotLike), NotLike);
-            operators.put(new Integer(ExpressionOperator.In), In);
-            operators.put(new Integer(ExpressionOperator.NotIn), NotIn);
-            operators.put(new Integer(ExpressionOperator.Between), Between);
-            operators.put(new Integer(ExpressionOperator.NotBetween),
+            operators.put(ExpressionOperator.Like, Like);
+            operators.put(ExpressionOperator.NotLike, NotLike);
+            operators.put(ExpressionOperator.In, In);
+            operators.put(ExpressionOperator.NotIn, NotIn);
+            operators.put(ExpressionOperator.Between, Between);
+            operators.put(ExpressionOperator.NotBetween,
                           NotBetween);
-            operators.put(new Integer(ExpressionOperator.Or), Or);
-            operators.put(new Integer(ExpressionOperator.And), And);
-            operators.put(new Integer(ExpressionOperator.Not), Not);
-            operators.put(new Integer(ExpressionOperator.ToLowerCase), Lower);
-            operators.put(new Integer(ExpressionOperator.ToUpperCase), Upper);
+            operators.put(ExpressionOperator.Or, Or);
+            operators.put(ExpressionOperator.And, And);
+            operators.put(ExpressionOperator.Not, Not);
+            operators.put(ExpressionOperator.ToLowerCase, Lower);
+            operators.put(ExpressionOperator.ToUpperCase, Upper);
         }
 
         return operators;
@@ -130,7 +130,7 @@ public class ExpressionNode {
         if (getExpression() instanceof ConstantExpression) {
             return ((ConstantExpression)getExpression()).getValue().toString();
         } else if (getExpression() instanceof QueryKeyExpression) {
-            return ((QueryKeyExpression)getExpression()).getName().toString();
+            return getExpression().getName().toString();
         } else {
             String anOperator =
                 getOperator(getExpression().getOperator().getSelector());

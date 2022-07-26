@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,12 +18,21 @@ package org.eclipse.persistence.platform.database.oracle;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Struct;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.EmptyRecord;
 import org.eclipse.persistence.logging.SessionLog;
@@ -151,4 +160,56 @@ public class Oracle12Platform extends Oracle11Platform {
         }
     }
 
+    /**
+     * INTERNAL:
+     * This method builds a Struct using the unwrapped connection within the session
+     * @return Struct
+     */
+    @Override
+    public Struct createStruct(String structTypeName, Object[] attributes, AbstractRecord row, Vector<DatabaseField> orderedFields, AbstractSession session, Connection connection) throws SQLException {
+        for (int index = 0; index < orderedFields.size(); index++) {
+            DatabaseField field = orderedFields.elementAt(index);
+            if (row.getField(field) != null && row.getField(field).getTypeName() != null) {
+                if (ClassConstants.BLOB.getTypeName().equals(row.getField(field).getTypeName())) {
+                    Blob blob = connection.createBlob();
+                    blob.setBytes(1L, (byte[]) row.get(field));
+                    attributes[index] = blob;
+                } else if (ClassConstants.CLOB.getTypeName().equals(row.getField(field).getTypeName())) {
+                    Clob clob = connection.createClob();
+                    clob.setString(1L, (String) attributes[index]);
+                    attributes[index] = clob;
+                }
+            } else {
+                attributes[index] = row.get(field);
+            }
+        }
+        return createStruct(structTypeName, attributes, connection);
+    }
+
+    /**
+     * Create java.sql.Struct from given parameters.
+     * @param structTypeName - the SQL type name of the SQL structured type that this Struct object maps to.
+     * @param attributes - the attributes that populate the returned object
+     * @param connection - DB connection
+     * @return Struct
+     */
+    @Override
+    public Struct createStruct(String structTypeName, Object[] attributes, Connection connection) throws SQLException {
+        return connection.createStruct(structTypeName, attributes);
+    }
+
+    /**
+     * INTERNAL:
+     * This method returns the query to select the UUID
+     * from the server for Oracle.
+     */
+    @Override
+    public ValueReadQuery getUUIDQuery() {
+        if (uuidQuery == null) {
+            uuidQuery = new ValueReadQuery();
+            uuidQuery.setSQLString("SELECT LOWER(REGEXP_REPLACE(RAWTOHEX(SYS_GUID()), '([A-F0-9]{8})([A-F0-9]{4})([A-F0-9]{4})([A-F0-9]{4})([A-F0-9]{12})', '\\1-\\2-\\3-\\4-\\5')) AS uuid FROM dual");
+            uuidQuery.setAllowNativeSQLQuery(true);
+        }
+        return uuidQuery;
+    }
 }

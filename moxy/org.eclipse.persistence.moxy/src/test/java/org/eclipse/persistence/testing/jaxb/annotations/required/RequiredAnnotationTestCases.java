@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class RequiredAnnotationTestCases extends TestCase {
     public void testAnnotationsProcessor() throws Exception {
         try {
             JaxbClassLoader classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
-            Generator generator = new Generator(new JavaModelInputImpl(new Class[] { RequiredTestObject.class, RequiredTestSubObject.class }, new JavaModelImpl(classLoader)));
+            Generator generator = new Generator(new JavaModelInputImpl(new Class<?>[] { RequiredTestObject.class, RequiredTestSubObject.class }, new JavaModelImpl(classLoader)));
 
             Project proj = (Project)generator.generateProject();
 

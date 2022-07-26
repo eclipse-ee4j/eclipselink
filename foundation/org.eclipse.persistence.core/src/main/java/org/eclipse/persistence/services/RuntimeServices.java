@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -96,14 +96,14 @@ public abstract class RuntimeServices {
     /**
      *  Default Constructor
      */
-    public RuntimeServices() {
+    protected RuntimeServices() {
     }
 
     /**
      *  Constructor
      *  @param session the session to be used with these RuntimeServices
      */
-    public RuntimeServices(Session session) {
+    protected RuntimeServices(Session session) {
         this.session = session;
     }
 
@@ -239,9 +239,9 @@ public abstract class RuntimeServices {
     public List getAvailableConnectionPools() {
         Vector list = null;
         if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
-            Map pools = ((ServerSession)getSession()).getConnectionPools();
+            Map<String, ConnectionPool> pools = ((ServerSession)getSession()).getConnectionPools();
             list = new Vector(pools.size());
-            Iterator poolNames = pools.keySet().iterator();
+            Iterator<String> poolNames = pools.keySet().iterator();
             while (poolNames.hasNext()) {
                 list.add(poolNames.next());
             }
@@ -262,8 +262,8 @@ public abstract class RuntimeServices {
         if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
             ConnectionPool connectionPool = ((ServerSession)getSession()).getConnectionPool(poolName);
             if (connectionPool != null) {
-                results.add(Integer.valueOf(connectionPool.getMaxNumberOfConnections()));
-                results.add(Integer.valueOf(connectionPool.getMinNumberOfConnections()));
+                results.add(connectionPool.getMaxNumberOfConnections());
+                results.add(connectionPool.getMinNumberOfConnections());
             }
         }
         return results;
@@ -300,9 +300,9 @@ public abstract class RuntimeServices {
      */
     public void resetAllConnections() {
         if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
-            Iterator enumtr = ((ServerSession)getSession()).getConnectionPools().values().iterator();
+            Iterator<ConnectionPool> enumtr = ((ServerSession)getSession()).getConnectionPools().values().iterator();
             while (enumtr.hasNext()) {
-                ConnectionPool pool = (ConnectionPool)enumtr.next();
+                ConnectionPool pool = enumtr.next();
                 pool.shutDown();
                 pool.startUp();
             }
@@ -328,13 +328,13 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public List getObjectsInIdentityMap(String className) throws ClassNotFoundException {
-        Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
 
         Vector results = new Vector(map.getSize());
-        Enumeration objects = map.keys();
+        Enumeration<CacheKey> objects = map.keys();
         while (objects.hasMoreElements()) {
-            results.add(((CacheKey)objects.nextElement()).getObject());
+            results.add(objects.nextElement().getObject());
         }
         return results;
     }
@@ -345,8 +345,8 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public Integer getNumberOfObjectsInIdentityMap(String className) throws ClassNotFoundException {
-        Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
-        return Integer.valueOf(getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange).getSize());
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        return getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange).getSize();
     }
 
     /**
@@ -358,7 +358,7 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public List getObjectsInIdentityMapSubCacheAsMap(String className) throws ClassNotFoundException {
-        Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
 
         //CR3855
@@ -377,12 +377,12 @@ public abstract class RuntimeServices {
      */
     public Integer getNumberOfObjectsInIdentityMapSubCache(String className) throws ClassNotFoundException {
         //This needs to use the Session's active class loader (not implemented yet)
-        Integer result = Integer.valueOf(0);
-        Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Integer result = 0;
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
         if (map.getClass().isAssignableFrom(ClassConstants.HardCacheWeakIdentityMap_Class)) {
             List subCache = ((HardCacheWeakIdentityMap)map).getReferenceCache();
-            result = Integer.valueOf(subCache.size());
+            result = subCache.size();
         }
         return result;
     }
@@ -390,12 +390,9 @@ public abstract class RuntimeServices {
     /**
      * <p>
      * Return the log level
-     * </p><p>
-     *
-     * @return the log level
-     * </p><p>
-     * @param category  the string representation of an EclipseLink category, e.g. "sql", "transaction" ...
      * </p>
+     * @param category  the string representation of an EclipseLink category, e.g. "sql", "transaction" ...
+     * @return the log level
      */
     public int getLogLevel(String category) {
         return getSession().getLogLevel(category);
@@ -404,10 +401,9 @@ public abstract class RuntimeServices {
     /**
      * <p>
      * Set the log level
-     * </p><p>
+     * </p>
      *
      * @param level     the new log level
-     * </p>
      */
     public void setLogLevel(int level) {
         getSession().setLogLevel(level);
@@ -416,13 +412,11 @@ public abstract class RuntimeServices {
     /**
      * <p>
      * Check if a message of the given level would actually be logged.
-     * </p><p>
+     * </p>
      *
-     * @return true if the given message level will be logged
-     * </p><p>
      * @param Level  the log request level
      * @param category  the string representation of an EclipseLink category
-     * </p>
+     * @return true if the given message level will be logged
      */
     public boolean shouldLog(int Level, String category) {
         return getSession().shouldLog(Level, category);
@@ -430,7 +424,6 @@ public abstract class RuntimeServices {
 
     /**
      * Return the DMS sensor weight
-     * @return
      */
     public int getProfileWeight() {
         if (getSession().isInProfile()) {
@@ -454,10 +447,10 @@ public abstract class RuntimeServices {
      * @param className the fully qualified classnames identifying the identity map to initialize
      */
      public synchronized void initializeIdentityMap(String className) throws ClassNotFoundException {
-         Class registeredClass;
+         Class<?> registeredClass;
 
          //get identity map, and initialize
-         registeredClass = (Class)getSession().getDatasourcePlatform().getConversionManager()
+         registeredClass = getSession().getDatasourcePlatform().getConversionManager()
              .convertObject(className, ClassConstants.CLASS);
          getSession().getIdentityMapAccessor().initializeIdentityMap(registeredClass);
          ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_initialized", className);
@@ -474,7 +467,7 @@ public abstract class RuntimeServices {
       *        This method will log the instance level locks in the Identity Map for the given class in the session.
       */
       public void printIdentityMapLocks(String registeredClassName) {
-          Class registeredClass = (Class)getSession().getDatasourcePlatform().getConversionManager()
+          Class<?> registeredClass = getSession().getDatasourcePlatform().getConversionManager()
               .convertObject(registeredClassName, ClassConstants.CLASS);
           getSession().getIdentityMapAccessorInstance().getIdentityMapManager().printLocks(registeredClass);
       }
@@ -484,7 +477,7 @@ public abstract class RuntimeServices {
        *        This will log at the INFO level a summary of all elements in the profile.
        */
        public void printProfileSummary() {
-           if (!this.getUsesEclipseLinkProfiling().booleanValue()) {
+           if (!this.getUsesEclipseLinkProfiling()) {
                return;
            }
            PerformanceProfiler performanceProfiler = (PerformanceProfiler)getSession().getProfiler();
@@ -515,7 +508,7 @@ public abstract class RuntimeServices {
        *        by Class.
        */
        public void printProfileSummaryByClass() {
-           if (!this.getUsesEclipseLinkProfiling().booleanValue()) {
+           if (!this.getUsesEclipseLinkProfiling()) {
                return;
            }
            PerformanceProfiler performanceProfiler = (PerformanceProfiler)getSession().getProfiler();
@@ -529,7 +522,7 @@ public abstract class RuntimeServices {
        *        by Query.
        */
        public void printProfileSummaryByQuery() {
-           if (!this.getUsesEclipseLinkProfiling().booleanValue()) {
+           if (!this.getUsesEclipseLinkProfiling()) {
                return;
            }
            PerformanceProfiler performanceProfiler = (PerformanceProfiler)getSession().getProfiler();
@@ -541,7 +534,7 @@ public abstract class RuntimeServices {
         *   Possible values are: "EclipseLink" or "None".
         */
         public synchronized String getProfilingType() {
-            if (getUsesEclipseLinkProfiling().booleanValue()) {
+            if (getUsesEclipseLinkProfiling()) {
                 return EclipseLink_Product_Name;
             } else {
                 return "None";
@@ -565,7 +558,7 @@ public abstract class RuntimeServices {
         *        This method is used to turn on EclipseLink Performance Profiling
         */
         public void setUseEclipseLinkProfiling() {
-            if (getUsesEclipseLinkProfiling().booleanValue()) {
+            if (getUsesEclipseLinkProfiling()) {
                 return;
             }
             getSession().setProfiler(new PerformanceProfiler());
@@ -583,7 +576,7 @@ public abstract class RuntimeServices {
         *        This method answers true if EclipseLink Performance Profiling is on.
         */
         public Boolean getUsesEclipseLinkProfiling() {
-            return Boolean.valueOf(getSession().getProfiler() instanceof PerformanceProfiler);
+            return getSession().getProfiler() instanceof PerformanceProfiler;
         }
 
         /**
@@ -706,7 +699,6 @@ public abstract class RuntimeServices {
       * Return whether this session is an EclipseLink JPA session.
       * The absence of this function or a value of false will signify that the session
       * belongs to a provider other than EclipseLink.
-      * @return
       */
      public boolean isJPASession() {
          return true;
@@ -765,15 +757,15 @@ public abstract class RuntimeServices {
       *
       * @return java.util.Vector
       */
-     private Vector getMappedClassNames() {
-         Map alreadyAdded = new HashMap();
-         Vector mappedClassNames = new Vector();
+     private Vector<String> getMappedClassNames() {
+         Map<String, Boolean> alreadyAdded = new HashMap<>();
+         Vector<String> mappedClassNames = new Vector<>();
          String mappedClassName = null;
 
-         Iterator descriptorsIterator = getSession().getProject().getDescriptors()
+         Iterator<ClassDescriptor> descriptorsIterator = getSession().getProject().getDescriptors()
                  .values().iterator();
          while (descriptorsIterator.hasNext()) {
-             ClassDescriptor nextDescriptor = (ClassDescriptor) descriptorsIterator.next();
+             ClassDescriptor nextDescriptor = descriptorsIterator.next();
 
              // differentiate between a generated class and not, by comparing the descriptor's Java class
              if (nextDescriptor.getCMPPolicy() != null) {
@@ -803,24 +795,24 @@ public abstract class RuntimeServices {
      *   @param filter A comma separated list of strings to match against.
      *   @return A Vector of class names that match the filter.
      */
-     public Vector getMappedClassNamesUsingFilter(String filter) {
+     public Vector<String> getMappedClassNamesUsingFilter(String filter) {
          //Output Vector
-         Vector outputVector = new Vector();
+         Vector<String> outputVector = new Vector<>();
 
          //Input mapped class names
-         Vector mappedClassNames = getMappedClassNames();
+         Vector<String> mappedClassNames = getMappedClassNames();
 
          //Input filter values
-         ArrayList filters = new ArrayList();
+         List<String> filters = new ArrayList<>();
          StringTokenizer lineTokens = new StringTokenizer(filter, ",");
          while (lineTokens.hasMoreTokens()) {
              filters.add(lineTokens.nextToken());
          }
          for (int i = 0; i < mappedClassNames.size(); i++) {
-             String className = (String)mappedClassNames.get(i);
-             String classNameLowerCase = ((String)mappedClassNames.get(i)).toLowerCase();
+             String className = mappedClassNames.get(i);
+             String classNameLowerCase = mappedClassNames.get(i).toLowerCase();
              for (int j = 0; j < filters.size(); j++) {
-                 String filterValue = (Helper.rightTrimString((String)filters.get(j)).trim()).toLowerCase();
+                 String filterValue = (Helper.rightTrimString(filters.get(j)).trim()).toLowerCase();
                  if (filterValue.indexOf('*') == 0) {
                      filterValue = filterValue.substring(1);
                  }
@@ -847,7 +839,7 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * getCacheTypeFor: Give a more UI-friendly version of the cache type
       */
-     protected String getCacheTypeFor(Class identityMapClass) {
+     protected String getCacheTypeFor(Class<?> identityMapClass) {
          if (identityMapClass == CacheIdentityMap.class) {
              return "Cache";
          } else if (identityMapClass == FullIdentityMap.class) {
@@ -894,7 +886,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(((DatabaseLogin)getSession().getDatasourceLogin()).shouldBindAllParameters());
+         return ((DatabaseLogin) getSession().getDatasourceLogin()).shouldBindAllParameters();
      }
 
      /**
@@ -904,19 +896,19 @@ public abstract class RuntimeServices {
        */
      public Integer getStringBindingSize() {
          if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
-             return Integer.valueOf(0);
+             return 0;
          }
          if (!getSession().getDatasourceLogin().getPlatform().usesStringBinding()) {
-             return Integer.valueOf(0);
+             return 0;
          }
-         return Integer.valueOf(((DatabaseLogin)getSession().getDatasourceLogin()).getStringBindingSize());
+         return ((DatabaseLogin) getSession().getDatasourceLogin()).getStringBindingSize();
      }
 
      /**
        *        This method will return if batchWriting is in use or not.
        */
      public Boolean getUsesBatchWriting() {
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesBatchWriting());
+         return getSession().getDatasourceLogin().getPlatform().usesBatchWriting();
      }
 
      /**
@@ -924,7 +916,7 @@ public abstract class RuntimeServices {
        *   session connected to the database.
        */
      public Long getTimeConnectionEstablished() {
-         return Long.valueOf(((DatabaseSessionImpl)getSession()).getConnectedTime());
+         return ((DatabaseSessionImpl) getSession()).getConnectedTime();
      }
 
      /**
@@ -934,7 +926,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesJDBCBatchWriting());
+         return getSession().getDatasourceLogin().getPlatform().usesJDBCBatchWriting();
      }
 
      /**
@@ -944,7 +936,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesByteArrayBinding());
+         return getSession().getDatasourceLogin().getPlatform().usesByteArrayBinding();
      }
 
      /**
@@ -954,7 +946,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesNativeSQL());
+         return getSession().getDatasourceLogin().getPlatform().usesNativeSQL();
      }
 
      /**
@@ -964,7 +956,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesStreamsForBinding());
+         return getSession().getDatasourceLogin().getPlatform().usesStreamsForBinding();
      }
 
      /**
@@ -974,7 +966,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesStringBinding());
+         return getSession().getDatasourceLogin().getPlatform().usesStringBinding();
      }
 
      /**
@@ -984,7 +976,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(((DatabaseLogin)getSession().getDatasourceLogin()).shouldCacheAllStatements());
+         return ((DatabaseLogin) getSession().getDatasourceLogin()).shouldCacheAllStatements();
      }
 
      /**
@@ -1004,8 +996,8 @@ public abstract class RuntimeServices {
      */
      public void printAvailableConnectionPools() {
          if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
-             Map pools = ((ServerSession)getSession()).getConnectionPools();
-             Iterator poolNames = pools.keySet().iterator();
+             Map<String, ConnectionPool> pools = ((ServerSession)getSession()).getConnectionPools();
+             Iterator<String> poolNames = pools.keySet().iterator();
              while (poolNames.hasNext()) {
                  String poolName = poolNames.next().toString();
                  ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_pool_name", poolName);
@@ -1025,10 +1017,10 @@ public abstract class RuntimeServices {
          if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
              ConnectionPool connectionPool = ((ServerSession)getSession()).getConnectionPool(poolName);
              if (connectionPool != null) {
-                 return Integer.valueOf(connectionPool.getMaxNumberOfConnections());
+                 return connectionPool.getMaxNumberOfConnections();
              }
          }
-         return Integer.valueOf(-1);
+         return -1;
      }
 
      /**
@@ -1040,10 +1032,10 @@ public abstract class RuntimeServices {
          if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
              ConnectionPool connectionPool = ((ServerSession)getSession()).getConnectionPool(poolName);
              if (connectionPool != null) {
-                 return Integer.valueOf(connectionPool.getMinNumberOfConnections());
+                 return connectionPool.getMinNumberOfConnections();
              }
          }
-         return Integer.valueOf(-1);
+         return -1;
      }
 
      /**
@@ -1071,7 +1063,7 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
      public void printObjectsInIdentityMap(String className) throws ClassNotFoundException {
-         Class classWithMap = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+         Class<?> classWithMap = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
          IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classWithMap);
 
          //check if the identity map exists
@@ -1081,14 +1073,14 @@ public abstract class RuntimeServices {
          }
 
          //check if there are any objects in the identity map. Print if so.
-         Enumeration objects = map.keys();
+         Enumeration<CacheKey> objects = map.keys();
          if (!objects.hasMoreElements()) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_empty", className);
          }
 
          CacheKey cacheKey;
          while (objects.hasMoreElements()) {
-             cacheKey = (CacheKey)objects.nextElement();
+             cacheKey = objects.nextElement();
              if(null != cacheKey && null != cacheKey.getKey() && null != cacheKey.getObject()) {
                  ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_print_cache_key_value",
                      cacheKey.getKey().toString(), cacheKey.getObject().toString());
@@ -1102,7 +1094,7 @@ public abstract class RuntimeServices {
      public void printAllIdentityMapTypes() {
          Vector classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
          String registeredClassName;
-         Class registeredClass;
+         Class<?> registeredClass;
 
          //Check if there aren't any classes registered
          if (classesRegistered.size() == 0) {
@@ -1113,7 +1105,7 @@ public abstract class RuntimeServices {
          //get each identity map, and log the type
          for (int index = 0; index < classesRegistered.size(); index++) {
              registeredClassName = (String)classesRegistered.elementAt(index);
-             registeredClass = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(registeredClassName, ClassConstants.CLASS);
+             registeredClass = getSession().getDatasourcePlatform().getConversionManager().convertObject(registeredClassName, ClassConstants.CLASS);
              IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(registeredClass);
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_class",
                      registeredClassName, map.getClass());
@@ -1157,14 +1149,14 @@ public abstract class RuntimeServices {
          //Check if there aren't any classes registered
          if (classesRegistered.size() == 0) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
-             return Integer.valueOf(0);
+             return 0;
          }
 
          //get each identity map, and log the size
          for (int index = 0; index < classesRegistered.size(); index++) {
              registeredClassName = (String)classesRegistered.elementAt(index);
              try {
-                 sum += this.getNumberOfObjectsInIdentityMap(registeredClassName).intValue();
+                 sum += this.getNumberOfObjectsInIdentityMap(registeredClassName);
              } catch (ClassNotFoundException classNotFound) {
                  //we are enumerating registered classes, so this shouldn't happen. Print anyway
                  classNotFound.printStackTrace();
@@ -1172,7 +1164,7 @@ public abstract class RuntimeServices {
              }
          }
 
-         return Integer.valueOf(sum);
+         return sum;
      }
 
      /**
@@ -1184,15 +1176,15 @@ public abstract class RuntimeServices {
          ClassDescriptor currentDescriptor;
 
          //use a table to eliminate duplicate classes. Ignore Aggregates
-         Iterator descriptors = getSession().getProject().getDescriptors().values().iterator();
+         Iterator<ClassDescriptor> descriptors = getSession().getProject().getDescriptors().values().iterator();
          while (descriptors.hasNext()) {
-             currentDescriptor = (ClassDescriptor)descriptors.next();
+             currentDescriptor = descriptors.next();
              if (!currentDescriptor.isAggregateDescriptor()) {
                  classesTable.put(currentDescriptor.getJavaClassName(), Boolean.TRUE);
              }
          }
 
-         return Integer.valueOf(classesTable.size());
+         return classesTable.size();
      }
 
      /**
@@ -1286,7 +1278,7 @@ public abstract class RuntimeServices {
      public synchronized void invalidateAllIdentityMaps() {
          Vector classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
          String registeredClassName;
-         Class registeredClass;
+         Class<?> registeredClass;
 
          if (classesRegistered.isEmpty()) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
@@ -1295,7 +1287,7 @@ public abstract class RuntimeServices {
          //get each identity map, and invalidate
          for (int index = 0; index < classesRegistered.size(); index++) {
              registeredClassName = (String)classesRegistered.elementAt(index);
-             registeredClass = (Class)getSession().getDatasourcePlatform().getConversionManager()
+             registeredClass = getSession().getDatasourcePlatform().getConversionManager()
                  .convertObject(registeredClassName, ClassConstants.CLASS);
              getSession().getIdentityMapAccessor().invalidateClass(registeredClass);
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_invalidated", registeredClassName);
@@ -1332,10 +1324,10 @@ public abstract class RuntimeServices {
      * @param recurse    Boolean indicating if we want to invalidate the children identity maps too
      */
      public synchronized void invalidateIdentityMap(String className, Boolean recurse) throws ClassNotFoundException {
-         Class registeredClass;
+         Class<?> registeredClass;
 
          //get identity map, and invalidate
-         registeredClass = (Class)getSession().getDatasourcePlatform().getConversionManager()
+         registeredClass = getSession().getDatasourcePlatform().getConversionManager()
              .convertObject(className, ClassConstants.CLASS);
          getSession().getIdentityMapAccessor().invalidateClass(registeredClass);
          ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_invalidated", className);
@@ -1348,7 +1340,6 @@ public abstract class RuntimeServices {
       * @param tdata the TabularData to be converted
       * @param names the order of the columns
       * @return a two-dimensional array
-      * @throws Exception
       */
      private Object[][] tabularDataTo2DArray(TabularData tdata, String[] names) throws Exception {
          if(tdata==null){
@@ -1363,7 +1354,7 @@ public abstract class RuntimeServices {
              for (int j = 0; j < names.length; j++) {
                  String name = names[j];
                  Object value = cdata.get(name);
-                 returnRow[j] = name + " : " + String.valueOf(value);
+                 returnRow[j] = name + " : " + value;
              }
              data[i] = returnRow;
          }
@@ -1409,37 +1400,23 @@ public abstract class RuntimeServices {
       * @param filter A comma separated list of strings to match against.
       * @return A ArrayList of instance of ClassSummaryDetail containing class information for the class names that match the filter.
       */
-     /**
-      * Provide a list of instance of ClassSummaryDetail containing information about the
-      * classes in the session whose class names match the provided filter.
-      *
-      * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
-      * convert class attribute to JMX required open type, it has:-
-      *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
-      *    2. convert methods.
-      *
-      * @param filter A comma separated list of strings to match against.
-      * @return A ArrayList of instance of ClassSummaryDetail containing class information for the class names that match the filter.
-      */
-     public List <ClassSummaryDetailBase>  getClassSummaryDetailsUsingFilterArray(String filter) {
-         // if the filter is null, return all the details
-         if (filter == null) {
-             return getClassSummaryDetailsArray();
-         }
-
+     public List<ClassSummaryDetailBase>  getClassSummaryDetailsUsingFilterArray(String filter) {
          try {
-             Vector mappedClassNames = getMappedClassNamesUsingFilter(filter);
+             // if the filter is null, return all the details
+             Vector<String> mappedClassNames = getMappedClassNamesUsingFilter(filter);
              String mappedClassName;
-             List classSummaryDetails = new ArrayList<ClassSummaryDetailBase>();
+             List<ClassSummaryDetailBase> classSummaryDetails = new ArrayList<>();
              // Check if there aren't any classes mapped
              if (mappedClassNames.size() == 0) {
                  return null;
              }
-
+             CompositeType type = buildCompositeTypeForClassSummaryDetails();
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = (String)mappedClassNames.elementAt(index);
-                 classSummaryDetails.add(buildLowlevelDetailsFor(mappedClassName));
+                 mappedClassName = mappedClassNames.elementAt(index);
+                 Map<String, String> data = buildLowlevelDetailsFor(mappedClassName);
+                 final CompositeDataSupport support = new CompositeDataSupport(type, buildLowlevelDetailsFor(mappedClassName));
+                 classSummaryDetails.add(ClassSummaryDetailBase.from(support));
              }
              return classSummaryDetails;
          } catch (Exception openTypeException) {
@@ -1462,29 +1439,9 @@ public abstract class RuntimeServices {
       *
       * @return A List of instance of ClassSummaryDetail objects containing class information for the class names that match the filter.
       */
-     public List <ClassSummaryDetailBase> getClassSummaryDetailsArray() {
-         try {
-             Vector mappedClassNames = getMappedClassNames();
-             List classSummaryDetails = new ArrayList<ClassSummaryDetailBase>();
-             // Check if there aren't any classes mapped
-             if (mappedClassNames.size() == 0) {
-                 return null;
-             }
-
-             // get details for each class, and add the details to the summary
-             for (int index = 0; index < mappedClassNames.size(); index++) {
-                 String mappedClassName = (String)mappedClassNames.elementAt(index);
-                 classSummaryDetails.add(buildLowlevelDetailsFor(mappedClassName));
-             }
-
-             return classSummaryDetails;
-         } catch (Exception openTypeException) {
-             AbstractSessionLog.getLog().log(SessionLog.SEVERE, "jmx_enabled_platform_mbean_runtime_exception", PLATFORM_NAME, openTypeException);
-             openTypeException.printStackTrace();
-         }
-
+     public List<ClassSummaryDetailBase> getClassSummaryDetailsArray() {
          // wait to get requirements from EM
-         return null;
+         return getClassSummaryDetailsUsingFilterArray(".*");
      }
 
      /**
@@ -1524,8 +1481,8 @@ public abstract class RuntimeServices {
 
       * @return HashMap
       */
-     private HashMap buildLowlevelDetailsFor(String mappedClassName) {
-         Class mappedClass = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(mappedClassName, ClassConstants.CLASS);
+     private Map<String, String> buildLowlevelDetailsFor(String mappedClassName) {
+         Class<?> mappedClass = getSession().getDatasourcePlatform().getConversionManager().convertObject(mappedClassName, ClassConstants.CLASS);
          ClassDescriptor descriptor = getSession().getProject().getDescriptor(mappedClass);
 
          String cacheType = "";
@@ -1551,7 +1508,7 @@ public abstract class RuntimeServices {
 
          boolean isChildDescriptor = descriptor.isChildDescriptor();
 
-         HashMap details = new HashMap(5);
+         Map<String, String> details = new HashMap<>(5);
          details.put("Class Name", mappedClassName);
          details.put("Cache Type", (isChildDescriptor ? "" : cacheType));
          details.put("Configured Size", (isChildDescriptor ? "" : configuredSize));
@@ -1585,7 +1542,7 @@ public abstract class RuntimeServices {
          }
 
          try {
-             Vector mappedClassNames = getMappedClassNamesUsingFilter(filter);
+             Vector<String> mappedClassNames = getMappedClassNamesUsingFilter(filter);
              String mappedClassName;
              TabularDataSupport rowData = new TabularDataSupport(buildTabularTypeForClassSummaryDetails());
              // Check if there aren't any classes mapped
@@ -1595,7 +1552,7 @@ public abstract class RuntimeServices {
 
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = (String)mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.elementAt(index);
                  String[] key = new String[] { mappedClassName };
                  rowData.put(key, buildDetailsFor(mappedClassName, rowData.getTabularType().getRowType()));
              }
@@ -1623,7 +1580,7 @@ public abstract class RuntimeServices {
       */
      private TabularData buildClassSummaryDetails() {
          try {
-             Vector mappedClassNames = getMappedClassNames();
+             Vector<String> mappedClassNames = getMappedClassNames();
              String mappedClassName;
              TabularDataSupport rowData = new TabularDataSupport(buildTabularTypeForClassSummaryDetails());
              // Check if there aren't any classes mapped
@@ -1633,7 +1590,7 @@ public abstract class RuntimeServices {
 
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = (String)mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.elementAt(index);
                  String[] key = new String[] { mappedClassName };
                  rowData.put(key, buildDetailsFor(mappedClassName, rowData.getTabularType().getRowType()));
              }

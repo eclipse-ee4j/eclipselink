@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 public class JPQLTestCase extends TransactionalTestCase {
     private String ejbql;
     protected ObjectLevelReadQuery theQuery = null;
-    private Class referenceClass;
+    private Class<?> referenceClass;
     private Expression originalExpression = null;
     private Object originalObject;
     private DomainObjectComparer comparer = null;
@@ -64,7 +64,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         this.theQuery = theQuery;
     }
 
-    public JPQLTestCase(String ejbqlString, ObjectLevelReadQuery theQuery, Class theReferenceClass) {
+    public JPQLTestCase(String ejbqlString, ObjectLevelReadQuery theQuery, Class<?> theReferenceClass) {
         this();
         this.ejbql = ejbqlString;
         this.theQuery = theQuery;
@@ -92,6 +92,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         return attributes;
     }
 
+    @Override
     public void reset() {
         // Force the query to be rebuilt each time...
         setQuery(null);
@@ -102,9 +103,6 @@ public class JPQLTestCase extends TransactionalTestCase {
      * Return the first employee that has a long enough name for the test.
      * If no match is found throw a warning exception.
      * See bug 223005
-     * @param minFirstNameLength
-     * @param testName
-     * @return
      */
     public Employee getEmployeeWithRequiredNameLength(int minFirstNameLength, String testName) {
         return getEmployeeWithRequiredNameLength(getSomeEmployees(), minFirstNameLength, testName);
@@ -114,10 +112,6 @@ public class JPQLTestCase extends TransactionalTestCase {
      * Return the first employee that has a long enough name for the test.
      * If no match is found throw a warning exception.
      * See bug 223005
-     * @param vectorOfEmployees
-     * @param minFirstNameLength
-     * @param testName
-     * @return
      */
     public Employee getEmployeeWithRequiredNameLength(Vector vectorOfEmployees, int minFirstNameLength, String testName) {
         Employee empMatch = null;
@@ -144,6 +138,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void setup() {
         if (!isPlatformSupported(getSession().getLogin().getPlatform())) {
             throw new TestWarningException("This EJBQL is not supported on this platform.");
@@ -155,6 +150,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         getQuery().setEJBQLString(getEjbqlString());
     }
 
+    @Override
     public void test() throws Exception {
         getSession().logMessage("Running EJBQL -> " + getEjbqlString());
         executeEJBQLQuery();
@@ -179,6 +175,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void verify() throws Exception {
         if (!getComparer().compareObjects(getOriginalObject(), getReturnedObjects())) {
             throw new TestErrorException(getName() + " Verify Failed:" + getOriginalObject() + " != " + getReturnedObjects());
@@ -208,7 +205,6 @@ public class JPQLTestCase extends TransactionalTestCase {
 
     /**
      * Set the ejbql string to the passed value
-     * @param theEjbqlString
      */
     public void setEjbqlString(String theEjbqlString) {
         this.ejbql = theEjbqlString;
@@ -244,11 +240,11 @@ public class JPQLTestCase extends TransactionalTestCase {
         this.theQuery = theQuery;
     }
 
-    public Class getReferenceClass() {
+    public Class<?> getReferenceClass() {
         return referenceClass;
     }
 
-    public void setReferenceClass(Class theClass) {
+    public void setReferenceClass(Class<?> theClass) {
         this.referenceClass = theClass;
     }
 
@@ -328,7 +324,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         }
         if (supportedPlatforms != null) {
             for (Iterator iterator = supportedPlatforms.iterator(); iterator.hasNext();) {
-                Class platformClass = (Class)iterator.next();
+                Class<?> platformClass = (Class)iterator.next();
                 if (platformClass.isInstance(platform)) {
                     supported = true;
                 }
@@ -338,7 +334,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         }
         if (unsupportedPlatforms != null) {
             for (Iterator iterator = unsupportedPlatforms.iterator(); iterator.hasNext();) {
-                Class platformClass = (Class)iterator.next();
+                Class<?> platformClass = (Class)iterator.next();
                 if (platformClass.isInstance(platform)) {
                     notSupported = true;
                 }
@@ -347,14 +343,14 @@ public class JPQLTestCase extends TransactionalTestCase {
         return supported && (!notSupported);
     }
 
-    public void addSupportedPlatform(Class platform) {
+    public void addSupportedPlatform(Class<?> platform) {
         if (supportedPlatforms == null) {
             supportedPlatforms = new Vector();
         }
         supportedPlatforms.addElement(platform);
     }
 
-    public void addUnsupportedPlatform(Class platform) {
+    public void addUnsupportedPlatform(Class<?> platform) {
         if (unsupportedPlatforms == null) {
             unsupportedPlatforms = new Vector();
         }

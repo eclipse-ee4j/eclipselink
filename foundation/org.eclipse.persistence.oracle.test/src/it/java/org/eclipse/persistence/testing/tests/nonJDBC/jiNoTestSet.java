@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,7 +86,7 @@ public class jiNoTestSet {
         query.addArgument("X", String.class);
         query.setCall(call);
         project.getDescriptor(Empty.class).getQueryManager().addQuery("jiNo", query);
-        Project projectToXml = (Project)project.clone();
+        Project projectToXml = project.clone();
         // trim off login 'cause it changes under test - this way, a comparison
         // can be done to a control document
         projectToXml.setDatasourceLogin(null);
@@ -167,9 +167,9 @@ public class jiNoTestSet {
     @SuppressWarnings("unchecked")
     @Test
     public void runQuery() {
-        Session s = project.createDatabaseSession();
+        DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
-        ((DatabaseSession)s).login();
+        s.login();
         Object o = null;
         Vector queryArgs = new NonSynchronizedVector();
         queryArgs.add("test");
@@ -186,7 +186,7 @@ public class jiNoTestSet {
         Vector results = (Vector)o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         Integer bool2int = (Integer)record.get("Y");
-        assertTrue("wrong bool2int value", bool2int.intValue() == 0);
-        ((DatabaseSession)s).logout();
+        assertTrue("wrong bool2int value", bool2int == 0);
+        s.logout();
     }
 }

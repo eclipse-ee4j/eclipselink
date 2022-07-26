@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,8 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Record;
 
 
 //Created by Ian Reid
@@ -34,6 +34,7 @@ public class TargetInvocationWhileInvokingRowExtractionMethodTest extends Except
     InheritancePolicy policy;
     DatabaseRecord row;
 
+    @Override
     protected void setup() throws NoSuchMethodException {
         descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(TargetInvocationWhileInvokingRowExtractionMethodTest.class);
@@ -47,12 +48,13 @@ public class TargetInvocationWhileInvokingRowExtractionMethodTest extends Except
         policy.preInitialize((AbstractSession)getSession());
 
         row = new DatabaseRecord();
-        Class[] parmClasses = { Record.class };
+        Class<?>[] parmClasses = { DataRecord.class };
 
 
         expectedException = DescriptorException.targetInvocationWhileInvokingRowExtractionMethod(row, TargetInvocationWhileInvokingRowExtractionMethodTest.class.getDeclaredMethod("invalidMethod", parmClasses), descriptor, new Exception());
     }
 
+    @Override
     public void test() {
         try {
             policy.classFromRow(row, (AbstractSession)getSession());
@@ -61,8 +63,8 @@ public class TargetInvocationWhileInvokingRowExtractionMethodTest extends Except
         }
     }
 
-    public static void invalidMethod(Record row) throws java.lang.IllegalAccessException {
-        throw new java.lang.IllegalAccessException();
+    public static void invalidMethod(DataRecord row) throws java.lang.IllegalAccessException {
+        throw new IllegalAccessException();
     }
 
 }

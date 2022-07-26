@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public interface StructConverter {
      * PUBLIC:
      * @return The Java Class to perform conversions on
      */
-    Class getJavaType();
+    Class<?> getJavaType();
 
     /**
      * PUBLIC:
@@ -57,7 +57,6 @@ public interface StructConverter {
      * Implementers should put any custom conversion logic in this method
      * @param struct the Struct that will be read
      * @return The Object converted back from the Struct
-     * @throws SQLException
      */
     Object convertToObject(Struct struct) throws SQLException;
 
@@ -68,7 +67,6 @@ public interface StructConverter {
      * @param struct The Object to convert
      * @param connection The JDBC connection
      * @return The Object as a Struct
-     * @throws SQLException
      */
     Struct convertToStruct(Object struct,
                            Connection connection) throws SQLException;

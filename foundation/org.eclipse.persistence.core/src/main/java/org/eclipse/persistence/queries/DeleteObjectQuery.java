@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,11 +104,6 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      * INTERNAL:
      * Code was moved from UnitOfWork.internalExecuteQuery
      *
-     * @param unitOfWork
-     * @param translationRow
-     * @return
-     * @throws org.eclipse.persistence.exceptions.DatabaseException
-     * @throws org.eclipse.persistence.exceptions.OptimisticLockException
      */
     @Override
     protected Object executeInUnitOfWorkObjectLevelModifyQuery(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
@@ -180,7 +175,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
 
             // Check for deletion dependencies.
             if (isUnitOfWork) {
-                Set dependencies = ((UnitOfWorkImpl)session).getDeletionDependencies(object);
+                Set<Object> dependencies = ((UnitOfWorkImpl)session).getDeletionDependencies(object);
                 if (dependencies != null) {
                     for (Object dependency : dependencies) {
                         if (!commitManager.isCommitCompletedInPostOrIgnore(dependency)) {
@@ -221,7 +216,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
                 // Cascade delete does not check optimistic lock, assume ok.
                 rowCount = 1;
             } else {
-                rowCount = getQueryMechanism().deleteObject().intValue();
+                rowCount = getQueryMechanism().deleteObject();
             }
 
             if (rowCount < 1) {

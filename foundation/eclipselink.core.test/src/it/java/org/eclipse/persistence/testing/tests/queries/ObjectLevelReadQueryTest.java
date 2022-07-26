@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
     protected Session session;
 
     /** Some entity to be used in query. */
-    protected final Class entity = Employee.class;
+    protected final Class<Employee> entity = Employee.class;
 
     /** Some SQL call to be used in query. */
     protected final SQLCall call = new SQLCall("SELECT t0.EMP_ID FROM EMPLOYEE t0");
@@ -74,6 +74,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
     /**
      * Initialize this test suite.
      */
+    @Override
     public void setup() {
         session = getSession();
         log = session.getSessionLog();
@@ -82,6 +83,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
     /**
      * Clean this test suite.
      */
+    @Override
     public void reset() {
         session = null;
         log = null;
@@ -95,7 +97,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
 
     /**
      * {@code [ObjectLevelReadQuery].isCustomQueryUsed} value changer
-     * for {@link #testCheckForCustomQueryRaceConditions()}.
+     * for checkCustomQueryRaceConditionsInReadObjectQuery.
      */
     private static final class ValueChanger extends Thread {
 
@@ -157,6 +159,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
         /**
          * Start thread execution.
          */
+        @Override
         public void start() {
             execute = true;
             super.start();
@@ -180,7 +183,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
             while(execute) {
                 try {
                     isCustomQueryUsed.set(query, Boolean.TRUE);
-                    isCustomQueryUsed.set(query, (Boolean)null);
+                    isCustomQueryUsed.set(query, null);
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     log.logThrowable(WARNING, e);
                     execute = false;
@@ -194,7 +197,7 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
      * @param c Class where to search for method.
      * @return {@code [ObjectLevelReadQuery].checkForCustomQuery(AbstractSession, AbstractRecord)} method accessor.
      */
-    protected Method getCheckForCustomQueryMethod(final Class c) {
+    protected Method getCheckForCustomQueryMethod(final Class<?> c) {
         Method method;
         try {
             method = c.getDeclaredMethod(
@@ -210,14 +213,14 @@ public abstract class ObjectLevelReadQueryTest extends TestCase {
     /**
      * Call {@code [ObjectLevelReadQuery].checkForCustomQuery(AbstractSession, AbstractRecord)} method.
      * @param instance ObjectLevelReadQuery instance on which method is called.
-     * @param mathod   {@code [ObjectLevelReadQuery].checkForCustomQuery(AbstractSession, AbstractRecord)}
+     * @param method   {@code [ObjectLevelReadQuery].checkForCustomQuery(AbstractSession, AbstractRecord)}
      *                 method accessor.
      * @throws Throwable when any exception except NPE in invoked method occurs.
      */
     protected DatabaseQuery callCheckForCustomQueryMethod(final Object instance, final Method method) throws Throwable {
         DatabaseQuery databaseQuery;
         try {
-            databaseQuery = (DatabaseQuery)method.invoke(instance, session, (AbstractRecord)null);
+            databaseQuery = (DatabaseQuery)method.invoke(instance, session, null);
         } catch (InvocationTargetException e) {
             if (e.getTargetException() instanceof NullPointerException) {
                 log.log(WARNING, FAIL_NPE);

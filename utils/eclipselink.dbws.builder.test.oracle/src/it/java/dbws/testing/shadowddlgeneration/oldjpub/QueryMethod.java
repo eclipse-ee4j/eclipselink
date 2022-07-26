@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,22 +43,27 @@ public class QueryMethod extends SqlStmtMethod implements CursorMethod {
         return m_resultIterTypeName;
     }
 
+    @Override
     public TypeClass getReturnEleType() {
         return m_returnEleType;
     }
 
+    @Override
     public boolean isSingleCol() {
         return (m_singleColName != null);
     }
 
+    @Override
     public String singleColName() {
         return m_singleColName;
     }
 
+    @Override
     public boolean returnBeans() {
         return m_returnBeans;
     }
 
+    @Override
     public boolean returnResultSet() {
         return !m_returnBeans;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
@@ -77,6 +77,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
     /*
      * Fetch Group tests require weaving.
      */
+    @Override
     public void runBare() throws Throwable {
         if (this.shouldRunTestOnServer()) {
             super.runBare();
@@ -92,6 +93,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
      * Descriptors should not be isolated.
      * Clear cache, install QuerySQLTracker.
      */
+    @Override
     public void setUp() {
         Session session = getServerSession();
 
@@ -132,6 +134,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
      * Reset isolated flag on Employee descriptor.
      * Clear cache, uninstall QuerySQLTracker.
      */
+    @Override
     public void tearDown() {
         Session session = getServerSession();
 
@@ -509,6 +512,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
 
     public static class PhoneCustomizer implements DescriptorCustomizer {
 
+        @Override
         public void customize(ClassDescriptor descriptor) throws Exception {
             defaultPhoneFG = new FetchGroup("PhoneNumber.default");
             defaultPhoneFG.addAttribute("number");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class TestReadDirectDirectMapMapping extends TestCase {
         setName("TestReadDirectDirectMapMapping fetchJoin = " + fetchJoin);
     }
 
+    @Override
     public void setup(){
         mapping = (DirectCollectionMapping)getSession().getProject().getDescriptor(DirectDirectMapHolder.class).getMappingForAttributeName("directToDirectMap");
         oldFetchJoinValue = mapping.getJoinFetch();
@@ -51,18 +52,20 @@ public class TestReadDirectDirectMapMapping extends TestCase {
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
         DirectDirectMapHolder holder = new DirectDirectMapHolder();
-        holder.addDirectToDirectMapItem(new Integer(1), new Integer(1));
-        holder.addDirectToDirectMapItem(new Integer(2), new Integer(2));
+        holder.addDirectToDirectMapItem(1, 1);
+        holder.addDirectToDirectMapItem(2, 2);
         uow.registerObject(holder);
         uow.commit();
         holderExp = (new ExpressionBuilder()).get("id").equal(holder.getId());
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         holders = getSession().readAllObjects(DirectDirectMapHolder.class, holderExp);
     }
 
+    @Override
     public void verify(){
         if (holders == null || holders.size() != 1){
             throw new TestErrorException("Incorrect number of MapHolders was read.");
@@ -76,11 +79,12 @@ public class TestReadDirectDirectMapMapping extends TestCase {
             throw new TestErrorException("Incorrect Number of Map values was read.");
         }
         Integer value = (Integer)holder.getDirectToDirectMap().get(1);
-        if (value.intValue() != 1){
+        if (value != 1){
             throw new TestErrorException("Incorrect map value was read.");
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteAllObjects(holders);

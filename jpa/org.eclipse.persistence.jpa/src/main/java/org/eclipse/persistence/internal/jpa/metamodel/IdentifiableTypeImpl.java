@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@
 //     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +40,6 @@ import jakarta.persistence.metamodel.Type;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.CMP3Policy;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -196,6 +196,8 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                     "metamodel_identifiable_id_attribute_is_incorrect_idclass",
                     new Object[] { this }));
         } else {
+            List<String> anAttributesMsg = new ArrayList<>();
+            List<String> anAttributesJavaTypeMsg = new ArrayList<>();
             // verify single id attribute type
             for(SingularAttribute<? super X, ?> anAttribute : idAttributes) {
                 // Verify type is correct - relax restriction on null and Object.class (from same classLoader)
@@ -203,10 +205,14 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                         type.getCanonicalName().equals(anAttribute.getJavaType().getCanonicalName())) {
                     idAttribute = (SingularAttribute<? super X, Y>) anAttribute;
                 } else {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                        "metamodel_identifiable_id_attribute_type_incorrect",
-                        new Object[] { anAttribute, this, type, anAttribute.getJavaType() }));
+                    anAttributesMsg.add(anAttribute.toString());
+                    anAttributesJavaTypeMsg.add(anAttribute.getJavaType().toString());
                 }
+            }
+            if (idAttribute == null) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                        "metamodel_identifiable_id_attribute_type_incorrect",
+                        new Object[] { anAttributesMsg, this, type, anAttributesJavaTypeMsg }));
             }
         }
         return idAttribute;
@@ -229,7 +235,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
                 for(DatabaseMapping aMapping : getDescriptor().getMappings()) {
                     if(aMapping.isJPAId()) {
                         // get the attribute Id (declared or not)
-                        Attribute anAttribute = this.getAttribute(aMapping.getAttributeName());
+                        Attribute<X, ?> anAttribute = this.getAttribute(aMapping.getAttributeName());
                         if(anAttribute != null) {
                             return this.getMetamodel().getType(((Bindable)anAttribute).getBindableJavaType()); // all Attributes are Bindable
                         }
@@ -238,7 +244,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             }
 
             if (pkMappings.size() == 1) {
-                Class aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
+                Class<?> aClass = pkMappings.get(0).getAttributeClassification(); // null for OneToOneMapping
                 // lookup class in our types map
                 return this.getMetamodel().getType(aClass);
             }
@@ -248,7 +254,7 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
         // There already is an instance of the PKclass on the policy
         if (cmpPolicy != null && cmpPolicy.isCMP3Policy()) {
             // BasicType, EntityType or IdentifiableType are handled here, lookup the class in the types map and create a wrapper if it does not exist yet
-            return this.getMetamodel().getType(((CMP3Policy) cmpPolicy).getPKClass());
+            return this.getMetamodel().getType(cmpPolicy.getPKClass());
         }
         // Non-specification mandated exception
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
@@ -301,8 +307,6 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      * INTERNAL:
      * Return the version attribute on this type.
      * If no version attribute exists - return null.
-     * @param <Y>
-     * @return
      */
     private <Y> SingularAttribute<? super X, ?> getVersion() {
         if(hasVersionAttribute()) {
@@ -340,9 +344,9 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
             return false;
         } else {
             // Optional: Verify the mapping on the each field and whether it is an IdClass
-            Class pkClass = null;
+            Class<?> pkClass = null;
             if(this.getDescriptor().hasCMPPolicy()) {
-                pkClass = ((CMP3Policy)this.getDescriptor().getCMPPolicy()).getPKClass();
+                pkClass = this.getDescriptor().getCMPPolicy().getPKClass();
                 if(null == pkClass) {
                     return false;
                 }
@@ -388,7 +392,6 @@ public abstract class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> impleme
      * INTERNAL:
      * Return whether this type is identifiable.
      * This would be EntityType and MappedSuperclassType
-     * @return
      */
     @Override
     protected boolean isIdentifiableType() {

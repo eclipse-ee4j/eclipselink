@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2020 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2022 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,7 +102,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "register_new_for_persist", "PERSIST operation called on: {0}." },
         { "all_registered_clones", "All Registered Clones:" },
         { "new_objects", "New Objects:" },
-
+        { "unit_of_work_thread_info", "Current unit of work in session ({0}) was created by another thread (id: {1} name: {2}), than current thread (id: {3} name: {4})" },
+        { "unit_of_work_thread_info_thread_dump", "Creation thread (id: {0} name: {1}) stack trace:\n{2}\n\n" +
+                "Current thread (id: {3} name: {4}) stack trace:\n{5}" },
         { "failed_to_propogate_to", "CacheSynchronization : Failed to propagate to {0}.  {1}" },
         { "exception_thrown_when_attempting_to_shutdown_cache_synch", "Exception thrown when attempting to shutdown cache synch: {0}" },
         { "corrupted_session_announcement", "SessionID: {0}  Discovery manager received corrupted session announcement - ignoring." },
@@ -117,7 +119,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "error_in_create", "Error in create." },
         { "error_executing_ejbHome", "Error executing ejbHome: {0}" },
         { "error_in_remove", "Error in remove." },
-        { "table_existed_during_creation", "Table creation failed. If it already exists, it must be dropped first. This can be done manually or by setting the db-table-gen attribute in orion-ejb-jar.xml." },
         { "an_error_occured_trying_to_undeploy_bean", "An error occurred trying to undeploy bean (after deployment failure): {0}" },
         { "an_error_occured_executing_findByPrimaryKey", "An error occurred executing findByPrimaryKey: {0}" },
         { "an_error_occured_preparing_bean", "An error occurred preparing bean for invocation: {0}" },
@@ -126,7 +127,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "ejbSelect2", "EjbSelect: {0}" },
         { "error_getting_transaction_status", "Error getting transaction status.  {0}" },
         { "removeEJB_return", "removeEJB return: {0}" },
-        { "multiple_ds_not_supported", "EclipseLink CMP does not support multiple datasources, and will only use one of them named ({0}), which is specified in the orion-ejb-jar.xml, and being associated with an entity bean defined last in the corresponding ejb-jar.xml." },
         { "failed_to_find_mbean_server", "Failed to find MBean Server: {0}" },
         { "problem_while_registering", "Problem while registering: {0}" },
         { "objectchangepolicy_turned_off", "Change tracking turned off for: {0}" },
@@ -137,7 +137,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "extra_finder", "There is a finder defined on the [{0}] " + "home interface(s) but the corresponding finder [{1}{2}] " + "entry is not declared in the ejb-jar.xml." },
         { "cmp_and_cmr_field", "The ejb-jar.xml entry for [{0}] contains both a <cmp-field> and <cmr-field> entry for the attribute [{1}].  The <cmp-field> entry will be ignored." },
 
-        { "toplink_cmp_bean_name_xml_deprecated", "Support for toplink-cmp-bean_name.xml is deprecated." + "Please refer to the documentation for the use of toplink-ejb-jar.xml" },
+        { "toplink_cmp_bean_name_xml_deprecated", "Support for toplink-cmp-bean_name.xml is deprecated. " +
+                "Please refer to the documentation for the use of toplink-ejb-jar.xml" },
 
         { "drop_connection_on_error", "Warning: Dropping remote command connection to {0} on error {1}" },
         { "received_corrupt_announcement", "Warning: Discovery manager could not process service announcement due to {0} - ignoring announcement" },
@@ -159,10 +160,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "an_error_occured_initializing_dms_listener", "Exception thrown when initializing DMS embedded listener and the SPY Servlet" },
 
         { "input_minimum_arguments", "The command line input arguments must at least include -s, -a or -x, and -o." },
-        { "src_pm_name_first_argument", "You must specify the source PM name at the first input argument as either: -sOc4j-native or -sWeblogic." },
-        { "oc4j_native_migration_start", "OC4J-Native CMP -> OC4J EclipseLink CMP Migration STARTS......" },
         { "validate_ejb_jar", "Validating ejb-jar.xml starts, it may take some times..."},
-        { "weblogic_native_migration_start", "WebLogic-Native CMP -> OC4J EclipseLink CMP Migration STARTS......" },
         { "must_define_migration_output_dir", "You must define an output directory for the migration tool" },
         { "migration_output_dir_not_valid", "The output directory ({0}) you defined is not valid" },
         { "migration_input_dir_not_valid", "The input directory ({0}) you defined is not valid" },
@@ -172,7 +170,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "input_not_both_archive_and_xml", "You use either -e to specify the archive file name, or -x to signal that descriptor files under the input directory will be migrated, but not both." },
         { "input_at_least_either_archive_or_xml", "You use either -e to specify the migrated archive file name, or -x to signal that descriptor xml files under the input directory will be migrated, and you must specify and only specify one of them." },
         { "ejb_jar_xml_not_found_in_input", "The ejb-jar.xml is not present under input directory ({0})." },
-        { "orion_ejb_jar_xml_not_found_in_input", "orion-ejb-jar.xml is not existed under input directory ({0}) you specified." },
         { "weblogic_ejb_jar_xml_not_found_in_input", "weblogic-ejb-jar.xml is not existed under input directory ({0}) you specified." },
         { "toplink_ejb_jar_xml_found_in_input", "The toplink-ejb-jar.xml is under input directory ({0}). You have to remove the toplink descriptor away from the input directory to process the migration." },
         { "migration_successful", "Migration Successful!" },
@@ -186,29 +183,12 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "invalid_command_line_argument", "The command line argument ({0}) is invalid" },
         { "persistence_unit_ignores_statments_cache_setting", "The statement cache cannot be enabled because no connection pool is configured." },
         { "column_size_not_migrated", "DB column size ({0}) is not migrated. See migration doc for details." },
-        { "associate_using_third_table_not_migrated", "Oc4j native CMP feature -DassociateUsingThirdTable=true to map 1:m using a relation table is not migrated. You must re-map cmr field ({1}) of the entity ({0}) as one-to-many mapping through Mapping Workbench after the migration process." },
-        { "delay_updates_until_commit_not_supported", "Oc4j native CMP feature \"delay-updates-until-commit\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "do_select_before_insert_not_supported", "Oc4j native CMP feature \"do-select-before-insert\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "no_exclusive_write_access_not_supported", "Oc4j native CMP feature \"no-exclusive-write-access\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "force_update_not_supported", "Oc4j native CMP feature \"force-update\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "isolation_level_not_supported", "Oc4j native CMP setting \"isolation-level\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "max_instance_not_supported", "Oc4j native CMP setting \"max-instance\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "max_tx_retries_not_supported", "Oc4j native CMP setting \"max-tx-retries\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "min_instance_not_supported", "Oc4j native CMP setting \"min-instance\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details."},
-        { "update_all_fields_not_supported", "Oc4j native CMP feature \"update-all-fields\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "validity_timeout_not_supported", "Oc4j native CMP setting \"validity-timeout\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "call_timeout_not_migrated", "The call-timeout value={1} is defined in entity {0} in orion-ejb-jar.xml" + " but no persistent mappings defined in the descriptor file, therefore no migration will occur. " + " If you use EclipseLink default mapping later to generate the EclipseLink mapping descriptor, be aware that the call-timeout " + " setting will be lost as EclipseLink default mapping has no access to native descriptor file. " + " You then need to reset the call timeout mamually or through EclipseLink Mapping Workbench after default mapping generation." },
-        { "optimistic_locking_not_supported", "Oc4j native CMP setting locking-mode=\"optimistic\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "old_pessimistic_locking_not_supported", "Oc4j native CMP setting \"old-pessimistic-locking\" on entity({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "locking_mode_not_valid", "Locking mode({1}) on entity({0} in orion-ejb-jar.xml is not well defined and therefore not migrated." },
         { "verifiy_columns_read_locking_not_supported", "Optimistic setting \"Read\" on \"verify-columns\" in entity ({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "verifiy_rows_read_locking_not_supported", "Optimistic setting \"Read\" on \"verify-rows\" in entity ({0}) is not directly supported in EclipseLink CMP. See migration doc for details.." },
         { "one_to_one_join_outer_migrated", "The one-to-one outer join defined for cmr field ({0}) of entity bean ({1}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "bacth_update_not_supported", "The Batch update setting batch-size with value ({0}) defined on entity bean ({1}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "data_sync_on_ejb_create_not_supported", "The data syncronization setting data-synchronization-option=\"ejbCreate\" defined on entity bean ({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "weblogic_ql_not_supported", "WebLogic-QL({0}) of the method({1} of the entity({2}) is not migrated as EclipseLink does not support WebLogic QL language." },
-        { "input_orione_ejb_jar_augmented", "Input orion-ejb-jar.xml file has been augmented to specify EclipseLink as OC4J''s Persistent Manager" },
-        { "template_orion_ejb_jar_created", "A templated orion-ejb-jar.xml file has been created" },
         { "create_default_dbms_tables_not_supported", "WLS native CMP setting \"create-default-dbms-tables\" is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "default_dbms_tables_ddl_not_supported", "WLS native CMP setting \"default-dbms-tables-ddl\" is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "enable_batch_operations_as_true_not_supported", "WLS native CMP setting \"enable-batch-operations-as-true\" is not directly supported in EclipseLink CMP. See migration doc for details." },
@@ -369,6 +349,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "class_list_created_by", "Class list created by ({0}).({1})() method."},
         { "jar_file_url_exception", "Exception while parsing persistence.xml.  Jar file location could not be found: {0}"},
         { "cannot_unwrap_connection", "Cannot unwrap the oracle connection wrapped by the application server because of the following exception.  {0}"},
+        { "platform_specific_connection_property_exists", "Cannot add platform specific connection property {0}={1}. Property key {0} was already added to connection properties."},
         { "error_loading_xml_file", "Exception while loading ORM xml file: {0}: {1}"},
         // B5112171: XML AnyObject and AnyCollection throw NPE on null document root element
         { "exception_loading_entity_class", "An exception while trying to initialize persistence.  {1} occurred while trying to load entity class: {0}."},
@@ -385,6 +366,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "broadcast_listening_sleep_on_error", "Warning: {0}: Exception {1} was thrown. The thread will sleep for {2} milliseconds before resuming listening." },
         { "dbPlatformHelper_defaultingPlatform", "Not able to detect platform for vendor name [{0}]. Defaulting to [{1}]. The database dialect used may not match with the database you are using. Please explicitly provide a platform using property \"eclipselink.target-database\"."},
         { "dbPlatformHelper_noMappingFound", "Can not load resource [{0}] that loads mapping from vendor name to database platform. Autodetection of database platform will not work."},
+        { "pgsql10_platform_missing_json_extension", "Missing PostgreSQL10JsonPlatform from org.eclipse.persistence.pgsql module. JSON extension will not work properly. "},
 
         { "sessions_xml_path_where_session_load_from", "The session info is loaded from [{0}]."},
         { "resource_local_persistence_init_info_ignores_jta_data_source", "PersistenceUnitInfo {0} has transactionType RESOURCE_LOCAL and therefore jtaDataSource will be ignored"},

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,11 +29,12 @@ public class TopLinkBatchUpdatesTestModel extends TestModel {
         super();
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         DatabasePlatform platform = getSession().getPlatform();
-        wasBatchWriting = Boolean.valueOf(platform.usesBatchWriting());
-        wasJDBCBatchWriting = Boolean.valueOf(platform.usesJDBCBatchWriting());
-        wasParameterBinding = Boolean.valueOf(getSession().getLogin().shouldBindAllParameters());
+        wasBatchWriting = platform.usesBatchWriting();
+        wasJDBCBatchWriting = platform.usesJDBCBatchWriting();
+        wasParameterBinding = getSession().getLogin().shouldBindAllParameters();
 
         try {
             getSession().getLog().write("WARNING, some JDBC drivers may fail BatchUpdates.");
@@ -56,6 +57,7 @@ public class TopLinkBatchUpdatesTestModel extends TestModel {
         addForcedRequiredSystem(new EmployeeSystem());
     }
 
+    @Override
     public void addTests() {
         TestSuite suite = new TestSuite();
         suite.setName("BatchWriteTests");
@@ -80,20 +82,22 @@ public class TopLinkBatchUpdatesTestModel extends TestModel {
         addTest(suite);
     }
 
+    @Override
     public void reset() {
         DatabasePlatform platform = getSession().getPlatform();
 
         if (wasBatchWriting != null) {
-            platform.setUsesBatchWriting(wasBatchWriting.booleanValue());
+            platform.setUsesBatchWriting(wasBatchWriting);
         }
         if (wasJDBCBatchWriting != null) {
-            platform.setUsesJDBCBatchWriting(wasJDBCBatchWriting.booleanValue());
+            platform.setUsesJDBCBatchWriting(wasJDBCBatchWriting);
         }
         if (wasParameterBinding != null) {
-            platform.setShouldBindAllParameters(wasParameterBinding.booleanValue());
+            platform.setShouldBindAllParameters(wasParameterBinding);
         }
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }

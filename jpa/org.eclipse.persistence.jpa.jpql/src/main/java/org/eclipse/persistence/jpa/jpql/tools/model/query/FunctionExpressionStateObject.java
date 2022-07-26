@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,43 +91,28 @@ public class FunctionExpressionStateObject extends AbstractStateObject
         this.items.addAll(parent(arguments));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         acceptUnknownVisitor(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
         children.addAll(items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <S extends StateObject> S addItem(S item) {
         getChangeSupport().addItem(this, items, ARGUMENTS_LIST, parent(item));
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addItems(List<? extends StateObject> items) {
         getChangeSupport().addItems(this, this.items, ARGUMENTS_LIST, parent(items));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addListChangeListener(String listName, IListChangeListener<StateObject> listener) {
         getChangeSupport().addListChangeListener(listName, listener);
@@ -161,25 +146,16 @@ public class FunctionExpressionStateObject extends AbstractStateObject
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canMoveDown(StateObject item) {
         return getChangeSupport().canMoveDown(items, item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean canMoveUp(StateObject item) {
         return getChangeSupport().canMoveUp(items, item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public FunctionExpression getExpression() {
         return (FunctionExpression) super.getExpression();
@@ -203,9 +179,6 @@ public class FunctionExpressionStateObject extends AbstractStateObject
         return identifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject getItem(int index) {
         return items.get(index);
@@ -230,26 +203,17 @@ public class FunctionExpressionStateObject extends AbstractStateObject
         return functionName != null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasItems() {
         return !items.isEmpty();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
-        items = new ArrayList<StateObject>();
+        items = new ArrayList<>();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -262,59 +226,38 @@ public class FunctionExpressionStateObject extends AbstractStateObject
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListIterable<StateObject> items() {
-        return new SnapshotCloneListIterable<StateObject>(items);
+        return new SnapshotCloneListIterable<>(items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int itemsSize() {
         return items.size();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject moveDown(StateObject item) {
         getChangeSupport().moveDown(this, items, ARGUMENTS_LIST, item);
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public StateObject moveUp(StateObject item) {
         getChangeSupport().moveUp(this, items, ARGUMENTS_LIST, item);
         return item;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeItem(StateObject item) {
         getChangeSupport().removeItem(this, items, ARGUMENTS_LIST, item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeItems(Collection<StateObject> items) {
         getChangeSupport().removeItems(this, this.items, ARGUMENTS_LIST, items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeListChangeListener(String listName, IListChangeListener<StateObject> listener) {
         getChangeSupport().removeListChangeListener(listName, listener);
@@ -342,9 +285,6 @@ public class FunctionExpressionStateObject extends AbstractStateObject
         firePropertyChanged(FUNCTION_NAME_PROPERTY, oldFunctionName, functionName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

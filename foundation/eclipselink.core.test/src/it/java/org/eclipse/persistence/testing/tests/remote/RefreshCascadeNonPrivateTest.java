@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,16 +29,19 @@ public class RefreshCascadeNonPrivateTest extends TestCase {
         setDescription("Tests if remote refresh cascades no-private parts correctly.");
     }
 
+    @Override
     public void reset() {
         ((AbstractSession)RemoteModel.getServerSession()).rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
     }
 
+    @Override
     public void setup() {
         ((AbstractSession)RemoteModel.getServerSession()).beginTransaction();
     }
 
+    @Override
     public void test() throws Exception {
 
         // Objects to test:  Employee and Manager.  Employee doesn't privately own Manager
@@ -55,6 +58,7 @@ public class RefreshCascadeNonPrivateTest extends TestCase {
 
     }
 
+    @Override
     public void verify() throws Exception {
 
         if (originalFirstName.equals(r_employee.getManager().getFirstName()))

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -60,7 +62,7 @@ public class SDODataObjectGetIntConversionWithPathTest extends SDODataObjectConv
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals((int)by, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals(by, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //3. purpose: getInt with Undefined Byte Property
@@ -106,7 +108,7 @@ public class SDODataObjectGetIntConversionWithPathTest extends SDODataObjectConv
         double db = 12;
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals((int)db, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals((int)db, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //6. purpose: getInt with Undefined Double Property
@@ -136,7 +138,7 @@ public class SDODataObjectGetIntConversionWithPathTest extends SDODataObjectConv
         float fl = 12;
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
 
-        this.assertEquals((int)fl, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals((int)fl, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //8. purpose: getInt with Undefined float Property
@@ -166,7 +168,7 @@ public class SDODataObjectGetIntConversionWithPathTest extends SDODataObjectConv
         int in = 12;
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
 
-        this.assertEquals((int)in, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals(in, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //10. purpose: getInt with Undefined int Property
@@ -196,7 +198,7 @@ public class SDODataObjectGetIntConversionWithPathTest extends SDODataObjectConv
         long lg = 12;
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
 
-        this.assertEquals((int)lg, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals((int)lg, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //12. purpose: getInt with Undefined long Property
@@ -226,7 +228,7 @@ public class SDODataObjectGetIntConversionWithPathTest extends SDODataObjectConv
         short shr = 12;
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
 
-        this.assertEquals((int)shr, dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals(shr, dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //14. purpose: getInt with Undefined short Property
@@ -254,10 +256,10 @@ public class SDODataObjectGetIntConversionWithPathTest extends SDODataObjectConv
         dataObject_c._setType(type_c);
 
         String str = "12";
-        Integer s_d = new Integer(str);
+        Integer s_d = Integer.valueOf(str);
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(s_d.intValue(), dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals(s_d.intValue(), dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //16. purpose: getInt with Undefined string Property
@@ -304,7 +306,7 @@ public class SDODataObjectGetIntConversionWithPathTest extends SDODataObjectConv
         BigDecimal bd = new BigDecimal(db);
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd.intValue(), dataObject_a.getInt(property));
+        assertEquals(bd.intValue(), dataObject_a.getInt(property));
     }
 
     //19. purpose: getInt with Undefined decimal Property
@@ -334,7 +336,7 @@ public class SDODataObjectGetIntConversionWithPathTest extends SDODataObjectConv
         BigInteger bi = new BigInteger("12");
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi.intValue(), dataObject_a.getInt(propertyPath_a_b_c));
+        assertEquals(bi.intValue(), dataObject_a.getInt(propertyPath_a_b_c));
     }
 
     //21. purpose: getInt with Undefined Integer Property

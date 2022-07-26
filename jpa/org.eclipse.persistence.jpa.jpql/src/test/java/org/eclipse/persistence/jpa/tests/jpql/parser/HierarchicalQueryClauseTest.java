@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 public final class HierarchicalQueryClauseTest extends JPQLParserTest {
 
     @Test
-    public void test_JPQLQuery_01() throws Exception {
+    public void test_JPQLQuery_01() {
 
         String jpqlQuery = "SELECT e FROM Employee e START WITH CONNECT BY";
 
@@ -57,7 +57,7 @@ public final class HierarchicalQueryClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_02() throws Exception {
+    public void test_JPQLQuery_02() {
 
         String jpqlQuery = "SELECT e FROM Employee e START WITH CONNECT BY ORDER SIBLINGS BY";
 
@@ -88,7 +88,7 @@ public final class HierarchicalQueryClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_03() throws Exception {
+    public void test_JPQLQuery_03() {
 
         String jpqlQuery = "SELECT e FROM Employee e START WITH CONNECT BY ORDER SIBLINGS BY ";
 
@@ -119,7 +119,7 @@ public final class HierarchicalQueryClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_04() throws Exception {
+    public void test_JPQLQuery_04() {
 
         String jpqlQuery = "SELECT e FROM Employee e START WITH ORDER SIBLINGS BY";
 
@@ -146,7 +146,7 @@ public final class HierarchicalQueryClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_05() throws Exception {
+    public void test_JPQLQuery_05() {
 
         String jpqlQuery = "SELECT e FROM Employee e ORDER SIBLINGS BY";
 
@@ -168,7 +168,7 @@ public final class HierarchicalQueryClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_06() throws Exception {
+    public void test_JPQLQuery_06() {
 
         String jpqlQuery = "SELECT e FROM Employee e CONNECT BY ORDER SIBLINGS BY";
 
@@ -196,7 +196,7 @@ public final class HierarchicalQueryClauseTest extends JPQLParserTest {
     }
 
     @Test
-    public void test_JPQLQuery_07() throws Exception {
+    public void test_JPQLQuery_07() {
 
         String jpqlQuery = "SELECT e FROM Employee e CONNECT BY";
 

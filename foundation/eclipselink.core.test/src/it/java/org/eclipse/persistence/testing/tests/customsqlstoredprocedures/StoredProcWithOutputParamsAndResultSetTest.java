@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         }
     }
 
+    @Override
     public void setup() {
         shouldBindAllParametersOriginal = getSession().getLogin().getShouldBindAllParameters();
         //right now only the stored procedure is set up in SQLServer
@@ -53,6 +54,7 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         getSession().getLogin().setShouldBindAllParameters(shouldBindAllParameters);
     }
 
+    @Override
     public void test() {
         ReadAllQuery readQuery = new ReadAllQuery(Employee.class);
         DatabaseCall call;
@@ -78,7 +80,7 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
             spCall.setProcedureName("Select_Output_and_ResultSet");
             spCall.addNamedArgument("ARG1", "argument");
             if (useInOut) {
-                spCall.addNamedInOutputArgumentValue("VERSION", new Long(0), "VERSION", java.math.BigDecimal.class);
+                spCall.addNamedInOutputArgumentValue("VERSION", 0L, "VERSION", java.math.BigDecimal.class);
             } else {
                 spCall.addNamedOutputArgument("VERSION", "VERSION", BigDecimal.class);
             }
@@ -93,9 +95,9 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         getSession().removeQuery("dblogin");
         getSession().addQuery("dblogin", readQuery);
         Vector args = new Vector(2);
-        args.addElement(new Integer(1));
+        args.addElement(1);
         if (useCustomSQL && useInOut) {
-            args.addElement(new Long(0));
+            args.addElement(0L);
         }
         try {
             Vector vResult = (Vector)getSession().executeQuery("dblogin", args);
@@ -109,9 +111,9 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         } else {
             spCall = new StoredProcedureCall();
             spCall.setProcedureName("Select_Output_and_ResultSet");
-            spCall.addNamedArgumentValue("ARG1", new Integer(1));
+            spCall.addNamedArgumentValue("ARG1", 1);
             if (useInOut) {
-                spCall.addNamedInOutputArgumentValue("VERSION", new Long(0), "VERSION", java.math.BigDecimal.class);
+                spCall.addNamedInOutputArgumentValue("VERSION", 0L, "VERSION", java.math.BigDecimal.class);
             } else {
                 spCall.addNamedOutputArgument("VERSION", "VERSION", BigDecimal.class);
             }
@@ -126,6 +128,7 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getLogin().setShouldBindAllParameters(shouldBindAllParametersOriginal);
     }

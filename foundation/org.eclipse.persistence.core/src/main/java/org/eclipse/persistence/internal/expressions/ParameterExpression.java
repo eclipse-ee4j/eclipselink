@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +46,13 @@ public class ParameterExpression extends BaseExpression {
     protected Expression localBase;
 
     protected boolean isProperty = false;
+
+    /**
+     *  'True' indicates this expression can bind parameters
+     *  'False' indicates this expression cannot bind parameters
+     *  Defaults to 'null' to indicate specific no preference
+     */
+    protected Boolean canBind = null;
 
     /** The inferred type of the parameter.
      * Please note that the type might not be always initialized to correct value.
@@ -338,6 +346,16 @@ public class ParameterExpression extends BaseExpression {
 
     /**
      * INTERNAL:
+     *  true indicates this expression can bind parameters
+     *  false indicates this expression cannot bind parameters
+     *  Defaults to null to indicate no specific preference
+     */
+    public Boolean canBind() {
+        return canBind;
+    }
+
+    /**
+     * INTERNAL:
      * Used for cloning.
      */
     @Override
@@ -357,10 +375,10 @@ public class ParameterExpression extends BaseExpression {
         if (printer.shouldPrintParameterValues()) {
             Object value = getValue(printer.getTranslationRow(), printer.getSession());
             if (value instanceof Collection) {
-                printer.printValuelist((Collection)value);
-            }else{
+                printer.printValuelist((Collection<Object>)value, this.canBind);
+            } else {
                 if(getField() == null) {
-                    printer.printPrimitive(value);
+                    printer.printPrimitive(value, this.canBind);
                 } else {
                     printer.printParameter(this);
                 }
@@ -414,6 +432,16 @@ public class ParameterExpression extends BaseExpression {
     }
 
     /**
+     * INTERNAL:
+     * Set to true if this expression can bind parameters
+     * Set to false if this expression cannot bind parameters
+     * Set to null to indicate no specific preference
+     */
+    public void setCanBind(Boolean canBind) {
+        this.canBind = canBind;
+    }
+
+    /**
      * The opposite side of the relation, this is used for conversion of the parameter using the others mapping.
      */
     @Override
@@ -463,7 +491,7 @@ public class ParameterExpression extends BaseExpression {
                     // this is a map key expression, operate on the key
                     ContainerPolicy cp = mapping.getContainerPolicy();
                     Object keyType = cp.getKeyType();
-                    Class keyTypeClass = keyType instanceof Class ? (Class)keyType: ((ClassDescriptor)keyType).getJavaClass();
+                    Class<?> keyTypeClass = keyType instanceof Class<?> ? (Class)keyType: ((ClassDescriptor)keyType).getJavaClass();
                     if (!keyTypeClass.isInstance(value)){
                         throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
                     }
@@ -511,9 +539,26 @@ public class ParameterExpression extends BaseExpression {
      */
     @Override
     public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
+        /*
+         * If the platform doesn't support binding for functions, then disable binding for the whole query
+         * 
+         * DatabasePlatform classes should instead override DatasourcePlatform.initializePlatformOperators()
+         *      @see ExpressionOperator.setIsBindingSupported(boolean isBindingSupported)
+         * In this way, platforms can define their own supported binding behaviors for individual functions
+         */
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
             printer.getCall().setUsesBinding(false);
         }
+
+        /*
+         *  Allow the platform to indicate if they support parameter expressions in the SELECT clause 
+         *  as a whole, regardless if individual functions allow binding. We make that decision here 
+         *  before we continue parsing into generic API calls
+         */
+        if (!printer.getPlatform().allowBindingForSelectClause()) {
+            setCanBind(false);
+        }
+
         //print ", " before each selected field except the first one
         if (printer.isFirstElementPrinted()) {
             printer.printString(", ");

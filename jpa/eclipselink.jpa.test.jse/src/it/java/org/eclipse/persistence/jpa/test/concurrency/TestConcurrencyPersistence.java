@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,10 @@ package org.eclipse.persistence.jpa.test.concurrency;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -47,8 +50,7 @@ public class TestConcurrencyPersistence {
      * This test spins up threads and runs them multiple times to replicate the race condition. 
      * This test should pass everytime it's run, but there exists the possibility that it 
      * passes when none of the threads actually test the collision.
-     * 
-     * @throws Exception
+     *
      */
     @Test
     public void testInsertConcurrency() throws Exception {
@@ -76,7 +78,51 @@ public class TestConcurrencyPersistence {
         }
 
         Assert.assertTrue(errors.toString(), errors.isEmpty());
+    }
 
+    /**
+     * Bug 463042: Executing the same query simultaneously on separate threads has the possibility of
+     * causing an ArrayOutOfBoundsException to be thrown. This test spins up multiple threads, executes
+     * the same query on each and validates that none of the threads failed.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testCaseExpressionOperatorConcurrency() throws Exception {
+        final AtomicInteger count = new AtomicInteger();
+        final AtomicInteger error = new AtomicInteger();
+
+        final int threads = 100;
+        final ExecutorService taskExecutor = Executors.newFixedThreadPool(threads);
+
+        // Spawn 100 threads
+        for (int i = 0; i < threads; i++) {
+            taskExecutor.execute(new Runnable() {
+                public void run() {
+                    count.incrementAndGet();
+
+                    final EntityManager em = emf.createEntityManager();
+                    try {
+                        // Executing the Query
+                        em.createNamedQuery("CONCURR_CASE_QUERY", Integer.class).setParameter("id", 1).getSingleResult();
+                    } catch (Exception e) {
+                        error.incrementAndGet();
+                        System.out.println(e.getMessage());
+                    } finally {
+                        if (em != null) {
+                            if (em.getTransaction().isActive()) {
+                                em.getTransaction().rollback();
+                            }
+                            em.close();
+                        }
+                    }
+                }
+            });
+        }
+        taskExecutor.shutdown();
+        taskExecutor.awaitTermination(5, TimeUnit.SECONDS);
+
+        Assert.assertEquals("Expected no failures, but " + error.intValue() + "/" + count.intValue() + " threads failed", 0, error.intValue());
     }
 
     /**

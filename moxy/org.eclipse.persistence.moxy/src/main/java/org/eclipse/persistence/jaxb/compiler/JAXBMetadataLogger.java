@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,6 @@ public class JAXBMetadataLogger {
     /**
      * Create a new JAXBMetadataLogger and set the logLevel.
      *
-     * @param logLevel
      * @see SessionLog
      */
     public JAXBMetadataLogger(int logLevel) {
@@ -71,7 +70,6 @@ public class JAXBMetadataLogger {
      * Logs a Severe message to the SessionLog. Typically called when EclipseLink is not in a state
      * to continue
      *
-     * @param throwable
      * @see SessionLog
      */
     public void logException(Throwable throwable) {

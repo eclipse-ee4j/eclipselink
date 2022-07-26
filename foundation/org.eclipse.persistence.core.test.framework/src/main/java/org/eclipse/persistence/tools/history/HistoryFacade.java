@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,13 +30,13 @@ import org.eclipse.persistence.sessions.server.*;
 
 /**
  * <b>Purpose:</b>One stop shopping for all your history needs.
- * <p>
+ *
  * @author Stephen McRitchie
  * @since Oracle 10g AS
  */
 public class HistoryFacade {
 
-    private static Map timeOffsetsMap = new IdentityHashMap();
+    private static Map<Session, Long> timeOffsetsMap = new IdentityHashMap<>();
 
     protected HistoryFacade() {
     }
@@ -62,7 +62,7 @@ public class HistoryFacade {
         fieldDef.setType(ClassConstants.TIMESTAMP);
         fieldDef.setSize(6);
         histDef.addField(fieldDef);
-        histDef.setForeignKeys(new Vector());
+        histDef.setForeignKeys(new Vector<>());
 
         for (FieldDefinition fieldDef2 : histDef.getFields()) {
             // For now foreign key constraints are not supported, because shallow inserts are not...
@@ -87,7 +87,7 @@ public class HistoryFacade {
      * PUBLIC:
      */
     public static long currentDatabaseTimeMillis(org.eclipse.persistence.sessions.Session session,
-                                   Class domainClass) {
+                                   Class<?> domainClass) {
         Session rootSession = session;
         while (rootSession.isUnitOfWork() || rootSession.isClientSession() ||
                rootSession instanceof HistoricalSession ||
@@ -107,8 +107,8 @@ public class HistoryFacade {
             }
         }
         if (timeOffsetsMap.containsKey(rootSession)) {
-            Long offset = (Long)timeOffsetsMap.get(rootSession);
-            return System.currentTimeMillis() + offset.longValue();
+            Long offset = timeOffsetsMap.get(rootSession);
+            return System.currentTimeMillis() + offset;
         } else {
             DatabaseQuery query =
                 rootSession.getPlatform().getTimestampQuery();
@@ -118,7 +118,7 @@ public class HistoryFacade {
             long endTime = System.currentTimeMillis();
             long jvmTime = (endTime - startTime) / 2 + startTime;
             long offset = databaseTime.getTime() - jvmTime;
-            timeOffsetsMap.put(rootSession, new Long(offset));
+            timeOffsetsMap.put(rootSession, offset);
             return jvmTime + offset;
         }
     }
@@ -132,11 +132,11 @@ public class HistoryFacade {
     public static void generateHistoricalTableDefinitions(TableCreator creator, Session session) {
 
         // First add all table definitions to a hashtable.
-        Map<String, TableDefinition> tableDefinitions = new HashMap(creator.getTableDefinitions().size());
+        Map<String, TableDefinition> tableDefinitions = new HashMap<>(creator.getTableDefinitions().size());
         for (TableDefinition def : creator.getTableDefinitions()) {
             tableDefinitions.put(def.getFullName(), def);
         }
-        Set<String> generatedTables = new HashSet<String>();
+        Set<String> generatedTables = new HashSet<>();
         for (ClassDescriptor descriptor : session.getDescriptors().values()) {
             HistoryPolicy policy = descriptor.getHistoryPolicy();
             if (policy != null) {
@@ -157,7 +157,7 @@ public class HistoryFacade {
                     policy = m2mMapping.getHistoryPolicy();
                     if (policy != null) {
                         String name = m2mMapping.getRelationTableName();
-                        String histName = (String)policy.getHistoryTableNames().get(0);
+                        String histName = policy.getHistoryTableNames().get(0);
                         if (!generatedTables.contains(histName)) {
                             generatedTables.add(histName);
                             TableDefinition def = tableDefinitions.get(name);
@@ -169,7 +169,7 @@ public class HistoryFacade {
                     policy = dcMapping.getHistoryPolicy();
                     if (policy != null) {
                         String name = dcMapping.getReferenceTableName();
-                        String histName = (String)policy.getHistoryTableNames().get(0);
+                        String histName = policy.getHistoryTableNames().get(0);
                         if (!generatedTables.contains(histName)) {
                             generatedTables.add(histName);
                             TableDefinition def = tableDefinitions.get(name);
@@ -188,7 +188,7 @@ public class HistoryFacade {
      * being the current table name with a _HIST suffix.  Hence Employee would
      * become Employee_Hist.
      */
-    public static void generateHistoryPolicies(Iterator descriptors, DatasourcePlatform platform) {
+    public static void generateHistoryPolicies(Iterator<ClassDescriptor> descriptors, DatasourcePlatform platform) {
         HistoryPolicy basePolicy = new HistoryPolicy();
         basePolicy.addStartFieldName("ROW_START");
         basePolicy.addEndFieldName("ROW_END");
@@ -196,7 +196,7 @@ public class HistoryFacade {
         HistoryPolicy policy = null;
 
         while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptors.next();
+            ClassDescriptor descriptor = descriptors.next();
             policy = (HistoryPolicy)basePolicy.clone();
             List<DatabaseTable> tables = descriptor.getTables();
             int size = tables.size();
@@ -216,10 +216,10 @@ public class HistoryFacade {
             }
             descriptor.setHistoryPolicy(policy);
 
-            for (Enumeration mappings = descriptor.getMappings().elements();
+            for (Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
                  mappings.hasMoreElements(); ) {
                 DatabaseMapping mapping =
-                    (DatabaseMapping)mappings.nextElement();
+                        mappings.nextElement();
                 if (mapping instanceof ManyToManyMapping) {
                     ManyToManyMapping m2mMapping = (ManyToManyMapping)mapping;
                     policy = (HistoryPolicy)basePolicy.clone();

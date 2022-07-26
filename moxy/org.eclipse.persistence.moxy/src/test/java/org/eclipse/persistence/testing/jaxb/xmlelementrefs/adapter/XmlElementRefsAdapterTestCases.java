@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,16 +17,15 @@ package org.eclipse.persistence.testing.jaxb.xmlelementrefs.adapter;
 import java.util.ArrayList;
 
 import jakarta.xml.bind.Binder;
-import jakarta.xml.bind.DatatypeConverter;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class XmlElementRefsAdapterTestCases extends JAXBWithJSONTestCases{
 
@@ -38,7 +37,7 @@ public class XmlElementRefsAdapterTestCases extends JAXBWithJSONTestCases{
         super(name);
         setControlJSON(JSON_RESOURCE);
         setControlDocument(XML_RESOURCE);
-        setClasses(new Class[]{Foo.class, ObjectFactory.class});
+        setClasses(new Class<?>[]{Foo.class, ObjectFactory.class});
     }
 
     @Override
@@ -46,8 +45,8 @@ public class XmlElementRefsAdapterTestCases extends JAXBWithJSONTestCases{
         Foo f = new Foo();
         f.e1OrE2 = new ArrayList<JAXBElement<byte[]>>();
 
-        byte[] bytes = (byte[]) XMLConversionManager.getDefaultXMLManager().convertObject("001122", byte[].class);
-        byte[] bytes2 = (byte[]) XMLConversionManager.getDefaultXMLManager().convertObject("cafe", byte[].class, Constants.BASE_64_BINARY_QNAME);
+        byte[] bytes = XMLConversionManager.getDefaultXMLManager().convertObject("001122", byte[].class);
+        byte[] bytes2 = XMLConversionManager.getDefaultXMLManager().convertObject("cafe", byte[].class, Constants.BASE_64_BINARY_QNAME);
 
         JAXBElement jb1= new JAXBElement(new QName("e1"), byte[].class, bytes);
         f.e1OrE2.add(jb1);
@@ -63,8 +62,8 @@ public class XmlElementRefsAdapterTestCases extends JAXBWithJSONTestCases{
         Foo f = new Foo();
         f.e1OrE2 = new ArrayList<JAXBElement<byte[]>>();
 
-        byte[] bytes = (byte[]) XMLConversionManager.getDefaultXMLManager().convertObject("001122", byte[].class);
-        byte[] bytes2 = (byte[]) XMLConversionManager.getDefaultXMLManager().convertObject("cafe", byte[].class, Constants.BASE_64_BINARY_QNAME);
+        byte[] bytes = XMLConversionManager.getDefaultXMLManager().convertObject("001122", byte[].class);
+        byte[] bytes2 = XMLConversionManager.getDefaultXMLManager().convertObject("cafe", byte[].class, Constants.BASE_64_BINARY_QNAME);
 
         JAXBElement jb1= new JAXBElement(new QName("e1"), byte[].class, bytes);
         JAXBElement jb2= new JAXBElement(new QName("e2"), byte[].class, bytes2);
@@ -77,10 +76,10 @@ public class XmlElementRefsAdapterTestCases extends JAXBWithJSONTestCases{
     }
 
     public void testBinder() throws Exception{
-        Binder binder = jaxbContext.createBinder();
+        Binder<Node> binder = jaxbContext.createBinder();
         Document doc = parser.parse(ClassLoader.getSystemResourceAsStream(XML_RESOURCE));
         Foo unmarshalled =  (Foo)binder.unmarshal(doc);
-        byte[] bytes = (byte[]) XMLConversionManager.getDefaultXMLManager().convertObject("001122", byte[].class);
+        byte[] bytes = XMLConversionManager.getDefaultXMLManager().convertObject("001122", byte[].class);
         JAXBElement jbe= new JAXBElement(new QName("e1"), byte[].class, bytes);
         unmarshalled.e1OrE2.add(jbe);
         binder.updateXML(unmarshalled);

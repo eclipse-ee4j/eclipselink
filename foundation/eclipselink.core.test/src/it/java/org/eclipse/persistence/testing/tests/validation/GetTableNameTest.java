@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
+import java.util.Iterator;
+
 
 public class GetTableNameTest extends ExceptionTest {
     public GetTableNameTest() {
@@ -25,25 +27,28 @@ public class GetTableNameTest extends ExceptionTest {
         setDescription("This test attempts to call getTableName()");
     }
 
+    @Override
     protected void setup() {
         expectedException = null;
     }
 
+    @Override
     public void test() {
         try { //test if getTableName() throws casting exception
             org.eclipse.persistence.testing.models.employee.relational.EmployeeProject project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
-            java.util.Iterator iterator = project.getDescriptors().values().iterator();
+            Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator();
             while (iterator.hasNext()) {
-                ((ClassDescriptor)iterator.next()).getTableName();
+                iterator.next().getTableName();
             }
         } catch (EclipseLinkException exception) {
             caughtException = exception;
         }
     }
 
+    @Override
     protected void verify() {
         if (caughtException != expectedException) {
-            throw new TestErrorException("The proper exception was not thrown:\n" + "[CAUGHT] " + caughtException + "\n\n[EXPECTING] " + String.valueOf(expectedException));
+            throw new TestErrorException("The proper exception was not thrown:\n" + "[CAUGHT] " + caughtException + "\n\n[EXPECTING] " + expectedException);
         }
     }
 }

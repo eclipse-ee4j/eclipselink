@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,13 +32,14 @@ public class JPAReadAllEmployeeCompletelyJoinedPerformanceComparisonTest extends
     /**
      * Read all employee.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
         Query query = manager.createQuery("Select e from Employee e join fetch e.address left join fetch e.phoneNumbers");
-        query.setHint("org.hibernate.readOnly", new Boolean(isReadOnly()));
-        query.setHint("eclipselink.read-only", new Boolean(isReadOnly()));
-        query.setHint("toplink.return-shared", new Boolean(isReadOnly()));
+        query.setHint("org.hibernate.readOnly", isReadOnly());
+        query.setHint("eclipselink.read-only", isReadOnly());
+        query.setHint("toplink.return-shared", isReadOnly());
         List result = query.getResultList();
         for (Iterator iterator = result.iterator(); iterator.hasNext();) {
             Employee employee = (Employee)iterator.next();

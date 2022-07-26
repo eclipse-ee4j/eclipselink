@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public interface BinaryDataCollectionMapping<
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
-    Class getAttributeElementClass();
+    Class<?> getAttributeElementClass();
 
     /**
      * INTERNAL
@@ -64,7 +64,7 @@ public interface BinaryDataCollectionMapping<
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    void setAttributeElementClass(Class attributeElementClass);
+    void setAttributeElementClass(Class<?> attributeElementClass);
 
     /**
      * ADVANCED:
@@ -86,7 +86,6 @@ public interface BinaryDataCollectionMapping<
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
      *
-     * @param aNullPolicy
      */
     void setNullPolicy(AbstractNullPolicy aNullPolicy);
 

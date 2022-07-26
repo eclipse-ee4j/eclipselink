@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
+
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -168,7 +170,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
     public void testToCalendarWithInvalidInput() {
         try {
             Calendar aCalendar = dataHelper.toCalendar("----2000");
-            this.fail();
+            fail();
         } catch (IllegalArgumentException e) {
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ public class XsiTypeTestCases extends JAXBWithJSONTestCases {
 
     public XsiTypeTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[] {XsiTypeRoot.class});
+        setClasses(new Class<?>[] {XsiTypeRoot.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         initXsiType();

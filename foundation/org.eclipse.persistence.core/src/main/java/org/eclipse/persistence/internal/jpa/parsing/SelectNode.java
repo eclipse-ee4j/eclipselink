@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,27 +54,27 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public class SelectNode extends QueryNode {
 
-    private List selectExpressions = new ArrayList();
-    private List identifiers = new ArrayList();
+    private List<Node> selectExpressions = new ArrayList<>();
+    private List<String> identifiers = new ArrayList<>();
 
     private boolean distinct = false;
 
     public SelectNode() {
     }
 
-    public List getSelectExpressions() {
+    public List<Node> getSelectExpressions() {
         return selectExpressions;
     }
 
-    public void setSelectExpressions(List exprs) {
+    public void setSelectExpressions(List<Node> exprs) {
         selectExpressions = exprs;
     }
 
-    public List getIdentifiers() {
+    public List<String> getIdentifiers() {
         return identifiers;
     }
 
-    public void setIdentifiers(List identifiers) {
+    public void setIdentifiers(List<String> identifiers) {
         this.identifiers = identifiers;
     }
 
@@ -174,12 +174,12 @@ public class SelectNode extends QueryNode {
         }
         SelectGenerationContext selectContext = (SelectGenerationContext)context;
         for (int i=0;i<selectExpressions.size();i++){
-            Node node = (Node)selectExpressions.get(i);
+            Node node = selectExpressions.get(i);
             if (selectingRelationshipField(node, context)) {
                 selectContext.useOuterJoins();
             }
             if (node.isAliasableNode() && identifiers != null){
-                String alias = (String)identifiers.get(i);
+                String alias = identifiers.get(i);
                 if (alias != null){
                     ((AliasableNode)node).setAlias(alias);
                 }
@@ -197,8 +197,8 @@ public class SelectNode extends QueryNode {
     public boolean hasOneToOneSelected(GenerationContext context) {
         // Iterate the select expression and return true if one of it has a
         // oneToOne selected.
-        for (Iterator i = selectExpressions.iterator(); i.hasNext();) {
-            Node node = (Node)i.next();
+        for (Iterator<Node> i = selectExpressions.iterator(); i.hasNext();) {
+            Node node = i.next();
             if (hasOneToOneSelected(node, context)) {
                 return true;
             }
@@ -210,7 +210,7 @@ public class SelectNode extends QueryNode {
      * Answer true if there is a one-to-one relationship selected.
      * This includes a chain of relationships.
      * True: SELECT employee.address FROM ..... //Simple 1:1
-     * True: SELECT a.b.c.d FROM ..... //where a->b, b->c and c->d are all 1:1.
+     * True: SELECT a.b.c.d FROM ..... //where a-{@literal >}b, b-{@literal >}c and c-{@literal >}d are all 1:1.
      * False: SELECT OBJECT(employee) FROM ..... //simple SELECT
      * False: SELECT phoneNumber.areaCode FROM ..... //direct-to-field
      */
@@ -230,9 +230,9 @@ public class SelectNode extends QueryNode {
         }
 
         if (node.isConstructorNode()) {
-            List args = ((ConstructorNode)node).getConstructorItems();
-            for (Iterator i = args.iterator(); i.hasNext();) {
-                Node arg = (Node)i.next();
+            List<Node> args = ((ConstructorNode)node).getConstructorItems();
+            for (Iterator<Node> i = args.iterator(); i.hasNext();) {
+                Node arg = i.next();
                 if (hasOneToOneSelected(arg, context)) {
                     return true;
                 }
@@ -252,8 +252,8 @@ public class SelectNode extends QueryNode {
      * Invalid: SELECT OBJECT(badAlias) FROM Employee emp WHERE ...
      */
     public void verifySelectedAlias(GenerationContext context) {
-        for (Iterator i = selectExpressions.iterator(); i.hasNext();) {
-            Node node = (Node)i.next();
+        for (Iterator<Node> i = selectExpressions.iterator(); i.hasNext();) {
+            Node node = i.next();
             //if the node is a DotNode, there is no selected alias
             if (node.isDotNode()) {
                 return;
@@ -269,8 +269,8 @@ public class SelectNode extends QueryNode {
      * False: "SELECT OBJECT(somethingElse) ..." &amp; variableName = "emp"
      */
     public boolean isSelected(String variableName) {
-        for (Iterator i = selectExpressions.iterator(); i.hasNext();) {
-            Node node = (Node)i.next();
+        for (Iterator<Node> i = selectExpressions.iterator(); i.hasNext();) {
+            Node node = i.next();
             //Make sure we've SELECted a VariableNode
             if (node.isVariableNode() &&
                 ((VariableNode)node).getCanonicalVariableName().equals(variableName)) {
@@ -293,7 +293,7 @@ public class SelectNode extends QueryNode {
     @Override
     public Node qualifyAttributeAccess(ParseTreeContext context) {
         for (int i = 0; i < selectExpressions.size(); i++) {
-            Node item = (Node)selectExpressions.get(i);
+            Node item = selectExpressions.get(i);
             selectExpressions.set(i, item.qualifyAttributeAccess(context));
         }
         return this;
@@ -304,8 +304,8 @@ public class SelectNode extends QueryNode {
      */
     @Override
     public void validate(ParseTreeContext context) {
-        for (Iterator i = selectExpressions.iterator(); i.hasNext(); ) {
-            Node item = (Node)i.next();
+        for (Iterator<Node> i = selectExpressions.iterator(); i.hasNext(); ) {
+            Node item = i.next();
             item.validate(context);
         }
     }
@@ -314,7 +314,7 @@ public class SelectNode extends QueryNode {
      * Answer the class associated with my left node.
      */
     @Override
-    public Class resolveClass(GenerationContext context) {
+    public Class<?> resolveClass(GenerationContext context) {
         return getReferenceClass(context);
     }
 
@@ -331,12 +331,12 @@ public class SelectNode extends QueryNode {
      * @return the class this query is querying for
      */
     @Override
-    public Class getReferenceClass(GenerationContext context) {
+    public Class<?> getReferenceClass(GenerationContext context) {
         return getClassOfFirstVariable(context);
     }
 
-    private Class getClassOfFirstVariable(GenerationContext context) {
-        Class clazz = null;
+    private Class<?> getClassOfFirstVariable(GenerationContext context) {
+        Class<?> clazz = null;
         String variable = getParseTree().getFromNode().getFirstVariable();
         ParseTreeContext parseTreeContext = context.getParseTreeContext();
         if (parseTreeContext.isRangeVariable(variable)) {
@@ -357,8 +357,8 @@ public class SelectNode extends QueryNode {
      * Answer true if a variable in the IN clause is SELECTed
      */
     public boolean isVariableInINClauseSelected(GenerationContext context) {
-        for (Iterator i = selectExpressions.iterator(); i.hasNext();) {
-            Node node = (Node)i.next();
+        for (Iterator<Node> i = selectExpressions.iterator(); i.hasNext();) {
+            Node node = i.next();
 
             if (node.isVariableNode()) {
                 String variableNameForLeft = ((VariableNode)node).getCanonicalVariableName();
@@ -419,7 +419,7 @@ public class SelectNode extends QueryNode {
      */
     private Node getFirstSelectExpressionNode() {
         return selectExpressions.size() > 0 ?
-            (Node)selectExpressions.get(0) : null;
+                selectExpressions.get(0) : null;
     }
 
     private boolean isSingleSelectExpression() {

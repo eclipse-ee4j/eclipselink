@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -85,7 +86,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     /**
      * Instantiates a new dynamic entity impl.
      */
-    public DynamicEntityImpl() {
+    protected DynamicEntityImpl() {
         postConstruct(); // life-cycle callback
     }
 
@@ -125,6 +126,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * @see org.eclipse.persistence.dynamic.DynamicEntity#get(java.lang.String)
      */
     @Override
+    @SuppressWarnings({"unchecked"})
     public <T> T get(String propertyName) throws DynamicException {
         DynamicPropertiesManager dpm = fetchPropertiesManager();
         if (dpm.contains(propertyName)) {
@@ -143,10 +145,10 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
             Object value = wrapper.getValue();
             // trigger any indirection
             if (value instanceof ValueHolderInterface) {
-                value = ((ValueHolderInterface) value).getValue();
+                value = ((ValueHolderInterface<?>) value).getValue();
             }
             else if (value instanceof IndirectContainer) {
-                value = ((IndirectContainer) value).getValueHolder().getValue();
+                value = ((IndirectContainer<?>) value).getValueHolder().getValue();
             }
             try {
                 return (T) value;
@@ -225,6 +227,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         Object oldValue = null;
         Object wrapperValue = wrapper.getValue();
         if (wrapperValue instanceof ValueHolderInterface<?>) {
+            @SuppressWarnings({"unchecked"})
             ValueHolderInterface<Object> vh = (ValueHolderInterface<Object>) wrapperValue;
             if (vh.isInstantiated()) {
                 oldValue = vh.getValue();
@@ -321,7 +324,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
                 sb.append("<null>");
             }
             else {
-                sb.append(value.toString());
+                sb.append(value);
             }
             return sb.toString();
         }
@@ -400,8 +403,8 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
          * @see org.eclipse.persistence.mappings.DatabaseMapping#fixObjectReferences(java.lang.Object, java.util.Map, java.util.Map, org.eclipse.persistence.queries.ObjectLevelReadQuery, org.eclipse.persistence.sessions.remote.RemoteSession)
          */
         @Override
-        public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects,
-                ObjectLevelReadQuery query, DistributedSession session) {
+        public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects,
+                                        ObjectLevelReadQuery query, DistributedSession session) {
         }
 
         /* (non-Javadoc)
@@ -442,7 +445,6 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * @see org.eclipse.persistence.internal.descriptors.PersistenceEntity#_persistence_getId()
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Object _persistence_getId() {
         return this.primaryKey;
     }
@@ -451,7 +453,6 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * @see org.eclipse.persistence.internal.descriptors.PersistenceEntity#_persistence_setId(java.lang.Object)
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void _persistence_setId(Object pk) {
         this.primaryKey = pk;
     }

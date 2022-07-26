@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 import org.eclipse.persistence.testing.framework.TestCase;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.customfeatures.*;
 import org.eclipse.persistence.tools.schemaframework.PackageDefinition;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
@@ -76,7 +76,7 @@ public class CustomFeaturesJUnitTestSuite extends JUnitTestCase {
         try {
             accessor.incrementCallCount(session);
             DatabaseMetaData metaData = accessor.getConnection().getMetaData();
-            String dbMajorMinorVersion = Integer.toString(metaData.getDatabaseMajorVersion()) + '.' + Integer.toString(metaData.getDatabaseMinorVersion());
+            String dbMajorMinorVersion = Integer.toString(metaData.getDatabaseMajorVersion()) + '.' + metaData.getDatabaseMinorVersion();
             String dbProductionVersion =  metaData.getDatabaseProductVersion();
             // For Helper.compareVersions to work the first digit in the passed version String should be part of the version,
             // i.e. "10.2.0.2 ..." is ok, but "Oracle 10g ... 10.2.0.2..." is not.

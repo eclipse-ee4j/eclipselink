@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -32,6 +33,7 @@ public class MultipleMapWithBindingsTestCases extends MultipleMapTestCases{
         super(name);
     }
 
+    @Override
     protected Map getProperties() {
         String pkg = "";
 
@@ -40,7 +42,7 @@ public class MultipleMapWithBindingsTestCases extends MultipleMapTestCases{
         overrides.put(pkg, getXmlSchemaOxm(pkg));
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, overrides);
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, overrides);
         return properties;
     }
 

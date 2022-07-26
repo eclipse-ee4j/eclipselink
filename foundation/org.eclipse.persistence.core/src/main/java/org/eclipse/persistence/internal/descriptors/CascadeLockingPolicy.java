@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  * INTERNAL:
  */
 public class CascadeLockingPolicy {
-    protected Class m_parentClass;
+    protected Class<?> m_parentClass;
     protected ReadObjectQuery m_query;
     protected ClassDescriptor m_descriptor;
     protected ClassDescriptor m_parentDescriptor;
@@ -68,11 +68,11 @@ public class CascadeLockingPolicy {
             m_query = new ReadObjectQuery(m_parentClass);
 
             Expression selectionCriteria = null;
-            Iterator keys = m_queryKeyFields.keySet().iterator();
+            Iterator<DatabaseField> keys = m_queryKeyFields.keySet().iterator();
             ExpressionBuilder builder = new ExpressionBuilder();
 
             while (keys.hasNext()) {
-                String keyField = ((DatabaseField) keys.next()).getQualifiedName();
+                String keyField = keys.next().getQualifiedName();
 
                 if (selectionCriteria == null) {
                     selectionCriteria = builder.getField(keyField).equal(builder.getParameter(keyField));
@@ -134,8 +134,6 @@ public class CascadeLockingPolicy {
       * If there is no InheritancePolicy, we return our parentDescriptor
       * If there is inheritance we will search for a descriptor that represents parentObj and
       * return that descriptor
-      * @param parentObj
-      * @return
       */
      protected ClassDescriptor getParentDescriptorFromInheritancePolicy(Object parentObj){
          ClassDescriptor realParentDescriptor = m_parentDescriptor;

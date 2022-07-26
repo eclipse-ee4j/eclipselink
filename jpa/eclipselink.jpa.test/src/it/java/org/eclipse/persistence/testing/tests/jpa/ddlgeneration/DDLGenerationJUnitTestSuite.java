@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014 IBM Corporation. All rights reserved.
  * Copyright (c) 2010 Frank Schwarz. All rights reserved.
  * Copyright (c) 2008 Daryl Davis. All rights reserved.
@@ -48,10 +48,8 @@
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.io.BufferedReader;
 import java.io.File;
@@ -68,18 +66,10 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Candidate;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Mason;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Party;
@@ -217,7 +207,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
      * reads back in to verify the CREATE TABLE statements have the correct strings appended to them
      */
     public void testDDLTableCreationWithSuffix(){
-        if(this.isOnServer){
+        if(isOnServer){
             return;
         }
       //strings searched for:
@@ -513,7 +503,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        this.assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
+        assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
     }
 
     // Test for bug 322233, that optional field info defined in Overrides are used in DDL
@@ -552,7 +542,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        this.assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
+        assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
     }
 
     // Test for relationships using candidate(unique) keys
@@ -1457,8 +1447,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
 
     /**
      * Returns a List of strings representing the lines within the fileName.
-     * @param fileName
-     * @return List<String>
+     * @return {@code List<String>}
      */
     public List<String> getDDLFile(String fileName){
         ArrayList<String> array = new ArrayList();
@@ -1468,7 +1457,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             try {
                 fileStream = new FileInputStream(file);
             } catch (FileNotFoundException exception) {
-                this.warning("cannot load file "+fileName+ " due to error: "+exception);
+                warning("cannot load file "+fileName+ " due to error: "+exception);
                 throw ValidationException.fatalErrorOccurred(exception);
             }
         }
@@ -1558,14 +1547,14 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
 
             Lobtest lobtest = new Lobtest();
-            Byte b1 = new Byte("1");
-            Byte b2 = new Byte("2");
+            Byte b1 = Byte.valueOf("1");
+            Byte b2 = Byte.valueOf("2");
             lobtest.setContentdata(new byte[]{b1, b2});
 
             lobtest.setUuid("123456789");
 
             pk.setDocid("blah");
-            pk.setVersionid(new BigInteger(new Long(System.currentTimeMillis()).toString()));
+            pk.setVersionid(new BigInteger(Long.valueOf(System.currentTimeMillis()).toString()));
             lobtest.setLobtestPK(pk);
 
             em.persist(lobtest);
@@ -2115,10 +2104,10 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             if (mapHolders.size() == 2) {
                 for (MapHolder mh : mapHolders) {
                     if (mh.getMapHolderEmbedded().getStringMap().size() != mh.getId() + 1) {
-                        errorMsg += "Wrong getMapHolderEmbedded().getStringMap().size() " + mh.getMapHolderEmbedded().getStringMap().size() + "; expected " + Integer.toString(mh.getId() + 1) + "\n";
+                        errorMsg += "Wrong getMapHolderEmbedded().getStringMap().size() " + mh.getMapHolderEmbedded().getStringMap().size() + "; expected " + (mh.getId() + 1) + "\n";
                     }
                     if (mh.getStringMap().size() != mh.getId() + 1) {
-                        errorMsg += "Wrong getStringMap().size() " + mh.getStringMap().size() + "; expected " + Integer.toString(mh.getId() + 1) + "\n";
+                        errorMsg += "Wrong getStringMap().size() " + mh.getStringMap().size() + "; expected " + (mh.getId() + 1) + "\n";
                     }
                 }
             } else {
@@ -2181,8 +2170,8 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), "Best pointer");
             mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), "Least screw-ups");
 
-            mason.addHoursWorked(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), Integer.valueOf(10));
-            mason.addHoursWorked(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), Integer.valueOf(11));
+            mason.addHoursWorked(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), 10);
+            mason.addHoursWorked(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), 11);
 
             mason.addUniSelf(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), mason);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,12 +32,14 @@ public class JAXBElementLongTestCases extends JAXBElementTestCases {
         setTargetClass(long.class);
     }
 
-    public Class[] getClasses(){
-        Class[] classes = new Class[1];
+    @Override
+    public Class<?>[] getClasses(){
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Long.class;
         return classes;
     }
 
+    @Override
     protected Object getControlObject() {
         long longValue = 11;
         JAXBElement<Long> jbe = new JAXBElement<Long>(new QName("a", "b"),Long.class, longValue);

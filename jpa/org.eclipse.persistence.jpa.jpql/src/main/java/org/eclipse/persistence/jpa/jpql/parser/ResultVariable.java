@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * A result variable may be used to name a select item in the query result.
  *
- * <div><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code><p></div>
+ * <div><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -67,35 +67,23 @@ public final class ResultVariable extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getSelectExpression().accept(visitor);
         getResultVariable().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getSelectExpression());
         children.add(getResultVariable());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -120,9 +108,6 @@ public final class ResultVariable extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -147,9 +132,6 @@ public final class ResultVariable extends AbstractExpression {
         return (asIdentifier != null) ? asIdentifier : ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(ResultVariableBNF.ID);
@@ -218,9 +200,6 @@ public final class ResultVariable extends AbstractExpression {
         return hasSpaceAfterAs;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -240,9 +219,6 @@ public final class ResultVariable extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

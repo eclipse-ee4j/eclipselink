@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * This expression tests whether or not the collection designated by the collection-valued path
  * expression is empty (i.e, has no elements).
  *
- * <div><b>BNF:</b> <code>empty_collection_comparison_expression ::= collection_valued_path_expression IS [NOT] EMPTY</code><p></div>
+ * <div><p><b>BNF:</b> <code>empty_collection_comparison_expression ::= collection_valued_path_expression IS [NOT] EMPTY</code></p></div>
  *
  * @see EmptyCollectionComparisonExpression
  *
@@ -89,17 +89,11 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
         this(parent, false, path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildren(List<StateObject> children) {
         super.addChildren(children);
@@ -118,9 +112,6 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EmptyCollectionComparisonExpression getExpression() {
         return (EmptyCollectionComparisonExpression) super.getExpression();
@@ -147,18 +138,12 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
         return not;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void initialize() {
         super.initialize();
         stateObject = new CollectionValuedPathExpressionStateObject(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isEquivalent(StateObject stateObject) {
 
@@ -211,9 +196,6 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
         setNot(!not);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toTextInternal(Appendable writer) throws IOException {
 

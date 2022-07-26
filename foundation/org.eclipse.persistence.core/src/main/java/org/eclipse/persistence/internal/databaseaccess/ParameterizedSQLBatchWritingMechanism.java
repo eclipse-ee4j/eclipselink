@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,8 +31,8 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * INTERNAL:
- * ParameterizedSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor. it provides the required
- * behavior for batching statements, for write, with parameter binding turned on.<p>
+ * <p>ParameterizedSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor. it provides the required
+ * behavior for batching statements, for write, with parameter binding turned on.</p>
  *
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */
@@ -56,7 +57,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
 
     public ParameterizedSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
         this.databaseAccessor = databaseAccessor;
-        this.parameters = new ArrayList();
+        this.parameters = new ArrayList<>();
         this.maxBatchSize = this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize();
         if (this.maxBatchSize == 0) {
             // the max size was not set on the platform - use default
@@ -113,7 +114,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         this.previousCall = null;
         //Bug#419326 : A clone may be holding a reference to this.parameters.
         //So, instead of clearing the parameters, just initialize with a new reference.
-        this.parameters = new ArrayList();
+        this.parameters = new ArrayList<>();
         this.statementCount = 0;
         this.executionCount  = 0;
         this.queryTimeoutCache = DescriptorQueryManager.NoTimeout;
@@ -151,9 +152,9 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         if (this.parameters.size() == 1) {
             // If only one call, just execute normally.
             try {
-                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.previousCall, null, session, false);
-                if (this.previousCall.hasOptimisticLock()) {
-                    if (rowCount != 1) {
+                Object rowCount = this.databaseAccessor.basicExecuteCall(this.previousCall, null, session, false);
+                if (this.previousCall.hasOptimisticLock() && rowCount instanceof Integer) {
+                    if ((Integer)rowCount != 1) {
                         throw OptimisticLockException.batchStatementExecutionFailure();
                     }
                 }

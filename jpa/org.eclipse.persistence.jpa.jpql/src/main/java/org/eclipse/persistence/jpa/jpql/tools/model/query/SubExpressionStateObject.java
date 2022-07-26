@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 /**
  * This expression wraps a sub-expression within parenthesis.
  *
- * <div><b>BNF:</b> <code>expression ::= (sub_expression)</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= (sub_expression)</code></p></div>
  *
  * @see SubExpression
  *
@@ -75,33 +75,21 @@ public class SubExpressionStateObject extends AbstractSingleEncapsulatedExpressi
         parse(jpqlFragment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SubExpression getExpression() {
         return (SubExpression) super.getExpression();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getIdentifier() {
         return ExpressionTools.EMPTY_STRING;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected String getQueryBNFId() {
         return queryBNFId;
@@ -131,9 +119,6 @@ public class SubExpressionStateObject extends AbstractSingleEncapsulatedExpressi
         this.queryBNFId = queryBNFId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStateObject(StateObject stateObject) {
         super.setStateObject(stateObject);

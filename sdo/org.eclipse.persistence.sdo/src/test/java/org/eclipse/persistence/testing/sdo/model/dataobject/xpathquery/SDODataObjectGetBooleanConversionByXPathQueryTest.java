@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -33,12 +35,12 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathDotSet() {
-        SDOProperty prop = (SDOProperty)dataObject_c0.getType().getProperty("test");
+        SDOProperty prop = dataObject_c0.getType().getProperty("test");
         prop.setType(SDOConstants.SDO_BOOLEAN);
 
         dataObject_a.setBoolean(propertyTest + "test", true);
 
-        this.assertEquals(true, dataObject_a.getBoolean(propertyTest + "test"));
+        assertEquals(true, dataObject_a.getBoolean(propertyTest + "test"));
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathWithColon() {
@@ -49,12 +51,12 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
         type_c0.addDeclaredProperty(p);
         dataObject_c._setType(type_c);
 
-        //Boolean bb = new Boolean(true);
+        //Boolean bb = Boolean.valueOf(true);
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBoolean("schema:" + propertyTest + "test", true);
 
-        this.assertEquals(true, dataObject_a.getBoolean(propertyTest + "test"));
+        assertEquals(true, dataObject_a.getBoolean(propertyTest + "test"));
     }
 
     public void testGetBooleanConversionWithPathFromDefinedBooleanPropertyEqualSignBracketInPathWithAtSign() {
@@ -65,12 +67,12 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
         type_c0.addDeclaredProperty(p);
         dataObject_c._setType(type_c);
 
-        //Boolean bb = new Boolean(true);
+        //Boolean bb = Boolean.valueOf(true);
         //List b = new ArrayList();
         //dataObject_c.set(property_c, b);// c dataobject's a property has value boolean 'true'
         dataObject_a.setBoolean("PName-a0/@alias2[number='123']/test", true);
 
-        this.assertEquals(true, dataObject_a.getBoolean(propertyTest + "test"));
+        assertEquals(true, dataObject_a.getBoolean(propertyTest + "test"));
     }
 
     // purpose: opencontent properties
@@ -83,8 +85,8 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
         //type_c0.addDeclaredProperty(property_c1_object);
         List objects = new ArrayList();
-        Boolean b = new Boolean(true);
-        Boolean bb = new Boolean(false);
+        Boolean b = Boolean.TRUE;
+        Boolean bb = Boolean.FALSE;
         objects.add(b);
         objects.add(bb);
 
@@ -92,7 +94,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
         dataObject_c1.set(property_c1_object, objects);// add it to instance list
 
-        this.assertEquals(bb.booleanValue(), dataObject_a.getBoolean("PName-a0/PName-b0[number='1']/PName-c1.1"));
+        assertEquals(bb.booleanValue(), dataObject_a.getBoolean("PName-a0/PName-b0[number='1']/PName-c1.1"));
     }
 
     //2. purpose: getDataObject with property value is not dataobject
@@ -119,7 +121,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
     //3. purpose: getDataObject with property set to boolean value
     public void testGetDataObjectConversionFromProperty() {
         //try {
-        this.assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
+        assertNull(dataObject_a.getDataObject("PName-a/notExistedTest"));
 
         //fail("IllegalArgumentException should be thrown.");
         //} catch (IllegalArgumentException e) {
@@ -129,7 +131,7 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
     //purpose: getDataObject with nul value
     public void testGetDataObjectConversionWithNullArgument() {
         String p = null;
-        this.assertNull(dataObject_a.getDataObject(p));
+        assertNull(dataObject_a.getDataObject(p));
     }
 
     public void testSetGetDataObjectWithQueryPath() {
@@ -141,11 +143,11 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
        // type_c0.addDeclaredProperty(property_c1_object);
 
-        Boolean b = new Boolean(true);
+        Boolean b = Boolean.TRUE;
 
         dataObject_a.setBoolean("PName-a0/PName-b0[number='1']/PName-c1.0", true);
 
-        this.assertEquals(true, dataObject_a.getBoolean("PName-a0/PName-b0[number='1']/PName-c1.0"));
+        assertEquals(true, dataObject_a.getBoolean("PName-a0/PName-b0[number='1']/PName-c1.0"));
     }
 
     public void testSetGetDataObjectWithQueryPath_ShortPath() {
@@ -157,10 +159,10 @@ public class SDODataObjectGetBooleanConversionByXPathQueryTest extends SDODataOb
 
         type_c0.addDeclaredProperty(property_c1_object);
 
-        Boolean b = new Boolean(true);
+        Boolean b = Boolean.TRUE;
 
         dataObject_c0.setBoolean("PName-c1.0", true);
 
-        this.assertEquals(true, dataObject_c0.getBoolean("PName-c1.0"));
+        assertEquals(true, dataObject_c0.getBoolean("PName-c1.0"));
     }
 }

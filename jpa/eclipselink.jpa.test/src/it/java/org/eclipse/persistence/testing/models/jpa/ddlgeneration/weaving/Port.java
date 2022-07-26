@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,17 +17,17 @@ package org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving;
 
 public interface Port {
 
-    public long getEntityId();
+    long getEntityId();
 
-    public String getId();
-    public void setId( String id );
+    String getId();
+    void setId(String id);
 
-    public int getPortOrder();
-    public void setPortOrder(int portOrder);
+    int getPortOrder();
+    void setPortOrder(int portOrder);
 
-    public Equipment getEquipment();
-    public void setEquipment(Equipment equipment);
+    Equipment getEquipment();
+    void setEquipment(Equipment equipment);
 
-    public Equipment getVirtualEquipment();
-    public void setVirtualEquipment(Equipment equipment);
+    Equipment getVirtualEquipment();
+    void setVirtualEquipment(Equipment equipment);
 }

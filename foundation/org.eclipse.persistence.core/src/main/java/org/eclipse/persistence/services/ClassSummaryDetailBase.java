@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public abstract class ClassSummaryDetailBase {
      * to be able to construct a ClassSummaryDetail instance out of a CompositeData
      * instance. See MXBeans documentation for more details.
      */
-    public ClassSummaryDetailBase(String className, String cacheType, String configuredSize,String currentSize , String parentClassName) {
+    protected ClassSummaryDetailBase(String className, String cacheType, String configuredSize, String currentSize, String parentClassName) {
         this.className = className;
         this.cacheType = cacheType;
         this.configuredSize = configuredSize;
@@ -62,7 +62,7 @@ public abstract class ClassSummaryDetailBase {
     private String parentClassName;
 
     // The corresponding CompositeType for this class
-    protected static CompositeType cType_= null;
+    protected static CompositeType cType_;
 
     protected static final String[] itemNames_=
         {"Class Name", "Cache Type", "Configured Size",
@@ -70,7 +70,7 @@ public abstract class ClassSummaryDetailBase {
 
     static {
         try {
-            OpenType[] itemTypes = {
+            OpenType<?>[] itemTypes = {
                     SimpleType.STRING,
                     SimpleType.STRING,
                     SimpleType.STRING,

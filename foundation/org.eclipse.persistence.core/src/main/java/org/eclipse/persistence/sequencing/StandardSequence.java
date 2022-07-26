@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,19 +28,19 @@ import org.eclipse.persistence.exceptions.DatabaseException;
  * </p>
  */
 public abstract class StandardSequence extends Sequence {
-    public StandardSequence() {
+    protected StandardSequence() {
         super();
     }
 
-    public StandardSequence(String name) {
+    protected StandardSequence(String name) {
         super(name);
     }
 
-    public StandardSequence(String name, int size) {
+    protected StandardSequence(String name, int size) {
         super(name, size);
     }
 
-    public StandardSequence(String name, int size, int initialValue) {
+    protected StandardSequence(String name, int size, int initialValue) {
         super(name, size, initialValue);
     }
 
@@ -76,7 +76,7 @@ public abstract class StandardSequence extends Sequence {
     }
 
     @Override
-    public Vector getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
+    public Vector<?> getGeneratedVector(Accessor accessor, AbstractSession writeSession, String seqName, int size) {
         if (shouldUsePreallocation()) {
             Number value = updateAndSelectSequence(accessor, writeSession, seqName, size);
             if (value == null) {
@@ -97,10 +97,10 @@ public abstract class StandardSequence extends Sequence {
      * @param seqName String is sequencing number field name
      * @param size int size of Vector to create.
      */
-    protected Vector createVector(Number sequence, String seqName, int size) {
+    protected Vector<Number> createVector(Number sequence, String seqName, int size) {
         long nextSequence = sequence.longValue();
 
-        Vector sequencesForName = new Vector(size);
+        Vector<Number> sequencesForName = new Vector<>(size);
         nextSequence = nextSequence - size;
 
         // Check for incorrect values return to validate that the sequence is setup correctly.
@@ -122,10 +122,10 @@ public abstract class StandardSequence extends Sequence {
      * @param seqName String is sequencing number field name
      * @param size int size of Vector to create.
      */
-    protected Vector createVectorAtNextVal(Number sequence, String seqName, int size) {
+    protected Vector<Number> createVectorAtNextVal(Number sequence, String seqName, int size) {
         long nextSequence = sequence.longValue();
 
-        Vector sequencesForName = new Vector(size);
+        Vector<Number> sequencesForName = new Vector<>(size);
 
         // Check for incorrect values return to validate that the sequence is setup correctly.
         // PRS 36451 intvalue would wrap

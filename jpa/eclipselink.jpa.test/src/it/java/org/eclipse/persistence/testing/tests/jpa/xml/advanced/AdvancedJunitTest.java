@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import junit.framework.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
 
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Address;
@@ -264,7 +264,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         CacheAuditor interceptor = (CacheAuditor) getServerSession(m_persistenceUnit).getIdentityMapAccessorInstance().getIdentityMap(descriptor);
         interceptor.resetAccessCount();
         try{
-            em.find(Address.class, Integer.valueOf((int) System.currentTimeMillis()));
+            em.find(Address.class, (int) System.currentTimeMillis());
             assertTrue("To many calls to cache for missing Entity", interceptor.getAccessCount() == 1);
         }finally{
             interceptor.resetAccessCount();

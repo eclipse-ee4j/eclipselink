@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ public abstract class _CORBAServerManagerImplBase extends org.omg.CORBA.portable
   private static java.util.Hashtable _methods = new java.util.Hashtable ();
   static
   {
-    _methods.put ("createRemoteSessionController", new java.lang.Integer (0));
+    _methods.put ("createRemoteSessionController", 0);
   }
 
   // Type-specific CORBA::Object operations
@@ -39,20 +39,22 @@ public abstract class _CORBAServerManagerImplBase extends org.omg.CORBA.portable
   public _CORBAServerManagerImplBase ()
   {
   }
+  @Override
   public String[] _ids ()
   {
     return __ids;
   }
+  @Override
   public org.omg.CORBA.portable.OutputStream _invoke (String method,
-                                org.omg.CORBA.portable.InputStream in,
-                                org.omg.CORBA.portable.ResponseHandler rh)
+                                                      org.omg.CORBA.portable.InputStream in,
+                                                      org.omg.CORBA.portable.ResponseHandler rh)
   {
     org.omg.CORBA.portable.OutputStream out = rh.createReply();
     java.lang.Integer __method = (java.lang.Integer)_methods.get (method);
     if (__method == null)
       throw new org.omg.CORBA.BAD_OPERATION (0, org.omg.CORBA.CompletionStatus.COMPLETED_MAYBE);
 
-    switch (__method.intValue ())
+    switch (__method)
     {
        case 0:  // org/eclipse/persistence/testing/Remote/SunCORBA/CORBAServerManager/createRemoteSessionController
        {

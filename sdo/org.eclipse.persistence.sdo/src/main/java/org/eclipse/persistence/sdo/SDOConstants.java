@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import java.util.Set;
  * </ul>
  */
 public class SDOConstants {
-    // 20070604: use a standard class as opposed to a constant interface (v21.20060731) - see item 17 of (Effective Java)
+// 20070604: use a standard class as opposed to a constant interface (v21.20060731) - see item 17 of (Effective Java)
 
     /** Strings for known uris and default prefix values */
     public static final String SDO_PREFIX = "sdo";
@@ -329,10 +329,7 @@ public class SDOConstants {
     /** A classloader toString containing (.wrappers) means we are running from a local ejb container client */
     public static final String CLASSLOADER_EJB_FRAGMENT = ".wrappers";
 
-    /** A classloader toString containing (oc4j:) means we are running from an 4 levels up from an ejb container */
-    public static final String CLASSLOADER_OC4J_FRAGMENT = "oc4j:";
-
-    /** XPath related constants*/
+    /* XPath related constants*/
     /** XPath ns separator ":" */
     public static final String SDO_XPATH_NS_SEPARATOR_FRAGMENT = ":";
 
@@ -366,5 +363,9 @@ public class SDOConstants {
         if(null != sdoTypeHelper) {
             sdoTypeHelper.reset();
         }
+    }
+
+    private SDOConstants() {
+        //no instance please
     }
 }

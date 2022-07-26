@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
 
 public class NormalHoursNSTransformer implements FieldTransformer, AttributeTransformer {
@@ -38,12 +38,14 @@ public class NormalHoursNSTransformer implements FieldTransformer, AttributeTran
         endTimeField = new XMLField("myns:END_TIME/text()");
     }
 
+    @Override
     public void initialize(AbstractTransformationMapping mapping) {
         nsResolver = ((org.eclipse.persistence.eis.EISDescriptor)mapping.getDescriptor()).getNamespaceResolver();
         startTimeField.setNamespaceResolver(nsResolver);
         endTimeField.setNamespaceResolver(nsResolver);
     }
 
+    @Override
     public Object buildFieldValue(Object instance, String fieldName, Session session) {
         Employee employee = (Employee)instance;
         if (fieldName.equalsIgnoreCase("myns:START_TIME/text()")) {
@@ -54,15 +56,16 @@ public class NormalHoursNSTransformer implements FieldTransformer, AttributeTran
         return null;
     }
 
-    public Object buildAttributeValue(Record row, Object object, Session session) {
+    @Override
+    public Object buildAttributeValue(DataRecord row, Object object, Session session) {
         Time[] hours = new Time[2];
 
         /**
          * This conversion allows for the database type not to match, i.e. may be a Timestamp or
          * String.
          */
-        hours[0] = (Time)session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get(startTimeField), Time.class);
-        hours[1] = (Time)session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get(endTimeField), Time.class);
+        hours[0] = session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get(startTimeField), Time.class);
+        hours[1] = session.getProject().getDatasourceLogin().getDatasourcePlatform().convertObject(row.get(endTimeField), Time.class);
 
         return hours;
     }

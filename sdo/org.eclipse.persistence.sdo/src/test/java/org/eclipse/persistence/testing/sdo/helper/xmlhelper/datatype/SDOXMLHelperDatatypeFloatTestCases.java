@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,30 +31,37 @@ public class SDOXMLHelperDatatypeFloatTestCases extends SDOXMLHelperDatatypeTest
         TestRunner.main(arguments);
     }
 
-    protected Class getDatatypeJavaClass() {
+    @Override
+    protected Class<?> getDatatypeJavaClass() {
         return Float.class;
     }
 
+    @Override
     protected SDOType getValueType() {
         return SDOConstants.SDO_FLOAT;
     }
 
+    @Override
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/datatype/myFloat-1.xml");
     }
 
+    @Override
     protected String getControlRootURI() {
         return "myFloat-NS";
     }
 
+    @Override
     protected String getControlRootName() {
         return "myFloat";
     }
 
+    @Override
     protected String getSchemaNameForUserDefinedType() {
         return getSchemaLocation() + "myFloat.xsd";
     }
 
+    @Override
     protected String getSchemaNameForBuiltinType() {
         return getSchemaLocation() + "myFloat-builtin.xsd";
     }

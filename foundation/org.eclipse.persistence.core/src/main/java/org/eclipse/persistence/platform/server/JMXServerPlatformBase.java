@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -147,7 +147,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      *
      * @param newDatabaseSession The instance of DatabaseSession that I am helping.
      */
-    public JMXServerPlatformBase(DatabaseSession newDatabaseSession) {
+    protected JMXServerPlatformBase(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);
     }
 
@@ -207,13 +207,13 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        mBeanServerList = (List<MBeanServer>) AccessController.doPrivileged(
-                            new PrivilegedExceptionAction() {
-                                @Override
-                                public List<MBeanServer> run() {
-                                    return MBeanServerFactory.findMBeanServer(null);
+                        mBeanServerList = AccessController.doPrivileged(
+                                new PrivilegedExceptionAction<>() {
+                                    @Override
+                                    public List<MBeanServer> run() {
+                                        return MBeanServerFactory.findMBeanServer(null);
+                                    }
                                 }
-                            }
                            );
                     } catch (PrivilegedActionException pae) {
                         getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER,
@@ -323,9 +323,9 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                     args[1] = name;
                     try {
                         Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class,
-                                "registerMBean", new Class[] {Object.class, ObjectName.class}, false);
+                                "registerMBean", new Class<?>[] {Object.class, ObjectName.class}, false);
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                            info = (ObjectInstance) AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, mBeanServerRuntime, args));
+                            info = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getMethod, mBeanServerRuntime, args));
                         } else {
                             info = mBeanServerRuntime.registerMBean(developmentMBean, name);
                         }
@@ -355,9 +355,9 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                         args[0] = runtimeServicesMBean;
                         args[1] = name;
                         Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class,
-                                "registerMBean", new Class[] {Object.class, ObjectName.class}, false);
+                                "registerMBean", new Class<?>[] {Object.class, ObjectName.class}, false);
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                           runtimeInstance = (ObjectInstance) AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, mBeanServerRuntime, args));
+                           runtimeInstance = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getMethod, mBeanServerRuntime, args));
                         } else {
                             runtimeInstance = mBeanServerRuntime.registerMBean(runtimeServicesMBean, name);
                         }
@@ -407,9 +407,9 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                         args[0] = name;
                         try {
                             Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class,
-                                    "unregisterMBean", new Class[] {ObjectName.class}, false);
+                                    "unregisterMBean", new Class<?>[] {ObjectName.class}, false);
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, mBeanServerRuntime, args));
+                                AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getMethod, mBeanServerRuntime, args));
                             } else {
                                 mBeanServerRuntime.unregisterMBean(name);
                             }
@@ -435,9 +435,9 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
                         args[0] = name;
                         try {
                             Method getMethod = PrivilegedAccessHelper.getPublicMethod(MBeanServer.class,
-                                    "unregisterMBean", new Class[] {ObjectName.class}, false);
+                                    "unregisterMBean", new Class<?>[] {ObjectName.class}, false);
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, mBeanServerRuntime, args));
+                                AccessController.doPrivileged(new PrivilegedMethodInvoker<>(getMethod, mBeanServerRuntime, args));
                             } else {
                                 mBeanServerRuntime.unregisterMBean(name);
                             }
@@ -460,7 +460,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
 
     /**
      * Remove JMX reserved characters from the session name
-     * @return
      */
     protected String getMBeanSessionName() {
         // Check for a valid session - should never occur though
@@ -484,7 +483,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
     /**
      * INTERNAL:
      * Set the cached server specific services MBean
-     * @param runtimeServicesMBean
      */
     protected void setRuntimeServicesMBean(MBeanRuntimeServicesMBean runtimeServicesMBean) {
         this.runtimeServicesMBean = runtimeServicesMBean;
@@ -492,8 +490,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
 
     /**
      * INTERNAL:
-     * @param enableDefault
-     * @return
      */
     protected String getModuleName(boolean enableDefault) {
         //Object substring = getModuleOrApplicationName();
@@ -529,7 +525,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
 
     /**
      * INTERNAL;
-     * @param aName
      */
     protected void setModuleName(String aName) {
         this.moduleName = aName;
@@ -540,8 +535,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * Lazy initialize the application name by
      * first checking for a persistence.xml property override and then
      * deferring to a default name in the absence of a platform override of this function
-     * @param enableDefault
-     * @return
      */
     protected String getApplicationName(boolean enableDefault) {
         //Object substring = getModuleOrApplicationName();
@@ -577,7 +570,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
 
     /**
      * INTERNAL:
-     * @param aName
      */
     public void setApplicationName(String aName) {
         this.applicationName = aName;

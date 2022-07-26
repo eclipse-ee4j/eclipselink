@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <b>Purpose</b>: Acts as a client to the server session.
@@ -344,7 +343,6 @@ public class ClientSession extends AbstractSession {
     /**
      * INTERNAL:
      * Release (if required) connection after call.
-     * @param query
      */
     @Override
     public void releaseConnectionAfterCall(DatabaseQuery query) {
@@ -417,7 +415,7 @@ public class ClientSession extends AbstractSession {
      * Return all registered descriptors.
      */
     @Override
-    public Map<Class, ClassDescriptor> getDescriptors() {
+    public Map<Class<?>, ClassDescriptor> getDescriptors() {
         // descriptors from the project may have been modified (for table per
         // tenants so make sure to return the updated ones)
         if (hasTablePerTenantDescriptors()) {
@@ -433,7 +431,6 @@ public class ClientSession extends AbstractSession {
      * chained and each session can have its own Cache/IdentityMap.  Entities can be stored
      * at different levels based on Cache Isolation.  This method will return the correct Session
      * for a particular Entity class based on the Isolation Level and the attributes provided.
-     * <p>
      * @param canReturnSelf true when method calls itself.  If the path
      * starting at <code>this</code> is acceptable.  Sometimes true if want to
      * move to the first valid session, i.e. executing on ClientSession when really
@@ -668,7 +665,7 @@ public class ClientSession extends AbstractSession {
     @Override
     public void release() throws DatabaseException {
         // Clear referencing classes. If this is not done the object is not garbage collected.
-        for (Map.Entry<Class, ClassDescriptor> entry : getDescriptors().entrySet()) {
+        for (Map.Entry<Class<?>, ClassDescriptor> entry : getDescriptors().entrySet()) {
             entry.getValue().clearReferencingClasses();
         }
 
@@ -794,7 +791,7 @@ public class ClientSession extends AbstractSession {
                 if (retryCount > 1) {
                     // We are retrying more than once lets wait to give connection time to restart.
                     //Give the failover time to recover.
-                    Thread.currentThread().sleep(login.getDelayBetweenConnectionAttempts());
+                    Thread.sleep(login.getDelayBetweenConnectionAttempts());
                 }
                 getWriteConnections().put(poolName, writeConnection);
                 writeConnection.createCustomizer(this);

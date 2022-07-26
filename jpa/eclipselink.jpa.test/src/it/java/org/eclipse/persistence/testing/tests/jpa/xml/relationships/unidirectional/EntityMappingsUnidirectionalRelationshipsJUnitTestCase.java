@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirection
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional.ModelExamples;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
@@ -187,11 +187,11 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         EntityManager em = createEntityManager();
         Employee employee = em.find(Employee.class, otmEmployeeId);
         assertTrue("Error reading Employee", employee.getId() == otmEmployeeId);
-        Collection phones = employee.getPhoneNumbers();
+        Collection<PhoneNumber> phones = employee.getPhoneNumbers();
         assertTrue("Employee didn't have correct number of phone numbers", phones.size()==2);
         boolean phonesMatched = true;
-        for(Iterator ite = phones.iterator(); ite.hasNext();){
-          PhoneNumber phone = (PhoneNumber)ite.next();
+        for(Iterator<PhoneNumber> ite = phones.iterator(); ite.hasNext();){
+          PhoneNumber phone = ite.next();
           if(phone.getId()!=otmPhone1Id && phone.getId()!=otmPhone2Id)
           {
             phonesMatched = false;
@@ -344,11 +344,11 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         EntityManager em = createEntityManager();
         Employee employee = em.find(Employee.class, mtmEmployeeId);
         assertTrue("Error reading Employee", employee.getId() == mtmEmployeeId);
-        Collection projects = employee.getProjects();
+        Collection<Project> projects = employee.getProjects();
         assertTrue("Employee didn't have correct number of projects", projects.size()==2);
         boolean projectsMatched = true;
-        for(Iterator ite = projects.iterator(); ite.hasNext();){
-          Project project = (Project)ite.next();
+        for(Iterator<Project> ite = projects.iterator(); ite.hasNext();){
+          Project project = ite.next();
           if(project.getId()!=mtmProject1Id && project.getId()!=mtmProject2Id)
           {
             projectsMatched = false;

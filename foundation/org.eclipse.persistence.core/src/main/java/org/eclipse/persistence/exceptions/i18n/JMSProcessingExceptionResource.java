@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,13 +28,20 @@ import java.util.ListResourceBundle;
  * Creation date: (12/6/00 9:47:38 AM)
  * @author TopLink maintenance team
  */
-public class JMSProcessingExceptionResource extends ListResourceBundle {
+public final class JMSProcessingExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "18001", "Error while processing incoming JMS message" },
                                            { "18002", "The Topic created in the JMS Service for the interconnection of Sessions must be set in the JMSClusteringService" },
                                            { "18003", "Failed to lookup the session''s name defined it the env-entry element of the Message Driven Bean" },
                                            { "18004", "The Message Driven Bean (MDB) cannot find the session.  The MDB getSession() method must return a non null session." }
     };
+
+    /**
+     * Default constructor.
+     */
+    public JMSProcessingExceptionResource() {
+        // for reflection
+    }
 
     /**
      * Return the lookup table.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -23,15 +23,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.security.AccessController;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -45,6 +42,12 @@ import org.eclipse.persistence.logging.SessionLog;
 public class XMLMetadataSource extends MetadataSourceAdapter {
 
     /**
+     * Default constructor.
+     */
+    public XMLMetadataSource() {
+    }
+
+    /**
      * This method returns a Reader for an EclipseLink-ORM.xml.  It will use the
      * PersistenceUnitProperties.METADATA_SOURCE_XML_URL property if available to create an
      * InputStreamReader from a URL, and if not available, use the
@@ -52,8 +55,6 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
      * resource from the classloader.
      * It will throw a ValidationException if no reader can be returned.
      *
-     * @param properties
-     * @param classLoader
      * @param log - SessionLog used for status messages.
      * @return Reader - a InputStreamReader with data in the form of an EclipseLink-orm.xml
      *
@@ -205,26 +206,12 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
     /**
      * Check the provided map for an object with the given name.  If that object is not available, check the
      * System properties.  Log the value returned if logging is enabled
-     * @param propertyName
-     * @param properties
-     * @param log
-     * @return
+     * @param propertyName property name
+     * @param properties properties
+     * @param log logger
+     * @return object for the given name, null if not found
      */
-    public Object getConfigPropertyLogDebug(final String propertyName, Map properties, SessionLog log) {
-        Object value = null;
-        if (properties != null) {
-            value = properties.get(propertyName);
-        }
-        if (value == null) {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyName));
-            } else {
-                value = System.getProperty(propertyName);
-            }
-        }
-        if ((value != null) && (log !=  null)) {
-            log.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyName, value});
-        }
-        return value;
+    public Object getConfigPropertyLogDebug(final String propertyName, Map<String, ?> properties, SessionLog log) {
+        return PropertyHelper.getConfigPropertyLogDebug(propertyName, properties, log);
     }
 }

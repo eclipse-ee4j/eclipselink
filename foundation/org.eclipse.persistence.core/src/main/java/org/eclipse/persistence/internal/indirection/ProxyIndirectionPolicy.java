@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,41 +15,40 @@
 package org.eclipse.persistence.internal.indirection;
 
 import java.lang.reflect.Proxy;
-import java.security.AccessController;
+import java.util.Map;
 
-import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
-
-import java.util.*;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.MergeManager;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
-import org.eclipse.persistence.internal.sessions.remote.*;
 
 /**
- * <H2>ProxyIndirectionPolicy</H2>
+ * <h2>ProxyIndirectionPolicy</h2>
  *
- * Define the behavior for Proxy Indirection.<P>
+ * <p>Define the behavior for Proxy Indirection.</p>
  *
- * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
+ * <p>Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
  * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
- * Indirection:<P>
+ * Indirection:</p>
  *
- * <UL>
- *        <LI>The target class must implement at least one public interface
- *        <LI>The attribute on the source class must be typed as that public interface
- * </UL>
+ * <ul>
+ *        <li>The target class must implement at least one public interface</li>
+ *        <li>The attribute on the source class must be typed as that public interface</li>
+ * </ul>
  *
  * In this policy, proxy objects are returned during object creation.  When a message other than
  * <CODE>toString</CODE> is called on the proxy the real object data is retrieved from the database.
@@ -59,14 +58,14 @@ import org.eclipse.persistence.internal.sessions.remote.*;
  * @since        TopLink 3.0
  */
 public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
-    private Class[] targetInterfaces;
+    private final Class<?>[] targetInterfaces;
 
-    public ProxyIndirectionPolicy(Class[] targetInterfaces) {
+    public ProxyIndirectionPolicy(Class<?>[] targetInterfaces) {
         this.targetInterfaces = targetInterfaces;
     }
 
     public ProxyIndirectionPolicy() {
-        this.targetInterfaces = new Class[] {  };
+        this.targetInterfaces = new Class<?>[] {  };
     }
 
     /**
@@ -101,7 +100,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      */
     @Override
     public Object valueFromRow(Object object) {
-        ValueHolderInterface valueHolder = new ValueHolder(object);
+        ValueHolderInterface<?> valueHolder = new ValueHolder<>(object);
 
         return ProxyIndirectionHandler.newProxyInstance(object.getClass(), targetInterfaces, valueHolder);
     }
@@ -124,7 +123,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
         } catch (Exception e) {
             return null;
         }
-        ValueHolderInterface valueHolder = new QueryBasedValueHolder(query, row, session);
+        ValueHolderInterface<?> valueHolder = new QueryBasedValueHolder<>(query, row, session);
 
         return ProxyIndirectionHandler.newProxyInstance(descriptor.getJavaClass(), targetInterfaces, valueHolder);
     }
@@ -137,7 +136,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      */
     @Override
     public Object valueFromMethod(Object object, AbstractRecord row, AbstractSession session) {
-        ValueHolderInterface valueHolder = new TransformerBasedValueHolder(this.getTransformationMapping().getAttributeTransformer(), object, row, session);
+        ValueHolderInterface<?> valueHolder = new TransformerBasedValueHolder<>(this.getTransformationMapping().getAttributeTransformer(), object, row, session);
 
         return ProxyIndirectionHandler.newProxyInstance(object.getClass(), targetInterfaces, valueHolder);
     }
@@ -151,25 +150,19 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     @Override
     public Object valueFromBatchQuery(ReadQuery batchQuery, AbstractRecord row, ObjectLevelReadQuery originalQuery, CacheKey parentCacheKey) {
         Object object;
-
         try {
             // Need an instance of the implementing class
-            ClassDescriptor d = originalQuery.getDescriptor();
-            if (d.isDescriptorForInterface()) {
-                d = originalQuery.getDescriptor().getInterfacePolicy().getChildDescriptors().get(0);
-            }
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                object = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(d.getJavaClass()));
-            }else{
-                object = PrivilegedAccessHelper.newInstanceFromClass(d.getJavaClass());
-            }
+            final ClassDescriptor cd = originalQuery.getDescriptor().isDescriptorForInterface() ?
+                    originalQuery.getDescriptor().getInterfacePolicy().getChildDescriptors().get(0) : originalQuery.getDescriptor();
+            object = PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.newInstanceFromClass(cd.getJavaClass())
+            );
         } catch (Exception e) {
             //org.eclipse.persistence.internal.helper.Helper.toDo("*** Should probably throw some sort of TopLink exception here. ***");
             e.printStackTrace();
             return null;
         }
-        ValueHolderInterface valueHolder = new BatchValueHolder(batchQuery, row, this.getForeignReferenceMapping(), originalQuery, parentCacheKey);
-
+        ValueHolderInterface<?> valueHolder = new BatchValueHolder<>(batchQuery, row, this.getForeignReferenceMapping(), originalQuery, parentCacheKey);
         return ProxyIndirectionHandler.newProxyInstance(object.getClass(), targetInterfaces, valueHolder);
     }
 
@@ -180,8 +173,8 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     @Override
     public boolean objectIsInstantiated(Object object) {
         if (object instanceof Proxy) {
-            ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(object);
-            ValueHolderInterface valueHolder = handler.getValueHolder();
+            ProxyIndirectionHandler<?> handler = (ProxyIndirectionHandler<?>)Proxy.getInvocationHandler(object);
+            ValueHolderInterface<?> valueHolder = handler.getValueHolder();
             return valueHolder.isInstantiated();
         } else {
             return true;
@@ -195,10 +188,10 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     @Override
     public boolean objectIsEasilyInstantiated(Object object) {
         if (object instanceof Proxy) {
-            ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(object);
-            ValueHolderInterface valueHolder = handler.getValueHolder();
+            ProxyIndirectionHandler<?> handler = (ProxyIndirectionHandler<?>)Proxy.getInvocationHandler(object);
+            ValueHolderInterface<?> valueHolder = handler.getValueHolder();
             if (valueHolder instanceof DatabaseValueHolder) {
-                return ((DatabaseValueHolder)valueHolder).isEasilyInstantiated();
+                return ((DatabaseValueHolder<?>)valueHolder).isEasilyInstantiated();
             }
         }
         return true;
@@ -232,8 +225,8 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     @Override
     public Object getRealAttributeValueFromObject(Object obj, Object object) {
         if (object instanceof Proxy) {
-            ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(object);
-            ValueHolderInterface valueHolder = handler.getValueHolder();
+            ProxyIndirectionHandler<?> handler = (ProxyIndirectionHandler<?>)Proxy.getInvocationHandler(object);
+            ValueHolderInterface<?> valueHolder = handler.getValueHolder();
             return valueHolder.getValue();
         } else {
             return object;
@@ -246,7 +239,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      */
     public static Object getValueFromProxy(Object value) {
         if (Proxy.isProxyClass(value.getClass())) {
-            return ((ProxyIndirectionHandler)Proxy.getInvocationHandler(value)).getValueHolder().getValue();
+            return ((ProxyIndirectionHandler<?>)Proxy.getInvocationHandler(value)).getValueHolder().getValue();
         }
         return value;
     }
@@ -267,10 +260,10 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     @Override
     public Object getOriginalIndirectionObject(Object unitOfWorkIndirectionObject, AbstractSession session) {
         if (unitOfWorkIndirectionObject instanceof UnitOfWorkValueHolder) {
-            ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
+            ValueHolderInterface<?> valueHolder = ((UnitOfWorkValueHolder<?>)unitOfWorkIndirectionObject).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
                 RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
-                valueHolder = controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolderRemoteID());
+                valueHolder = controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder<?>)unitOfWorkIndirectionObject).getWrappedValueHolderRemoteID());
             }
             return valueHolder;
         } else {
@@ -284,7 +277,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * remote value holders with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
+    public void fixObjectReferences(Object object, Map<Object, ObjectDescriptor> objectDescriptors, Map<Object, Object> processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         //org.eclipse.persistence.internal.helper.Helper.toDo("*** Something tells me this isn't going to work. *** [X]");
     }
 
@@ -299,13 +292,13 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             return null;
         }
 
-        ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(referenceObject);
-        ValueHolderInterface valueHolder = handler.getValueHolder();
+        ProxyIndirectionHandler<?> handler = (ProxyIndirectionHandler<?>)Proxy.getInvocationHandler(referenceObject);
+        ValueHolderInterface<?> valueHolder = handler.getValueHolder();
 
         if (valueHolder.isInstantiated()) {
             return null;
         } else {
-            return ((DatabaseValueHolder)valueHolder).getRow();
+            return ((DatabaseValueHolder<?>)valueHolder).getRow();
         }
     }
 
@@ -317,31 +310,32 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      *  row, putting it in the shared cache, and then cloning the original.
      */
     @Override
+    @SuppressWarnings({"unchecked"})
     public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         if (!(attributeValue instanceof Proxy)) {
             boolean isExisting = !cloningSession.isUnitOfWork() || (((UnitOfWorkImpl)cloningSession).isObjectRegistered(clone) && (!((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)));
             return this.getMapping().buildCloneForPartObject(attributeValue, original, null, clone, cloningSession, refreshCascade, isExisting, !buildDirectlyFromRow);
         }
 
-        ValueHolderInterface newValueHolder;
-        ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
-        ValueHolderInterface oldValueHolder = handler.getValueHolder();
+        ValueHolderInterface<Object> newValueHolder;
+        ProxyIndirectionHandler<Object> handler = (ProxyIndirectionHandler<Object>)Proxy.getInvocationHandler(attributeValue);
+        ValueHolderInterface<Object> oldValueHolder = handler.getValueHolder();
 
         if (!buildDirectlyFromRow && cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)) {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
             // This can occur if an existing serialized object is attempt to be registered as new.
             if ((oldValueHolder instanceof DatabaseValueHolder)
                     && (! oldValueHolder.isInstantiated())
-                    && (((DatabaseValueHolder) oldValueHolder).getSession() == null)
-                    && (! ((DatabaseValueHolder) oldValueHolder).isSerializedRemoteUnitOfWorkValueHolder())) {
+                    && (((DatabaseValueHolder<?>) oldValueHolder).getSession() == null)
+                    && (! ((DatabaseValueHolder<?>) oldValueHolder).isSerializedRemoteUnitOfWorkValueHolder())) {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, getMapping());
             }
-            newValueHolder = new ValueHolder();
+            newValueHolder = new ValueHolder<>();
             newValueHolder.setValue(this.getMapping().buildCloneForPartObject(oldValueHolder.getValue(), original, null, clone, cloningSession, refreshCascade, false, false));
         } else {
             AbstractRecord row = null;
             if (oldValueHolder instanceof DatabaseValueHolder) {
-                row = ((DatabaseValueHolder)oldValueHolder).getRow();
+                row = ((DatabaseValueHolder<?>)oldValueHolder).getRow();
             }
             newValueHolder = this.getMapping().createCloneValueHolder(oldValueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
         }
@@ -354,20 +348,21 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * Return a backup clone of the attribute.
      */
     @Override
+    @SuppressWarnings({"unchecked"})
     public Object backupCloneAttribute(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         if (!(attributeValue instanceof Proxy)) {
             return this.getMapping().buildBackupCloneForPartObject(attributeValue, clone, backup, unitOfWork);
         }
-        ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
-        ValueHolderInterface<?> unitOfWorkValueHolder = handler.getValueHolder();
-        ValueHolderInterface<?> backupValueHolder = null;
+        ProxyIndirectionHandler<Object> handler = (ProxyIndirectionHandler<Object>)Proxy.getInvocationHandler(attributeValue);
+        ValueHolderInterface<Object> unitOfWorkValueHolder = handler.getValueHolder();
+        ValueHolderInterface<Object> backupValueHolder = null;
 
         if ((!(unitOfWorkValueHolder instanceof UnitOfWorkValueHolder)) || unitOfWorkValueHolder.isInstantiated()) {
-            backupValueHolder = (ValueHolderInterface<?>) super.backupCloneAttribute(unitOfWorkValueHolder, clone, backup, unitOfWork);
+            backupValueHolder = (ValueHolderInterface<Object>) super.backupCloneAttribute(unitOfWorkValueHolder, clone, backup, unitOfWork);
         } else {
             // CR#2852176 Use a BackupValueHolder to handle replacing of the original.
-            backupValueHolder = new BackupValueHolder(unitOfWorkValueHolder);
-            ((UnitOfWorkValueHolder)unitOfWorkValueHolder).setBackupValueHolder(backupValueHolder);
+            backupValueHolder = new BackupValueHolder<>(unitOfWorkValueHolder);
+            ((UnitOfWorkValueHolder<Object>)unitOfWorkValueHolder).setBackupValueHolder(backupValueHolder);
         }
 
         return ProxyIndirectionHandler.newProxyInstance(attributeValue.getClass(), targetInterfaces, backupValueHolder);
@@ -380,7 +375,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     @Override
     public void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
         if (attributeValue instanceof Proxy) {
-            ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
+            ProxyIndirectionHandler<?> handler = (ProxyIndirectionHandler<?>)Proxy.getInvocationHandler(attributeValue);
             ValueHolderInterface<?> valueHolder = handler.getValueHolder();
 
             iterator.iterateValueHolderForMapping(valueHolder, this.getMapping());
@@ -412,7 +407,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * integrity checker.  In this case, the attribute type must be contained in targetInterfaces.
      */
     @Override
-    public void validateDeclaredAttributeType(Class attributeType, IntegrityChecker checker) throws DescriptorException {
+    public void validateDeclaredAttributeType(Class<?> attributeType, IntegrityChecker checker) throws DescriptorException {
         if (!isValidType(attributeType)) {
             checker.handleError(DescriptorException.invalidAttributeTypeForProxyIndirection(attributeType, targetInterfaces, getMapping()));
         }
@@ -425,7 +420,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * public interface.
      */
     @Override
-    public void validateGetMethodReturnType(Class returnType, IntegrityChecker checker) throws DescriptorException {
+    public void validateGetMethodReturnType(Class<?> returnType, IntegrityChecker checker) throws DescriptorException {
         if (!isValidType(returnType)) {
             checker.handleError(DescriptorException.invalidGetMethodReturnTypeForProxyIndirection(returnType, targetInterfaces, getMapping()));
         }
@@ -438,7 +433,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * public interface.
      */
     @Override
-    public void validateSetMethodParameterType(Class parameterType, IntegrityChecker checker) throws DescriptorException {
+    public void validateSetMethodParameterType(Class<?> parameterType, IntegrityChecker checker) throws DescriptorException {
         if (!isValidType(parameterType)) {
             checker.handleError(DescriptorException.invalidSetMethodParameterTypeForProxyIndirection(parameterType, targetInterfaces, getMapping()));
         }
@@ -449,9 +444,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
-     * @param attributeValue
-     * @return
-     * @see validateAttributeOfInstantiatedObject(Object attributeValue)
+     * @see #validateAttributeOfInstantiatedObject(Object attributeValue)
      */
     @Override
     public boolean isAttributeValueFullyBuilt(Object attributeValue){
@@ -463,7 +456,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * Verify that a class type is valid to use for the proxy.  The class must be one of the
      * interfaces in <CODE>targetInterfaces</CODE>.
      */
-    public boolean isValidType(Class attributeType) {
+    public boolean isValidType(Class<?> attributeType) {
         if (!attributeType.isInterface()) {
             return false;
         }

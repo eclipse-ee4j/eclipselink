@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -194,7 +194,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         return getXMLReader(null);
     }
 
-    private XMLReader getXMLReader(Class clazz) {
+    private XMLReader getXMLReader(Class<?> clazz) {
         if (null == xmlReader) {
             xmlReader = getNewXMLReader(clazz, xmlUnmarshaller.getMediaType());
         }
@@ -205,7 +205,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         return getNewXMLReader(null, mediaType);
     }
 
-    private XMLReader getNewXMLReader(Class clazz, MediaType mediaType) {
+    private XMLReader getNewXMLReader(Class<?> clazz, MediaType mediaType) {
 
         if (null != mediaType && mediaType.isApplicationJSON()) {
             return new JsonStructureReader(xmlUnmarshaller, clazz);
@@ -358,7 +358,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(File file, Class clazz) {
+    public Object unmarshal(File file, Class<?> clazz) {
         try {
             if (xmlUnmarshaller.getContext().hasDocumentPreservation()) {
                 Node domElement = getXMLParser().parse(file).getDocumentElement();
@@ -393,7 +393,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(InputStream inputStream, Class clazz) {
+    public Object unmarshal(InputStream inputStream, Class<?> clazz) {
         if (xmlUnmarshaller.getContext().hasDocumentPreservation()) {
             Node domElement = getXMLParser().parse(inputStream).getDocumentElement();
             return unmarshal(domElement, clazz);
@@ -441,7 +441,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(InputSource inputSource, Class clazz) {
+    public Object unmarshal(InputSource inputSource, Class<?> clazz) {
         if (inputSource != null && null == inputSource.getSystemId()) {
             inputSource.setSystemId(this.systemId);
         }
@@ -454,7 +454,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         return unmarshal(getXMLReader(clazz), inputSource, clazz);
     }
 
-    public Object unmarshal(InputSource inputSource, Class clazz, XMLReader xmlReader) {
+    public Object unmarshal(InputSource inputSource, Class<?> clazz, XMLReader xmlReader) {
         if (inputSource != null && null == inputSource.getSystemId()) {
             inputSource.setSystemId(this.systemId);
         }
@@ -560,12 +560,12 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(Node node, Class clazz) {
+    public Object unmarshal(Node node, Class<?> clazz) {
         DOMReader reader = new DOMReader(xmlUnmarshaller);
         return unmarshal(reader, node, clazz);
     }
 
-    public Object unmarshal(DOMReader domReader, Node node, Class clazz) {
+    public Object unmarshal(DOMReader domReader, Node node, Class<?> clazz) {
         UnmarshalRecord unmarshalRecord = null;
         Descriptor xmlDescriptor = null;
 
@@ -657,7 +657,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(Reader reader, Class clazz) {
+    public Object unmarshal(Reader reader, Class<?> clazz) {
         if (xmlUnmarshaller.getContext().hasDocumentPreservation()) {
             Node domElement = getXMLParser().parse(reader).getDocumentElement();
             return unmarshal(domElement, clazz);
@@ -715,7 +715,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(Source source, Class clazz) {
+    public Object unmarshal(Source source, Class<?> clazz) {
         if (source instanceof SAXSource) {
             SAXSource saxSource = (SAXSource) source;
             XMLReader xmlReader = null;
@@ -788,7 +788,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(URL url, Class clazz) {
+    public Object unmarshal(URL url, Class<?> clazz) {
         InputStream inputStream = null;
         try {
             inputStream = url.openStream();
@@ -834,7 +834,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         }
     }
 
-    public Object unmarshal(String systemId, Class clazz) {
+    public Object unmarshal(String systemId, Class<?> clazz) {
         if (xmlUnmarshaller.isAutoDetectMediaType()) {
             return unmarshal(new InputSource(systemId), clazz);
         }
@@ -952,7 +952,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     @Override
-    public Object unmarshal(org.xml.sax.XMLReader xmlReader, InputSource inputSource, Class clazz) {
+    public Object unmarshal(org.xml.sax.XMLReader xmlReader, InputSource inputSource, Class<?> clazz) {
         try {
             Context xmlContext = xmlUnmarshaller.getContext();
 
@@ -1055,7 +1055,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         this.isResultAlwaysXMLRoot = alwaysReturnRoot;
     }
 
-    private boolean isPrimitiveWrapper(Class clazz) {
+    private boolean isPrimitiveWrapper(Class<?> clazz) {
         return ((ConversionManager) xmlUnmarshaller.getContext().getSession().getDatasourcePlatform().getConversionManager()).schemaType(clazz) != null
                 || CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(clazz)
                 || CoreClassConstants.DURATION.isAssignableFrom(clazz);

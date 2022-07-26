@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -717,7 +717,7 @@ public class KeyMappingsTestSuite {
         for (DynamicEntity employee : resultVector) {
             xrDynEntityCol.add(employee);
             xrDynEntityCol.add(employee.get("address"));
-            Vector<DynamicEntity> phones = (Vector<DynamicEntity>)employee.get("phones");
+            Vector<DynamicEntity> phones = employee.get("phones");
             phones.size(); // trigger IndirectList
             for (DynamicEntity phone : phones) {
                 xrDynEntityCol.add(phone);
@@ -731,7 +731,6 @@ public class KeyMappingsTestSuite {
             comparer.isNodeEqual(controlDoc, doc));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void buildEmployees() {
         XMLUnmarshaller unMarshaller = xrService.getXMLContext().createUnmarshaller();
@@ -745,7 +744,7 @@ public class KeyMappingsTestSuite {
         assertTrue("employee1 __pk incorrent", Integer.valueOf(1).equals(employee1.get("employeeId")));
         assertTrue("employee1 first name incorrent", "Mike".equals(employee1.get("firstName")));
         assertTrue("employee1 last name incorrent", "Norman".equals(employee1.get("lastName")));
-        ArrayList<DynamicEntity> phones = (ArrayList<DynamicEntity>)employee1.get("phones"); // phones
+        ArrayList<DynamicEntity> phones = employee1.get("phones"); // phones
         assertTrue("employee1 has wrong number of phones", phones.size() == 2);
     }
 

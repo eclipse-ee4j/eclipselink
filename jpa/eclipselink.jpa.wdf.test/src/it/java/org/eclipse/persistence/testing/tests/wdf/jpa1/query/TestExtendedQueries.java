@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -98,10 +98,10 @@ public class TestExtendedQueries extends JPA1Base {
     protected String getRandomSurname() {
         String tmpName = SURNAMES[nameRandomizer.nextInt(SURNAMES.length)];
         if (!NUMBER_OF_SURNAMES_USED.containsKey(tmpName)) {
-            NUMBER_OF_SURNAMES_USED.put(tmpName, new Integer(1));
+            NUMBER_OF_SURNAMES_USED.put(tmpName, 1);
         } else {
             Integer tmpNum = NUMBER_OF_SURNAMES_USED.get(tmpName);
-            tmpNum = Integer.valueOf(tmpNum.intValue() + 1);
+            tmpNum = tmpNum + 1;
             NUMBER_OF_SURNAMES_USED.put(tmpName, tmpNum);
         }
         return tmpName;
@@ -110,10 +110,10 @@ public class TestExtendedQueries extends JPA1Base {
     protected String getRandomGivenName() {
         String tmpName = GIVEN_NAMES[nameRandomizer.nextInt(GIVEN_NAMES.length)];
         if (!NUMBER_OF_GIVEN_NAMES_USED.containsKey(tmpName)) {
-            NUMBER_OF_GIVEN_NAMES_USED.put(tmpName, new Integer(1));
+            NUMBER_OF_GIVEN_NAMES_USED.put(tmpName, 1);
         } else {
             Integer tmpNum = NUMBER_OF_GIVEN_NAMES_USED.get(tmpName);
-            tmpNum = Integer.valueOf(tmpNum.intValue() + 1);
+            tmpNum = tmpNum + 1;
             NUMBER_OF_GIVEN_NAMES_USED.put(tmpName, tmpNum);
         }
         return tmpName;
@@ -125,8 +125,6 @@ public class TestExtendedQueries extends JPA1Base {
      * @param empID
      *            the ID of the employee
      * @return a hobby for the given employee ID
-     * @throws Exception
-     *             is thrown if there are no hobbies left which have not already been assigned to this employee
      */
     protected Hobby getRandomHobby(int empID) {
         boolean matched = false;
@@ -264,10 +262,10 @@ public class TestExtendedQueries extends JPA1Base {
             env.beginTransaction(em);
             Query query = em
                     .createQuery("UPDATE Employee emp SET emp.salary = emp.salary + :param1 WHERE emp.firstname = SUBSTRING(:string, :int1, :int2)");
-            query.setParameter("param1", Integer.valueOf(13));
+            query.setParameter("param1", 13);
             query.setParameter("string", "moo");
-            query.setParameter("int1", Integer.valueOf(1));
-            query.setParameter("int2", Integer.valueOf(2));
+            query.setParameter("int1", 1);
+            query.setParameter("int2", 2);
             query.executeUpdate();
             env.commitTransaction(em);
         } finally {
@@ -282,7 +280,7 @@ public class TestExtendedQueries extends JPA1Base {
         try {
             // test string-mapping of enums
             Query query = em.createQuery("Select DISTINCT Object(emp) From Employee emp WHERE emp.salary > ABS(:dbl)");
-            query.setParameter("dbl", new Double(1180D));
+            query.setParameter("dbl", 1180D);
             query.getResultList();
         } finally {
             closeEntityManager(em);
@@ -298,8 +296,8 @@ public class TestExtendedQueries extends JPA1Base {
             Query query = em
                     .createQuery("Select Distinct Object(emp) FROM Employee emp WHERE emp.firstname = SUBSTRING(:string, :int1, :int2)");
             query.setParameter("string", "moo");
-            query.setParameter("int1", Integer.valueOf(1));
-            query.setParameter("int2", Integer.valueOf(2));
+            query.setParameter("int1", 1);
+            query.setParameter("int2", 2);
             query.getResultList();
         } finally {
             closeEntityManager(em);
@@ -360,8 +358,8 @@ public class TestExtendedQueries extends JPA1Base {
         try {
             // this one tests for the IN predicate in combination with two parameters
             Query query1 = em.createQuery("select e.id from Employee e where e.id IN (?1, ?2)");
-            query1.setParameter(1, Integer.valueOf(1));
-            query1.setParameter(2, Integer.valueOf(2));
+            query1.setParameter(1, 1);
+            query1.setParameter(2, 2);
             query1.getResultList();
         } finally {
             closeEntityManager(em);
@@ -452,7 +450,7 @@ public class TestExtendedQueries extends JPA1Base {
                 Integer surnamesUsed = NUMBER_OF_SURNAMES_USED.get(surname);
                 query.setParameter(1, surname);
                 List result = query.getResultList();
-                verify(result.size() == surnamesUsed.intValue(), "the number of persons with given name " + surname
+                verify(result.size() == surnamesUsed, "the number of persons with given name " + surname
                         + " in the result does not match the number of names used when the entities where created.");
             }
         } finally {
@@ -472,7 +470,7 @@ public class TestExtendedQueries extends JPA1Base {
                 Integer givenNamesUsed = NUMBER_OF_GIVEN_NAMES_USED.get(givenName);
                 query.setParameter(1, givenName);
                 List result = query.getResultList();
-                verify(result.size() == givenNamesUsed.intValue(), "the number of persons with given name " + givenName
+                verify(result.size() == givenNamesUsed, "the number of persons with given name " + givenName
                         + " in the result does not match the number of names used when the entities where created.");
             }
         } finally {

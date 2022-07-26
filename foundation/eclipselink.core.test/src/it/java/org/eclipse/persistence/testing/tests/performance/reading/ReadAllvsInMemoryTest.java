@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,13 +34,15 @@ public class ReadAllvsInMemoryTest extends PerformanceComparisonTestCase {
     /**
      * Fill the cache.
      */
+    @Override
     public void setup() {
         allObjects = getSession().readAllObjects(Employee.class);
     }
 
     /**
-     * Read all employees with salary > 0.
+     * Read all employees with salary {@literal >} 0.
      */
+    @Override
     public void test() throws Exception {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -53,6 +55,7 @@ public class ReadAllvsInMemoryTest extends PerformanceComparisonTestCase {
      */
     public void addReadAllInMemoryTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
                 ExpressionBuilder builder = new ExpressionBuilder();

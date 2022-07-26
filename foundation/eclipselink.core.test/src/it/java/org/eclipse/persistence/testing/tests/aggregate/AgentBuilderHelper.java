@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.eclipse.persistence.testing.models.aggregate.House;
 public class AgentBuilderHelper {
 
     public static List getCustomers(Object object) {
-        Class cls = object.getClass();
+        Class<? extends Object> cls = object.getClass();
         if(Agent.class.equals(cls)) {
             return ((Agent)object).getCustomers();
         } else if (Builder.class.equals(cls)) {
@@ -43,7 +43,7 @@ public class AgentBuilderHelper {
     }
 
     public static List getHouses(Object object) {
-        Class cls = object.getClass();
+        Class<? extends Object> cls = object.getClass();
         if(Agent.class.equals(cls)) {
             return ((Agent)object).getHouses();
         } else if (Builder.class.equals(cls)) {
@@ -53,7 +53,7 @@ public class AgentBuilderHelper {
         }
     }
 
-    public static String getName(Class cls) {
+    public static String getName(Class<?> cls) {
         if(Agent.class.equals(cls)) {
             return "Agent";
         } else if (Builder.class.equals(cls)) {
@@ -63,7 +63,7 @@ public class AgentBuilderHelper {
         }
     }
 
-    public static String getNameInBrackets(Class cls) {
+    public static String getNameInBrackets(Class<?> cls) {
         if(Agent.class.equals(cls)) {
             return "(Agent)";
         } else if (Builder.class.equals(cls)) {
@@ -74,7 +74,7 @@ public class AgentBuilderHelper {
     }
 
     public static String getLastName(Object object) {
-        Class cls = object.getClass();
+        Class<? extends Object> cls = object.getClass();
         if(Agent.class.equals(cls)) {
             return ((Agent)object).getLastName();
         } else if (Builder.class.equals(cls)) {
@@ -85,7 +85,7 @@ public class AgentBuilderHelper {
     }
 
     public static void setLastName(Object object, String lastName) {
-        Class cls = object.getClass();
+        Class<? extends Object> cls = object.getClass();
         if(Agent.class.equals(cls)) {
             ((Agent)object).setLastName(lastName);
         } else if (Builder.class.equals(cls)) {
@@ -96,7 +96,7 @@ public class AgentBuilderHelper {
     }
 
     public static String getFirstName(Object object) {
-        Class cls = object.getClass();
+        Class<? extends Object> cls = object.getClass();
         if(Agent.class.equals(cls)) {
             return ((Agent)object).getFirstName();
         } else if (Builder.class.equals(cls)) {
@@ -107,7 +107,7 @@ public class AgentBuilderHelper {
     }
 
     public static void setFirstName(Object object, String firstName) {
-        Class cls = object.getClass();
+        Class<? extends Object> cls = object.getClass();
         if(Agent.class.equals(cls)) {
             ((Agent)object).setFirstName(firstName);
         } else if (Builder.class.equals(cls)) {
@@ -118,7 +118,7 @@ public class AgentBuilderHelper {
     }
 
     public static void addCustomer(Object object, Customer customer) {
-        Class cls = object.getClass();
+        Class<? extends Object> cls = object.getClass();
         if(Agent.class.equals(cls)) {
             ((Agent)object).addCustomer(customer);
         } else if (Builder.class.equals(cls)) {
@@ -129,7 +129,7 @@ public class AgentBuilderHelper {
     }
 
     public static void addHouse(Object object, House house) {
-        Class cls = object.getClass();
+        Class<? extends Object> cls = object.getClass();
         if(Agent.class.equals(cls)) {
             ((Agent)object).addHouse(house);
         } else if (Builder.class.equals(cls)) {
@@ -140,7 +140,7 @@ public class AgentBuilderHelper {
     }
 
     public static void removeCustomer(Object object, Customer customer) {
-        Class cls = object.getClass();
+        Class<? extends Object> cls = object.getClass();
         if(Agent.class.equals(cls)) {
             ((Agent)object).removeCustomer(customer);
         } else if (Builder.class.equals(cls)) {
@@ -151,7 +151,7 @@ public class AgentBuilderHelper {
     }
 
     public static void removeHouse(Object object, House house) {
-        Class cls = object.getClass();
+        Class<? extends Object> cls = object.getClass();
         if(Agent.class.equals(cls)) {
             ((Agent)object).removeHouse(house);
         } else if (Builder.class.equals(cls)) {

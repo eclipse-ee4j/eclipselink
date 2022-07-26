@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -44,10 +45,10 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         dataObject_c._setType(type_c);
 
         boolean str = true;
-        Boolean B_STR = new Boolean(str);
+        Boolean B_STR = str;
         dataObject_a.setBoolean(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(B_STR.toString(), dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(B_STR.toString(), dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //2. purpose: getString with Undefined boolean Property
@@ -79,7 +80,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
 
         dataObject_a.setByte(propertyPath_a_b_c, by);// add it to instance list
 
-        this.assertEquals(by_, dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(by_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //3. purpose: getString with Undefined Byte Property
@@ -110,7 +111,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         String str_ = String.valueOf(str);
         dataObject_a.setChar(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(str_, dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(str_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //5. purpose: getString with Undefined boolean Property
@@ -141,7 +142,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         String db_ = "12.0";// String.valueOf(12);
         dataObject_a.setDouble(propertyPath_a_b_c, db);// add it to instance list
 
-        this.assertEquals(db_, dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(db_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //7. purpose: getString with Undefined Double Property
@@ -172,7 +173,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         dataObject_a.setFloat(propertyPath_a_b_c, fl);// add it to instance list
         String fl_ = String.valueOf(fl);
 
-        this.assertEquals(fl_, dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(fl_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //9. purpose: getString with Undefined float Property
@@ -203,7 +204,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         dataObject_a.setInt(propertyPath_a_b_c, in);// add it to instance list
         String in_ = String.valueOf(in);
 
-        this.assertEquals(in_, dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(in_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //11. purpose: getString with Undefined int Property
@@ -234,7 +235,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         dataObject_a.setLong(propertyPath_a_b_c, lg);// add it to instance list
         String lg_ = String.valueOf(lg);
 
-        this.assertEquals(lg_, dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(lg_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //13. purpose: getString with Undefined long Property
@@ -265,7 +266,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         dataObject_a.setShort(propertyPath_a_b_c, shr);// add it to instance list
         String shr_ = String.valueOf(shr);
 
-        this.assertEquals(shr_, dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(shr_, dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //15. purpose: getString with Undefined short Property
@@ -295,7 +296,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         String str = "12";
         dataObject_a.setString(propertyPath_a_b_c, str);// add it to instance list
 
-        this.assertEquals(str, dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(str, dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //17. purpose: getString with Undefined string Property
@@ -344,7 +345,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         BigDecimal bd = new BigDecimal(db);
         dataObject_a.setBigDecimal(propertyPath_a_b_c, bd);// add it to instance list
 
-        this.assertEquals(bd.toString(), dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(bd.toString(), dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //20. purpose: getString with Undefined decimal Property
@@ -374,7 +375,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         BigInteger bi = new BigInteger("12");
         dataObject_a.setBigInteger(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals(bi.toString(), dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals(bi.toString(), dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //22. purpose: getString with Undefined Integer Property
@@ -415,7 +416,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         //dataObject.setString(property, "2001-01-01");// add it to instance list
         dataObject_a.setDate(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals("2001-01-01T00:00:00Z", dataObject_a.getString(propertyPath_a_b_c));
+        assertEquals("2001-01-01T00:00:00Z", dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //23. purpose: getString with Undefined date Property

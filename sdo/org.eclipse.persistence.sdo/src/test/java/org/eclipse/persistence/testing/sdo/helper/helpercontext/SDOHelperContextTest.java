@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,6 +89,7 @@ public class SDOHelperContextTest extends SDOHelperContextTestCases {
         }
     }
 
+    @Override
     public void setUp() {
         // define 1st type
         setUpContext(CONTEXT1_DATAOBJECT_XSD_PATH, CONTEXT1_DATAOBJECT_XML_PATH, aNonStaticHelperContext1);
@@ -185,7 +186,7 @@ public class SDOHelperContextTest extends SDOHelperContextTestCases {
     @SuppressWarnings("unchecked")
     public void testNotificationListenerWLS() throws Exception {
         final String applicationName = "App1";
-        Class listenerClass = Class.forName("org.eclipse.persistence.sdo.helper.SDOHelperContext$MyNotificationListener");
+        Class<? extends NotificationListener> listenerClass = (Class<? extends NotificationListener>) Class.forName("org.eclipse.persistence.sdo.helper.SDOHelperContext$MyNotificationListener");
         Constructor<? extends NotificationListener> constructor = listenerClass.getDeclaredConstructor(String.class, int.class);
         Field helperContextsField = SDOHelperContext.class.getDeclaredField("helperContexts");
         Field appNameToClassLoaderMapField = SDOHelperContext.class.getDeclaredField("appNameToClassLoaderMap");

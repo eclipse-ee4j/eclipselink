@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,7 +82,7 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
         super.verifyConfig();
         assertNotNull(simpleType.getDescriptor().getCMPPolicy());
         assertEquals(Object[].class,
-            ((DynamicIdentityPolicy)simpleType.getDescriptor().getCMPPolicy()).getPKClass());
+            simpleType.getDescriptor().getCMPPolicy().getPKClass());
     }
 
     @Override
@@ -95,7 +95,7 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
             0, simpleInstance.<Integer>get("id2").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",
-            false, simpleInstance.<Boolean>get("value2").booleanValue());
+            false, simpleInstance.<Boolean>get("value2"));
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
         assertFalse("value4 set on new instance", simpleInstance.isSet("value4"));
     }
@@ -117,7 +117,7 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
         assertNotNull(foundEntity);
         assertEquals(simpleInstance.<Number>get("id1"), foundEntity.<Number>get("id1"));
         assertEquals(simpleInstance.<Number>get("id2"), foundEntity.<Number>get("id2"));
-        assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
+        assertEquals(simpleInstance.<String>get("value1"), foundEntity.<String>get("value1"));
         assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
         em.close();
         return simpleInstance;

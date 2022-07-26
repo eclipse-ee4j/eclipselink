@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,17 @@
 //      Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.jpars.test.service.v1;
 
-import org.eclipse.persistence.jpars.test.service.noversion.EmployeeTest;
+import org.eclipse.persistence.jpars.test.service.EmployeeTestBase;
 import org.junit.BeforeClass;
 
 /**
  * EmployeeTest adapted for JPARS 1.0.
- * {@see EmployeeTest}
+ * {@link EmployeeTestBase}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class EmployeeV1Test extends EmployeeTest {
+public class EmployeeV1Test extends EmployeeTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -146,7 +146,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return false;
             }
-            return value.booleanValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return false;
@@ -160,7 +160,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0;
             }
-            return value.byteValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0;
@@ -174,7 +174,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return '\u0000';
             }
-            return value.charValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return '\u0000';
@@ -188,7 +188,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0.0d;
             }
-            return value.doubleValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0.0d;
@@ -202,7 +202,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0.0f;
             }
-            return value.floatValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0.0f;
@@ -216,7 +216,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0;
             }
-            return value.intValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0;
@@ -230,7 +230,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0L;
             }
-            return value.longValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0L;
@@ -244,7 +244,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             if (value == null) {
                 return 0;
             }
-            return value.shortValue();
+            return value;
         } catch (Exception e) {
             // Swallow exception and return null, as per SDO 2.1 spec
             return 0;
@@ -693,7 +693,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         Type sdotype = null;
         boolean isMany = false;
         boolean isContainment = false;
-        Class valueClass = value.getClass();
+        Class<? extends Object> valueClass = value.getClass();
 
         if (value instanceof Collection) {
             if (((Collection)value).size() > 0) {
@@ -745,7 +745,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         propertyDO.set("name", name);
         boolean isMany = false;
         boolean isContainment = false;
-        Class valueClass = value.getClass();
+        Class<? extends Object> valueClass = value.getClass();
 
         if (value instanceof Collection) {
             if (((Collection)value).size() > 0) {
@@ -939,7 +939,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             throw SDOException.cannotPerformOperationOnNullArgument("unset");
         }
 
-        if (((SDOProperty)property).isReadOnly()) {
+        if (property.isReadOnly()) {
             throw new UnsupportedOperationException("Property is Readonly." + property.getName() + "  " + getType().getName());
         }
 
@@ -981,7 +981,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyBooleanValue == null) {
             return false;
         }
-        return propertyBooleanValue.booleanValue();
+        return propertyBooleanValue;
     }
 
     @Override
@@ -990,7 +990,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyByteValue == null) {
             return 0;
         }
-        return propertyByteValue.byteValue();
+        return propertyByteValue;
     }
 
     @Override
@@ -999,7 +999,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyCharValue == null) {
             return '\u0000';
         }
-        return propertyCharValue.charValue();
+        return propertyCharValue;
     }
 
     @Override
@@ -1008,7 +1008,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyDoubleValue == null) {
             return 0.0d;
         }
-        return propertyDoubleValue.doubleValue();
+        return propertyDoubleValue;
     }
 
     @Override
@@ -1017,7 +1017,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyFloatValue == null) {
             return 0.0f;
         }
-        return propertyFloatValue.floatValue();
+        return propertyFloatValue;
     }
 
     @Override
@@ -1026,7 +1026,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyIntegerValue == null) {
             return 0;
         }
-        return propertyIntegerValue.intValue();
+        return propertyIntegerValue;
     }
 
     @Override
@@ -1035,7 +1035,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyLongValue == null) {
             return 0L;
         }
-        return propertyLongValue.longValue();
+        return propertyLongValue;
     }
 
     @Override
@@ -1044,7 +1044,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         if (propertyShortValue == null) {
             return 0;
         }
-        return propertyShortValue.shortValue();
+        return propertyShortValue;
     }
 
     @Override
@@ -2261,7 +2261,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @throws ClassCastException
      * @throws IllegalArgumentException
      */
-    public Object convertObjectToValue(Property property, Class cls) throws ClassCastException, IllegalArgumentException {
+    public Object convertObjectToValue(Property property, Class<?> cls) throws ClassCastException, IllegalArgumentException {
         //ie get String - convert(thisprop, String.class)
         if (null == property) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationOnNullArgument("convertObjectToValue"));
@@ -2286,7 +2286,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @throws ClassCastException
      * @throws IllegalArgumentException
      */
-    public Object convertObjectToValue(Property property, int position, Class cls) throws ClassCastException, IllegalArgumentException {
+    public Object convertObjectToValue(Property property, int position, Class<?> cls) throws ClassCastException, IllegalArgumentException {
         if (null == property) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationOnNullArgument("convertObjectToValue"));
         }
@@ -2807,8 +2807,8 @@ public class SDODataObject implements DataObject, SequencedObject {
             theList.add(property);
             getInstanceProperties().add(property);
             if (((SDOProperty)property).hasAliasNames()) {
-                for (int i = 0, size = ((SDOProperty)property).getAliasNames().size(); i < size; i++) {
-                    _getOpenContentAliasNamesMap().put((String)((SDOProperty)property).getAliasNames().get(i), property);
+                for (int i = 0, size = property.getAliasNames().size(); i < size; i++) {
+                    _getOpenContentAliasNamesMap().put((String) property.getAliasNames().get(i), property);
                 }
             }
         }
@@ -2832,8 +2832,8 @@ public class SDODataObject implements DataObject, SequencedObject {
         _getOpenContentPropertiesAttributes().remove(property);
         getInstanceProperties().remove(property);
         if (((SDOProperty)property).hasAliasNames()) {
-            for (int i = 0, size = ((SDOProperty)property).getAliasNames().size(); i < size; i++) {
-               _getOpenContentAliasNamesMap().remove(((SDOProperty)property).getAliasNames().get(i));
+            for (int i = 0, size = property.getAliasNames().size(); i < size; i++) {
+               _getOpenContentAliasNamesMap().remove(property.getAliasNames().get(i));
             }
         }
     }

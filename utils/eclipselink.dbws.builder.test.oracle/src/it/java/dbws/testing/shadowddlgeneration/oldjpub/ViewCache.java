@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,13 +39,15 @@ import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_ARGUMENTS;
 @SuppressWarnings({"unchecked","rawtypes"})
 public class ViewCache implements Externalizable {
 
+    private static final long serialVersionUID = 5009092516275895424L;
+
     static final String VIEW_CACHE_PREFIX = "viewcachefor";
     public static final String PARAMETER_USER = "USER";
     public static final String PARAMETER_ALL = "ALL";
 
-    protected Connection m_conn;
+    protected transient Connection m_conn;
     protected String m_user;
-    protected Map m_rowsCacheIndex;
+    protected transient Map m_rowsCacheIndex;
     protected ArrayList m_rowsCache;
     protected int m_hits;
     protected int m_visits;
@@ -217,7 +219,7 @@ public class ViewCache implements Externalizable {
             for (i = inParams.length; i < inParams.length + types.length; i++) {
                 int index = i - inParams.length;
                 if (types[index] == OracleTypes.INTEGER) {
-                    outParamList.add(Integer.valueOf(stmt.getInt(i + 1)));
+                    outParamList.add(stmt.getInt(i + 1));
                 }
                 else if (types[index] == OracleTypes.VARCHAR) {
                     outParamList.add(stmt.getString(i + 1));
@@ -239,7 +241,7 @@ public class ViewCache implements Externalizable {
     private Object[] toObject(int[] types) {
         Object[] obj = new Object[types.length];
         for (int i = 0; i < types.length; i++) {
-            obj[i] = Integer.valueOf(types[i]);
+            obj[i] = types[i];
         }
         return obj;
     }
@@ -304,11 +306,11 @@ public class ViewCache implements Externalizable {
                 stmt += " IS NOT NULL";
             }
             else if (values[i] instanceof java.lang.String) {
-                stmt += "='" + ((java.lang.String)values[i]) + "'";
+                stmt += "='" + values[i] + "'";
             }
             else if ((values[i] instanceof java.lang.String)
                 && ((String)values[i]).indexOf("%") > -1) {
-                stmt += " like '" + ((java.lang.String)values[i]) + "'";
+                stmt += " like '" + values[i] + "'";
             }
             else {
                 stmt += "=" + values[i];
@@ -451,17 +453,18 @@ public class ViewCache implements Externalizable {
         return (dir == null ? "" : dir + File.separator) + VIEW_CACHE_PREFIX + user.toLowerCase();
     }
 
+    @Override
     public void readExternal(java.io.ObjectInput in) throws IOException, ClassNotFoundException {
         if (m_viewCacheDebug) {
             System.out.println("viewcache.read.external");
         }
         // summary
         m_user = (String)in.readObject();
-        m_hits = ((Integer)in.readObject()).intValue();
-        m_visits = ((Integer)in.readObject()).intValue();
+        m_hits = (Integer) in.readObject();
+        m_visits = (Integer) in.readObject();
 
         // m_rowsCache
-        int rowsCacheSize = ((Integer)in.readObject()).intValue();
+        int rowsCacheSize = (Integer) in.readObject();
         m_rowsCache = new ArrayList(rowsCacheSize);
         for (int i = 0; i < rowsCacheSize; i++) {
             RowsCacheEntry rce = (RowsCacheEntry)in.readObject();
@@ -469,11 +472,11 @@ public class ViewCache implements Externalizable {
         }
 
         // m_rowsCacheIndex (String, ArrayList<ViewRow>)
-        int rowsCacheIndexSize = ((Integer)in.readObject()).intValue();
+        int rowsCacheIndexSize = (Integer) in.readObject();
         m_rowsCacheIndex = new HashMap(rowsCacheIndexSize);
         for (int i = 0; i < rowsCacheIndexSize; i++) {
             String key = (String)in.readObject();
-            int rowsSize = ((Integer)in.readObject()).intValue();
+            int rowsSize = (Integer) in.readObject();
             ArrayList rows = new ArrayList(rowsSize);
             for (int j = 0; j < rowsSize; j++) {
                 ViewRow row = (ViewRow)in.readObject();
@@ -483,30 +486,31 @@ public class ViewCache implements Externalizable {
         }
     }
 
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         if (m_viewCacheDebug) {
             System.out.println("viewcache.write.external");
         }
         // summary
         out.writeObject(m_user);
-        out.writeObject(Integer.valueOf(m_hits));
-        out.writeObject(Integer.valueOf(m_visits));
+        out.writeObject(m_hits);
+        out.writeObject(m_visits);
 
         // m_rowsCache
-        out.writeObject(Integer.valueOf(m_rowsCache.size()));
+        out.writeObject(m_rowsCache.size());
         for (int i = 0; i < m_rowsCache.size(); i++) {
             RowsCacheEntry rce = (RowsCacheEntry)m_rowsCache.get(i);
             out.writeObject(rce);
         }
 
         // m_rowsCacheIndex (String, ArrayList<ViewRow>)
-        out.writeObject(Integer.valueOf(m_rowsCacheIndex.size()));
+        out.writeObject(m_rowsCacheIndex.size());
         Iterator keys = m_rowsCacheIndex.keySet().iterator();
         Iterator values = m_rowsCacheIndex.values().iterator();
         while (keys.hasNext()) {
             out.writeObject(keys.next());
             ArrayList rows = (ArrayList)values.next();
-            out.writeObject(Integer.valueOf(rows.size()));
+            out.writeObject(rows.size());
             for (int i = 0; i < rows.size(); i++) {
                 out.writeObject(rows.get(i));
             }

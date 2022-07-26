@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
+import org.eclipse.persistence.sessions.DataRecord;
 
 /**
  * The class defines EclipseLink query hints.
@@ -839,7 +840,7 @@ public class QueryHints {
      * <p>It can also be used to return a single column, or single value.
      * Valid values are defined in ResultType.
      * @see ResultType
-     * @see org.eclipse.persistence.sessions.Record
+     * @see DataRecord
      * @see org.eclipse.persistence.sessions.DatabaseRecord
      * @see org.eclipse.persistence.queries.ReportQueryResult
      * @see org.eclipse.persistence.queries.ReportQuery#setReturnType(int)
@@ -919,4 +920,8 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ResultSetMappingQuery#shouldReturnNameValuePairs()
      */
     public static final String RETURN_NAME_VALUE_PAIRS = "eclipselink.query-return-name-value-pairs";
+
+    private QueryHints() {
+        // no instance please
+    }
 }

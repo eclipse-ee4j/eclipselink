@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -264,11 +264,11 @@ public class JAXBBinder extends Binder {
             return;
         }
         if (propName.equals(Marshaller.JAXB_FORMATTED_OUTPUT)) {
-            this.xmlBinder.getMarshaller().setFormattedOutput(Boolean.valueOf(valueString).booleanValue());
+            this.xmlBinder.getMarshaller().setFormattedOutput(Boolean.parseBoolean(valueString));
             return;
         }
         if (propName.equals(Marshaller.JAXB_FRAGMENT)) {
-            this.xmlBinder.getMarshaller().setFragment(Boolean.valueOf(valueString).booleanValue());
+            this.xmlBinder.getMarshaller().setFragment(Boolean.parseBoolean(valueString));
             return;
         }
         if (propName.equals(Marshaller.JAXB_SCHEMA_LOCATION)) {

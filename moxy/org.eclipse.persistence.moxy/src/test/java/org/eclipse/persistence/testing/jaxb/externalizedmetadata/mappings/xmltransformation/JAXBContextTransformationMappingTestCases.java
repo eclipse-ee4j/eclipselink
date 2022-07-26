@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
@@ -50,13 +51,13 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
     public void testBothClassAndMethod() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(METADATA_FILE_CLASS_AND_METHOD);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         try {
-            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
         } catch (JAXBException e) {
             return;
         }
@@ -72,13 +73,13 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
     public void testNoClassOrMethod() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(METADATA_FILE_NO_CLASS_OR_METHOD);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
        try {
-            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
 
         } catch (JAXBException e) {
             return;
@@ -97,14 +98,14 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
     public void testInvalidMethod() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(METADATA_FILE_BAD_METHOD);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         int exceptionCount = 0;
         try {
-            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
 
         } catch (JAXBException e) {
             exceptionCount++;
@@ -114,7 +115,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         // test exception from SchemaGenerator
         try {
             Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, Thread.currentThread().getContextClassLoader());
-            JavaModelInputImpl jModelInput = new JavaModelInputImpl(new Class[]{Employee.class}, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), new Class[]{Employee.class})));
+            JavaModelInputImpl jModelInput = new JavaModelInputImpl(new Class<?>[]{Employee.class}, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), new Class<?>[]{Employee.class})));
             Generator generator = new Generator(jModelInput, bindings, Thread.currentThread().getContextClassLoader(), "", false);
             generator.generateSchema();
         } catch (Exception e) {
@@ -133,15 +134,15 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
     public void testInvalidTransformerClass() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(METADATA_FILE_BAD_CLASS);
 
-        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
-        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
-        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
 
         int exceptionCount = 0;
         // test exception from MappingsGenerator
         try {
-            JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class<?>[]{Employee.class}, properties, Thread.currentThread().getContextClassLoader());
 
         } catch (JAXBException e) {
             exceptionCount++;
@@ -151,7 +152,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         // test exception from SchemaGenerator
         try {
             Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, Thread.currentThread().getContextClassLoader());
-            JavaModelInputImpl jModelInput = new JavaModelInputImpl(new Class[]{Employee.class}, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), new Class[]{Employee.class})));
+            JavaModelInputImpl jModelInput = new JavaModelInputImpl(new Class<?>[]{Employee.class}, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), new Class<?>[]{Employee.class})));
             Generator generator = new Generator(jModelInput, bindings, Thread.currentThread().getContextClassLoader(), "", false);
             generator.generateSchema();
         } catch (Exception e) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,10 +40,12 @@ public class EmployeeWeavingTestModel extends TestModel {
         setDescription("This model tests reading/writing using weaved performance employee model.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getWeaverTestSuite());
         addTest(getReadObjectTestSuite());
@@ -94,9 +96,9 @@ public class EmployeeWeavingTestModel extends TestModel {
         suite.setName("EmployeeWeavedReadObjectTestSuite");
         suite.setDescription("This suite test the reading of each object in the employee weaved performance model.");
 
-        Class employeeClass = Employee.class;
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new ReadObjectTest(manager.getObject(employeeClass, "0001")));
@@ -121,9 +123,9 @@ public class EmployeeWeavingTestModel extends TestModel {
         suite.setName("EmployeeWeavedUpdateTestSuite");
         suite.setDescription("This suite tests the updating of each object in the employee demo.");
 
-        Class employeeClass = Employee.class;
-        Class largeProjectClass = LargeProject.class;
-        Class smallProjectClass = SmallProject.class;
+        Class<Employee> employeeClass = Employee.class;
+        Class<LargeProject> largeProjectClass = LargeProject.class;
+        Class<SmallProject> smallProjectClass = SmallProject.class;
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         suite.addTest(new UnitOfWorkBasicUpdateObjectTest(manager.getObject(employeeClass, "0001")));
@@ -168,6 +170,7 @@ public class EmployeeWeavingTestModel extends TestModel {
 
     public TestCase buildWeaverTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 testWeaving(new Employee(), true);
                 testWeaving(new SmallProject(), true);
@@ -217,6 +220,7 @@ public class EmployeeWeavingTestModel extends TestModel {
      */
     public TestCase buildFetchGroupReadObjectTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() throws Exception {
                 Employee fetched = (Employee)getSession().readObject(Employee.class);
                 getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -239,6 +243,7 @@ public class EmployeeWeavingTestModel extends TestModel {
      */
     public TestCase buildFetchGroupReadObjectUOWTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() throws Exception {
                 Employee fetched = (Employee)getSession().readObject(Employee.class);
                 getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -261,6 +266,7 @@ public class EmployeeWeavingTestModel extends TestModel {
      */
     public TestCase buildFetchGroupUpdateObjectUOWTest() {
         TestCase test = new TransactionalTestCase() {
+            @Override
             public void test() throws Exception {
                 Employee fetched = (Employee)getSession().readObject(Employee.class);
                 getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -289,6 +295,7 @@ public class EmployeeWeavingTestModel extends TestModel {
      */
     public TestCase buildFetchGroupUpdateNonFetchedObjectUOWTest() {
         TestCase test = new TransactionalTestCase() {
+            @Override
             public void test() throws Exception {
                 Employee fetched = (Employee)getSession().readObject(Employee.class);
                 getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -318,6 +325,7 @@ public class EmployeeWeavingTestModel extends TestModel {
      */
     public TestCase buildFetchGroupReadObjectUOWTransactionTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() throws Exception {
                 Employee fetched = (Employee)getSession().readObject(Employee.class);
                 getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -347,6 +355,7 @@ public class EmployeeWeavingTestModel extends TestModel {
      */
     public TestCase buildFetchGroupReadAllTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() throws Exception {
                 getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
                 ReadAllQuery query = new ReadAllQuery(Employee.class);

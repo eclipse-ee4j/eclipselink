@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package org.eclipse.persistence.internal.sequencing;
 
 import java.util.Hashtable;
-import org.eclipse.persistence.internal.sequencing.Sequencing;
+
 import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.remote.RemoteFunctionCall;
 import org.eclipse.persistence.internal.sessions.remote.SequencingFunctionCall;
@@ -29,18 +29,19 @@ import org.eclipse.persistence.internal.sessions.remote.SequencingFunctionCall;
  * are implemented as static inner classes in SequenceFunctionCall class:
  * like SequencingFunctionCall.DoesExist.
  */
+@SuppressWarnings({"rawtypes"})
 class RemoteConnectionSequencing implements Sequencing {
     protected RemoteConnection remoteConnection;
     protected Hashtable classToShouldAcquireValueAfterInsert;
     protected int whenShouldAcquireValueForAll;
 
     public static boolean masterSequencingExists(RemoteConnection con) {
-        return ((Boolean)con.getSequenceNumberNamed(new SequencingFunctionCall.DoesExist())).booleanValue();
+        return (Boolean) con.getSequenceNumberNamed(new SequencingFunctionCall.DoesExist());
     }
 
     public RemoteConnectionSequencing(RemoteConnection remoteConnection) {
         this.remoteConnection = remoteConnection;
-        whenShouldAcquireValueForAll = ((Integer)processFunctionCall(new SequencingFunctionCall.WhenShouldAcquireValueForAll())).intValue();
+        whenShouldAcquireValueForAll = (Integer) processFunctionCall(new SequencingFunctionCall.WhenShouldAcquireValueForAll());
         if (whenShouldAcquireValueForAll == UNDEFINED) {
             classToShouldAcquireValueAfterInsert = new Hashtable(20);
         }
@@ -52,7 +53,7 @@ class RemoteConnectionSequencing implements Sequencing {
     }
 
     @Override
-    public Object getNextValue(Class cls) {
+    public Object getNextValue(Class<?> cls) {
         return processFunctionCall(new SequencingFunctionCall.GetNextValue(cls));
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,10 +61,12 @@ public class ArrayWithAnnotationsTestCases extends TypeMappingInfoWithJSONTestCa
         return typeMappingInfos;
     }
 
+    @Override
     protected Object getControlObject() {
         return new JAXBElement<Float[]>(XML_TAG_NAME, Float[].class, f);
     }
 
+    @Override
     public Map<String, InputStream> getControlSchemaFiles() {
         InputStream instream = ClassLoader.getSystemResourceAsStream(XSD_RESOURCE);
         Map<String, InputStream> controlSchema = new HashMap<String, InputStream>();

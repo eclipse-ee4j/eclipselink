@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -34,7 +34,7 @@ import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
@@ -75,6 +75,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
   }
 
   //This method is run at the end of EVERY test case method
+  @Override
   public void tearDown()
   {
       clearCache();
@@ -139,7 +140,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         employeePopulator.persistExample(session);
     }
 
-    public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass){
+    public Vector getAttributeFromAll(String attributeName, Vector objects, Class<?> referenceClass){
 
         EntityManager em = createEntityManager();
 
@@ -373,7 +374,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
 
         try {
             String ejbqlString = "SELECT emp FROM Employee emp WHERE emp.id > :param1 OR :param1 IS null";
-            createEntityManager().createQuery(ejbqlString).setParameter("param1", new Integer(1)).getResultList();
+            createEntityManager().createQuery(ejbqlString).setParameter("param1", 1).getResultList();
         } catch (Exception e) {
             exception = e;
         }
@@ -621,7 +622,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     /**
      * Bug 501272
      * Test a JPQL query with 'select new' syntax with a named query and query results
-     * cache enabled. Tests if any SQL is generated & correct results after initial query.
+     * cache enabled. Tests if any SQL is generated &amp; correct results after initial query.
      * @see SimpleRoom
      */
     public void testSelectNewJPQLQueryWithQueryResultsCache() {

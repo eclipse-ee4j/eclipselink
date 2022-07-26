@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,6 +74,7 @@ import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.XmlType.DEFAULT;
 import jakarta.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
@@ -93,6 +94,7 @@ import org.eclipse.persistence.internal.jaxb.many.MultiDimensionalArrayValue;
 import org.eclipse.persistence.internal.jaxb.many.MultiDimensionalCollectionValue;
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
@@ -239,13 +241,13 @@ public final class AnnotationsProcessor {
     private List<String> objectFactoryClassNames;
     private List<JavaClass> classesToProcessPropertyTypes;
 
-    private Map<String, Class> arrayClassesToGeneratedClasses;
-    private Map<Class, JavaClass> generatedClassesToArrayClasses;
-    private Map<java.lang.reflect.Type, Class> collectionClassesToGeneratedClasses;
-    private Map<Class, java.lang.reflect.Type> generatedClassesToCollectionClasses;
+    private Map<String, Class<?>> arrayClassesToGeneratedClasses;
+    private Map<Class<?>, JavaClass> generatedClassesToArrayClasses;
+    private Map<java.lang.reflect.Type, Class<?>> collectionClassesToGeneratedClasses;
+    private Map<Class<?>, java.lang.reflect.Type> generatedClassesToCollectionClasses;
     private Map<JavaClass, List<TypeMappingInfo>> javaClassToTypeMappingInfos;
-    private Map<TypeMappingInfo, Class> typeMappingInfosToGeneratedClasses;
-    private Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses;
+    private Map<TypeMappingInfo, Class<?>> typeMappingInfosToGeneratedClasses;
+    private Map<TypeMappingInfo, Class<?>> typeMappingInfoToAdapterClasses;
     private Map<TypeMappingInfo, QName> typeMappingInfosToSchemaTypes;
 
     private Helper helper;
@@ -297,7 +299,6 @@ public final class AnnotationsProcessor {
     /**
      * Generate TypeInfo instances for a given array of JavaClasses.
      *
-     * @param classes
      */
     void processClassesAndProperties(JavaClass[] classes, TypeMappingInfo[] typeMappingInfos) {
         init(classes, typeMappingInfos);
@@ -319,8 +320,8 @@ public final class AnnotationsProcessor {
                         boolean xmlAttachmentRef = false;
                         String xmlMimeType = null;
                         java.lang.annotation.Annotation[] annotations = getAnnotations(nextInfo);
-                        Class adapterClass = typeMappingInfoToAdapterClasses.get(nextInfo);
-                        Class declJavaType = null;
+                        Class<?> adapterClass = typeMappingInfoToAdapterClasses.get(nextInfo);
+                        Class<?> declJavaType = null;
                         if (adapterClass != null) {
                             declJavaType = CompilerHelper.getTypeFromAdapterClass(adapterClass);
                         }
@@ -349,7 +350,7 @@ public final class AnnotationsProcessor {
                         }
 
                         if (typeMappingInfosToGeneratedClasses != null) {
-                            Class generatedClass = typeMappingInfosToGeneratedClasses.get(nextInfo);
+                            Class<?> generatedClass = typeMappingInfosToGeneratedClasses.get(nextInfo);
                             if (generatedClass != null) {
                                 nextClassName = generatedClass.getCanonicalName();
                             }
@@ -372,8 +373,8 @@ public final class AnnotationsProcessor {
                                 } else if (nextClassName.equals(ClassConstants.XML_GREGORIAN_CALENDAR.getName())) {
                                     qname = Constants.ANY_SIMPLE_TYPE_QNAME;
                                 } else {
-                                    Class theClass = helper.getClassForJavaClass(nextClass);
-                                    qname = (QName) XMLConversionManager.getDefaultJavaTypes().get(theClass);
+                                    Class<?> theClass = helper.getClassForJavaClass(nextClass);
+                                    qname = XMLConversionManager.getDefaultJavaTypes().get(theClass);
                                 }
                             }
                         }
@@ -392,7 +393,7 @@ public final class AnnotationsProcessor {
                             if (declJavaType != null) {
                                 element.setJavaType(helper.getJavaClass(declJavaType));
                             }
-                            Class generatedClass = typeMappingInfosToGeneratedClasses.get(nextInfo);
+                            Class<?> generatedClass = typeMappingInfosToGeneratedClasses.get(nextInfo);
                             if (generatedClass != null) {
                                 element.setJavaType(helper.getJavaClass(generatedClass));
                             }
@@ -432,8 +433,6 @@ public final class AnnotationsProcessor {
      * precedence over the annotation array; if there is an xml-element the
      * Array of Annotations will be ignored.
      *
-     * @param tmInfo
-     * @return
      */
     private java.lang.annotation.Annotation[] getAnnotations(TypeMappingInfo tmInfo) {
         if (tmInfo.getXmlElement() != null) {
@@ -445,13 +444,13 @@ public final class AnnotationsProcessor {
 
             // unmarshal the node into an XmlElement
             org.eclipse.persistence.jaxb.xmlmodel.XmlElement xElt = CompilerHelper.getXmlElement(tmInfo.getXmlElement(), loader);
-            List annotations = new ArrayList();
+            List<Annotation> annotations = new ArrayList<>();
             // where applicable, a given dynamic proxy will contain a Map of
             // method name/return value entries
             Map<String, Object> components = null;
             // handle @XmlElement: set 'type' method
             if (!(xElt.getType().equals("jakarta.xml.bind.annotation.XmlElement.DEFAULT"))) {
-                components = new HashMap<String, Object>();
+                components = new HashMap<>();
                 components.put(TYPE_METHOD_NAME, xElt.getType());
                 annotations.add(AnnotationProxy.getProxy(components, XmlElement.class, loader, cMgr));
             }
@@ -465,19 +464,19 @@ public final class AnnotationsProcessor {
             }
             // handle @XmlMimeType: set 'value' method
             if (xElt.getXmlMimeType() != null) {
-                components = new HashMap<String, Object>();
+                components = new HashMap<>();
                 components.put(VALUE_METHOD_NAME, xElt.getXmlMimeType());
                 annotations.add(AnnotationProxy.getProxy(components, XmlMimeType.class, loader, cMgr));
             }
             // handle @XmlJavaTypeAdapter: set 'type' and 'value' methods
             if (xElt.getXmlJavaTypeAdapter() != null) {
-                components = new HashMap<String, Object>();
+                components = new HashMap<>();
                 components.put(TYPE_METHOD_NAME, xElt.getXmlJavaTypeAdapter().getType());
                 components.put(VALUE_METHOD_NAME, xElt.getXmlJavaTypeAdapter().getValue());
                 annotations.add(AnnotationProxy.getProxy(components, XmlJavaTypeAdapter.class, loader, cMgr));
             }
             // return the newly created array of dynamic proxy objects
-            return (java.lang.annotation.Annotation[]) annotations.toArray(new java.lang.annotation.Annotation[annotations.size()]);
+            return annotations.toArray(new Annotation[annotations.size()]);
         }
         // no xml-element set on the info, (i.e. no xml overrides) so return the
         // array of Annotation objects
@@ -489,38 +488,38 @@ public final class AnnotationsProcessor {
      * of classes via preBuildTypeInfo, postBuildTypeInfo, processJavaClasses.
      */
     void init(JavaClass[] classes, TypeMappingInfo[] typeMappingInfos) {
-        typeInfoClasses = new ArrayList<JavaClass>();
-        referencedByTransformer = new ArrayList<String>();
-        typeInfos = new HashMap<String, TypeInfo>();
-        typeQNames = new ArrayList<QName>();
-        classesToProcessPropertyTypes = new ArrayList<JavaClass>();
-        objectFactoryClassNames = new ArrayList<String>();
-        userDefinedSchemaTypes = new HashMap<String, QName>();
+        typeInfoClasses = new ArrayList<>();
+        referencedByTransformer = new ArrayList<>();
+        typeInfos = new HashMap<>();
+        typeQNames = new ArrayList<>();
+        classesToProcessPropertyTypes = new ArrayList<>();
+        objectFactoryClassNames = new ArrayList<>();
+        userDefinedSchemaTypes = new HashMap<>();
         if (packageToPackageInfoMappings == null) {
-            packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
+            packageToPackageInfoMappings = new HashMap<>();
         }
-        this.factoryMethods = new HashMap<String, JavaMethod>();
-        this.xmlRegistries = new HashMap<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry>();
-        this.xmlRootElements = new HashMap<String, ElementDeclaration>();
+        this.factoryMethods = new HashMap<>();
+        this.xmlRegistries = new HashMap<>();
+        this.xmlRootElements = new HashMap<>();
 
-        arrayClassesToGeneratedClasses = new HashMap<String, Class>();
-        collectionClassesToGeneratedClasses = new HashMap<java.lang.reflect.Type, Class>();
-        generatedClassesToArrayClasses = new HashMap<Class, JavaClass>();
-        generatedClassesToCollectionClasses = new HashMap<Class, java.lang.reflect.Type>();
-        typeMappingInfosToGeneratedClasses = new HashMap<TypeMappingInfo, Class>();
-        typeMappingInfosToSchemaTypes = new HashMap<TypeMappingInfo, QName>();
-        elementDeclarations = new HashMap<String, Map<QName, ElementDeclaration>>();
-        Map globalElements = new HashMap<QName, ElementDeclaration>();
+        arrayClassesToGeneratedClasses = new HashMap<>();
+        collectionClassesToGeneratedClasses = new HashMap<>();
+        generatedClassesToArrayClasses = new HashMap<>();
+        generatedClassesToCollectionClasses = new HashMap<>();
+        typeMappingInfosToGeneratedClasses = new HashMap<>();
+        typeMappingInfosToSchemaTypes = new HashMap<>();
+        elementDeclarations = new HashMap<>();
+        Map<QName, ElementDeclaration> globalElements = new HashMap<>();
         elementDeclarations.put(XmlElementDecl.GLOBAL.class.getName(), globalElements);
-        localElements = new ArrayList<ElementDeclaration>();
+        localElements = new ArrayList<>();
 
-        javaClassToTypeMappingInfos = new HashMap<JavaClass, List<TypeMappingInfo>>();
-        typeMappingInfoToAdapterClasses = new HashMap<TypeMappingInfo, Class>();
+        javaClassToTypeMappingInfos = new HashMap<>();
+        typeMappingInfoToAdapterClasses = new HashMap<>();
         if (typeMappingInfos != null) {
             for (int i = 0; i < typeMappingInfos.length; i++) {
                 List<TypeMappingInfo> infos = javaClassToTypeMappingInfos.get(classes[i]);
                 if(infos == null) {
-                    infos = new ArrayList<TypeMappingInfo>();
+                    infos = new ArrayList<>();
                     javaClassToTypeMappingInfos.put(classes[i], infos);
                 }
                 infos.add(typeMappingInfos[i]);
@@ -543,14 +542,12 @@ public final class AnnotationsProcessor {
      * this method have been modified (if necessary) postBuildTypeInfo and
      * processJavaClasses should be called to finish processing.
      *
-     * @param javaClasses
-     * @return
      */
     public Map<String, TypeInfo> preBuildTypeInfo(JavaClass[] javaClasses) {
         for (JavaClass javaClass : javaClasses) {
             String qualifiedName = javaClass.getQualifiedName();
             TypeInfo info = typeInfos.get(qualifiedName);
-            if (javaClass == null || javaClass.isArray()|| (info!=null && info.isPreBuilt()) || !shouldGenerateTypeInfo(javaClass) || isXmlRegistry(javaClass) ) {
+            if (javaClass.isArray()|| (info!=null && info.isPreBuilt()) || !shouldGenerateTypeInfo(javaClass) || isXmlRegistry(javaClass) ) {
                 continue;
             }
 
@@ -676,7 +673,7 @@ public final class AnnotationsProcessor {
     }
 
     private void processNamedObjectGraphs(JavaClass javaClass, TypeInfo info) {
-        List<XmlNamedObjectGraph> objectGraphs = new ArrayList<XmlNamedObjectGraph>();
+        List<XmlNamedObjectGraph> objectGraphs = new ArrayList<>();
         if(helper.isAnnotationPresent(javaClass, XmlNamedObjectGraphs.class)) {
             XmlNamedObjectGraphs graphs = (XmlNamedObjectGraphs)helper.getAnnotation(javaClass, XmlNamedObjectGraphs.class);
             Collections.addAll(objectGraphs, graphs.value());
@@ -740,9 +737,9 @@ public final class AnnotationsProcessor {
             }
         }
         if(xmlAccessorFactory != null) {
-            Class xmlAccessorFactoryClass = null;
+            Class<?> xmlAccessorFactoryClass = null;
             try {
-                xmlAccessorFactoryClass = (Class)PrivilegedAccessHelper.invokeMethod(valueMethod, xmlAccessorFactory, new Object[]{});
+                xmlAccessorFactoryClass = PrivilegedAccessHelper.invokeMethod(valueMethod, xmlAccessorFactory, new Object[]{});
                 info.setXmlAccessorFactory(new AccessorFactoryWrapper(PrivilegedAccessHelper.newInstanceFromClass(xmlAccessorFactoryClass)));
             } catch (Exception ex) {
                 throw JAXBException.errorInstantiatingAccessorFactory(xmlAccessorFactoryClass, ex);
@@ -761,7 +758,6 @@ public final class AnnotationsProcessor {
      * is typically called after init and preBuildTypeInfo have
      * been called.
      *
-     * @param javaClasses
      * @return updated array of JavaClasses, made up of the original classes
      * plus any additional ones
      */
@@ -776,7 +772,7 @@ public final class AnnotationsProcessor {
         buildTypeInfo(javaClasses);
         updateGlobalElements(javaClasses);
         if(javaClasses.length > originalList.size()) {
-            List<JavaClass> newClasses = new ArrayList<JavaClass>(javaClasses.length - originalList.size());
+            List<JavaClass> newClasses = new ArrayList<>(javaClasses.length - originalList.size());
             for(JavaClass next:javaClasses) {
                 if(!(originalList.contains(next))) {
                     newClasses.add(next);
@@ -794,8 +790,6 @@ public final class AnnotationsProcessor {
      * instances. This method assumes that init, preBuildTypeInfo, and
      * postBuildTypeInfo have been called.
      *
-     * @param allClasses
-     * @return
      */
     private Map<String, TypeInfo> buildTypeInfo(JavaClass[] allClasses) {
         for (JavaClass javaClass : allClasses) {
@@ -822,22 +816,18 @@ public final class AnnotationsProcessor {
                     info.setXmlNameTransformer(nsInfoXmlNameTransformer);
                 } else if (helper.isAnnotationPresent(javaClass, XmlNameTransformer.class)) {
                     XmlNameTransformer xmlNameTransformer = (XmlNameTransformer) helper.getAnnotation(javaClass, XmlNameTransformer.class);
-                    Class nameTransformerClass = xmlNameTransformer.value();
+                    Class<? extends XMLNameTransformer> nameTransformerClass = xmlNameTransformer.value();
                     try {
-                        info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.newInstance());
-                    } catch (InstantiationException ex) {
-                        throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
-                    } catch (IllegalAccessException ex) {
+                        info.setXmlNameTransformer(nameTransformerClass.getConstructor().newInstance());
+                    } catch (ReflectiveOperationException ex) {
                         throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
                     }
                 } else if (helper.isAnnotationPresent(javaClass.getPackage(), XmlNameTransformer.class)) {
                     XmlNameTransformer xmlNameTransformer = (XmlNameTransformer) helper.getAnnotation(javaClass.getPackage(), XmlNameTransformer.class);
-                    Class nameTransformerClass = xmlNameTransformer.value();
+                    Class<? extends XMLNameTransformer> nameTransformerClass = xmlNameTransformer.value();
                     try {
-                        info.setXmlNameTransformer((XMLNameTransformer) nameTransformerClass.newInstance());
-                    } catch (InstantiationException ex) {
-                        throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
-                    } catch (IllegalAccessException ex) {
+                        info.setXmlNameTransformer(nameTransformerClass.getConstructor().newInstance());
+                    } catch (ReflectiveOperationException ex) {
                         throw JAXBException.exceptionWithNameTransformerClass(nameTransformerClass.getName(), ex);
                     }
                 }
@@ -980,7 +970,7 @@ public final class AnnotationsProcessor {
 
             // Keep a list of "any" properties to verify if multiples exist
             // that they have different element wrappers
-            List<Property> anyElementProperties = new ArrayList<Property>();
+            List<Property> anyElementProperties = new ArrayList<>();
 
             for (Property property : tInfo.getPropertyList()) {
                 // Check that @XmlAttribute references a Java type that maps to text in XML
@@ -1117,7 +1107,6 @@ public final class AnnotationsProcessor {
     /**
      * Process a given TypeInfo instance's properties.
      *
-     * @param info
      */
     private void processTypeInfoProperties(JavaClass javaClass, TypeInfo info) {
         List<Property> properties = info.getPropertyList();
@@ -1179,12 +1168,10 @@ public final class AnnotationsProcessor {
      * Process any additional classes, such as inner classes, @XmlRegistry or
      * from @XmlSeeAlso.
      *
-     * @param classes
-     * @return
      */
     private JavaClass[] processAdditionalClasses(JavaClass[] classes) {
-        ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();
-        ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
+        ArrayList<JavaClass> extraClasses = new ArrayList<>();
+        ArrayList<JavaClass> classesToProcess = new ArrayList<>();
         for (JavaClass jClass : classes) {
             List<TypeMappingInfo> infos = this.javaClassToTypeMappingInfos.get(jClass);
             if(infos != null && infos.size() > 0) {
@@ -1204,10 +1191,10 @@ public final class AnnotationsProcessor {
     }
 
     private void processAdditionalClasses(JavaClass cls, TypeMappingInfo tmi, ArrayList<JavaClass> extraClasses, ArrayList<JavaClass> classesToProcess) {
-        Class xmlElementType = null;
+        Class<?> xmlElementType = null;
         JavaClass javaClass = cls;
         if (tmi != null) {
-            Class adapterClass = this.typeMappingInfoToAdapterClasses.get(tmi);
+            Class<?> adapterClass = this.typeMappingInfoToAdapterClasses.get(tmi);
             if (adapterClass != null) {
                 JavaClass adapterJavaClass = helper.getJavaClass(adapterClass);
                 JavaClass newType = helper.getJavaClass(Object.class);
@@ -1251,7 +1238,7 @@ public final class AnnotationsProcessor {
             if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
                 extraClasses.add(javaClass.getComponentType());
             }
-            Class generatedClass;
+            Class<?> generatedClass;
             if (null == tmi) {
                 generatedClass = arrayClassesToGeneratedClasses.get(javaClass.getName());
             } else {
@@ -1277,7 +1264,7 @@ public final class AnnotationsProcessor {
                 componentClass = helper.getJavaClass(Object.class);
             }
 
-            Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfosToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
+            Class<?> generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfosToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
             if (generatedClass == null) {
                 generatedClass = generateCollectionValue(javaClass, tmi, xmlElementType, extraClasses);
                 extraClasses.add(helper.getJavaClass(generatedClass));
@@ -1302,7 +1289,7 @@ public final class AnnotationsProcessor {
                 valueClass = helper.getJavaClass(Object.class);
             }
 
-            Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfosToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
+            Class<?> generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfosToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
             if (generatedClass == null) {
                 generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass, tmi);
                 extraClasses.add(helper.getJavaClass(generatedClass));
@@ -1319,8 +1306,6 @@ public final class AnnotationsProcessor {
      *
      * See @XmlRegistry or @XmlSeeAlso.
      *
-     * @param javaClass
-     * @param classesToProcess
      */
     private void processClass(JavaClass javaClass, ArrayList<JavaClass> classesToProcess) {
         if (shouldGenerateTypeInfo(javaClass)) {
@@ -1343,15 +1328,14 @@ public final class AnnotationsProcessor {
      * Process an @XmlSeeAlso annotation. TypeInfo instances will be created for
      * each class listed.
      *
-     * @param javaClass
      */
     private void processXmlSeeAlso(JavaClass javaClass, TypeInfo info) {
         // reflectively load @XmlSeeAlso class to avoid dependency
-        Class xmlSeeAlsoClass = null;
+        Class<?> xmlSeeAlsoClass = null;
         Method valueMethod = null;
         try {
             xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("jakarta.xml.bind.annotation.XmlSeeAlso", false, helper.getClassLoader());
-            valueMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlSeeAlsoClass, "value", new Class[] {});
+            valueMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlSeeAlsoClass, "value", new Class<?>[] {});
         } catch (ClassNotFoundException ex) {
             // Ignore this exception. If SeeAlso isn't available, don't try to
             // process
@@ -1359,15 +1343,15 @@ public final class AnnotationsProcessor {
         }
         if (xmlSeeAlsoClass != null && helper.isAnnotationPresent(javaClass, xmlSeeAlsoClass)) {
             Object seeAlso = helper.getAnnotation(javaClass, xmlSeeAlsoClass);
-            Class[] values = null;
+            Class<?>[] values = null;
             try {
-                values = (Class[]) PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[] {});
+                values = PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[] {});
             } catch (Exception ex) {
             }
 
             if (values != null) {
-                List<String> seeAlsoClassNames = new ArrayList<String>();
-                for (Class next : values) {
+                List<String> seeAlsoClassNames = new ArrayList<>();
+                for (Class<?> next : values) {
                     seeAlsoClassNames.add(next.getName());
                 }
                 info.setXmlSeeAlso(seeAlsoClassNames);
@@ -1378,8 +1362,6 @@ public final class AnnotationsProcessor {
     /**
      * Process any factory methods.
      *
-     * @param javaClass
-     * @param info
      */
     private void processFactoryMethods(JavaClass javaClass, TypeInfo info) {
         JavaMethod factoryMethod = this.factoryMethods.get(javaClass.getRawName());
@@ -1402,8 +1384,6 @@ public final class AnnotationsProcessor {
     /**
      * Process any package-level @XmlJavaTypeAdapters.
      *
-     * @param javaClass
-     * @param info
      */
     private void processPackageLevelAdapters(JavaClass javaClass, TypeInfo info) {
         JavaPackage pack = javaClass.getPackage();
@@ -1434,8 +1414,6 @@ public final class AnnotationsProcessor {
     /**
      * Process any class-level @XmlJavaTypeAdapters.
      *
-     * @param javaClass
-     * @param info
      */
     private void processClassLevelAdapters(JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(javaClass, XmlJavaTypeAdapter.class)) {
@@ -1456,8 +1434,6 @@ public final class AnnotationsProcessor {
     /**
      * Process any @XmlSchemaType(s).
      *
-     * @param javaClass
-     * @param info
      */
     private void processSchemaTypes(JavaClass javaClass, TypeInfo info) {
         JavaPackage pack = javaClass.getPackage();
@@ -1475,8 +1451,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlRootElement annotation on a given JavaClass.
      *
-     * @param javaClass
-     * @param info
      */
     private void processXmlRootElement(JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(javaClass, XmlRootElement.class)) {
@@ -1491,8 +1465,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlExtensible annotation on a given JavaClass.
      *
-     * @param javaClass
-     * @param info
      */
     private void processXmlExtensible(JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(javaClass, XmlVirtualAccessMethods.class)) {
@@ -1510,9 +1482,6 @@ public final class AnnotationsProcessor {
      * for pre-processing. Note that if no @XmlType annotation is present we
      * still create a new XmlType an set it on the TypeInfo.
      *
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
      */
     private void preProcessXmlType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType = new org.eclipse.persistence.jaxb.xmlmodel.XmlType(); // 14 xmlType=XmlType - default settings: name=null, namespace=null, factoryClass=null, factoryMethod=null, propOrder=null.
@@ -1532,7 +1501,7 @@ public final class AnnotationsProcessor {
                 xmlType.getPropOrder().add(prop); // 20 - puts "car" into xmlType.propOrder
             }
             // set factoryClass
-            Class factoryClass = typeAnnotation.factoryClass(); // 21 factoryClass=java.lang.Class"class jakarta.xml.bind.annotation.XmlType$DEFAULT"
+            Class<?> factoryClass = typeAnnotation.factoryClass(); // 21 factoryClass=java.lang.Class"class jakarta.xml.bind.annotation.XmlType$DEFAULT"
             if (factoryClass == DEFAULT.class) {
                 xmlType.setFactoryClass("jakarta.xml.bind.annotation.XmlType.DEFAULT"); // 22
             } else {
@@ -1552,9 +1521,6 @@ public final class AnnotationsProcessor {
      * has an XmlType set - typically via preProcessXmlType or XmlProcessor
      * override.
      *
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
      */
     private void postProcessXmlType(JavaClass javaClass, TypeInfo info, PackageInfo packageNamespace) {
         // assumes that the TypeInfo has an XmlType set from
@@ -1617,9 +1583,6 @@ public final class AnnotationsProcessor {
      * Process @XmlAccessorType annotation on a given JavaClass and update the
      * TypeInfo for pre-processing.
      *
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
      */
     private void preProcessXmlAccessorType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessType;
@@ -1634,7 +1597,6 @@ public final class AnnotationsProcessor {
      * Post process XmlAccessorType. In some cases, such as @XmlSeeAlso classes,
      * the access type may not have been set
      *
-     * @param info
      */
     private void postProcessXmlAccessorType(TypeInfo info, PackageInfo packageNamespace) {
         if (!info.isSetXmlAccessType()) {
@@ -1661,9 +1623,6 @@ public final class AnnotationsProcessor {
      * Process package and class @XmlAccessorOrder. Class level annotation
      * overrides a package level annotation.
      *
-     * @param javaClass
-     * @param info
-     * @param packageNamespace
      */
     private void preProcessXmlAccessorOrder(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         XmlAccessorOrder order = null;
@@ -1679,8 +1638,6 @@ public final class AnnotationsProcessor {
      * TypeInfo has already had its order set (via annotations in
      * preProcessXmlAccessorOrder or via xml metadata override in XMLProcessor).
      *
-     * @param info
-     * @param packageNamespace
      */
     private void postProcessXmlAccessorOrder(TypeInfo info, PackageInfo packageNamespace) {
         if (!info.isSetXmlAccessOrder()) {
@@ -1694,7 +1651,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlElement annotation on a given property.
      *
-     * @param property
      */
     private void processXmlElement(Property property, TypeInfo info) {
 
@@ -1718,7 +1674,7 @@ public final class AnnotationsProcessor {
                     JavaClass newType =helper.getJavaClass(element.type());
                     if(!originalType.getName().equals(newType.getName())){
                         property.setTyped(true);
-                        property.setSchemaType((QName) helper.getXMLToJavaTypeMap().get(newType.getName()));
+                        property.setSchemaType(helper.getXMLToJavaTypeMap().get(newType.getName()));
                     }
                     property.setType(newType);
                 }
@@ -1781,7 +1737,7 @@ public final class AnnotationsProcessor {
         }) */
         if (helper.isAnnotationPresent(element, Pattern.List.class)) {
             Pattern.List a = (Pattern.List) helper.getAnnotation(element, Pattern.List.class);
-            PatternListFacet facet = new PatternListFacet(new ArrayList<PatternFacet>());
+            PatternListFacet facet = new PatternListFacet(new ArrayList<>());
             for (Pattern pat : a.value()) {
                 PatternFacet pf = new PatternFacet(pat.regexp(), pat.flags());
                 facet.addPattern(pf);
@@ -1807,8 +1763,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlID annotation on a given property
      *
-     * @param property
-     * @param info
      */
     private void processXmlID(Property property, JavaClass javaClass, TypeInfo info) {
         if (helper.isAnnotationPresent(property.getElement(), XmlID.class)) {
@@ -1820,7 +1774,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlIDREF on a given property.
      *
-     * @param property
      */
     private void processXmlIDREF(Property property) {
         if (helper.isAnnotationPresent(property.getElement(), XmlIDREF.class)) {
@@ -1831,9 +1784,6 @@ public final class AnnotationsProcessor {
     /**
      * Process @XmlJavaTypeAdapter on a given property.
      *
-     * @param property
-     * @param info
-     * @param javaClass
      */
     private void processXmlJavaTypeAdapter(Property property, TypeInfo info, JavaClass javaClass) {
         JavaClass adapterClass = null;
@@ -1886,8 +1836,6 @@ public final class AnnotationsProcessor {
      * Store a QName (if necessary) based on a given TypeInfo's schema type
      * name.
      *
-     * @param javaClass
-     * @param info
      */
     private void processTypeQName(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         if(info.isTransient()) {
@@ -1929,7 +1877,7 @@ public final class AnnotationsProcessor {
     }
 
     public ArrayList<Property> getPropertiesForClass(JavaClass cls, TypeInfo info) {
-        ArrayList<Property> returnList = new ArrayList<Property>();
+        ArrayList<Property> returnList = new ArrayList<>();
 
         if (!info.isTransient()) {
             JavaClass superClass = cls.getSuperclass();
@@ -1977,12 +1925,12 @@ public final class AnnotationsProcessor {
     }
 
     public ArrayList<Property> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic, boolean onlyExplicit) {
-        ArrayList<Property> properties = new ArrayList<Property>();
+        ArrayList<Property> properties = new ArrayList<>();
         if (cls == null) {
             return properties;
         }
 
-        for (JavaField javaField : (Iterable<JavaField>) cls.getDeclaredFields()) {
+        for (JavaField javaField : cls.getDeclaredFields()) {
             Property property = null;
             int modifiers = javaField.getModifiers();
 
@@ -2004,7 +1952,7 @@ public final class AnnotationsProcessor {
                         if (helper.isAnnotationPresent(javaField, XmlAttribute.class)) {
                             Object value = ((JavaFieldImpl) javaField).get(null);
                             if (value != null) {
-                                String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
+                                String stringValue = XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
                                 property.setFixedValue(stringValue);
                             }
                         }
@@ -2117,7 +2065,7 @@ public final class AnnotationsProcessor {
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlPath.class)) {
             XmlPath xmlPath = (XmlPath) helper.getAnnotation(javaHasAnnotations, XmlPath.class);
             property.setXmlPath(xmlPath.value());
-            Field tempField = new XMLField(xmlPath.value());
+            Field<XMLConversionManager, NamespaceResolver> tempField = new XMLField(xmlPath.value());
             boolean isAttribute = tempField.getLastXPathFragment().isAttribute();
             property.setIsAttribute(isAttribute);
             // set schema name
@@ -2256,8 +2204,6 @@ public final class AnnotationsProcessor {
      * Validation and building of the XmlElement properties will be done during
      * finalizeProperties in the processChoiceProperty method.
      *
-     * @param javaHasAnnotations
-     * @return
      */
     private Property buildChoiceProperty(JavaHasAnnotations javaHasAnnotations) {
         Property choiceProperty = new Property(helper);
@@ -2283,11 +2229,11 @@ public final class AnnotationsProcessor {
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlElementsJoinNodes.class)) {
             org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes xmlJoinNodes;
             org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode xmlJoinNode;
-            List<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes> xmlJoinNodesList = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes>();
+            List<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes> xmlJoinNodesList = new ArrayList<>();
             List<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode> xmlJoinNodeList = null;
 
             for (XmlJoinNodes xmlJNs : ((XmlElementsJoinNodes) helper.getAnnotation(javaHasAnnotations, XmlElementsJoinNodes.class)).value()) {
-                xmlJoinNodeList = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode>();
+                xmlJoinNodeList = new ArrayList<>();
                 for (XmlJoinNode xmlJN : xmlJNs.value()) {
                     xmlJoinNode = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode();
                     xmlJoinNode.setXmlPath(xmlJN.xmlPath());
@@ -2358,10 +2304,6 @@ public final class AnnotationsProcessor {
      * Each created Property is added to the owning Property's list of choice
      * properties.
      *
-     * @param choiceProperty
-     * @param info
-     * @param cls
-     * @param propertyType
      */
     private void processChoiceProperty(Property choiceProperty, TypeInfo info, JavaClass cls, JavaClass propertyType) {
         String propertyName = choiceProperty.getPropertyName();
@@ -2379,7 +2321,7 @@ public final class AnnotationsProcessor {
             XmlPaths pathAnnotation = (XmlPaths) helper.getAnnotation(choiceProperty.getElement(), XmlPaths.class);
             paths = pathAnnotation.value();
         }
-        List<Property> choiceProperties = new ArrayList<Property>();
+        List<Property> choiceProperties = new ArrayList<>();
         for (int i = 0; i < choiceProperty.getXmlElements().getXmlElement().size(); i++) {
             org.eclipse.persistence.jaxb.xmlmodel.XmlElement next = choiceProperty.getXmlElements().getXmlElement().get(i);
             Property choiceProp = new Property(helper);
@@ -2495,9 +2437,6 @@ public final class AnnotationsProcessor {
      * inheritance (parent classes) and from parent class is reverse reference
      * via @XmlIDREF, @XmlPaths and @XmlElements to the some child classes.
      * In this phase type info is not complete (missing properties).
-     * @param javaClass
-     * @param typeInfo
-     * @return
      */
     private boolean preCheckXmlID(JavaClass javaClass, TypeInfo typeInfo) {
         ArrayList<Property> properties = getPropertiesForClass(javaClass, typeInfo);
@@ -2523,11 +2462,6 @@ public final class AnnotationsProcessor {
      * performed during the finalize property phase via the
      * processReferenceProperty method.
      *
-     * @param info
-     * @param javaHasAnnotations
-     * @param propertyName
-     * @param ptype
-     * @return
      */
     private Property buildReferenceProperty(TypeInfo info, JavaHasAnnotations javaHasAnnotations, String propertyName, JavaClass ptype) {
         Property property = new Property(helper);
@@ -2543,7 +2477,7 @@ public final class AnnotationsProcessor {
             info.setElementRefsPropertyName(propertyName);
         }
 
-        List<org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef> eltRefs = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef>();
+        List<org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef> eltRefs = new ArrayList<>();
         for (XmlElementRef nextRef : elementRefs) {
             org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef eltRef = new org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef();
             eltRef.setName(nextRef.name());
@@ -2551,9 +2485,9 @@ public final class AnnotationsProcessor {
             eltRef.setType(nextRef.type().getName());
             property.setIsRequired(true);
             try{
-                Method requireMethod = PrivilegedAccessHelper.getMethod(XmlElementRef.class, "required", new Class[0], true);
+                Method requireMethod = PrivilegedAccessHelper.getMethod(XmlElementRef.class, "required", new Class<?>[0], true);
                 if(requireMethod != null){
-                    Boolean val = (Boolean)PrivilegedAccessHelper.invokeMethod(requireMethod, nextRef);
+                    Boolean val = PrivilegedAccessHelper.invokeMethod(requireMethod, nextRef);
                     property.setIsRequired(val);
                 }
             } catch (Exception exception){
@@ -2569,10 +2503,6 @@ public final class AnnotationsProcessor {
     /**
      * Build a reference property.
      *
-     * @param property
-     * @param info
-     * @param cls
-     * @return
      */
     private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls) {
 
@@ -2828,7 +2758,7 @@ public final class AnnotationsProcessor {
         org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes xmlJoinNodes;
         // handle XmlJoinNodes
         if (helper.isAnnotationPresent(property.getElement(), XmlJoinNodes.class)) {
-            xmlJoinNodeList = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode>();
+            xmlJoinNodeList = new ArrayList<>();
             for (XmlJoinNode xmlJN : ((XmlJoinNodes) helper.getAnnotation(property.getElement(), XmlJoinNodes.class)).value()) {
                 xmlJoinNode = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode();
                 xmlJoinNode.setXmlPath(xmlJN.xmlPath());
@@ -2845,7 +2775,7 @@ public final class AnnotationsProcessor {
             xmlJoinNode = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode();
             xmlJoinNode.setXmlPath(xmlJN.xmlPath());
             xmlJoinNode.setReferencedXmlPath(xmlJN.referencedXmlPath());
-            xmlJoinNodeList = new ArrayList<org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode>();
+            xmlJoinNodeList = new ArrayList<>();
             xmlJoinNodeList.add(xmlJoinNode);
             xmlJoinNodes = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes();
             xmlJoinNodes.setXmlJoinNode(xmlJoinNodeList);
@@ -2860,7 +2790,6 @@ public final class AnnotationsProcessor {
      * for attribute transformers either a transformer class OR method name is
      * set (not both).
      *
-     * @param property
      */
     private void validateXmlTransformationProperty(Property property) {
         if (property.isSetXmlTransformation()) {
@@ -2912,11 +2841,8 @@ public final class AnnotationsProcessor {
      * Compares a JavaModel JavaClass to a Class. Equality is based on the raw
      * name of the JavaClass compared to the canonical name of the Class.
      *
-     * @param src
-     * @param tgt
-     * @return
      */
-    protected boolean areEquals(JavaClass src, Class tgt) {
+    protected boolean areEquals(JavaClass src, Class<?> tgt) {
         if (src == null || tgt == null) {
             return false;
         }
@@ -2977,7 +2903,7 @@ public final class AnnotationsProcessor {
         org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy policy = new org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy();
         policy.setEmptyNodeRepresentsNull(nullPolicy.emptyNodeRepresentsNull());
         policy.setIsSetPerformedForAbsentNode(nullPolicy.isSetPerformedForAbsentNode());
-        policy.setXsiNilRepresentsNull(Boolean.valueOf(nullPolicy.xsiNilRepresentsNull()));
+        policy.setXsiNilRepresentsNull(nullPolicy.xsiNilRepresentsNull());
         policy.setNullRepresentationForXml(org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation.valueOf(nullPolicy.nullRepresentationForXml().toString()));
         property.setNullPolicy(policy);
     }
@@ -2986,9 +2912,6 @@ public final class AnnotationsProcessor {
      * Compares a JavaModel JavaClass to a Class. Equality is based on the raw
      * name of the JavaClass compared to the canonical name of the Class.
      *
-     * @param src
-     * @param tgtCanonicalName
-     * @return
      */
     protected boolean areEquals(JavaClass src, String tgtCanonicalName) {
         if (src == null || tgtCanonicalName == null) {
@@ -3002,14 +2925,14 @@ public final class AnnotationsProcessor {
     }
 
     public ArrayList<Property> getPropertyPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic, boolean onlyExplicit) {
-        ArrayList<Property> properties = new ArrayList<Property>();
+        ArrayList<Property> properties = new ArrayList<>();
         if (cls == null) {
             return properties;
         }
 
         // First collect all the getters and setters
-        ArrayList<JavaMethod> propertyMethods = new ArrayList<JavaMethod>();
-        for (JavaMethod next : new ArrayList<JavaMethod>(cls.getDeclaredMethods())) {
+        ArrayList<JavaMethod> propertyMethods = new ArrayList<>();
+        for (JavaMethod next : new ArrayList<>(cls.getDeclaredMethods())) {
             if(!next.isSynthetic()){
                 if (((next.getName().startsWith(GET_STR) && next.getName().length() > 3) || (next.getName().startsWith(IS_STR) && next.getName().length() > 2)) && next.getParameterTypes().length == 0 && next.getReturnType() != helper.getJavaClass(java.lang.Void.class)) {
                     int modifiers = next.getModifiers();
@@ -3031,7 +2954,7 @@ public final class AnnotationsProcessor {
 
         // keep track of property names to avoid processing the same property
         // twice (for getter and setter)
-        List<String> propertyNames = new ArrayList<String>();
+        List<String> propertyNames = new ArrayList<>();
         for (JavaMethod propertyMethod1 : propertyMethods) {
             boolean isPropertyTransient = false;
             JavaMethod nextMethod = propertyMethod1;
@@ -3209,7 +3132,7 @@ public final class AnnotationsProcessor {
     }
 
     private ArrayList<Property> removeSuperclassProperties(JavaClass cls, ArrayList<Property> properties) {
-        ArrayList<Property> revisedProperties = new ArrayList<Property>();
+        ArrayList<Property> revisedProperties = new ArrayList<>();
         revisedProperties.addAll(properties);
 
         // Check for any get() methods that are overridden in the subclass.
@@ -3237,8 +3160,8 @@ public final class AnnotationsProcessor {
         ArrayList<Property> methodProperties = getPropertyPropertiesForClass(cls, info, !hasXmlBindings());
 
         // filter out non-public properties that aren't annotated
-        ArrayList<Property> publicFieldProperties = new ArrayList<Property>();
-        ArrayList<Property> publicMethodProperties = new ArrayList<Property>();
+        ArrayList<Property> publicFieldProperties = new ArrayList<>();
+        ArrayList<Property> publicMethodProperties = new ArrayList<>();
 
         for (Property next : fieldProperties) {
             if (Modifier.isPublic(((JavaField) next.getElement()).getModifiers())) {
@@ -3264,9 +3187,9 @@ public final class AnnotationsProcessor {
 
         // Not sure who should win if a property exists for both or the correct
         // order
-        if (publicFieldProperties.size() >= 0 && publicMethodProperties.size() == 0) {
+        if (!publicFieldProperties.isEmpty() && publicMethodProperties.size() == 0) {
             return publicFieldProperties;
-        } else if (publicMethodProperties.size() > 0 && publicFieldProperties.size() == 0) {
+        } else if (!publicMethodProperties.isEmpty() && publicFieldProperties.size() == 0) {
             return publicMethodProperties;
         } else {
             // add any non-duplicate method properties to the collection.
@@ -3293,14 +3216,14 @@ public final class AnnotationsProcessor {
     public HashMap<String, Property> getPropertyMapFromArrayList(ArrayList<Property> props) {
         HashMap propMap = new HashMap(props.size());
 
-        for (Object next : props) {
-            propMap.put(((Property)next).getPropertyName(), next);
+        for (Property next : props) {
+            propMap.put(next.getPropertyName(), next);
         }
         return propMap;
     }
 
     public ArrayList getNoAccessTypePropertiesForClass(JavaClass cls, TypeInfo info) {
-        ArrayList<Property> list = new ArrayList<Property>();
+        ArrayList<Property> list = new ArrayList<>();
         if (cls == null) {
             return list;
         }
@@ -3309,7 +3232,7 @@ public final class AnnotationsProcessor {
         // annotation and
         // doesn't appear in the other list, add it to the final list
         List<Property> fieldProperties = getFieldPropertiesForClass(cls, info, false);
-        Map<String, Property> fields = new HashMap<String, Property>(fieldProperties.size());
+        Map<String, Property> fields = new HashMap<>(fieldProperties.size());
         for (Property next : fieldProperties) {
             JavaHasAnnotations elem = next.getElement();
             if (!hasJAXBAnnotations(elem)) {
@@ -3345,9 +3268,6 @@ public final class AnnotationsProcessor {
      *
      * {@literal @XmlSchemaType(s)} annotation or xml-schema-type(s) metadata.
      *
-     * @param name
-     * @param namespace
-     * @param jClassQualifiedName
      */
     public void processSchemaType(String name, String namespace, String jClassQualifiedName) {
         this.userDefinedSchemaTypes.put(jClassQualifiedName, new QName(namespace, name));
@@ -3367,7 +3287,7 @@ public final class AnnotationsProcessor {
         }
 
         info.setClassName(javaClass.getQualifiedName());
-        Class restrictionClass = String.class;
+        Class<?> restrictionClass = String.class;
         QName restrictionBase = getSchemaTypeFor(helper.getJavaClass(restrictionClass));
 
         if (helper.isAnnotationPresent(javaClass, XmlEnum.class)) {
@@ -3411,7 +3331,7 @@ public final class AnnotationsProcessor {
         }
         info.setRestrictionBase(restrictionBase);
 
-        for (JavaField field : (Iterable<JavaField>) javaClass.getDeclaredFields()) {
+        for (JavaField field : javaClass.getDeclaredFields()) {
             if (field.isEnumConstant()) {
                 Object enumValue = field.getName();
                 if (helper.isAnnotationPresent(field, XmlEnumValue.class)) {
@@ -3445,7 +3365,7 @@ public final class AnnotationsProcessor {
         // check user defined types first
         QName schemaType = userDefinedSchemaTypes.get(javaClass.getQualifiedName());
         if (schemaType == null) {
-            schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
+            schemaType = helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
         }
         return schemaType;
     }
@@ -3479,8 +3399,8 @@ public final class AnnotationsProcessor {
 
             // reflectively load XmlSchema class to avoid dependency
             try {
-                Method locationMethod = PrivilegedAccessHelper.getDeclaredMethod(XmlSchema.class, "location", new Class[] {});
-                String location = (String) PrivilegedAccessHelper.invokeMethod(locationMethod, xmlSchema, new Object[] {});
+                Method locationMethod = PrivilegedAccessHelper.getDeclaredMethod(XmlSchema.class, "location", new Class<?>[] {});
+                String location = PrivilegedAccessHelper.invokeMethod(locationMethod, xmlSchema, new Object[] {});
 
                 if (location != null) {
                     if (location.equals("##generate")) {
@@ -3621,7 +3541,7 @@ public final class AnnotationsProcessor {
 
     private XmlNillableInfo getXmlNillableInfoWithLazyInit(String packageName) {
         if (packageToXmlNillableInfoMappings == null) {
-            packageToXmlNillableInfoMappings = new HashMap<String, XmlNillableInfo>();
+            packageToXmlNillableInfoMappings = new HashMap<>();
         }
         XmlNillableInfo info = packageToXmlNillableInfoMappings.get(packageName);
         if (info == null) {
@@ -3633,7 +3553,7 @@ public final class AnnotationsProcessor {
 
     private PackageInfo getPackageInfoWithLazyInit(String packageName) {
         if (packageToPackageInfoMappings == null) {
-            packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
+            packageToPackageInfoMappings = new HashMap<>();
         }
         PackageInfo info = packageToPackageInfoMappings.get(packageName);
         if (info == null) {
@@ -3645,7 +3565,7 @@ public final class AnnotationsProcessor {
 
     public void addPackageToPackageInfoMapping(String packageName, PackageInfo packageInfo) {
         if(packageToPackageInfoMappings == null) {
-            packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
+            packageToPackageInfoMappings = new HashMap<>();
         }
         packageToPackageInfoMappings.put(packageName, packageInfo);
     }
@@ -3682,27 +3602,27 @@ public final class AnnotationsProcessor {
             }
             if (CompilerHelper.ACCESSOR_FACTORY_ANNOTATION_CLASS != null && helper.isAnnotationPresent(pack, CompilerHelper.ACCESSOR_FACTORY_ANNOTATION_CLASS)) {
                 Annotation xmlAccessorFactory = helper.getAnnotation(pack, CompilerHelper.ACCESSOR_FACTORY_ANNOTATION_CLASS);
-                Class xmlAccessorFactoryClass = null;
+                Class<?> xmlAccessorFactoryClass = null;
                 try {
-                    xmlAccessorFactoryClass = (Class)PrivilegedAccessHelper.invokeMethod(CompilerHelper.ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
+                    xmlAccessorFactoryClass = PrivilegedAccessHelper.invokeMethod(CompilerHelper.ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
                     packageInfo.setAccessorFactory(new AccessorFactoryWrapper(PrivilegedAccessHelper.newInstanceFromClass(xmlAccessorFactoryClass)));
                 } catch (Exception ex) {
                     throw JAXBException.errorInstantiatingAccessorFactory(xmlAccessorFactoryClass, ex);
                 }
             } else if (CompilerHelper.OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS != null && helper.isAnnotationPresent(pack, CompilerHelper.OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS)) {
                 Annotation xmlAccessorFactory = helper.getAnnotation(pack, CompilerHelper.OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS);
-                Class xmlAccessorFactoryClass = null;
+                Class<?> xmlAccessorFactoryClass = null;
                 try {
-                    xmlAccessorFactoryClass = (Class)PrivilegedAccessHelper.invokeMethod(CompilerHelper.OLD_ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
+                    xmlAccessorFactoryClass = PrivilegedAccessHelper.invokeMethod(CompilerHelper.OLD_ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
                     packageInfo.setAccessorFactory(new AccessorFactoryWrapper(PrivilegedAccessHelper.newInstanceFromClass(xmlAccessorFactoryClass)));
                 } catch (Exception ex) {
                     throw JAXBException.errorInstantiatingAccessorFactory(xmlAccessorFactoryClass, ex);
                 }
             } else if (CompilerHelper.INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS != null && helper.isAnnotationPresent(pack, CompilerHelper.INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS)) {
                 Annotation xmlAccessorFactory = helper.getAnnotation(pack, CompilerHelper.INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS);
-                Class xmlAccessorFactoryClass = null;
+                Class<?> xmlAccessorFactoryClass = null;
                 try {
-                    xmlAccessorFactoryClass = (Class)PrivilegedAccessHelper.invokeMethod(CompilerHelper.INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
+                    xmlAccessorFactoryClass = PrivilegedAccessHelper.invokeMethod(CompilerHelper.INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
                     packageInfo.setAccessorFactory(new AccessorFactoryWrapper(PrivilegedAccessHelper.newInstanceFromClass(xmlAccessorFactoryClass)));
                 } catch (Exception ex) {
                     throw JAXBException.errorInstantiatingAccessorFactory(xmlAccessorFactoryClass, ex);
@@ -3762,7 +3682,7 @@ public final class AnnotationsProcessor {
             // the list
             if (unmarshalCallback != null) {
                 if (this.unmarshalCallbacks == null) {
-                    this.unmarshalCallbacks = new HashMap<String, UnmarshalCallback>();
+                    this.unmarshalCallbacks = new HashMap<>();
                 }
                 unmarshalCallbacks.put(next.getQualifiedName(), unmarshalCallback);
             }
@@ -3784,7 +3704,7 @@ public final class AnnotationsProcessor {
             // the list
             if (marshalCallback != null) {
                 if (this.marshalCallbacks == null) {
-                    this.marshalCallbacks = new HashMap<String, MarshalCallback>();
+                    this.marshalCallbacks = new HashMap<>();
                 }
                 marshalCallbacks.put(next.getQualifiedName(), marshalCallback);
             }
@@ -3815,7 +3735,7 @@ public final class AnnotationsProcessor {
             }
             JavaClass javaClass = helper.getJavaClass(objectFactoryClassName);
             if (isXmlRegistry(javaClass)) {
-                JavaClass[] processed = this.processObjectFactory(javaClass, new ArrayList<JavaClass>());
+                JavaClass[] processed = this.processObjectFactory(javaClass, new ArrayList<>());
                 preBuildTypeInfo(processed);
                 buildTypeInfo(processed);
                 updateGlobalElements(processed);
@@ -3833,7 +3753,7 @@ public final class AnnotationsProcessor {
         // if there is an xml-registry from XML for this JavaClass, create a map
         // of method names to XmlElementDecl objects to simplify processing
         // later on in this method
-        Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl> elemDecls = new HashMap<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl>();
+        Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl> elemDecls = new HashMap<>();
         org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry xmlReg = xmlRegistries.get(objectFactoryClass.getQualifiedName());
         if (xmlReg != null) {
             // process xml-element-decl entries
@@ -3889,7 +3809,7 @@ public final class AnnotationsProcessor {
             String url;
             String localName;
             String defaultValue = null;
-            Class scopeClass = jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
+            Class<?> scopeClass = jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
 
             if (xmlEltDecl != null) {
                 url = xmlEltDecl.getNamespace();
@@ -3965,10 +3885,10 @@ public final class AnnotationsProcessor {
 
             if (helper.isAnnotationPresent(next, XmlJavaTypeAdapter.class)) {
                 XmlJavaTypeAdapter typeAdapter = (XmlJavaTypeAdapter) helper.getAnnotation(next, XmlJavaTypeAdapter.class);
-                Class typeAdapterClass = typeAdapter.value();
+                Class<? extends XmlAdapter> typeAdapterClass = typeAdapter.value();
                 declaration.setJavaTypeAdapterClass(typeAdapterClass);
 
-                Class declJavaType = CompilerHelper.getTypeFromAdapterClass(typeAdapterClass);
+                Class<?> declJavaType = CompilerHelper.getTypeFromAdapterClass(typeAdapterClass);
                 JavaClass adaptedType = helper.getJavaClass(declJavaType);
                 declaration.setJavaType(adaptedType);
                 declaration.setAdaptedJavaType(type);
@@ -3983,7 +3903,7 @@ public final class AnnotationsProcessor {
             }
             Map<QName, ElementDeclaration> elements = getElementDeclarationsForScope(scopeClass.getName());
             if (elements == null) {
-                elements = new HashMap<QName, ElementDeclaration>();
+                elements = new HashMap<>();
                 this.elementDeclarations.put(scopeClass.getName(), elements);
             }
             if(elements.containsKey(qname)){
@@ -3998,7 +3918,6 @@ public final class AnnotationsProcessor {
     /**
      * Lazy load and return the map of global elements.
      *
-     * @return
      */
     public Map<QName, ElementDeclaration> getGlobalElements() {
         return this.elementDeclarations.get(XmlElementDecl.GLOBAL.class.getName());
@@ -4093,12 +4012,12 @@ public final class AnnotationsProcessor {
         if(elem == null){
             return false;
         }
-        List annotations = (List<JavaAnnotation>) elem.getAnnotations();
+        List<JavaAnnotation> annotations = (List<JavaAnnotation>) elem.getAnnotations();
         if (annotations == null || annotations.isEmpty()) {
             return false;
         }
-        for (Object annotation : annotations) {
-            String nextName = ((JavaAnnotation) annotation).getName();
+        for (JavaAnnotation annotation : annotations) {
+            String nextName = annotation.getName();
             if (nextName.startsWith(JAVAX_XML_BIND_ANNOTATION)
                     || nextName.startsWith(OXM_ANNOTATIONS)
                     || nextName.equals(CompilerHelper.XML_LOCATION_ANNOTATION_NAME)
@@ -4220,7 +4139,7 @@ public final class AnnotationsProcessor {
         return (hasXmlValue || hasXmlId);
     }
 
-    private Class generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass, TypeMappingInfo typeMappingInfo) {
+    private Class<?> generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass, TypeMappingInfo typeMappingInfo) {
         String packageName = JAXB_DEV;
         NamespaceResolver combinedNamespaceResolver = new NamespaceResolver();
         if (!helper.isBuiltInJavaType(keyClass)) {
@@ -4294,25 +4213,25 @@ public final class AnnotationsProcessor {
 
         Type mapType = Type.getType(L + mapClass.getRawName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
 
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
 
         String sig = "Lorg/eclipse/persistence/internal/jaxb/many/MapValue<L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;>;";
-        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
+        cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
 
         // Write Field: @... public Map entry
         String fieldSig = L + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;";
         FieldVisitor fv = cw.visitField(Opcodes.ACC_PUBLIC, "entry", L + mapType.getInternalName() + SEMI_COLON, fieldSig, null);
-        AnnotationVisitor av = fv.visitAnnotation(Type.getDescriptor(XmlElement.class), true);
+        fv.visitAnnotation(Type.getDescriptor(XmlElement.class), true);
         if (typeMappingInfo != null) {
             Annotation[] annotations = typeMappingInfo.getAnnotations();
             if (annotations != null) {
                 for (Annotation nextAnnotation : annotations) {
                     if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {
                         String annotationClassName = nextAnnotation.annotationType().getName();
-                        av = fv.visitAnnotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
+                        AnnotationVisitor av = fv.visitAnnotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
                         for (Method next : nextAnnotation.annotationType().getDeclaredMethods()) {
                             try {
-                                Object nextValue = next.invoke(nextAnnotation, new Object[] { });
+                                Object nextValue = next.invoke(nextAnnotation);
                                 if (nextValue instanceof Class) {
                                     Type nextType = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                                     nextValue = nextType;
@@ -4333,7 +4252,7 @@ public final class AnnotationsProcessor {
 
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/MapValue", "<init>", "()V");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/MapValue", "<init>", "()V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -4387,7 +4306,7 @@ public final class AnnotationsProcessor {
         mv.visitEnd();
 
         // Write @XmlType(namespace)
-        av = cw.visitAnnotation("Ljakarta/xml/bind/annotation/XmlType;", true);
+        AnnotationVisitor av = cw.visitAnnotation("Ljakarta/xml/bind/annotation/XmlType;", true);
         av.visit("namespace", namespace);
 
         cw.visitEnd();
@@ -4396,7 +4315,7 @@ public final class AnnotationsProcessor {
         return generateClassFromBytes(qualifiedClassName, classBytes);
     }
 
-    private Class generateWrapperForArrayClass(JavaClass arrayClass, TypeMappingInfo typeMappingInfo, Class xmlElementType, List<JavaClass> classesToProcess) {
+    private Class<?> generateWrapperForArrayClass(JavaClass arrayClass, TypeMappingInfo typeMappingInfo, Class<?> xmlElementType, List<JavaClass> classesToProcess) {
         JavaClass componentClass = null;
         if (typeMappingInfo != null && xmlElementType != null) {
             componentClass = helper.getJavaClass(xmlElementType);
@@ -4404,7 +4323,7 @@ public final class AnnotationsProcessor {
             componentClass = arrayClass.getComponentType();
         }
         if (componentClass.isArray()) {
-            Class nestedArrayClass = arrayClassesToGeneratedClasses.get(componentClass.getName());
+            Class<?> nestedArrayClass = arrayClassesToGeneratedClasses.get(componentClass.getName());
             if (nestedArrayClass == null) {
                 nestedArrayClass = generateWrapperForArrayClass(componentClass, typeMappingInfo, xmlElementType, classesToProcess);
                 arrayClassesToGeneratedClasses.put(componentClass.getName(), nestedArrayClass);
@@ -4416,7 +4335,7 @@ public final class AnnotationsProcessor {
         }
     }
 
-    private Class generateArrayValue(JavaClass arrayClass, JavaClass componentClass, JavaClass nestedClass, TypeMappingInfo typeMappingInfo) {
+    private Class<?> generateArrayValue(JavaClass arrayClass, JavaClass componentClass, JavaClass nestedClass, TypeMappingInfo typeMappingInfo) {
         String packageName;
         String qualifiedClassName;
         QName qName = null;
@@ -4439,7 +4358,7 @@ public final class AnnotationsProcessor {
             }
 
             if (componentClass.isPrimitive() || helper.isBuiltInJavaType(componentClass)) {
-                qName = (QName) helper.getXMLToJavaTypeMap().get(componentClass.getQualifiedName());
+                qName = helper.getXMLToJavaTypeMap().get(componentClass.getQualifiedName());
                 if(null != qName) {
                     packageName = ARRAY_PACKAGE_NAME;
                     qualifiedClassName = ARRAY_PACKAGE_NAME + DOT_CHR + qName.getLocalPart() + ARRAY_CLASS_NAME_SUFFIX;
@@ -4476,13 +4395,13 @@ public final class AnnotationsProcessor {
     private JavaClass getObjectType(JavaClass javaClass) {
         if (javaClass.isPrimitive()) {
             String primitiveClassName = javaClass.getRawName();
-            Class primitiveClass = getPrimitiveClass(primitiveClassName);
+            Class<?> primitiveClass = getPrimitiveClass(primitiveClassName);
             return helper.getJavaClass(getObjectClass(primitiveClass));
         }
         return javaClass;
     }
 
-    private Class generateCollectionValue(JavaClass collectionClass, TypeMappingInfo typeMappingInfo, Class xmlElementType, List<JavaClass> classesToProcess) {
+    private Class<?> generateCollectionValue(JavaClass collectionClass, TypeMappingInfo typeMappingInfo, Class<?> xmlElementType, List<JavaClass> classesToProcess) {
 
         JavaClass componentClass;
 
@@ -4499,12 +4418,12 @@ public final class AnnotationsProcessor {
 
         boolean multiDimensional = false;
         if (componentClass.isPrimitive()) {
-            Class primitiveClass = getPrimitiveClass(componentClass.getRawName());
+            Class<?> primitiveClass = getPrimitiveClass(componentClass.getRawName());
             componentClass = helper.getJavaClass(getObjectClass(primitiveClass));
         } else if(helper.getJavaClass(Collection.class).isAssignableFrom(componentClass)) {
             multiDimensional = true;
             java.lang.reflect.Type nestedCollectionType = getNestedCollectionType(typeMappingInfo);
-            Class nestedCollectionClass = collectionClassesToGeneratedClasses.get(nestedCollectionType);
+            Class<?> nestedCollectionClass = collectionClassesToGeneratedClasses.get(nestedCollectionType);
             if (nestedCollectionClass == null) {
                 nestedCollectionClass = generateCollectionValue(componentClass, typeMappingInfo, xmlElementType, classesToProcess);
                 collectionClassesToGeneratedClasses.put(nestedCollectionType, nestedCollectionClass);
@@ -4516,7 +4435,7 @@ public final class AnnotationsProcessor {
                 multiDimensional = false;
             } else {
                 multiDimensional = true;
-                Class nestedArrayClass = arrayClassesToGeneratedClasses.get(componentClass.getName());
+                Class<?> nestedArrayClass = arrayClassesToGeneratedClasses.get(componentClass.getName());
                 if (nestedArrayClass == null) {
                     nestedArrayClass = generateWrapperForArrayClass(componentClass, typeMappingInfo, xmlElementType, classesToProcess);
                     arrayClassesToGeneratedClasses.put(componentClass.getName(), nestedArrayClass);
@@ -4597,20 +4516,20 @@ public final class AnnotationsProcessor {
         return result;
     }
 
-    private byte[] generateManyValue(TypeMappingInfo typeMappingInfo, String namespace, Class superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+    private byte[] generateManyValue(TypeMappingInfo typeMappingInfo, String namespace, Class<?> superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
+        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
         generateManyValueClass(cw, typeMappingInfo, namespace, superType, classNameSeparatedBySlash, componentType, containerType);
         cw.visitEnd();
         return cw.toByteArray();
     }
 
-    private void generateManyValueClass(ClassWriter cw, TypeMappingInfo typeMappingInfo, String namespace, Class superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
+    private void generateManyValueClass(EclipseLinkASMClassWriter cw, TypeMappingInfo typeMappingInfo, String namespace, Class<?> superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
         String componentClassNameSeparatedBySlash = getObjectType(componentType).getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         String containerClassNameSeperatedBySlash = containerType.getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         if("[B".equals(componentClassNameSeparatedBySlash)) {
-            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<" + componentClassNameSeparatedBySlash + ">;", Type.getInternalName(superType), null);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<" + componentClassNameSeparatedBySlash + ">;", Type.getInternalName(superType), null);
         } else {
-            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<L" + componentClassNameSeparatedBySlash + ";>;", Type.getInternalName(superType), null);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<L" + componentClassNameSeparatedBySlash + ";>;", Type.getInternalName(superType), null);
         }
 
         // Write @XmlType(namespace)
@@ -4664,7 +4583,7 @@ public final class AnnotationsProcessor {
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
             mv.visitVarInsn(Opcodes.ALOAD, 2);
-            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;");
+            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;", true);
             mv.visitInsn(Opcodes.POP);
 
             mv.visitVarInsn(Opcodes.ALOAD, 2);
@@ -4721,7 +4640,7 @@ public final class AnnotationsProcessor {
                     av = mv.visitAnnotation(L + annotationType.getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
                     for (Method next : annotation.annotationType().getDeclaredMethods()) {
                         try {
-                            Object nextValue = next.invoke(annotation, new Object[] {});
+                            Object nextValue = next.invoke(annotation);
                             if (nextValue instanceof Class) {
                                 nextValue = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                             }
@@ -4785,8 +4704,8 @@ public final class AnnotationsProcessor {
         mv.visitEnd();
     }
 
-    private byte[] generateMultiDimensionalManyValueClass(TypeMappingInfo typeMappingInfo, String namespace, Class superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+    private byte[] generateMultiDimensionalManyValueClass(TypeMappingInfo typeMappingInfo, String namespace, Class<?> superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
+        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
         generateManyValueClass(cw, typeMappingInfo, namespace, superType, classNameSeparatedBySlash, componentType, containerType);
         generateMultiDimensionalManyValueClass(cw, componentType);
         cw.visitEnd();
@@ -4806,9 +4725,9 @@ public final class AnnotationsProcessor {
         mv.visitEnd();
     }
 
-    private Class generateClassFromBytes(String className, byte[] classBytes) {
+    private Class<?> generateClassFromBytes(String className, byte[] classBytes) {
         JaxbClassLoader loader = (JaxbClassLoader) helper.getClassLoader();
-        Class generatedClass = loader.generateClass(className, classBytes);
+        Class<?> generatedClass = loader.generateClass(className, classBytes);
         return generatedClass;
     }
 
@@ -4831,9 +4750,9 @@ public final class AnnotationsProcessor {
 
     private String getNextAvailableClassName(String suggestedBaseName, String suggestedName, int counter) {
 
-        Iterator<Class> iter = typeMappingInfosToGeneratedClasses.values().iterator();
+        Iterator<Class<?>> iter = typeMappingInfosToGeneratedClasses.values().iterator();
         while (iter.hasNext()) {
-            Class nextClass = iter.next();
+            Class<?> nextClass = iter.next();
             if (nextClass.getName().equals(suggestedName)) {
                 counter = counter + 1;
                 return getNextAvailableClassName(suggestedBaseName, suggestedBaseName + counter, counter);
@@ -4842,27 +4761,27 @@ public final class AnnotationsProcessor {
         return suggestedName;
     }
 
-    private Class getPrimitiveClass(String primitiveClassName) {
+    private Class<?> getPrimitiveClass(String primitiveClassName) {
         return ConversionManager.getDefaultManager().convertClassNameToClass(primitiveClassName);
     }
 
-    private Class getObjectClass(Class primitiveClass) {
-        return ConversionManager.getDefaultManager().getObjectClass(primitiveClass);
+    private Class<?> getObjectClass(Class<?> primitiveClass) {
+        return ConversionManager.getObjectClass(primitiveClass);
     }
 
-    public Map<java.lang.reflect.Type, Class> getCollectionClassesToGeneratedClasses() {
+    public Map<java.lang.reflect.Type, Class<?>> getCollectionClassesToGeneratedClasses() {
         return collectionClassesToGeneratedClasses;
     }
 
-    public Map<String, Class> getArrayClassesToGeneratedClasses() {
+    public Map<String, Class<?>> getArrayClassesToGeneratedClasses() {
         return arrayClassesToGeneratedClasses;
     }
 
-    public Map<Class, java.lang.reflect.Type> getGeneratedClassesToCollectionClasses() {
+    public Map<Class<?>, java.lang.reflect.Type> getGeneratedClassesToCollectionClasses() {
         return generatedClassesToCollectionClasses;
     }
 
-    public Map<Class, JavaClass> getGeneratedClassesToArrayClasses() {
+    public Map<Class<?>, JavaClass> getGeneratedClassesToArrayClasses() {
         return generatedClassesToArrayClasses;
     }
 
@@ -4876,11 +4795,10 @@ public final class AnnotationsProcessor {
      *
      * Map {@literal <String, Map<String, TypeInfo>>}
      *
-     * @param packageName
      * @return List of TypeInfo objects for a given package name
      */
     public Map<String, TypeInfo> getTypeInfosForPackage(String packageName) {
-        Map<String, TypeInfo> typeInfos = new HashMap<String, TypeInfo>();
+        Map<String, TypeInfo> typeInfos = new HashMap<>();
         List<JavaClass> jClasses = getTypeInfoClasses();
         for (JavaClass jClass : jClasses) {
             if (jClass.getPackageName().equals(packageName)) {
@@ -4895,7 +4813,6 @@ public final class AnnotationsProcessor {
      * Set namespace override info from XML bindings file. This will typically
      * be called from the XMLProcessor.
      *
-     * @param packageToNamespaceMappings
      */
     public void setPackageToNamespaceMappings(HashMap<String, NamespaceInfo> packageToNamespaceMappings) {
         //this.packageToNamespaceMappings = packageToNamespaceMappings;
@@ -4914,11 +4831,11 @@ public final class AnnotationsProcessor {
 
         if (typeInfos == null) {
             // this is the first class. Initialize all the properties
-            this.typeInfoClasses = new ArrayList<JavaClass>();
-            this.typeInfos = new HashMap<String, TypeInfo>();
-            this.typeQNames = new ArrayList<QName>();
-            this.userDefinedSchemaTypes = new HashMap<String, QName>();
-            this.packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
+            this.typeInfoClasses = new ArrayList<>();
+            this.typeInfos = new HashMap<>();
+            this.typeQNames = new ArrayList<>();
+            this.userDefinedSchemaTypes = new HashMap<>();
+            this.packageToPackageInfoMappings = new HashMap<>();
         }
 
         JavaClass[] jClasses = new JavaClass[] { javaClass };
@@ -4961,7 +4878,6 @@ public final class AnnotationsProcessor {
      * Convenience method which class pre and postBuildTypeInfo for a given set
      * of JavaClasses.
      *
-     * @param javaClasses
      */
     public void buildNewTypeInfo(JavaClass[] javaClasses) {
         preBuildTypeInfo(javaClasses);
@@ -4979,8 +4895,6 @@ public final class AnnotationsProcessor {
      * place in MappingsGenerator's generateProject method, after the
      * descriptors and mappings have been generated.
      *
-     * @param jClass
-     * @param tInfo
      * @see XmlCustomizer
      * @see MappingsGenerator
      */
@@ -4994,7 +4908,6 @@ public final class AnnotationsProcessor {
     /**
      * Lazy load the metadata logger.
      *
-     * @return
      */
     private JAXBMetadataLogger getLogger() {
         if (logger == null) {
@@ -5006,7 +4919,6 @@ public final class AnnotationsProcessor {
     /**
      * Return the Helper object set on this processor.
      *
-     * @return
      */
     Helper getHelper() {
         return this.helper;
@@ -5020,11 +4932,11 @@ public final class AnnotationsProcessor {
         return this.localElements;
     }
 
-    public Map<TypeMappingInfo, Class> getTypeMappingInfosToGeneratedClasses() {
+    public Map<TypeMappingInfo, Class<?>> getTypeMappingInfosToGeneratedClasses() {
         return this.typeMappingInfosToGeneratedClasses;
     }
 
-    public Map<TypeMappingInfo, Class> getTypeMappingInfoToAdapterClasses() {
+    public Map<TypeMappingInfo, Class<?>> getTypeMappingInfoToAdapterClasses() {
         return this.typeMappingInfoToAdapterClasses;
     }
 
@@ -5044,7 +4956,6 @@ public final class AnnotationsProcessor {
      * Convenience method for determining if a given JavaClass should be
      * processed as an ObjectFactory class.
      *
-     * @param javaClass
      * @return true if the JavaClass is annotated with @XmlRegistry or the map
      * of XmlRegistries contains a key equal to the JavaClass' qualified
      * name
@@ -5082,7 +4993,7 @@ public final class AnnotationsProcessor {
     }
 
     private Map<Object, Object> createUserPropertiesMap(XmlProperty[] properties) {
-        Map<Object, Object> propMap = new HashMap<Object, Object>();
+        Map<Object, Object> propMap = new HashMap<>();
         for (XmlProperty prop : properties) {
             Object pvalue = prop.value();
             if (!(prop.valueType() == String.class)) {
@@ -5099,8 +5010,6 @@ public final class AnnotationsProcessor {
      *
      * - DataHandler - byte[] - Byte[] - Image - Source - MimeMultipart
      *
-     * @param property
-     * @return
      */
     public boolean isMtomAttachment(Property property) {
         JavaClass ptype = property.getActualType();

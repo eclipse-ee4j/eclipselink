@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -135,11 +135,12 @@ public final class ConstructorQueryMappings {
     }
 
     /**
+     * <p>
      * This visitor visits the constructor items and adds the attribute type mapped to the name.
-     * <p/>
-     * Example:<br/>
-     * e.name -> "name" : String<br/>
-     * e.address.zipcode -> "zipcode" : int
+     * </p>
+     * <p>Example:</p>
+     * <p>e.name -{@literal >} "name" : String</p>
+     * <p>e.address.zipcode -{@literal >} "zipcode" : int</p>
      */
     private class ConstructorItemVisitor extends AbstractEclipseLinkExpressionVisitor {
 
@@ -150,25 +151,16 @@ public final class ConstructorQueryMappings {
             this.queryContext = queryContext;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionExpression expression) {
             expression.acceptChildren(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(CollectionValuedPathExpression expression) {
             visitPathExpression(expression);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(StateFieldPathExpression expression) {
             visitPathExpression(expression);
@@ -200,9 +192,6 @@ public final class ConstructorQueryMappings {
             return (DynamicClassLoader) queryContext.getSession().getProperty(PersistenceUnitProperties.CLASSLOADER);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(ConstructorExpression expression) {
 
@@ -213,25 +202,16 @@ public final class ConstructorQueryMappings {
             expression.getConstructorItems().accept(visitor);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(JPQLExpression expression) {
             expression.getQueryStatement().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectClause expression) {
             expression.getSelectExpression().accept(this);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void visit(SelectStatement expression) {
             expression.getSelectClause().accept(this);

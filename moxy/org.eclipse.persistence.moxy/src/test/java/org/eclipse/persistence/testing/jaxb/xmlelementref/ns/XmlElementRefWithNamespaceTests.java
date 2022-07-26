@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ public class XmlElementRefWithNamespaceTests extends JAXBWithJSONTestCases {
 
     public XmlElementRefWithNamespaceTests(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{ EchoByteArray.class, ObjectFactory.class });
+        setClasses(new Class<?>[]{ EchoByteArray.class, ObjectFactory.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
 
@@ -52,14 +52,17 @@ public class XmlElementRefWithNamespaceTests extends JAXBWithJSONTestCases {
 
     }
 
+    @Override
     protected Marshaller getJSONMarshaller() throws Exception{
         return jsonMarshaller;
     }
 
+   @Override
    protected Unmarshaller getJSONUnmarshaller() throws Exception{
        return jsonUnmarshaller;
     }
 
+    @Override
     protected Object getControlObject() {
         ObjectFactory factory = new ObjectFactory();
         EchoByteArray e = factory.createEchoByteArray();

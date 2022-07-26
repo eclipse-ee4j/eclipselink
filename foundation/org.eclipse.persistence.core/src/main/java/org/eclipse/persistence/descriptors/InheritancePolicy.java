@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,28 +22,43 @@
 //       - 371950: Metadata caching
 package org.eclipse.persistence.descriptors;
 
-import java.io.*;
-import java.lang.reflect.*;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.*;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.Association;
+import org.eclipse.persistence.mappings.TypedAssociation;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <p><b>Purpose</b>: Allows customization of an object's inheritance.
@@ -59,7 +74,7 @@ import org.eclipse.persistence.sessions.remote.*;
  * filter expression may be required for concrete and branch querying.
  */
 public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, AbstractSession, ClassDescriptor, DatabaseField> implements Serializable, Cloneable {
-    protected Class parentClass;
+    protected Class<?> parentClass;
     protected String parentClassName;
     protected ClassDescriptor parentDescriptor;
     protected List<ClassDescriptor> childDescriptors;
@@ -73,7 +88,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     protected transient Expression onlyInstancesExpression;
     protected transient Expression withAllSubclassesExpression;
     // null if there are no childrenTables, otherwise all tables for reference class plus childrenTables
-    protected transient Vector allTables;
+    protected transient Vector<DatabaseTable> allTables;
     // all tables for all subclasses (subclasses of subclasses included), should be in sync with childrenTablesJoinExpressions.
     protected transient List<DatabaseTable> childrenTables;
     // join expression for each child table, keyed by the table, should be in sync with childrenTables.
@@ -108,11 +123,11 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Only descriptors involved in inheritance should have a policy.
      */
     public InheritancePolicy() {
-        this.classIndicatorMapping = new HashMap(10);
-        this.classNameIndicatorMapping = new HashMap(10);
+        this.classIndicatorMapping = new HashMap<>(10);
+        this.classNameIndicatorMapping = new HashMap<>(10);
         this.shouldUseClassNameAsIndicator = false;
-        this.allChildClassIndicators = new ArrayList(4);
-        this.childDescriptors = new ArrayList(4);
+        this.allChildClassIndicators = new ArrayList<>(4);
+        this.childDescriptors = new ArrayList<>(4);
         this.setJoinedStrategy();
     }
 
@@ -141,11 +156,11 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      */
     protected void addChildTableJoinExpression(DatabaseTable table, Expression expression) {
         if (this.childrenTablesJoinExpressions == null) {
-            this.childrenTablesJoinExpressions = new HashMap();
+            this.childrenTablesJoinExpressions = new HashMap<>();
            // childrenTables should've been null, too
-            this.childrenTables = new ArrayList();
+            this.childrenTables = new ArrayList<>();
            // allTables should've been null, too
-            this.allTables = new Vector(getDescriptor().getTables());
+            this.allTables = new Vector<>(getDescriptor().getTables());
         }
         // Avoid duplicates as two independent subclasses may have the same table.
         if (!this.childrenTables.contains(table)) {
@@ -180,7 +195,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * If the root class is concrete then it must also define an indicator.
      * Only the root class's descriptor of the entire inheritance hierarchy can define the class indicator mapping.
      */
-    public void addClassIndicator(Class childClass, Object typeValue) {
+    public void addClassIndicator(Class<?> childClass, Object typeValue) {
         // Note we should think about supporting null values.
         // Store as key and value for bi-directional lookup.
         getClassIndicatorMapping().put(typeValue, childClass);
@@ -316,7 +331,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
 
         // CR#3166555 - Have the mechanism build the statement to avoid duplicating code and ensure that lock-mode, hints, hierarchical, etc. are set.
         SQLSelectStatement selectStatement = mechanism.buildBaseSelectStatement(false, clonedExpressions);
-        selectStatement.setTables(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1));
+        selectStatement.setTables(new ArrayList<>(1));
         selectStatement.addTable(getReadAllSubclassesView());
 
         // Case, normal read for branch inheritance class that reads subclasses all in its own table(s).
@@ -342,7 +357,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * This method is invoked only for the abstract descriptors.
      */
     @Override
-    public Class classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
+    public Class<?> classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
         if (hasClassExtractor()) {
             return getClassExtractor().extractClassFromRow(rowFromDatabase, session);
         }
@@ -361,8 +376,8 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * This method is used to turn the a raw database field value classFieldValue into a Class object.  Used to determine
      * which class objects to build from database results, and for class type expression
      */
-    public Class classFromValue(Object classFieldValue, AbstractSession session) throws DescriptorException {
-        Class concreteClass;
+    public Class<?> classFromValue(Object classFieldValue, AbstractSession session) throws DescriptorException {
+        Class<?> concreteClass;
         if (!shouldUseClassNameAsIndicator()) {
             concreteClass = (Class)getClassIndicatorMapping().get(classFieldValue);
             if (concreteClass == null) {
@@ -423,7 +438,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             Object key = keysEnum.next();
             Object value = valuesEnum.next();
 
-            Class theClass = convertClassNameToClass((String) key, classLoader);
+            Class<?> theClass = convertClassNameToClass((String) key, classLoader);
             classIndicatorMapping.put(theClass, value);
             classIndicatorMapping.put(value, theClass);
         }
@@ -435,23 +450,11 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
 
         // Initialize the class extractor name.
         if (classExtractorName != null) {
-            Class classExtractorClass = convertClassNameToClass(classExtractorName, classLoader);
-
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    try {
-                        setClassExtractor((ClassExtractor) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(classExtractorClass)));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(classExtractorName, exception.getException());
-                    }
-                } else {
-                    setClassExtractor((ClassExtractor) PrivilegedAccessHelper.newInstanceFromClass(classExtractorClass));
-                }
-            } catch (IllegalAccessException ex) {
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(classExtractorName, ex);
-            } catch (InstantiationException e) {
-                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(classExtractorName, e);
-            }
+            Class<ClassExtractor> classExtractorClass = convertClassNameToClass(classExtractorName, classLoader);
+            setClassExtractor(PrivilegedAccessHelper.callDoPrivilegedWithException(
+                    () -> PrivilegedAccessHelper.<ClassExtractor>newInstanceFromClass(classExtractorClass),
+                    (ex) -> ValidationException.reflectiveExceptionWhileCreatingClassInstance(classExtractorName, ex)
+            ));
         }
     }
 
@@ -459,20 +462,11 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * Convert the given className to an actual class.
      */
-    protected Class convertClassNameToClass(String className, ClassLoader classLoader) {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    return AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(className, (Exception)exception.getCause());
-                }
-            } else {
-                return PrivilegedAccessHelper.getClassForName(className, true, classLoader);
-            }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
-        }
+    protected <T> Class<T> convertClassNameToClass(String className, ClassLoader classLoader) {
+        return PrivilegedAccessHelper.callDoPrivilegedWithException(
+                () -> PrivilegedAccessHelper.<T>getClassForName(className, true, classLoader),
+                (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(className, ex)
+        );
     }
 
     /**
@@ -503,7 +497,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      */
     protected List<Object> getAllChildClassIndicators() {
         if (allChildClassIndicators == null) {
-            allChildClassIndicators = new ArrayList(4);
+            allChildClassIndicators = new ArrayList<>(4);
         }
         return allChildClassIndicators;
     }
@@ -517,7 +511,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     @Override
     public List<ClassDescriptor> getAllChildDescriptors() {
         // Guess the number of child descriptors...
-        List<ClassDescriptor> allChildDescriptors = new ArrayList(this.getAllChildClassIndicators().size());
+        List<ClassDescriptor> allChildDescriptors = new ArrayList<>(this.getAllChildClassIndicators().size());
         return getAllChildDescriptors(allChildDescriptors);
     }
 
@@ -561,7 +555,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * all tables for reference class plus childrenTables
      */
-    public Vector getAllTables() {
+    public Vector<DatabaseTable> getAllTables() {
         if (allTables == null) {
             return this.getDescriptor().getTables();
         } else {
@@ -669,8 +663,8 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Return the class indicator associations for XML.
      * List of class-name/value associations.
      */
-    public Vector getClassIndicatorAssociations() {
-        Vector associations = new Vector(getClassNameIndicatorMapping().size() / 2);
+    public Vector<Association> getClassIndicatorAssociations() {
+        Vector<Association> associations = new Vector<>(getClassNameIndicatorMapping().size() / 2);
         Iterator classesEnum = getClassNameIndicatorMapping().keySet().iterator();
         Iterator valuesEnum = getClassNameIndicatorMapping().values().iterator();
         while (classesEnum.hasNext()) {
@@ -678,7 +672,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
 
             // If the project was built in runtime is a class, MW is a string.
             if (className instanceof Class) {
-                className = ((Class)className).getName();
+                className = ((Class<?>)className).getName();
             }
             Object value = valuesEnum.next();
             associations.addElement(new TypedAssociation(className, value));
@@ -757,7 +751,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Returns the indicator field value for the given class
      * If no abstract indicator mapping is specified, use the class name.
      */
-    protected Object getClassIndicatorValue(Class javaClass) {
+    protected Object getClassIndicatorValue(Class<?> javaClass) {
         if (shouldUseClassNameAsIndicator()) {
             return javaClass.getName();
         } else {
@@ -801,7 +795,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Return the parent class.
      */
     @Override
-    public Class getParentClass() {
+    public Class<?> getParentClass() {
         return parentClass;
     }
 
@@ -867,10 +861,10 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * use aggregate in inheritance
      */
-    public ClassDescriptor getSubclassDescriptor(Class theClass) {
+    public ClassDescriptor getSubclassDescriptor(Class<?> theClass) {
         if (hasChildren()) {
-            for (Iterator enumtr = getChildDescriptors().iterator(); enumtr.hasNext();) {
-                ClassDescriptor childDescriptor = (ClassDescriptor)enumtr.next();
+            for (Iterator<ClassDescriptor> enumtr = getChildDescriptors().iterator(); enumtr.hasNext();) {
+                ClassDescriptor childDescriptor = enumtr.next();
                 if (childDescriptor.getJavaClass().equals(theClass)) {
                     return childDescriptor;
                 } else {
@@ -888,7 +882,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * Returns descriptor corresponding to the class owning the policy or its subclass - otherwise null.
      */
-    public ClassDescriptor getDescriptor(Class theClass) {
+    public ClassDescriptor getDescriptor(Class<?> theClass) {
         if(getDescriptor().getJavaClass().equals(theClass)) {
             return getDescriptor();
         } else {
@@ -1240,7 +1234,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                 if (shouldUseClassNameAsIndicator()) {
                     getClassIndicatorField().setType(ClassConstants.STRING);
                 } else if (!getClassIndicatorMapping().isEmpty()) {
-                    Class type = null;
+                    Class<?> type = null;
                     Iterator fieldValuesEnum = getClassIndicatorMapping().values().iterator();
                     while (fieldValuesEnum.hasNext() && (type == null)) {
                         Object value = fieldValuesEnum.next();
@@ -1347,10 +1341,10 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         // The indicator select is prepared in the original query, so can just be executed.
         List<AbstractRecord> classIndicators = ((ExpressionQueryMechanism)query.getQueryMechanism()).selectAllRowsFromTable();
 
-        List<Class> classes = new ArrayList<>();
-        Set<Class> uniqueClasses = new HashSet<>();
+        List<Class<?>> classes = new ArrayList<>();
+        Set<Class<?>> uniqueClasses = new HashSet<>();
         for (AbstractRecord row : classIndicators) {
-            Class concreteClass = classFromRow(row, query.getSession());
+            Class<?> concreteClass = classFromRow(row, query.getSession());
             if (!uniqueClasses.contains(concreteClass)) { // Ensure unique (a distinct is used, but may have been disabled)
                 uniqueClasses.add(concreteClass);
                 classes.add(concreteClass);
@@ -1371,11 +1365,11 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             joinedMappingIndexes = new HashMap();
         }
         ClassDescriptor rootDescriptor = query.getDescriptor();
-        for (Class concreteClass : classes) {
+        for (Class<?> concreteClass : classes) {
             if (!uniqueClasses.contains(concreteClass)) {
                 continue;
             }
-            Set<Class> subclasses = new HashSet<>();
+            Set<Class<?>> subclasses = new HashSet<>();
             uniqueClasses.remove(concreteClass);
             subclasses.add(concreteClass);
             ClassDescriptor concreteDescriptor = getDescriptor(concreteClass);
@@ -1412,7 +1406,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                         mappingIndexes = new HashMap(classes.size());
                         joinedMappingIndexes.put(entry.getKey(), mappingIndexes);
                     }
-                    for (Class subclass : subclasses) {
+                    for (Class<?> subclass : subclasses) {
                         mappingIndexes.put(subclass, entry.getValue());
                     }
                 }
@@ -1428,7 +1422,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     /**
      * Remove all of the subclasses (and so on) from the set of classes.
      */
-    protected void removeChildren(ClassDescriptor descriptor, Set<Class> classes, Set<Class> subclasses) {
+    protected void removeChildren(ClassDescriptor descriptor, Set<Class<?>> classes, Set<Class<?>> subclasses) {
         for (ClassDescriptor childDescriptor : descriptor.getInheritancePolicy().getChildDescriptors()) {
             classes.remove(childDescriptor.getJavaClass());
             subclasses.add(childDescriptor.getJavaClass());
@@ -1498,7 +1492,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             return null;
         }
 
-        Class concreteClass = classFromRow(typeRow, query.getSession());
+        Class<?> concreteClass = classFromRow(typeRow, query.getSession());
         ClassDescriptor concreteDescriptor = getDescriptor(concreteClass);
         if (concreteDescriptor == null) {
             throw QueryException.noDescriptorForClassFromInheritancePolicy(query, concreteClass);
@@ -1646,7 +1640,6 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * not have a descriptor, if describesNonPersistenceSubclasses is true
      * Employee's descriptor will be used as the descriptor for Employee
      *
-     * @param describesNonPersistentSubclasses
      */
     public void setDescribesNonPersistentSubclasses(boolean describesNonPersistentSubclasses){
         this.describesNonPersistentSubclasses = describesNonPersistentSubclasses;
@@ -1678,7 +1671,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * All children must share the same table as their parent but can add additional tables.
      * All children must share the root descriptor primary key.
      */
-    public void setParentClass(Class parentClass) {
+    public void setParentClass(Class<?> parentClass) {
         this.parentClass = parentClass;
         if (parentClass != null) {
             setParentClassName(parentClass.getName());
@@ -1744,7 +1737,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * By default this is true for root inheritance descriptors, and false for all others.
      */
     public void setShouldReadSubclasses(boolean shouldReadSubclasses) {
-        this.shouldReadSubclasses = Boolean.valueOf(shouldReadSubclasses);
+        this.shouldReadSubclasses = shouldReadSubclasses;
     }
 
     /**
@@ -1808,7 +1801,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         if (shouldReadSubclasses == null) {
             return true;
         }
-        return shouldReadSubclasses.booleanValue();
+        return shouldReadSubclasses;
     }
 
     /**

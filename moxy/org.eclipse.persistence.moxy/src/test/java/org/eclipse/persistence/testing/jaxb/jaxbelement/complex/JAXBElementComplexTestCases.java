@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class JAXBElementComplexTestCases extends JAXBElementTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/complex/employee.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbelement/complex/employee.json";
     private final static String CONTROL_ELEMENT_NAME = "employee";
-    private final static Class targetClass = Object.class;
+    private final static Class<Object> targetClass = Object.class;
 
     public JAXBElementComplexTestCases(String name) throws Exception {
         super(name);
@@ -53,6 +53,7 @@ public class JAXBElementComplexTestCases extends JAXBElementTestCases {
         TestRunner.main(arguments);
     }
 
+    @Override
     public Document getWriteControlDocument() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/jaxbelement/complex/employee-write.xml");
         Document writeControlDocument = parser.parse(inputStream);
@@ -61,6 +62,7 @@ public class JAXBElementComplexTestCases extends JAXBElementTestCases {
         return writeControlDocument;
     }
 
+    @Override
     public Object getControlObject() {
         Person peep = new Person();
         peep.setName(CONTROL_PERSON_NAME);

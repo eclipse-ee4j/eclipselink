@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * <div><b>BNF:</b> <code>between_expression ::= arithmetic_expression [NOT] BETWEEN arithmetic_expression AND arithmetic_expression |<br>
  *                                                      string_expression [NOT] BETWEEN string_expression AND string_expression |<br>
- *                                                      datetime_expression [NOT] BETWEEN datetime_expression AND datetime_expression</code></div><p>
+ *                                                      datetime_expression [NOT] BETWEEN datetime_expression AND datetime_expression</code></div>
  *
  * @version 2.5
  * @since 2.3
@@ -94,17 +94,11 @@ public final class BetweenExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void accept(ExpressionVisitor visitor) {
         visitor.visit(this);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void acceptChildren(ExpressionVisitor visitor) {
         getExpression().accept(visitor);
@@ -112,9 +106,6 @@ public final class BetweenExpression extends AbstractExpression {
         getUpperBoundExpression().accept(visitor);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addChildrenTo(Collection<Expression> children) {
         children.add(getExpression());
@@ -122,9 +113,6 @@ public final class BetweenExpression extends AbstractExpression {
         children.add(getUpperBoundExpression());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void addOrderedChildrenTo(List<Expression> children) {
 
@@ -172,9 +160,6 @@ public final class BetweenExpression extends AbstractExpression {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF findQueryBNF(Expression expression) {
 
@@ -265,9 +250,6 @@ public final class BetweenExpression extends AbstractExpression {
         return lowerBoundExpression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(BetweenExpressionBNF.ID);
@@ -373,9 +355,6 @@ public final class BetweenExpression extends AbstractExpression {
               !upperBoundExpression.isNull();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return wordParser.character() == RIGHT_PARENTHESIS ||
@@ -385,9 +364,6 @@ public final class BetweenExpression extends AbstractExpression {
                super.isParsingComplete(wordParser, word, expression);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void parse(WordParser wordParser, boolean tolerant) {
 
@@ -418,9 +394,6 @@ public final class BetweenExpression extends AbstractExpression {
         upperBoundExpression = parse(wordParser, InternalBetweenExpressionBNF.ID, tolerant);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void toParsedText(StringBuilder writer, boolean actual) {
 

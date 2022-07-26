@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,18 +33,21 @@ public class JAXBElementCharacterTestCases extends JAXBElementTestCases {
         setTargetClass(Character.class);
     }
 
-    public Class[] getClasses(){
-        Class[] classes = new Class[1];
+    @Override
+    public Class<?>[] getClasses(){
+        Class<?>[] classes = new Class<?>[1];
         classes[0] = Character.class;
         return classes;
     }
 
-    public Class getUnmarshalClass(){
+    @Override
+    public Class<?> getUnmarshalClass(){
         return Character.class;
     }
 
+    @Override
     protected Object getControlObject() {
-        Character character = new Character('s');
+        Character character = 's';
         JAXBElement<Character> jbe = new JAXBElement<Character>(new QName("a", "b"),Character.class, character);
         return jbe;
     }

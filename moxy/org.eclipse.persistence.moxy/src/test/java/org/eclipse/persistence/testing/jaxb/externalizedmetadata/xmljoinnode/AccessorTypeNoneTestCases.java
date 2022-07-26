@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,9 +39,10 @@ public class AccessorTypeNoneTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setClasses(new Class[] { Company.class });
+        setClasses(new Class<?>[] { Company.class });
     }
 
+    @Override
     public Object getControlObject() {
         AtnCompany company = new AtnCompany();
 
@@ -68,6 +69,7 @@ public class AccessorTypeNoneTestCases extends JAXBWithJSONTestCases {
         return company;
     }
 
+    @Override
     public Map getProperties() {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS_RESOURCE);
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();

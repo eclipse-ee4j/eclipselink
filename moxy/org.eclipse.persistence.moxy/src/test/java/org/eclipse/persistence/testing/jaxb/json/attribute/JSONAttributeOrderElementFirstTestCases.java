@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,9 +28,10 @@ public class JSONAttributeOrderElementFirstTestCases extends JSONMarshalUnmarsha
         super(name);
         setControlJSON(JSON_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
-        setClasses(new Class[]{AddressElementAttributeOrder.class});
+        setClasses(new Class<?>[]{AddressElementAttributeOrder.class});
     }
 
+    @Override
     protected Object getControlObject() {
         AddressElementAttributeOrder add = new AddressElementAttributeOrder();
         add.id = "10";
@@ -39,6 +40,7 @@ public class JSONAttributeOrderElementFirstTestCases extends JSONMarshalUnmarsha
         return add;
     }
 
+    @Override
     public Map getProperties(){
         Map props = new HashMap();
         props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");

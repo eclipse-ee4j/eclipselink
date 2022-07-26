@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,34 +34,34 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
- * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/XMLSchema}openAttrs">
- *       &lt;sequence>
- *         &lt;choice maxOccurs="unbounded" minOccurs="0">
- *           &lt;element ref="{http://www.w3.org/2001/XMLSchema}include"/>
- *           &lt;element ref="{http://www.w3.org/2001/XMLSchema}import"/>
- *           &lt;element ref="{http://www.w3.org/2001/XMLSchema}redefine"/>
- *           &lt;element ref="{http://www.w3.org/2001/XMLSchema}annotation"/>
- *         &lt;/choice>
- *         &lt;sequence maxOccurs="unbounded" minOccurs="0">
- *           &lt;group ref="{http://www.w3.org/2001/XMLSchema}schemaTop"/>
- *           &lt;element ref="{http://www.w3.org/2001/XMLSchema}annotation" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;/sequence>
- *       &lt;/sequence>
- *       &lt;attribute name="targetNamespace" type="{http://www.w3.org/2001/XMLSchema}anyURI" />
- *       &lt;attribute name="version" type="{http://www.w3.org/2001/XMLSchema}token" />
- *       &lt;attribute name="finalDefault" type="{http://www.w3.org/2001/XMLSchema}fullDerivationSet" default="" />
- *       &lt;attribute name="blockDefault" type="{http://www.w3.org/2001/XMLSchema}blockSet" default="" />
- *       &lt;attribute name="attributeFormDefault" type="{http://www.w3.org/2001/XMLSchema}formChoice" default="unqualified" />
- *       &lt;attribute name="elementFormDefault" type="{http://www.w3.org/2001/XMLSchema}formChoice" default="unqualified" />
- *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
- *       &lt;anyAttribute processContents='lax' namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
+ * <pre>{@code
+ * <complexType>
+ *   <complexContent>
+ *     <extension base="{http://www.w3.org/2001/XMLSchema}openAttrs">
+ *       <sequence>
+ *         <choice maxOccurs="unbounded" minOccurs="0">
+ *           <element ref="{http://www.w3.org/2001/XMLSchema}include"/>
+ *           <element ref="{http://www.w3.org/2001/XMLSchema}import"/>
+ *           <element ref="{http://www.w3.org/2001/XMLSchema}redefine"/>
+ *           <element ref="{http://www.w3.org/2001/XMLSchema}annotation"/>
+ *         </choice>
+ *         <sequence maxOccurs="unbounded" minOccurs="0">
+ *           <group ref="{http://www.w3.org/2001/XMLSchema}schemaTop"/>
+ *           <element ref="{http://www.w3.org/2001/XMLSchema}annotation" maxOccurs="unbounded" minOccurs="0"/>
+ *         </sequence>
+ *       </sequence>
+ *       <attribute name="targetNamespace" type="{http://www.w3.org/2001/XMLSchema}anyURI" />
+ *       <attribute name="version" type="{http://www.w3.org/2001/XMLSchema}token" />
+ *       <attribute name="finalDefault" type="{http://www.w3.org/2001/XMLSchema}fullDerivationSet" default="" />
+ *       <attribute name="blockDefault" type="{http://www.w3.org/2001/XMLSchema}blockSet" default="" />
+ *       <attribute name="attributeFormDefault" type="{http://www.w3.org/2001/XMLSchema}formChoice" default="unqualified" />
+ *       <attribute name="elementFormDefault" type="{http://www.w3.org/2001/XMLSchema}formChoice" default="unqualified" />
+ *       <attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       <anyAttribute processContents='lax' namespace='##other'/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  *
  *
  */
@@ -129,7 +129,7 @@ public class Schema
      * For example, to add a new item, do as follows:
      * <pre>
      *    getIncludeOrImportOrRedefine().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>
@@ -161,7 +161,7 @@ public class Schema
      * For example, to add a new item, do as follows:
      * <pre>
      *    getSimpleTypeOrComplexTypeOrGroup().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>
@@ -245,7 +245,7 @@ public class Schema
      * For example, to add a new item, do as follows:
      * <pre>
      *    getFinalDefault().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>
@@ -274,7 +274,7 @@ public class Schema
      * For example, to add a new item, do as follows:
      * <pre>
      *    getBlockDefault().add(newItem);
-     * </pre>
+     * }</pre>
      *
      *
      * <p>
