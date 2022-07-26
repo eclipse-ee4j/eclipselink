@@ -242,6 +242,14 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         //bug 5871089 the default generator requires definitions based on all java types
         fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP"));
+        // Local classes have no TZ information included
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        // Offset classes contain an offset from UTC/Greenwich in the ISO-8601 calendar system so TZ should be included
+        // but TIMESTAMP WITH TIME ZONE is not supported until 10g
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
 
         return fieldTypeMapping;
     }
@@ -724,8 +732,10 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
         ExpressionOperator exOperator = new ExpressionOperator() {
 
-            // QUARTER emulation: ((MONTH(:first)+2)/3)
+            // QUARTER emulation: TO_NUMBER(TO_CHAR(", ", 'Q'))
             private final String[] QUARTER_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'Q'))"};
+            // ISO WEEK emulation: TO_NUMBER(TO_CHAR(", ", 'IW'))
+            private final String[] WEEK_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'IW'))"};
 
             private void printQuarterSQL(final Expression first, final ExpressionSQLPrinter printer) {
                 printer.printString(QUARTER_STRINGS[0]);
@@ -739,23 +749,43 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                 printer.printString(QUARTER_STRINGS[1]);
             }
 
+            private void printWeekSQL(final Expression first, final ExpressionSQLPrinter printer) {
+                printer.printString(WEEK_STRINGS[0]);
+                first.printSQL(printer);
+                printer.printString(WEEK_STRINGS[1]);
+            }
+
+            private void printWeekJava(final Expression first, final ExpressionJavaPrinter printer) {
+                printer.printString(WEEK_STRINGS[0]);
+                first.printJava(printer);
+                printer.printString(WEEK_STRINGS[1]);
+            }
+
             @Override
             public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-                if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                    printQuarterSQL(first, printer);
-                } else {
-                    super.printDuo(first, second, printer);
+                if (second instanceof LiteralExpression) {
+                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                        case "QUARTER":
+                            printQuarterSQL(first, printer);
+                            return;
+                        case "WEEK":
+                            printWeekSQL(first, printer);
+                            return;
+                    }
                 }
+                super.printDuo(first, second, printer);
             }
 
             @Override
             public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if (items.size() == 2) {
-                    Expression first = items.get(0);
-                    Expression second = items.get(1);
-                    if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                        printQuarterSQL(first, printer);
-                        return;
+                    switch (((LiteralExpression) items.get(1)).getValue().toUpperCase()) {
+                        case "QUARTER":
+                            printQuarterSQL(items.get(0), printer);
+                            return;
+                        case "WEEK":
+                            printWeekSQL(items.get(0), printer);
+                            return;
                     }
                 }
                 super.printCollection(items, printer);
@@ -763,21 +793,29 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
             @Override
             public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
-                if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                    printQuarterJava(first, printer);
-                } else {
-                    super.printJavaDuo(first, second, printer);
+                if (second instanceof LiteralExpression) {
+                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                        case "QUARTER":
+                            printQuarterJava(first, printer);
+                            return;
+                        case "WEEK":
+                            printWeekJava(first, printer);
+                            return;
+                    }
                 }
+                super.printJavaDuo(first, second, printer);
             }
 
             @Override
             public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if (items.size() == 2) {
-                    Expression first = items.get(0);
-                    Expression second = items.get(1);
-                    if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                        printQuarterJava(first, printer);
-                        return;
+                    switch (((LiteralExpression) items.get(1)).getValue().toUpperCase()) {
+                        case "QUARTER":
+                            printQuarterJava(items.get(0), printer);
+                            return;
+                        case "WEEK":
+                            printWeekJava(items.get(0), printer);
+                            return;
                     }
                 }
                 super.printJavaCollection(items, printer);

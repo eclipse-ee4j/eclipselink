@@ -324,13 +324,6 @@ public class Oracle9Platform extends Oracle8Platform {
         fieldTypes.put(ORACLE_SQL_TIMESTAMP, new FieldTypeDefinition("TIMESTAMP", false));
         fieldTypes.put(ORACLE_SQL_TIMESTAMPTZ, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE", false));
         fieldTypes.put(ORACLE_SQL_TIMESTAMPLTZ, new FieldTypeDefinition("TIMESTAMP WITH LOCAL TIME ZONE", false));
-        // Local classes have no TZ information included
-        fieldTypes.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
-        fieldTypes.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypes.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        // Offset classes contain an offset from UTC/Greenwich in the ISO-8601 calendar system so TZ should be included
-        fieldTypes.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE"));
-        fieldTypes.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE"));
         return fieldTypes;
     }
 
