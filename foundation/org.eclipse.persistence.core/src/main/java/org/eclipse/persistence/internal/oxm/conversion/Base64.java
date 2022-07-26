@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.conversion;
 
-import jakarta.xml.bind.DatatypeConverter;
+import java.util.Arrays;
+import java.util.Base64.Encoder;
 
 /**
  * INTERNAL:
@@ -23,6 +24,8 @@ import jakarta.xml.bind.DatatypeConverter;
 
 public class Base64 {
 
+    // 0.3MB (must be multiple of 3)
+    private static final int BASE64_CHUNK_SIZE = 3 * 100000;
     /**
      * Base64 constructor comment.
      */
@@ -55,11 +58,25 @@ public class Base64 {
 
     /**
      * This method encodes the given byte[] using java.util.Base64.
+     * To improve memory consumption it is parsing data in chunks.
      *
      * @param  data the data
      * @return the base64-encoded <var>data</var> as a String
      */
     public static String base64EncodeToString(byte[] data) {
-        return DatatypeConverter.printBase64Binary(data);
+        Encoder encoder = java.util.Base64.getEncoder();
+        StringBuilder builder = new StringBuilder();
+        int i = 0;
+        while (i < data.length) {
+            int from = i + BASE64_CHUNK_SIZE;
+            if (from > data.length) {
+                from = data.length;
+            }
+            byte[] chunk = Arrays.copyOfRange(data, i, from);
+            builder.append(encoder.encodeToString(chunk));
+            i = from;
+        }
+        // Total memory pick is 'data' + 'builder x 2'. Builder makes a defensive copy
+        return builder.toString();
     }
 }
