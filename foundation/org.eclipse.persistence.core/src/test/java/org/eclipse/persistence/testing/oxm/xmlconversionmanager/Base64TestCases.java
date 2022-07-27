@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,5 +50,18 @@ public class Base64TestCases extends OXTestCase {
         } catch(Exception ex) {
             fail("an unexpected exception was thrown " + ex.getMessage());
         }
+    }
+    
+    public void testBase64EncodeToString() {
+        // 2 MB
+        byte[] big = new byte[2000000];
+        // Initialize it with some data
+        for (int i = 0; i < big.length; i++) {
+            big[i] = (byte) i;
+        }
+        String base64 = xcm.buildBase64StringFromBytes(big);
+        // Verifies the implementation is not changing the expected result.
+        // Currently this check is unnecessary because implementation is the same.
+        assertEquals(java.util.Base64.getEncoder().encodeToString(big), base64);
     }
 }

@@ -1641,12 +1641,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
     @Override
     public String buildBase64StringFromBytes(byte[] bytes) {
-        byte[] convertedBytes = Base64.base64Encode(bytes);
-        StringBuilder buffer = new StringBuilder();
-        for (int i = 0; i < convertedBytes.length; i++) {
-            buffer.append((char) convertedBytes[i]);
-        }
-        return buffer.toString();
+        return Base64.base64EncodeToString(bytes);
     }
 
     public String buildBase64StringFromObjectBytes(Byte[] bytes) {

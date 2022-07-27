@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ package org.eclipse.persistence.internal.oxm.conversion;
  */
 
 public class Base64 {
-
     /**
      * Base64 constructor comment.
      */
@@ -49,5 +48,16 @@ public class Base64 {
      */
     public static byte[] base64Encode(byte[] data) {
         return java.util.Base64.getEncoder().encode(data);
+    }
+
+    /**
+     * This method encodes the given byte[] using java.util.Base64.
+     *
+     * @param  data the data
+     * @return the base64-encoded <var>data</var> as a String
+     */
+    public static String base64EncodeToString(byte[] data) {
+        // Total memory pick is 'data' + 'encoded x 2'
+        return java.util.Base64.getEncoder().encodeToString(data);
     }
 }
