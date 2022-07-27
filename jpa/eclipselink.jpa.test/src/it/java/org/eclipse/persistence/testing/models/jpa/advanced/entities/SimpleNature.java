@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,6 @@
 //     342922: Unwanted insert statement generated when using ElementCollection
 //     with lazy loading.
 package org.eclipse.persistence.testing.models.jpa.advanced.entities;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SimpleNature {
     public static final String[] PERSONALITY =

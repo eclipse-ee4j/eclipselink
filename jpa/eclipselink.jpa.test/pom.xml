@@ -309,7 +309,6 @@
                                 <item>eclipselink-annotation-model</item>
                                 <item>eclipselink-xml-only-model</item>
                                 <item>eclipselink-xml-merge-model</item>
-                                <item>eclipselink-cacheable-model</item>
                                 <item>eclipselink-ddl-generation-model</item>
                                 <item>eclipselink-jpa21-model</item>
                                 <item>eclipselink-xml-mapping-metadata-complete</item>
@@ -439,7 +438,6 @@
                             <items>
                                 <item>eclipselink-annotation-model</item>
                                 <item>eclipselink-ddl-generation-model</item>
-                                <item>eclipselink-cacheable-model</item>
                                 <item>eclipselink-plsql-model</item>
                                 <item>jpa-performance</item>
                                 <item>eclipselink-xml-mapping-metadata-complete</item>
@@ -469,7 +467,6 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
@@ -522,7 +519,6 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
@@ -554,7 +550,6 @@
                             <skip>${skip-server-test-jpa-lrg1}</skip>
                             <items>
                                 <item>server-test-jpa-advanced</item>
-                                <item>server-test-jpa-cacheable</item>
                                 <item>server-test-jpa-criteria</item>
                                 <item>server-test-jpa-datatypes</item>
                                 <item>server-test-jpa-ddlgeneration</item>
@@ -751,8 +746,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                <!-- Special model jars for LRG 22_1 test.-->
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -978,7 +971,6 @@
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-cacheable-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-jpa22-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
@@ -1014,7 +1006,6 @@
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-plsql-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-cacheable-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}jpa-performance.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-mapping-metadata-complete.jar</additionalClasspathElement>
                             </additionalClasspathElements>
@@ -1350,19 +1341,6 @@
                 <extra-model>eclipselink-jpa22-model-server</extra-model>
                 <packageName>jpa22</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa22.advanced.JPA22TestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-cacheable</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-cacheable-model</modelname>
-                <extra-model>eclipselink-cacheable-model-extra</extra-model>
-                <packageName>cacheable</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableServerTestSuite</test-client-class>
             </properties>
         </profile>
         <profile>

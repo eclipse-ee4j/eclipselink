@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.performance;
 
+import jakarta.persistence.spi.PersistenceProvider;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.spi.PersistenceProvider;
-
-import org.eclipse.persistence.testing.framework.TestProblemException;
-import org.eclipse.persistence.testing.models.jpa.performance.EmployeeTableCreator;
 
 /**
  * Performance tests that compare JPA performance.

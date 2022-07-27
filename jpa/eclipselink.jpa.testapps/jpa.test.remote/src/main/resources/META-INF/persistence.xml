@@ -107,4 +107,29 @@
             <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="cacheablePU" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetailWithBackPointer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableProtectedEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmploymentPeriod</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Equipment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EquipmentCode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.FormerEmployment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.sql.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
 </persistence>

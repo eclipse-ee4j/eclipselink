@@ -116,6 +116,11 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.cacheable</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.testapps.fieldaccess.advanced</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -179,9 +184,11 @@
     </dependencies>
 
     <modules>
+        <module>jpa.test.advanced.cascadepersist</module>
         <module>jpa.test.advanced.multitenant</module>
         <module>jpa.test.beanvalidation</module>
         <module>jpa.test.beanvalidation.dynamic</module>
+        <module>jpa.test.cacheable</module>
         <module>jpa.test.cascadedeletes</module>
         <module>jpa.test.composite.advanced</module>
         <module>jpa.test.composite.advanced/common</module>
@@ -207,6 +214,7 @@
         <module>jpa.test.sessionbean.ha</module>
         <module>jpa.test.validation</module>
         <module>jpa.test.xml.advanced.multitenant</module>
+        <module>jpa.test.xml.cacheable</module>
         <module>jpa.test.xml.composite.advanced</module>
         <module>jpa.test.xml.composite.advanced/common</module>
         <module>jpa.test.xml.composite.advanced/member_1</module>

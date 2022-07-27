@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,23 +19,21 @@
 //       - 354678: Temp classloader is still being used during metadata processing
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import java.util.Collection;
-
 import jakarta.persistence.AssociationOverride;
 import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
 import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.Version;
 
-import org.eclipse.persistence.annotations.Property;
+import java.util.Collection;
 
 @Entity(name="DDL_EMP")
 @SecondaryTable(name="DDL_SALARY")

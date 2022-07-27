@@ -16,22 +16,6 @@
 //       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.CascadeType.MERGE;
-import static jakarta.persistence.CascadeType.PERSIST;
-import static jakarta.persistence.FetchType.EAGER;
-import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.TABLE;
-import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES;//INVALIDATE_CHANGED_OBJECTS;
-import static org.eclipse.persistence.annotations.CacheType.FULL;//SOFT_WEAK;
-import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Set;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Basic;
@@ -57,7 +41,6 @@ import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
 import jakarta.persistence.Version;
-
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
@@ -74,6 +57,22 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.TypeConverters;
 import org.eclipse.persistence.config.CacheIsolationType;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Set;
+
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.TABLE;
+import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES;
+import static org.eclipse.persistence.annotations.CacheType.FULL;
+import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
 
 /**
  * Employees have a one-to-many relationship with Employees through the

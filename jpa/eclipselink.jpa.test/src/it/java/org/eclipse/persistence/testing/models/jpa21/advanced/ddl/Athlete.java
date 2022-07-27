@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,10 +17,6 @@
 //       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 package org.eclipse.persistence.testing.models.jpa21.advanced.ddl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -28,9 +24,12 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.MapKeyJoinColumn;
-import jakarta.persistence.MapKeyTemporal;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Temporal;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static jakarta.persistence.TemporalType.DATE;
 

@@ -15,12 +15,11 @@
 //       - 3223850: Primary key metadata issues
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-
 import org.eclipse.persistence.annotations.PrimaryKey;
+
+import java.io.Serializable;
 
 /**
  * Test for bug fix 323850. Since the inheriting entity PhoneNumber defines

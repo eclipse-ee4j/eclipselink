@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,10 @@
 //       - 307664:  Lifecycle callbacks not called for object from IndirectSet
 package org.eclipse.persistence.testing.models.jpa.inheritance.listeners;
 
-import java.util.EventListener;
 import jakarta.persistence.PostLoad;
-
 import org.eclipse.persistence.testing.models.jpa.inheritance.DDD;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Vehicle;
+
+import java.util.EventListener;
 
 public class DDDListener implements EventListener {
     @PostLoad

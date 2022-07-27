@@ -25,18 +25,20 @@
 //         Throw an IAE for Interfaces and Embeddable classes passed to evict()
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import jakarta.persistence.Cache;
+//import jakarta.persistence.Cache;
 import jakarta.persistence.EntityManager;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.testing.models.jpa.advanced.*;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Department;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.AdvancedFetchGroupTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.ChestProtector;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Gear;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.GoalieGear;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.NonPersistedSubclassOfChestProtector;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Pads;
-import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
+//import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTableCreator;
 //import org.eclipse.persistence.testing.models.jpa.metamodel.Manufacturer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
@@ -89,10 +91,10 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         suite.addTest(new CacheImplJUnitTest("testEvictClass_NonPersistableParentOfEntityMappedSuperclassChain_RemovesAssignableSubclasses"));
         suite.addTest(new CacheImplJUnitTest("testEvictClass_NonPersistableSubclassOfEntityMappedSuperclassChain_hasNoEffect"));
 
-        suite.addTest(new CacheImplJUnitTest("testGetId_fromUnmanagedMappedSuperclass_handles_null_descriptor"));
+//        suite.addTest(new CacheImplJUnitTest("testGetId_fromUnmanagedMappedSuperclass_handles_null_descriptor"));
         suite.addTest(new CacheImplJUnitTest("testGetId_fromUnsupportedJavaLangInteger_throwsIAE_on_null_descriptor"));
         // Run these tests last as they modify the state of the ClassDescriptor permanently to verify variant corner use cases
-        suite.addTest(new CacheImplJUnitTest("testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_weaving_on"));
+//        suite.addTest(new CacheImplJUnitTest("testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_weaving_on"));
         // 315714: comment out 3 of the 10 new tests requiring setup() table creation - until the metamodel one is added to setup()
         // Tests fail to create tables when run outside of ant or before the metamodel model is created
         /*
@@ -114,7 +116,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
         new AdvancedFetchGroupTableCreator().replaceTables(JUnitTestCase.getServerSession());
-        new CacheableTableCreator().replaceTables(JUnitTestCase.getServerSession());
+//        new CacheableTableCreator().replaceTables(JUnitTestCase.getServerSession());
         // 315714: metamodel model requires a table creator now that we are persisting with it
         clearCache();
     }
@@ -620,40 +622,40 @@ public class CacheImplJUnitTest extends JUnitTestCase {
     }
 
     // The xml model version is not managed
-    public void testGetId_fromUnmanagedMappedSuperclass_handles_null_descriptor() {
-        if (!isJPA10()) {
-            int ID = ID_TEST_BASE + 400;
-            boolean _exceptionThrown = false;
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            // CacheableTrueMappedSuperclass (MappedSuperclass with Id) << SubCacheableFalseEntity (Entity)
-            org.eclipse.persistence.testing.models.jpa.xml.cacheable.SubCacheableFalseEntity anEntity
-                = new org.eclipse.persistence.testing.models.jpa.xml.cacheable.SubCacheableFalseEntity();
-            org.eclipse.persistence.testing.models.jpa.xml.cacheable.CacheableTrueMappedSuperclass aMappedSuperclass
-                = new org.eclipse.persistence.testing.models.jpa.xml.cacheable.CacheableTrueMappedSuperclass();
-            anEntity.setId(ID);
-            // Can we place non-persistable objects into only the cache (non-entities)?
-            // We do not need to persist this entity for this specific test
-            //em.persist(anEntity);
-            commitTransaction(em);
-            closeEntityManager(em);
-
-            EntityManager em1 = createEntityManager();
-            EntityManager em2 = createEntityManager();
-            Cache aJPACache = getEntityManagerFactory().getCache();
-            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
-            Object anId = null;
-            try {
-                anId = anEclipseLinkCache.getId(anEntity);
-            } catch (IllegalArgumentException iae) {
-                _exceptionThrown = true;
-            } finally {
-                closeEntityManager(em1);
-                closeEntityManager(em2);
-                assertTrue("IllegalArgumentException should have been thrown on the unmanaged entity lacking a descriptor.", _exceptionThrown);
-            }
-        }
-    }
+//    public void testGetId_fromUnmanagedMappedSuperclass_handles_null_descriptor() {
+//        if (!isJPA10()) {
+//            int ID = ID_TEST_BASE + 400;
+//            boolean _exceptionThrown = false;
+//            EntityManager em = createEntityManager();
+//            beginTransaction(em);
+//            // CacheableTrueMappedSuperclass (MappedSuperclass with Id) << SubCacheableFalseEntity (Entity)
+//            org.eclipse.persistence.testing.models.jpa.xml.cacheable.SubCacheableFalseEntity anEntity
+//                = new org.eclipse.persistence.testing.models.jpa.xml.cacheable.SubCacheableFalseEntity();
+//            org.eclipse.persistence.testing.models.jpa.xml.cacheable.CacheableTrueMappedSuperclass aMappedSuperclass
+//                = new org.eclipse.persistence.testing.models.jpa.xml.cacheable.CacheableTrueMappedSuperclass();
+//            anEntity.setId(ID);
+//            // Can we place non-persistable objects into only the cache (non-entities)?
+//            // We do not need to persist this entity for this specific test
+//            //em.persist(anEntity);
+//            commitTransaction(em);
+//            closeEntityManager(em);
+//
+//            EntityManager em1 = createEntityManager();
+//            EntityManager em2 = createEntityManager();
+//            Cache aJPACache = getEntityManagerFactory().getCache();
+//            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
+//            Object anId = null;
+//            try {
+//                anId = anEclipseLinkCache.getId(anEntity);
+//            } catch (IllegalArgumentException iae) {
+//                _exceptionThrown = true;
+//            } finally {
+//                closeEntityManager(em1);
+//                closeEntityManager(em2);
+//                assertTrue("IllegalArgumentException should have been thrown on the unmanaged entity lacking a descriptor.", _exceptionThrown);
+//            }
+//        }
+//    }
 
     public void testGetId_fromUnsupportedJavaLangInteger_throwsIAE_on_null_descriptor() {
         if (!isJPA10()) {
@@ -676,45 +678,45 @@ public class CacheImplJUnitTest extends JUnitTestCase {
      * we must have an Id on an abstract MappedSuperclass root that is defined via sessions.xml.
      * Or we can simulate a null CMP3Policy by clearing it - so that the alternate code handling is run
      */
-    public void testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_weaving_on() {
-        if (!isJPA10()) {
-            int ID = ID_TEST_BASE + 500;
-            Object originalId = null;
-            EntityManager em = createEntityManager();//);
-            // Persist both implementing subclasses of GoalieGear
-            beginTransaction(em);
-            // CacheableTrueMappedSuperclass (MappedSuperclass with Id) << SubCacheableFalseEntity (Entity)
-            org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity anEntity = new org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity();
-            org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass aMappedSuperclass = new org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass();
-            anEntity.setId(ID);
-            // Can we place non-persistable objects into only the cache (non-entities)?
-            em.persist(anEntity);
-            commitTransaction(em);
-            closeEntityManager(em);
-
-            EntityManager em1 = createEntityManager();
-            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
-            Object anId = null;
-            originalId = anEntity.getId();
-
-            // clear the CMP3Policy to simulate a native pojo
-            ClassDescriptor cdesc = ((EntityManagerImpl)em1).getSession().getClassDescriptor(anEntity.getClass());
-            CMP3Policy policy = (CMP3Policy) (cdesc.getCMPPolicy());
-            assertNotNull("CMP3Policy should exist", policy);
-            cdesc.setCMPPolicy(null);
-            try {
-                // This call will test the weaving [on] section of getId()
-                anId = anEclipseLinkCache.getId(anEntity);
-                assertNotNull("Id instance should not be null", anId);
-                assertTrue("Id instance should be of type Integer", anId instanceof Integer);
-                assertEquals(((Integer)anId).intValue(), ID);
-                assertEquals(anId, originalId);
-            } finally {
-                cdesc.setCMPPolicy(policy);
-                closeEntityManager(em1);
-            }
-        }
-    }
+//    public void testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_weaving_on() {
+//        if (!isJPA10()) {
+//            int ID = ID_TEST_BASE + 500;
+//            Object originalId = null;
+//            EntityManager em = createEntityManager();//);
+//            // Persist both implementing subclasses of GoalieGear
+//            beginTransaction(em);
+//            // CacheableTrueMappedSuperclass (MappedSuperclass with Id) << SubCacheableFalseEntity (Entity)
+//            org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity anEntity = new org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity();
+//            org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass aMappedSuperclass = new org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass();
+//            anEntity.setId(ID);
+//            // Can we place non-persistable objects into only the cache (non-entities)?
+//            em.persist(anEntity);
+//            commitTransaction(em);
+//            closeEntityManager(em);
+//
+//            EntityManager em1 = createEntityManager();
+//            JpaCache anEclipseLinkCache = (JpaCache)getEntityManagerFactory().getCache();
+//            Object anId = null;
+//            originalId = anEntity.getId();
+//
+//            // clear the CMP3Policy to simulate a native pojo
+//            ClassDescriptor cdesc = ((EntityManagerImpl)em1).getSession().getClassDescriptor(anEntity.getClass());
+//            CMP3Policy policy = (CMP3Policy) (cdesc.getCMPPolicy());
+//            assertNotNull("CMP3Policy should exist", policy);
+//            cdesc.setCMPPolicy(null);
+//            try {
+//                // This call will test the weaving [on] section of getId()
+//                anId = anEclipseLinkCache.getId(anEntity);
+//                assertNotNull("Id instance should not be null", anId);
+//                assertTrue("Id instance should be of type Integer", anId instanceof Integer);
+//                assertEquals(((Integer)anId).intValue(), ID);
+//                assertEquals(anId, originalId);
+//            } finally {
+//                cdesc.setCMPPolicy(policy);
+//                closeEntityManager(em1);
+//            }
+//        }
+//    }
 
 //    public void testGetId_fromNativeMappedSuperclass_handles_null_cmp3policy_and_null_pk_with_weaving_on() {
 //        if (!isJPA10()) {

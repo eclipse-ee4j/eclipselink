@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2008, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2008, 2015 Daryl Davis. All rights reserved.
+ * Copyright (c) 2008, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2022 Daryl Davis. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,12 +16,11 @@
 //       - 386939: @ManyToMany Map<Entity,Entity> unidirectional reverses Key and Value fields on Update
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+
+import java.io.Serializable;
 
 @Entity
 public class ValueEntity implements Serializable {

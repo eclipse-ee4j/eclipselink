@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,9 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.testing.models.jpa22.advanced.ddl.schema;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
-import jakarta.persistence.Converts;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -38,7 +32,6 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.testing.models.jpa22.advanced.converters.AccomplishmentConverter;
 import org.eclipse.persistence.testing.models.jpa22.advanced.converters.AgeConverter;
 import org.eclipse.persistence.testing.models.jpa22.advanced.converters.DateConverter;
@@ -49,6 +42,11 @@ import org.eclipse.persistence.testing.models.jpa22.advanced.converters.LevelCon
 import org.eclipse.persistence.testing.models.jpa22.advanced.converters.RunningStatusConverter;
 import org.eclipse.persistence.testing.models.jpa22.advanced.converters.TimeConverter;
 import org.eclipse.persistence.testing.models.jpa22.advanced.enums.Gender;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static jakarta.persistence.InheritanceType.JOINED;
 
