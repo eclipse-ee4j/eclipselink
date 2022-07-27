@@ -44,7 +44,7 @@
     <properties>
         <persistence-unit.name>composite-advanced-member_2</persistence-unit.name>
         <persistence-unit.data-source2-name>jdbc/EclipseLinkXADS2</persistence-unit.data-source2-name>
-        <server.skip>true</server.skip>
+        <server.test.skip>true</server.test.skip>
         <el.packager.mode>EJB</el.packager.mode>
     </properties>
 

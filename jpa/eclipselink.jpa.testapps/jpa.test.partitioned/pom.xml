@@ -31,7 +31,7 @@
         <argLine/>
         <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>
         <!-- server tests require Oracle DB -->
-        <server.skip>true</server.skip>
+        <server.test.skip>true</server.test.skip>
     </properties>
 
     <build>
