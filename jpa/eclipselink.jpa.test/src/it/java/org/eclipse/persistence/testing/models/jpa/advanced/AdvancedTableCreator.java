@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,7 +109,6 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCMP3_ROOMTable());
         addTableDefinition(buildCMP3_DOORTable());
         addTableDefinition(buildCMP3_PRODUCTTable());
-        addTableDefinition(buildCmp3EmbedVisitorTable());
         addTableDefinition(buildCMP3_CANOETable());
         addTableDefinition(buildCMP3_LAKETable());
         addTableDefinition(buildCMP3_OYSTERTable());
@@ -2813,17 +2812,6 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         foreignKeyCMP3_DOOR_CMP3_ROOM.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyCMP3_DOOR_CMP3_ROOM);
 
-        return table;
-    }
-
-    public static TableDefinition buildCmp3EmbedVisitorTable() {
-        TableDefinition table = createTable("CMP3_EMBED_VISITOR");
-        table.addField(createNumericPk("ID"));
-        table.addField(createStringColumn("NAME"));
-        table.addField(createStringColumn("CODE", 3, true));
-        table.addField(createStringColumn("COUNTRY"));
-        table.addField(createStringColumn("CONTINENT"));
-        table.addField(createStringColumn("NOTE"));
         return table;
     }
 

@@ -29,15 +29,12 @@ package org.eclipse.persistence.testing.tests.jpa;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.AbstractEntityWithColumnDiscriminatorTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CacheImplJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CallbackEventJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.EntityEmbeddableTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ExtendedPersistenceContextJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.InvalidNamedQueryTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.JoinedAttributeAdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.NamedQueryJUnitTest;
@@ -132,8 +129,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(OptimisticLockForceIncrementTestSuite.suite());
         suite.addTest(ConfigPUTestSuite.suite());
         suite.addTest(NamedQueryJUnitTest.suite());
-        suite.addTest(EntityEmbeddableTest.suite());
-        suite.addTest(InvalidNamedQueryTest.suite());
         fullSuite.addTest(suite);
 
         // Inheritance model.
@@ -180,7 +175,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(JUnitJPQLQueryHelperTestSuite.suite());
         suite.addTest(AdvancedQueryTestSuite.suite());
         suite.addTest(JUnitNativeQueryTestSuite.suite());
-        suite.addTest(AbstractEntityWithColumnDiscriminatorTest.suite());
         fullSuite.addTest(suite);
 
         fullSuite.addTest(PLSQLTestSuite.suite());

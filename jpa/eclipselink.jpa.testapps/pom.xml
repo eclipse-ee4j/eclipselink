@@ -190,6 +190,8 @@
 
     <modules>
         <module>jpa.test.advanced.cascadepersist</module>
+        <module>jpa.test.advanced.customer</module>
+        <module>jpa.test.advanced.embeddable</module>
         <module>jpa.test.advanced.multitenant</module>
         <module>jpa.test.beanvalidation</module>
         <module>jpa.test.beanvalidation.dynamic</module>
