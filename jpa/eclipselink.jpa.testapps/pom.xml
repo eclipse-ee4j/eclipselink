@@ -134,6 +134,11 @@
                 <artifactId>org.eclipse.persistence.jpa.testapps.datetime</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.datatypes</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -195,6 +200,7 @@
         <module>jpa.test.composite.advanced/member_1</module>
         <module>jpa.test.composite.advanced/member_2</module>
         <module>jpa.test.composite.advanced/member_3</module>
+        <module>jpa.test.datatypes</module>
         <module>jpa.test.datetime</module>
         <module>jpa.test.delimited</module>
         <module>jpa.test.extensibility</module>

@@ -551,7 +551,6 @@
                             <items>
                                 <item>server-test-jpa-advanced</item>
                                 <item>server-test-jpa-criteria</item>
-                                <item>server-test-jpa-datatypes</item>
                                 <item>server-test-jpa-ddlgeneration</item>
                                 <item>server-test-jpa-fetchgroups</item>
                                 <item>server-test-jpa-inheritance</item>
@@ -1354,19 +1353,6 @@
                 <extra-model>common-server-generic</extra-model>
                 <packageName>criteria</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.criteria.CriteriaServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-datatypes</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-datatypes-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>datatypes</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.datatypes.NullBindingJUnitTestCase</test-client-class>
             </properties>
         </profile>
         <profile>

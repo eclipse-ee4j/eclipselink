@@ -14,13 +14,14 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.tests.jpa.datatypes;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.datatypes.*;
+import org.eclipse.persistence.testing.models.jpa.datatypes.DataTypesTableCreator;
+import org.eclipse.persistence.testing.models.jpa.datatypes.WrapperTypes;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -28,21 +29,26 @@ import java.util.List;
 /**
  * Test case to select boolean values only according to bug fix for GitHub bug #716.
  */
-public class BooleanJUnitTestCase extends JUnitTestCase {
+public class BooleanTest extends JUnitTestCase {
 
-    public BooleanJUnitTestCase() {
+    public BooleanTest() {
         super();
     }
 
-    public BooleanJUnitTestCase(String name) {
+    public BooleanTest(String name) {
         super(name);
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+        return "datatypes";
     }
 
     public static Test suite() {
         TestSuite suite = new TestSuite("Boolean DataTypes");
-        suite.addTest(new BooleanJUnitTestCase("testSetup"));
-        suite.addTest(new BooleanJUnitTestCase("testCreateWrapperTypes"));
-        suite.addTest(new BooleanJUnitTestCase("testBoolean"));
+        suite.addTest(new BooleanTest("testSetup"));
+        suite.addTest(new BooleanTest("testCreateWrapperTypes"));
+        suite.addTest(new BooleanTest("testBoolean"));
 
         return suite;
     }
@@ -51,7 +57,7 @@ public class BooleanJUnitTestCase extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new DataTypesTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new DataTypesTableCreator().replaceTables(getPersistenceUnitServerSession());
         clearCache();
     }
 
@@ -90,8 +96,8 @@ public class BooleanJUnitTestCase extends JUnitTestCase {
 
         try {
             q = em.createQuery("SELECT wt.booleanData FROM WrapperTypes wt");
-            List<Object> result = q.getResultList();
-            assertTrue("Not all boolean rows are selected", result.size() == 4);
+            List<?> result = q.getResultList();
+            assertEquals("Not all boolean rows are selected", 4, result.size());
         } catch (RuntimeException e) {
             closeEntityManager(em);
             throw e;

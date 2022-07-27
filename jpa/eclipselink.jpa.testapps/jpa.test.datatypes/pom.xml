@@ -23,37 +23,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>org.eclipse.persistence.jpa.testapps.jpql</artifactId>
+    <artifactId>org.eclipse.persistence.jpa.testapps.datatypes</artifactId>
 
-    <name>Test - jpql</name>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.testapps.datatypes</artifactId>
-            <version>${project.version}</version>
-            <classifier>model</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.testapps.datetime</artifactId>
-            <version>${project.version}</version>
-            <classifier>model</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.testapps.relationships</artifactId>
-            <version>${project.version}</version>
-            <classifier>model</classifier>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+    <name>Test - datatypes</name>
 
     <properties>
         <argLine/>
-        <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>
     </properties>
 
     <build>
@@ -92,6 +67,16 @@
                         <configuration>
                             <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>package-model</id>
+                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>

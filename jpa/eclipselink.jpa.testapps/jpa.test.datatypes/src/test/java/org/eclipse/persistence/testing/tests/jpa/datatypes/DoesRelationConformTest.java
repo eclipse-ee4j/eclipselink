@@ -14,10 +14,10 @@
 //     tware - Bug 326104 - in-memory query BigDecimal equality comparation fails
 package org.eclipse.persistence.testing.tests.jpa.datatypes;
 
-import java.math.BigDecimal;
-
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+
+import java.math.BigDecimal;
 
 public class DoesRelationConformTest extends JUnitTestCase {
 
@@ -27,6 +27,11 @@ public class DoesRelationConformTest extends JUnitTestCase {
 
     public DoesRelationConformTest(String name) {
         super(name);
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+        return "datatypes";
     }
 
     // Bug 326104

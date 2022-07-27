@@ -14,18 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.datatypes.arraypks;
 
-import java.util.UUID;
-
 import jakarta.persistence.EntityManager;
 import junit.extensions.TestSetup;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
-import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.datatypes.arraypks.PrimByteArrayPKType;
 import org.eclipse.persistence.testing.models.jpa.datatypes.arraypks.PrimitiveArraysAsPrimaryKeyTableCreator;
+
+import java.util.UUID;
 
 /**
  * <p>
@@ -42,34 +40,33 @@ import org.eclipse.persistence.testing.models.jpa.datatypes.arraypks.PrimitiveAr
  * </ul>
  * @see PrimitiveArraysAsPrimaryKeyTableCreator
  */
-public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
-    public PrimitiveArrayPKCachingJUnitTestCase() {
+public class PrimitiveArrayPKCachingTest extends JUnitTestCase{
+    public PrimitiveArrayPKCachingTest() {
     }
-    public PrimitiveArrayPKCachingJUnitTestCase(String name) {
+    public PrimitiveArrayPKCachingTest(String name) {
         super(name);
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+        return "datatypes";
     }
 
     public static Test suite() {
         TestSuite suite = new TestSuite("Caching Primitive Array pk types");
-        suite.addTest(new PrimitiveArrayPKCachingJUnitTestCase("testPrimitiveByteArrayPK"));
+        suite.addTest(new PrimitiveArrayPKCachingTest("testSetup"));
+        suite.addTest(new PrimitiveArrayPKCachingTest("testPrimitiveByteArrayPK"));
+        return suite;
+    }
 
-        return new TestSetup(suite) {
-
-            @Override
-            protected void setUp(){
-                DatabaseSession session = JUnitTestCase.getServerSession();
-                if (!(JUnitTestCase.getServerSession()).getPlatform().isOracle()){
-                    session.logMessage("Warning, RAW type used for Primary keys only supported on Oracle");
-                    return;
-                }
-                new PrimitiveArraysAsPrimaryKeyTableCreator().replaceTables(session);
-            }
-
-            @Override
-            protected void tearDown() {
-                new PrimitiveArrayPKCachingJUnitTestCase().clearCache();
-            }
-        };
+    public void testSetup() {
+        ServerSession session = getPersistenceUnitServerSession();
+        if (!session.getPlatform().isOracle()){
+            session.logMessage("Warning, RAW type used for Primary keys only supported on Oracle");
+            return;
+        }
+        new PrimitiveArraysAsPrimaryKeyTableCreator().replaceTables(session);
+        clearCache();
     }
 
     /**
@@ -77,8 +74,8 @@ public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
      * is returned from the database.
      */
     public void testPrimitiveByteArrayPK() {
-        if (!(JUnitTestCase.getServerSession()).getPlatform().isOracle()){
-            JUnitTestCase.getServerSession().logMessage("Warning, RAW type used for Primary keys only supported on Oracle");
+        if (!(getPersistenceUnitServerSession()).getPlatform().isOracle()){
+            getPersistenceUnitServerSession().logMessage("Warning, RAW type used for Primary keys only supported on Oracle");
             return;
         }
         EntityManager em = createEntityManager();
@@ -91,7 +88,7 @@ public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
             em.flush();
             PrimByteArrayPKType objectReadIn = em.find(PrimByteArrayPKType.class, PrimByteArrayPKType.getBytes(uuid));
             rollbackTransaction(em);
-            assertTrue("Different instances of the same PrimByteArrayPKType object was returned", originalEntity == objectReadIn);
+            assertSame("Different instances of the same PrimByteArrayPKType object was returned", originalEntity, objectReadIn);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
