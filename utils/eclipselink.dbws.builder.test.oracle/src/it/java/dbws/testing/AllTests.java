@@ -90,7 +90,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     OXDescriptorTestSuite.class,
     PLSQLCollectionTestSuite.class,
     PLSQLRecordTestSuite.class,
-    PLSQLTypeReturnTest.class
+    PLSQLTypeReturnTest.class,
     PLSQLRecord2TestSuite.class,
     PrependedPackageTestSuite.class,
     PrependedSchemaTestSuite.class,
