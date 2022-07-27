@@ -195,6 +195,7 @@
         <module>jpa.test.beanvalidation.dynamic</module>
         <module>jpa.test.cacheable</module>
         <module>jpa.test.cascadedeletes</module>
+        <module>jpa.test.complexaggregate</module>
         <module>jpa.test.composite.advanced</module>
         <module>jpa.test.composite.advanced/common</module>
         <module>jpa.test.composite.advanced/member_1</module>
