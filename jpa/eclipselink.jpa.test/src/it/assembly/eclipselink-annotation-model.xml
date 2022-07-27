@@ -30,7 +30,6 @@
                 <include>org/eclipse/persistence/testing/models/jpa/advanced/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/complexaggregate/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/customer/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/datatypes/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/inheritance/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/inherited/**</include>
             </includes>

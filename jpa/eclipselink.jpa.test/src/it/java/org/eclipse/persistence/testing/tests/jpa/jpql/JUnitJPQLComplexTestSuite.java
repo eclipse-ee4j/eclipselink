@@ -75,8 +75,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
-import org.eclipse.persistence.testing.models.jpa.datatypes.DataTypesTableCreator;
-import org.eclipse.persistence.testing.models.jpa.datatypes.WrapperTypes;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
@@ -353,8 +351,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         partnerLinkPopulator.persistExample(session);
 
         new InheritedTableManager().replaceTables(session);
-
-        new DataTypesTableCreator().replaceTables(session);
 
         //create stored function when database supports it
         if (supportsStoredFunctions()){
@@ -3567,10 +3563,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         query = em.createQuery("Select COUNT(a) from Employee e join e.address a group by a order by COUNT(a) desc");
         query.getResultList();
-        query = em.createQuery("SELECT wt FROM WrapperTypes wt order by wt.booleanData");
-        // Cast to ensure that server test compile picks up class.
-        List<WrapperTypes> result = query.getResultList();
-        result.toString();
         closeEntityManager(em);
     }
 

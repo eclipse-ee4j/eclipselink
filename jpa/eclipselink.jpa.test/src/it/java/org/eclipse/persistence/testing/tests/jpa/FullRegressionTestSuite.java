@@ -224,12 +224,6 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTest(DDLGenerationJUnitTestSuite.suite());
         fullSuite.addTest(DDLGenerationExtendTablesJUnitTestSuite.suite());
 
-        // DataTypes model
-        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.NullBindingJUnitTestCase.suite());
-        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.BooleanJUnitTestCase.suite());
-        fullSuite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.datatypes.DoesRelationConformTest.class);
-        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.arraypks.PrimitiveArrayPKCachingJUnitTestCase.suite());
-
         // OSGi Deployment
         //try {
         //    fullSuite.addTestSuite(CompositeEnumerationTest.class);
