@@ -1,0 +1,77 @@
+/*
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     James Sutherland - initial impl
+ package org.eclipse.persistence.testing.tests.jpa.performance.concurrent;
+
+import jakarta.persistence.EntityManager;
+import org.eclipse.persistence.testing.framework.ConcurrentPerformanceComparisonTest;
+import org.eclipse.persistence.testing.models.jpa.performance.Address;
+
+import java.util.List;
+
+/**
+ * This test compares the concurrency of updating Address.
+ */
+public class JPAUpdateAddressConcurrencyComparisonTest extends ConcurrentPerformanceComparisonTest {
+    protected List<Address> addresses;
+    protected String street;
+    protected int index;
+    protected long count;
+    protected int errors;
+
+    public JPAUpdateAddressConcurrencyComparisonTest() {
+        setDescription("This test compares the concurrency of update Address.");
+    }
+
+    public synchronized int incrementIndex() {
+        this.index++;
+        if (this.index >= this.addresses.size()) {
+            this.index = 0;
+        }
+        return this.index;
+    }
+
+    /**
+     * Get list of addresses.
+     */
+    @Override
+    public void setup() {
+        super.setup();
+        EntityManager manager = createEntityManager();
+        this.addresses = manager.createQuery("Select a from Address a", Address.class).getResultList();
+        street = this.addresses.get(0).getStreet();
+        manager.close();
+        this.index = 0;
+        this.count = 0;
+    }
+
+    /**
+     * Update address.
+     */
+    @Override
+    public void runTask() {
+        EntityManager manager = createEntityManager();
+        manager.getTransaction().begin();
+        Address address = manager.find(Address.class, this.addresses.get(incrementIndex()).getId());
+        count++;
+        address.setStreet(street + count);
+        try {
+            manager.getTransaction().commit();
+        } catch (Exception exception) {
+            this.errors++;
+            System.out.println("" + this.errors + ":" + exception);
+        }
+        manager.close();
+    }
+}

@@ -1,0 +1,55 @@
+<!--
+
+    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd"
+    version="1.0">
+    <persistence-unit name="performance" transaction-type="JTA">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <jta-data-source>@data-source-name@</jta-data-source>
+        <mapping-file>META-INF/jpa-orm.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="@server-platform@" />
+            <!--property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="eclipselink.logging.logger" value="DefaultLogger"/-->
+            <!--property name="eclipselink.profiler" value="PerformanceMonitor"/-->
+            <!--property name="eclipselink.descriptor.customizer.Employee" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.Address" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.PhoneNumber" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.Project" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.LargeProject" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.SmallProject" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/-->
+            <!--property name="eclipselink.cache.shared.default" value="false"/-->
+            <property name="eclipselink.cache.type.default" value="Full" />
+            <property name="eclipselink.cache.size.default" value="1000" />
+            <!--property name="eclipselink.cache.database-event-listener" value="org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener"/-->
+            <property name="eclipselink.cache.coordination.protocol" value="@cachecoordination-protocol@" />
+            <!--property name="eclipselink.cache.coordination.channel" value="cluster-test-1" /-->
+            <!--property name="eclipselink.cache.coordination.thread.pool.size" value="128" /-->
+            <!--property name="eclipselink.cache.coordination.serializer" value="org.eclipse.persistence.sessions.serializers.kryo.KryoSerializer" /-->
+            <!--property name="eclipselink.cache.coordination.serializer" value="oracle.toplink.exalogic.serializers.POFSerializer" /-->
+            <!--property name="eclipselink.cache.coordination.propagate-asynchronously" value="false" /-->
+            <!--property name="eclipselink.cache.coordination.jms.host" value="@topic-host-url@" /-->
+            <property name="eclipselink.cache.coordination.jms.topic" value="@topic-name@" />
+            <property name="eclipselink.cache.coordination.jms.factory" value="@topic-connection-factory@" />
+            <!--property name="eclipselink.cache.coordination.jndi.user" value="@server-user@" />
+            <property name="eclipselink.cache.coordination.jndi.password" value="@server-pwd@" />
+            <property name="eclipselink.cache.coordination.rmi.url" value="@current-server-url@" />
+            <property name="eclipselink.cache.coordination.rmi.announcement-delay" value="@announcement-delay@" />
+            <property name="eclipselink.cache.coordination.rmi.multicast-group" value="@rcm-multicastgroup@" />
+            <property name="eclipselink.cache.coordination.rmi.multicast-group.port" value="@rcm-multicastport@" />
+            <property name="eclipselink.cache.coordination.packet-time-to-live" value="@rcm-packet-timetolive@" /-->
+        </properties>
+    </persistence-unit>
+</persistence>

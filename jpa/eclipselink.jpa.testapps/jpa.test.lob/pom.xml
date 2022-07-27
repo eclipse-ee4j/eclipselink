@@ -47,7 +47,7 @@
     <properties>
         <argLine/>
         <!-- server tests require MOXy as the default XML Binding provider -->
-        <server.skip>true</server.skip>
+        <server.test.skip>true</server.test.skip>
     </properties>
 
     <build>

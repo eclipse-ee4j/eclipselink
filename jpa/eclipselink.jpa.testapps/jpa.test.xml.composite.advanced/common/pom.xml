@@ -28,7 +28,7 @@
     <name>Test - xml.composite.advanced.common</name>
 
     <properties>
-        <server.skip>true</server.skip>
+        <server.test.skip>true</server.test.skip>
     </properties>
 
     <build>

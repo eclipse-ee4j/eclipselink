@@ -32,10 +32,11 @@
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
 
+        <se.test.skip>false</se.test.skip>
         <server.test.runner.context>${project.build.finalName}/${project.build.finalName}_ejb</server.test.runner.context>
         <server.jndi.factory></server.jndi.factory>
         <server.remote.url></server.remote.url>
-        <server.skip>false</server.skip>
+        <server.test.skip>false</server.test.skip>
         <ignore.server.failures>false</ignore.server.failures>
 
         <!-- logging properties for persistence.xml -->
@@ -139,6 +140,11 @@
                 <artifactId>org.eclipse.persistence.jpa.testapps.datatypes</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.performance</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -212,9 +218,12 @@
         <module>jpa.test.jpaadvancedproperties</module>
         <module>jpa.test.jpql</module>
         <module>jpa.test.lob</module>
+        <module>jpa.test.memory</module>
         <module>jpa.test.metamodel</module>
         <module>jpa.test.orphanremoval</module>
         <module>jpa.test.partitioned</module>
+        <module>jpa.test.performance</module>
+        <module>jpa.test.performance2</module>
         <module>jpa.test.privateowned</module>
         <module>jpa.test.pu with spaces</module>
         <module>jpa.test.relationships</module>
@@ -351,6 +360,7 @@
                             <id>default-test</id>
                             <phase>none</phase>
                             <configuration>
+                                <skip>${se.test.skip}</skip>
                                 <systemPropertyVariables>
                                     <test.properties>${test.properties.file}</test.properties>
                                 </systemPropertyVariables>
@@ -364,7 +374,7 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
-                                <skip>${server.skip}</skip>
+                                <skip>${server.test.skip}</skip>
                                 <reportNameSuffix>server</reportNameSuffix>
                                 <systemPropertyVariables>
                                     <java.naming.factory.initial>${server.jndi.factory}</java.naming.factory.initial>
@@ -396,7 +406,7 @@
                 <!-- see https://github.com/lukasj/eclipselink-build-support -->
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink-testbuild-plugin</artifactId>
-                <version>0.0.3</version>
+                <version>0.0.4</version>
 <!--                <extensions>true</extensions>-->
                 <executions>
                     <execution>
@@ -425,7 +435,7 @@
             <properties>
                 <server.jndi.factory>org.wildfly.naming.client.WildFlyInitialContextFactory</server.jndi.factory>
                 <server.remote.url>remote+http://localhost:8080</server.remote.url>
-                <wildfly.deploy.skip>${server.skip}</wildfly.deploy.skip>
+                <wildfly.deploy.skip>${server.test.skip}</wildfly.deploy.skip>
             </properties>
             <dependencyManagement>
                 <dependencies>

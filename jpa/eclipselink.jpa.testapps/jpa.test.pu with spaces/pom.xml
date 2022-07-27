@@ -29,7 +29,7 @@
 
     <properties>
         <argLine/>
-        <server.skip>true</server.skip>
+        <server.test.skip>true</server.test.skip>
     </properties>
 
     <build>
