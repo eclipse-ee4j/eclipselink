@@ -15,14 +15,14 @@
 //        - Bug 341709 - Delete fails with DB constraint violation due to an internal update
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import java.io.Serializable;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
+import java.io.Serializable;
 
 @Entity
 @Table(name = "CMP3_FA_SOURCE")

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,20 +17,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriter
 
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.persistence.Basic;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.NamedNativeQuery;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-
-import org.eclipse.persistence.annotations.AdditionalCriteria;
-
-import static jakarta.persistence.CascadeType.PERSIST;
 
 public class School {
     public Integer id;

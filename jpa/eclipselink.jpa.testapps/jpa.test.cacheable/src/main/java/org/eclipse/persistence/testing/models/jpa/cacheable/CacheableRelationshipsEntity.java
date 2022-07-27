@@ -1,0 +1,185 @@
+/*
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Yiping Zhao - initial contribution
+package org.eclipse.persistence.testing.models.jpa.cacheable;
+
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.GenerationType.TABLE;
+
+@Entity(name="JPA_CACHEABLE_RELATIONSHIPS")
+@Table(name="JPA_CACHEREL")
+@Cacheable // defaults to true
+public class CacheableRelationshipsEntity {
+    protected int id;
+
+    protected String name;
+
+    protected List<CacheableFalseEntity> cacheableFalses;
+
+    protected List<CacheableProtectedEntity> cacheableProtecteds;
+
+    protected CacheableForceProtectedEntity cacheableFPE;
+
+    protected List<CacheableFalseDetail> cacheableFalseDetails;
+
+    protected List<ProtectedEmbeddable> protectedEmbeddables;
+
+    protected List<SharedEmbeddable> sharedEmbeddables;
+
+    @Id
+    @GeneratedValue(strategy=TABLE, generator="CACHEABLE_TABLE_GENERATOR")
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCacheableFalses(List<CacheableFalseEntity> cacheableFalses) {
+        this.cacheableFalses = cacheableFalses;
+    }
+
+    /*cacheable true -> cachebale false(isolated)*/
+    @OneToMany
+    @JoinColumn(name="SHARED_ISOLATED_REL_ID")
+    public List<CacheableFalseEntity> getCacheableFalses() {
+        return cacheableFalses;
+    }
+
+    public void addCacheableFalse(CacheableFalseEntity cacheableFalse) {
+        cacheableFalses.add(cacheableFalse);
+    }
+
+    /*cacheable true -> cachebale false(protected)*/
+    @OneToMany
+    @JoinTable(
+            name="SHARED_PROTECTED_REL",
+            joinColumns=
+            @JoinColumn(name="CACHBLE_REL_ID", referencedColumnName="ID"),
+            inverseJoinColumns=
+            @JoinColumn(name="CACHBLE_PRT_ID", referencedColumnName="ID")
+    )
+    public List<CacheableProtectedEntity> getCacheableProtecteds() {
+        return cacheableProtecteds;
+    }
+
+    public void setCacheableProtecteds(List<CacheableProtectedEntity> cacheableProtecteds) {
+        this.cacheableProtecteds = cacheableProtecteds;
+    }
+
+    public void addCacheableProtected(CacheableProtectedEntity cacheableProtected) {
+        cacheableProtecteds.add(cacheableProtected);
+    }
+    /*cacheable true -> cacheable force protected (false, protected) */
+    @ManyToOne
+    @JoinColumn(name="FORCE_PROTECTED_FK")
+    public CacheableForceProtectedEntity getCacheableFPE() {
+        return cacheableFPE;
+    }
+
+    public void setCacheableFPE(CacheableForceProtectedEntity cacheableFPE) {
+        this.cacheableFPE = cacheableFPE;
+    }
+
+    public void setCacheableFalseDetails(List<CacheableFalseDetail> cacheableFalseDetails) {
+        this.cacheableFalseDetails = cacheableFalseDetails;
+    }
+    /* cacheable true -> cache false */
+    @ManyToMany
+    @JoinTable(
+            name="SHARED_FALSEDETAIL_REL",
+            joinColumns=
+            @JoinColumn(name="CACHBLE_REL_ID", referencedColumnName="ID"),
+            inverseJoinColumns=
+            @JoinColumn(name="CACHBLE_FLDETAIL_ID", referencedColumnName="ID")
+    )
+    public List<CacheableFalseDetail> getCacheableFalseDetails() {
+        return cacheableFalseDetails;
+    }
+
+    public void addCacheableFalseDetail(CacheableFalseDetail cacheableFalseDetail) {
+        cacheableFalseDetails.add(cacheableFalseDetail);
+    }
+    public void removeCacheableFalseDetail(CacheableFalseDetail cacheableFalseDetail) {
+        getCacheableFalseDetails().remove(cacheableFalseDetail);
+    }
+    /* element collection with ebeddable (false protected)*/
+    @ElementCollection
+    @CollectionTable(
+        name="CACHREL_PROTECTEMB",
+        joinColumns=@JoinColumn(name="ID")
+    )
+    public List<ProtectedEmbeddable> getProtectedEmbeddables() {
+        return protectedEmbeddables;
+    }
+
+    public void setProtectedEmbeddables(List<ProtectedEmbeddable> protectedEmbeddables) {
+        this.protectedEmbeddables = protectedEmbeddables;
+    }
+
+    public void addProtectedEmbeddable(ProtectedEmbeddable protectedEmbeddable) {
+        protectedEmbeddables.add(protectedEmbeddable);
+    }
+
+    /* element collection with embeddable (true protected)*/
+    @ElementCollection
+    @CollectionTable(
+        name="CACHREL_SHAREDEMB",
+        joinColumns=@JoinColumn(name="ID")
+    )
+    public List<SharedEmbeddable> getSharedEmbeddables() {
+        return sharedEmbeddables;
+    }
+
+    public void setSharedEmbeddables(List<SharedEmbeddable> sharedEmbeddables) {
+        this.sharedEmbeddables = sharedEmbeddables;
+    }
+
+    public void addSharedEmbeddable(SharedEmbeddable sharedEmbeddables) {
+        this.sharedEmbeddables.add(sharedEmbeddables);
+    }
+
+    public CacheableRelationshipsEntity() {
+        cacheableFalses = new ArrayList<>();
+        cacheableProtecteds = new ArrayList<>();
+        cacheableFalseDetails = new ArrayList<>();
+        protectedEmbeddables = new ArrayList<>();
+        sharedEmbeddables = new ArrayList<>();
+    }
+
+}

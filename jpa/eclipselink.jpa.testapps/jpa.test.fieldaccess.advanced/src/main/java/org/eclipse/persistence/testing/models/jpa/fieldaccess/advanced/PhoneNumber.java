@@ -16,19 +16,24 @@
 //       - 3223850: Primary key metadata issues
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import java.io.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import org.eclipse.persistence.annotations.BasicCollection;
+import org.eclipse.persistence.annotations.CollectionTable;
+import org.eclipse.persistence.annotations.PrimaryKey;
+import org.eclipse.persistence.queries.FetchGroupTracker;
+
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
-import jakarta.persistence.*;
 import static jakarta.persistence.EnumType.STRING;
-
-import org.eclipse.persistence.annotations.PrimaryKey;
-import org.eclipse.persistence.annotations.BasicCollection;
-import org.eclipse.persistence.annotations.CollectionTable;
-import org.eclipse.persistence.queries.FetchGroupTracker;
 
 /**
  * <p>

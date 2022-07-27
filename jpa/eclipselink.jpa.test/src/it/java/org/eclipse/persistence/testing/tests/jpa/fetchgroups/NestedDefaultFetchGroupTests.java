@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,27 +14,23 @@
 //     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
 package org.eclipse.persistence.testing.tests.jpa.fetchgroups;
 
-import java.util.HashMap;
-import java.util.List;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.LoadGroup;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
-
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Test named nested FetchGroup usage.

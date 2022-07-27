@@ -14,8 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+
 import java.io.Serializable;
-import jakarta.persistence.*;
 
 /**
  * <p><b>Purpose</b>: Represents a simple Entity with no identity map

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,6 @@
 //       - 298494: JPQL exists subquery generates unnecessary table join
 package org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria;
 
-import static jakarta.persistence.InheritanceType.JOINED;
-import static org.eclipse.persistence.config.CacheIsolationType.PROTECTED;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -26,7 +23,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.Table;
 
-import org.eclipse.persistence.annotations.Cache;
+import static jakarta.persistence.InheritanceType.JOINED;
 
 @Entity(name="AC_PERSON")
 @Table(name="JPA_AC_PERSON")

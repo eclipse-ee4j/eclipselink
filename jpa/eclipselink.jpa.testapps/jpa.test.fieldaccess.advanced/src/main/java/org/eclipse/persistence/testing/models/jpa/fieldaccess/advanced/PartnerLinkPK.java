@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Id;
 
 import java.util.Objects;
 

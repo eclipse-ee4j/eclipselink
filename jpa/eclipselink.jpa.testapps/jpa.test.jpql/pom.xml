@@ -84,9 +84,6 @@
                         <id>default-test</id>
                         <configuration>
                             <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
-<!--                            <includes>-->
-<!--                                <include>**/JUnitJPQLExamplesTest</include>-->
-<!--                            </includes>-->
                         </configuration>
                     </execution>
                 </executions>

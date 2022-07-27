@@ -14,16 +14,28 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import java.util.*;
-import java.io.Serializable;
-import jakarta.persistence.*;
-import static jakarta.persistence.CascadeType.*;
-
-import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
+import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.StoredProcedureParameter;
-import static org.eclipse.persistence.annotations.Direction.OUT;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Vector;
+
+import static jakarta.persistence.CascadeType.ALL;
 import static org.eclipse.persistence.annotations.Direction.IN_OUT;
+import static org.eclipse.persistence.annotations.Direction.OUT;
 
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee
@@ -94,6 +106,8 @@ public class Address implements Serializable {
     @SequenceGenerator(name="FA_ADD_SEQ_GENERATOR", sequenceName="ADDRESS_SEQ", allocationSize=25)
     @Column(name="ADDRESS_ID")
     private Integer id;
+    @Version
+    private Integer version;
 
     private String street;
     private String city;
@@ -201,6 +215,14 @@ public class Address implements Serializable {
 
     public void setEmployees(Collection<Employee> employees) {
         this.employees = employees;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     public class TransferAddress {

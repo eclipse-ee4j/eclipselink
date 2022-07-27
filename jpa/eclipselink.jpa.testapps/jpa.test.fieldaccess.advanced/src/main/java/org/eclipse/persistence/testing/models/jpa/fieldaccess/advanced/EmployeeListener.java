@@ -16,7 +16,15 @@
 
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import jakarta.persistence.*;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreRemove;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Transient;
+
 import java.util.EventListener;
 
 public class EmployeeListener implements EventListener {

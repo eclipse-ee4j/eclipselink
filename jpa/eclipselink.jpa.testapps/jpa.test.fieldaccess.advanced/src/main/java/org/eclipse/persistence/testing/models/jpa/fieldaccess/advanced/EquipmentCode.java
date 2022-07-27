@@ -14,19 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
-import jakarta.persistence.NamedNativeQuery;
-import jakarta.persistence.NamedNativeQueries;
+import org.eclipse.persistence.annotations.ReadOnly;
+
+import java.io.Serializable;
 
 import static jakarta.persistence.GenerationType.TABLE;
-
-import org.eclipse.persistence.annotations.ReadOnly;
 
 @Entity(name="EquipmentCode")
 @Table(name="CMP3_FA_ADV_EQUIP_CODE")

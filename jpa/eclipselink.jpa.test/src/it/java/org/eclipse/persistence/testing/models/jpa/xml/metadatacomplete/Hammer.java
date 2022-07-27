@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,7 @@
 //       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
 package org.eclipse.persistence.testing.models.jpa.xml.metadatacomplete;
 
-import java.util.Date;
-
-import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Table;
 
 /**

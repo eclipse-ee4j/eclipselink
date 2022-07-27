@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2010, 2015 Frank Schwarz. All rights reserved.
+ * Copyright (c) 2010, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2022 Frank Schwarz. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,19 +16,16 @@
 //       - 328774: TABLE_PER_CLASS-mapped key of a java.util.Map does not work for querying
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.MapKeyJoinColumn;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 public class DesignPattern {

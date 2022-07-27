@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,13 +27,6 @@
 //       - 374377: OrderBy with ElementCollection doesn't work
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import jakarta.persistence.Access;
 import jakarta.persistence.AssociationOverride;
 import jakarta.persistence.AssociationOverrides;
@@ -49,15 +42,19 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Transient;
+import org.eclipse.persistence.annotations.BasicMap;
+import org.eclipse.persistence.annotations.OrderCorrection;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import static jakarta.persistence.AccessType.FIELD;
 import static jakarta.persistence.AccessType.PROPERTY;
 import static jakarta.persistence.CascadeType.ALL;
-
-import org.eclipse.persistence.annotations.BasicCollection;
-import org.eclipse.persistence.annotations.BasicMap;
-import org.eclipse.persistence.annotations.OrderCorrection;
-
 import static org.eclipse.persistence.annotations.OrderCorrectionType.EXCEPTION;
 
 @SuppressWarnings("deprecation")

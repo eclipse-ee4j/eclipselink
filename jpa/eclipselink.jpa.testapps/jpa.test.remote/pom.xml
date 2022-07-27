@@ -30,6 +30,13 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.cacheable</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.testapps.fieldaccess.advanced</artifactId>
             <version>${project.version}</version>
             <classifier>model</classifier>

@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import java.io.Serializable;
 import jakarta.persistence.Embeddable;
+
+import java.io.Serializable;
 
 @Embeddable
 public class VegetablePK implements Serializable {

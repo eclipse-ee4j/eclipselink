@@ -29,7 +29,6 @@ package org.eclipse.persistence.testing.tests.jpa;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.testing.tests.jpa.advanced.AbstractEntityWithColumnDiscriminatorTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
@@ -48,7 +47,6 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.PersistenceUnitProcess
 import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockEntityRefreshTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockingExtendedScopeTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.QueryCastTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.JPARCMLocalChangeSetTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryConstructorExpressionTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryMultipleReturnTestSuite;
@@ -58,13 +56,10 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCo
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.ConcurrencyTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTestEnableSelective;
 import org.eclipse.persistence.testing.tests.jpa.complexaggregate.ComplexAggregateTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.config.ConfigPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationExtendTablesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
-//import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupAPITests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupMergeWithCacheTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupTrackerWeavingTests;
@@ -129,7 +124,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
         suite.addTest(AdvancedJPAJunitTest.suite());
         suite.addTest(AdvancedJunitTest.suite());
-        suite.addTest(JPARCMLocalChangeSetTestSuite.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedFetchGroupJunitTest.suite());
         suite.addTest(PessimisticLockingExtendedScopeTestSuite.suite());
@@ -252,10 +246,6 @@ public class FullRegressionTestSuite extends TestSuite {
         // Addition of the following suite requires classpath work - as it currently does not allow the JPA Testing Browser.launch to run in the Eclipse IDE
         //suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaMetamodelTestSuite.suite());
         fullSuite.addTest(suite);
-
-        // JPA 2.0 Cacheable model
-        fullSuite.addTest(CacheableModelJunitTest.suite());
-        fullSuite.addTest(CacheableModelJunitTestEnableSelective.suite());
 
         fullSuite.addTest(QueryCastTestSuite.suite());
 

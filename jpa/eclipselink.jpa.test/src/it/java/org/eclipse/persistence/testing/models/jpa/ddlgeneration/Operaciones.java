@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2015 Xavier Callejas. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Xavier Callejas. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +18,6 @@
 //                 does not correspond to a valid field on the mapping reference
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import java.io.Serializable;
-import java.util.Date;
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -38,6 +35,9 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  *

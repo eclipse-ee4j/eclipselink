@@ -21,12 +21,9 @@
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>org/eclipse/persistence/testing/models/jpa/advanced/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/cacheable/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/complexaggregate/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/inheritance/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/inherited/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/xml/cacheable/CacheableTrueMappedSuperclass.class</include>
-                <include>org/eclipse/persistence/testing/models/jpa/xml/cacheable/SubCacheableFalseEntity.class</include>
                 <include>org/eclipse/persistence/testing/tests/jpa/advanced/**</include>
                 <include>org/eclipse/persistence/testing/tests/jpa/complexaggregate/**</include>
                 <include>org/eclipse/persistence/testing/tests/jpa/unit/**</include>

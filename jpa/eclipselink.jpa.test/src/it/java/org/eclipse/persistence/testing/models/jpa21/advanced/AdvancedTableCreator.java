@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,13 +32,8 @@
 //       - 437760: AttributeOverride with no column name defined doesn't work.
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
-
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
-import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
-import org.eclipse.persistence.tools.schemaframework.SchemaManager;
-import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class AdvancedTableCreator extends TogglingFastTableCreator {
