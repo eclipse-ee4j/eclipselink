@@ -19,12 +19,19 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.Period;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
+import jakarta.enterprise.inject.Typed;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
@@ -37,6 +44,7 @@ import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sessions.Session;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -90,14 +98,29 @@ public class TestDateTimeFunctions {
     private void updateDbOffset() {
         final EntityManager em = emf.createEntityManager();
         try {
+            // PostgreSQL specific code to update timezone to match Java environment
+            if (emf.unwrap(Session.class).getPlatform().isPostgreSQL()) {
+                Query tzq = em.createNativeQuery("SHOW TIMEZONE");
+                String tz = (String)tzq.getSingleResult();
+                TimeZone jTz = TimeZone.getDefault();
+                String jTzStr = jTz.getID();
+                try {
+                    em.getTransaction().begin();
+                    em.createNativeQuery("SET TIMEZONE='" + jTzStr + "'").executeUpdate();
+                    em.getTransaction().commit();
+                } catch (Throwable t) {
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING, "Can't update PostgreSQL DB timezone: " + t.getMessage());
+                }
+            }
             CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<LocalTime> cq = cb.createQuery(LocalTime.class);
-            cq.select(cb.localTime());
+            CriteriaQuery<LocalDateTime> cq = cb.createQuery(LocalDateTime.class);
+            cq.select(cb.localDateTime());
             Root<DateTimeEntity> entity = cq.from(DateTimeEntity.class);
             cq.where(cb.equal(entity.get("id"), 1));
-            LocalTime dbTime = em.createQuery(cq).getSingleResult();
-            LocalTime javaTime = LocalTime.now();
-            this.dbOffset = dbTime.truncatedTo(ChronoUnit.SECONDS).toSecondOfDay() - javaTime.truncatedTo(ChronoUnit.SECONDS).toSecondOfDay();
+            LocalDateTime dbDateTime = em.createQuery(cq).getSingleResult();
+            LocalDateTime javaDateTime = LocalDateTime.now();
+            ZoneOffset zo = OffsetDateTime.now().getOffset();
+            this.dbOffset = dbDateTime.truncatedTo(ChronoUnit.SECONDS).toEpochSecond(zo) - javaDateTime.truncatedTo(ChronoUnit.SECONDS).toEpochSecond(zo);
         } catch (Throwable t) {
             AbstractSessionLog.getLog().log(SessionLog.WARNING, "Can't update DB offset: " + t.getMessage());
             t.printStackTrace();

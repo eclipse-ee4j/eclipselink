@@ -58,13 +58,15 @@ public class TestDateTimeFunctions {
     private final LocalDateTime[] TS = {
             LocalDateTime.of(2022, 3, 9, 14, 30, 25, 0),
             LocalDateTime.now(),
-            LocalDateTime.of(2022, 06, 07, 12, 0)
+            LocalDateTime.of(2022, 06, 07, 12, 0),
+            LocalDateTime.of(2022, 7, 28, 12, 32, 46, 123456789)
     };
 
     private final DateTimeQueryEntity[] ENTITY = {
             new DateTimeQueryEntity(1, TS[0].toLocalTime(), TS[0].toLocalDate(), TS[0]),
             new DateTimeQueryEntity(2, TS[1].toLocalTime(), TS[1].toLocalDate(), TS[1]),
             new DateTimeQueryEntity(3, TS[2].toLocalTime(), TS[2].toLocalDate(), TS[2]),
+            new DateTimeQueryEntity(4, TS[3].toLocalTime(), TS[3].toLocalDate(), TS[3]),
     };
 
     @Before
@@ -497,6 +499,103 @@ public class TestDateTimeFunctions {
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
             MatcherAssert.assertThat(y, Matchers.equalTo(23L));
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test whether JPQL EXTRACT for YEAR/QUARTER/MONTH/WEEK/DAY returns an integer - issue 1574
+    @Test
+    public void testIssue1574LocalDate() {
+        final EntityManager em = emf.createEntityManager();
+        final String[] extractOps = emf.unwrap(Session.class).getPlatform().isDerby()
+                ? new String[] {"YEAR", "QUARTER", "MONTH", "DAY"}
+                : new String[] {"YEAR", "QUARTER", "MONTH", "WEEK", "DAY"};
+        try {
+            em.getTransaction().begin();
+            for (String operand : extractOps) {
+                TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(" + operand + " FROM qdte.dateValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1", Number.class);
+                Number value = query.getSingleResult();
+                MatcherAssert.assertThat(value, Matchers.anyOf(Matchers.instanceOf(Integer.class), Matchers.instanceOf(Long.class)));
+            }
+            em.getTransaction().commit();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test whether JPQL EXTRACT for HOUR/MINUTE returns an integer - issue 1574
+    @Test
+    public void testIssue1574LocalTime() {
+        final EntityManager em = emf.createEntityManager();
+        final String[] extractOps = new String[] {"HOUR", "MINUTE"};
+        try {
+            em.getTransaction().begin();
+            for (String operand : extractOps) {
+                TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(" + operand + " FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1", Number.class);
+                Number value = query.getSingleResult();
+                MatcherAssert.assertThat(value, Matchers.instanceOf(Integer.class));
+            }
+            em.getTransaction().commit();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test whether JPQL EXTRACT for SECOND returns a floating point - issue 1574
+    @Test
+    public void testIssue1574LocalTimeSecond() {
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(SECOND FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1", Number.class);
+            Number value = query.getSingleResult();
+            MatcherAssert.assertThat(value, Matchers.instanceOf(Double.class));
+            em.getTransaction().commit();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test whether JPQL EXTRACT for SECOND returns a floating point with proper nanoseconds fraction
+    @Test
+    public void testLocalTimeSecondFraction() {
+        // Derby does not support SECOND fractions
+        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(SECOND FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 4", Number.class);
+            Number value = query.getSingleResult();
+            MatcherAssert.assertThat(value, Matchers.instanceOf(Double.class));
+            double secWithNs = (double)TS[3].getNano() / 1000000000 + TS[3].getSecond();
+            double diff = Math.abs(secWithNs - value.doubleValue());
+            MatcherAssert.assertThat(diff, Matchers.lessThan(0.000001));
+            em.getTransaction().commit();
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;

@@ -996,7 +996,26 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = queryExpression.extract(expression.getDatePart());
 
         // Set the expression type
-        type[0] = Object.class;
+        if (expression.hasFrom()) {
+            switch (expression.getDatePart()) {
+                case "YEAR":
+                case "QUARTER":
+                case "MONTH":
+                case "WEEK":
+                case "DAY":
+                case "HOUR":
+                case "MINUTE":
+                    type[0] = Integer.class;
+                    break;
+                case "SECOND":
+                    type[0] = Double.class;
+                    break;
+                default:
+                    type[0] = Object.class;
+            }
+        } else {
+            type[0] = Object.class;
+        }
     }
 
     @Override

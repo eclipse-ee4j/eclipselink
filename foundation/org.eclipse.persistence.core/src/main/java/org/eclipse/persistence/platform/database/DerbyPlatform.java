@@ -518,6 +518,8 @@ public class DerbyPlatform extends DB2Platform {
 
             // QUARTER emulation: ((MONTH(:first)+2)/3)
             private final String[] QUARTER_STRINGS = new String[] {"((MONTH(", ")+2)/3)"};
+            // CAST as FLOAT
+            private final String[] CAST_FLOAT = new String[] {"CAST(", " AS FLOAT)"};
 
             private void printQuarterSQL(final Expression first, final ExpressionSQLPrinter printer) {
                 printer.printString(QUARTER_STRINGS[0]);
@@ -533,21 +535,36 @@ public class DerbyPlatform extends DB2Platform {
 
             @Override
             public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-                if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                    printQuarterSQL(first, printer);
-                } else {
-                    super.printDuo(first, second, printer);
+                if (second instanceof LiteralExpression) {
+                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                        case "QUARTER":
+                            printQuarterSQL(first, printer);
+                            return;
+                        case "SECOND":
+                            printer.printString(CAST_FLOAT[0]);
+                            super.printDuo(first, second, printer);
+                            printer.printString(CAST_FLOAT[1]);
+                            return;
+                    }
                 }
+                super.printDuo(first, second, printer);
             }
 
             @Override
             public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if (items.size() == 2) {
-                    Expression first = items.get(0);
-                    Expression second = items.get(1);
-                    if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                        printQuarterSQL(first, printer);
-                        return;
+                    final Expression second = items.get(1);
+                    if (second instanceof LiteralExpression) {
+                        switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                            case "QUARTER":
+                                printQuarterSQL(items.get(0), printer);
+                                return;
+                            case "SECOND":
+                                printer.printString(CAST_FLOAT[0]);
+                                super.printCollection(items, printer);
+                                printer.printString(CAST_FLOAT[1]);
+                                return;
+                        }
                     }
                 }
                 super.printCollection(items, printer);
@@ -555,21 +572,36 @@ public class DerbyPlatform extends DB2Platform {
 
             @Override
             public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
-                if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                    printQuarterJava(first, printer);
-                } else {
-                    super.printJavaDuo(first, second, printer);
+                if (second instanceof LiteralExpression) {
+                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                        case "QUARTER":
+                            printQuarterJava(first, printer);
+                            return;
+                        case "SECOND":
+                            printer.printString(CAST_FLOAT[0]);
+                            super.printJavaDuo(first, second, printer);
+                            printer.printString(CAST_FLOAT[1]);
+                            return;
+                    }
                 }
+                super.printJavaDuo(first, second, printer);
             }
 
             @Override
             public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if (items.size() == 2) {
-                    Expression first = items.get(0);
-                    Expression second = items.get(1);
-                    if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                        printQuarterJava(first, printer);
-                        return;
+                    final Expression second = items.get(1);
+                    if (second instanceof LiteralExpression) {
+                        switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                            case "QUARTER":
+                                printQuarterJava(items.get(0), printer);
+                                return;
+                            case "SECOND":
+                                printer.printString(CAST_FLOAT[0]);
+                                super.printJavaCollection(items, printer);
+                                printer.printString(CAST_FLOAT[1]);
+                                return;
+                        }
                     }
                 }
                 super.printJavaCollection(items, printer);

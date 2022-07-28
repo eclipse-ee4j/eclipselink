@@ -147,6 +147,8 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         addOperator(toNumberOperator());
         addOperator(regexpOperator());
         addOperator(pgsqlRoundOperator());
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "LOCALTIME"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalDateTime, "LOCALTIMESTAMP"));
     }
 
     // Emulate ROUND(:x,:n) as FLOOR((:x)*10^(:n)+0.5)/10^(:n)
@@ -231,7 +233,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * Create the ~ operator.
      * REGEXP allows for comparison through regular expression.
      */
-    public static ExpressionOperator regexpOperator() {
+    private static ExpressionOperator regexpOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Regexp);
         result.setType(ExpressionOperator.FunctionOperator);
@@ -252,7 +254,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     /**
      * INTERNAL: Postgres to_number has two arguments, as fix format argument.
      */
-    protected ExpressionOperator toNumberOperator() {
+    private static ExpressionOperator toNumberOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.ToNumber);

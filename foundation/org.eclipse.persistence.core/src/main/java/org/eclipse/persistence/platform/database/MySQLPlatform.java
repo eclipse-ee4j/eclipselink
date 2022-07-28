@@ -42,12 +42,15 @@ import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.LiteralExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -406,6 +409,7 @@ public class MySQLPlatform extends DatabasePlatform {
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Trunc, "TRUNCATE"));
         addOperator(leftTrim2());
         addOperator(rightTrim2());
+        addOperator(mysqlExtractOperator());
     }
 
     /**
@@ -595,6 +599,101 @@ public class MySQLPlatform extends DatabasePlatform {
      */
     protected ExpressionOperator currentDateOperator() {
         return ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "CURRENT_DATE");
+    }
+
+    // MySQL EXTRACT SECOND operator requires CAST to not return Long value.
+    private static ExpressionOperator mysqlExtractOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator() {
+
+            // SECOND emulation: (EXTRACT(MICROSECOND FROM date)/1e6+EXTRACT(SECOND FROM date))
+            private final String[] SECOND_STRINGS = new String[] {"(EXTRACT(MICROSECOND FROM ", ")/1e6+EXTRACT(SECOND FROM ", "))"};
+
+            private void printSecondSQL(final Expression first, final ExpressionSQLPrinter printer) {
+                printer.printString(SECOND_STRINGS[0]);
+                first.printSQL(printer);
+                printer.printString(SECOND_STRINGS[1]);
+                first.printSQL(printer);
+                printer.printString(SECOND_STRINGS[2]);
+            }
+
+            private void printSecondJava(final Expression first, final ExpressionJavaPrinter printer) {
+                printer.printString(SECOND_STRINGS[0]);
+                first.printJava(printer);
+                printer.printString(SECOND_STRINGS[1]);
+                first.printJava(printer);
+                printer.printString(SECOND_STRINGS[2]);
+            }
+
+            @Override
+            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
+                if (second instanceof LiteralExpression) {
+                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                        case "SECOND":
+                            printSecondSQL(first, printer);
+                            return;
+                    }
+                }
+                super.printDuo(first, second, printer);
+            }
+
+            @Override
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+                if (items.size() == 2) {
+                    final Expression second = items.get(1);
+                    if (second instanceof LiteralExpression) {
+                        switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                            case "SECOND":
+                                printSecondSQL(items.get(0), printer);
+                                return;
+                        }
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
+                if (second instanceof LiteralExpression) {
+                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                        case "SECOND":
+                            printSecondJava(first, printer);
+                            return;
+                    }
+                }
+                super.printJavaDuo(first, second, printer);
+            }
+
+            @Override
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
+                if (items.size() == 2) {
+                    final Expression second = items.get(1);
+                    if (second instanceof LiteralExpression) {
+                        switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                            case "SECOND":
+                                printSecondJava(items.get(0), printer);
+                                return;
+                        }
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Extract);
+        exOperator.setName("EXTRACT");
+        List<String> v = new ArrayList<>(5);
+        v.add("EXTRACT(");
+        v.add(" FROM ");
+        v.add(")");
+        exOperator.printsAs(v);
+        int[] indices = new int[2];
+        indices[0] = 1;
+        indices[1] = 0;
+        exOperator.setArgumentIndices(indices);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
 
     /**

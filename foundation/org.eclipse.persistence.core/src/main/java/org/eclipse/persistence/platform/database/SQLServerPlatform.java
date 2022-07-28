@@ -515,8 +515,26 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     protected static ExpressionOperator mssqlExtractOperator() {
         ExpressionOperator exOperator = new ExpressionOperator() {
 
+            // SECOND emulation: (CAST(DATEPART(NANOSECOND, date) AS FLOAT)/1000000000 + DATEPART(SECOND, date))
+            private final String[] SECOND_STRINGS = new String[] {"(CAST(DATEPART(NANOSECOND, ", ") AS FLOAT)/1000000000 + DATEPART(SECOND, ", "))"};
             // WEEK replacement: ISO_WEEK
             private final String[] WEEK_STRINGS = new String[] {"DATEPART(ISO_WEEK,", ")"};
+
+            private void printSecondSQL(final Expression first, final ExpressionSQLPrinter printer) {
+                printer.printString(SECOND_STRINGS[0]);
+                first.printSQL(printer);
+                printer.printString(SECOND_STRINGS[1]);
+                first.printSQL(printer);
+                printer.printString(SECOND_STRINGS[2]);
+            }
+
+            private void printSecondJava(final Expression first, final ExpressionJavaPrinter printer) {
+                printer.printString(SECOND_STRINGS[0]);
+                first.printJava(printer);
+                printer.printString(SECOND_STRINGS[1]);
+                first.printJava(printer);
+                printer.printString(SECOND_STRINGS[2]);
+            }
 
             private void printWeekSQL(final Expression first, final ExpressionSQLPrinter printer) {
                 printer.printString(WEEK_STRINGS[0]);
@@ -532,21 +550,32 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
 
             @Override
             public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-                if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                    printWeekSQL(first, printer);
-                } else {
-                    super.printDuo(first, second, printer);
+                if (second instanceof LiteralExpression) {
+                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                        case "SECOND":
+                            printSecondSQL(first, printer);
+                            return;
+                        case "WEEK":
+                            printWeekSQL(first, printer);
+                            return;
+                    }
                 }
+                super.printDuo(first, second, printer);
             }
 
             @Override
             public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
                 if (items.size() == 2) {
-                    Expression first = items.get(0);
-                    Expression second = items.get(1);
-                    if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                        printWeekSQL(first, printer);
-                        return;
+                    final Expression second = items.get(1);
+                    if (second instanceof LiteralExpression) {
+                        switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                            case "SECOND":
+                                printSecondSQL(items.get(0), printer);
+                                return;
+                            case "WEEK":
+                                printWeekSQL(items.get(0), printer);
+                                return;
+                        }
                     }
                 }
                 super.printCollection(items, printer);
@@ -554,21 +583,32 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
 
             @Override
             public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
-                if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                    printWeekJava(first, printer);
-                } else {
-                    super.printJavaDuo(first, second, printer);
+                if (second instanceof LiteralExpression) {
+                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                        case "SECOND":
+                            printSecondJava(first, printer);
+                            return;
+                        case "WEEK":
+                            printWeekJava(first, printer);
+                            return;
+                    }
                 }
+                super.printJavaDuo(first, second, printer);
             }
 
             @Override
             public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
                 if (items.size() == 2) {
-                    Expression first = items.get(0);
-                    Expression second = items.get(1);
-                    if (second instanceof LiteralExpression && "WEEK".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                        printWeekJava(first, printer);
-                        return;
+                    final Expression second = items.get(1);
+                    if (second instanceof LiteralExpression) {
+                        switch (((LiteralExpression) second).getValue().toUpperCase()) {
+                            case "SECOND":
+                                printSecondJava(items.get(0), printer);
+                                return;
+                            case "WEEK":
+                                printWeekJava(items.get(0), printer);
+                                return;
+                        }
                     }
                 }
                 super.printJavaCollection(items, printer);
