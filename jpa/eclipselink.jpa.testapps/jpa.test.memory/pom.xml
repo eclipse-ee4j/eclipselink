@@ -47,7 +47,7 @@
 
     <properties>
         <argLine/>
-        <se.test.skip>false</se.test.skip>
+        <se.test.skip>true</se.test.skip>
         <server.test.skip>true</server.test.skip>
     </properties>
 

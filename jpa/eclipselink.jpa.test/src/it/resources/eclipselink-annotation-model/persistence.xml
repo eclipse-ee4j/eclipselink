@@ -117,18 +117,6 @@
         </properties>
     </persistence-unit>
 
-    <persistence-unit name="METADATA_COMPLETE">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/metadata-complete-mappings.xml</mapping-file>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-    </persistence-unit>
-
-    <persistence-unit name="XML_MAPPING_METADATA_COMPLETE">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/xml-mapping-metadata-complete-mappings.xml</mapping-file>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-    </persistence-unit>
-
     <persistence-unit name="customizeAddTarget">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>

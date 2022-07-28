@@ -242,6 +242,8 @@
         <module>jpa.test.xml.extended.composite.advanced/member_1</module>
         <module>jpa.test.xml.extended.composite.advanced/member_2</module>
         <module>jpa.test.xml.extended.composite.advanced/member_3</module>
+        <module>jpa.test.xml.metadatacomplete</module>
+        <module>jpa.test.xml.xmlmetadatacomplete</module>
         <module>nativeapi</module>
     </modules>
 
