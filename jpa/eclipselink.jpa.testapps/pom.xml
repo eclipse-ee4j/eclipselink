@@ -31,6 +31,8 @@
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <spotbugs.skip>true</spotbugs.skip>
 
         <se.test.skip>false</se.test.skip>
         <server.test.runner.context>${project.build.finalName}/${project.build.finalName}_ejb</server.test.runner.context>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,22 +14,37 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.weaving;
 
-import java.lang.reflect.Field;
-
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
-import org.eclipse.persistence.internal.weaving.*;
+import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
+import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.performance.*;
+import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.ReadObjectTest;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.TransactionalTestCase;
+import org.eclipse.persistence.testing.framework.UnitOfWorkBasicInsertObjectTest;
+import org.eclipse.persistence.testing.framework.UnitOfWorkBasicUpdateObjectTest;
+import org.eclipse.persistence.testing.models.performance.Address;
+import org.eclipse.persistence.testing.models.performance.Employee;
+import org.eclipse.persistence.testing.models.performance.EmployeePopulator;
+import org.eclipse.persistence.testing.models.performance.EmployeeSystem;
+import org.eclipse.persistence.testing.models.performance.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.performance.LargeProject;
+import org.eclipse.persistence.testing.models.performance.PhoneNumber;
+import org.eclipse.persistence.testing.models.performance.Project;
+import org.eclipse.persistence.testing.models.performance.SmallProject;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This model tests reading/writing using weaved performance employee model.
