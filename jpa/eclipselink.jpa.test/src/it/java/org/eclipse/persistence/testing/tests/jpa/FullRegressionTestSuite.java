@@ -94,7 +94,6 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitNativeQueryTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.plsql.XMLPLSQLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.xml.xmlmetadatacomplete.XMLMappingMetadataCompleteJunitTestCase;
 
 public class FullRegressionTestSuite extends TestSuite {
 
@@ -234,9 +233,6 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTest(suite);
 
         fullSuite.addTest(QueryCastTestSuite.suite());
-
-        // XML Mapping Metadata Complete
-        fullSuite.addTest(XMLMappingMetadataCompleteJunitTestCase.suite());
 
         // Persistence Unit Processor tests.
         fullSuite.addTest(PersistenceUnitProcessorTest.suite());

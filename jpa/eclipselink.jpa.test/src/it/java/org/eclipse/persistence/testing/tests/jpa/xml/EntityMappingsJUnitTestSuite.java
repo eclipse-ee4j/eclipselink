@@ -38,7 +38,6 @@ import org.eclipse.persistence.testing.tests.jpa.xml.inherited.EntityMappingsInh
 import org.eclipse.persistence.testing.tests.jpa.xml.relationships.EntityMappingsRelationshipsJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.relationships.unidirectional.EntityMappingsUnidirectionalRelationshipsJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.merge.EntityMappingsMergeJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.xml.metadatacomplete.EntityMappingsMetadataCompleteJUnitTestCase;
 
 /**
  * JUnit test suite XML metadata configurations.
@@ -59,7 +58,6 @@ public class EntityMappingsJUnitTestSuite extends TestCase {
             suite.addTest(EntityMappingsUnidirectionalRelationshipsJUnitTestCase.suite());
             suite.addTest(EntityMappingsInheritedJUnitTestCase.suite());
             suite.addTest(EntityMappingsMergeJUnitTestSuite.suite());
-            suite.addTest(EntityMappingsMetadataCompleteJUnitTestCase.suite());
         } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) {
             suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());
             suite.addTest(EntityMappingsFetchGroupJunitTest.suite());

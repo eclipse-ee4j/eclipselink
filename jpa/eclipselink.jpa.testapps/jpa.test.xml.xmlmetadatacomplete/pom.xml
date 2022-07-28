@@ -23,23 +23,24 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>org.eclipse.persistence.jpa.testapps.metamodel</artifactId>
+    <artifactId>org.eclipse.persistence.jpa.testapps.xml.xmlmetadatacomplete</artifactId>
 
-    <name>Test - metamodel</name>
+    <name>Test - xml.xmlmetadatacomplete</name>
+
+    <properties>
+        <argLine/>
+    </properties>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
+                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
                     <execution>
-                        <id>default-compile</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>compile-with-processor</id>
-                        <phase>compile</phase>
+                        <id>get-test-classpath-to-properties</id>
+                        <phase>process-test-classes</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -62,12 +63,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>server-test</id>
+                        <id>default-test</id>
                         <configuration>
-                            <excludes>
-                                <exclude>**/EntityManagerImplTest</exclude>
-                                <exclude>**/EntityManagerFactoryImplTest</exclude>
-                            </excludes>
+                            <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
                         </configuration>
                     </execution>
                 </executions>
