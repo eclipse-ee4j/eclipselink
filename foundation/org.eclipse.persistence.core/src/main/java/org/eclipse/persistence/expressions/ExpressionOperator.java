@@ -3135,22 +3135,7 @@ public class ExpressionOperator implements Serializable {
      * Build operator.
      */
     public static ExpressionOperator extract() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(FunctionOperator);
-        exOperator.setSelector(Extract);
-        exOperator.setName("EXTRACT");
-        List<String> v = new ArrayList<>(5);
-        v.add("EXTRACT(");
-        v.add(" FROM ");
-        v.add(")");
-        exOperator.printsAs(v);
-        int[] indices = new int[2];
-        indices[0] = 1;
-        indices[1] = 0;
-        exOperator.setArgumentIndices(indices);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
+        return new ExtractOperator();
     }
 
     /**

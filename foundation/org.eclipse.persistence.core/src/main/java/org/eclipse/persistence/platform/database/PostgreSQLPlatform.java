@@ -233,7 +233,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * Create the ~ operator.
      * REGEXP allows for comparison through regular expression.
      */
-    private static ExpressionOperator regexpOperator() {
+    public static ExpressionOperator regexpOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Regexp);
         result.setType(ExpressionOperator.FunctionOperator);
@@ -254,7 +254,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     /**
      * INTERNAL: Postgres to_number has two arguments, as fix format argument.
      */
-    private static ExpressionOperator toNumberOperator() {
+    protected ExpressionOperator toNumberOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.ToNumber);

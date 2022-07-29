@@ -507,129 +507,65 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         addOperator(mssqlExtractOperator());
     }
 
-    /**
-     * INTERNAL:
-     * MS SQL does not support EXTRACT, but does have DATEPART.
-     * ISO_WEEK should be used instead of WEEK.
-     */
-    protected static ExpressionOperator mssqlExtractOperator() {
-        ExpressionOperator exOperator = new ExpressionOperator() {
+    // SQL Server EXTRACT operator needs emulation of SECOND and WEEK date/time parts.
+    // EXTRACT SECOND operator need more complex statement to join values of SECOND and NANOSECOND.
+    private static final class SqlServerExtractOperator extends ExtractOperator {
 
-            // SECOND emulation: (CAST(DATEPART(NANOSECOND, date) AS FLOAT)/1000000000 + DATEPART(SECOND, date))
-            private final String[] SECOND_STRINGS = new String[] {"(CAST(DATEPART(NANOSECOND, ", ") AS FLOAT)/1000000000 + DATEPART(SECOND, ", "))"};
-            // WEEK replacement: ISO_WEEK
-            private final String[] WEEK_STRINGS = new String[] {"DATEPART(ISO_WEEK,", ")"};
+        // SECOND emulation: (CAST(DATEPART(NANOSECOND, date) AS FLOAT)/1000000000 + DATEPART(SECOND, date))
+        private static final String[] SECOND_STRINGS = new String[] {"(CAST(DATEPART(NANOSECOND, ", ") AS FLOAT)/1000000000 + DATEPART(SECOND, ", "))"};
+        // WEEK replacement: ISO_WEEK
+        private static final String[] WEEK_STRINGS = new String[] {"DATEPART(ISO_WEEK,", ")"};
 
-            private void printSecondSQL(final Expression first, final ExpressionSQLPrinter printer) {
-                printer.printString(SECOND_STRINGS[0]);
-                first.printSQL(printer);
-                printer.printString(SECOND_STRINGS[1]);
-                first.printSQL(printer);
-                printer.printString(SECOND_STRINGS[2]);
-            }
+        // SQL Server native database Strings to be printed for EXTRACT expression
+        private static List<String> mssqlDbStrings() {
+            final List<String> dbStrings = new ArrayList<>(2);
+            dbStrings.add("DATEPART(");
+            dbStrings.add(",");
+            dbStrings.add(")");
+            return dbStrings;
+        }
 
-            private void printSecondJava(final Expression first, final ExpressionJavaPrinter printer) {
-                printer.printString(SECOND_STRINGS[0]);
-                first.printJava(printer);
-                printer.printString(SECOND_STRINGS[1]);
-                first.printJava(printer);
-                printer.printString(SECOND_STRINGS[2]);
-            }
+        private SqlServerExtractOperator() {
+            super(mssqlDbStrings());
+        }
 
-            private void printWeekSQL(final Expression first, final ExpressionSQLPrinter printer) {
-                printer.printString(WEEK_STRINGS[0]);
-                first.printSQL(printer);
-                printer.printString(WEEK_STRINGS[1]);
-            }
+        @Override
+        protected void printSecondSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(SECOND_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(SECOND_STRINGS[1]);
+            first.printSQL(printer);
+            printer.printString(SECOND_STRINGS[2]);
+        }
 
-            private void printWeekJava(final Expression first, final ExpressionJavaPrinter printer) {
-                printer.printString(WEEK_STRINGS[0]);
-                first.printJava(printer);
-                printer.printString(WEEK_STRINGS[1]);
-            }
+        @Override
+        protected void printSecondJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(SECOND_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(SECOND_STRINGS[1]);
+            first.printJava(printer);
+            printer.printString(SECOND_STRINGS[2]);
+        }
 
-            @Override
-            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-                if (second instanceof LiteralExpression) {
-                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
-                        case "SECOND":
-                            printSecondSQL(first, printer);
-                            return;
-                        case "WEEK":
-                            printWeekSQL(first, printer);
-                            return;
-                    }
-                }
-                super.printDuo(first, second, printer);
-            }
+        @Override
+        protected void printWeekSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(WEEK_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(WEEK_STRINGS[1]);
+        }
 
-            @Override
-            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
-                if (items.size() == 2) {
-                    final Expression second = items.get(1);
-                    if (second instanceof LiteralExpression) {
-                        switch (((LiteralExpression) second).getValue().toUpperCase()) {
-                            case "SECOND":
-                                printSecondSQL(items.get(0), printer);
-                                return;
-                            case "WEEK":
-                                printWeekSQL(items.get(0), printer);
-                                return;
-                        }
-                    }
-                }
-                super.printCollection(items, printer);
-            }
+        @Override
+        protected void printWeekJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(WEEK_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(WEEK_STRINGS[1]);
+        }
 
-            @Override
-            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
-                if (second instanceof LiteralExpression) {
-                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
-                        case "SECOND":
-                            printSecondJava(first, printer);
-                            return;
-                        case "WEEK":
-                            printWeekJava(first, printer);
-                            return;
-                    }
-                }
-                super.printJavaDuo(first, second, printer);
-            }
+    }
 
-            @Override
-            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
-                if (items.size() == 2) {
-                    final Expression second = items.get(1);
-                    if (second instanceof LiteralExpression) {
-                        switch (((LiteralExpression) second).getValue().toUpperCase()) {
-                            case "SECOND":
-                                printSecondJava(items.get(0), printer);
-                                return;
-                            case "WEEK":
-                                printWeekJava(items.get(0), printer);
-                                return;
-                        }
-                    }
-                }
-                super.printJavaCollection(items, printer);
-            }
-        };
-
-        exOperator.setType(ExpressionOperator.FunctionOperator);
-        exOperator.setSelector(ExpressionOperator.Extract);
-        exOperator.setName("EXTRACT");
-        List<String> v = new ArrayList<>(5);
-        v.add("DATEPART(");
-        v.add(",");
-        v.add(")");
-        exOperator.printsAs(v);
-        int[] indices = new int[2];
-        indices[0] = 1;
-        indices[1] = 0;
-        exOperator.setArgumentIndices(indices);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
+    // Create EXTRACT operator form SQL Server platform
+    private static ExpressionOperator mssqlExtractOperator() {
+        return new SqlServerExtractOperator();
     }
 
     /**

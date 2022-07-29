@@ -987,6 +987,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     }
 
     @Override
+    @SuppressWarnings("fallthrough")
     public void visit(ExtractExpression expression) {
 
         // First create the expression from the encapsulated expression
@@ -996,7 +997,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = queryExpression.extract(expression.getDatePart());
 
         // Set the expression type
-        if (expression.hasFrom()) {
+        if (expression.hasDatePart()) {
             switch (expression.getDatePart()) {
                 case "YEAR":
                 case "QUARTER":
