@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,9 @@
 //         485984: Added SHELF table and reference to SHELF in HELMET
 package org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup;
 
-import org.eclipse.persistence.tools.schemaframework.*;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
     public AdvancedFetchGroupTableCreator() {

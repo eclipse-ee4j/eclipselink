@@ -20,7 +20,6 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.IsolatedHashMapTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
@@ -47,9 +46,6 @@ public class AdvancedServerTestSuite extends TestSuite {
         suite.addTest(AdvancedJunitTest.suite());
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(QueryCastTestSuite.suite());
-        if (! JUnitTestCase.isJPA10()) {
-            suite.addTest(AdvancedFetchGroupJunitTest.suite());
-        }
         return suite;
     }
 }

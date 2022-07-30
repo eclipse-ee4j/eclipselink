@@ -31,16 +31,16 @@ import jakarta.persistence.MappedSuperclass;
 public abstract class MS_MS_Entity_Center extends MS_MS_Entity_Root {
 
     @Id // see 288972
-    private Integer identity;
+    private Integer ms_identity;
 
     private String declaredCenterStringField;
 
     public Integer getIdentity() {
-        return identity;
+        return ms_identity;
     }
 
     public void setIdentity(Integer identity) {
-        this.identity = identity;
+        this.ms_identity = identity;
     }
 
     public String getDeclaredCenterStringField() {
@@ -73,7 +73,7 @@ public abstract class MS_MS_Entity_Center extends MS_MS_Entity_Root {
     @Override
     public int hashCode() {
         if (null != type && null != length && null != width) {
-            return 9232 * type.hashCode() * length.hashCode() * width.hashCode() * identity.hashCode();
+            return 9232 * type.hashCode() * length.hashCode() * width.hashCode() * ms_identity.hashCode();
         } else {
             return super.hashCode();
         }

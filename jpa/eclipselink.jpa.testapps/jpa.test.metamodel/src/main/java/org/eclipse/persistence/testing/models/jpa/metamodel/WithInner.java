@@ -28,7 +28,7 @@ import jakarta.persistence.Table;
 @IdClass(WithInner.InnerPK.class)
 public class WithInner {
 
-    @Column(name="DESC")
+    @Column(name="DESC_PK")
     public String description;
 
     @Id

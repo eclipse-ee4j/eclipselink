@@ -13,7 +13,7 @@
 // Contributors:
 //     04/30/2009-2.0 Michael O'Brien
 //       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
-package org.eclipse.persistence.testing.tests.jpa.metamodel;
+package org.eclipse.persistence.testing.models.jpa.metamodel;
 
 
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -870,7 +870,7 @@ DROP TABLE CMP3_MM_COMPUTER
         // From MS-(MS)-Entity center
         FieldDefinition field = new FieldDefinition();
         //field.setName("MSMSENTITY_ID");
-        field.setName("IDENTITY");
+        field.setName("MS_IDENTITY");
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);
@@ -1122,7 +1122,7 @@ DROP TABLE CMP3_MM_COMPUTER
         table.setName("INNER_PK");
 
         FieldDefinition field = new FieldDefinition();
-        field.setName("DESC");
+        field.setName("DESC_PK");
         field.setTypeName("VARCHAR");
         field.setSize(80);
         field.setShouldAllowNull(false);

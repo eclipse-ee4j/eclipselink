@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,12 +25,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
+import org.eclipse.persistence.annotations.FetchAttribute;
+import org.eclipse.persistence.annotations.FetchGroup;
 
 import static jakarta.persistence.GenerationType.TABLE;
 import static jakarta.persistence.InheritanceType.JOINED;
-
-import org.eclipse.persistence.annotations.FetchAttribute;
-import org.eclipse.persistence.annotations.FetchGroup;
 
 @Entity
 @Table(name="JPA_HOCKEY_GEAR")

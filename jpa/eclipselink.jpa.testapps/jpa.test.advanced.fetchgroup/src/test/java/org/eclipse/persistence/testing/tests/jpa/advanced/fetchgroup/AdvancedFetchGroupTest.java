@@ -17,38 +17,41 @@
 //       - 485984: Add test for retrieval of cached getReference within a txn
 package org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.persistence.EntityManager;
-
-import junit.framework.*;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.AdvancedFetchGroupTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.ChestProtector;
+import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.GoalieGear.AgeGroup;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Helmet;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.HockeyGear;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Pads;
-import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.GoalieGear.AgeGroup;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Shelf;
 
-public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
+public class AdvancedFetchGroupTest extends JUnitTestCase {
     private static Integer padsId;
     private static Integer chestProtectorId;
 
-    public AdvancedFetchGroupJunitTest() {
+    public AdvancedFetchGroupTest() {
         super();
     }
 
-    public AdvancedFetchGroupJunitTest(String name) {
+    public AdvancedFetchGroupTest(String name) {
         super(name);
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+        return "fetchgroup";
     }
 
     @Override
@@ -58,18 +61,18 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("AdvancedFetchGroupJunitTest");
+        suite.setName("AdvancedFetchGroupTest");
 
-        suite.addTest(new AdvancedFetchGroupJunitTest("testSetup"));
-        suite.addTest(new AdvancedFetchGroupJunitTest("testVerifyFetchGroups"));
-        suite.addTest(new AdvancedFetchGroupJunitTest("testCreateHockeyGear"));
-        suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupOnPads"));
-        suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupOnChestProtector"));
-        suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupOnPadsFromInheritanceParent"));
+        suite.addTest(new AdvancedFetchGroupTest("testSetup"));
+        suite.addTest(new AdvancedFetchGroupTest("testVerifyFetchGroups"));
+        suite.addTest(new AdvancedFetchGroupTest("testCreateHockeyGear"));
+        suite.addTest(new AdvancedFetchGroupTest("testFetchGroupOnPads"));
+        suite.addTest(new AdvancedFetchGroupTest("testFetchGroupOnChestProtector"));
+        suite.addTest(new AdvancedFetchGroupTest("testFetchGroupOnPadsFromInheritanceParent"));
         // Bug 434120
-        suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupMergeMapAttribute"));
+        suite.addTest(new AdvancedFetchGroupTest("testFetchGroupMergeMapAttribute"));
         // Bug 485984
-        suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupForCachedReference"));
+        suite.addTest(new AdvancedFetchGroupTest("testFetchGroupForCachedReference"));
 
         return suite;
     }
@@ -78,25 +81,25 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedFetchGroupTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedFetchGroupTableCreator().replaceTables(getPersistenceUnitServerSession());
         clearCache();
     }
 
     public void testVerifyFetchGroups() {
         if (isWeavingEnabled()) {
-            ClassDescriptor hockeyGearDescriptor = getServerSession().getDescriptor(HockeyGear.class);
+            ClassDescriptor hockeyGearDescriptor = getPersistenceUnitServerSession().getDescriptor(HockeyGear.class);
             FetchGroupManager hockeyGearFetchGroupManager = hockeyGearDescriptor.getFetchGroupManager();
             assertTrue("Wrong number of fetch groups for HockeyGear", hockeyGearFetchGroupManager.getFetchGroups().size() == 1);
             assertNotNull("The 'MSRP' fetch group was not found for HockeyGear", hockeyGearFetchGroupManager.getFetchGroup("MSRP"));
 
-            ClassDescriptor padsDescriptor = getServerSession().getDescriptor(Pads.class);
+            ClassDescriptor padsDescriptor = getPersistenceUnitServerSession().getDescriptor(Pads.class);
             FetchGroupManager padsFetchGroupManager = padsDescriptor.getFetchGroupManager();
             assertTrue("Wrong number of fetch groups for Pads", padsFetchGroupManager.getFetchGroups().size() == 3);
             assertNotNull("The 'HeightAndWidth' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("HeightAndWidth"));
             assertNotNull("The 'Weight' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("Weight"));
             assertNotNull("The 'AgeGroup' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("AgeGroup"));
 
-            ClassDescriptor chestProtectorDescriptor = getServerSession().getDescriptor(ChestProtector.class);
+            ClassDescriptor chestProtectorDescriptor = getPersistenceUnitServerSession().getDescriptor(ChestProtector.class);
             FetchGroupManager chestProtectorFetchGroupManager = chestProtectorDescriptor.getFetchGroupManager();
             assertTrue("Wrong number of fetch groups for ChestProtector", chestProtectorFetchGroupManager.getFetchGroups().size() == 1);
             assertNotNull("The 'AgeGroup' fetch group was not found for ChestProtector", chestProtectorFetchGroupManager.getFetchGroup("AgeGroup"));

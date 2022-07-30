@@ -124,6 +124,11 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.advanced.fetchgroup</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.testapps.fieldaccess.advanced</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -144,7 +149,17 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.metamodel</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.testapps.performance</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.xml.cacheable</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
@@ -197,9 +212,11 @@
     </dependencies>
 
     <modules>
+        <module>jpa.test.advanced.cacheimpl</module>
         <module>jpa.test.advanced.cascadepersist</module>
         <module>jpa.test.advanced.customer</module>
         <module>jpa.test.advanced.embeddable</module>
+        <module>jpa.test.advanced.fetchgroup</module>
         <module>jpa.test.advanced.multitenant</module>
         <module>jpa.test.beanvalidation</module>
         <module>jpa.test.beanvalidation.dynamic</module>

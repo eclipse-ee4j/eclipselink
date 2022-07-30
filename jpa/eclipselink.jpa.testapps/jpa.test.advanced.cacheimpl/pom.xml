@@ -23,13 +23,42 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>org.eclipse.persistence.jpa.testapps.xml.cacheable</artifactId>
+    <artifactId>org.eclipse.persistence.jpa.testapps.advanced.cacheimpl</artifactId>
 
-    <name>Test - xml.cacheable</name>
+    <name>Test - advanced.cacheimpl</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.cacheable</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.advanced.fetchgroup</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.metamodel</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.xml.cacheable</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
     <properties>
         <argLine/>
-        <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>
     </properties>
 
     <build>
@@ -68,16 +97,6 @@
                         <configuration>
                             <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>package-model</id>
-                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>
