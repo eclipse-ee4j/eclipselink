@@ -23,14 +23,14 @@ public class MSIdClassPK implements Serializable {
     public String type;
     protected String length;
     private String width;
-    private Integer identity;
+    private Integer ms_identity;
 
     public Integer getIdentity() {
-        return identity;
+        return ms_identity;
     }
 
     public void setIdentity(Integer identity) {
-        this.identity = identity;
+        this.ms_identity = identity;
     }
 
     public MSIdClassPK() {}

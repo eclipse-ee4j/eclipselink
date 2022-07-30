@@ -19,6 +19,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.metamodel.MetamodelTableCreator;
 
 /**
  * These tests verify the JPA 2.0 Metamodel API.

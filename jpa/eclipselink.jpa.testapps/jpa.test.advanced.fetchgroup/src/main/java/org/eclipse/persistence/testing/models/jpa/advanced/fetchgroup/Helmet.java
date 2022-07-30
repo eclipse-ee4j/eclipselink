@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,6 @@
 //         - 485984-Added reference to Shelf entity
 package org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.persistence.Basic;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -30,8 +27,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.PrivateOwned;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name="JPA_HELMET")
