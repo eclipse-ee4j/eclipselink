@@ -14,6 +14,8 @@ package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.queries.ValueReadQuery;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -58,6 +60,20 @@ public class MariaDBPlatform extends MySQLPlatform {
      * one of buildSelectQueryForSequenceObject methods should return non-null
      * query.
      */
+    
+    @Override
+    public Writer buildSequenceObjectCreationWriter(Writer writer, String fullSeqName, int increment, int start) throws IOException {
+        writer.write("CREATE SEQUENCE ");
+        writer.write(fullSeqName);
+        if(start != 1) {
+            writer.write(" START WITH " + start);
+        }
+        if (increment != 1) {
+            writer.write(" INCREMENT BY " + increment);
+        }
+        return writer;
+    }
+    
     @Override
     public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
         return new ValueReadQuery("select nextval(" + qualifiedSeqName + ")");
