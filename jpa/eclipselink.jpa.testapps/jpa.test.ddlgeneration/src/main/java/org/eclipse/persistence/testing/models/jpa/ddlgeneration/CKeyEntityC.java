@@ -1,0 +1,104 @@
+/*
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import org.eclipse.persistence.annotations.Index;
+
+import java.util.Collection;
+
+/**
+ * Composite Key Entity.
+ *
+ * @author Wonseok Kim
+ */
+@Entity
+@Table(name = "DDL_CKENTC")
+@Index(name="INDEX_BS", table="DDL_CKENT_C_B", columnNames={"C_SEQ", "C_ROLE"})
+public class CKeyEntityC {
+
+    @EmbeddedId
+    private CKeyEntityCPK key;
+
+    // Test for GF#1392
+    // If there is a same name column for the entity and many-to-many table, wrong pk constraint generated.
+    @Column(name="C_ROLE")
+    private String tempRole;
+
+    @OneToOne
+    @JoinColumns({
+        @JoinColumn(name="A_SEQ", referencedColumnName = "SEQ"),
+        @JoinColumn(name="A_L_NAME", referencedColumnName = "L_NAME"),
+        @JoinColumn(name="A_F_NAME", referencedColumnName = "F_NAME")
+    })
+    private CKeyEntityA a;
+
+    @ManyToMany
+        @JoinTable(name="DDL_CKENT_C_B",
+        joinColumns={
+            @JoinColumn(name="C_SEQ", referencedColumnName="SEQ"),
+            @JoinColumn(name="C_ROLE", referencedColumnName="C_ROLE")
+        },
+        inverseJoinColumns={
+            @JoinColumn(name="B_SEQ", referencedColumnName = "SEQ"),
+            @JoinColumn(name="B_CODE", referencedColumnName = "CODE")
+        }
+    )
+    private Collection<CKeyEntityB> bs;
+
+
+    public CKeyEntityC() {
+    }
+
+    public CKeyEntityC(CKeyEntityCPK key) {
+        this.key = key;
+    }
+
+    public CKeyEntityCPK getKey() {
+        return key;
+    }
+
+    public String getTempRole() {
+        return tempRole;
+    }
+
+    public void setTempRole(String tempRole) {
+        this.tempRole = tempRole;
+    }
+
+    public CKeyEntityA getA() {
+        return a;
+    }
+
+    public void setA(CKeyEntityA a) {
+        this.a = a;
+    }
+
+    public Collection<CKeyEntityB> getBs() {
+        return bs;
+    }
+
+    public void setBs(Collection<CKeyEntityB> bs) {
+        this.bs = bs;
+    }
+}

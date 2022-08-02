@@ -31,9 +31,6 @@
 
         <!-- mapping files that are packaged in xml-merge-model-tests.jar-->
         <mapping-file>META-INF/orm-annotation-merge-advanced-entity-mappings.xml</mapping-file>
-        <mapping-file>META-INF/orm-annotation-merge-relationships-entity-mappings.xml</mapping-file>
-        <mapping-file>META-INF/incomplete-nonowning-entity-mappings.xml</mapping-file>
-        <mapping-file>META-INF/incomplete-owning-entity-mappings.xml</mapping-file>
 
         <!-- this is here for testing purposes - ensures a persistence unit can load even with a file that does not exist.  Please do not add an xml file called: META-INF/non-existant-orm-file.xml -->
         <mapping-file>META-INF/non-existant-orm-file.xml</mapping-file>

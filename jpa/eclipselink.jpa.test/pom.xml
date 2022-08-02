@@ -302,7 +302,6 @@
                                 <item>eclipselink-annotation-model</item>
                                 <item>eclipselink-xml-only-model</item>
                                 <item>eclipselink-xml-merge-model</item>
-                                <item>eclipselink-ddl-generation-model</item>
                                 <item>eclipselink-jpa21-model</item>
                                 <!--Additional for LRG-->
                                 <item>eclipselink-plsql-model</item>
@@ -427,7 +426,6 @@
                             <skip>${skip-jpa-jse-build}</skip>
                             <items>
                                 <item>eclipselink-annotation-model</item>
-                                <item>eclipselink-ddl-generation-model</item>
                                 <item>eclipselink-plsql-model</item>
                                 <item>eclipselink-xml-extended-model</item>
                             </items>
@@ -455,7 +453,6 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
                                         </additionalClasspathElements>
                                         <arguments>
@@ -506,7 +503,6 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
                                         </additionalClasspathElements>
                                         <arguments>
@@ -537,7 +533,6 @@
                             <items>
                                 <item>server-test-jpa-advanced</item>
                                 <item>server-test-jpa-criteria</item>
-                                <item>server-test-jpa-ddlgeneration</item>
                                 <item>server-test-jpa-fetchgroups</item>
                                 <item>server-test-jpa-inheritance</item>
                                 <item>server-test-jpa-inherited</item>
@@ -586,12 +581,6 @@
                                     <name>server-test-jpa-plsql</name>
                                     <properties>
                                         <puName>plsql</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-xml-mergeinherited</name>
-                                    <properties>
-                                        <puName>ddlGeneration</puName>
                                     </properties>
                                 </itemWithProperty>
                             </itemsWithProperties>
@@ -802,8 +791,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                <!-- Special model jars for LRG 22_4 test.-->
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -955,7 +942,6 @@
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-jpa22-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-model.jar</additionalClasspathElement>
@@ -985,7 +971,6 @@
                             </systemPropertyVariables>
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-annotation-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-ddl-generation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-plsql-model.jar</additionalClasspathElement>
@@ -1338,19 +1323,6 @@
             </properties>
         </profile>
         <profile>
-            <id>server-test-jpa-ddlgeneration</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-ddl-generation-model</modelname>
-                <extra-model>eclipselink-ddl-generation-model-extra</extra-model>
-                <packageName>ddlgeneration</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
             <id>server-test-jpa-fetchgroups</id>
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
@@ -1414,20 +1386,6 @@
                 <extra-model>eclipselink-jpql-model</extra-model>
                 <packageName>jpql</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.jpql.JPQLServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-xml-mergeinherited</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>ddlGeneration</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-xml-mergeinherited-model</modelname>
-                <extra-model>eclipselink-xml-mergeinherited-model</extra-model>
-                <packageName>xml/merge/inherited</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited.EntityMappingsMergeInheritedJUnitTestCase</test-client-class>
             </properties>
         </profile>
         <profile>

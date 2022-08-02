@@ -230,6 +230,7 @@
         <module>jpa.test.composite.advanced/member_3</module>
         <module>jpa.test.datatypes</module>
         <module>jpa.test.datetime</module>
+        <module>jpa.test.ddlgeneration</module>
         <module>jpa.test.delimited</module>
         <module>jpa.test.extensibility</module>
         <module>jpa.test.fieldaccess.advanced</module>
@@ -261,6 +262,10 @@
         <module>jpa.test.xml.extended.composite.advanced/member_1</module>
         <module>jpa.test.xml.extended.composite.advanced/member_2</module>
         <module>jpa.test.xml.extended.composite.advanced/member_3</module>
+        <module>jpa.test.xml.merge.incompletemappings.nonowning</module>
+        <module>jpa.test.xml.merge.incompletemappings.owning</module>
+        <module>jpa.test.xml.merge.inherited</module>
+        <module>jpa.test.xml.merge.relationships</module>
         <module>jpa.test.xml.metadatacomplete</module>
         <module>jpa.test.xml.xmlmetadatacomplete</module>
         <module>nativeapi</module>
@@ -384,6 +389,7 @@
                                 <skip>${se.test.skip}</skip>
                                 <systemPropertyVariables>
                                     <test.properties>${test.properties.file}</test.properties>
+<!--                                    <eclipselink.test.toggle-fast-table-creator>true</eclipselink.test.toggle-fast-table-creator>-->
                                 </systemPropertyVariables>
                                 <workingDirectory>${project.build.directory}/test-out</workingDirectory>
                             </configuration>

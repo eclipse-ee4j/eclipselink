@@ -53,8 +53,6 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCo
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.ConcurrencyTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.config.ConfigPUTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationExtendTablesJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupAPITests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupMergeWithCacheTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupTrackerWeavingTests;
@@ -208,10 +206,6 @@ public class FullRegressionTestSuite extends TestSuite {
 
         // XML model
         fullSuite.addTest(EntityMappingsJUnitTestSuite.suite());
-
-        // DDL model
-        fullSuite.addTest(DDLGenerationJUnitTestSuite.suite());
-        fullSuite.addTest(DDLGenerationExtendTablesJUnitTestSuite.suite());
 
         // OSGi Deployment
         //try {
