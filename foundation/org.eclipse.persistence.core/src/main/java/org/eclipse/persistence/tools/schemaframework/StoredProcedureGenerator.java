@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -551,7 +551,7 @@ public class StoredProcedureGenerator {
         List<DatabaseField> primaryKeyFields = fields;
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             databaseField = primaryKeyFields.get(index);
-            fieldNames.put(databaseField.getName(), this.schemaManager.getColumnInfo(null, null, databaseField.getTableName(), databaseField.getName()).firstElement());
+            fieldNames.put(databaseField.getName(), this.schemaManager.getColumnInfo(databaseField.getTableName(), databaseField.getName()).firstElement());
         }
 
         definition.setName(Helper.truncate(name, MAX_NAME_SIZE));

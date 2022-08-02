@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,6 +17,7 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.tools.schemaframework;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -482,15 +484,14 @@ public class TableCreator {
                     final boolean usesDelimiting = (table.getTable()!=null && table.getTable().shouldUseDelimiters());
                     List<AbstractRecord> columnInfo = null;
 
-                    //I need the actual table catalog, schema and tableName for getTableInfo.
-                    columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
+                    columnInfo = abstractSession.getAccessor().getColumnInfo(tableName, null, abstractSession);
 
                     if (!usesDelimiting && (columnInfo == null || columnInfo.isEmpty()) ) {
                         tableName = tableName.toUpperCase();
-                        columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
+                        columnInfo = abstractSession.getAccessor().getColumnInfo(tableName, null, abstractSession);
                         if (( columnInfo == null || columnInfo.isEmpty()) ){
                             tableName = tableName.toLowerCase();
-                            columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
+                            columnInfo = abstractSession.getAccessor().getColumnInfo(tableName, null, abstractSession);
                         }
                     }
                     if (columnInfo != null && !columnInfo.isEmpty()) {

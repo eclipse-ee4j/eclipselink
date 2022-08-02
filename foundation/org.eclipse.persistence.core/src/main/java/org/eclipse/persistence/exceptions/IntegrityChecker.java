@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -186,7 +186,7 @@ public class IntegrityChecker implements Serializable {
      * This method is used to get all the database tables and add them into a vector.
      */
     public void initializeTables(AbstractSession session) {
-        List<AbstractRecord> result = session.getAccessor().getTableInfo(null, null, null, null, session);
+        List<AbstractRecord> result = session.getAccessor().getTableInfo(null, null, session);
         for (Iterator<AbstractRecord> iterator = result.iterator(); iterator.hasNext();) {
             AbstractRecord row = iterator.next();
             if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {

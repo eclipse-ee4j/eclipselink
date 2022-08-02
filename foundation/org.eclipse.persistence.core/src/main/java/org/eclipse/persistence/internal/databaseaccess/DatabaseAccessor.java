@@ -1213,6 +1213,62 @@ public class DatabaseAccessor extends DatasourceAccessor {
         return result;
     }
 
+    @Override
+    public Vector<AbstractRecord> getColumnInfo(String tableName, String columnName, AbstractSession session) throws DatabaseException {
+        Vector<AbstractRecord> result = new Vector<>();
+        ResultSet resultSet = null;
+        try {
+            //to get current catalog/schema we have to be connected to the DB
+            incrementCallCount(session);
+            if (session.shouldLog(SessionLog.FINEST, SessionLog.QUERY)) {// Avoid printing if no logging required.
+                Object[] args = { getCatalog(), getSchema(), tableName, columnName };
+                session.log(SessionLog.FINEST, SessionLog.QUERY, "query_column_meta_data_with_column", args, this);
+            }
+            resultSet = getConnectionMetaData().getColumns(getCatalog(), getSchema(), tableName, columnName);
+            Vector<DatabaseField> fields = buildSortedFields(null, resultSet, session);
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            while (resultSet.next()) {
+                result.addElement(fetchRow(fields, resultSet, metaData, session));
+            }
+            resultSet.close();
+        } catch (SQLException sqlException) {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException closeException) {
+            }
+            DatabaseException commException = processExceptionForCommError(session, sqlException, null);
+            if (commException != null) throw commException;
+            // Ensure that real exception is thrown.
+            throw DatabaseException.sqlException(sqlException, this, session, false);
+        } finally {
+            decrementCallCount();
+        }
+        return result;
+    }
+
+    /**
+     * Get the current schema. The accessor has to be connected.
+     *
+     * @return current schema name
+     * @throws SQLException
+     */
+    public String getSchema() throws SQLException {
+        return getConnection().getSchema();
+    }
+
+    /**
+     * Get the current schema. The accessor has to be connected.
+     *
+     * @return current calatog name
+     * @throws SQLException
+     */
+    public String getCatalog() throws SQLException {
+        return getConnection().getCatalog();
+    }
+
     /**
      * Return the column names from a result sets meta data as a vector of DatabaseFields.
      * This is required for custom SQL execution only,
@@ -1551,6 +1607,42 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             incrementCallCount(session);
             resultSet = getConnectionMetaData().getTables(catalog, schema, tableName, types);
+            Vector<DatabaseField> fields = buildSortedFields(null, resultSet, session);
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            while (resultSet.next()) {
+                result.addElement(fetchRow(fields, resultSet, metaData, session));
+            }
+            resultSet.close();
+        } catch (SQLException sqlException) {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException closeException) {
+            }
+            DatabaseException commException = processExceptionForCommError(session, sqlException, null);
+            if (commException != null) throw commException;
+            // Ensure that real exception is thrown.
+            throw DatabaseException.sqlException(sqlException, this, session, false);
+        } finally {
+            decrementCallCount();
+        }
+        return result;
+    }
+
+    @Override
+    public Vector<AbstractRecord> getTableInfo(String tableName, String[] types, AbstractSession session) throws DatabaseException {
+        Vector<AbstractRecord> result = new Vector<>();
+        ResultSet resultSet = null;
+        try {
+            //to get current catalog/schema we have to be connected to the DB
+            incrementCallCount(session);
+            if (session.shouldLog(SessionLog.FINEST, SessionLog.QUERY)) {// Avoid printing if no logging required.
+                Object[] args = { getCatalog(), getSchema(), tableName };
+                session.log(SessionLog.FINEST, SessionLog.QUERY, "query_column_meta_data", args, this);
+            }
+            resultSet = getConnectionMetaData().getTables(getCatalog(), getSchema(), tableName, types);
             Vector<DatabaseField> fields = buildSortedFields(null, resultSet, session);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
