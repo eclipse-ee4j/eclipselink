@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -51,6 +51,7 @@ public class FileBasedProjectCache implements ProjectCache {
                 java.io.File file = new java.io.File(fileName);
                 java.io.FileInputStream fis = new java.io.FileInputStream(file);
                 in = new java.io.ObjectInputStream(fis);
+                in.setObjectInputFilter(new FileBasedProjectCacheFilter(log));
                 project = (Project)in.readObject();
             } catch (Exception e) {
               //need exception differentiation,logging and warnings
