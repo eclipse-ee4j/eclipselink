@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -128,6 +128,12 @@ public interface Accessor extends Cloneable {
     Vector<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName, AbstractSession session) throws DatabaseException;
 
     /**
+     * Return the column metadata for the specified
+     * selection criteria limited to the context of the current {@code Accessor}.
+     */
+    Vector<AbstractRecord> getColumnInfo(String tableName, String columnName, AbstractSession session) throws DatabaseException;
+
+    /**
      * Return the JDBC connection for relational accessors.
      * This will fail for non-relational accessors.
      */
@@ -149,6 +155,12 @@ public interface Accessor extends Cloneable {
      * selection criteria.
      */
     Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException;
+
+    /**
+     * Return the table metadata for the specified
+     * selection criteria limited to the context of the current {@code Accessor}.
+     */
+    Vector<AbstractRecord> getTableInfo(String tableName, String[] types, AbstractSession session) throws DatabaseException;
 
     /**
      * Increment the number of calls in progress.

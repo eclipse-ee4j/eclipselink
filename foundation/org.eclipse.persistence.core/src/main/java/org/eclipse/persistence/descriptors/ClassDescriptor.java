@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1005,10 +1005,10 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 if (session.getIntegrityChecker().checkTable(table, session)) {
                     // To load the fields of database into a vector
                     List databaseFields = new ArrayList();
-                    List<AbstractRecord> result = session.getAccessor().getColumnInfo(null, null, table.getName(), null, session);
+                    List<AbstractRecord> result = session.getAccessor().getColumnInfo(table.getName(), null, session);
                     // Table name may need to be lowercase.
                     if (result.isEmpty() && session.getPlatform().shouldForceFieldNamesToUpperCase()) {
-                        result = session.getAccessor().getColumnInfo(null, null, table.getName().toLowerCase(), null, session);
+                        result = session.getAccessor().getColumnInfo(table.getName().toLowerCase(), null, session);
                     }
                     for (Iterator<AbstractRecord> resultIterator = result.iterator(); resultIterator.hasNext();) {
                         AbstractRecord row = resultIterator.next();

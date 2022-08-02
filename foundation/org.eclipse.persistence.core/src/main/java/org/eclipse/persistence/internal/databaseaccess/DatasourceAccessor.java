@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -647,6 +647,11 @@ public abstract class DatasourceAccessor implements Accessor {
         return new Vector<>();
     }
 
+    @Override
+    public Vector<AbstractRecord> getColumnInfo(String tableName, String columnName, AbstractSession session) throws DatabaseException {
+        return getColumnInfo(null, null, tableName, columnName, session);
+    }
+
     /**
      * Return the number of read statements.
      */
@@ -675,6 +680,11 @@ public abstract class DatasourceAccessor implements Accessor {
     @Override
     public Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types, AbstractSession session) throws DatabaseException {
         return new Vector<>();
+    }
+
+    @Override
+    public Vector<AbstractRecord> getTableInfo(String tableName, String[] types, AbstractSession session) throws DatabaseException {
+        return getTableInfo(null, null, tableName, types, session);
     }
 
     /**
