@@ -69,7 +69,7 @@ class FileBasedProjectCacheFilter implements ObjectInputFilter {
                     }
                 }
                 // Remote interface must be rejected
-                if (info.serialClass() != null && Remote.class.isAssignableFrom(info.serialClass())) {
+                if (Remote.class.isAssignableFrom(serialClass)) {
                     log.log(SessionLog.WARNING, String.format(
                             "FileBasedProjectCacheFilter: rejected illegal Remote FileBasedProjectCache class: %s",
                             serialClass.getName()));
@@ -104,7 +104,8 @@ class FileBasedProjectCacheFilter implements ObjectInputFilter {
                     if (pathSepPos > 0 && file.length() > pathSepPos + 1) {
                         file = file.substring(pathSepPos + 1);
                     }
-                    if (file.startsWith("org.eclipse.persistence") && file.contains(Version.getVersion())) {
+                    if ((file.startsWith("org.eclipse.persistence") && file.contains(Version.getVersion()))
+                            || file.equals("eclipselink.jar")) {
                         log.log(SessionLog.FINER, String.format(
                                 "FileBasedProjectCacheFilter: class %s from known jar file %s",
                                 serialClass.getName(), file));
