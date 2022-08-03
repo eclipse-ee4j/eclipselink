@@ -39,10 +39,10 @@ useradd -u "${JENKINS_UID}"       -g "${JENKINS_GID}" \
         -s '${build.user.shell}' -c '${build.user.comment}' \
         -m "${JENKINS_USER}"
 
-print "Updating the system"
+print "Updating the system and install additional utilities"
 echo '--------------------------------------------------------------------------------'
 yum -y update
-yum -y install git tar wget
+yum -y install git tar wget zip unzip
 echo '--------------------------------------------------------------------------------'
 
 print "Configuring Java tools in ${INSTALL_JAVA}"

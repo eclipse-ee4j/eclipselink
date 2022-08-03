@@ -24,7 +24,7 @@
     <artifactId>org.eclipse.persistence.build.docker</artifactId>
     <packaging>pom</packaging>
     <!-- Version is used as target docker image tag -->
-    <version>2.0.1</version>
+    <version>2.0.2</version>
 
     <properties>
         <!-- Source docker image -->
