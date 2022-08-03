@@ -64,12 +64,17 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
     public CriteriaQueryCastTestSuite(String name) {
         super(name);
-        setPuName("MulitPU-1");
+//        setPuName("MulitPU-1");
     }
+
+//    @Override
+//    public String getPersistenceUnitName() {
+//        return "MulitPU-1";
+//    }
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("QueryCastTestSuite");
+        suite.setName("CriteriaQueryCastTestSuite");
 
         suite.addTest(new CriteriaQueryCastTestSuite("testSetup"));
         suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyLeafQueryKey"));
@@ -1346,11 +1351,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-    }
-
-    @Override
-    public String getPersistenceUnitName() {
-       return "MulitPU-1";
     }
 }
 

@@ -44,7 +44,6 @@
         <wave.file.prefix>woven-</wave.file.prefix>
 
         <skip-test-jpa-srg>${skipTests}</skip-test-jpa-srg>
-        <skip-test-jpa-lrg21>true</skip-test-jpa-lrg21>
         <skip-test-jpa-lrg22>true</skip-test-jpa-lrg22>
         <skip-test-jpa-dynamic>true</skip-test-jpa-dynamic>
         <skip-test-jpa-identity>true</skip-test-jpa-identity>
@@ -302,11 +301,9 @@
                                 <item>eclipselink-annotation-model</item>
                                 <item>eclipselink-xml-only-model</item>
                                 <item>eclipselink-xml-merge-model</item>
-                                <item>eclipselink-jpa21-model</item>
                                 <!--Additional for LRG-->
                                 <item>eclipselink-plsql-model</item>
                                 <item>eclipselink-identity-model</item>
-                                <item>eclipselink-jpa22-model</item>
                                 <item>eclipselink-xml-extended-model</item>
                             </items>
                             <pluginExecutors>
@@ -453,7 +450,6 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
                                         </additionalClasspathElements>
                                         <arguments>
                                             <!-- Weaving source -->
@@ -503,7 +499,6 @@
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                            <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
                                         </additionalClasspathElements>
                                         <arguments>
                                             <!-- Weaving persistence info -->
@@ -795,6 +790,7 @@
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
                                 <include>org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel4</include>
+                                <include>org.eclipse.persistence.testing.tests.weaving.SimpleWeaverTestSuite</include>
                             </includes>
                         </configuration>
                     </execution>
@@ -822,29 +818,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>test-jpa-lrg22_jpa22_advanced</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${skip-test-jpa-lrg22}</skipTests>
-                            <reportNameSuffix>test-jpa-lrg22_jpa22_advanced</reportNameSuffix>
-                            <!--EclipseLink dynamic weaving is enabled.
-                                When it will be disabled by -Dignore or without arg switch it leads into test errors-->
-                            <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}</argLine>
-                            <systemPropertyVariables>
-                                <orm.testing>eclipselink</orm.testing>
-                            </systemPropertyVariables>
-                            <additionalClasspathElements>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-jpa22-model.jar</additionalClasspathElement>
-                            </additionalClasspathElements>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
-                                <include>org.eclipse.persistence.testing.tests.jpa22.advanced.JPA22TestSuite</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>test-jpa-lrg22_weaver</id>
                         <goals>
                             <goal>integration-test</goal>
@@ -860,30 +833,6 @@
                             </systemPropertyVariables>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
-                                <include>org.eclipse.persistence.testing.tests.weaving.SimpleWeaverTestSuite</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-jpa-lrg21</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${skip-test-jpa-lrg21}</skipTests>
-                            <reportNameSuffix>test-jpa-lrg21</reportNameSuffix>
-                            <!--EclipseLink dynamic weaving is enabled.
-                                When it will be disabled by -Dignore or without arg switch it leads into test errors-->
-                            <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}</argLine>
-                            <systemPropertyVariables>
-                                <orm.testing>eclipselink</orm.testing>
-                            </systemPropertyVariables>
-                            <additionalClasspathElements>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-jpa21-model.jar</additionalClasspathElement>
-                            </additionalClasspathElements>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
-                                <include>org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite</include>
                                 <include>org.eclipse.persistence.testing.tests.weaving.SimpleWeaverTestSuite</include>
                             </includes>
                         </configuration>
@@ -942,7 +891,6 @@
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-jpa22-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-extended-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
@@ -1175,23 +1123,6 @@
             </properties>
         </profile>
         <profile>
-            <id>jpa21</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <testExcludes>
-                                <testExclude>org/eclipse/persistence/testing/tests/jpa22/**</testExclude>
-                                <testExclude>org/eclipse/persistence/testing/models/jpa22/**</testExclude>
-                            </testExcludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>test-srg</id>
             <properties>
                 <skip-test-jpa-srg>false</skip-test-jpa-srg>
@@ -1215,13 +1146,6 @@
             <properties>
                 <skip-test-jpa-srg>true</skip-test-jpa-srg>
                 <skip-test-jpa-lrg22>false</skip-test-jpa-lrg22>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-jpa-lrg21</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-test-jpa-lrg21>false</skip-test-jpa-lrg21>
             </properties>
         </profile>
         <profile>
@@ -1281,32 +1205,6 @@
                 <extra-model>eclipselink-advanced-model-extra</extra-model>
                 <packageName>advanced</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-jpa21-advanced</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-jpa21-model-server</modelname>
-                <extra-model>eclipselink-jpa21-model-server</extra-model>
-                <packageName>jpa21</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-jpa22-advanced</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-jpa22-model-server</modelname>
-                <extra-model>eclipselink-jpa22-model-server</extra-model>
-                <packageName>jpa22</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa22.advanced.JPA22TestSuite</test-client-class>
             </properties>
         </profile>
         <profile>

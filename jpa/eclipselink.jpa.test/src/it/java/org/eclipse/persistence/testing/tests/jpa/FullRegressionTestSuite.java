@@ -91,6 +91,8 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitNativeQueryTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.plsql.XMLPLSQLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa22.jta.JTATestSuite;
+import org.eclipse.persistence.testing.tests.jpa22.metadata.MetadataASMFactoryTest;
 
 public class FullRegressionTestSuite extends TestSuite {
 
@@ -148,6 +150,9 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(InheritedCallbacksJunitTest.suite());
         suite.addTest(EmbeddableSuperclassJunitTest.suite());
         fullSuite.addTest(suite);
+
+        fullSuite.addTest(MetadataASMFactoryTest.suite());
+        fullSuite.addTest(JTATestSuite.suite());
 
         return fullSuite;
     }
@@ -225,6 +230,7 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTest(suite);
 
         fullSuite.addTest(QueryCastTestSuite.suite());
+//        fullSuite.addTest(CriteriaQueryCastTestSuite.suite());
 
         // Persistence Unit Processor tests.
         fullSuite.addTest(PersistenceUnitProcessorTest.suite());

@@ -212,6 +212,7 @@
     </dependencies>
 
     <modules>
+        <module>jpa.test.advanced2</module>
         <module>jpa.test.advanced.cacheimpl</module>
         <module>jpa.test.advanced.cascadepersist</module>
         <module>jpa.test.advanced.customer</module>
