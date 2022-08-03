@@ -44,7 +44,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
     <dependency>
       <groupId>jakarta.transaction</groupId>
       <artifactId>jakarta.transaction-api</artifactId>
-      <version>2.0.0-RC1</version>
+      <version>2.0.1</version>
     </dependency>
   </dependencies>
   <groupId>download</groupId>
