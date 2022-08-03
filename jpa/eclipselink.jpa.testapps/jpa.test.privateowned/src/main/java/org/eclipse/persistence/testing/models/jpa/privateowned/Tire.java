@@ -14,7 +14,7 @@
 //     02/19/09 dminsky - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.privateowned;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Tire {

@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
+import jakarta.persistence.spi.PersistenceProvider;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.persistence.spi.PersistenceProvider;
-
-import org.eclipse.persistence.testing.framework.TestProblemException;
 
 /**
  * Performance tests that compare JPA performance.

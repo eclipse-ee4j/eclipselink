@@ -18,7 +18,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.HashPartitioning;
 import org.eclipse.persistence.annotations.Partitioned;
 

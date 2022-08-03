@@ -21,18 +21,10 @@
 //         are commented out, the quick explanation why the test can't run is provided.
 package org.eclipse.persistence.testing.tests.jpa.xml.composite.advanced;
 
-import java.lang.reflect.Array;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Vector;
-
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Query;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
-
+import jakarta.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
@@ -52,7 +44,9 @@ import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1.Address;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1.AdvancedTableCreator_1;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1.Bungalow;
@@ -66,28 +60,14 @@ import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.Project;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.SmallProject;
-/*import org.eclipse.persistence.testing.models.jpa.xml.advanced.Confidant;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.Loner;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.Name;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.ReadOnlyClass;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.Shovel;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelDigger;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelOwner;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelProject;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelSections;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.SmallProject;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.ShovelSections.MaterialType;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.Violation;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.ViolationCode;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.Violation.ViolationID;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.ViolationCode.ViolationCodeId;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Bolt;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Nut;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.School;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Student;*/
-import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
+
+import java.lang.reflect.Array;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
@@ -347,7 +327,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         try {
-            List schools = em.createNamedQuery("findJPQLXMLSchools").getResultList();
+            List<?> schools = em.createNamedQuery("findJPQLXMLSchools").getResultList();
             assertEquals("Incorrect number of schools were returned [" + schools.size() + "], expected [2]", 2, schools.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -375,7 +355,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             // Find the schools, because of our additional criteria on Student
             // and the property above, we should only return Ottawa students.
 
-            List students = em.createQuery("SELECT s from XMLStudent s").getResultList();
+            List<?> students = em.createQuery("SELECT s from XMLStudent s").getResultList();
             assertEquals("Incorrect number of students were returned [" + students.size() + "], expected [8]", 8, students.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -404,7 +384,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             // and the property above, we should only return Toronto students.
             // However, they should not have any schools loaded.
 
-            List students = em.createQuery("SELECT s from XMLStudent s").getResultList();
+            List<?> students = em.createQuery("SELECT s from XMLStudent s").getResultList();
             assertEquals("Incorrect number of students were returned [" + students.size() + "], expected [18]", 18, students.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -427,7 +407,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         try {
             // This should use the EMF NAME property of Montreal%
-            List students = em.createQuery("SELECT s from XMLStudent s").getResultList();
+            List<?> students = em.createQuery("SELECT s from XMLStudent s").getResultList();
             assertEquals("Incorrect number of students were returned [" + students.size() + "], expected [5]", 5, students.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -452,7 +432,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             em.setProperty("NUT_SIZE", 8);
             em.setProperty("NUT_COLOR", "Grey");
 
-            List bolts = em.createQuery("SELECT b from XMLBolt b").getResultList();
+            List<?> bolts = em.createQuery("SELECT b from XMLBolt b").getResultList();
             assertEquals("Incorrect number of bolts were returned [" + bolts.size() + "], expected [2]", 2, bolts.size());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -834,7 +814,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
             throw e;
         }
         Query query = em.createNamedQuery("findAllXMLAddresses");
-        List addresses = query.getResultList();
+        List<?> addresses = query.getResultList();
         assertNotNull("Error executing named native query 'findAllXMLAddresses'", addresses);
     }
 
@@ -907,7 +887,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         String firstName = "testRefreshRemovedEmployee";
         Employee emp;
         EntityManager em = createEntityManager();
-        List result = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'").getResultList();
+        List<?> result = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'").getResultList();
         if(!result.isEmpty()) {
             emp = (Employee)result.get(0);
         } else {
@@ -966,7 +946,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         String firstName = "testContainsRemovedEmployee";
         Employee emp;
         EntityManager em = createEntityManager();
-        List result = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'").getResultList();
+        List<?> result = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'").getResultList();
         if(!result.isEmpty()) {
             emp = (Employee)result.get(0);
         } else {
@@ -1009,7 +989,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
         String firstName = "testSubString";
         Employee emp;
         EntityManager em = createEntityManager();
-        List result = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'").getResultList();
+        List<?> result = em.createQuery("SELECT OBJECT(e) FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'").getResultList();
         if(!result.isEmpty()) {
             emp = (Employee)result.get(0);
         } else {
@@ -1031,7 +1011,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
 
         int firstIndex = 1;
         int lastIndex = firstName.length();
-        List employees = em.createQuery("SELECT object(e) FROM XMLEmployee e where e.firstName = substring(:p1, :p2, :p3)").
+        List<?> employees = em.createQuery("SELECT object(e) FROM XMLEmployee e where e.firstName = substring(:p1, :p2, :p3)").
             setParameter("p1", firstName).
             setParameter("p2", firstIndex).
             setParameter("p3", lastIndex).

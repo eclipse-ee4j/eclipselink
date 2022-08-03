@@ -14,10 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-
-import junit.framework.TestSuite;
 import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.

@@ -14,12 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
-import java.util.HashSet;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+
 import java.util.Collection;
+import java.util.HashSet;
 
-import jakarta.persistence.*;
-
-import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity
 @Table(name="JPA_AUDITOR")

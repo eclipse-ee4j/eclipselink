@@ -14,8 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.Employee;
 
 import static jakarta.persistence.FetchType.LAZY;

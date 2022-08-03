@@ -14,11 +14,23 @@
 //     tware - add for testing JPA 2.0 delimited identifiers
 package org.eclipse.persistence.testing.models.jpa.delimited;
 
-import java.util.*;
-import java.io.Serializable;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
-import static jakarta.persistence.CascadeType.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Vector;
+
+import static jakarta.persistence.CascadeType.ALL;
 
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee

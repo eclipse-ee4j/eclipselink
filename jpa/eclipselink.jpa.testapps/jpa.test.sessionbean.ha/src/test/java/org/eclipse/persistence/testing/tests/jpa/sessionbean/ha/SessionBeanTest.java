@@ -14,18 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.sessionbean.ha;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
@@ -33,6 +23,14 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedT
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * EJB 3 SessionBean tests. Testing using EclipseLink JPA in a JEE EJB 3

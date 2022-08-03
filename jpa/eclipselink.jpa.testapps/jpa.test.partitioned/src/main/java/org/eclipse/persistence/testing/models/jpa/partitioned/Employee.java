@@ -14,19 +14,39 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
-import java.util.*;
-import java.io.Serializable;
-import jakarta.persistence.*;
-
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import org.eclipse.persistence.annotations.Partitioned;
-import org.eclipse.persistence.annotations.RoundRobinPartitioning;
 import org.eclipse.persistence.annotations.PinnedPartitioning;
-import org.eclipse.persistence.annotations.ValuePartitioning;
+import org.eclipse.persistence.annotations.RoundRobinPartitioning;
 import org.eclipse.persistence.annotations.ValuePartition;
+import org.eclipse.persistence.annotations.ValuePartitioning;
 
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.*;
-import static jakarta.persistence.GenerationType.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
+
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.TABLE;
 
 /**
  * Employees is partitioned by department.

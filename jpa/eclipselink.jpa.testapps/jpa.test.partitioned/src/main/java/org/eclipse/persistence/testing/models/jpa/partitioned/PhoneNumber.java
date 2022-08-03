@@ -14,12 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
-import java.io.*;
-
-import jakarta.persistence.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.eclipse.persistence.annotations.Partitioned;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+
+import java.io.Serializable;
+import java.io.StringWriter;
 
 /**
  * <p>

@@ -14,15 +14,15 @@
 //     etang - initial API and implementation from Oracle TopLink
  package org.eclipse.persistence.testing.tests.jpa.sessionbean.ha;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
-
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * EJB 3 SessionBean tests using EclipseLink JPA

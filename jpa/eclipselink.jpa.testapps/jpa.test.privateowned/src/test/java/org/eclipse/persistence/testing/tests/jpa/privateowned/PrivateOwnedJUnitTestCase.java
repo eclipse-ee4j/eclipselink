@@ -14,20 +14,29 @@
 //     03/04/09 dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.jpa.privateowned;
 
-import java.util.Iterator;
-
-import jakarta.persistence.*;
-
-import junit.framework.*;
-
-import org.eclipse.persistence.testing.framework.QuerySQLTracker;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.privateowned.*;
-
+import jakarta.persistence.EntityManager;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.privateowned.Chassis;
+import org.eclipse.persistence.testing.models.jpa.privateowned.Engine;
+import org.eclipse.persistence.testing.models.jpa.privateowned.Mount;
+import org.eclipse.persistence.testing.models.jpa.privateowned.MountPK;
+import org.eclipse.persistence.testing.models.jpa.privateowned.PrivateOwnedModelTableCreator;
+import org.eclipse.persistence.testing.models.jpa.privateowned.SparkPlug;
+import org.eclipse.persistence.testing.models.jpa.privateowned.SpecificVehicle;
+import org.eclipse.persistence.testing.models.jpa.privateowned.Tire;
+import org.eclipse.persistence.testing.models.jpa.privateowned.Vehicle;
+import org.eclipse.persistence.testing.models.jpa.privateowned.Wheel;
+import org.eclipse.persistence.testing.models.jpa.privateowned.WheelNut;
+import org.eclipse.persistence.testing.models.jpa.privateowned.WheelRim;
+
+import java.util.Iterator;
 
 public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
 

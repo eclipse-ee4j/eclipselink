@@ -18,7 +18,6 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceUnit;
-
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.models.jpa.entitylistener.EntityListener;
 import org.eclipse.persistence.testing.models.jpa.entitylistener.EntityListenerHolder;

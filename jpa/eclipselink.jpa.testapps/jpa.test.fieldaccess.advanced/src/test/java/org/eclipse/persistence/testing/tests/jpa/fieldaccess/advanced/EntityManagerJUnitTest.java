@@ -17,23 +17,6 @@
 //          304650: fix left over entity data interfering with testSetRollbackOnly
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StringWriter;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -46,7 +29,9 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import jakarta.persistence.RollbackException;
 import jakarta.persistence.TransactionRequiredException;
-
+import junit.framework.AssertionFailedError;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -124,11 +109,24 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Vegetable
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.WorldRank;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
-
 import org.junit.Assert;
-import junit.framework.AssertionFailedError;
-import junit.framework.Test;
-import junit.framework.TestSuite;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StringWriter;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Test the EntityManager API using the advanced model.

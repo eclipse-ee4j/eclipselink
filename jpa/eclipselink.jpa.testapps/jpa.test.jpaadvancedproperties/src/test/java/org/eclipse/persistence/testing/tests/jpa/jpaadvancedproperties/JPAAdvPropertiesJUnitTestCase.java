@@ -16,13 +16,8 @@
 
 package org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.expressions.Expression;
@@ -31,9 +26,13 @@ import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer;
-import org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.ModelExamples;
 import org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.JPAPropertiesRelationshipTableManager;
+import org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.ModelExamples;
 import org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 
 /**

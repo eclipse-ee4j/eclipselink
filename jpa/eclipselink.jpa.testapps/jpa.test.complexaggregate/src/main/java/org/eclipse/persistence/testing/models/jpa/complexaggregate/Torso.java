@@ -20,6 +20,8 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.GeneratedValue;
 
+import java.util.Objects;
+
 @Embeddable
 public class Torso {
     @GeneratedValue
@@ -44,6 +46,11 @@ public class Torso {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(count, heart);
     }
 
     public Torso(int count, Heart heart) {

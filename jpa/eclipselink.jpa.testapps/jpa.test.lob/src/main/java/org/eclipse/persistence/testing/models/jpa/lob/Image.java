@@ -14,13 +14,21 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.lob;
 
-import java.io.Serializable;
-import jakarta.persistence.*;
-
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.Table;
 import org.eclipse.persistence.annotations.SerializedConverter;
 import org.eclipse.persistence.annotations.SerializedConverters;
 import org.eclipse.persistence.sessions.serializers.JSONSerializer;
 import org.eclipse.persistence.sessions.serializers.XMLSerializer;
+
+import java.io.Serializable;
 
 /**
  * Model class used to test Lobs and Lazy Basics.

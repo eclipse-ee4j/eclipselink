@@ -12,13 +12,6 @@
 
 package org.eclipse.persistence.testing.models.jpa.cascadedeletes;
 
-import static jakarta.persistence.CascadeType.REMOVE;
-import static jakarta.persistence.FetchType.LAZY;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.GeneratedValue;
@@ -26,8 +19,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
-
 import org.eclipse.persistence.annotations.PrivateOwned;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 public class BranchB implements Serializable, PersistentIdentity{

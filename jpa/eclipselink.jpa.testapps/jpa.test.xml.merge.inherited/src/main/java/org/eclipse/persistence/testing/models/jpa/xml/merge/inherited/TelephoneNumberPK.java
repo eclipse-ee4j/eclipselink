@@ -15,6 +15,8 @@
 
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
+import java.util.Objects;
+
 public class TelephoneNumberPK  {
     public String type;
     protected String number;
@@ -59,5 +61,10 @@ public class TelephoneNumberPK  {
             telephoneNumberPK.getType().equals(getType())
         );
 
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, number, areaCode);
     }
 }

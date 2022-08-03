@@ -15,13 +15,14 @@
 package org.eclipse.persistence.testing.models.jpa.relationships.manyToMany;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.TableGenerator;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+
 import java.util.Collection;
 import java.util.HashSet;
 

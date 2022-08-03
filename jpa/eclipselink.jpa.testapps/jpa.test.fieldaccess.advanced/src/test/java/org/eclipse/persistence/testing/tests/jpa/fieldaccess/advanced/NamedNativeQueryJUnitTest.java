@@ -16,8 +16,8 @@
 
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import junit.framework.*;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 

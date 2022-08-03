@@ -12,20 +12,18 @@
 
 package org.eclipse.persistence.testing.tests.jpa.sessionbean;
 
-import java.util.Arrays;
-import java.util.Properties;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.entitylistener.EntityListenerTableCreator;
 import org.eclipse.persistence.testing.models.jpa.sessionbean.InjectionTest;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.util.Arrays;
+import java.util.Properties;
 
 public class EntityListenerInjectionTest extends JUnitTestCase {
 

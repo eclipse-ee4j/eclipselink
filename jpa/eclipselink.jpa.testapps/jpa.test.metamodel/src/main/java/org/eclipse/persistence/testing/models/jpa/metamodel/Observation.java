@@ -15,14 +15,12 @@
 //       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import java.util.List;
-import java.util.Map;
-
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.MapKey;
+
+import java.util.List;
+import java.util.Map;
 
 @Embeddable
 public class Observation {

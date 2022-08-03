@@ -17,14 +17,14 @@
 //       - 337323: Multi-tenant with shared schema support (part 9)
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
-import java.util.Collection;
-import java.util.Vector;
-
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import java.util.Collection;
+import java.util.Vector;
 
 import static jakarta.persistence.CascadeType.ALL;
 

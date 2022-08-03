@@ -15,18 +15,13 @@
 //       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -43,8 +38,11 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.Orde
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.RelationshipsExamples;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.RelationshipsTableManager;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 public class RelationshipModelJUnitTest extends JUnitTestCase {
 

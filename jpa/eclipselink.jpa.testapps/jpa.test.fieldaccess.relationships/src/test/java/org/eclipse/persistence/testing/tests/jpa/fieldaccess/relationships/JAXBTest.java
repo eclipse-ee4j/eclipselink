@@ -14,9 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-
 import jakarta.persistence.EntityManager;
 import jakarta.xml.bind.JAXBContext;
 import junit.framework.Test;
@@ -25,6 +22,9 @@ import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.Customer;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.Order;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.RelationshipsTableManager;
+
+import java.io.StringReader;
+import java.io.StringWriter;
 
 /**
  * Tests marshaling JPA objects with lazy through JAXB.

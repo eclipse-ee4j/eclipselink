@@ -17,14 +17,12 @@
 //       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import static jakarta.persistence.FetchType.EAGER;
-
-//import jakarta.persistence.Column;
-//import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToOne;
+
+import static jakarta.persistence.FetchType.EAGER;
 
 @MappedSuperclass
 public abstract class Designer extends Person {

@@ -16,9 +16,10 @@
 //       - 241651: JPA 2.0 Access Type support
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3;
 
-import java.io.*;
-
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2.Employee;
+
+import java.io.Serializable;
+import java.io.StringWriter;
 
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.

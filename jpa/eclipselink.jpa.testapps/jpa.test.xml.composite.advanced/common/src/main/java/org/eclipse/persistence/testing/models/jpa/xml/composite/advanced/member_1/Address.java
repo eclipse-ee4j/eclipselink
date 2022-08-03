@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Transient;
+
+import java.io.Serializable;
 
 /**
  * <p>

@@ -14,23 +14,19 @@
 //     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.internal.jpa.weaving.ClassWeaver;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
-
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
-
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 
 

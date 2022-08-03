@@ -14,7 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.cascadedeletes;
 
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class CascadeDeleteTableCreator extends org.eclipse.persistence.tools.schemaframework.TableCreator {
 

@@ -15,8 +15,6 @@
 //       - 239825: XML configuration for Interceptors and Default redirectors
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1;
 
-import java.util.Map;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -25,6 +23,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.interceptors.CacheInterceptor;
 import org.eclipse.persistence.sessions.interceptors.CacheKeyInterceptor;
+
+import java.util.Map;
 
 public class CacheAuditor extends CacheInterceptor {
 

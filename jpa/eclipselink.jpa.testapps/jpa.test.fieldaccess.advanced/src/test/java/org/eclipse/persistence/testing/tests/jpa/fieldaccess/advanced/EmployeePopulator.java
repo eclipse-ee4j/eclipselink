@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import java.util.*;
-
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -34,6 +32,9 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SmallProj
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
+
+import java.util.Calendar;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
@@ -661,7 +662,6 @@ public class EmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -945,7 +945,7 @@ public class EmployeePopulator {
 
     public void persistExample(Session session)
     {
-        Vector allObjects = new Vector();
+        Vector<Object> allObjects = new Vector<>();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
         // Disable the read-only classes for model population. Specifically,
         // in this case we want to be able to create EquipmentCode objects.
@@ -1416,11 +1416,11 @@ public class EmployeePopulator {
         return equipmentCode;
     }
 
-    protected Vector getAllObjects() {
+    protected Vector<Object> getAllObjects() {
         return populationManager.getAllObjects();
     }
 
-    public Vector getAllObjectsForClass(Class<?> domainClass) {
+    public Vector<Object> getAllObjectsForClass(Class<?> domainClass) {
         return populationManager.getAllObjectsForClass(domainClass);
     }
 

@@ -15,10 +15,11 @@
 
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RelationshipsExamples {
     public void buildExamples(Session session) {

@@ -15,7 +15,8 @@
 
 package org.eclipse.persistence.testing.models.jpa.virtualattribute;
 
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class VirtualAttributeTableCreator extends org.eclipse.persistence.tools.schemaframework.TableCreator {
 

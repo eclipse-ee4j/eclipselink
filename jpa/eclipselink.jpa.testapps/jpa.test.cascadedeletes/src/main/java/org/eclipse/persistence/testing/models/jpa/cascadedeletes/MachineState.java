@@ -12,15 +12,14 @@
 
 package org.eclipse.persistence.testing.models.jpa.cascadedeletes;
 
-import static jakarta.persistence.CascadeType.ALL;
-
-import java.util.List;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-
 import org.eclipse.persistence.annotations.PrivateOwned;
+
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.ALL;
 
 @Entity
 public class MachineState {

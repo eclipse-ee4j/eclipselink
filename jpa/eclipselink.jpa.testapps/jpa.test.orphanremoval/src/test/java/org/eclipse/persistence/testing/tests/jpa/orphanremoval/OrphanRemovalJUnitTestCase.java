@@ -17,9 +17,6 @@
 //       - 474752: Add test for 1-M in Embeddable
 package org.eclipse.persistence.testing.tests.jpa.orphanremoval;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import jakarta.persistence.EntityManager;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -34,6 +31,9 @@ import org.eclipse.persistence.testing.models.jpa.orphanremoval.Vehicle;
 import org.eclipse.persistence.testing.models.jpa.orphanremoval.Wheel;
 import org.eclipse.persistence.testing.models.jpa.orphanremoval.WheelNut;
 import org.eclipse.persistence.testing.models.jpa.orphanremoval.WheelRim;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class OrphanRemovalJUnitTestCase extends JUnitTestCase {
 

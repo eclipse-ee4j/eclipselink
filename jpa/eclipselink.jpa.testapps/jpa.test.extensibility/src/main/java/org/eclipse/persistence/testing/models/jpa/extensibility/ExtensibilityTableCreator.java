@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.models.jpa.extensibility;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
-//import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;

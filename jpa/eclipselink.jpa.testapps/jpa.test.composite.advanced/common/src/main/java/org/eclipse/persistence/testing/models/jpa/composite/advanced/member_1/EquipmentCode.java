@@ -17,14 +17,13 @@ package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
-import jakarta.persistence.NamedNativeQuery;
-import jakarta.persistence.NamedNativeQueries;
+import org.eclipse.persistence.annotations.ReadOnly;
 
 import static jakarta.persistence.GenerationType.TABLE;
-
-import org.eclipse.persistence.annotations.ReadOnly;
 
 @Entity
 @Table(name="MBR1_ADV_EQUIP_CODE")

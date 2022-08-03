@@ -18,7 +18,8 @@
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
     public AdvancedMultiTenantTableCreator() {

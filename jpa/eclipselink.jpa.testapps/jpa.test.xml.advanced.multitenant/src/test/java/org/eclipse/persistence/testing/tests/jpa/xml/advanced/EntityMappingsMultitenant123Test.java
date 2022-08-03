@@ -22,7 +22,6 @@
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
 import jakarta.persistence.EntityManager;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Boss;

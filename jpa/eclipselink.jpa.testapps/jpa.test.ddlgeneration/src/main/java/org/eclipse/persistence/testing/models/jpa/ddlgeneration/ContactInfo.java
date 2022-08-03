@@ -39,7 +39,7 @@ public class ContactInfo {
     // Uni-directional M-M
     @ManyToMany(cascade=PERSIST, fetch=EAGER)
     @JoinTable(name="DDL_EMP_COMMENTS")
-    public List<Comment> comments;
+    public List<Comment<?>> comments;
 
     // Direct collection
     @ElementCollection
@@ -52,7 +52,7 @@ public class ContactInfo {
         updates = new ArrayList<>();
     }
 
-    public void addComment(Comment comment) {
+    public void addComment(Comment<?> comment) {
         comments.add(comment);
     }
 
@@ -64,7 +64,7 @@ public class ContactInfo {
         updates.add(update);
     }
 
-    public List<Comment> getComments() {
+    public List<Comment<?>> getComments() {
         return comments;
     }
 
@@ -76,7 +76,7 @@ public class ContactInfo {
         return updates;
     }
 
-    public void setComments(List<Comment> comments) {
+    public void setComments(List<Comment<?>> comments) {
         this.comments = comments;
     }
 

@@ -14,18 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
-import java.util.List;
-
 import jakarta.persistence.EntityManager;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.queries.ReadAllQuery;
-
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.Customer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.Item;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.RelationshipsExamples;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.RelationshipsTableManager;
+
+import java.util.List;
 
 public class ExpressionJUnitTest extends JUnitTestCase {
 

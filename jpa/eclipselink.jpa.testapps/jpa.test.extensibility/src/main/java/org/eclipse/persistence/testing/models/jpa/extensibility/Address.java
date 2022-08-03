@@ -14,16 +14,15 @@
 //     tware - initial implementation as part of extensibility feature
 package org.eclipse.persistence.testing.models.jpa.extensibility;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.VirtualAccessMethods;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 @Entity(name="ExtensibilityAddress")
 @Table(name="EXTENS_ADDR")

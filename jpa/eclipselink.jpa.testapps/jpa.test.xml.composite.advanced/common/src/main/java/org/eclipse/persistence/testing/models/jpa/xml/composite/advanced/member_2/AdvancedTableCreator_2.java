@@ -29,7 +29,8 @@
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class AdvancedTableCreator_2 extends TogglingFastTableCreator {
 

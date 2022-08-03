@@ -14,20 +14,19 @@
 //     tware - initial implementation as part of extensibility feature
 package org.eclipse.persistence.testing.models.jpa.extensibility;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
-
 import org.eclipse.persistence.annotations.VirtualAccessMethods;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity(name="ExtensibilityEmployee")
 @Table(name="EXTENS_EMP")

@@ -17,7 +17,14 @@
 //       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import static jakarta.persistence.CascadeType.ALL;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.MapKey;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+import org.eclipse.persistence.annotations.BasicCollection;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -28,15 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.MapKey;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
-
-import org.eclipse.persistence.annotations.BasicCollection;
+import static jakarta.persistence.CascadeType.ALL;
 
 // retain name attribute for testing
 @Entity(name="ManuMetamodel")

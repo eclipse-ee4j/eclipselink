@@ -21,7 +21,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.Multitenant;
 
 import static org.eclipse.persistence.annotations.MultitenantType.TABLE_PER_TENANT;

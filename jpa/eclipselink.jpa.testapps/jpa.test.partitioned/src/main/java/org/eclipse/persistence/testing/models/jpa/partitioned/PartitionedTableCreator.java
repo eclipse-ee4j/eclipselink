@@ -15,7 +15,9 @@
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class PartitionedTableCreator extends TogglingFastTableCreator {
     public PartitionedTableCreator() {

@@ -17,21 +17,19 @@
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
 
-import java.util.Collection;
-import java.util.List;
-
 import jakarta.persistence.EntityManager;
-
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import jakarta.persistence.EntityNotFoundException;
-
-import org.eclipse.persistence.testing.models.jpa.relationships.*;
-import org.eclipse.persistence.exceptions.DatabaseException;
-
 import jakarta.persistence.Query;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
+import org.eclipse.persistence.testing.models.jpa.relationships.Order;
+import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
+
+import java.util.Collection;
+import java.util.List;
 
 public class EMQueryTest extends JUnitTestCase {
     protected Integer nonExistingCustomerId = 999999;

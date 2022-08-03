@@ -16,13 +16,9 @@
 
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import java.util.HashMap;
-import java.util.Vector;
-
-import junit.framework.*;
-
 import jakarta.persistence.EntityManager;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -31,14 +27,22 @@ import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
 import org.eclipse.persistence.testing.framework.UpdateAllQueryTestHelper;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
+
+import java.util.HashMap;
+import java.util.Vector;
 
 public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
 
     static protected Class<?>[] classes = {Employee.class, Address.class, PhoneNumber.class, Project.class};
-    static protected Vector[] objectVectors = {null, null, null, null};
+    static protected Vector<?>[] objectVectors = {null, null, null, null};
 
     static protected EmployeePopulator populator = new EmployeePopulator();
 
@@ -445,7 +449,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         if(objectVectors[i] == null) {
             return false;
         }
-        Vector currentVector = getDbSession().readAllObjects(classes[i]);
+        Vector<?> currentVector = getDbSession().readAllObjects(classes[i]);
         if(currentVector.size() != objectVectors[i].size()) {
             return false;
         }

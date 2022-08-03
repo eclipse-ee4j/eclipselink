@@ -16,6 +16,8 @@
 
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3;
 
+import java.util.Objects;
+
 public class PhoneNumberPK  {
     public Integer id;
     public String type;
@@ -46,5 +48,10 @@ public class PhoneNumberPK  {
             return false;
         }
         return (getId().equals(((PhoneNumberPK)anotherPhoneNumber).getId()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type);
     }
 }

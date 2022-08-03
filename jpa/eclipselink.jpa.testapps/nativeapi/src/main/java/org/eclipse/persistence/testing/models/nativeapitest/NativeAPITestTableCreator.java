@@ -14,7 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.nativeapitest;
 
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableCreator;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class NativeAPITestTableCreator extends TableCreator {
     public NativeAPITestTableCreator() {

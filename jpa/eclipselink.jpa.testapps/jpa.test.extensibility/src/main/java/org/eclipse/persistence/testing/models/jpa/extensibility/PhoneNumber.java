@@ -14,11 +14,16 @@
 //     tware - initial implementation as part of extensibility feature
 package org.eclipse.persistence.testing.models.jpa.extensibility;
 
-import java.io.*;
-
-import jakarta.persistence.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+
+import java.io.Serializable;
+import java.io.StringWriter;
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.
  *    <p><b>Description</b>: Used in a 1:M relationship from an employee.

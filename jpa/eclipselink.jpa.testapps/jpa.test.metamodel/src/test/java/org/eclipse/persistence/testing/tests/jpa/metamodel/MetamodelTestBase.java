@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.metamodel.MetamodelTableCreator;

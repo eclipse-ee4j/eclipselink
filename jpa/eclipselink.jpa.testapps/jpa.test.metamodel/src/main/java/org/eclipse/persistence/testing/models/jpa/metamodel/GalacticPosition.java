@@ -17,9 +17,6 @@
 //       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import static jakarta.persistence.FetchType.EAGER;
-import static jakarta.persistence.InheritanceType.JOINED;
-
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
@@ -30,6 +27,9 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
+import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.InheritanceType.JOINED;
 
 //OVERRIDE @Inheritance from SINGLE_TABLE to JOINED
 //http://wiki.eclipse.org/Introduction_to_EclipseLink_JPA_%28ELUG%29#.40Inheritance

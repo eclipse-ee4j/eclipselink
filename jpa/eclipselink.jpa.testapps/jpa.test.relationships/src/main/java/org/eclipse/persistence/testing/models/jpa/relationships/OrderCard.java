@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
-import static jakarta.persistence.GenerationType.TABLE;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -23,6 +21,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
+
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity(name="OrderCard")
 @Table(name="JPA_ORDER_CARD")

@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.nativeapitest;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee

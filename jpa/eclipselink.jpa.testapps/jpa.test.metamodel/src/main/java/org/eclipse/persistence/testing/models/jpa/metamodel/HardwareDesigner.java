@@ -17,13 +17,13 @@
 //       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import static jakarta.persistence.FetchType.EAGER;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
+import static jakarta.persistence.FetchType.EAGER;
 
 // No name attribute for testing
 @Entity

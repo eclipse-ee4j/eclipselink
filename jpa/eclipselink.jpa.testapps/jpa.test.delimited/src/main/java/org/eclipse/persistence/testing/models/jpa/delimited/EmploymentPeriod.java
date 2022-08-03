@@ -14,11 +14,13 @@
 //     tware - add for testing JPA 2.0 delimited identifiers
 package org.eclipse.persistence.testing.models.jpa.delimited;
 
-import java.sql.Date;
-import java.io.*;
-import jakarta.persistence.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Table;
 import org.eclipse.persistence.annotations.Property;
+
+import java.io.Serializable;
+import java.sql.Date;
 
 /**
  * <p><b>Purpose</b>: Defines the period an Employee worked for the organization

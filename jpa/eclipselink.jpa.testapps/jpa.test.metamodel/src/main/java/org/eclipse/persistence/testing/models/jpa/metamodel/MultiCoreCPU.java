@@ -19,14 +19,14 @@
 //                      during MetadataProject.addMetamodelMappedSuperclass()
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import static jakarta.persistence.CascadeType.ALL;
-
-import java.util.Set;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.Set;
+
+import static jakarta.persistence.CascadeType.ALL;
 
 /**
  * Use Case: IdClass identifiers declared across multiple mappedSuperclasses in an inheritance hierarchy.

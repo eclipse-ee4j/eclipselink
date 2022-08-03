@@ -23,11 +23,6 @@
 //       - 357474: Address primaryKey option from tenant discriminator column
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
-import java.util.Collection;
-import java.util.Vector;
-
-import java.io.Serializable;
-
 import jakarta.persistence.Basic;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -43,9 +38,12 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.Table;
-
-import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
 import org.eclipse.persistence.annotations.Multitenant;
+import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Vector;
 
 import static jakarta.persistence.CascadeType.ALL;
 

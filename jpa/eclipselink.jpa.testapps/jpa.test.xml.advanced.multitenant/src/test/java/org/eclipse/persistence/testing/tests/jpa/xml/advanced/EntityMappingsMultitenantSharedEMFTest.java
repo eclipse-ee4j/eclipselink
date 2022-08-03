@@ -23,7 +23,6 @@ package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.EntityManagerProperties;

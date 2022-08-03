@@ -14,21 +14,19 @@
 //     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
-import java.util.List;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
+import jakarta.persistence.TypedQuery;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
-
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * Simple tests to verify the functionality of single level FetchGroup usage
@@ -158,7 +156,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
     public void resultListDefaultFetchGroup() {
         EntityManager em = createEntityManager("fieldaccess");
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID", Employee.class);
         query.setParameter("ID", minimumEmployeeId(em));
 
         List<Employee> emps = query.getResultList();
@@ -233,7 +231,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
     public void resultListNoFetchGroup() {
         EntityManager em = createEntityManager("fieldaccess");
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID", Employee.class);
         query.setParameter("ID", minimumEmployeeId(em));
 
         List<Employee> emps = query.getResultList();
@@ -411,7 +409,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
         fetchGroup.addAttribute("lastName");
         query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
 
-        List<Employee> emps = query.getResultList();
+        List<?> emps = query.getResultList();
 
         assertNotNull(emps);
     }
@@ -428,7 +426,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
         fetchGroup.addAttribute("lastName");
         query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
 
-        List<Employee> emps = query.getResultList();
+        List<?> emps = query.getResultList();
 
         assertNotNull(emps);
     }

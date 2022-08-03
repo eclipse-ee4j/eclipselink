@@ -13,7 +13,9 @@
 // Contributors:
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableCreator;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class BeanValidationTableCreator extends TableCreator {
     public BeanValidationTableCreator() {

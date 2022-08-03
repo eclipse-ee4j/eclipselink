@@ -15,13 +15,13 @@
 //       - 531528: IdentifiableType.hasSingleIdAttribute() returns true when IdClass references an inner class
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
+
+import java.io.Serializable;
 
 @Entity
 @Table(name="INNER_PK")

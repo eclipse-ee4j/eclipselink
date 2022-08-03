@@ -17,56 +17,53 @@
 //       - 251554: ExcludeDefaultMapping annotation needed
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.jpa.JpaHelper;
-import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.relationships.Auditor;
+import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerServiceRepresentative;
-import org.eclipse.persistence.testing.models.jpa.relationships.Lego;
 import org.eclipse.persistence.testing.models.jpa.relationships.Item;
+import org.eclipse.persistence.testing.models.jpa.relationships.Lego;
 import org.eclipse.persistence.testing.models.jpa.relationships.Mattel;
 import org.eclipse.persistence.testing.models.jpa.relationships.MegaBrands;
 import org.eclipse.persistence.testing.models.jpa.relationships.Namco;
+import org.eclipse.persistence.testing.models.jpa.relationships.Order;
 import org.eclipse.persistence.testing.models.jpa.relationships.OrderCard;
 import org.eclipse.persistence.testing.models.jpa.relationships.OrderLabel;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
-import org.eclipse.persistence.testing.models.jpa.relationships.Order;
 import org.eclipse.persistence.testing.models.jpa.relationships.ServiceCall;
 import org.eclipse.persistence.testing.models.jpa.relationships.TestInstantiationCopyPolicy;
 
-import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 public class RelationshipModelTest extends JUnitTestCase {
     private static Integer itemId;

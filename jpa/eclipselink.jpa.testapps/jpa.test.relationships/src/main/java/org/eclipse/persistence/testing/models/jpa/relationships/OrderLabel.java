@@ -14,8 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
-import jakarta.persistence.*;
-import static jakarta.persistence.GenerationType.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity(name="OrderLabel")
 @Table(name="JPA_ORDER_LABEL")

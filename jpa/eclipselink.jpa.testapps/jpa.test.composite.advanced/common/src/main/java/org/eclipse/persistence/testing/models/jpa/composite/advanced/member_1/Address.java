@@ -14,22 +14,38 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1;
 
-import java.util.*;
-import java.io.Serializable;
-import jakarta.persistence.*;
-
-import static jakarta.persistence.CascadeType.*;
-
-import org.eclipse.persistence.annotations.NamedStoredFunctionQuery;
-import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
-import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
-import org.eclipse.persistence.annotations.StoredProcedureParameter;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityResult;
+import jakarta.persistence.FieldResult;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.NamedStoredFunctionQuery;
+import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
+import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
+import org.eclipse.persistence.annotations.StoredProcedureParameter;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.Employee;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Vector;
+
+import static jakarta.persistence.CascadeType.ALL;
 import static org.eclipse.persistence.annotations.Direction.IN;
-import static org.eclipse.persistence.annotations.Direction.OUT;
 import static org.eclipse.persistence.annotations.Direction.IN_OUT;
+import static org.eclipse.persistence.annotations.Direction.OUT;
 
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee

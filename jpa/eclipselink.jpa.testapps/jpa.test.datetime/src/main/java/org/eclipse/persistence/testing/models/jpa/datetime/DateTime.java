@@ -17,7 +17,16 @@
 //       - 375101: Date and Calendar should not require @Temporal.
 package org.eclipse.persistence.testing.models.jpa.datetime;
 
-import static jakarta.persistence.GenerationType.TABLE;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import java.io.Serializable;
 import java.sql.Time;
@@ -33,16 +42,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.TableGenerator;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity
 @Table(name = "CMP3_DATE_TIME")

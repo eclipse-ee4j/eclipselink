@@ -19,7 +19,8 @@
 //       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /*
  * The test is testing against "NONE" persistence unit which has <shared-cache-mode> to be NONE

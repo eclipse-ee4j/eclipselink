@@ -14,18 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.jpql.datetime;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
-
 import jakarta.persistence.TemporalType;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimePopulator;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 //Test all kinds of combinations of date time types
 public class JUnitJPQLDateTimeTest extends JUnitTestCase {

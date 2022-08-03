@@ -14,12 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2;
 
-import java.sql.Time;
-
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;
+
+import java.sql.Time;
 
 public class AdvancedReadTransformer implements AttributeTransformer {
 

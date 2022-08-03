@@ -16,19 +16,18 @@
 
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import java.util.List;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
+
+import java.util.List;
 
 public class ReportQueryMultipleReturnTest extends JUnitTestCase {
     protected boolean m_reset = false;    // reset gets called twice on error

@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2;
 
-import java.sql.Time;
-
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.sessions.Session;
+
+import java.sql.Time;
 
 public class AdvancedWriteTransformer implements FieldTransformer {
 

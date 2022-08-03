@@ -14,19 +14,16 @@
 //     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
+import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
-
 import org.junit.Test;
 
-import junit.framework.TestSuite;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FetchGroupMergeWithCacheTests extends BaseFetchGroupTests {
     public FetchGroupMergeWithCacheTests() {

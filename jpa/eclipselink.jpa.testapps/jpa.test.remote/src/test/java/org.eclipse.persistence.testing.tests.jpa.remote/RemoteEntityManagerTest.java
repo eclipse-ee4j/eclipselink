@@ -16,17 +16,16 @@
 //          304650: fix left over entity data interfering with testSetRollbackOnly
 package org.eclipse.persistence.testing.tests.jpa.remote;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTest;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
-import junit.framework.*;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTest;
 
 /**
  * Test the EntityManager API using a remote EntityManager.

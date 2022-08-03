@@ -18,7 +18,10 @@
 package org.eclipse.persistence.testing.models.jpa.orphanremoval;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
+import org.eclipse.persistence.tools.schemaframework.TableCreator;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class OrphanRemovalModelTableCreator extends TableCreator {
 

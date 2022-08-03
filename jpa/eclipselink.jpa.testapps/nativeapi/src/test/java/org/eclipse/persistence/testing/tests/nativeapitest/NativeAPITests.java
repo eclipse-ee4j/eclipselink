@@ -14,18 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.nativeapitest;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -35,6 +25,14 @@ import org.eclipse.persistence.testing.models.nativeapitest.Department;
 import org.eclipse.persistence.testing.models.nativeapitest.Employee;
 import org.eclipse.persistence.testing.models.nativeapitest.EmployeeService;
 import org.eclipse.persistence.testing.models.nativeapitest.NativeAPITestTableCreator;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * EJB 3 NativeAPITests tests. Testing using EclipseLink Native ORM API in a JEE

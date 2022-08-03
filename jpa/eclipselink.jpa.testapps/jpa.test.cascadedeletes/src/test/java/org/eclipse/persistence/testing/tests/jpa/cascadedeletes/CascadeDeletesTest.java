@@ -15,13 +15,9 @@
 
 package org.eclipse.persistence.testing.tests.jpa.cascadedeletes;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import jakarta.persistence.EntityManager;
-
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.BranchA;
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.BranchB;
@@ -32,6 +28,10 @@ import org.eclipse.persistence.testing.models.jpa.cascadedeletes.MachineState;
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.PersistentIdentity;
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.RootA;
 import org.eclipse.persistence.testing.models.jpa.cascadedeletes.ThreadInfo;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CascadeDeletesTest extends JUnitTestCase {
 

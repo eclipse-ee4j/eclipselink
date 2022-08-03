@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.ReadOnly;
 import org.eclipse.persistence.config.CacheIsolationType;

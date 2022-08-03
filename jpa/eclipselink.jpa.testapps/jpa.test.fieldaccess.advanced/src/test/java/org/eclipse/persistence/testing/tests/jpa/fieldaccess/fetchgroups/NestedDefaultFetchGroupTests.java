@@ -14,15 +14,9 @@
 //     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -33,8 +27,11 @@ import org.eclipse.persistence.queries.LoadGroup;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
-
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Test named nested FetchGroup usage.

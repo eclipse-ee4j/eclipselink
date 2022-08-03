@@ -16,17 +16,15 @@
 //       - 438177: Test M2M map
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
-import java.util.HashMap;
-
 import jakarta.persistence.EntityManager;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.relationships.MtoMEntityA;
 import org.eclipse.persistence.testing.models.jpa.relationships.MtoMEntityB;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
+
+import java.util.HashMap;
 
 public class KeyTypeToManyRelationshipTest extends JUnitTestCase{
 

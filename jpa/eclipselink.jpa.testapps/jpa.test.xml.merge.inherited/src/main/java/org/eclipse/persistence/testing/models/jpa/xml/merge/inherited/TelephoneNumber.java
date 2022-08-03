@@ -23,6 +23,7 @@ import jakarta.persistence.Id;
 
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.Objects;
 
 /**
  * This class is mapped in:
@@ -58,6 +59,11 @@ public class TelephoneNumber extends ParentTelephoneNumber implements Serializab
         }
 
         return ((TelephoneNumber) telephoneNumber).buildPK().equals(buildPK());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, number, areaCode, beerConsumer);
     }
 
     public String getAreaCode() {

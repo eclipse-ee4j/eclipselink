@@ -15,13 +15,13 @@
 //       - 211302: Add variable 1-1 mapping support to the EclipseLink-ORM.XML Schema
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
-import static jakarta.persistence.GenerationType.TABLE;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
+
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity
 @Table(name="CMP3_LEGO")

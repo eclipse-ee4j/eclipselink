@@ -31,26 +31,6 @@
 //       - 489787: Add negative test for non-entity supplied to PersistenceUnitUtil.isLoaded
 package org.eclipse.persistence.testing.tests.jpa.composite.advanced;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StringWriter;
-import java.sql.Date;
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -69,7 +49,8 @@ import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.spi.LoadState;
 import jakarta.persistence.spi.ProviderUtil;
-
+import junit.framework.AssertionFailedError;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
 import org.eclipse.persistence.config.CascadePolicy;
@@ -180,10 +161,27 @@ import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.Sm
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.SuperLargeProject;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
-
 import org.junit.Assert;
-import junit.framework.AssertionFailedError;
-import junit.framework.TestSuite;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StringWriter;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Test the EntityManager API using the advanced model.

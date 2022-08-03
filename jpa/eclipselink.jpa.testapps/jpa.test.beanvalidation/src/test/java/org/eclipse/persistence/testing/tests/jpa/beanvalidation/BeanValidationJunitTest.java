@@ -14,19 +14,13 @@
 //      Marcel Valovy
 package org.eclipse.persistence.testing.tests.jpa.beanvalidation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
@@ -35,8 +29,12 @@ import org.eclipse.persistence.testing.models.jpa.beanvalidation.BeanValidationT
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.Employee;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.Project;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class BeanValidationJunitTest extends JUnitTestCase {
 

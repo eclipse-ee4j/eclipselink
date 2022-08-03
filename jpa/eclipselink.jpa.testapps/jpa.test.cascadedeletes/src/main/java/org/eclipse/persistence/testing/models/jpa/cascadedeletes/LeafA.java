@@ -12,8 +12,14 @@
 
 package org.eclipse.persistence.testing.models.jpa.cascadedeletes;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+
 import java.io.Serializable;
-import jakarta.persistence.*;
 
 /**
  * Entity implementation class for Entity: LeafA

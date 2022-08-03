@@ -18,6 +18,8 @@ package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
+import java.util.Objects;
+
 @Embeddable
 public class Heart {
     @Column(name="H_SIZE")
@@ -38,6 +40,11 @@ public class Heart {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(size);
     }
 
     public int getSize() {

@@ -14,28 +14,11 @@
 //     tware - initial implementation as part of extensibility feature
 package org.eclipse.persistence.testing.tests.jpa.extensibility;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceException;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
-import org.eclipse.persistence.queries.FetchGroup;
-import org.eclipse.persistence.sessions.Connector;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.JNDIConnector;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.models.jpa.extensibility.Employee;
-import org.eclipse.persistence.testing.models.jpa.extensibility.Address;
-import org.eclipse.persistence.testing.models.jpa.extensibility.PhoneNumber;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -43,13 +26,27 @@ import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
-import org.eclipse.persistence.internal.sessions.coordination.MetadataRefreshCommand;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.coordination.MetadataRefreshCommand;
 import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.sessions.Connector;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.extensibility.Address;
+import org.eclipse.persistence.testing.models.jpa.extensibility.Employee;
 import org.eclipse.persistence.testing.models.jpa.extensibility.ExtensibilityTableCreator;
+import org.eclipse.persistence.testing.models.jpa.extensibility.PhoneNumber;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ExtensibilityTests extends JUnitTestCase {
 
@@ -273,7 +270,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         Map<String, Object> properties = new HashMap<>();
         properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
 
-        JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
+        emf.unwrap(JpaEntityManagerFactory.class).refreshMetadata(properties);
 
         session = (ServerSession)getDatabaseSession();
         addDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Address.class);
@@ -296,15 +293,15 @@ public class ExtensibilityTests extends JUnitTestCase {
 
             emp = em.find(Employee.class, emp.getId());
             assertEquals("111", emp.getAddress().get("appartmentNumber"));
+            System.gc();
+            assertNotSame(emfRef.get(), JpaHelper.getEntityManagerFactory(em).unwrap());
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             deleteEmployeeData(emf);
         }
-        System.gc();
-        assertNull(emfRef.get());
     }
 
     public void testMergeRefreshed(){

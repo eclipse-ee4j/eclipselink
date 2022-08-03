@@ -23,7 +23,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
-
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Department;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.EquipmentCode;
 

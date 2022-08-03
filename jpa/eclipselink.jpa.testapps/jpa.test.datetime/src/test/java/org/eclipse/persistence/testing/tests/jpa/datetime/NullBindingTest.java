@@ -17,18 +17,16 @@
 //       - 375101: Date and Calendar should not require @Temporal.
 package org.eclipse.persistence.testing.tests.jpa.datetime;
 
-import java.util.Date;
-import java.util.Map;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTime;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * <p>

@@ -14,27 +14,24 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.validation;
 
-import java.io.PrintWriter;
-import java.util.HashMap;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.ValidationMode;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
-import java.util.Map;
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.logging.Logger;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.validation.Item;
+
+import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 public class ValidationTest extends JUnitTestCase {
     public ValidationTest() {
