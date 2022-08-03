@@ -15,16 +15,9 @@
 //     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -37,11 +30,15 @@ import org.eclipse.persistence.queries.LoadGroup;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee.Gender;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee.Gender;
-
 import org.junit.Test;
+
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author dclarke

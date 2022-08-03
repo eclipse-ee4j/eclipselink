@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
-import junit.framework.TestSuite;
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.

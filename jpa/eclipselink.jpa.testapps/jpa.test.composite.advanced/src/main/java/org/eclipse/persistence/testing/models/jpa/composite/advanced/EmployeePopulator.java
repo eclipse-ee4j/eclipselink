@@ -16,8 +16,6 @@
 //       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
 package org.eclipse.persistence.testing.models.jpa.composite.advanced;
 
-import java.util.*;
-
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -34,6 +32,9 @@ import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.Sm
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
+
+import java.util.Calendar;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
@@ -1448,7 +1449,7 @@ public class EmployeePopulator {
         return populationManager.getAllObjects();
     }
 
-    public Vector getAllObjectsForClass(Class<?> domainClass) {
+    public Vector<Object> getAllObjectsForClass(Class<?> domainClass) {
         return populationManager.getAllObjectsForClass(domainClass);
     }
 

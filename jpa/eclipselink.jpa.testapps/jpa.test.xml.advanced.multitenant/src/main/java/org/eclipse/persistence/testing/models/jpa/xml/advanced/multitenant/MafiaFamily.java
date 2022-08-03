@@ -15,10 +15,9 @@
 //       - 337323: Multi-tenant with shared schema support (part 1)
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Vector;
-
-import java.io.Serializable;
 
 public class MafiaFamily implements Serializable {
     private int id;

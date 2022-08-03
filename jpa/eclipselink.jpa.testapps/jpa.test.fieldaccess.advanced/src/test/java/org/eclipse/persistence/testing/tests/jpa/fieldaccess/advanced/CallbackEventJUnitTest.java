@@ -14,17 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import java.util.Vector;
-
 import jakarta.persistence.EntityManager;
-
-import junit.framework.TestSuite;
 import junit.framework.Test;
-
+import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmployeeListener;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+
+import java.util.Vector;
 
 /**
  * Suite used to contain Entity callback tests.

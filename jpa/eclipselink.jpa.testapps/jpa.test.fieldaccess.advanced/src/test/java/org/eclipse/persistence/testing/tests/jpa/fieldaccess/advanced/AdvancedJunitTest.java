@@ -14,30 +14,25 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import java.util.Arrays;
-
 import jakarta.persistence.EntityManager;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Child;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Man;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Parent;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Golfer;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.GolferPK;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Man;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Parent;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PartnerLink;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Vegetable;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.VegetablePK;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.WorldRank;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PartnerLink;
 import org.junit.Assert;
 
 public class AdvancedJunitTest extends JUnitTestCase {

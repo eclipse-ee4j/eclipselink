@@ -16,9 +16,8 @@
 
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import java.util.Iterator;
-import java.util.Vector;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -28,12 +27,15 @@ import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
-
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.util.Iterator;
+import java.util.Vector;
 
 public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
 
@@ -84,13 +86,14 @@ public class ReportQueryAdvancedJUnitTest  extends JUnitTestCase {
 
             uow.executeQuery(new DeleteAllQuery(Employee.class));
         } else {
+            @SuppressWarnings({"unchecked"})
             Iterator<Employee> emps = uow.readAllObjects(Employee.class).iterator();
             while (emps.hasNext()){
               Employee emp = emps.next();
               emp.setManager(null);
               emp.setAddress(null);
               uow.deleteObject(emp);
-            };
+            }
         }
 
         uow.executeQuery(new DeleteAllQuery(PhoneNumber.class));

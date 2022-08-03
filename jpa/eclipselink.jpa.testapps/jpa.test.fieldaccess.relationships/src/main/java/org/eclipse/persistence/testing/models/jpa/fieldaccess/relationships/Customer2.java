@@ -14,7 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 @Entity(name="FieldAccessCustomer2")
 @Table(name="CMP3_FIELDACCESS_CUSTOMER2")

@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
-import java.util.List;
-
 import org.eclipse.persistence.descriptors.partitioning.ReplicationPartitioningPolicy;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
+
+import java.util.List;
 
 /**
  * Used to test a custom policy.

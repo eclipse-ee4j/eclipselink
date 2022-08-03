@@ -22,12 +22,7 @@
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess;
 
 //javase imports
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-//EclipseLink imports
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.DefaultSessionLog;
@@ -38,6 +33,11 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
+
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  *

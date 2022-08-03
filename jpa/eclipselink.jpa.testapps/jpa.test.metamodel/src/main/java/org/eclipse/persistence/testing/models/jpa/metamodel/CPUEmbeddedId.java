@@ -23,14 +23,14 @@
 //
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import static jakarta.persistence.GenerationType.TABLE;
-
-import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.TableGenerator;
+
+import java.io.Serializable;
+
+import static jakarta.persistence.GenerationType.TABLE;
 
 // This class uses MethodAttributeAccessors during reflective calls
 @Embeddable

@@ -14,12 +14,13 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.tests.jpa.performance;
 
-import junit.framework.TestSuite;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import junit.framework.Test;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import jakarta.persistence.*;
+import org.eclipse.persistence.testing.framework.TestExecutor;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 /**
  * <p><b>Purpose</b>: Run performance tests inside JEE server.

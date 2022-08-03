@@ -14,16 +14,26 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3;
 
-import java.io.*;
-import java.util.Collection;
-import java.util.Vector;
-
-import jakarta.persistence.*;
-import static jakarta.persistence.EnumType.STRING;
-
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.eclipse.persistence.annotations.CompositeMember;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.Employee;
+
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Vector;
+
+import static jakarta.persistence.EnumType.STRING;
 
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.

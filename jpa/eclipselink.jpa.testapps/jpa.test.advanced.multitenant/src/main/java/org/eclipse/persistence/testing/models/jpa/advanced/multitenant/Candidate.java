@@ -15,9 +15,6 @@
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -30,9 +27,11 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.Multitenant;
 import org.eclipse.persistence.annotations.TenantTableDiscriminator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.eclipse.persistence.annotations.MultitenantType.TABLE_PER_TENANT;
 import static org.eclipse.persistence.annotations.TenantTableDiscriminatorType.SUFFIX;

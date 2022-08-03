@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.lob;
 
-import java.io.Serializable;
-
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serializable;
 
 /**
  * This class is used to test serialization to persistent fields in other entities,

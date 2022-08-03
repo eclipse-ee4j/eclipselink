@@ -69,7 +69,7 @@ public class Employee {
     @Column(table="DDL_SALARY")
     private Integer salary;
 
-    public void addComment(Comment comment) {
+    public void addComment(Comment<?> comment) {
         getContactInfo().addComment(comment);
     }
 

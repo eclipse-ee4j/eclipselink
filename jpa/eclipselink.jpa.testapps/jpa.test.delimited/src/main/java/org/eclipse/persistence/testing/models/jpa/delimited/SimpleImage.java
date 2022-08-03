@@ -15,14 +15,14 @@
 //       - bug 338585: Issue while inserting blobs with delimited identifiers on Oracle Database
 package org.eclipse.persistence.testing.models.jpa.delimited;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+
+import java.io.Serializable;
 
 /**
  * @author cdelahun

@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties;
 
-import java.util.Vector;
-import java.util.HashSet;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Vector;
 
 public class Customer implements java.io.Serializable{
     private Integer customerId;

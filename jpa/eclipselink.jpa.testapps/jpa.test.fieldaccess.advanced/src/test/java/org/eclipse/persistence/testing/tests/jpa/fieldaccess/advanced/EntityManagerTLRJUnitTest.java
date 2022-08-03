@@ -16,71 +16,92 @@
 //          304650: fix left over entity data interfering with testSetRollbackOnly
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StringWriter;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Collection;
-import java.util.Vector;
-import java.util.Iterator;
-
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.FlushModeType;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.Query;
-import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.LockModeType;
-import jakarta.persistence.PersistenceException;
 import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
 import jakarta.persistence.RollbackException;
-
+import jakarta.persistence.TransactionRequiredException;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.jpa.JpaQuery;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.sessions.server.ReadConnectionPool;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CascadePolicy;
-import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.PessimisticLock;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.JpaQuery;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.logging.SessionLogEntry;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.logging.SessionLogEntry;
-
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.server.ReadConnectionPool;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Buyer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Equipment;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EquipmentCode;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.FormerEmployment;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.GoldBuyer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Golfer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.GolferPK;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Man;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PartnerLink;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PlatinumBuyer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SuperLargeProject;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Vegetable;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.VegetablePK;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Woman;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.WorldRank;
+import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.junit.Assert;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Test the EntityManager API using the advanced model.
@@ -93,6 +114,11 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     public EntityManagerTLRJUnitTest(String name) {
         super(name);
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+        return "fieldaccess";
     }
 
     public static Test suite() {
@@ -219,17 +245,18 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession("fieldaccess"));
+        ServerSession session = getPersistenceUnitServerSession();
+        new AdvancedTableCreator().replaceTables(session);
 
         // Force uppercase for Postgres.
-        if (getServerSession("fieldaccess").getPlatform().isPostgreSQL()) {
-            getServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
+        if (session.getPlatform().isPostgreSQL()) {
+            session.getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
     }
 
     // JUnit framework will automatically execute all methods starting with test...
     public void testRefreshNotManaged() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee emp = new Employee();
         emp.setFirstName("testRefreshNotManaged");
@@ -250,7 +277,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         // find an existing or create a new Employee
         String firstName = "testRefreshRemoved";
         Employee emp;
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         List result = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
         if(!result.isEmpty()) {
             emp = (Employee)result.get(0);
@@ -274,7 +301,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             beginTransaction(em);
             emp = em.find(Employee.class, emp.getId());
 
-            if (getServerSession("fieldaccess").getPlatform().isSymfoware()){
+            if (getPersistenceUnitServerSession().getPlatform().isSymfoware()){
                 // Symfoware does not support deleteall with multiple table
                 em.createNativeQuery("DELETE FROM CMP3_FA_EMPLOYEE WHERE F_NAME = '"+firstName+"'").executeUpdate();
             } else {
@@ -295,7 +322,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testCacheUsage() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         Employee emp = new Employee();
         emp.setFirstName("Mark");
         // persist the Employee
@@ -309,13 +336,13 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             }
             throw ex;
         }
-        clearCache("fieldaccess");
+        clearCache();
         // Create new entity manager to avoid extended uow of work cache hits.
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         List result = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
         commitTransaction(em);
-        Object obj = getServerSession("fieldaccess").getIdentityMapAccessor().getFromIdentityMap(result.get(0));
+        Object obj = getPersistenceUnitServerSession().getIdentityMapAccessor().getFromIdentityMap(result.get(0));
         assertTrue("Failed to load the object into the shared cache when there were no changes in the UOW", obj != null);
         try{
             beginTransaction(em);
@@ -334,7 +361,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         // find an existing or create a new Employee
         String firstName = "testContainsRemoved";
         Employee emp;
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         List result = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
         if(!result.isEmpty()) {
             emp = (Employee)result.get(0);
@@ -400,7 +427,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         String firstName = "testFlushMode";
 
         // make sure no Employee with the specified firstName exists.
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         try{
             beginTransaction(em);
             Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
@@ -414,7 +441,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             }
             throw ex;
         }
-        clearCache("fieldaccess");
+        clearCache();
 
         FlushModeType emFlushModeOriginal = em.getFlushMode();
         Employee emp = new Employee();
@@ -459,7 +486,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         // find an existing or create a new Employee
         String firstName = "testFlushModeOnUpdateQuery";
         Employee emp;
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         emp = new Employee();
         emp.setFirstName(firstName);
         try{
@@ -467,7 +494,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
                 beginTransaction(em);
                 Query readQuery = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.phoneNumbers IS EMPTY and e.firstName like '"+firstName+"'");
                 Query updateQuery = null;
-                if (getServerSession("fieldaccess").getPlatform().isSymfoware()){
+                if (getPersistenceUnitServerSession().getPlatform().isSymfoware()){
                     updateQuery = em.createNativeQuery("UPDATE CMP3_FA_EMPLOYEE SET VERSION = (VERSION + 1) WHERE F_NAME LIKE '" + firstName + "' AND EMP_ID in (SELECT EMP_ID FROM CMP3_FA_SALARY)");
                 } else {
                     updateQuery = em.createQuery("UPDATE Employee e set e.salary = 100 where e.firstName like '" + firstName + "'");
@@ -475,7 +502,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
                 updateQuery.setFlushMode(FlushModeType.AUTO);
                 em.persist(emp);
                 updateQuery.executeUpdate();
-                if (getServerSession("fieldaccess").getPlatform().isSymfoware()){
+                if (getPersistenceUnitServerSession().getPlatform().isSymfoware()){
                     updateQuery = em.createNativeQuery("UPDATE CMP3_FA_SALARY SET SALARY = 100 WHERE EMP_ID IN (SELECT EMP_ID FROM CMP3_FA_EMPLOYEE WHERE F_NAME LIKE '" + firstName + "')");
                     updateQuery.setFlushMode(FlushModeType.AUTO);
                     updateQuery.executeUpdate();
@@ -499,7 +526,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testSetRollbackOnly(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee emp = null;
         Employee emp2 = null;
@@ -520,8 +547,8 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             closeEntityManager(em);
             throw ex;
         }
-        clearCache("fieldaccess");
-        em = createEntityManager("fieldaccess");
+        clearCache();
+        em = createEntityManager();
         beginTransaction(em);
         List result = em.createQuery("SELECT e FROM Employee e where e.id = " + emp.getId() + " or e.id = " + emp2.getId()).getResultList();
         emp = (Employee)result.get(0);
@@ -571,7 +598,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testSubString() {
-        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+        if (getPersistenceUnitServerSession().getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testSubString skipped for this platform, "
                     + "Symfoware doesn't allow dynamic parameter as first argument of SUBSTRING.");
             return;
@@ -580,7 +607,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         // find an existing or create a new Employee
         String firstName = "testSubString";
         Employee emp;
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         List result = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
         if(!result.isEmpty()) {
             emp = (Employee)result.get(0);
@@ -624,7 +651,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testDatabaseSyncNewObject() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         beginTransaction(em);
 
@@ -654,7 +681,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         String wrongException = "";
 
         try {
-            createEntityManager("fieldaccess").flush();
+            createEntityManager().flush();
             noException = noException + " flush;";
         } catch (TransactionRequiredException transactionRequiredException) {
             // expected behavior
@@ -678,7 +705,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testIdentityInsideTransaction() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
 
         Query query = em.createQuery("SELECT e FROM PhoneNumber e");
@@ -694,7 +721,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testIdentityOutsideTransaction() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         Query query = em.createQuery("SELECT e FROM PhoneNumber e");
         List<PhoneNumber> phoneNumbers = query.getResultList();
@@ -708,7 +735,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testIgnoreRemovedObjectsOnDatabaseSync() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         beginTransaction(em);
         Query phoneQuery = em.createQuery("Select p from PhoneNumber p where p.owner.lastName like 'Dow%'");
@@ -758,7 +785,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         }catch (IllegalStateException ex){
             rollbackTransaction(em);
             closeEntityManager(em);
-            em = createEntityManager("fieldaccess");
+            em = createEntityManager();
             beginTransaction(em);
             try{
                 phoneQuery = em.createQuery("Select p from PhoneNumber p where p.owner.lastName like 'Dow%'");
@@ -789,7 +816,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         if (isOnServer()) {
             return;
         }
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee employee = null;
         try{
@@ -805,7 +832,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             closeEntityManager(em);
             throw ex;
         }
-        EntityManager em2 = createEntityManager("fieldaccess");
+        EntityManager em2 = createEntityManager();
         Exception optimisticLockException = null;
 
         beginTransaction(em);
@@ -875,7 +902,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         emp.setFirstName(firstName);
 
         // make sure no Employee with the specified firstName exists.
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
@@ -1005,7 +1032,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
             // clean up
             if(employeeExists || exceptionWasThrown) {
-                em = createEntityManager("fieldaccess");
+                em = createEntityManager();
                 beginTransaction(em);
                 try{
                     Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
@@ -1029,7 +1056,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testPersistManagedException(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee emp = new Employee();
         emp.setFirstName("PersistManagedException");
@@ -1053,7 +1080,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testPersistManagedNoException(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee emp = new Employee();
         em.persist(emp);
@@ -1082,7 +1109,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         emp.setFirstName(firstName);
 
         // make sure no Employee with the specified firstName exists.
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
@@ -1154,7 +1181,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         emp.setFirstName(firstName);
 
         // make sure no Employee with the specified firstName exists.
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
@@ -1227,7 +1254,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     // test for bug 4681287:
     // CTS: EXCEPTION EXPECTED ON FIND() IF PK PASSED IN != ATTRIBUTE TYPE
     public void testFindWithWrongTypePk() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         try {
             em.find(Employee.class, "1");
         } catch (IllegalArgumentException ilEx) {
@@ -1243,7 +1270,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //test for gf721 - IllegalArgumentException expected for null PK
     public void testFindWithNullPk() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         try {
             em.find(Employee.class, null);
         } catch (IllegalArgumentException iae) {
@@ -1260,7 +1287,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         Employee employee = new Employee();
         employee.setFirstName("Marc");
 
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         try{
             beginTransaction(em);
             em.persist(employee);
@@ -1299,7 +1326,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     public void testClear(){
         Employee employee = new Employee();
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             em.persist(employee);
@@ -1318,7 +1345,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testClearWithFlush(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             Employee emp = new Employee();
@@ -1333,8 +1360,8 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             closeEntityManager(em);
             throw ex;
         }
-        clearCache("fieldaccess");
-        em = createEntityManager("fieldaccess");
+        clearCache();
+        em = createEntityManager();
         beginTransaction(em);
         Employee emp = null;
         String originalName = "";
@@ -1360,7 +1387,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             throw exception;
         } finally {
             //now clean up
-            em = createEntityManager("fieldaccess");
+            em = createEntityManager();
             beginTransaction(em);
             emp = em.find(Employee.class, emp.getId());
             emp.setFirstName(originalName);
@@ -1375,7 +1402,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testClearInTransaction(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             Employee emp = new Employee();
@@ -1390,8 +1417,8 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             closeEntityManager(em);
             throw ex;
         }
-        clearCache("fieldaccess");
-        em = createEntityManager("fieldaccess");
+        clearCache();
+        em = createEntityManager();
         beginTransaction(em);
         Employee emp = null;
         String originalName = "";
@@ -1447,7 +1474,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         empToBeMerged.setSalary(originalSalary);
 
         // setup: make sure no Employee with the specified firstName exists and create the existing employees.
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
@@ -1468,10 +1495,10 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             throw ex;
         }
         closeEntityManager(em);
-        clearCache("fieldaccess");
+        clearCache();
 
         // create entityManager with extended Persistence Context.
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
 
         try {
             // first test
@@ -1521,7 +1548,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             }
 
             // verify objects are correct in the db after transaction
-            clearCache("fieldaccess");
+            clearCache();
             Employee empNewFound = em.find(Employee.class, empNew.getId());
             if(empNewFound == null) {
                 fail("empNew not in the db after transaction committed");
@@ -1587,7 +1614,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             }
 
             // verify objects are correct in the db
-            clearCache("fieldaccess");
+            clearCache();
             Employee empNewFound2 = em.find(Employee.class, empNew.getId());
             if(empNewFound2 != null) {
                 fail("empNew still in the db after the second transaction committed");
@@ -1619,7 +1646,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             em.remove(empToBeRemoved);
 
             // Use another EntityManager to alter empToBeRefreshed in the db
-            EntityManager em2 = createEntityManager("fieldaccess");
+            EntityManager em2 = createEntityManager();
             em2.getTransaction().begin();
             try{
                 empToBeRefreshed = em2.find(Employee.class, empToBeRefreshed.getId());
@@ -1664,7 +1691,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             }
 
             // verify objects are correct in the db after the third transaction rolled back
-            clearCache("fieldaccess");
+            clearCache();
             Employee empNewFound3 = em.find(Employee.class, empNew.getId());
             if(empNewFound3 != null) {
                 fail("empNew is in the db after the third transaction rolled back");
@@ -1745,7 +1772,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     protected void internalTestReadTransactionIsolation(boolean shouldOriginalBeInParentCache, boolean shouldUpdateAll, boolean shouldRefresh, boolean shouldFlush) {
-        if (shouldUpdateAll && (JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+        if (shouldUpdateAll && getPersistenceUnitServerSession().getPlatform().isSymfoware()) {
             getServerSession().logMessage("A testReadTransactionIsolation test skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
@@ -1755,7 +1782,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         String firstName = "testReadTransactionIsolation";
 
         // make sure no Employee with the specified firstName exists.
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             Query q = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = '"+firstName+"'");
@@ -1770,7 +1797,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             closeEntityManager(em);
             throw ex;
         }
-        clearCache("fieldaccess");
+        clearCache();
         em.clear();
 
         // create and persist the object
@@ -1793,7 +1820,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         }
 
         if(!shouldOriginalBeInParentCache) {
-            clearCache("fieldaccess");
+            clearCache();
         }
         em.clear();
 
@@ -1873,14 +1900,14 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             closeEntityManager(em);
             throw ex;
         }
-        clearCache("fieldaccess");
+        clearCache();
         closeEntityManager(em);
     }
 
     // test for bug 4755392:
     // AFTER DELETEALL OBJECT STILL DEEMED EXISTING
     public void testFindDeleteAllPersist() {
-        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+        if (getPersistenceUnitServerSession().getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testFindDeleteAllPersist skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
@@ -1897,7 +1924,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         empWithoutAddress.setFirstName(firstName);
         empWithoutAddress.setLastName("WithoutAddress");
 
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         // make sure no Employee with the specified firstName exists.
         beginTransaction(em);
@@ -1927,7 +1954,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         }
 
         // clear cache
-        clearCache("fieldaccess");
+        clearCache();
         em.clear();
 
         // Find both to bring into the cache, delete empWithoutAddress.
@@ -1994,7 +2021,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         if (isOnServer()) {
             return;
         }
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         Employee employee = new Employee();
         employee.setFirstName("Mark");
         employee.setLastName("Madsen");
@@ -2010,7 +2037,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             throw ex;
         }
 
-        EntityManager em2 = createEntityManager("fieldaccess");
+        EntityManager em2 = createEntityManager();
         Exception optimisticLockException = null;
 
         beginTransaction(em);
@@ -2062,7 +2089,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     public void testPersistOnNonEntity() {
         boolean testPass = false;
         Object nonEntity = new Object();
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             em.persist(nonEntity);
@@ -2079,7 +2106,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         if (isOnServer()) {
             return;
         }
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         if (!em.isOpen()) {
             fail("Created EntityManager is not open");
         }
@@ -2094,7 +2121,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         if (isOnServer()) {
             return;
         }
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
             closeEntityManager(em);
@@ -2123,7 +2150,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             return;
         }
         String firstName = "testBeginTrCloseCommitTr";
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         // make sure there is no employees with this firstName
         beginTransaction(em);
@@ -2159,7 +2186,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         }
 
         // verify that the employee has been persisted
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         RuntimeException exception = null;
         try {
             Employee persistedEmployee = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getSingleResult();
@@ -2186,7 +2213,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     // The test removed because we moved back to binding literals
     // on platforms other than DB2 and Derby
 /*    public void testDontBindLiteral() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         Query controlQuery = em.createQuery("SELECT OBJECT(p) FROM SmallProject p WHERE p.name = CONCAT(:param1, :param2)");
         controlQuery.setParameter("param1", "A").setParameter("param2", "B");
@@ -2212,7 +2239,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             return;
         }
 
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         ServerSession ss = ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em.getDelegate()).getServerSession();
 
         // these properties were set in persistence unit
@@ -2311,14 +2338,14 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testMultipleFactories() {
-        getEntityManagerFactory("fieldaccess");
+        getEntityManagerFactory();
         closeEntityManagerFactory();
-        boolean isOpen = getEntityManagerFactory("fieldaccess").isOpen();
+        boolean isOpen = getEntityManagerFactory().isOpen();
         if(!isOpen) {
             fail("Close factory 1; open factory 2 - it's not open");
         } else {
             // Get entity manager just to login back the session, then close em
-            getEntityManagerFactory("fieldaccess").createEntityManager().close();
+            getEntityManagerFactory().createEntityManager().close();
         }
     }
 
@@ -2327,9 +2354,9 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             // Cannot connect locally on server.
             return;
         }
-        EntityManagerFactory factory1 =  Persistence.createEntityManagerFactory("fieldaccess", JUnitTestCaseHelper.getDatabaseProperties());
+        EntityManagerFactory factory1 =  Persistence.createEntityManagerFactory(getPersistenceUnitName(), JUnitTestCaseHelper.getDatabaseProperties());
         factory1.createEntityManager();
-        EntityManagerFactory factory2 =  Persistence.createEntityManagerFactory("fieldaccess", JUnitTestCaseHelper.getDatabaseProperties());
+        EntityManagerFactory factory2 =  Persistence.createEntityManagerFactory(getPersistenceUnitName(), JUnitTestCaseHelper.getDatabaseProperties());
         factory2.createEntityManager();
         factory1.close();
         if(factory1.isOpen()) {
@@ -2342,7 +2369,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         if(factory2.isOpen()) {
             fail("after factory2.close() factory2 is not closed");
         }
-        EntityManagerFactory factory3 =  Persistence.createEntityManagerFactory("fieldaccess", JUnitTestCaseHelper.getDatabaseProperties());
+        EntityManagerFactory factory3 =  Persistence.createEntityManagerFactory(getPersistenceUnitName(), JUnitTestCaseHelper.getDatabaseProperties());
         if(!factory3.isOpen()) {
             fail("factory3 is closed");
         }
@@ -2354,7 +2381,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testQueryHints() {
-        EntityManager em = getEntityManagerFactory("fieldaccess").createEntityManager();
+        EntityManager em = getEntityManagerFactory().createEntityManager();
         Query query = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = 'testQueryHints'");
         ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
 
@@ -2456,7 +2483,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testQueryTimeOut() {
-        EntityManager em = getEntityManagerFactory("fieldaccess").createEntityManager();
+        EntityManager em = getEntityManagerFactory().createEntityManager();
         Query query = em.createQuery("SELECT d FROM Department d");
         ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
 
@@ -2482,7 +2509,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      */
     public void testBatchQueryHint(){
         int id1 = 0;
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
 
         Employee manager = new Employee();
@@ -2520,7 +2547,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         commitTransaction(em);
         em.clear();
 
-        JpaQuery query = (JpaQuery)getEntityManagerFactory("fieldaccess").createEntityManager().createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
+        JpaQuery query = (JpaQuery)getEntityManagerFactory().createEntityManager().createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
         query.setHint(QueryHints.BATCH, "e.phoneNumbers");
         query.setHint(QueryHints.BATCH, "e.manager.phoneNumbers");
 
@@ -2568,7 +2595,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      */
     public void testFetchQueryHint(){
         int id1 = 0;
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
 
         Employee manager = new Employee();
@@ -2606,7 +2633,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         commitTransaction(em);
         em.clear();
 
-        JpaQuery query = (JpaQuery)getEntityManagerFactory("fieldaccess").createEntityManager().createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
+        JpaQuery query = (JpaQuery)getEntityManagerFactory().createEntityManager().createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
         query.setHint(QueryHints.FETCH, "e.manager");
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getJoinedAttributeExpressions();
@@ -2637,7 +2664,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      * Test that the proper exception is thrown when an incorrect batch or fetch query hint is set on the queyr.
      */
     public void testIncorrectBatchQueryHint(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         QueryException exception = null;
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
@@ -2714,7 +2741,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             return;
         }
         boolean exceptionWasThrown = false;
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         Query q =  em.createQuery("SELECT e FROM Employee e ");
         closeEntityManager(em);
         if(em.isOpen()) {
@@ -2731,12 +2758,12 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testNullifyAddressIn() {
-        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+        if (getPersistenceUnitServerSession().getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testNullifyAddressIn skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             em.createQuery("UPDATE Employee e SET e.address = null WHERE e.address.country IN ('Canada', 'US')").executeUpdate();
@@ -2748,7 +2775,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //test for bug 5234283: WRONG =* SQL FOR LEFT JOIN ON DERBY AND DB2 PLATFORMS
     public void testLeftJoinOneToOneQuery() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         List results = em.createQuery("SELECT a FROM Employee e LEFT JOIN e.address a").getResultList();
         results.toString();
         closeEntityManager(em);
@@ -2756,7 +2783,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     // test for GlassFish bug 711 - throw a descriptive exception when an uninstantiated valueholder is serialized and then accessed
     public void testSerializedLazy(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         beginTransaction(em);
 
@@ -2771,8 +2798,8 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         em.flush();
         commitTransaction(em);
         closeEntityManager(em);
-        clearCache("fieldaccess");
-        em = createEntityManager("fieldaccess");
+        clearCache();
+        em = createEntityManager();
         String ejbqlString = "SELECT e FROM Employee e WHERE e.firstName = 'Owen' and e.lastName = 'Hargreaves'";
         List result = em.createQuery(ejbqlString).getResultList();
         emp = (Employee)result.get(0);
@@ -2811,8 +2838,8 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //test for bug 5170395: GET THE SEQUENCING EXCEPTION WHEN RUNNING FOR THE FIRST TIME ON A CLEAR SCHEMA
     public void testSequenceObjectDefinition() {
-        EntityManager em = createEntityManager("fieldaccess");
-        ServerSession ss = getServerSession("fieldaccess");
+        EntityManager em = createEntityManager();
+        ServerSession ss = getPersistenceUnitServerSession();
         if(!ss.getLogin().getPlatform().supportsSequenceObjects()) {
             // platform that supports sequence objects is required for this test
             closeEntityManager(em);
@@ -2851,7 +2878,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             sequence.onDisconnect(ss.getPlatform());
             // Symfoware doesn't allow drop while connections that performed
             // CREATE and DML on the sequence are still open.
-            if (JUnitTestCase.getServerSession("fieldaccess").getPlatform().isSymfoware()) return;
+            if (getPersistenceUnitServerSession().getPlatform().isSymfoware()) return;
             // drop sequence
             String dropStr = def.buildDeletionWriter(ss, new StringWriter()).toString();
             beginTransaction(em);
@@ -2862,8 +2889,8 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     public void testMergeDetachedObject() {
         // Step 1 - read a department and clear the cache.
-        clearCache("fieldaccess");
-        EntityManager em = createEntityManager("fieldaccess");
+        clearCache();
+        EntityManager em = createEntityManager();
         Query query = em.createNamedQuery("findAllSQLDepartments");
         Collection departments = query.getResultList();
 
@@ -2882,11 +2909,11 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         }
 
         closeEntityManager(em);
-        clearCache("fieldaccess");
+        clearCache();
 
         // Step 2 - create a new em, create a new employee with the
         // detached department and then query the departments again.
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
 
         Employee emp = new Employee();
@@ -2904,7 +2931,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
             em.createNamedQuery("findAllSQLDepartments").getResultList();
         } catch (RuntimeException e){
-            getServerSession("fieldaccess").log(new SessionLogEntry(getServerSession("fieldaccess"), SessionLog.WARNING, SessionLog.TRANSACTION, e));
+            getPersistenceUnitServerSession().log(new SessionLogEntry(getPersistenceUnitServerSession(), SessionLog.WARNING, SessionLog.TRANSACTION, e));
         }
         closeEntityManager(em);
     }
@@ -2917,7 +2944,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         emp.setId(42);
 
         //persist the Employee
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         try{
             beginTransaction(em);
             em.persist(emp);
@@ -2951,7 +2978,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //merge(null) should throw IllegalArgumentException
     public void testMergeNull(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             em.merge(null);
@@ -2968,7 +2995,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //persist(null) should throw IllegalArgumentException
     public void testPersistNull(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             em.persist(null);
@@ -2985,7 +3012,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //contains(null) should throw IllegalArgumentException
     public void testContainsNull(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             em.contains(null);
@@ -3002,7 +3029,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //bug gf732 - removing null entity should throw an IllegalArgumentException
     public void testRemoveNull(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             em.remove(null);
@@ -3019,7 +3046,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //Glassfish bug 702 - prevent primary key updates
     public void testPrimaryKeyUpdate() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
 
         Employee emp = new Employee();
@@ -3068,7 +3095,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //Glassfish bug 702 - prevent primary key updates, same value is ok
     public void testPrimaryKeyUpdateSameValue() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
 
         Employee emp = new Employee();
@@ -3097,7 +3124,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //Glassfish bug 702 - prevent primary key updates, overlapping PK/FK
     public void testPrimaryKeyUpdatePKFK() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
 
         Employee emp = new Employee();
@@ -3164,7 +3191,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         Employee e2 = new Employee();
         e2.setFirstName("Employee2");
 
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             em.persist(p1);
@@ -3193,7 +3220,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         e2.addProject(p2);
         p2.addTeamMember(e2);
 
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         try {
             Project mp1 = em.merge(p1); // cascade merge
@@ -3235,7 +3262,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         Employee e2 = new Employee();
         e2.setFirstName("Employee2");
 
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             em.persist(p1);
@@ -3254,7 +3281,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         // end of setup
 
         //p1,p2,e1,e2 are detached
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         try {
             Project mp1 = em.merge(p1);
@@ -3298,8 +3325,8 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //Glassfish bug 1021 - allow cascading persist operation to non-entities
     public void testCascadePersistToNonEntitySubclass() {
-        EntityManager em = createEntityManager("fieldaccess");
-        InheritancePolicy ip = getServerSession("fieldaccess").getDescriptor(Project.class).getInheritancePolicy();
+        EntityManager em = createEntityManager();
+        InheritancePolicy ip = getPersistenceUnitServerSession().getDescriptor(Project.class).getInheritancePolicy();
         boolean describesNonPersistentSubclasses = ip.getDescribesNonPersistentSubclasses();
         ip.setDescribesNonPersistentSubclasses(true);
 
@@ -3343,7 +3370,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         address.setCity("Shawshank");
         employee.setAddressField(address);
 
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         em.persist(employee);
         try {
@@ -3356,9 +3383,9 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         }
         int id = employee.getId();
 
-        clearCache("fieldaccess");
+        clearCache();
 
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         try {
             employee = em.find(Employee.class, id);
@@ -3382,7 +3409,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      * In this test we test making the change after the object is managed
      */
     public void testSetFieldForPropertyAccess() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         Employee employee = new Employee();
         employee.setFirstName("Andy");
@@ -3413,9 +3440,9 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             throw e;
         }
 
-        clearCache("fieldaccess");
+        clearCache();
 
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         try {
             employee = em.find(Employee.class, id);
@@ -3442,7 +3469,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      * In this test we test making the change after the object is refreshed
      */
     public void testSetFieldForPropertyAccessWithRefresh() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         Employee employee = new Employee();
         employee.setFirstName("Andy");
@@ -3474,9 +3501,9 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             throw e;
         }
 
-        clearCache("fieldaccess");
+        clearCache();
 
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         try {
             employee = em.find(Employee.class, id);
@@ -3503,7 +3530,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      * In this test we test making the change when an existing object is read into a new EM
      */
     public void testSetFieldForPropertyAccessWithNewEM(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         Employee employee = new Employee();
         employee.setFirstName("Andy");
@@ -3518,7 +3545,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         int id = employee.getId();
         int addressId = address.getId();
 
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
 
         beginTransaction(em);
         employee = em.find(Employee.class, id);
@@ -3536,9 +3563,9 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             throw e;
         }
 
-        clearCache("fieldaccess");
+        clearCache();
 
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         try {
             employee = em.find(Employee.class, id);
@@ -3560,7 +3587,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     //bug gf674 - EJBQL delete query with IS NULL in WHERE clause produces wrong sql
     public void testDeleteAllPhonesWithNullOwner() {
-         EntityManager em = createEntityManager("fieldaccess");
+         EntityManager em = createEntityManager();
          beginTransaction(em);
          try {
              em.createQuery("DELETE FROM PhoneNumber ph WHERE ph.owner IS NULL").executeUpdate();
@@ -3574,7 +3601,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
          }
      }
      public void testDeleteAllProjectsWithNullTeamLeader() {
-         if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+         if (getPersistenceUnitServerSession().getPlatform().isSymfoware()) {
              getServerSession().logMessage("Test testDeleteAllProjectsWithNullTeamLeader skipped for this platform, "
                      + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
              return;
@@ -3585,7 +3612,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
          internalDeleteAllProjectsWithNullTeamLeader("SmallProject");
      }
      public void testDeleteAllLargeProjectsWithNullTeamLeader() {
-         if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+         if (getPersistenceUnitServerSession().getPlatform().isSymfoware()) {
              getServerSession().logMessage("Test testDeleteAllLargeProjectsWithNullTeamLeader skipped for this platform, "
                      + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
              return;
@@ -3600,7 +3627,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
          sp.setName(name);
          LargeProject lp = new LargeProject();
          lp.setName(name);
-         EntityManager em = createEntityManager("fieldaccess");
+         EntityManager em = createEntityManager();
          try {
              beginTransaction(em);
              // make sure there are no pre-existing objects with this name
@@ -3618,7 +3645,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
          }
 
          // test
-         em = createEntityManager("fieldaccess");
+         em = createEntityManager();
          beginTransaction(em);
          try {
              em.createQuery("DELETE FROM "+className+" p WHERE p.name = '"+name+"' AND p.teamLeader IS NULL").executeUpdate();
@@ -3634,7 +3661,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
          // verify
          String error = null;
-         em = createEntityManager("fieldaccess");
+         em = createEntityManager();
          List result = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+name+"'").getResultList();
          if(result.isEmpty()) {
              if(!className.equals("Project")) {
@@ -3683,7 +3710,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         internalUpdateUsingTempStorage(true);
     }
     protected void internalUpdateUsingTempStorage(boolean useParameter) {
-        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+        if (getPersistenceUnitServerSession().getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testUpdateUsingTempStorage* skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
@@ -3693,7 +3720,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         int n = 3;
 
         // setup
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             // make sure there are no pre-existing objects with this name
@@ -3726,7 +3753,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         }
 
         // test
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         int nUpdated = 0;
         try {
@@ -3745,7 +3772,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
         // verify
         String error = null;
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         List result = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
         closeEntityManager(em);
         int nReadBack = result.size();
@@ -3770,7 +3797,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         }
 
         // clean up
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         try {
             beginTransaction(em);
             // make sure there are no objects left with this name
@@ -3792,7 +3819,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     protected void createProjectsWithName(String name, Employee teamLeader) {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
 
@@ -3830,7 +3857,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     protected void deleteProjectsWithName(String name) {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
 
@@ -3857,7 +3884,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         internalTestUpdateAllProjects(Project.class);
     }
     protected void internalTestUpdateAllProjects(Class<?> cls) {
-        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+        if (getPersistenceUnitServerSession().getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testUpdateAll*Projects skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
@@ -3875,7 +3902,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             createProjectsWithName(name, null);
             // save the original names of projects: will set them back in cleanup
             // to restore the original state.
-            EntityManager em = createEntityManager("fieldaccess");
+            EntityManager em = createEntityManager();
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
             map = new HashMap(projects.size());
             for(int i=0; i<projects.size(); i++) {
@@ -3898,7 +3925,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             }
 
             // verify
-            em = createEntityManager("fieldaccess");
+            em = createEntityManager();
             String errorMsg = "";
             projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
             for(int i=0; i<projects.size(); i++) {
@@ -3925,7 +3952,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             // clean-up
             try {
                 if(map != null) {
-                    EntityManager em = createEntityManager("fieldaccess");
+                    EntityManager em = createEntityManager();
                     beginTransaction(em);
                     List projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
                     try {
@@ -3965,7 +3992,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         internalTestUpdateAllProjectsWithName(Project.class);
     }
     protected void internalTestUpdateAllProjectsWithName(Class<?> cls) {
-        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+        if (getPersistenceUnitServerSession().getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testUpdateAll*ProjectsWithName skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
@@ -3984,7 +4011,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             createProjectsWithName(name, null);
 
             // test
-            EntityManager em = createEntityManager("fieldaccess");
+            EntityManager em = createEntityManager();
             beginTransaction(em);
             try {
                 em.createQuery("UPDATE "+className+" p set p.name = '"+newName+"' WHERE p.name = '"+name+"'").executeUpdate();
@@ -3999,7 +4026,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             }
 
             // verify
-            em = createEntityManager("fieldaccess");
+            em = createEntityManager();
             String errorMsg = "";
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
             for(int i=0; i<projects.size(); i++) {
@@ -4047,7 +4074,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         internalTestUpdateAllProjectsWithNullTeamLeader(Project.class);
     }
     protected void internalTestUpdateAllProjectsWithNullTeamLeader(Class<?> cls) {
-        if ((JUnitTestCase.getServerSession("fieldaccess")).getPlatform().isSymfoware()) {
+        if (getPersistenceUnitServerSession().getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
         }
@@ -4062,7 +4089,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             // make sure no projects with the specified names exist
             deleteProjectsWithName(name);
             deleteProjectsWithName(newName);
-            EntityManager em = createEntityManager("fieldaccess");
+            EntityManager em = createEntityManager();
             Employee emp = null;
             List employees = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
             if(employees.size() > 0) {
@@ -4089,7 +4116,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             createProjectsWithName(name, emp);
 
             // test
-            em = createEntityManager("fieldaccess");
+            em = createEntityManager();
             beginTransaction(em);
             try {
                 em.createQuery("UPDATE "+className+" p set p.name = '"+newName+"' WHERE p.name = '"+name+"' AND p.teamLeader IS NULL").executeUpdate();
@@ -4104,7 +4131,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             }
 
             // verify
-            em = createEntityManager("fieldaccess");
+            em = createEntityManager();
             String errorMsg = "";
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
             for(int i=0; i<projects.size(); i++) {
@@ -4134,7 +4161,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
                 deleteProjectsWithName(name);
                 deleteProjectsWithName(newName);
                 if(empTemp != null) {
-                    EntityManager em = createEntityManager("fieldaccess");
+                    EntityManager em = createEntityManager();
                     beginTransaction(em);
                     try {
                         em.createQuery("DELETE FROM Employee e WHERE e.id = '"+empTemp.getId()+"'").executeUpdate();
@@ -4158,7 +4185,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     }
 
     public void testRollbackOnlyOnException() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             Employee emp = em.find(Employee.class, "");
@@ -4182,7 +4209,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             return;
         }
 
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         closeEntityManager(em);
         String errorMsg = "";
 
@@ -4254,7 +4281,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         Employee manager = new Employee();
         dept.addManager(manager);
 
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             em.persist(dept);
@@ -4279,9 +4306,9 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         // close the original factory
         closeEntityManagerFactory();
         // create the new one - not yet deployed
-        EntityManagerFactory factory1 =  getEntityManagerFactory("fieldaccess");
+        EntityManagerFactory factory1 =  getEntityManagerFactory();
         // create the second one
-        EntityManagerFactory factory2 =  Persistence.createEntityManagerFactory("fieldaccess", JUnitTestCaseHelper.getDatabaseProperties());
+        EntityManagerFactory factory2 =  Persistence.createEntityManagerFactory(getPersistenceUnitName(), JUnitTestCaseHelper.getDatabaseProperties());
         // deploy
         factory2.createEntityManager();
         // close
@@ -4299,7 +4326,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     // gf2074: EM.clear throws NPE
     public void testClearEntityManagerWithoutPersistenceContext() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         try {
             em.clear();
         }finally {
@@ -4345,7 +4372,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     // gf2074: EM.clear throws NPE (JTA case)
     public void testClearEntityManagerWithoutPersistenceContextSimulateJTA() {
-        ServerSession ss = getServerSession("fieldaccess");
+        ServerSession ss = getPersistenceUnitServerSession();
         // in non-JTA case session doesn't have external transaction controller
         boolean hasExternalTransactionController = ss.hasExternalTransactionController();
         if (!hasExternalTransactionController) {
@@ -4371,8 +4398,8 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         query.addArgument("fName", String.class);
         query.addArgument("lName", String.class);
 
-        EntityManager em = createEntityManager("fieldaccess");
-        Session session = getServerSession("fieldaccess");
+        EntityManager em = createEntityManager();
+        Session session = getPersistenceUnitServerSession();
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
         descriptor.getQueryManager().addQuery("findByFNameLName", query);
 
@@ -4412,8 +4439,8 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         ReadAllQuery query2 = new ReadAllQuery(Employee.class);
 
 
-        EntityManager em = createEntityManager("fieldaccess");
-        Session session = getServerSession("fieldaccess");
+        EntityManager em = createEntityManager();
+        Session session = getPersistenceUnitServerSession();
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
         descriptor.getQueryManager().addQuery("findEmployees", query);
         descriptor.getQueryManager().addQuery("findEmployees", query2);
@@ -4447,7 +4474,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     // GF 2621
     public void testDoubleMerge(){
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
 
         Employee employee = new Employee();
         employee.setId(44);
@@ -4473,7 +4500,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     // Test the clone method works correctly with lazy attributes.
     public void testCloneable() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
 
         try {
@@ -4492,9 +4519,9 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
                 fail("Changing clone address changed original.");
             }
             commitTransaction(em);
-            clearCache("fieldaccess");
+            clearCache();
             closeEntityManager(em);
-            em = createEntityManager("fieldaccess");
+            em = createEntityManager();
             beginTransaction(em);
             employee = em.find(Employee.class, clone.getId());
             clone = employee.clone();
@@ -4540,7 +4567,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
     // This test weaving works when accessing a superclass field in a subclass.
     public void testSuperclassFieldInSubclass() {
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             Employee employee = new Employee();
@@ -4550,7 +4577,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             em.persist(project);
             commitTransaction(em);
             closeEntityManager(em);
-            em = createEntityManager("fieldaccess");
+            em = createEntityManager();
             beginTransaction(em);
             employee = em.find(Employee.class, employee.getId());
             project = em.find(LargeProject.class, project.getId());
@@ -4611,7 +4638,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         if (changeTracking && (!(object instanceof ChangeTracker))) {
             fail("Object not weaved for ChangeTracker:" + object);
         }
-        ClassDescriptor descriptor = getServerSession("fieldaccess").getDescriptor(object);
+        ClassDescriptor descriptor = getPersistenceUnitServerSession().getDescriptor(object);
         if (!descriptor.isAggregateDescriptor()) {
             if (changeTracking != descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()) {
                 fail("Descriptor not set to use change tracking policy correctly:" + object);
@@ -4633,7 +4660,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      */
     public void testSequencePreallocationUsingCallbackTest() {
         // setup
-        ServerSession ss = getServerSession("fieldaccess");
+        ServerSession ss = getPersistenceUnitServerSession();
         // make sure the sequence has both preallocation and callback
         // (the latter means not using sequencing connection pool,
         // acquiring values before insert and requiring transaction).
@@ -4641,7 +4668,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         //    fail("setup failure: the test requires serverSession.getSequencingControl().shouldUseSeparateConnection()==false");
         //}
         String seqName = ss.getDescriptor(Employee.class).getSequenceNumberName();
-        Sequence sequence = getServerSession("fieldaccess").getLogin().getSequence(seqName);
+        Sequence sequence = getPersistenceUnitServerSession().getLogin().getSequence(seqName);
         if(sequence.getPreallocationSize() < 2) {
             fail("setup failure: the test requires sequence preallocation size greater than 1");
         }
@@ -4652,10 +4679,10 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
             fail("setup failure: the test requires sequence that uses transaction, like TableSequence");
         }
         // clear all already allocated sequencing values for seqName
-        getServerSession("fieldaccess").getSequencingControl().initializePreallocated(seqName);
+        getPersistenceUnitServerSession().getSequencingControl().initializePreallocated(seqName);
 
         // test
-        EntityManager em = createEntityManager("fieldaccess");
+        EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee emp1 = new Employee();
         emp1.setFirstName("testSequencePreallocation");
@@ -4665,7 +4692,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
         commitTransaction(em);
 
         // verify
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         Employee emp2 = new Employee();
         emp2.setFirstName("testSequencePreallocation");
@@ -4677,7 +4704,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
         // cleanup
         // remove the object that has been created in setup
-        em = createEntityManager("fieldaccess");
+        em = createEntityManager();
         beginTransaction(em);
         emp1 = em.find(Employee.class, assignedSequenceNumber);
         em.remove(emp1);

@@ -14,12 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
-import jakarta.persistence.*;
-
-import junit.framework.*;
-
-import org.eclipse.persistence.testing.models.jpa.relationships.*;
+import jakarta.persistence.EntityManager;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
+import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
+import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 
 /**
  * Test transactional operations with uni and bi-directional relationships.

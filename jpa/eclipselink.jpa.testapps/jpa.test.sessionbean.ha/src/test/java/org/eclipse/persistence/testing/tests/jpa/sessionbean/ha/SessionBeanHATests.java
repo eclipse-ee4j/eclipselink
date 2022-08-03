@@ -14,25 +14,33 @@
 //     etang - initial API and implementation from Oracle TopLink
  package org.eclipse.persistence.testing.tests.jpa.sessionbean.ha;
 
+import jakarta.persistence.EntityManager;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.FormerEmployment;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NameNotFoundException;
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NameNotFoundException;
-
-import junit.framework.*;
-
-import jakarta.persistence.EntityManager;
-
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
-import org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService;
 
 /**
  * EJB 3 SessionBean tests using EclipseLink JPA

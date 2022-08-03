@@ -14,19 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.nativeapitest;
 
-import java.util.*;
-
 import jakarta.ejb.Remote;
 import jakarta.ejb.Stateless;
-
-// EclipseLink imports
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.sessions.server.Server;
+
+import java.util.List;
 
 /**
  * EmployeeService session bean.

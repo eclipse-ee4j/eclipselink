@@ -12,19 +12,17 @@
 
 package org.eclipse.persistence.testing.tests.jpa.sessionbean;
 
-import java.util.Arrays;
-import java.util.Properties;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.attributeconverter.AttributeConverterTableCreator;
+import org.eclipse.persistence.testing.models.jpa.sessionbean.InjectionTest;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.attributeconverter.AttributeConverterTableCreator;
-import org.eclipse.persistence.testing.models.jpa.sessionbean.InjectionTest;
+import java.util.Arrays;
+import java.util.Properties;
 
 public class AttributeConverterInjectionTest extends JUnitTestCase {
 

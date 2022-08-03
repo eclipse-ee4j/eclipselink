@@ -17,17 +17,16 @@
 //       - 251554: ExcludeDefaultMapping annotation needed
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
-import static jakarta.persistence.GenerationType.TABLE;
-
-import java.util.List;
-
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.ExcludeDefaultMappings;
+
+import java.util.List;
+
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity
 @Table(name="CMP3_MATTEL")

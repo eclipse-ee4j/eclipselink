@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1;
 
-import static jakarta.persistence.GenerationType.TABLE;
-
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
@@ -26,6 +24,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
+
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity(name="AdvancedCustomer")
 @Access(value=AccessType.PROPERTY)

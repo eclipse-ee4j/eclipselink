@@ -14,13 +14,8 @@
 //     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.QueryHints;
@@ -39,11 +34,15 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
-import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.tests.jpa.fieldaccess.FetchGroupAssert;
 import org.eclipse.persistence.testing.tests.jpa.fieldaccess.QuerySQLTracker;
+import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EmployeePopulator;
 import org.junit.Test;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Simple set of tests that verify the {@link FetchGroup} API. Need to verify
@@ -487,16 +486,16 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
     }
 
     public static Employee minEmployeeWithAddressAndPhones(EntityManager em) {
-        return (Employee) em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address WHERE e.id IN (SELECT MIN(p.owner.id) FROM PhoneNumber p)").getSingleResult();
+        return em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address WHERE e.id IN (SELECT MIN(p.owner.id) FROM PhoneNumber p)", Employee.class).getSingleResult();
     }
 
     public Employee minEmployeeWithManagerWithAddress(EntityManager em) {
-        List<Employee> emps = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.manager WHERE e.manager.address IS NOT NULL ORDER BY e.id").getResultList();
+        List<Employee> emps = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.manager WHERE e.manager.address IS NOT NULL ORDER BY e.id", Employee.class).getResultList();
         return emps.get(0);
     }
 
     public static int minEmployeeIdWithAddressAndPhones(EntityManager em) {
-        return ((Number) em.createQuery("SELECT e.id FROM Employee e JOIN FETCH e.address WHERE e.id IN (SELECT MIN(p.owner.id) FROM PhoneNumber p)").getSingleResult()).intValue();
+        return em.createQuery("SELECT e.id FROM Employee e JOIN FETCH e.address WHERE e.id IN (SELECT MIN(p.owner.id) FROM PhoneNumber p)", Number.class).getSingleResult().intValue();
     }
 
     public static class PhoneCustomizer implements DescriptorCustomizer {

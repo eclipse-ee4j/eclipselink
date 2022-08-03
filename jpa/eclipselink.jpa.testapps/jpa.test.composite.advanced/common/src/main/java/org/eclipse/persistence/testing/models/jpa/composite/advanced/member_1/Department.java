@@ -16,16 +16,9 @@
 //       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
 package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1;
 
-import java.io.Serializable;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.MapKey;
@@ -34,15 +27,20 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
-
-import static jakarta.persistence.CascadeType.PERSIST;
-import static jakarta.persistence.GenerationType.TABLE;
-import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
-
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.Employee;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.Equipment;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
+
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.GenerationType.TABLE;
+import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
 
 /**
  * <p>

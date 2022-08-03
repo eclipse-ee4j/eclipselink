@@ -14,20 +14,6 @@
 //     tware - add for testing JPA 2.0 delimited identifiers
 package org.eclipse.persistence.testing.models.jpa.delimited;
 
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.CascadeType.MERGE;
-import static jakarta.persistence.CascadeType.PERSIST;
-import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.TABLE;
-import static org.eclipse.persistence.annotations.CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS;
-import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
-import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
-import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Vector;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -46,7 +32,6 @@ import jakarta.persistence.SecondaryTable;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
 import jakarta.persistence.Version;
-
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.ChangeTracking;
@@ -61,6 +46,20 @@ import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.config.CacheIsolationType;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Vector;
+
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.TABLE;
+import static org.eclipse.persistence.annotations.CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS;
+import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
+import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
+import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
 
 /**
  * Employees have a one-to-many relationship with Employees through the

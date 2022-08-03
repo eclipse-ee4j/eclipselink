@@ -14,13 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2;
 
-import java.util.Date;
-import java.io.*;
-
 import jakarta.persistence.Entity;
-
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p><b>Purpose</b>: Defines the period an Employee worked for the organization

@@ -18,8 +18,6 @@
 
 package org.eclipse.persistence.testing.tests.jpa.xml.composite.advanced;
 
-import java.sql.Date;
-
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1.Address;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2.EmploymentPeriod;
@@ -27,6 +25,8 @@ import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.Project;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.SmallProject;
+
+import java.sql.Date;
 
 public class ModelExamples  {
 

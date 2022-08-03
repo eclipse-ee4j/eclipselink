@@ -15,20 +15,20 @@
 
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
-import java.util.Vector;
-
 import jakarta.persistence.EntityManager;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
+import org.eclipse.persistence.testing.models.jpa.relationships.Item;
+import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
+import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 
-import org.eclipse.persistence.testing.models.jpa.relationships.*;
+import java.util.Vector;
 
 public class ExpressionTest extends JUnitTestCase {
 

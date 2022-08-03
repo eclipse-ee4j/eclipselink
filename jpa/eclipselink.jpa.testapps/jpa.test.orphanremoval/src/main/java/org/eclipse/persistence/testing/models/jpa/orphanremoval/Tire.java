@@ -17,12 +17,12 @@
 //       - 474752: Added TireDetails
 package org.eclipse.persistence.testing.models.jpa.orphanremoval;
 
-import java.util.Set;
-
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+
+import java.util.Set;
 
 @Embeddable
 public class Tire {

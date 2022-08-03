@@ -20,7 +20,8 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
 import jakarta.persistence.EntityManager;
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason;

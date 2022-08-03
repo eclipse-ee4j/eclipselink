@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.nativeapitest;
 
-import java.io.*;
+import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;

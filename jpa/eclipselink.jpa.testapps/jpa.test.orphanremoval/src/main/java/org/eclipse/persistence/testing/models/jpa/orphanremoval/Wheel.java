@@ -15,9 +15,6 @@
 //       - 249033: JPA 2.0 Orphan removal
 package org.eclipse.persistence.testing.models.jpa.orphanremoval;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +24,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.GenerationType.TABLE;

@@ -14,7 +14,8 @@
 //     2010-10-27 - James Sutherland (Oracle) initial impl
 package org.eclipse.persistence.testing.tests.jpa.partitioned;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class PartitionedXMLTest extends PartitionedTest {
 

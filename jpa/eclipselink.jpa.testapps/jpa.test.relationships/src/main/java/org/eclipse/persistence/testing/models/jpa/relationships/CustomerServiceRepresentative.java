@@ -14,17 +14,17 @@
 //     tware - bug 282571 testing of ManyToMany Map with Entity key and Entity value
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.GenerationType.TABLE;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity
 @Table(name="CMP3_CUSTOMER_SERVICE_REP")

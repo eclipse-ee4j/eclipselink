@@ -17,10 +17,6 @@
 //       - 363820: Issue with clone method from VPDMultitenantPolicy
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -32,9 +28,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.Multitenant;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.InheritanceType.SINGLE_TABLE;
 import static org.eclipse.persistence.annotations.MultitenantType.VPD;

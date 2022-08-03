@@ -16,7 +16,13 @@
 
 package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2;
 
-import jakarta.persistence.*;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreRemove;
+import jakarta.persistence.PreUpdate;
 
 import java.sql.Date;
 import java.util.EventListener;

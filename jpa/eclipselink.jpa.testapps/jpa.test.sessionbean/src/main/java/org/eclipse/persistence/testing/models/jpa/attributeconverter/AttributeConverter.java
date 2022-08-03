@@ -16,7 +16,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 import jakarta.persistence.Converter;
-
 import org.eclipse.persistence.testing.models.jpa.sessionbean.InjectedBean;
 
 @Converter

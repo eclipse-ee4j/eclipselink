@@ -14,8 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.nativeapitest;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.Vector;
 
 public class Employee implements Serializable, Cloneable {
 

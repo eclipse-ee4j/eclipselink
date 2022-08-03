@@ -12,14 +12,13 @@
 
 package org.eclipse.persistence.testing.models.jpa.sessionbean;
 
-import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import org.eclipse.persistence.testing.models.jpa.attributeconverter.AttributeConverter;
-import org.eclipse.persistence.testing.models.jpa.attributeconverter.AttributeConverterHolder;
-
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceUnit;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.testing.models.jpa.attributeconverter.AttributeConverter;
+import org.eclipse.persistence.testing.models.jpa.attributeconverter.AttributeConverterHolder;
 
 @Stateless
 public class AttributeConverterTestBean implements InjectionTest {

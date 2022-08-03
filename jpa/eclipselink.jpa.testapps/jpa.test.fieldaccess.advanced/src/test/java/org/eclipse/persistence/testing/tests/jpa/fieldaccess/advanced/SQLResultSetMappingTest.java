@@ -17,24 +17,29 @@
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
 import jakarta.persistence.EntityManager;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ColumnResult;
+import org.eclipse.persistence.queries.EntityResult;
+import org.eclipse.persistence.queries.FieldResult;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ResultSetMappingQuery;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.SQLResultSetMapping;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Buyer;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SmallProject;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Buyer;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import junit.framework.TestSuite;
-import junit.framework.Test;
 import org.junit.Assert;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 public class SQLResultSetMappingTest extends JUnitTestCase {
     protected boolean m_reset = false;    // reset gets called twice on error

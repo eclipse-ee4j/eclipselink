@@ -15,8 +15,6 @@
 //       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
-import static org.eclipse.persistence.annotations.MultitenantType.SINGLE_TABLE;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,9 +22,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.Multitenant;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
+
+import static org.eclipse.persistence.annotations.MultitenantType.SINGLE_TABLE;
 
 @Entity
 @Table(name="JPA_ENVELOPE")

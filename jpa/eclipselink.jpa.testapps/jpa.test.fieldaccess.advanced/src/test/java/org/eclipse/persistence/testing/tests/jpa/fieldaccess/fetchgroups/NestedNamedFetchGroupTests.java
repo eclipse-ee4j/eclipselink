@@ -14,23 +14,20 @@
 //     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-
+import jakarta.persistence.TypedQuery;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee.Gender;
-
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author dclarke
@@ -89,7 +86,7 @@ public class NestedNamedFetchGroupTests extends BaseFetchGroupTests {
         try {
             beginTransaction(em);
 
-            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
+            TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER", Employee.class);
             query.setParameter("GENDER", Gender.Male);
 
             // Define the fields to be fetched on Employee
@@ -157,7 +154,7 @@ public class NestedNamedFetchGroupTests extends BaseFetchGroupTests {
     public void dynamicFetchGroup_Employee_NullAddress() {
         EntityManager em = createEntityManager("fieldaccess");
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
+        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER", Employee.class);
         query.setParameter("GENDER", Gender.Male);
 
         // Define the fields to be fetched on Employee
@@ -222,7 +219,7 @@ public class NestedNamedFetchGroupTests extends BaseFetchGroupTests {
         try {
             beginTransaction(em);
 
-            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
+            TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER", Employee.class);
             query.setParameter("GENDER", Gender.Male);
 
             // Define the fields to be fetched on Employee
@@ -301,7 +298,7 @@ public class NestedNamedFetchGroupTests extends BaseFetchGroupTests {
         try {
             beginTransaction(em);
 
-            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
+            TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER", Employee.class);
             query.setParameter("GENDER", Gender.Male);
 
             // Define the fields to be fetched on Employee
@@ -384,7 +381,7 @@ public class NestedNamedFetchGroupTests extends BaseFetchGroupTests {
 
         EntityManager em = createEntityManager("fieldaccess");
 
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER");
+        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER", Employee.class);
         query.setParameter("GENDER", Gender.Male);
 
         // Define the fields to be fetched on Employee

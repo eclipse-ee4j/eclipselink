@@ -14,7 +14,8 @@
 //     tware - add for testing JPA 2.0 delimited identifiers
 package org.eclipse.persistence.testing.models.jpa.delimited;
 
-import java.io.*;
+import java.io.Serializable;
+import java.io.StringWriter;
 
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.

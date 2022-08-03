@@ -16,24 +16,21 @@
 
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import org.eclipse.persistence.queries.ReportQuery;
+import jakarta.persistence.EntityManager;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ConstructorReportItem;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
-
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.queries.ConstructorReportItem;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 
-import junit.framework.TestSuite;
-import junit.framework.Test;
-
-import jakarta.persistence.EntityManager;
-
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.Iterator;
 
 public class ReportQueryConstructorExpressionTest extends JUnitTestCase {
 

@@ -14,16 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
+import jakarta.persistence.EntityManager;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
-import jakarta.persistence.*;
-
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.RelationshipsTableManager;
 
 public class IsolatedCacheTest extends JUnitTestCase {
     public IsolatedCacheTest() {}

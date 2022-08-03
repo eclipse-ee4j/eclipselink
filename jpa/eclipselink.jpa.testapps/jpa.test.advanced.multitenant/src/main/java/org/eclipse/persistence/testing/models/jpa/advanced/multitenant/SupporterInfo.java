@@ -15,10 +15,6 @@
 //       - 394524: Invalid query key [...] in expression
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
-import static jakarta.persistence.CascadeType.PERSIST;
-import static org.eclipse.persistence.annotations.MultitenantType.TABLE_PER_TENANT;
-import static org.eclipse.persistence.annotations.TenantTableDiscriminatorType.PREFIX;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,9 +22,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.Multitenant;
 import org.eclipse.persistence.annotations.TenantTableDiscriminator;
+
+import static jakarta.persistence.CascadeType.PERSIST;
+import static org.eclipse.persistence.annotations.MultitenantType.TABLE_PER_TENANT;
+import static org.eclipse.persistence.annotations.TenantTableDiscriminatorType.PREFIX;
 
 @Entity
 @Table(name="JPA_SUPPORTER_INFO")

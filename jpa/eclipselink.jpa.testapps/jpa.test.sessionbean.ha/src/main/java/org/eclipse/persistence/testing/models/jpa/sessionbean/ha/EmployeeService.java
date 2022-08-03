@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
  package org.eclipse.persistence.testing.models.jpa.sessionbean.ha;
 
-import java.util.List;
-
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+
+import java.util.List;
 
 /**
  * EmployeeService session bean interface.

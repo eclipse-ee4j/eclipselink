@@ -14,13 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.relationships.manyToMany;
 
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.GenerationType.TABLE;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 
 import java.util.Collection;
 import java.util.HashSet;
+
+import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity
 @Table(name="CMP3_ENTITYB")

@@ -14,11 +14,20 @@
 
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.Valid;
+
 import java.util.Collection;
 
 @Entity(name = "CMP3_BV_EMPLOYEE")

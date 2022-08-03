@@ -14,11 +14,6 @@
 //     2010-10-27 - James Sutherland (Oracle) initial impl
 package org.eclipse.persistence.testing.tests.jpa.partitioned;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import junit.framework.Test;
@@ -46,6 +41,11 @@ import org.eclipse.persistence.testing.models.jpa.partitioned.Office;
 import org.eclipse.persistence.testing.models.jpa.partitioned.PartitionedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.partitioned.Project;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class PartitionedTest extends JUnitTestCase {
     public static boolean validDatabase = true;

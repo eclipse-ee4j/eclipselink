@@ -41,12 +41,11 @@
 //       - 394524: Invalid query key [...] in expression
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedMultiTenantTableCreator;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-
-import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedMultiTenantTableCreator;
 
 public class AdvancedMultiTenantJunitBase extends JUnitTestCase {
 

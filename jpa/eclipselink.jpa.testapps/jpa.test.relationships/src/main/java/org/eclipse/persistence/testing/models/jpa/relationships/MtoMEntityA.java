@@ -16,15 +16,15 @@
 //       - 438177: Test M2M map
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name="MTOMENTITYA")

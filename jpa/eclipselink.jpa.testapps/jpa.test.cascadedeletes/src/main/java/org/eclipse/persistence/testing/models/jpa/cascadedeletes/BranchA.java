@@ -12,16 +12,20 @@
 
 package org.eclipse.persistence.testing.models.jpa.cascadedeletes;
 
-import static jakarta.persistence.CascadeType.REMOVE;
-import static jakarta.persistence.FetchType.LAZY;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import org.eclipse.persistence.annotations.PrivateOwned;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.*;
-
-import org.eclipse.persistence.annotations.PrivateOwned;
+import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.FetchType.LAZY;
 
 /**
  * Entity implementation class for Entity: BranchA

@@ -14,16 +14,41 @@
 //     tware - add for testing JPA 2.0 delimited identifiers
 package org.eclipse.persistence.testing.models.jpa.delimited;
 
-import java.util.*;
-import java.io.Serializable;
-import jakarta.persistence.*;
-import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
-import static jakarta.persistence.GenerationType.*;
-import static jakarta.persistence.InheritanceType.*;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreRemove;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.annotations.ExistenceChecking;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
+
+import static jakarta.persistence.GenerationType.SEQUENCE;
+import static jakarta.persistence.InheritanceType.JOINED;
+import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
 
 /**
  * Employees have a many-to-many relationship with Projects through the

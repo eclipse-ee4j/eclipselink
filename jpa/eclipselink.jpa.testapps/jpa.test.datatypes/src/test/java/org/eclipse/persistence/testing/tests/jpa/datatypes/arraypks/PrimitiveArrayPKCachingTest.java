@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.tests.jpa.datatypes.arraypks;
 
 import jakarta.persistence.EntityManager;
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.sessions.server.ServerSession;

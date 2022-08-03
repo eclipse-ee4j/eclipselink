@@ -20,12 +20,7 @@
 //       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2;
 
-import java.sql.Time;
-import java.util.*;
-import java.io.Serializable;
-
 import jakarta.persistence.Transient;
-
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.sessions.DataRecord;
@@ -34,6 +29,15 @@ import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.Dealer;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.Project;
+
+import java.io.Serializable;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Employees have a one-to-many relationship with Employees through the

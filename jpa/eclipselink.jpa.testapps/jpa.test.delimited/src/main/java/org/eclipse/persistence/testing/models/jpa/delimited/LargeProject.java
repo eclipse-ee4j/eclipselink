@@ -14,8 +14,11 @@
 //     tware - add for testing JPA 2.0 delimited identifiers
 package org.eclipse.persistence.testing.models.jpa.delimited;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 import org.eclipse.persistence.annotations.ExistenceChecking;
 
 import static org.eclipse.persistence.annotations.ExistenceType.ASSUME_NON_EXISTENCE;

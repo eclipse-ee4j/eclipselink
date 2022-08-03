@@ -15,12 +15,20 @@
 
 package org.eclipse.persistence.testing.models.jpa.virtualattribute;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+
 import java.util.HashMap;
 
-import jakarta.persistence.*;
-import static jakarta.persistence.GenerationType.*;
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity
 @Table(name="O_O_VIRTUAL")

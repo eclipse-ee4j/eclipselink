@@ -25,18 +25,10 @@
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.CollectionAttribute;
 import jakarta.persistence.metamodel.EmbeddableType;
@@ -48,16 +40,13 @@ import jakarta.persistence.metamodel.MapAttribute;
 import jakarta.persistence.metamodel.MappedSuperclassType;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.PluralAttribute;
+import jakarta.persistence.metamodel.PluralAttribute.CollectionType;
 import jakarta.persistence.metamodel.SetAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.Type;
-import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
-import jakarta.persistence.metamodel.PluralAttribute.CollectionType;
 import jakarta.persistence.metamodel.Type.PersistenceType;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.BasicTypeImpl;
@@ -100,6 +89,15 @@ import org.eclipse.persistence.testing.models.jpa.metamodel.Position;
 import org.eclipse.persistence.testing.models.jpa.metamodel.Processor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.VectorProcessor;
 import org.eclipse.persistence.testing.models.jpa.metamodel.WithInner;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * These tests verify the JPA 2.0 Metamodel API.

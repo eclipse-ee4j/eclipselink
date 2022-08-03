@@ -15,10 +15,6 @@
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -30,8 +26,11 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.MapKeyTemporal;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import org.eclipse.persistence.annotations.Multitenant;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static jakarta.persistence.TemporalType.DATE;
 import static org.eclipse.persistence.annotations.MultitenantType.TABLE_PER_TENANT;

@@ -14,20 +14,20 @@
 //     pvijayaratnam - cache coordination test implementation
  package org.eclipse.persistence.testing.tests.jpa.sessionbean.ha;
 
+import jakarta.persistence.EntityManager;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import jakarta.persistence.EntityManager;
-
-import junit.framework.*;
-
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService;
 
 /**
  * JPA Cache Coordination SessionBean tests.

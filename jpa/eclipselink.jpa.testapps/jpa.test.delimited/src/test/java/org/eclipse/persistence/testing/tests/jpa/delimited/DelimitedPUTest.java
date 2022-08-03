@@ -17,19 +17,23 @@
 
 package org.eclipse.persistence.testing.tests.jpa.delimited;
 
-import java.sql.Date;
-import java.util.List;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
-import org.junit.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.delimited.*;
+import org.eclipse.persistence.testing.models.jpa.delimited.Address;
+import org.eclipse.persistence.testing.models.jpa.delimited.Employee;
+import org.eclipse.persistence.testing.models.jpa.delimited.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa.delimited.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.delimited.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.delimited.SimpleImage;
+import org.eclipse.persistence.testing.models.jpa.delimited.SmallProject;
+import org.junit.Assert;
+
+import java.sql.Date;
+import java.util.List;
 
 /**
  * Test the EntityManager API using a model that uses delimited-identifiers

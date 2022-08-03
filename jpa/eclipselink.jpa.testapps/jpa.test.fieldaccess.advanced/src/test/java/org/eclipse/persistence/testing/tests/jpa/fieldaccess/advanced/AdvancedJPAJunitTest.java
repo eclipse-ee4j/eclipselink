@@ -20,17 +20,17 @@
 //       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import java.util.Collection;
-
-import jakarta.persistence.*;
-
-import junit.framework.*;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PessimisticLockException;
+import jakarta.persistence.Query;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
@@ -39,10 +39,12 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Equipment;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.GoldBuyer;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SmallProject;
+
+import java.util.Collection;
 
 /**
  * This test suite tests EclipseLink JPA annotations extensions.

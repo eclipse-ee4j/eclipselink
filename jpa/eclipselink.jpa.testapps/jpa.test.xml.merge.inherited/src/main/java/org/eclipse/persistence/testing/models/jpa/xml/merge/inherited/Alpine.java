@@ -24,6 +24,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.Transient;
 
 import java.util.Date;
+import java.util.Objects;
 
 import static jakarta.persistence.TemporalType.DATE;
 
@@ -84,5 +85,10 @@ public class Alpine extends Beer  {
         }
 
         return (getId().equals(((Alpine)anotherAlpine).getId()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bestBeforeDate, classification, localTransientString);
     }
 }

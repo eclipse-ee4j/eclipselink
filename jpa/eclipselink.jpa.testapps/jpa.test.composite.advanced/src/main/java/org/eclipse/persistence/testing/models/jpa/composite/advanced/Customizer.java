@@ -14,9 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.composite.advanced;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -33,6 +30,9 @@ import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.Ad
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.Employee;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.Project;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Session and descriptor customizer.

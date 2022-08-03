@@ -15,11 +15,11 @@
 //       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+
+import java.io.Serializable;
 
 @Embeddable
 public class CompositePK implements Serializable {

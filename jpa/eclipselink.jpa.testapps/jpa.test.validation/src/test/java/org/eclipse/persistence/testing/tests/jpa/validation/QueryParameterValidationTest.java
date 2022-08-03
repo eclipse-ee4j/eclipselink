@@ -17,10 +17,8 @@
 package org.eclipse.persistence.testing.tests.jpa.validation;
 
 import jakarta.persistence.Query;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 
 public class QueryParameterValidationTest extends JUnitTestCase {

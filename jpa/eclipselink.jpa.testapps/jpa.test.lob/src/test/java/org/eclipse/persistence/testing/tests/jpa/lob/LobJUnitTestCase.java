@@ -14,18 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.lob;
 
-import java.lang.reflect.Field;
-
 import jakarta.persistence.EntityManager;
-import junit.framework.*;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.lob.Image;
 import org.eclipse.persistence.testing.models.jpa.lob.ImageSimulator;
 import org.eclipse.persistence.testing.models.jpa.lob.LobTableCreator;
 import org.eclipse.persistence.testing.models.jpa.lob.SerializableNonEntity;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+
+import java.lang.reflect.Field;
 
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.

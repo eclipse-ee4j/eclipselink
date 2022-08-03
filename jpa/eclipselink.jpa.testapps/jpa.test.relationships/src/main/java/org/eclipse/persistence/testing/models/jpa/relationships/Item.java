@@ -18,13 +18,21 @@
 //       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
-import java.io.Serializable;
-
-import jakarta.persistence.*;
-
-import org.eclipse.persistence.annotations.VariableOneToOne;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+import jakarta.persistence.Version;
 import org.eclipse.persistence.annotations.DiscriminatorClass;
 import org.eclipse.persistence.annotations.InstantiationCopyPolicy;
+import org.eclipse.persistence.annotations.VariableOneToOne;
+
+import java.io.Serializable;
 
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.DiscriminatorType.INTEGER;

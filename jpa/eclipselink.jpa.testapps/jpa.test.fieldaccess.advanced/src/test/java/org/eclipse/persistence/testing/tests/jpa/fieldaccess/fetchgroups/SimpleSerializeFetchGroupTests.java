@@ -14,21 +14,10 @@
 //     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.indirection.IndirectList;
@@ -48,8 +37,16 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
-
 import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Simple tests to verify the functionality of {@link FetchGroup} when the
@@ -384,7 +381,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         try {
             beginTransaction(em);
 
-            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID", Employee.class);
             query.setParameter("ID", minimumEmployeeId(em));
             FetchGroup emptyFG = new FetchGroup();
             query.setHint(QueryHints.FETCH_GROUP, emptyFG);
@@ -453,7 +450,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         try {
             beginTransaction(em);
 
-            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+            TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID", Employee.class);
             query.setParameter("ID", minimumEmployeeId(em));
             FetchGroup fg = new FetchGroup();
             fg.addAttribute("period");
@@ -695,7 +692,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     public void joinFetchEmployeeAddressWithDynamicFetchGroup() {
         EntityManager em = createEntityManager("fieldaccess");
 
-        Query query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address");
+        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address", Employee.class);
 
         FetchGroup fetchGroup = new FetchGroup("names");
         fetchGroup.addAttribute("firstName");
@@ -712,7 +709,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     public void joinFetchEmployeeAddressPhoneWithDynamicFetchGroup() {
         EntityManager em = createEntityManager("fieldaccess");
 
-        Query query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address WHERE e.id IN (SELECT p.owner.id FROM PhoneNumber p)");
+        TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address WHERE e.id IN (SELECT p.owner.id FROM PhoneNumber p)", Employee.class);
 
         FetchGroup fetchGroup = new FetchGroup("names");
         fetchGroup.addAttribute("firstName");
@@ -783,7 +780,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     public void simpleSerializeAndMerge() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
         int id = minEmployeeIdWithAddressAndPhones(em);
-        HashMap<String, PhoneNumber> phonesOriginal = new HashMap();
+        HashMap<String, PhoneNumber> phonesOriginal = new HashMap<>();
         // save the original Employee for clean up
         Employee empOriginal = em.find(Employee.class, id);
         for(PhoneNumber phone : empOriginal.getPhoneNumbers()) {
@@ -1108,6 +1105,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             group.addAttribute("lastName");
             group.addAttribute("address");
 
+            @SuppressWarnings({"unchecked"})
             List<Employee> employeesCopy = (List<Employee>) em.unwrap(JpaEntityManager.class).copy(employees, group);
             assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
             System.out.println(">>> Employees copied");
@@ -1320,11 +1318,12 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         copyCascade(CopyGroup.CASCADE_ALL_PARTS);
     }
 
+    @SuppressWarnings({"unchecked"})
     void copyCascade(int cascadeDepth) {
         EntityManager em = createEntityManager("fieldaccess");
         try {
             beginTransaction(em);
-            Query query = em.createQuery("SELECT e FROM Employee e");
+            TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e", Employee.class);
             List<Employee> employees = query.getResultList();
 
             CopyGroup group = new CopyGroup();
@@ -1345,7 +1344,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 // In this case the objects should be copied one by one - each one using a new CopyGroup.
                 // That ensures most referenced object are original ones (not copies) -
                 // the only exception is privately owned objects in CASCADE_PRIVATE_PARTS case.
-                employeesCopy = new ArrayList(employees.size());
+                employeesCopy = new ArrayList<>(employees.size());
                 for(Employee emp : employees) {
                     CopyGroup groupClone = group.clone();
                     employeesCopy.add((Employee)em.unwrap(JpaEntityManager.class).copy(emp, groupClone));
@@ -1356,7 +1355,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 // That ensures identities of the copies:
                 // for instance if several employees referenced the same project,
                 // then all copies of these employees will reference the single copy of the project.
-                employeesCopy = (List)em.unwrap(JpaEntityManager.class).copy(employees, group);
+                employeesCopy = (List<Employee>)em.unwrap(JpaEntityManager.class).copy(employees, group);
             }
 
             // IdentityHashSets will be used to verify copy identities
@@ -1482,7 +1481,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         try {
             beginTransaction(em);
 
-             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL and e.manager IS NOT NULL");
+             TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.address IS NOT NULL and e.manager IS NOT NULL", Employee.class);
              List<Employee> employees = query.getResultList();
 
              OneToOneMapping addressMapping = (OneToOneMapping)employeeDescriptor.getMappingForAttributeName("address");

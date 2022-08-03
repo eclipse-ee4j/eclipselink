@@ -14,15 +14,30 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.MapKeyClass;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+import jakarta.persistence.Version;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Collection;
 import java.util.Map;
 
-import jakarta.persistence.*;
-
-import static jakarta.persistence.GenerationType.*;
-import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity
 @Table(name="CMP3_CUSTOMER")

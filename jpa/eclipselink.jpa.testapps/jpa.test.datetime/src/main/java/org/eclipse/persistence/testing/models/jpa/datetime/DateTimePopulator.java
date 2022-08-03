@@ -14,6 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.datetime;
 
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+
 import java.lang.reflect.Method;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -24,11 +29,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
-
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.UnitOfWork;
 
 public class DateTimePopulator {
     public DateTimePopulator() {

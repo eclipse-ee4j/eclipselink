@@ -12,13 +12,12 @@
 
 package org.eclipse.persistence.testing.models.jpa.entitylistener;
 
-import org.eclipse.persistence.testing.models.jpa.sessionbean.InjectedBean;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PrePersist;
+import org.eclipse.persistence.testing.models.jpa.sessionbean.InjectedBean;
 
 /* Trigger Bug #495587 */
 public class AbstractEntityListener<E extends EntityListenerHolderInterface> {

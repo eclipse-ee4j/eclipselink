@@ -16,27 +16,31 @@
 
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import junit.framework.*;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.*;
-import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
 
@@ -85,7 +89,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
               emp.setManager(null);
               emp.setAddress(null);
               uow.deleteObject(emp);
-            };
+            }
         }
 
         UpdateAllQuery updateProjects = new UpdateAllQuery(Project.class);

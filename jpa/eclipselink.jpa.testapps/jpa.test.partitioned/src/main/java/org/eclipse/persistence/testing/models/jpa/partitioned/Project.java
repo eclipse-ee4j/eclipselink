@@ -14,15 +14,26 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
-import java.io.Serializable;
-import jakarta.persistence.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import org.eclipse.persistence.annotations.Partitioned;
 import org.eclipse.persistence.annotations.RangePartition;
 import org.eclipse.persistence.annotations.RangePartitioning;
 
-import static jakarta.persistence.GenerationType.*;
-import static jakarta.persistence.InheritanceType.*;
+import java.io.Serializable;
+
+import static jakarta.persistence.GenerationType.TABLE;
+import static jakarta.persistence.InheritanceType.JOINED;
 
 /**
  * Employees have a many-to-many relationship with Projects through the
