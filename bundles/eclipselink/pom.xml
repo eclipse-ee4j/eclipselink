@@ -357,11 +357,7 @@
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
-                        <configuration>
-                            <!-- we can't skip execution, so generate manifest to some dummy location
-                                 to not include it in final jar-->
-                            <manifestLocation>${project.build.directory}/tmp-m</manifestLocation>
-                        </configuration>
+                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -550,6 +546,19 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>jar</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

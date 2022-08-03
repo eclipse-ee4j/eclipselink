@@ -1567,11 +1567,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <configuration>
+                            <archive>
+                                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <!--Create jar file with source files and manifest with OSGi entries-->
             <plugin>
