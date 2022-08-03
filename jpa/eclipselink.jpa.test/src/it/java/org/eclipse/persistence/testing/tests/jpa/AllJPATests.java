@@ -16,10 +16,11 @@
 //       - 465235 : Find Bugs Fix: removed null variable args
 package org.eclipse.persistence.testing.tests.jpa;
 
-import junit.framework.Test;
-
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.tests.jpa.advanced.JPAAdvancedTestModel;
+import org.eclipse.persistence.testing.tests.jpa22.advanced.CriteriaQueryCastTestSuite;
+import org.eclipse.persistence.testing.tests.jpa22.jta.JTATestSuite;
+import org.eclipse.persistence.testing.tests.jpa22.metadata.MetadataASMFactoryTest;
 
 /**
  * <p><b>Purpose</b>: Test run for all JPA tests.
@@ -38,10 +39,5 @@ public class AllJPATests extends TestModel {
         public AllJPATests() {
             addTest(new JPAAdvancedTestModel());
             addTest(FullRegressionTestSuite.suite());
-            try {
-                addTest((Test)Class.forName("org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite").getMethod("suite").invoke(null));
-            } catch (Exception exception) {
-                System.out.println("WARNING: " + exception);
-            }
         }
 }
