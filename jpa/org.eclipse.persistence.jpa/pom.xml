@@ -42,6 +42,12 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.json</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
         </dependency>
         <!--API dependecies-->
@@ -52,6 +58,7 @@
         <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.enterprise</groupId>
@@ -155,6 +162,7 @@
                                 </Export-Package>
                                 <Import-Package>
                                     org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
+                                    org.eclipse.persistence.json;resolution:=optional,
                                     *
                                 </Import-Package>
                             </instructions>

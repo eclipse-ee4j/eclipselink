@@ -108,8 +108,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.json.JsonValue;
-
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
@@ -1447,7 +1445,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      *         or {@code false} otherwise
      */
     protected boolean isValidJsonType(MetadataClass cls) {
-        return cls.extendsInterface(JsonValue.class);
+        return cls.extendsInterface("jakarta.json.JsonValue");
     }
 
     /**
