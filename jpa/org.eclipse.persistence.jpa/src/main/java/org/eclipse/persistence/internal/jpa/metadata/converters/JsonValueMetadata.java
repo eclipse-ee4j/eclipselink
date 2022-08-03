@@ -14,8 +14,6 @@
 //     13/01/2022-4.0.0 Tomas Kraus - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import jakarta.json.JsonValue;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -49,7 +47,7 @@ public class JsonValueMetadata extends MetadataConverter {
 
     @Override
     public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
-        if (accessor.getReferenceClass().extendsInterface(JsonValue.class)
+        if (accessor.getReferenceClass().extendsInterface("jakarta.json.JsonValue")
                 || accessor.getReferenceClass().isArray()
                 || accessor.getReferenceClass().isInterface()) {
             if (ConverterManager.getInstance().hasConverter(TYPE_NAME)) {
