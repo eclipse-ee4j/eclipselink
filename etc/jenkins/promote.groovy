@@ -73,7 +73,7 @@ spec:
       requests:
         memory: "2Gi"
         cpu: "1"
-    image: tkraus/el-build:2.0.2
+    image: tkraus/el-build:1.1.9
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
@@ -123,6 +123,7 @@ spec:
                             """
                         // Prepare and promote EclipseLink artifacts to oss.sonatype.org (staging)
                         sh """
+                            . /etc/profile
                             curl --version
                             $JAVA_HOME/bin/java -version
                             echo JAVA_HOME = ${JAVA_HOME}
