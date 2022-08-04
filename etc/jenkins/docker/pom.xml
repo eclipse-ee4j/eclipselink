@@ -195,7 +195,7 @@
                             <build>
                                 <contextDir>${project.build.directory}/image</contextDir>
                                 <buildOptions>
-                                    <squash/>
+                                    <!--squash/-->
                                 </buildOptions>
                             </build>
                         </image>
