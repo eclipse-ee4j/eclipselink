@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.models.jpa.nosql.mapped;
 import java.util.*;
 
 import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -29,19 +31,24 @@ import org.eclipse.persistence.nosql.annotations.NoSql;
  * Model order class, maps to ORDER record.
  */
 @Entity
-@NoSql(dataFormat=DataFormatType.MAPPED, dataType="Order-mapped")
+@NoSql(dataFormat=DataFormatType.MAPPED, dataType="order_mapped")
 public class Order {
     @Id
+    @Column(name="id")
     public long id;
     @Basic
+    @Column(name="orderedby")
     public String orderedBy;
     @Embedded
+    @Column(name="address")
     public Address address;
     @OneToOne
     public Customer customer;
-    @Basic
+    @ElementCollection
+    @Column(name="lineitems")
     public List<LineItem> lineItems = new ArrayList<>();
-    @Basic
+    @ElementCollection
+    @Column(name="comments")
     public List<String> comments = new ArrayList<>();
 
     public String toString() {

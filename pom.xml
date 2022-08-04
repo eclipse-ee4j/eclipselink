@@ -240,6 +240,8 @@
         <oracle.fmw.version>12.2.1-2-0</oracle.fmw.version>
         <!-- CQ #21141 -->
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
+        <!-- CQ #24195 -->
+        <oracle.nosql.sdk.version>5.3.5</oracle.nosql.sdk.version>
         <!-- CQ #21142 -->
         <osgi.version>6.0.0</osgi.version>
         <!-- CQ #21143 -->
@@ -829,6 +831,12 @@
                 <groupId>com.oracle.kv</groupId>
                 <artifactId>oracle-nosql-client</artifactId>
                 <version>${oracle.nosql.version}</version>
+            </dependency>
+            <!--Oracle NoSQL SDK Driver-->
+            <dependency>
+                <groupId>com.oracle.nosql.sdk</groupId>
+                <artifactId>nosqldriver</artifactId>
+                <version>${oracle.nosql.sdk.version}</version>
             </dependency>
             <!-- All files as a Oracle JDBC driver CQ #21154 -->
             <dependency>

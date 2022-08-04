@@ -45,7 +45,10 @@ public class UUIDSequence extends Sequence {
 
     @Override
     public Object getGeneratedValue(Accessor accessor, AbstractSession writeSession, String seqName) {
-        ValueReadQuery query = getDatasourcePlatform().getUUIDQuery();
+        ValueReadQuery query = null;
+        if (getDatasourcePlatform() != null) {
+            query = getDatasourcePlatform().getUUIDQuery();
+        }
         if (query != null) {
             return writeSession.executeQuery(query);
         } else {

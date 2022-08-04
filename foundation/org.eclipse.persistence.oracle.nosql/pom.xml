@@ -62,7 +62,12 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-        <!--Oracle proprietary dependencies-->
+        <dependency>
+            <groupId>com.oracle.nosql.sdk</groupId>
+            <artifactId>nosqldriver</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>com.oracle.database.messaging</groupId>
             <artifactId>aqapi</artifactId>
@@ -73,6 +78,14 @@
     </dependencies>
 
     <build>
+        <!--Filtering enables generate/substitute test properties from Maven into *.xml files.-->
+        <testResources>
+            <testResource>
+                <directory>${integration.test.resources.directory}</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -185,6 +198,20 @@
                             <workingDirectory>${project.build.directory}/test-run</workingDirectory>
                         </configuration>
                         <executions>
+                            <execution>
+                                <id>test-oracle-nosql-sdk</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <skipTests>${test-skip-oracle-nosql}</skipTests>
+                                    <reportNameSuffix>test-oracle-nosql-sdk</reportNameSuffix>
+                                    <includes>
+                                        <include>org.eclipse.persistence.testing.tests.eis.nosql.sdk.NoSQLTestSuite</include>
+                                        <include>org.eclipse.persistence.testing.tests.jpa.nosql.sdk.NoSQLJPATestSuite</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
                             <execution>
                                 <id>test-oracle-nosql</id>
                                 <goals>

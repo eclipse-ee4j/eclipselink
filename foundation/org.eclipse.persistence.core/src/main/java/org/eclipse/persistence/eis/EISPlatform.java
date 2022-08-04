@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,12 +25,12 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.eis.interactions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 
 /**
  * <p>An <code>EISPlatform</code> defines any EIS adapter specific behavior.
@@ -52,7 +52,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public class EISPlatform extends DatasourcePlatform {
+public class EISPlatform extends DatabasePlatform {
     protected boolean isIndexedRecordSupported;
     protected boolean isMappedRecordSupported;
     protected boolean isDOMRecordSupported;

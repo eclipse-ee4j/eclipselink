@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,12 @@ public class EISException extends org.eclipse.persistence.exceptions.DatabaseExc
     public static final int INVALID_FACTORY_ATTRIBUTES = 17023;
     public static final int COULD_NOT_DELETE_FILE = 17024;
     public static final int GROUPING_ELEMENT_REQUIRED = 17025;
+    public static final int OPERATION_PROPERTY_IS_NOT_SET = 17026;
+    public static final int TABLE_NAME_IS_NOT_SET = 17027;
+    public static final int INVALID_CONSISTENCY_PROPERTY_VALUE = 17028;
+    public static final int INVALID_DURABILITY_PROPERTY_VALUE = 17029;
+    public static final int XML_INTERACTION_IS_VALID_ONLY = 17030;
+    public static final int QUERY_IS_TOO_COMPLEX_FOR_ORACLE_NOSQL_DB = 17031;
     public static final int EIS_EXCEPTION = 91000;
     public static final int RESOURCE_EXCEPTION = 90000;
 
@@ -176,6 +182,30 @@ public class EISException extends org.eclipse.persistence.exceptions.DatabaseExc
 
     public static EISException couldNotDeleteFile(Object[] args) {
         return EISException.createResourceException(args, COULD_NOT_DELETE_FILE);
+    }
+
+    public static EISException operationPropertyIsNotSet() {
+        return EISException.createException(new Object[] {  }, OPERATION_PROPERTY_IS_NOT_SET);
+    }
+
+    public static EISException tableNameIsNotSet() {
+        return EISException.createException(new Object[] {  }, TABLE_NAME_IS_NOT_SET);
+    }
+
+    public static EISException invalidConsistencyPropertyValue(String property) {
+        return EISException.createException(new Object[] { property }, INVALID_CONSISTENCY_PROPERTY_VALUE);
+    }
+
+    public static EISException invalidDurabilityPropertyValue(String property) {
+        return EISException.createException(new Object[] { property }, INVALID_DURABILITY_PROPERTY_VALUE);
+    }
+
+    public static EISException xmlInteractionIsValidOnly(String property) {
+        return EISException.createException(new Object[] { property }, XML_INTERACTION_IS_VALID_ONLY);
+    }
+
+    public static EISException queryIsTooComplexForOracleNoSQLDB(String property) {
+        return EISException.createException(new Object[] { property }, QUERY_IS_TOO_COMPLEX_FOR_ORACLE_NOSQL_DB);
     }
 
     public static EISException incorrectLoginInstanceProvided(Class<?> loginClass) {
