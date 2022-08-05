@@ -54,8 +54,7 @@
     <properties>
         <argLine/>
         <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>
-        <!-- there are 2 failures and no support for running on the server yet -->
-        <ignore.se.failures>true</ignore.se.failures>
+        <!-- no support for running on the server yet -->
         <server.test.skip>true</server.test.skip>
     </properties>
 
