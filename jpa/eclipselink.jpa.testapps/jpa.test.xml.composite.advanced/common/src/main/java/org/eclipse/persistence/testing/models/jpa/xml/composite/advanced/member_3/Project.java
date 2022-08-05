@@ -27,7 +27,7 @@ import java.util.Vector;
  * Remote interface: Project
  * Primary key class: ProjectPK
  * Home interface: ProjectHome
- *
+ * <p>
  * {@literal >}Employees have a many-to-many relationship with Projects through the
  *  projects attribute.
  * {@literal >}Projects refer to Employees through the employees attribute.

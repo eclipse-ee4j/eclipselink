@@ -20,7 +20,7 @@ import jakarta.persistence.Query;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
-import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
+import org.eclipse.persistence.testing.framework.jpa.junit.EntityContainerTestBase;
 
 /**
  * @author cdelahun

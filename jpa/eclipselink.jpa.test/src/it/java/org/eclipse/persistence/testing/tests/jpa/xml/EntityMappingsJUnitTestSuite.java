@@ -33,10 +33,7 @@ import org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsDyna
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.compositepk.AdvancedCompositePKJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.fetchgroup.EntityMappingsFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.xml.complexaggregate.EntityMappingsComplexAggregateJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.xml.inheritance.EntityMappingsInheritanceJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.inherited.EntityMappingsInheritedJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.xml.relationships.EntityMappingsRelationshipsJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.xml.relationships.unidirectional.EntityMappingsUnidirectionalRelationshipsJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.merge.EntityMappingsMergeJUnitTestSuite;
 
 /**
@@ -51,11 +48,8 @@ public class EntityMappingsJUnitTestSuite extends TestCase {
         TestSuite suite = new TestSuite("XML Entity Mappings JUnit Test Suite");
 
         suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite());
-        suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite());
-        suite.addTest(EntityMappingsInheritanceJUnitTestCase.suite());
 
         if (testing.equals(TestingProperties.JPA_ORM_TESTING)) {
-            suite.addTest(EntityMappingsUnidirectionalRelationshipsJUnitTestCase.suite());
             suite.addTest(EntityMappingsInheritedJUnitTestCase.suite());
             suite.addTest(EntityMappingsMergeJUnitTestSuite.suite());
         } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) {

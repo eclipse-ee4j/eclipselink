@@ -59,7 +59,7 @@ public class Helmet {
 
     public Helmet() {
         super();
-        this.properties = new HashMap<String, String>();
+        this.properties = new HashMap<>();
     }
 
     public int getId() {

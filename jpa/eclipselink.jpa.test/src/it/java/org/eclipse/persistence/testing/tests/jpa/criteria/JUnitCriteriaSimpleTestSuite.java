@@ -105,10 +105,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitCriteriaSimpleTestSuiteBa
         attributes.put(Address_postalCode, "postalCode");
         attributes.put(Address_city, "city");
         attributes.put(LargeProject_budget, "budget");
-        attributes.put(BeerConsumer_blueBeersToConsume, "blueBeersToConsume");
-        attributes.put(BlueLight_discount, "discount");
-        attributes.put(Person_car, "car");
-        attributes.put(SportsCar_maxSpeed, "maxSpeed");
     }
 
     public JUnitCriteriaSimpleTestSuite() {

@@ -46,11 +46,11 @@ public class JUnitDomainObjectComparer {
         }
 
         if ((obj1 instanceof Collection)  && !(obj2 instanceof Collection)) {
-            return compareObjects(obj2, (Collection)obj1);
+            return compareObjects(obj2, (Collection<?>)obj1);
         } else if ( !(obj1  instanceof Collection)  && (obj2 instanceof Collection)) {
-            return compareObjects(obj1, (Collection)obj2);
+            return compareObjects(obj1, (Collection<?>)obj2);
         } else if ((obj1 instanceof Collection) && (obj2 instanceof Collection)) {
-            return compareObjects((Collection)obj1, (Collection)obj2);
+            return compareObjects((Collection<?>)obj1, (Collection<?>)obj2);
         } else {
             if (getSession().compareObjects(obj1, obj2)) {
                 return true;
@@ -97,8 +97,8 @@ public class JUnitDomainObjectComparer {
         }
     }
 
-    public boolean compareObjects(Object domainObject1, Collection aCollection) {
-        Iterator itr = aCollection.iterator();
+    public boolean compareObjects(Object domainObject1, Collection<?> aCollection) {
+        Iterator<?> itr = aCollection.iterator();
 
         while (itr.hasNext()) {
             Object domainObject2 = itr.next();
@@ -109,7 +109,7 @@ public class JUnitDomainObjectComparer {
         return false;
     }
 
-    public boolean compareObjects(Collection objects1, Collection objects2) {
+    public boolean compareObjects(Collection<?> objects1, Collection<?> objects2) {
         boolean allMatched = true;
 
         if (objects1.size() != objects2.size()) {
@@ -118,7 +118,7 @@ public class JUnitDomainObjectComparer {
             allMatched = false;
         }*/
         //Enumeration enum1 = objects1.elements();
-        Iterator itr1 = objects1.iterator();
+        Iterator<?> itr1 = objects1.iterator();
 
         while (itr1.hasNext()) {
             Object obj1 = itr1.next();
@@ -154,7 +154,7 @@ public class JUnitDomainObjectComparer {
         }
         return allMatched;
     }
-//    public PhoneNumber findPhoneNumberIn(PhoneNumber phone1, Collection phones){
+    //    public PhoneNumber findPhoneNumberIn(PhoneNumber phone1, Collection phones){
 //
 //        Iterator itr = phones.iterator();
 //        while (itr.hasNext()) {

@@ -17,7 +17,7 @@
 package org.eclipse.persistence.testing.tests.jpa.jpql.relationships;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.annotations.BatchFetchType;
@@ -132,7 +132,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
         // Count SQL.
         QuerySQLTracker counter = new QuerySQLTracker(getPersistenceUnitServerSession());
         try {
-            Query query = em.createQuery("Select c from Customer c");
+            TypedQuery<Customer> query = em.createQuery("Select c from Customer c", Customer.class);
             query.setHint(QueryHints.BATCH_SIZE, size);
             query.setHint(QueryHints.BATCH_TYPE, type);
             query.setHint(QueryHints.BATCH, "e.CSInteractions");
@@ -171,7 +171,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
         // Count SQL.
         QuerySQLTracker counter = new QuerySQLTracker(getPersistenceUnitServerSession());
         try {
-            Query query = em.createQuery("Select c from Customer c");
+            TypedQuery<Customer> query = em.createQuery("Select c from Customer c", Customer.class);
             query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CSInteractions");
             query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CCustomers");
             List<Customer> results = query.getResultList();
@@ -207,7 +207,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
         // Count SQL.
         QuerySQLTracker counter = new QuerySQLTracker(getPersistenceUnitServerSession());
         try {
-            Query query = em.createQuery("Select c from Customer c");
+            TypedQuery<Customer> query = em.createQuery("Select c from Customer c", Customer.class);
             query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CSInteractions");
             query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CCustomers");
             List<Customer> results = query.getResultList();
@@ -242,7 +242,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
         // Count SQL.
         QuerySQLTracker counter = new QuerySQLTracker(getPersistenceUnitServerSession());
         try {
-            Query query = em.createQuery("Select c from Customer c");
+            TypedQuery<Customer> query = em.createQuery("Select c from Customer c", Customer.class);
             query.setHint(QueryHints.LEFT_FETCH, "e.CSInteractions");
             query.setHint(QueryHints.LEFT_FETCH, "e.CCustomers");
             List<Customer> results = query.getResultList();

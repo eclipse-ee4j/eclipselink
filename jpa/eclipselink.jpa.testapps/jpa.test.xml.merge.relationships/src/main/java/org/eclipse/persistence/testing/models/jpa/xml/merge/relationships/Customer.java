@@ -40,7 +40,7 @@ import static jakarta.persistence.GenerationType.TABLE;
 /**
  * This class is mapped in the following file:
  *  - eclipselink.jpa.test\resource\eclipselink-xml-merge-model\orm-annotation-merge-relationships-entity-mappings.xml
- *
+ * <p>
  * Its equivalent testing file is:
  *  - org.eclipse.persistence.testing.tests.jpa.xml.merge.relationships.EntityMappingsMergeRelationshipsJUnitTestCase
  */

@@ -101,12 +101,12 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
  * address attribute.
  * Employees have a many-to-many relationship with Projects through the
  * projects attribute.
- *
+ * <p>
  * Employee now has invalid annotation fields and data. This is done so that
  * we may test the XML/Annotation merging. Employee has been defined in the
  * XML, therefore, most annotations should not be processed. If they are, then
  * they will force an error, which means something is wrong with our merging.
- *
+ * <p>
  * The invalid annotations that should not be processed have _INVALID
  * appended to some annotation field member. Others will not have this,
  * which means they should be processed (their mappings are not defined in the

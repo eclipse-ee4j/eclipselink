@@ -111,7 +111,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         FetchGroup serFG = serialize(fg);
 
         assertNotNull(serFG);
-        assertTrue(serFG.getClass() == EntityFetchGroup.class);
+        assertSame(serFG.getClass(), EntityFetchGroup.class);
         assertTrue(serFG.hasItems());
 
         AttributeItem basicFI = serFG.getItem("basic");
@@ -173,7 +173,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
         assertNotFetchedAttribute(emp, "phoneNumbers");
         assertNotFetchedAttribute(emp, "projects");
 
-        assertTrue(getFetchGroup(emp).getClass() == EntityFetchGroup.class);
+        assertSame(getFetchGroup(emp).getClass(), EntityFetchGroup.class);
         Employee serEmp = serialize(emp);
 
         assertNotNull(serEmp);
@@ -1384,15 +1384,15 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 }
 
                 if(emp.getAddress() == null) {
-                    assertTrue("emp.getAddress() == null, but empCopy.getAddress() != null", empCopy.getAddress() == null);
+                    assertNull("emp.getAddress() == null, but empCopy.getAddress() != null", empCopy.getAddress());
                 } else {
                     originalAddresses.add(emp.getAddress());
                     copyAddresses.add(empCopy.getAddress());
                     if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
-                        assertTrue("address has been copied", emp.getAddress() == empCopy.getAddress());
+                        assertSame("address has been copied", emp.getAddress(), empCopy.getAddress());
                     } else {
                         // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
-                        assertFalse("address has not been copied", emp.getAddress() == empCopy.getAddress());
+                        assertNotSame("address has not been copied", emp.getAddress(), empCopy.getAddress());
                     }
                 }
 
@@ -1432,15 +1432,15 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 }
 
                 if(emp.getManager() == null) {
-                    assertTrue("emp.getManager() == null, but empCopy.getManager() != null", empCopy.getManager() == null);
+                    assertNull("emp.getManager() == null, but empCopy.getManager() != null", empCopy.getManager());
                 } else {
                     originalEmployees.add(emp.getManager());
                     copyEmployees.add(empCopy.getManager());
                     if(cascadeDepth == CopyGroup.NO_CASCADE || cascadeDepth == CopyGroup.CASCADE_PRIVATE_PARTS) {
-                        assertTrue("manager has been copied", emp.getManager() == empCopy.getManager());
+                        assertSame("manager has been copied", emp.getManager(), empCopy.getManager());
                     } else {
                         // cascadeDepth == CopyGroup.CASCADE_ALL_PARTS
-                        assertFalse("manager has not been copied", emp.getManager() == empCopy.getManager());
+                        assertNotSame("manager has not been copied", emp.getManager(), empCopy.getManager());
                     }
                 }
 
@@ -1463,10 +1463,10 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                 }
             }
 
-            assertTrue("copyEmployees.size() == " + copyEmployees.size() + "; was expected " + originalEmployees.size(), originalEmployees.size() == copyEmployees.size());
-            assertTrue("copyAddresses.size() == " + copyAddresses.size() + "; was expected " + originalAddresses.size(), originalAddresses.size() == copyAddresses.size());
-            assertTrue("copyProjects.size() == " + copyProjects.size() + "; was expected " + originalProjects.size(), originalProjects.size() == copyProjects.size());
-            assertTrue("copyPhones.size() == " + copyPhones.size() + "; was expected " + originalPhones.size(), originalPhones.size() == copyPhones.size());
+            assertEquals("copyEmployees.size() == " + copyEmployees.size() + "; was expected " + originalEmployees.size(), originalEmployees.size(), copyEmployees.size());
+            assertEquals("copyAddresses.size() == " + copyAddresses.size() + "; was expected " + originalAddresses.size(), originalAddresses.size(), copyAddresses.size());
+            assertEquals("copyProjects.size() == " + copyProjects.size() + "; was expected " + originalProjects.size(), originalProjects.size(), copyProjects.size());
+            assertEquals("copyPhones.size() == " + copyPhones.size() + "; was expected " + originalPhones.size(), originalPhones.size(), copyPhones.size());
         } finally {
             if(isTransactionActive(em)) {
                 rollbackTransaction(em);

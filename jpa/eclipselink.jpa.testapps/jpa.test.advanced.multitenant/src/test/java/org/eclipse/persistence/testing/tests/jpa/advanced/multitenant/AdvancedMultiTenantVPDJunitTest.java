@@ -62,7 +62,7 @@ public class AdvancedMultiTenantVPDJunitTest extends AdvancedMultiTenantJunitBas
      * This test will try to DDL generate on deploy. Meaning once we try to
      * access the VPD PU we'll get an exception if we are not an oracle platform
      * so check before throwing an exception.
-     *
+     * <p>
      * VPD is currently supported only on Oracle.
      */
     public void testVPDEMPerTenant() {

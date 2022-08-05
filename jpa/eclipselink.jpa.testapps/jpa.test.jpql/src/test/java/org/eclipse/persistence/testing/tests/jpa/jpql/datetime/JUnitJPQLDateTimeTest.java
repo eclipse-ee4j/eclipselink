@@ -81,11 +81,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.date = :date").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.date = :date").
             setParameter("date", cal.getTime(), TemporalType.DATE).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
     }
 
     public void testSqlDateToTS() {
@@ -93,11 +93,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.date = :date").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.date = :date").
             setParameter("date", cal.getTime(), TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
     }
 
     public void testTime() {
@@ -105,11 +105,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.time = :time").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.time = :time").
             setParameter("time", cal.getTime(), TemporalType.TIME).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
     }
 
     public void testTimeToTS() {
@@ -117,11 +117,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.time = :time").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.time = :time").
             setParameter("time", cal.getTime(), TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
     }
 
     public void testTimestamp() {
@@ -129,11 +129,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp = :timestamp").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp = :timestamp").
             setParameter("timestamp", cal.getTime(), TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
     }
 
     public void testTimestampToDate() {
@@ -141,11 +141,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp = :timestamp").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp = :timestamp").
             setParameter("timestamp", cal.getTime(), TemporalType.DATE).
             getResultList();
 
-        assertTrue("There should be zero result", result.size() == 0);
+        assertEquals("There should be zero result", 0, result.size());
     }
 
     public void testTimestampToTime() {
@@ -153,11 +153,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp = :timestamp").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp = :timestamp").
             setParameter("timestamp", cal.getTime(), TemporalType.TIME).
             getResultList();
 
-        assertTrue("There should be zero result", result.size() == 0);
+        assertEquals("There should be zero result", 0, result.size());
     }
 
    public void testUtilDate() {
@@ -165,11 +165,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.utilDate = :utilDate").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.utilDate = :utilDate").
             setParameter("utilDate", cal.getTime(), TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+       assertEquals("There should be one result", 1, result.size());
     }
 
     public void testCalendarWithUtilDate() {
@@ -177,11 +177,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
          cal.set(1901, 11, 31, 23, 59, 59);
          cal.set(Calendar.MILLISECOND, 999);
 
-         List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.calendar = :calendar").
+         List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.calendar = :calendar").
              setParameter("calendar", cal.getTime(), TemporalType.TIMESTAMP).
              getResultList();
 
-         assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
      }
 
     public void testSqlDateWithCal() {
@@ -189,11 +189,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.date = :date").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.date = :date").
             setParameter("date", cal, TemporalType.DATE).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
     }
 
     public void testTimeWithCal() {
@@ -201,11 +201,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.time = :time").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.time = :time").
             setParameter("time", cal, TemporalType.TIME).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
     }
 
     public void testTimestampWithCal() {
@@ -213,11 +213,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp = :timestamp").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp = :timestamp").
             setParameter("timestamp", cal, TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
     }
 
     public void testUtilDateWithCal() {
@@ -225,11 +225,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.utilDate = :utilDate").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.utilDate = :utilDate").
             setParameter("utilDate", cal, TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
     }
 
     public void testCalendar() {
@@ -237,11 +237,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.calendar = :calendar").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.calendar = :calendar").
             setParameter("calendar", cal, TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be one result", result.size() == 1);
+        assertEquals("There should be one result", 1, result.size());
     }
 
     public void testTimestampGreaterThan() {
@@ -249,11 +249,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(1901, 11, 31, 23, 59, 59);
         cal.set(Calendar.MILLISECOND, 999);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp > :timestamp").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp > :timestamp").
             setParameter("timestamp", cal.getTime(), TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be three result", result.size() == 3);
+        assertEquals("There should be three result", 3, result.size());
     }
 
     public void testTimestampLessThan() {
@@ -261,11 +261,11 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal.set(2001, 6, 1, 3, 45, 32);
         cal.set(Calendar.MILLISECOND, 87);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp < :timestamp").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp < :timestamp").
             setParameter("timestamp", cal.getTime(), TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be three result", result.size() == 2);
+        assertEquals("There should be three result", 2, result.size());
     }
 
 //IN node is going to be fixed and then this test will run
@@ -278,12 +278,12 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         cal2.set(2001, 6, 1, 3, 45, 32);
         cal2.set(Calendar.MILLISECOND, 87);
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp IN (:timestamp1, :timestamp2)").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp IN (:timestamp1, :timestamp2)").
             setParameter("timestamp1", cal.getTime(), TemporalType.TIMESTAMP).
             setParameter("timestamp2", cal2, TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be two result", result.size() == 2);
+        assertEquals("There should be two result", 2, result.size());
     }
 
     public void testTimestampBetween() {
@@ -293,12 +293,12 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
 
         Calendar cal2 = Calendar.getInstance();
 
-        List result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp BETWEEN :timestamp1 AND :timestamp2").
+        List<?> result = createEntityManager().createQuery("SELECT OBJECT(o) FROM DateTime o WHERE o.timestamp BETWEEN :timestamp1 AND :timestamp2").
             setParameter("timestamp1", cal.getTime(), TemporalType.TIMESTAMP).
             setParameter("timestamp2", cal2, TemporalType.TIMESTAMP).
             getResultList();
 
-        assertTrue("There should be four result", result.size() == 4);
+        assertEquals("There should be four result", 4, result.size());
     }
 
 }

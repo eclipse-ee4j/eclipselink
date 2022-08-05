@@ -63,19 +63,6 @@ import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleDefaultFetchG
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleFetchGroupTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleNamedFetchGroupTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleSerializeFetchGroupTests;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.DeleteAllQueryInheritanceJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.EntityManagerJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.JoinedAttributeInheritanceJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.LifecycleCallbackJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.MixedInheritanceJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.ReportQueryMultipleReturnInheritanceTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.TablePerClassInheritanceDDLTest;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.TablePerClassInheritanceJUnitTest;
-import org.eclipse.persistence.testing.tests.jpa.inherited.EmbeddableSuperclassJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedCallbacksJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedModelJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListAttributeChangeTrackingJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexAggregateTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite;
@@ -126,29 +113,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(OptimisticLockForceIncrementTestSuite.suite());
         suite.addTest(ConfigPUTestSuite.suite());
         suite.addTest(NamedQueryJUnitTest.suite());
-        fullSuite.addTest(suite);
-
-        // Inheritance model.
-        suite = new TestSuite();
-        suite.setName("inheritance");
-        suite.addTest(LifecycleCallbackJunitTest.suite());
-        suite.addTest(DeleteAllQueryInheritanceJunitTest.suite());
-        suite.addTest(EntityManagerJUnitTestCase.suite());
-        suite.addTest(MixedInheritanceJUnitTestCase.suite());
-        suite.addTest(JoinedAttributeInheritanceJunitTest.suite());
-        suite.addTest(TablePerClassInheritanceJUnitTest.suite());
-        suite.addTest(TablePerClassInheritanceDDLTest.suite());
-        suite.addTest(ReportQueryMultipleReturnInheritanceTestSuite.suite());
-        fullSuite.addTest(suite);
-
-        // Inherited model.
-        suite = new TestSuite();
-        suite.setName("inherited");
-        suite.addTest(OrderedListJunitTest.suite());
-        suite.addTest(OrderedListAttributeChangeTrackingJunitTest.suite());
-        suite.addTest(InheritedModelJunitTest.suite());
-        suite.addTest(InheritedCallbacksJunitTest.suite());
-        suite.addTest(EmbeddableSuperclassJunitTest.suite());
         fullSuite.addTest(suite);
 
         fullSuite.addTest(MetadataASMFactoryTest.suite());

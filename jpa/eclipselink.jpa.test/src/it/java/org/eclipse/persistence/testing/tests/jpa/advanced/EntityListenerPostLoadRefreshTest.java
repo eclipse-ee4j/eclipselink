@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeeListener;
-import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
+import org.eclipse.persistence.testing.framework.jpa.junit.EntityContainerTestBase;
 
 /**
  * Tests the @PostLoad event from an EntityListener is fired only once when in a transaction.

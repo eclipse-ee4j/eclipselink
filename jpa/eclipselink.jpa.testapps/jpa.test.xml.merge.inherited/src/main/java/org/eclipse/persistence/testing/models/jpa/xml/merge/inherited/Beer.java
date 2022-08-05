@@ -31,7 +31,7 @@ import static jakarta.persistence.FetchType.LAZY;
 /**
  * This class is mapped in:
  * resource/eclipselink-ddl-generation-model/merge-inherited-superclasses.xml
- *
+ * <p>
  * All annotations should be ignored in this class as the XML definition is
  * declared as metadata-complete=true. Not to mention the access is field
  * therefore any annotations on methods are not processed (where they were

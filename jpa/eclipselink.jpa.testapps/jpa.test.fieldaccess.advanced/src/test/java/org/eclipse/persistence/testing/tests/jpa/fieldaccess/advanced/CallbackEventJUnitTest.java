@@ -146,7 +146,7 @@ public class CallbackEventJUnitTest extends JUnitTestCase {
         m_afterEvent = EmployeeListener.PRE_REMOVE_COUNT;
         closeEntityManager(em);
 
-        assertTrue("The preRemove callback method was called, remove should have been ignored.", m_beforeEvent == m_afterEvent);
+        assertEquals("The preRemove callback method was called, remove should have been ignored.", m_beforeEvent, m_afterEvent);
         //Employee emp = (Employee)em.find(Employee.class, new_emp.getId());
 
         //this.assertTrue("The remove should have been ignored.", m_beforeEvent == m_afterEvent);
@@ -175,7 +175,7 @@ public class CallbackEventJUnitTest extends JUnitTestCase {
         }
 
 
-        assertTrue("Calling persist on a managed object should be ignored", m_beforeEvent==m_afterEvent);
+        assertEquals("Calling persist on a managed object should be ignored", m_beforeEvent, m_afterEvent);
     }
 
     public void testPreUpdateEvent_UpdateAltered() {

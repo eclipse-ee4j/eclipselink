@@ -666,7 +666,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             Address address2 = (Address) aQuery.getSingleResult();
 
             assertNotNull("Address returned from stored procedure is null", address2);
-            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new
+            assertNotSame("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1, address2); // new
             // Integer address handled differently than int
             assertEquals("Address not found using stored procedure", address1.getId().intValue(), address2.getId().intValue());
             assertTrue("Address.street data returned doesn't match persisted address.street", address1.getStreet().endsWith(address2.getStreet()));
@@ -714,7 +714,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             Address address2 = (Address) aQuery.getSingleResult();
 
             assertNotNull("Address returned from stored procedure is null", address2);
-            assertFalse("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1 == address2); // new
+            assertNotSame("Address returned is the same cached instance that was persisted - the cache must be disabled for this test", address1, address2); // new
             // Integer address handled differently than int
             assertEquals("Address not found using stored procedure", address1.getId().intValue(), address2.getId().intValue());
             assertEquals("Address.street data returned doesn't match persisted address.street", address1.getStreet(), address2.getStreet());

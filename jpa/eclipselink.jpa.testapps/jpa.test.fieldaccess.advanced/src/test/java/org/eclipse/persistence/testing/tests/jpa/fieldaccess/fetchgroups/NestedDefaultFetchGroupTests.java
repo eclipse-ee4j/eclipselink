@@ -124,7 +124,7 @@ public class NestedDefaultFetchGroupTests extends BaseFetchGroupTests {
         boolean load = false;
         boolean originalLoad = false;
         if(!useLoadGroup) {
-            assertTrue(loadAddress == loadPhones);
+            assertEquals(loadAddress, loadPhones);
             load = loadAddress;
             originalLoad = defaultEmployeeFG.shouldLoad();
             if(load != originalLoad) {
@@ -161,10 +161,10 @@ public class NestedDefaultFetchGroupTests extends BaseFetchGroupTests {
             assertEquals(nExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
             boolean addressInstantiated = ((ValueHolderInterface) employeeDescriptor.getMappingForAttributeName("address").getAttributeValueFromObject(emp)).isInstantiated();
-            assertTrue(loadAddress == addressInstantiated);
+            assertEquals(loadAddress, addressInstantiated);
 
             boolean phonesInstantiated = ((IndirectCollection) employeeDescriptor.getMappingForAttributeName("phoneNumbers").getAttributeValueFromObject(emp)).isInstantiated();
-            assertTrue(loadPhones == phonesInstantiated);
+            assertEquals(loadPhones, phonesInstantiated);
 
             emp.getAddress();
             emp.getPhoneNumbers().size();

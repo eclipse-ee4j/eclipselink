@@ -43,14 +43,14 @@ import static org.eclipse.persistence.annotations.MultitenantType.VPD;
  * picked up by the 'default' testing PU. We do not want this to happen
  * as any multitenant VPD entity will mark the connection mode to exclusive
  * always. We want this class to remain exclusive to the multi-tenant-vpd PU.
- *
+ * <p>
  * Don't add an Entity annotation to this class as we don't want this class to
  * be picked up from other test persistence unit classes that do not exclude
  * unlisted classes.
- *
+ * <p>
  * see Related mapping file:
  * trunk\jpa\eclipselink.jpa.test\resource\eclipselink-annotation-model\multitenant-vpd.xml
- *
+ * <p>
  * Multi-tenant to do list.
  * Each user can see its own list of tasks.
  * Each task has a set of subtasks.

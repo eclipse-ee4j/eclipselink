@@ -144,6 +144,7 @@ public class JUnitJPQLComplexAggregateTest extends JUnitTestCase {
 
         String jpql = "SELECT COUNT(cc), c.name FROM Customer c LEFT JOIN c.CCustomers cc GROUP BY c.name order by c.name";
         Query q = em.createQuery(jpql);
+        @SuppressWarnings({"unchecked"})
         List<Object[]> result = q.getResultList();
 
         final String description = "Complex COUNT on joined variable over ManyToMany self refrenceing relationship";
@@ -175,7 +176,7 @@ public class JUnitJPQLComplexAggregateTest extends JUnitTestCase {
 
         String jpql = "SELECT COUNT(cc) FROM Customer c LEFT JOIN c.CCustomers cc GROUP BY c.name order by c.name";
         Query q = em.createQuery(jpql);
-        List result = q.getResultList();
+        List<?> result = q.getResultList();
 
         Assert.assertEquals("Complex COUNT on joined variable over ManyToMany self refrenceing relationship failed",
                             expectedResult, result);

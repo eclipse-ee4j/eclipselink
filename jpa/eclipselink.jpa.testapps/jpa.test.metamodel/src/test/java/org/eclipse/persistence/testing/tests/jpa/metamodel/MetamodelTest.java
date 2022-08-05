@@ -108,7 +108,7 @@ import java.util.Set;
  *   - verify metamodel
  *   - delete test entities created above (to reset the database)
  *   - close persistence unit
- *
+ * <p>
  *   API Usage
  *   There are three ways to query using the Criteria API which can wrap the Metamodel API
  *   1) Static canonical metamodel class model for type safe queries - these are the _Underscore design time classes
@@ -118,7 +118,7 @@ import java.util.Set;
  *      - see p.262 of the JPA 2.0 specification section 6.7
  *      - there may be type or generic usage compiler warnings that
  *        the user will need to workaround when using this non-type-safe query in a type-safe environment.
- *
+ * <p>
  *   This enhancement deals only with # 2) Dynamic metamodel query generation.
  *
  */
@@ -474,7 +474,7 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
             assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
 
-            /**
+            /*
              *  Return the attribute that corresponds to the id attribute
              *  declared by the entity or mapped superclass.
              *  @param type  the type of the represented declared id attribute
@@ -511,10 +511,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(msPerson);
             assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, msPerson.getPersistenceType());
 
-            /**
-             *  Return the attribute that corresponds to the id attribute
-             *  declared by the entity or mapped superclass.
-             *  @param type  the type of the represented declared id attribute
+            /*
+               Return the attribute that corresponds to the id attribute
+               declared by the entity or mapped superclass.
+               @param type  the type of the represented declared id attribute
              *  @return declared id attribute
              *  @throws IllegalArgumentException if id attribute of the given
              *          type is not declared in the identifiable type or if
@@ -557,9 +557,9 @@ public class MetamodelTest extends MetamodelTestBase {
             MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
             }*/
 
-            /**
-             *  Return the persistent attribute type for the attribute.
-             *  @return persistent attribute type
+            /*
+               Return the persistent attribute type for the attribute.
+               @return persistent attribute type
              */
             //PersistentAttributeType getPersistentAttributeType();
 
@@ -593,9 +593,9 @@ public class MetamodelTest extends MetamodelTestBase {
             MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
             }*/
 
-            /**
-             *  Return the persistent attribute type for the attribute.
-             *  @return persistent attribute type
+            /*
+               Return the persistent attribute type for the attribute.
+               @return persistent attribute type
              */
             //PersistentAttributeType getPersistentAttributeType();
 
@@ -630,9 +630,9 @@ public class MetamodelTest extends MetamodelTestBase {
             MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
             }*/
 
-            /**
-             *  Return the persistent attribute type for the attribute.
-             *  @return persistent attribute type
+            /*
+               Return the persistent attribute type for the attribute.
+               @return persistent attribute type
              */
             //PersistentAttributeType getPersistentAttributeType();
 
@@ -669,9 +669,9 @@ public class MetamodelTest extends MetamodelTestBase {
             MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
             }*/
 
-            /**
-             *  Return the persistent attribute type for the attribute.
-             *  @return persistent attribute type
+            /*
+               Return the persistent attribute type for the attribute.
+               @return persistent attribute type
              */
             //PersistentAttributeType getPersistentAttributeType();
             // note: not implemented yet - need a manyToMany in the model
@@ -703,9 +703,9 @@ public class MetamodelTest extends MetamodelTestBase {
             MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
             }*/
 
-            /**
-             *  Return the persistent attribute type for the attribute.
-             *  @return persistent attribute type
+            /*
+               Return the persistent attribute type for the attribute.
+               @return persistent attribute type
              */
             //PersistentAttributeType getPersistentAttributeType();
 
@@ -742,9 +742,9 @@ public class MetamodelTest extends MetamodelTestBase {
             MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
             }*/
 
-            /**
-             *  Return the persistent attribute type for the attribute.
-             *  @return persistent attribute type
+            /*
+               Return the persistent attribute type for the attribute.
+               @return persistent attribute type
              */
             //PersistentAttributeType getPersistentAttributeType();
 
@@ -780,9 +780,9 @@ public class MetamodelTest extends MetamodelTestBase {
             MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
             }*/
 
-            /**
-             *  Return the persistent attribute type for the attribute.
-             *  @return persistent attribute type
+            /*
+               Return the persistent attribute type for the attribute.
+               @return persistent attribute type
              */
             //PersistentAttributeType getPersistentAttributeType();
 
@@ -808,9 +808,9 @@ public class MetamodelTest extends MetamodelTestBase {
             Metamodel metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
 
-            /**
-             * Return the name of the attribute.
-             * @return name
+            /*
+              Return the name of the attribute.
+              @return name
              */
             //String getName();
 
@@ -843,10 +843,10 @@ public class MetamodelTest extends MetamodelTestBase {
             EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
             assertNotNull(entityHardwareDesigner_);
 
-            /**
-             *  Return the managed type representing the type in which
-             *  the attribute was declared.
-             *  @return declaring type
+            /*
+               Return the managed type representing the type in which
+               the attribute was declared.
+               @return declaring type
              */
             //ManagedType<X> getDeclaringType();
 
@@ -874,9 +874,9 @@ public class MetamodelTest extends MetamodelTestBase {
             Metamodel metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
 
-            /**
-             *  Return the Java type of the represented attribute.
-             *  @return Java type
+            /*
+               Return the Java type of the represented attribute.
+               @return Java type
              */
             //Class<Y> getJavaType();
             ManagedType<Person> msPerson = metamodel.managedType(Person.class);
@@ -903,9 +903,9 @@ public class MetamodelTest extends MetamodelTestBase {
             Metamodel metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
 
-            /**
-             *  Return the Java type of the represented attribute.
-             *  @return Java type
+            /*
+               Return the Java type of the represented attribute.
+               @return Java type
              */
             //Class<Y> getJavaType();
             EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
@@ -940,10 +940,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(msPerson);
             assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, msPerson.getPersistenceType());
 
-            /**
-             *  Return the java.lang.reflect.Member for the represented
-             *  attribute.
-             *  @return corresponding java.lang.reflect.Member
+            /*
+               Return the java.lang.reflect.Member for the represented
+               attribute.
+               @return corresponding java.lang.reflect.Member
              */
             //java.lang.reflect.Member getJavaMember();
             Attribute idAttribute = ((IdentifiableType)msPerson).getDeclaredId(Integer.class);
@@ -976,9 +976,9 @@ public class MetamodelTest extends MetamodelTestBase {
             Metamodel metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
 
-            /**
-             *  Return the java.lang.reflect.Member for the represented attribute.
-             *  @return corresponding java.lang.reflect.Member
+            /*
+               Return the java.lang.reflect.Member for the represented attribute.
+               @return corresponding java.lang.reflect.Member
              */
             //java.lang.reflect.Member getJavaMember();
             ManagedType<EmbeddedPK> embedableAttribute = metamodel.managedType(EmbeddedPK.class);
@@ -1015,9 +1015,9 @@ public class MetamodelTest extends MetamodelTestBase {
             Metamodel metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
 
-            /**
-             *  Return the java.lang.reflect.Member for the represented attribute.
-             *  @return corresponding java.lang.reflect.Member
+            /*
+               Return the java.lang.reflect.Member for the represented attribute.
+               @return corresponding java.lang.reflect.Member
              */
             //java.lang.reflect.Member getJavaMember();
             ManagedType<CPUEmbeddedId> embedCPUEmbeddedId = metamodel.managedType(CPUEmbeddedId.class);
@@ -1054,10 +1054,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
             assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
 
-            /**
-             *  Return the java.lang.reflect.Member for the represented
-             *  attribute.
-             *  @return corresponding java.lang.reflect.Member
+            /*
+               Return the java.lang.reflect.Member for the represented
+               attribute.
+               @return corresponding java.lang.reflect.Member
              */
             //java.lang.reflect.Member getJavaMember();
             Attribute anAttribute = entityManufacturer_.getAttribute("anInt");
@@ -1093,10 +1093,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityComputer_);
             assertEquals(Type.PersistenceType.ENTITY, entityComputer_.getPersistenceType());
 
-            /**
-             *  Return the java.lang.reflect.Member for the represented
-             *  attribute.
-             *  @return corresponding java.lang.reflect.Member
+            /*
+               Return the java.lang.reflect.Member for the represented
+               attribute.
+               @return corresponding java.lang.reflect.Member
              */
             //java.lang.reflect.Member getJavaMember();
             Attribute anAttribute = entityComputer_.getAttribute("location");
@@ -1131,10 +1131,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(msDesigner_);
             assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, msDesigner_.getPersistenceType());
 
-            /**
-             *  Return the java.lang.reflect.Member for the represented
-             *  attribute.
-             *  @return corresponding java.lang.reflect.Member
+            /*
+               Return the java.lang.reflect.Member for the represented
+               attribute.
+               @return corresponding java.lang.reflect.Member
              */
             //java.lang.reflect.Member getJavaMember();
             Attribute anAttribute = msDesigner_.getAttribute("primaryEmployer");
@@ -1168,10 +1168,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(anEntity_);
             assertEquals(Type.PersistenceType.ENTITY, anEntity_.getPersistenceType());
 
-            /**
-             *  Return the java.lang.reflect.Member for the represented
-             *  attribute.
-             *  @return corresponding java.lang.reflect.Member
+            /*
+               Return the java.lang.reflect.Member for the represented
+               attribute.
+               @return corresponding java.lang.reflect.Member
              */
             //java.lang.reflect.Member getJavaMember();
             Attribute anAttribute = anEntity_.getAttribute("host");
@@ -1205,10 +1205,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(aMappedSuperclass_);
             assertEquals(Type.PersistenceType.MAPPED_SUPERCLASS, aMappedSuperclass_.getPersistenceType());
 
-            /**
-             *  Return the java.lang.reflect.Member for the represented
-             *  attribute.
-             *  @return corresponding java.lang.reflect.Member
+            /*
+               Return the java.lang.reflect.Member for the represented
+               attribute.
+               @return corresponding java.lang.reflect.Member
              */
             //java.lang.reflect.Member getJavaMember();
             Attribute anAttribute = aMappedSuperclass_.getAttribute("primarySuperComputer"); // if attribute is missing from model we throw an IAE
@@ -1240,10 +1240,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
             assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
 
-            /**
-             *  Return the java.lang.reflect.Member for the represented
-             *  attribute.
-             *  @return corresponding java.lang.reflect.Member
+            /*
+               Return the java.lang.reflect.Member for the represented
+               attribute.
+               @return corresponding java.lang.reflect.Member
              */
             //java.lang.reflect.Member getJavaMember();
             Attribute anAttribute = entityManufacturer_.getAttribute("computers");
@@ -1282,9 +1282,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
             assertEquals(Type.PersistenceType.ENTITY, entityManufacturer_.getPersistenceType());
 
-            /**
-             *  Is the attribute an association.
-             *  @return whether boolean indicating whether attribute
+            /*
+               Is the attribute an association.
+               @return whether boolean indicating whether attribute
              *          corresponds to an association
              */
             //boolean isAssociation();
@@ -1322,9 +1322,9 @@ public class MetamodelTest extends MetamodelTestBase {
             EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
             assertNotNull(entityComputer_);
 
-            /**
-             *  Is the attribute an association.
-             *  @return whether boolean indicating whether attribute
+            /*
+               Is the attribute an association.
+               @return whether boolean indicating whether attribute
              *          corresponds to an association
              */
             //boolean isAssociation();
@@ -1361,9 +1361,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(locationIdAttribute);
             assertTrue(locationIdAttribute instanceof SingularAttributeImpl);
 
-            /**
-             *  Is the attribute collection-valued.
-             *  @return boolean indicating whether attribute is
+            /*
+               Is the attribute collection-valued.
+               @return boolean indicating whether attribute is
              *          collection-valued
              */
             //boolean isCollection();
@@ -1409,9 +1409,9 @@ public class MetamodelTest extends MetamodelTestBase {
             // 314906: javaType for collections is the collection type not the element type
             assertEquals(Set.class, aPluralAttribute.getJavaType());
 
-            /**
-             *  Is the attribute collection-valued.
-             *  @return boolean indicating whether attribute is
+            /*
+               Is the attribute collection-valued.
+               @return boolean indicating whether attribute is
              *          collection-valued
              */
             //boolean isCollection();
@@ -1466,9 +1466,9 @@ public class MetamodelTest extends MetamodelTestBase {
             EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
             assertNotNull(entityManufacturer_);
 
-            /**
-             *  Return the bindable type of the represented object.
-             *  @return bindable type
+            /*
+               Return the bindable type of the represented object.
+               @return bindable type
              */
             //BindableType getBindableType();
             // EntityTypeImpl
@@ -1514,14 +1514,14 @@ public class MetamodelTest extends MetamodelTestBase {
             entityManufacturer_.getDeclaredList("hardwareDesigners", HardwareDesigner.class);
             assertNotNull(manufacturer_hardwareDesignersList);
 
-            /**
-             * Return the Java type of the represented object.
-             * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
-             * the Java element type is returned. If the bindable type is
-             * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>,
-             * the Java type of the
-             * represented entity or attribute is returned.
-             * @return Java type
+            /*
+              Return the Java type of the represented object.
+              If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
+              the Java element type is returned. If the bindable type is
+              <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>,
+              the Java type of the
+              represented entity or attribute is returned.
+              @return Java type
              */
             //Class<T> getBindableJavaType();
             // EntityTypeImpl
@@ -1625,9 +1625,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityHardwareDesigner_);
 
             // Actual Test Case
-            /**
-             *  Return the entity name.
-             *  @return entity name
+            /*
+               Return the entity name.
+               @return entity name
              */
             //String getName();
             String entityNameWithNameAttribute = entityManufacturer_.getName();
@@ -1644,11 +1644,11 @@ public class MetamodelTest extends MetamodelTestBase {
             // Composite table FK's that include a MappedSuperclass
             // get an Attribute<Container, Type==String>
             Attribute nameAttribute = entityManufacturer_.getAttribute("name");
-            assertTrue(null != nameAttribute);
+            assertNotNull(nameAttribute);
 
             // get an Attribute<Container, Type==MappedSuperclass>
             Attribute employerAttribute = entityHardwareDesigner_.getAttribute("employer");
-            assertTrue(null != employerAttribute);
+            assertNotNull(employerAttribute);
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             exceptionThrown = true;
@@ -1674,10 +1674,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityComputer_);
 
             // Actual Test Case
-            /**
-             *  Return the attribute that corresponds to the id attribute of
-             *  the entity or mapped superclass.
-             *  @param type  the type of the represented id attribute
+            /*
+               Return the attribute that corresponds to the id attribute of
+               the entity or mapped superclass.
+               @param type  the type of the represented id attribute
              *  @return id attribute
              *  @throws IllegalArgumentException if id attribute of the given
              *          type is not present in the identifiable type or if
@@ -1711,10 +1711,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertTrue(fooBarEntityType.hasSingleIdAttribute());
 
             // Actual Test Case
-            /**
-             *  Return the attribute that corresponds to the id attribute of
-             *  the entity or mapped superclass.
-             *  @param type  the type of the represented id attribute
+            /*
+               Return the attribute that corresponds to the id attribute of
+               the entity or mapped superclass.
+               @param type  the type of the represented id attribute
              *  @return id attribute
              *  @throws IllegalArgumentException if id attribute of the given
              *          type is not present in the identifiable type or if
@@ -1750,10 +1750,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityComputer_);
 
             // Actual Test Case
-            /**
-             *  Return the attribute that corresponds to the version
-             *    attribute of the entity or mapped superclass.
-             *  @param type  the type of the represented version attribute
+            /*
+               Return the attribute that corresponds to the version
+                 attribute of the entity or mapped superclass.
+               @param type  the type of the represented version attribute
              *  @return version attribute
              *  @throws IllegalArgumentException if version attribute of the
              *          given type is not present in the identifiable type
@@ -1794,10 +1794,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityComputer_);
 
             // Actual Test Case
-            /**
-             *  Return the attribute that corresponds to the id attribute
-             *  declared by the entity or mapped superclass.
-             *  @param type  the type of the represented declared id attribute
+            /*
+               Return the attribute that corresponds to the id attribute
+               declared by the entity or mapped superclass.
+               @param type  the type of the represented declared id attribute
              *  @return declared id attribute
              *  @throws IllegalArgumentException if id attribute of the given
              *          type is not declared in the identifiable type or if
@@ -1832,10 +1832,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             *  Return the attribute that corresponds to the version
-             *  attribute declared by the entity or mapped superclass.
-             *  @param type  the type of the represented declared version
+            /*
+               Return the attribute that corresponds to the version
+               attribute declared by the entity or mapped superclass.
+               @param type  the type of the represented declared version
              *               attribute
              *  @return declared version attribute
              *  @throws IllegalArgumentException if version attribute of the
@@ -1879,10 +1879,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             *  Return the attribute that corresponds to the version
-             *  attribute declared by the entity or mapped superclass.
-             *  @param type  the type of the represented declared version
+            /*
+               Return the attribute that corresponds to the version
+               attribute declared by the entity or mapped superclass.
+               @param type  the type of the represented declared version
              *               attribute
              *  @return declared version attribute
              *  @throws IllegalArgumentException if version attribute of the
@@ -1919,10 +1919,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             *  Return the attribute that corresponds to the version
-             *  attribute declared by the entity or mapped superclass.
-             *  @param type  the type of the represented declared version
+            /*
+               Return the attribute that corresponds to the version
+               attribute declared by the entity or mapped superclass.
+               @param type  the type of the represented declared version
              *               attribute
              *  @return declared version attribute
              *  @throws IllegalArgumentException if version attribute of the
@@ -1962,11 +1962,11 @@ public class MetamodelTest extends MetamodelTestBase {
             EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
             assertNotNull(entityComputer_);
 
-            /**
-             *  Return the identifiable type that corresponds to the most
-             *  specific mapped superclass or entity extended by the entity
-             *  or mapped superclass.
-             *  @return supertype of identifiable type or null if no such supertype
+            /*
+               Return the identifiable type that corresponds to the most
+               specific mapped superclass or entity extended by the entity
+               or mapped superclass.
+               @return supertype of identifiable type or null if no such supertype
              */
             //IdentifiableType<? super X> getSupertype();
 
@@ -1982,8 +1982,8 @@ public class MetamodelTest extends MetamodelTestBase {
             }
             assertFalse(expectedIAExceptionThrown);
             assertNotNull(superTypeManufacturer);
-            /**
-             * see
+            /*
+              see
      metamodel    MetamodelImpl  (id=113)
         embeddables LinkedHashMap<K,V>  (id=251)
             size    0
@@ -2038,11 +2038,11 @@ public class MetamodelTest extends MetamodelTestBase {
             EntityTypeImpl<WithInner> withInner_ = (EntityTypeImpl)metamodel.entity(WithInner.class);
             assertNotNull(withInner_);
 
-            /**
-             *  Whether or not the identifiable type has an id attribute.
-             *  Returns true for a simple id or embedded id; returns false
-             *  for an idclass.
-             *  @return boolean indicating whether or not the identifiable
+            /*
+               Whether or not the identifiable type has an id attribute.
+               Returns true for a simple id or embedded id; returns false
+               for an idclass.
+               @return boolean indicating whether or not the identifiable
              *           type has a single id attribute
              */
             // We do not need to test Embeddable to Basic as they do not implement IdentifiableType
@@ -2120,9 +2120,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             *  Whether or not the identifiable type has a version attribute.
-             *  @return boolean indicating whether or not the identifiable
+            /*
+               Whether or not the identifiable type has a version attribute.
+               @return boolean indicating whether or not the identifiable
              *           type has a version attribute
              */
             //boolean hasVersionAttribute();
@@ -2147,10 +2147,10 @@ public class MetamodelTest extends MetamodelTestBase {
             Metamodel metamodel = em.getMetamodel();
             assertNotNull(metamodel);
             // Actual Test Case
-            /**
-             *   Return the attributes corresponding to the id class of the
-             *   identifiable type.
-             *   @return id attributes
+            /*
+                Return the attributes corresponding to the id class of the
+                identifiable type.
+                @return id attributes
              *   @throws IllegalArgumentException if the identifiable type
              *           does not have an id class
              */
@@ -2185,10 +2185,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(metamodel);
 
             // Actual Test Case
-            /**
-             *   Return the attributes corresponding to the id class of the
-             *   identifiable type.
-             *   @return id attributes
+            /*
+                Return the attributes corresponding to the id class of the
+                identifiable type.
+                @return id attributes
              *   @throws IllegalArgumentException if the identifiable type
              *           does not have an id class
              */
@@ -2252,9 +2252,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityComputer_);
 
             // Actual Test Case
-            /**
-             *  Return the type that represents the type of the id.
-             *  @return type of id
+            /*
+               Return the type that represents the type of the id.
+               @return type of id
              */
             //Type<?> getIdType();
 
@@ -2379,15 +2379,15 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityHardwareDesigner_);
 
             // Actual Test Case
-            /**
-             * The following variant test cases are common to all functions
-             * 1) get*Attribute(name) = null (missing) --> IAE
-             * 2) get*Attribute(name, type) = null (missing, type=irrelevant) --> IAE
-             * 3) get*Attribute(name, type) = exists but type != returned type --> IAE
+            /*
+              The following variant test cases are common to all functions
+              1) get*Attribute(name) = null (missing) --> IAE
+              2) get*Attribute(name, type) = null (missing, type=irrelevant) --> IAE
+              3) get*Attribute(name, type) = exists but type != returned type --> IAE
              */
 
-            /**
-             *  Return the attributes of the managed type.
+            /*
+               Return the attributes of the managed type.
              */
              //java.util.Set<Attribute<? super X, ?>> getAttributes();
             Set<Attribute<? super Manufacturer, ?>> attributeSet = entityManufacturer_.getAttributes();
@@ -2420,47 +2420,47 @@ public class MetamodelTest extends MetamodelTestBase {
         //private Boolean aBooleanObject;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aBooleanObject"))); //
             assertNotNull(entityManufacturer_.getAttribute("aBooleanObject"));
-            assertTrue(entityManufacturer_.getAttribute("aBooleanObject").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aBooleanObject").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(Boolean.class, entityManufacturer_.getAttribute("aBooleanObject").getJavaType());
         //private Byte aByteObject;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aByteObject"))); //
             assertNotNull(entityManufacturer_.getAttribute("aByteObject"));
-            assertTrue(entityManufacturer_.getAttribute("aByteObject").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aByteObject").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(Byte.class, entityManufacturer_.getAttribute("aByteObject").getJavaType());
         //private Short aShortObject;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aShortObject"))); //
             assertNotNull(entityManufacturer_.getAttribute("aShortObject"));
-            assertTrue(entityManufacturer_.getAttribute("aShortObject").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aShortObject").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(Short.class, entityManufacturer_.getAttribute("aShortObject").getJavaType());
         //private Integer anIntegerObject;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("anIntegerObject"))); //
             assertNotNull(entityManufacturer_.getAttribute("anIntegerObject"));
-            assertTrue(entityManufacturer_.getAttribute("anIntegerObject").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("anIntegerObject").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(Integer.class, entityManufacturer_.getAttribute("anIntegerObject").getJavaType());
         //private Long aLongObject;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aLongObject"))); //
             assertNotNull(entityManufacturer_.getAttribute("aLongObject"));
-            assertTrue(entityManufacturer_.getAttribute("aLongObject").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aLongObject").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(Long.class, entityManufacturer_.getAttribute("aLongObject").getJavaType());
         //private BigInteger aBigIntegerObject;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aBigIntegerObject"))); //
             assertNotNull(entityManufacturer_.getAttribute("aBigIntegerObject"));
-            assertTrue(entityManufacturer_.getAttribute("aBigIntegerObject").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aBigIntegerObject").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(BigInteger.class, entityManufacturer_.getAttribute("aBigIntegerObject").getJavaType());
         //private Float aFloatObject;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aFloatObject"))); //
             assertNotNull(entityManufacturer_.getAttribute("aFloatObject"));
-            assertTrue(entityManufacturer_.getAttribute("aFloatObject").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aFloatObject").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(Float.class, entityManufacturer_.getAttribute("aFloatObject").getJavaType());
         //private Double aDoubleObject;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aDoubleObject"))); //
             assertNotNull(entityManufacturer_.getAttribute("aDoubleObject"));
-            assertTrue(entityManufacturer_.getAttribute("aDoubleObject").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aDoubleObject").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(Double.class, entityManufacturer_.getAttribute("aDoubleObject").getJavaType());
         //private Character aCharacterObject;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aCharacterObject"))); //
             assertNotNull(entityManufacturer_.getAttribute("aCharacterObject"));
-            assertTrue(entityManufacturer_.getAttribute("aCharacterObject").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aCharacterObject").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(Character.class, entityManufacturer_.getAttribute("aCharacterObject").getJavaType());
         //private Enum anEnum;
             // FUTURE: the following 4 lines are not implemented yet
@@ -2471,70 +2471,70 @@ public class MetamodelTest extends MetamodelTestBase {
         //private boolean aBoolean;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aBoolean"))); //
             assertNotNull(entityManufacturer_.getAttribute("aBoolean"));
-            assertTrue(entityManufacturer_.getAttribute("aBoolean").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aBoolean").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(boolean.class, entityManufacturer_.getAttribute("aBoolean").getJavaType());
         //private byte aByte;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aByte"))); //
             assertNotNull(entityManufacturer_.getAttribute("aByte"));
-            assertTrue(entityManufacturer_.getAttribute("aByte").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aByte").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(byte.class, entityManufacturer_.getAttribute("aByte").getJavaType());
         //private short aShort;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aShort"))); //
             assertNotNull(entityManufacturer_.getAttribute("aShort"));
-            assertTrue(entityManufacturer_.getAttribute("aShort").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aShort").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(short.class, entityManufacturer_.getAttribute("aShort").getJavaType());
         //private int anInt;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("anInt"))); //
             assertNotNull(entityManufacturer_.getAttribute("anInt"));
-            assertTrue(entityManufacturer_.getAttribute("anInt").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("anInt").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(int.class, entityManufacturer_.getAttribute("anInt").getJavaType());
         //private long aLong;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aLong"))); //
             assertNotNull(entityManufacturer_.getAttribute("aLong"));
-            assertTrue(entityManufacturer_.getAttribute("aLong").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aLong").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(long.class, entityManufacturer_.getAttribute("aLong").getJavaType());
         //private float aFloat;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aFloat"))); //
             assertNotNull(entityManufacturer_.getAttribute("aFloat"));
-            assertTrue(entityManufacturer_.getAttribute("aFloat").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aFloat").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(float.class, entityManufacturer_.getAttribute("aFloat").getJavaType());
         //private double aDouble;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aDouble"))); //
             assertNotNull(entityManufacturer_.getAttribute("aDouble"));
-            assertTrue(entityManufacturer_.getAttribute("aDouble").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aDouble").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(double.class, entityManufacturer_.getAttribute("aDouble").getJavaType());
         //private char aChar;
             assertTrue(attributeSet.contains(entityManufacturer_.getAttribute("aChar"))); //
             assertNotNull(entityManufacturer_.getAttribute("aChar"));
-            assertTrue(entityManufacturer_.getAttribute("aChar").getPersistentAttributeType().equals(PersistentAttributeType.BASIC));
+            assertEquals(entityManufacturer_.getAttribute("aChar").getPersistentAttributeType(), PersistentAttributeType.BASIC);
             assertEquals(char.class, entityManufacturer_.getAttribute("aChar").getJavaType());
 
-            /**
-             *  Return the attributes declared by the managed type.
-             *  Testing for Design Issue 52:
-             *  http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI:52_Refactor:_20090817
+            /*
+               Return the attributes declared by the managed type.
+               Testing for Design Issue 52:
+               http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI:52_Refactor:_20090817
              */
              //java.util.Set<Attribute<X, ?>> getDeclaredAttributes();
             expectedIAExceptionThrown = false;
         try {
-            /**
-             * Hierarchy:
-             *   Person : MappedSuperclass
-             *     +
-             *     +- id : Integer
-             *     +- name : String
-             *     +- historicalEmps : Manufacturer
-             *
-             *     Corporation : MappedSuperclass extends Person
-             *       +
-             *       +- corporateComputers : Collection
-             *
-             *       Manufacturer : Entity extends Corporation
-             *         +
-             *         +- computers : Set
-             *         +- hardwareDesigners : List
-             *         +- hardwareDesignersMap : Map
-             *         +- version : int
+            /*
+              Hierarchy:
+                Person : MappedSuperclass
+                  +
+                  +- id : Integer
+                  +- name : String
+                  +- historicalEmps : Manufacturer
+              <p>
+                  Corporation : MappedSuperclass extends Person
+                    +
+                    +- corporateComputers : Collection
+              <p>
+                    Manufacturer : Entity extends Corporation
+                      +
+                      +- computers : Set
+                      +- hardwareDesigners : List
+                      +- hardwareDesignersMap : Map
+                      +- version : int
              */
             Set<Attribute<Manufacturer, ?>> declaredAttributesSet = entityManufacturer_.getDeclaredAttributes();
             assertNotNull(declaredAttributesSet);
@@ -2594,11 +2594,11 @@ public class MetamodelTest extends MetamodelTestBase {
             assertFalse(expectedIAExceptionThrown);
 
             // Test Entity-->Entity hierarchy
-            /**
-             *  Return the single-valued attribute of the managed
-             *  type that corresponds to the specified name and Java type
-             *  in the represented type.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the single-valued attribute of the managed
+               type that corresponds to the specified name and Java type
+               in the represented type.
+               @param name  the name of the represented attribute
              *  @param type  the type of the represented attribute
              *  @return single-valued attribute with given name and type
              *  @throws IllegalArgumentException if attribute of the given
@@ -2655,11 +2655,11 @@ public class MetamodelTest extends MetamodelTestBase {
             assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
             assertNull(aManufacturer_wrong_IntegerAttribute);
 
-            /**
-             *  Return the declared single-valued attribute of the
-             *  managed type that corresponds to the specified name and Java
-             *  type in the represented type.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the declared single-valued attribute of the
+               managed type that corresponds to the specified name and Java
+               type in the represented type.
+               @param name  the name of the represented attribute
              *  @param type  the type of the represented attribute
              *  @return declared single-valued attribute of the given
              *          name and type
@@ -2720,9 +2720,9 @@ public class MetamodelTest extends MetamodelTestBase {
             // Test wrong hierarchy IAE failures
 
 
-            /**
-             *  Return the single-valued attributes of the managed type.
-             *  @return single-valued attributes
+            /*
+               Return the single-valued attributes of the managed type.
+               @return single-valued attributes
              */
             //java.util.Set<SingularAttribute<? super X, ?>> getSingularAttributes();
             Set<SingularAttribute<? super Manufacturer, ?>> singularAttributeSet = entityManufacturer_.getSingularAttributes();
@@ -2734,17 +2734,17 @@ public class MetamodelTest extends MetamodelTestBase {
             assertTrue(singularAttributeSet.contains(entityManufacturer_.getAttribute("version"))); //
             assertTrue(singularAttributeSet.contains(entityManufacturer_.getAttribute("name"))); //
 
-            /**
-             *  Return the single-valued attributes declared by the managed
-             *  type.
-             *  @return declared single-valued attributes
+            /*
+               Return the single-valued attributes declared by the managed
+               type.
+               @return declared single-valued attributes
              */
             //java.util.Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes();
 
-            /**
-             *  Return the Collection-valued attribute of the managed type
-             *  that corresponds to the specified name and Java element type.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Collection-valued attribute of the managed type
+               that corresponds to the specified name and Java element type.
+               @param name  the name of the represented attribute
              *  @param elementType  the element type of the represented
              *              attribute
              *  @return CollectionAttribute of the given name and element
@@ -2754,10 +2754,10 @@ public class MetamodelTest extends MetamodelTestBase {
              */
             //<E> CollectionAttribute<? super X, E> getCollection(String name, Class<E> elementType);
 
-            /**
-             *  Return the Set-valued attribute of the managed type that
-             *  corresponds to the specified name and Java element type.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Set-valued attribute of the managed type that
+               corresponds to the specified name and Java element type.
+               @param name  the name of the represented attribute
              *  @param elementType  the element type of the represented
              *              attribute
              *  @return SetAttribute of the given name and element type
@@ -2766,10 +2766,10 @@ public class MetamodelTest extends MetamodelTestBase {
              */
             //<E> SetAttribute<? super X, E> getSet(String name, Class<E> elementType);
 
-            /**
-             *  Return the List-valued attribute of the managed type that
-             *  corresponds to the specified name and Java element type.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the List-valued attribute of the managed type that
+               corresponds to the specified name and Java element type.
+               @param name  the name of the represented attribute
              *  @param elementType  the element type of the represented
              *              attribute
              *  @return ListAttribute of the given name and element type
@@ -2779,11 +2779,11 @@ public class MetamodelTest extends MetamodelTestBase {
             //<E> ListAttribute<? super X, E> getList(String name, Class<E> elementType);
 
 
-            /**
-             *  Return the Collection-valued attribute declared by the
-             *  managed type that corresponds to the specified name and Java
-             *  element type.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Collection-valued attribute declared by the
+               managed type that corresponds to the specified name and Java
+               element type.
+               @param name  the name of the represented attribute
              *  @param elementType  the element type of the represented
              *              attribute
              *  @return declared CollectionAttribute of the given name and
@@ -2867,10 +2867,10 @@ public class MetamodelTest extends MetamodelTestBase {
             }
             assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
 
-            /**
-             *  Return the Set-valued attribute declared by the managed type
-             *  that corresponds to the specified name and Java element type.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Set-valued attribute declared by the managed type
+               that corresponds to the specified name and Java element type.
+               @param name  the name of the represented attribute
              *  @param elementType  the element type of the represented
              *              attribute
              *  @return declared SetAttribute of the given name and
@@ -2880,11 +2880,11 @@ public class MetamodelTest extends MetamodelTestBase {
              */
             //<E> SetAttribute<X, E> getDeclaredSet(String name, Class<E> elementType);
 
-            /**
-             *  Return the List-valued attribute declared by the managed
-             *  type that corresponds to the specified name and Java
-             *  element type.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the List-valued attribute declared by the managed
+               type that corresponds to the specified name and Java
+               element type.
+               @param name  the name of the represented attribute
              *  @param elementType  the element type of the represented
              *              attribute
              *  @return declared ListAttribute of the given name and
@@ -2947,16 +2947,16 @@ public class MetamodelTest extends MetamodelTestBase {
             assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
 
 
-            /**
-             *  Return all collection-valued attributes of the managed type.
-             *  @return collection valued attributes
+            /*
+               Return all collection-valued attributes of the managed type.
+               @return collection valued attributes
              */
             //java.util.Set<PluralAttribute<? super X, ?, ?>> getCollections();
 
-            /**
-             *  Return all collection-valued attributes declared by the
-             *  managed type.
-             *  @return declared collection valued attributes
+            /*
+               Return all collection-valued attributes declared by the
+               managed type.
+               @return declared collection valued attributes
              */
             //java.util.Set<PluralAttribute<X, ?, ?>> getDeclaredCollections();
             // This also tests getCollections()
@@ -2975,20 +2975,20 @@ public class MetamodelTest extends MetamodelTestBase {
             assertFalse(expectedIAExceptionThrown);
 
 
-            /**
-             *  Return the attribute of the managed
-             *  type that corresponds to the specified name.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the attribute of the managed
+               type that corresponds to the specified name.
+               @param name  the name of the represented attribute
              *  @return attribute with given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not present in the managed type
              */
             //Attribute<? super X, ?> getAttribute(String name);
 
-            /**
-             *  Return the declared attribute of the managed
-             *  type that corresponds to the specified name.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the declared attribute of the managed
+               type that corresponds to the specified name.
+               @param name  the name of the represented attribute
              *  @return attribute with given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not declared in the managed type
@@ -3103,21 +3103,21 @@ public class MetamodelTest extends MetamodelTestBase {
             assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
 
 
-            /**
-             *  Return the single-valued attribute of the managed type that
-             *  corresponds to the specified name in the represented type.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the single-valued attribute of the managed type that
+               corresponds to the specified name in the represented type.
+               @param name  the name of the represented attribute
              *  @return single-valued attribute with the given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not present in the managed type
              */
             //SingularAttribute<? super X, ?> getSingularAttribute(String name);
 
-            /**
-             *  Return the declared single-valued attribute of the managed
-             *  type that corresponds to the specified name in the
-             *  represented type.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the declared single-valued attribute of the managed
+               type that corresponds to the specified name in the
+               represented type.
+               @param name  the name of the represented attribute
              *  @return declared single-valued attribute of the given
              *          name
              *  @throws IllegalArgumentException if attribute of the given
@@ -3125,50 +3125,50 @@ public class MetamodelTest extends MetamodelTestBase {
              */
             //SingularAttribute<X, ?> getDeclaredSingularAttribute(String name);
 
-            /**
-             *  Return the Collection-valued attribute of the managed type
-             *  that corresponds to the specified name.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Collection-valued attribute of the managed type
+               that corresponds to the specified name.
+               @param name  the name of the represented attribute
              *  @return CollectionAttribute of the given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not present in the managed type
              */
             //CollectionAttribute<? super X, ?> getCollection(String name);
 
-            /**
-             *  Return the Set-valued attribute of the managed type that
-             *  corresponds to the specified name.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Set-valued attribute of the managed type that
+               corresponds to the specified name.
+               @param name  the name of the represented attribute
              *  @return SetAttribute of the given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not present in the managed type
              */
             //SetAttribute<? super X, ?> getSet(String name);
 
-            /**
-             *  Return the List-valued attribute of the managed type that
-             *  corresponds to the specified name.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the List-valued attribute of the managed type that
+               corresponds to the specified name.
+               @param name  the name of the represented attribute
              *  @return ListAttribute of the given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not present in the managed type
              */
             //ListAttribute<? super X, ?> getList(String name);
 
-            /**
-             *  Return the Map-valued attribute of the managed type that
-             *  corresponds to the specified name.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Map-valued attribute of the managed type that
+               corresponds to the specified name.
+               @param name  the name of the represented attribute
              *  @return MapAttribute of the given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not present in the managed type
              */
             //MapAttribute<? super X, ?, ?> getMap(String name);
 
-            /**
-             *  Return the Collection-valued attribute declared by the
-             *  managed type that corresponds to the specified name.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Collection-valued attribute declared by the
+               managed type that corresponds to the specified name.
+               @param name  the name of the represented attribute
              *  @return declared CollectionAttribute of the given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not declared in the managed type
@@ -3214,30 +3214,30 @@ public class MetamodelTest extends MetamodelTestBase {
             assertTrue("Expected thrown IllegalArgumentException", expectedIAExceptionThrown);
             // reset state
             expectedIAExceptionThrown = false;
-            /**
-             *  Return the Set-valued attribute declared by the managed type
-             *  that corresponds to the specified name.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Set-valued attribute declared by the managed type
+               that corresponds to the specified name.
+               @param name  the name of the represented attribute
              *  @return declared SetAttribute of the given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not declared in the managed type
              */
             //SetAttribute<X, ?> getDeclaredSet(String name);
 
-            /**
-             *  Return the List-valued attribute declared by the managed
-             *  type that corresponds to the specified name.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the List-valued attribute declared by the managed
+               type that corresponds to the specified name.
+               @param name  the name of the represented attribute
              *  @return declared ListAttribute of the given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not declared in the managed type
              */
             //ListAttribute<X, ?> getDeclaredList(String name);
 
-            /**
-             *  Return the Map-valued attribute declared by the managed
-             *  type that corresponds to the specified name.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Map-valued attribute declared by the managed
+               type that corresponds to the specified name.
+               @param name  the name of the represented attribute
              *  @return declared MapAttribute of the given name
              *  @throws IllegalArgumentException if attribute of the given
              *          name is not declared in the managed type
@@ -3616,11 +3616,11 @@ public class MetamodelTest extends MetamodelTestBase {
             EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
             assertNotNull(entityHardwareDesigner_);
 
-            /**
-             *  Return the Map-valued attribute of the managed type that
-             *  corresponds to the specified name and Java key and value
-             *  types.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Map-valued attribute of the managed type that
+               corresponds to the specified name and Java key and value
+               types.
+               @param name  the name of the represented attribute
              *  @param keyType  the key type of the represented attribute
              *  @param valueType  the value type of the represented attribute
              *  @return MapAttribute of the given name and key and value
@@ -3684,11 +3684,11 @@ public class MetamodelTest extends MetamodelTestBase {
             EntityTypeImpl<HardwareDesigner> entityHardwareDesigner_ = (EntityTypeImpl)metamodel.entity(HardwareDesigner.class);
             assertNotNull(entityHardwareDesigner_);
 
-            /**
-             *  Return the Map-valued attribute declared by the managed
-             *  type that corresponds to the specified name and Java key
-             *  and value types.
-             *  @param name  the name of the represented attribute
+            /*
+               Return the Map-valued attribute declared by the managed
+               type that corresponds to the specified name and Java key
+               and value types.
+               @param name  the name of the represented attribute
              *  @param keyType  the key type of the represented attribute
              *  @param valueType  the value type of the represented attribute
              *  @return declared MapAttribute of the given name and key
@@ -4654,9 +4654,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the Java type of the map key.
-             * @return Java key type
+            /*
+              Return the Java type of the map key.
+              @return Java key type
              */
             //Class<K> getKeyJavaType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -4693,9 +4693,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the Java type of the map key.
-             * @return Java key type
+            /*
+              Return the Java type of the map key.
+              @return Java key type
              */
             //Class<K> getKeyJavaType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -4731,9 +4731,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the Java type of the map key.
-             * @return Java key type
+            /*
+              Return the Java type of the map key.
+              @return Java key type
              */
             //Class<K> getKeyJavaType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -4770,9 +4770,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the Java type of the map key.
-             * @return Java key type
+            /*
+              Return the Java type of the map key.
+              @return Java key type
              */
             //Class<K> getKeyJavaType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -4810,9 +4810,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the Java type of the map key.
-             * @return Java key type
+            /*
+              Return the Java type of the map key.
+              @return Java key type
              */
             //Class<K> getKeyJavaType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -4850,9 +4850,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the Java type of the map key.
-             * @return Java key type
+            /*
+              Return the Java type of the map key.
+              @return Java key type
              */
             //Class<K> getKeyJavaType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -4892,9 +4892,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the Java type of the map key.
-             * @return Java key type
+            /*
+              Return the Java type of the map key.
+              @return Java key type
              */
             //Class<K> getKeyJavaType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -4930,9 +4930,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -4969,9 +4969,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -5007,9 +5007,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -5046,9 +5046,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -5085,9 +5085,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -5124,9 +5124,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -5165,9 +5165,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
@@ -5204,9 +5204,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityComputer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
             MapAttribute<? super Computer, ?, ?> anAttribute =
@@ -5242,9 +5242,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityComputer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
             MapAttribute<? super Computer, ?, ?> anAttribute =
@@ -5280,9 +5280,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityComputer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
             MapAttribute<? super Computer, ?, ?> anAttribute =
@@ -5318,9 +5318,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the type representing the key type of the map.
-             * @return type representing key type
+            /*
+              Return the type representing the key type of the map.
+              @return type representing key type
              */
             //Type<K> getKeyType();
 
@@ -5367,10 +5367,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             *  Return the metamodel managed type representing the
-             *  entity, mapped superclass, or embeddable class.
-             *  @param cls  the type of the represented managed class
+            /*
+               Return the metamodel managed type representing the
+               entity, mapped superclass, or embeddable class.
+               @param cls  the type of the represented managed class
              *  @return the metamodel managed type
              *  @throws IllegalArgumentException if not a managed class
              */
@@ -5511,9 +5511,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the metamodel embeddable types.
-             * @return the metamodel embeddable types
+            /*
+              Return the metamodel embeddable types.
+              @return the metamodel embeddable types
              */
             //java.util.Set<EmbeddableType<?>> getEmbeddables();
         } catch (IllegalArgumentException iae) {
@@ -5538,9 +5538,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             * Return the metamodel entity types.
-             * @return the metamodel entity types
+            /*
+              Return the metamodel entity types.
+              @return the metamodel entity types
              */
             //java.util.Set<EntityType<?>> getEntities();
 
@@ -5567,9 +5567,9 @@ public class MetamodelTest extends MetamodelTestBase {
 
             // Actual Test Case
 
-            /**
-             *  Return the metamodel managed types.
-             *  @return the metamodel managed types
+            /*
+               Return the metamodel managed types.
+               @return the metamodel managed types
              */
             //java.util.Set<ManagedType<?>> getManagedTypes();
 
@@ -5594,10 +5594,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             *  Return the metamodel embeddable type representing the
-             *  embeddable class.
-             *  @param cls  the type of the represented embeddable class
+            /*
+               Return the metamodel embeddable type representing the
+               embeddable class.
+               @param cls  the type of the represented embeddable class
              *  @return the metamodel embeddable type
              *  @throws IllegalArgumentException if not an embeddable class
              */
@@ -5661,9 +5661,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(entityManufacturer_);
 
             // Actual Test Case
-            /**
-             *  Return the metamodel entity type representing the entity.
-             *  @param cls  the type of the represented entity
+            /*
+               Return the metamodel entity type representing the entity.
+               @param cls  the type of the represented entity
              *  @return the metamodel entity type
              *  @throws IllegalArgumentException if not an entity
              */
@@ -5740,9 +5740,9 @@ public class MetamodelTest extends MetamodelTestBase {
             // Actual Test Case
             //public static enum CollectionType {COLLECTION, SET, LIST, MAP}
 
-            /**
-             * Return the collection type.
-             * @return collection type
+            /*
+              Return the collection type.
+              @return collection type
              */
             //CollectionType getCollectionType();
         } catch (IllegalArgumentException iae) {
@@ -5765,10 +5765,10 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
 
             // Actual Test Case
-            /**
-             * Return the type representing the element type of the
-             * collection.
-             * @return element type
+            /*
+              Return the type representing the element type of the
+              collection.
+              @return element type
              */
             //Type<E> getElementType();
 
@@ -5818,11 +5818,11 @@ public class MetamodelTest extends MetamodelTestBase {
             // Composite table FK's that include a MappedSuperclass
             // get an Attribute<Container, Type==String>
             Attribute nameAttribute = entityManufacturer_.getAttribute("name");
-            assertTrue(null != nameAttribute);
+            assertNotNull(nameAttribute);
 
-            /**
-             *  Can the attribute be null.
-             *  @return boolean indicating whether the attribute can
+            /*
+               Can the attribute be null.
+               @return boolean indicating whether the attribute can
              *          be null
              */
             //boolean isOptional();
@@ -5852,13 +5852,13 @@ public class MetamodelTest extends MetamodelTestBase {
             // Composite table FK's that include a MappedSuperclass
             // get an Attribute<Container, Type==String>
             Attribute nameAttribute = entityManufacturer_.getAttribute("name");
-            assertTrue(null != nameAttribute);
+            assertNotNull(nameAttribute);
 
-            /**
-             *  Is the attribute an id attribute.  This method will return
-             *  true if the attribute is an attribute that corresponds to
-             *  a simple id, an embedded id, or an attribute of an id class.
-             *  @return boolean indicating whether the attribute is an id
+            /*
+               Is the attribute an id attribute.  This method will return
+               true if the attribute is an attribute that corresponds to
+               a simple id, an embedded id, or an attribute of an id class.
+               @return boolean indicating whether the attribute is an id
              */
             //boolean isId();
             assertFalse(((AttributeImpl)nameAttribute).isPlural());
@@ -5887,11 +5887,11 @@ public class MetamodelTest extends MetamodelTestBase {
             // Composite table FK's that include a MappedSuperclass
             // get an Attribute<Container, Type==String>
             Attribute nameAttribute = entityManufacturer_.getAttribute("name");
-            assertTrue(null != nameAttribute);
+            assertNotNull(nameAttribute);
 
-            /**
-             *  Is the attribute a version attribute.
-             *  @return boolean indicating whether or not attribute is
+            /*
+               Is the attribute a version attribute.
+               @return boolean indicating whether or not attribute is
              *          a version attribute
              */
             //public boolean isVersion() {
@@ -5917,9 +5917,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
             //public static enum BindableType {SINGULAR_ATTRIBUTE, PLURAL_ATTRIBUTE, ENTITY_TYPE}
 
-            /**
-             *  Return the bindable type of the represented object.
-             *  @return bindable type
+            /*
+               Return the bindable type of the represented object.
+               @return bindable type
              */
             //BindableType getBindableType();
         } catch (IllegalArgumentException iae) {
@@ -5945,14 +5945,14 @@ public class MetamodelTest extends MetamodelTestBase {
             EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
             assertNotNull(entityComputer_);
 
-            /**
-             * Return the Java type of the represented object.
-             * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
-             * the Java element type is returned. If the bindable type is
-             * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>,
-             * the Java type of the
-             * represented entity or attribute is returned.
-             * @return Java type
+            /*
+              Return the Java type of the represented object.
+              If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
+              the Java element type is returned. If the bindable type is
+              <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>,
+              the Java type of the
+              represented entity or attribute is returned.
+              @return Java type
              */
             //Class<T> getBindableJavaType();
             Attribute anAttribute = entityComputer_.getSingularAttribute("location");
@@ -5986,14 +5986,14 @@ public class MetamodelTest extends MetamodelTestBase {
             EntityTypeImpl<Computer> entityComputer_ = (EntityTypeImpl)metamodel.entity(Computer.class);
             assertNotNull(entityComputer_);
 
-            /**
-             * Return the Java type of the represented object.
-             * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
-             * the Java element type is returned. If the bindable type is
-             * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>,
-             * the Java type of the
-             * represented entity or attribute is returned.
-             * @return Java type
+            /*
+              Return the Java type of the represented object.
+              If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
+              the Java element type is returned. If the bindable type is
+              <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>,
+              the Java type of the
+              represented entity or attribute is returned.
+              @return Java type
              */
             //Class<T> getBindableJavaType();
             Attribute anAttribute = entityComputer_.getSingularAttribute("location");
@@ -6021,14 +6021,14 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(em);
             Metamodel metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
-            /**
-             * Return the Java type of the represented object.
-             * If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
-             * the Java element type is returned. If the bindable type is
-             * <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>,
-             * the Java type of the
-             * represented entity or attribute is returned.
-             * @return Java type
+            /*
+              Return the Java type of the represented object.
+              If the bindable type of the object is <code>PLURAL_ATTRIBUTE</code>,
+              the Java element type is returned. If the bindable type is
+              <code>SINGULAR_ATTRIBUTE</code> or <code>ENTITY_TYPE</code>,
+              the Java type of the
+              represented entity or attribute is returned.
+              @return Java type
              */
             //Class<T> getBindableJavaType();
             EntityTypeImpl<Manufacturer> entityManufacturer_ = (EntityTypeImpl)metamodel.entity(Manufacturer.class);
@@ -6059,9 +6059,9 @@ public class MetamodelTest extends MetamodelTestBase {
             assertNotNull(em);
             Metamodel metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
-            /**
-             *  Return the Java type of the represented attribute.
-             *  @return Java type
+            /*
+               Return the Java type of the represented attribute.
+               @return Java type
              */
             //public Class<T> getJavaType() {
         } catch (IllegalArgumentException iae) {
@@ -6083,14 +6083,14 @@ public class MetamodelTest extends MetamodelTestBase {
             Metamodel metamodel = em.getMetamodel();
             assertNotNull("The metamodel should never be null after an em.getMetamodel() call here.", metamodel);
 
-            /**
-             * Return the type that represents the type of the attribute.
-             * @return type of attribute
+            /*
+              Return the type that represents the type of the attribute.
+              @return type of attribute
              */
              //public Type<T> getType() {
 
-            /**
-             * Return the String representation of the receiver.
+            /*
+              Return the String representation of the receiver.
              */
             //public String toString() {
 
@@ -6116,9 +6116,9 @@ public class MetamodelTest extends MetamodelTestBase {
             // Actual Test Case
             //public static enum PersistenceType { ENTITY,  EMBEDDABLE, MAPPED_SUPERCLASS, BASIC }
 
-             /**
-              *  Return the persistence type.
-              *  @return persistence type
+             /*
+                Return the persistence type.
+                @return persistence type
               */
              //PersistenceType getPersistenceType();
 
@@ -6144,15 +6144,15 @@ public class MetamodelTest extends MetamodelTestBase {
             // Actual Test Case
             //public static enum PersistenceType { ENTITY,  EMBEDDABLE, MAPPED_SUPERCLASS, BASIC }
 
-             /**
-              *  Return the persistence type.
-              *  @return persistence type
+             /*
+                Return the persistence type.
+                @return persistence type
               */
              //PersistenceType getPersistenceType();
 
-             /**
-              *  Return the represented Java type.
-              *  @return Java type
+             /*
+                Return the represented Java type.
+                @return Java type
               */
              //Class<X> getJavaType();
         } catch (IllegalArgumentException iae) {
@@ -6176,9 +6176,9 @@ public class MetamodelTest extends MetamodelTestBase {
 
             // Actual Test Case
             //public static enum PersistenceType { ENTITY,  EMBEDDABLE, MAPPED_SUPERCLASS, BASIC }
-             /**
-              *  Return the represented Java type.
-              *  @return Java type
+             /*
+                Return the represented Java type.
+                @return Java type
               */
              //Class<X> getJavaType();
         } catch (IllegalArgumentException iae) {
@@ -6409,14 +6409,14 @@ public class MetamodelTest extends MetamodelTestBase {
         }
     }
 
-    /**
-    * Disclaimer:
-        *    The following work may still need to be fully implemented - subject to available time.
-        *    - proper and fully optimized test cases
-        *    - full exception handling
-        *    - full rollback handling
-        *    - better documented assertion failures
-        *    - fully described test model with links to design document
-        *    - traceability back to use cases
+    /*
+     Disclaimer:
+            The following work may still need to be fully implemented - subject to available time.
+            - proper and fully optimized test cases
+            - full exception handling
+            - full rollback handling
+            - better documented assertion failures
+            - fully described test model with links to design document
+            - traceability back to use cases
     */
 }

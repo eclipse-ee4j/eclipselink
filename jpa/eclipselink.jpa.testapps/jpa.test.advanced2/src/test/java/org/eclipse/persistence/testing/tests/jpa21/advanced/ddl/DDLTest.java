@@ -253,10 +253,10 @@ public class DDLTest extends JUnitTestCase {
 
     /**
      * Test the generate schema feature from the Persistence API.
-     *
+     * <p>
      * This test will then further use the PU and make sure the connection
      * occurs and we can persist objects.
-     *
+     * <p>
      * All properties are set in code.
      */
     private void testPersistenceGenerateSchemaNoConnection(String platform, String majorVersion, String minorVersion) {

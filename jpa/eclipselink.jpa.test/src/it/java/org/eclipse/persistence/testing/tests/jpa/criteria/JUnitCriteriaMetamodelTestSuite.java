@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,10 +27,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Address_;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee_;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject_;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber_;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Person_;
-import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar_;
-import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer_;
-import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight_;
 
 import jakarta.persistence.Persistence;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -126,10 +122,6 @@ public class JUnitCriteriaMetamodelTestSuite extends JUnitCriteriaSimpleTestSuit
         attributes.put(Address_postalCode, Address_.postalCode);
         attributes.put(Address_city, Address_.city);
         attributes.put(LargeProject_budget, LargeProject_.budget);
-        attributes.put(BeerConsumer_blueBeersToConsume, BeerConsumer_.blueBeersToConsume);
-        attributes.put(BlueLight_discount, BlueLight_.discount);
-        attributes.put(Person_car, Person_.car);
-        attributes.put(SportsCar_maxSpeed, SportsCar_.maxSpeed);
     }
 
     public JUnitCriteriaMetamodelTestSuite() {

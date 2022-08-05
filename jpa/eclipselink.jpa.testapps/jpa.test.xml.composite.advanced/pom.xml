@@ -142,12 +142,12 @@
                         <exclude>**/*.jar</exclude>
                     </excludes>
                 </configuration>
-                    <executions>
-                        <execution>
-                            <id>package-se-tests</id>
-                            <phase>package</phase>
-                        </execution>
-                    </executions>
+                <executions>
+                    <execution>
+                        <id>package-se-tests</id>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

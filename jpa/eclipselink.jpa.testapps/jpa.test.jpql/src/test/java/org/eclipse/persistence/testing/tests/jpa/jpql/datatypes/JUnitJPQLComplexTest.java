@@ -20,7 +20,7 @@
 package org.eclipse.persistence.testing.tests.jpa.jpql.datatypes;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -99,7 +99,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase {
 
     public void testFunctionInOrderBy() {
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("SELECT wt FROM WrapperTypes wt order by wt.booleanData");
+        TypedQuery<WrapperTypes> query = em.createQuery("SELECT wt FROM WrapperTypes wt order by wt.booleanData", WrapperTypes.class);
         // Cast to ensure that server test compile picks up class.
         List<WrapperTypes> result = query.getResultList();
         result.toString();

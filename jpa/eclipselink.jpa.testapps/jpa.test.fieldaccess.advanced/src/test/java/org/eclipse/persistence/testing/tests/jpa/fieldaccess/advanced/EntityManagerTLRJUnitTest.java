@@ -2500,10 +2500,10 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     /**
      * This test ensures that the eclipselink.batch query hint works.
      * It tests two things.
-     *
+     * <p>
      * 1. That the batch read attribute is properly added to the queyr
      * 2. That the query will execute
-     *
+     * <p>
      * It does not do any verification that the batch reading feature actually works.  That is
      * left for the batch reading testing to do.
      */
@@ -2586,10 +2586,10 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     /**
      * This test ensures that the toplink.fetch query hint works.
      * It tests two things.
-     *
+     * <p>
      * 1. That the joined attribute is properly added to the query
      * 2. That the query will execute
-     *
+     * <p>
      * It does not do any verification that the joining feature actually works.  That is
      * left for the joining testing to do.
      */
@@ -3359,7 +3359,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      * Bug 801
      * Test to ensure when property access is used and the underlying variable is changed the change
      * is correctly reflected in the database
-     *
+     * <p>
      * In this test we test making the change before the object is managed
      */
     public void testInitializeFieldForPropertyAccess() {
@@ -3405,7 +3405,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      * Bug 801
      * Test to ensure when property access is used and the underlying variable is changed the change
      * is correctly reflected in the database
-     *
+     * <p>
      * In this test we test making the change after the object is managed
      */
     public void testSetFieldForPropertyAccess() {
@@ -3465,7 +3465,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      * Bug 801
      * Test to ensure when property access is used and the underlying variable is changed the change
      * is correctly reflected in the database
-     *
+     * <p>
      * In this test we test making the change after the object is refreshed
      */
     public void testSetFieldForPropertyAccessWithRefresh() {
@@ -3526,7 +3526,7 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
      * Bug 801
      * Test to ensure when property access is used and the underlying variable is changed the change
      * is correctly reflected in the database
-     *
+     * <p>
      * In this test we test making the change when an existing object is read into a new EM
      */
     public void testSetFieldForPropertyAccessWithNewEM(){

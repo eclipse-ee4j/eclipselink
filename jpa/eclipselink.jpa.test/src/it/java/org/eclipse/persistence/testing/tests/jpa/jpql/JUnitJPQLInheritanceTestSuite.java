@@ -31,10 +31,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
-import org.eclipse.persistence.testing.models.jpa.inheritance.AAA;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Engineer;
-import org.eclipse.persistence.testing.models.jpa.inheritance.InheritancePopulator;
-import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 
 import org.junit.Assert;
 
@@ -77,17 +73,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testStraightReadSuperClass"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testStraightReadSubClass"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinSuperClass"));
-        suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinSubClass"));
         suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinFetchSuperClass"));
-        suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinFetchSubClass"));
-        suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritance"));
-        suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin1"));
-        suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin2"));
-        suite.addTest(new JUnitJPQLInheritanceTestSuite("testJoinedInheritanceWithLeftOuterJoin3"));
-        suite.addTest(new JUnitJPQLInheritanceTestSuite("testComputer"));
-        suite.addTest(new JUnitJPQLInheritanceTestSuite("testAllPeople"));
-        suite.addTest(new JUnitJPQLInheritanceTestSuite("testConverter"));
-
         return suite;
     }
 
@@ -109,21 +95,12 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         comparer.setSession((AbstractSession)session.getActiveSession());
 
         new AdvancedTableCreator().replaceTables(session);
-        new InheritanceTableCreator().replaceTables(session);
 
         //Populate the tables
         employeePopulator.buildExamples();
 
         //Persist the examples in the database
         employeePopulator.persistExample(session);
-
-        //Populate the tables
-        InheritancePopulator inheritancePopulator = new InheritancePopulator();
-        inheritancePopulator.buildExamples();
-
-        //Persist the examples in the database
-        inheritancePopulator.persistExample(session);
-
     }
 
     public void testStraightReadSuperClass() {
@@ -163,19 +140,6 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         Assert.assertTrue("Join superclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
     }
 
-    public void testJoinSubClass() {
-        EntityManager em = createEntityManager();
-
-        Engineer emp = (Engineer)em.createQuery("SELECT e from Engineer e JOIN e.bestFriend b WHERE e.title is not null").getResultList().get(0);
-        clearCache();
-        ReadObjectQuery tlQuery = new ReadObjectQuery(Engineer.class);
-        tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(emp.getId()));
-        tlQuery.addJoinedAttribute(tlQuery.getExpressionBuilder().get("bestFriend"));
-
-        Engineer tlEmp = (Engineer)getServerSession().executeQuery(tlQuery);
-        Assert.assertTrue("Join Subclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
-    }
-
     public void testJoinFetchSuperClass() {
         EntityManager em = createEntityManager();
 
@@ -187,108 +151,5 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
 
         Employee tlEmp = (Employee)getServerSession().executeQuery(tlQuery);
         Assert.assertTrue("Join superclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
-    }
-
-    public void testJoinFetchSubClass() {
-        EntityManager em = createEntityManager();
-
-        Engineer emp = (Engineer)em.createQuery("SELECT e from Engineer e JOIN FETCH e.bestFriend").getResultList().get(0);
-        clearCache();
-        ReadObjectQuery tlQuery = new ReadObjectQuery(Engineer.class);
-        tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(emp.getId()));
-        tlQuery.addJoinedAttribute(tlQuery.getExpressionBuilder().get("bestFriend"));
-
-        Engineer tlEmp = (Engineer)getServerSession().executeQuery(tlQuery);
-        Assert.assertTrue("Join Subclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
-    }
-
-    /**
-     * Checks, that the selection criteria for joined inheritance is well-formed,
-     * i.e. all tables are joined.
-     * See issue 860.
-     */
-    public void testJoinedInheritance() {
-        EntityManager em = createEntityManager();
-
-        String ejbqlString = "SELECT OBJECT(b) FROM BBB b WHERE b.foo = ?1";
-        // query throws exception, if result not unique!
-        em.createQuery(ejbqlString).setParameter(1, "bar").getSingleResult();
-    }
-
-    public void testJoinedInheritanceWithLeftOuterJoin1() {
-        EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT t0.maxSpeed, t0.color, t0.description, t0.fuelCapacity, t0.fuelType, t0.id, t0.passengerCapacity, t1.name, t1.id FROM SportsCar t0 LEFT OUTER JOIN t0.owner t1";
-        try {
-            em.createQuery(ejbqlString).getResultList();
-        } catch (Exception e) {
-            fail("Error occurred on a left outer join sql expression on a joined inheritance test: " + e.getCause());
-        }
-    }
-
-    public void testJoinedInheritanceWithLeftOuterJoin2() {
-        EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT t0.color, t0.description, t0.fuelCapacity, t0.fuelType, t0.id, t0.passengerCapacity, t1.name, t1.id FROM FueledVehicle t0 LEFT OUTER JOIN t0.owner t1";
-        try {
-            em.createQuery(ejbqlString).getResultList();
-        } catch (Exception e) {
-            fail("Error occurred on a left outer join sql expression on a joined inheritance test: " + e.getCause());
-        }
-    }
-
-    public void testJoinedInheritanceWithLeftOuterJoin3() {
-        EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT t0.color, t0.description, t0.fuelCapacity, t0.fuelType, t0.id, t0.passengerCapacity, t1.name, t1.id FROM Bus t0 LEFT OUTER JOIN t0.busDriver t1";
-        try {
-            em.createQuery(ejbqlString).getResultList();
-        } catch (Exception e) {
-            fail("Error occurred on a left outer join sql expression on a joined inheritance test: " + e.getCause());
-        }
-    }
-
-    public void testComputer() {
-        EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT c FROM Computer c";
-        List result = em.createQuery(ejbqlString).getResultList();
-        if (result.size() != 4) {
-            fail("Expected 4 computers got: " + result);
-        }
-    }
-
-    public void testAllPeople() {
-        EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT p FROM Person p order by p.id";
-        List result = em.createQuery(ejbqlString).getResultList();
-        if (result.size() != 8) {
-            fail("Expected 8 people got: " + result);
-        }
-    }
-
-    public void testConverter(){
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try{
-            AAA aaa = new AAA();
-            em.persist(aaa);
-            aaa = new AAA();
-            em.persist(aaa);
-            em.flush();
-            String ejbqlString = "SELECT MAX(aaa.id) FROM AAA aaa";
-            Object result = em.createQuery(ejbqlString).getSingleResult();
-            Assert.assertEquals("Converter not applied", String.class, result.getClass());
-        } finally{
-            rollbackTransaction(em);
-        }
-
-    }
-
-    // Helper methods and classes for constructor query test cases
-    public static boolean equals(Object o1, Object o2) {
-        if (o1 == o2) {
-            return true;
-        }
-        if (o1 == null || o2 == null) {
-            return false;
-        }
-        return o1.equals(o2);
     }
 }
