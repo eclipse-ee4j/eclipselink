@@ -51,7 +51,7 @@ public class FileBasedProjectCache implements ProjectCache {
                 java.io.File file = new java.io.File(fileName);
                 java.io.FileInputStream fis = new java.io.FileInputStream(file);
                 in = new java.io.ObjectInputStream(fis);
-                in.setObjectInputFilter(new FileBasedProjectCacheFilter(log));
+                in.setObjectInputFilter(new FileBasedProjectCacheFilter());
                 project = (Project)in.readObject();
             } catch (Exception e) {
               //need exception differentiation,logging and warnings
