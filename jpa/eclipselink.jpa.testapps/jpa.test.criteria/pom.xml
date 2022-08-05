@@ -47,9 +47,6 @@
     <properties>
         <argLine/>
         <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>
-
-        <ignore.se.failures>true</ignore.se.failures>
-        <ignore.server.failures>true</ignore.server.failures>
     </properties>
 
     <build>

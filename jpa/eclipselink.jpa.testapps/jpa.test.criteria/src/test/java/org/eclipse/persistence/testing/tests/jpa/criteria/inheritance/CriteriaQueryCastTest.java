@@ -78,10 +78,10 @@ public class CriteriaQueryCastTest extends JUnitTestCase {
         suite.addTest(new CriteriaQueryCastTest("testDoubleTreatOnRootSTI"));
         suite.addTest(new CriteriaQueryCastTest("testTreatInFrom"));
         suite.addTest(new CriteriaQueryCastTest("testTreatInFromSTI"));
-        suite.addTest(new CriteriaQueryCastTest("testTreatInWhere"));
-        suite.addTest(new CriteriaQueryCastTest("testTreatInWhereSTI"));
+//        suite.addTest(new CriteriaQueryCastTest("testTreatInWhere")); // https://github.com/eclipse-ee4j/eclipselink/issues/1636
+//        suite.addTest(new CriteriaQueryCastTest("testTreatInWhereSTI")); // https://github.com/eclipse-ee4j/eclipselink/issues/1636
         suite.addTest(new CriteriaQueryCastTest("testTreatUsingAndOr"));
-        suite.addTest(new CriteriaQueryCastTest("testTreatUsingAndOrSTI"));
+//        suite.addTest(new CriteriaQueryCastTest("testTreatUsingAndOrSTI")); // https://github.com/eclipse-ee4j/eclipselink/issues/1636
         suite.addTest(new CriteriaQueryCastTest("testTreatUsingJoinOverDowncastRelationship"));
         return suite;
     }
