@@ -40,11 +40,11 @@ import java.util.Vector;
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
  * This population routine is fairly complex and makes use of the population manager to
  * resolve interrelated objects as the employee objects are an interconnection graph of objects.
- *
+ * <p>
  * This is not the recommended way to create new objects in your application,
  * this is just the easiest way to create interconnected new example objects from code.
  * Normally in your application the objects will be defined as part of a transactional and user interactive process.
- *
+ * <p>
  * Be careful in changing any of the examples (names, projects etc) as they may
  * be used and relied on in testing.
  */

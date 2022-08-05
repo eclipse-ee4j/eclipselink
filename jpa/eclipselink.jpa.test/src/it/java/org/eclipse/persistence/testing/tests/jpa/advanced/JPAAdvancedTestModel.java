@@ -19,7 +19,7 @@ import org.eclipse.persistence.testing.framework.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
-import org.eclipse.persistence.testing.tests.jpa.CMP3TestModel;
+import org.eclipse.persistence.testing.framework.jpa.junit.CMP3TestModel;
 
 /**
  * <p><b>Purpose</b>: To collect the tests that will test specifics of our

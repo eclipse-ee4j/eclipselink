@@ -18,9 +18,6 @@ package org.eclipse.persistence.testing.tests.jpa;
 
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.tests.jpa.advanced.JPAAdvancedTestModel;
-import org.eclipse.persistence.testing.tests.jpa22.advanced.CriteriaQueryCastTestSuite;
-import org.eclipse.persistence.testing.tests.jpa22.jta.JTATestSuite;
-import org.eclipse.persistence.testing.tests.jpa22.metadata.MetadataASMFactoryTest;
 
 /**
  * <p><b>Purpose</b>: Test run for all JPA tests.

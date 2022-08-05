@@ -28,13 +28,8 @@
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>org/eclipse/persistence/testing/models/jpa/xml/advanced/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/xml/inheritance/**</include>
-                <include>org/eclipse/persistence/testing/models/jpa/xml/relationships/**</include>
                 <include>org/eclipse/persistence/testing/models/jpa/xml/complexaggregate/**</include>
             </includes>
-            <excludes>
-                <exclude>org/eclipse/persistence/testing/models/jpa/xml/relationships/unidirectional/**</exclude>
-            </excludes>
         </fileSet>
     </fileSets>
 </component>

@@ -21,10 +21,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsAdvancedJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.complexaggregate.EntityMappingsComplexAggregateJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.xml.inheritance.EntityMappingsInheritanceJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.inherited.EntityMappingsInheritedJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.xml.relationships.EntityMappingsRelationshipsJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.xml.relationships.unidirectional.EntityMappingsUnidirectionalRelationshipsJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.merge.EntityMappingsMergeServerJUnitTestSuite;
 
 /**
@@ -40,16 +37,12 @@ public class EntityMappingsServerJUnitTestSuite extends TestCase {
 
         if (testing.equals(TestingProperties.JPA_ORM_TESTING)) {
             suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite());
-            suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite());
-            suite.addTest(EntityMappingsUnidirectionalRelationshipsJUnitTestCase.suite());
-            suite.addTest(EntityMappingsInheritanceJUnitTestCase.suite());
             suite.addTest(EntityMappingsInheritedJUnitTestCase.suite());
             suite.addTest(EntityMappingsMergeServerJUnitTestSuite.suite());
             // un-comment the following line to be able to test 260271 without the orm.testing property
             //suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());
         } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) { // In the testing browser use -Dorm.testing=eclipselink
             suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite());
-            suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite());
             suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite());
         }
 

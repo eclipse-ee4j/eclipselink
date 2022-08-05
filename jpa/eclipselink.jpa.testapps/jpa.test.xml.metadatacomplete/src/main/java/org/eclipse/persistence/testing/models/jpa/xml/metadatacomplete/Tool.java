@@ -21,7 +21,7 @@ import jakarta.persistence.Column;
  * Included in the following mapping files:
  * - eclipselink-xml-only-model/metadata-complete-mappings.
  * - eclipselink-xml-only-model/xml-mapping-metadata-complete.
- *
+ * <p>
  * Which are used in two separate persistence units from:
  * - eclipselink-annotation-model/persistence.xml, namely:
  *   - METADATA_COMPLETE

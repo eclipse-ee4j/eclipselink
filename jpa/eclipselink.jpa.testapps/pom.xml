@@ -39,6 +39,7 @@
         <server.jndi.factory></server.jndi.factory>
         <server.remote.url></server.remote.url>
         <server.test.skip>false</server.test.skip>
+        <ignore.se.failures>false</ignore.se.failures>
         <ignore.server.failures>false</ignore.server.failures>
 
         <!-- logging properties for persistence.xml -->
@@ -114,6 +115,11 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.xml.inheritance</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.testapps.lob</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -125,6 +131,16 @@
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.testapps.advanced.fetchgroup</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.inheritance</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.inherited</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -160,6 +176,11 @@
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.testapps.xml.cacheable</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.xml.relationships</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
@@ -215,6 +236,7 @@
         <module>jpa.test.advanced2</module>
         <module>jpa.test.advanced.cacheimpl</module>
         <module>jpa.test.advanced.cascadepersist</module>
+        <module>jpa.test.criteria</module>
         <module>jpa.test.advanced.customer</module>
         <module>jpa.test.advanced.embeddable</module>
         <module>jpa.test.advanced.fetchgroup</module>
@@ -236,6 +258,8 @@
         <module>jpa.test.extensibility</module>
         <module>jpa.test.fieldaccess.advanced</module>
         <module>jpa.test.fieldaccess.relationships</module>
+        <module>jpa.test.inheritance</module>
+        <module>jpa.test.inherited</module>
         <module>jpa.test.jpaadvancedproperties</module>
         <module>jpa.test.jpql</module>
         <module>jpa.test.lob</module>
@@ -263,11 +287,16 @@
         <module>jpa.test.xml.extended.composite.advanced/member_1</module>
         <module>jpa.test.xml.extended.composite.advanced/member_2</module>
         <module>jpa.test.xml.extended.composite.advanced/member_3</module>
+        <module>jpa.test.xml.extended.inheritance</module>
+        <module>jpa.test.xml.extended.relationships</module>
+        <module>jpa.test.xml.inheritance</module>
         <module>jpa.test.xml.merge.incompletemappings.nonowning</module>
         <module>jpa.test.xml.merge.incompletemappings.owning</module>
         <module>jpa.test.xml.merge.inherited</module>
         <module>jpa.test.xml.merge.relationships</module>
         <module>jpa.test.xml.metadatacomplete</module>
+        <module>jpa.test.xml.relationships</module>
+        <module>jpa.test.xml.relationships.unidirectional</module>
         <module>jpa.test.xml.xmlmetadatacomplete</module>
         <module>nativeapi</module>
     </modules>
@@ -399,6 +428,7 @@
                                     <test.properties>${test.properties.file}</test.properties>
 <!--                                    <eclipselink.test.toggle-fast-table-creator>true</eclipselink.test.toggle-fast-table-creator>-->
                                 </systemPropertyVariables>
+                                <testFailureIgnore>${ignore.se.failures}</testFailureIgnore>
                                 <workingDirectory>${project.build.directory}/test-out</workingDirectory>
                             </configuration>
                         </execution>

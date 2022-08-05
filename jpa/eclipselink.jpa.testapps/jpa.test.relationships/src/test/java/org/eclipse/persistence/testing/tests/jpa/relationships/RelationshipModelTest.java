@@ -115,10 +115,10 @@ public class RelationshipModelTest extends JUnitTestCase {
      */
     public void testExcludeDefaultMappings() {
         ClassDescriptor descriptor = getServerSession().getDescriptor(Mattel.class);
-        assertNull("The 'ignoredBasic' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredBasic"));
-        assertNull("The 'ignoredOneToOne' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredOneToOne"));
-        assertNull("The 'ignoredVariableOneToOne' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredVariableOneToOne"));
-        assertNull("The 'ignoredOneToMany' attribute from the clas Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredOneToMany"));
+        assertNull("The 'ignoredBasic' attribute from the class Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredBasic"));
+        assertNull("The 'ignoredOneToOne' attribute from the class Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredOneToOne"));
+        assertNull("The 'ignoredVariableOneToOne' attribute from the class Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredVariableOneToOne"));
+        assertNull("The 'ignoredOneToMany' attribute from the class Mattel was mapped despite an exclude-default-mappings setting of true.", descriptor.getMappingForAttributeName("ignoredOneToMany"));
     }
 
     /**

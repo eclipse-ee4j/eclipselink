@@ -259,22 +259,6 @@
                             </includes>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>generate-inheritance-model-classes</id>
-                        <goals>
-                            <goal>process-test</goal>
-                        </goals>
-                        <phase>generate-test-sources</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/generated-test-sources/inheritance-model-src</outputDirectory>
-                            <compilerArguments>-Aeclipselink.persistencexml=${project.basedir}/${integration.test.resources.directory}/eclipselink-inheritance-model/persistence.xml</compilerArguments>
-                            <includes>
-                                <include>org/eclipse/persistence/testing/models/jpa/inheritance/*.java</include>
-                                <include>org/eclipse/persistence/testing/models/jpa/inheritance/listeners/*.java</include>
-                                <include>org/eclipse/persistence/testing/models/jpa/inherited/*.java</include>
-                            </includes>
-                        </configuration>
-                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>
@@ -529,8 +513,6 @@
                                 <item>server-test-jpa-advanced</item>
                                 <item>server-test-jpa-criteria</item>
                                 <item>server-test-jpa-fetchgroups</item>
-                                <item>server-test-jpa-inheritance</item>
-                                <item>server-test-jpa-inherited</item>
                                 <item>server-test-jpa-jpql</item>
                             </items>
                             <baseDirectory>${project.basedir}</baseDirectory>
@@ -1231,32 +1213,6 @@
                 <extra-model>common-server-generic</extra-model>
                 <packageName>fetchgroups</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupsServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-inheritance</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-inheritance-model</modelname>
-                <extra-model>eclipselink-inheritance-model</extra-model>
-                <packageName>inheritance</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.inheritance.InheritanceServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-inherited</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-inherited-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>inherited</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.inherited.InheritedServerTestSuite</test-client-class>
             </properties>
         </profile>
         <profile>

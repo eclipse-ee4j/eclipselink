@@ -16,13 +16,7 @@
 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
@@ -30,13 +24,10 @@ import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PessimisticLockException;
 import jakarta.persistence.Query;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.RollbackException;
 import jakarta.persistence.TypedQuery;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.PessimisticLock;
@@ -54,20 +45,23 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Engineer;
-import org.eclipse.persistence.testing.models.jpa.inheritance.InheritancePopulator;
-import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.Address;
-import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.junit.Assert;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -142,14 +136,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingPagination"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingPagination2"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingReadObject"));
-        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingInheritance"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingJOIN"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingEXISTS"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapBatchFetchingIN"));
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingINCache"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapLeftJoinFetching"));
-        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchOuterJoin"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetchingCursor"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetchingPagination"));
@@ -158,12 +150,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testJPQLCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testCacheIndexes"));
         suite.addTest(new AdvancedQueryTestSuite("testSQLHint"));
-        if (!isJPA10()) {
-            suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
-            suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
-            suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithWriteLock"));
-            suite.addTest(new AdvancedQueryTestSuite("testNamedQueryAnnotationOverwritePersistenceXML"));
-        }
+        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithWriteLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testNamedQueryAnnotationOverwritePersistenceXML"));
         suite.addTest(new AdvancedQueryTestSuite("testTearDown"));
         return suite;
     }
@@ -185,13 +175,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         employeePopulator.buildExamples();
         //Persist the examples in the database
         employeePopulator.persistExample(session);
-
-        new InheritanceTableCreator().replaceTables(session);
-        InheritancePopulator inheritancePopulator = new InheritancePopulator();
-        inheritancePopulator.buildExamples();
-
-        //Persist the examples in the database
-        inheritancePopulator.persistExample(session);
     }
 
     public void testTearDown() {
@@ -2379,82 +2362,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
             clearCache();
             verifyObject(result);
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-            if (counter != null) {
-                counter.remove();
-            }
-        }
-    }
-
-    /**
-     * Test batch fetching with outer joins.
-     */
-    public void testBatchFetchOuterJoin() {
-        clearCache();
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        // Count SQL.
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        try {
-            Query query = em.createQuery("Select p from Person p left join p.bestFriend f order by f.title");
-            query.setHint(QueryHints.BATCH, "p.bestFriend");
-            List<Person> result = query.getResultList();
-            if (result.size() != 8) {
-                fail("Should have been 8 results but was: " + result.size());
-            }
-            if (isWeavingEnabled() && counter.getSqlStatements().size() != 2) {
-                fail("Should have been 2 query but was: " + counter.getSqlStatements().size());
-            }
-            for (Person person : result) {
-                person.getBestFriend();
-            }
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 2) {
-                fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
-            }
-            clearCache();
-            for (Person person : result) {
-                verifyObject(person);
-            }
-        } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
-            if (counter != null) {
-                counter.remove();
-            }
-        }
-    }
-
-    /**
-     * Test batch fetching on inheritance.
-     */
-    public void testBatchFetchingInheritance() {
-        clearCache();
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        // Count SQL.
-        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
-        try {
-            Query query = em.createQuery("Select p from Person p");
-            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
-            query.setHint(QueryHints.BATCH, "p.company");
-            List<Person> result = query.getResultList();
-            if (isWeavingEnabled() && counter.getSqlStatements().size() != 5) {
-                fail("Should have been 5 query but was: " + counter.getSqlStatements().size());
-            }
-            for (Person person : result) {
-                if (person instanceof Engineer) {
-                    ((Engineer)person).getCompany();
-                }
-            }
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 5) {
-                fail("Should have been 5 queries but was: " + counter.getSqlStatements().size());
-            }
-            clearCache();
-            for (Person person : result) {
-                verifyObject(person);
-            }
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);

@@ -89,19 +89,19 @@ public class AdvancedFetchGroupTest extends JUnitTestCase {
         if (isWeavingEnabled()) {
             ClassDescriptor hockeyGearDescriptor = getPersistenceUnitServerSession().getDescriptor(HockeyGear.class);
             FetchGroupManager hockeyGearFetchGroupManager = hockeyGearDescriptor.getFetchGroupManager();
-            assertTrue("Wrong number of fetch groups for HockeyGear", hockeyGearFetchGroupManager.getFetchGroups().size() == 1);
+            assertEquals("Wrong number of fetch groups for HockeyGear", 1, hockeyGearFetchGroupManager.getFetchGroups().size());
             assertNotNull("The 'MSRP' fetch group was not found for HockeyGear", hockeyGearFetchGroupManager.getFetchGroup("MSRP"));
 
             ClassDescriptor padsDescriptor = getPersistenceUnitServerSession().getDescriptor(Pads.class);
             FetchGroupManager padsFetchGroupManager = padsDescriptor.getFetchGroupManager();
-            assertTrue("Wrong number of fetch groups for Pads", padsFetchGroupManager.getFetchGroups().size() == 3);
+            assertEquals("Wrong number of fetch groups for Pads", 3, padsFetchGroupManager.getFetchGroups().size());
             assertNotNull("The 'HeightAndWidth' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("HeightAndWidth"));
             assertNotNull("The 'Weight' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("Weight"));
             assertNotNull("The 'AgeGroup' fetch group was not found for Pads", padsFetchGroupManager.getFetchGroup("AgeGroup"));
 
             ClassDescriptor chestProtectorDescriptor = getPersistenceUnitServerSession().getDescriptor(ChestProtector.class);
             FetchGroupManager chestProtectorFetchGroupManager = chestProtectorDescriptor.getFetchGroupManager();
-            assertTrue("Wrong number of fetch groups for ChestProtector", chestProtectorFetchGroupManager.getFetchGroups().size() == 1);
+            assertEquals("Wrong number of fetch groups for ChestProtector", 1, chestProtectorFetchGroupManager.getFetchGroups().size());
             assertNotNull("The 'AgeGroup' fetch group was not found for ChestProtector", chestProtectorFetchGroupManager.getFetchGroup("AgeGroup"));
         }
     }
@@ -145,7 +145,7 @@ public class AdvancedFetchGroupTest extends JUnitTestCase {
     public void testFetchGroupOnPads() {
         if (isWeavingEnabled()) {
             EntityManager em = createEntityManager();
-            Map properties = new HashMap();
+            Map<String, Object> properties = new HashMap<>();
             properties.put(QueryHints.FETCH_GROUP_NAME, "HeightAndWidth");
             Class<Pads> PadsClass = Pads.class;
             Pads pads = em.find(PadsClass, padsId, properties);
@@ -169,7 +169,7 @@ public class AdvancedFetchGroupTest extends JUnitTestCase {
     public void testFetchGroupOnChestProtector() {
         if (isWeavingEnabled()) {
             EntityManager em = createEntityManager();
-            Map properties = new HashMap();
+            Map<String, Object> properties = new HashMap<>();
             properties.put(QueryHints.FETCH_GROUP_NAME, "AgeGroup");
             Class<ChestProtector> chestProtectorClass = ChestProtector.class;
             ChestProtector chestProtector = em.find(chestProtectorClass, chestProtectorId, properties);
@@ -191,7 +191,7 @@ public class AdvancedFetchGroupTest extends JUnitTestCase {
     public void testFetchGroupOnPadsFromInheritanceParent() {
         if (isWeavingEnabled()) {
             EntityManager em = createEntityManager();
-            Map properties = new HashMap();
+            Map<String, Object> properties = new HashMap<>();
             properties.put(QueryHints.FETCH_GROUP_NAME, "MSRP");
             Class<Pads> PadsClass = Pads.class;
             Pads pads = em.find(PadsClass, padsId, properties);
@@ -329,7 +329,7 @@ public class AdvancedFetchGroupTest extends JUnitTestCase {
     protected void verifyFetchedField(Field field, Object obj, Object value) {
         try {
             field.setAccessible(true);
-            assertTrue("The field [" + field.getName() +"] was not fetched", field.get(obj).equals(value));
+            assertEquals("The field [" + field.getName() + "] was not fetched", field.get(obj), value);
         } catch (IllegalAccessException e) {
             fail("Error verifying field content: " + e.getMessage());
         }
@@ -338,7 +338,7 @@ public class AdvancedFetchGroupTest extends JUnitTestCase {
     protected void verifyNonFetchedField(Field field, Object obj) {
         try {
             field.setAccessible(true);
-            assertTrue("The field [" + field.getName() +"] was fetched", field.get(obj) == null);
+            assertNull("The field [" + field.getName() + "] was fetched", field.get(obj));
         } catch (IllegalAccessException e) {
             fail("Error verifying field content: " + e.getMessage());
         }

@@ -3059,7 +3059,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
      *     without instantiating it.
      *     DB2 will therefore emit warning logs that are printed at FINEST in this lazy case.
      *     This test is a modification of testDeleteEmployee() that verifies instantiated lists are also ok
-     *
+     * <p>
      *     11/17/2010-2.2 Michael O'Brien
      *       - 325605: Filter out SQL warnings that are not SQL statements but are
      *       logged at a non-warning level.  This affects only implementors of SessionLog that
@@ -5287,10 +5287,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
     /**
      * This test ensures that the eclipselink.batch query hint works.
      * It tests two things.
-     *
+     * <p>
      * 1. That the batch read attribute is properly added to the query
      * 2. That the query will execute
-     *
+     * <p>
      * It does not do any verification that the batch reading feature actually works.  That is
      * left for the batch reading testing to do.
      */
@@ -5393,10 +5393,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
     /**
      * This test ensures that the eclipselink.fetch query hint works.
      * It tests two things.
-     *
+     * <p>
      * 1. That the joined attribute is properly added to the query
      * 2. That the query will execute
-     *
+     * <p>
      * It does not do any verification that the joining feature actually works.  That is
      * left for the joining testing to do.
      */
@@ -6540,7 +6540,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
      * Bug 801
      * Test to ensure when property access is used and the underlying variable is changed the change
      * is correctly reflected in the database
-     *
+     * <p>
      * In this test we test making the change before the object is managed
      */
     public void testInitializeFieldForPropertyAccess(){
@@ -6586,7 +6586,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
      * Bug 801
      * Test to ensure when property access is used and the underlying variable is changed the change
      * is correctly reflected in the database
-     *
+     * <p>
      * In this test we test making the change after the object is managed
      */
     public void testSetFieldForPropertyAccess(){
@@ -6661,7 +6661,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
      * Bug 801
      * Test to ensure when property access is used and the underlying variable is changed the change
      * is correctly reflected in the database
-     *
+     * <p>
      * In this test we test making the change after the object is refreshed
      */
     public void testSetFieldForPropertyAccessWithRefresh(){
@@ -6737,7 +6737,7 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
      * Bug 801
      * Test to ensure when property access is used and the underlying variable is changed the change
      * is correctly reflected in the database
-     *
+     * <p>
      * In this test we test making the change when an existing object is read into a new EM
      */
     public void testSetFieldForPropertyAccessWithNewEM(){
@@ -9148,10 +9148,10 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
     /**
      * This test ensures that the eclipselink.batch query hint works. It tests
      * two things.
-     *
+     * <p>
      * 1. That the batch read attribute is properly added to the queyr 2. That
      * the query will execute
-     *
+     * <p>
      * It does not do any verification that the batch reading feature actually
      * works. That is left for the batch reading testing to do.
      */

@@ -55,7 +55,7 @@
         <argLine/>
         <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>
         <!-- there are 2 failures and no support for running on the server yet -->
-        <maven.test.failure.ignore>true</maven.test.failure.ignore>
+        <ignore.se.failures>true</ignore.se.failures>
         <server.test.skip>true</server.test.skip>
     </properties>
 

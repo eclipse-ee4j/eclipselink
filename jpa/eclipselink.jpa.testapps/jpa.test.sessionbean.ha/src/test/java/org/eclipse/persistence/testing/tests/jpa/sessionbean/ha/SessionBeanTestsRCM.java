@@ -201,7 +201,7 @@ public class SessionBeanTestsRCM extends JUnitTestCase {
             Thread.sleep(20000);
         } catch (Exception ignore) {}
 
-        int sleeps[] = new int[]{1, 50, 100, 500, 1000, 2000, 3000, 4000, 5000, 10000};
+        int[] sleeps = new int[]{1, 50, 100, 500, 1000, 2000, 3000, 4000, 5000, 10000};
         int sleep = 0;
         boolean success = false;
         boolean failed = false;

@@ -77,7 +77,7 @@ public class DateTime implements Serializable {
         this.utilDate = new Date(0);
         this.calendar = Calendar.getInstance();
 
-        uniSelfMap = new HashMap<Date, DateTime>();
+        uniSelfMap = new HashMap<>();
         uniSelfMap.put(new Date(), this);
     }
 

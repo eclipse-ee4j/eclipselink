@@ -30,6 +30,20 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.inheritance</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.inherited</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.testapps.datatypes</artifactId>
             <version>${project.version}</version>
             <classifier>model</classifier>

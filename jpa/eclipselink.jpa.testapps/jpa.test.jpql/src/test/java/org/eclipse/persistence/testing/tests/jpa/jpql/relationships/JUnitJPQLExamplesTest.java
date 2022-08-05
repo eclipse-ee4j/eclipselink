@@ -112,10 +112,10 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
 
     public void findAllOrders() {
         EntityManager em = createEntityManager();
-        List expectedResult = getPersistenceUnitServerSession().readAllObjects(Order.class);
+        List<?> expectedResult = getPersistenceUnitServerSession().readAllObjects(Order.class);
 
         String ejbqlString = "SELECT o FROM OrderBean o";
-        List result = em.createQuery(ejbqlString).getResultList();
+        List<?> result = em.createQuery(ejbqlString).getResultList();
         // 4 orders returned
         Assert.assertEquals("Find all orders test failed: data validation error", result.size(), 4);
         Assert.assertTrue("Find all orders test failed", comparer.compareObjects(expectedResult, result));
@@ -129,13 +129,13 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
         ReadAllQuery raq = new ReadAllQuery(Order.class);
         raq.setSelectionCriteria(whereClause);
 
-        List expectedResult = (List)getPersistenceUnitServerSession().executeQuery(raq);
+        List<?> expectedResult = (List<?>)getPersistenceUnitServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT o FROM OrderBean o WHERE o.customer <> o.billedCustomer";
-        List firstResult = em.createQuery(ejbqlString).getResultList();
+        List<?> firstResult = em.createQuery(ejbqlString).getResultList();
 
         String alternateEjbqlString = "SELECT o FROM OrderBean o WHERE NOT o.customer.customerId = o.billedCustomer.customerId";
-        List secondResult = em.createQuery(alternateEjbqlString).getResultList();
+        List<?> secondResult = em.createQuery(alternateEjbqlString).getResultList();
         //2 orders returned
         Assert.assertTrue("Find orders with different billed customers test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResult, firstResult));
         Assert.assertTrue("Find orders with different billed customers test failed", comparer.compareObjects(expectedResult, firstResult));
@@ -157,10 +157,10 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
         raq.setSelectionCriteria(whereClause);
         raq.setReferenceClass(Order.class);
         raq.useDistinct();
-        List expectedResult = (List)getPersistenceUnitServerSession().executeQuery(raq);
+        List<?> expectedResult = (List<?>)getPersistenceUnitServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT DISTINCT o1 FROM OrderBean o1, OrderBean o2 WHERE o1.quantity > o2.quantity AND" + " o2.customer.name = 'Jane Smith' ";
-        List result = em.createQuery(ejbqlString).getResultList();
+        List<?> result = em.createQuery(ejbqlString).getResultList();
         //only 1 order
         Assert.assertEquals("Get order larger than test failed: data validation error", result.size(), 1);
         Assert.assertTrue("Get order larger than test failed", comparer.compareObjects(expectedResult, result));
@@ -174,13 +174,13 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
         ReadAllQuery raq = new ReadAllQuery(Customer.class);
         raq.setSelectionCriteria(whereClause);
 
-        Customer expectedCustomer = (Customer)(((List)getPersistenceUnitServerSession().executeQuery(raq)).get(0));
+        Customer expectedCustomer = (Customer)(((List<?>)getPersistenceUnitServerSession().executeQuery(raq)).get(0));
         SalesPerson salesPerson = expectedCustomer.getOrders().iterator().next().getSalesPerson();
 
         String ejbqlString = "SELECT DISTINCT c FROM Customer c JOIN c.orders o JOIN o.salesPerson s WHERE s.id = " + salesPerson.getId();
-        List firstResult = em.createQuery(ejbqlString).getResultList();
+        List<?> firstResult = em.createQuery(ejbqlString).getResultList();
         String alternateEjbqlString = "SELECT DISTINCT c FROM Customer c, IN(c.orders) o WHERE o.salesPerson.id = " + salesPerson.getId();
-        List secondResuslt = em.createQuery(alternateEjbqlString).getResultList();
+        List<?> secondResuslt = em.createQuery(alternateEjbqlString).getResultList();
 
         //only 1 order for this customer
         Assert.assertEquals("Get order for customer test failed: data validation error", firstResult.size(), 1);
@@ -191,10 +191,10 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
     public void getSalesPersonForOrders() {
         EntityManager em = createEntityManager();
 
-        List expectedResult = getPersistenceUnitServerSession().readAllObjects(SalesPerson.class);
+        List<?> expectedResult = getPersistenceUnitServerSession().readAllObjects(SalesPerson.class);
 
         String ejbqlString = "SELECT DISTINCT o.salesPerson FROM Customer AS c, IN(c.orders) o";
-        List result = em.createQuery(ejbqlString).getResultList();
+        List<?> result = em.createQuery(ejbqlString).getResultList();
         //2 sales person
         Assert.assertEquals("Get SalesPerson for Orders test failed: data validation error", result.size(), 2);
         Assert.assertTrue("Get SalesPerson for Orders test failed", comparer.compareObjects(expectedResult, result));
@@ -210,9 +210,9 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
         mainQuery.setSelectionCriteria(mainQuery.getExpressionBuilder().subQuery(subQuery).greaterThan(0));
         mainQuery.addAttribute("customerId");
         mainQuery.returnWithoutReportQueryResult();
-        List expectedResult = (List)getPersistenceUnitServerSession().executeQuery(mainQuery);
+        List<?> expectedResult = (List<?>)getPersistenceUnitServerSession().executeQuery(mainQuery);
         String ejbqlString = "SELECT c.customerId FROM Customer c WHERE (SELECT COUNT(o) FROM c.orders o) > 0";
-        List result = em.createQuery(ejbqlString).getResultList();
+        List<?> result = em.createQuery(ejbqlString).getResultList();
         if (result.containsAll(expectedResult) && expectedResult.containsAll(result))
             testPass = true;
 
@@ -224,7 +224,7 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.models.jpa.relationships.CustomerDetails(c.customerId, o.quantity) FROM Customer " + "c JOIN c.orders o WHERE o.quantity > 100";
 
-        List custDetails = em.createQuery(ejbqlString).getResultList();
+        List<?> custDetails = em.createQuery(ejbqlString).getResultList();
         Assert.assertTrue("Constructor query test failed: not an instance of CustomerDetail", custDetails.get(0) instanceof CustomerDetails);
         Assert.assertEquals("Constructor query test failed, expecting only 1 customer with order > 100", custDetails.size(), 1);
     }
@@ -267,7 +267,7 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
             ReadAllQuery raq = new ReadAllQuery(Customer.class, new ExpressionBuilder());
             Expression whereClause = raq.getExpressionBuilder().get("name").equal("Karen McDonald");
             raq.setSelectionCriteria(whereClause);
-            List customerFound = (List)em.getActiveSession().executeQuery(raq);
+            List<?> customerFound = (List<?>)em.getActiveSession().executeQuery(raq);
             Assert.assertEquals("Delete Expression test failed", 0, customerFound.size());
         } finally {
             rollbackTransaction(em);
@@ -301,7 +301,7 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
             Expression whereClause1 = raq.getExpressionBuilder().get("name").equal("Karen McDonald");
             Expression whereClause2 = raq.getExpressionBuilder().isEmpty("orders");
             raq.setSelectionCriteria(whereClause1.and(whereClause2));
-            List customerFound = (List)em.getActiveSession().executeQuery(raq);
+            List<?> customerFound = (List<?>)em.getActiveSession().executeQuery(raq);
             Assert.assertEquals("Complex Delete Expression test failed", 0, customerFound.size());
         } finally {
             rollbackTransaction(em);
@@ -337,11 +337,11 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
     public void namedQueryCloneTest() {
         EntityManager em = createEntityManager();
 
-        List result1 = em.createNamedQuery("findAllCustomers").getResultList();
+        List<?> result1 = em.createNamedQuery("findAllCustomers").getResultList();
 
-        List result2 = em.createNamedQuery("findAllCustomers").setMaxResults(1).getResultList();
+        List<?> result2 = em.createNamedQuery("findAllCustomers").setMaxResults(1).getResultList();
 
-        List result3 = em.createNamedQuery("findAllCustomers").getResultList();
+        List<?> result3 = em.createNamedQuery("findAllCustomers").getResultList();
 
         Assert.assertEquals("Named query clone test failed: the first result should be 4", result1.size(), 4);
         Assert.assertEquals("Named query clone test failed: the second result should be 1", result2.size(), 1);

@@ -359,13 +359,13 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         fetchGroup.addAttribute("lastName");
         query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
 
-        List<Employee> emps = query.getResultList();
+        List<?> emps = query.getResultList();
 
         assertNotNull(emps);
     }
 
     protected Employee findMinimumEmployee(EntityManager em) {
-        List<Employee> emps = em.createQuery("SELECT e FROM Employee e WHERE e.id in (SELECT MIN(ee.id) FROM Employee ee)").getResultList();
+        List<Employee> emps = em.createQuery("SELECT e FROM Employee e WHERE e.id in (SELECT MIN(ee.id) FROM Employee ee)", Employee.class).getResultList();
 
         assertNotNull("Null returned for min employee query", emps);
         assertEquals("No results returned for Mmin employee query", 1, emps.size());

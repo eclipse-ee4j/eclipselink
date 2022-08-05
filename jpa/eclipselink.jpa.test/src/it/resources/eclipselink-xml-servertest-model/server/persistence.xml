@@ -18,10 +18,7 @@
         <@datasource-type@>@data-source-name@</@datasource-type@>
         <mapping-file>META-INF/advanced-entity-mappings.xml</mapping-file>
         <mapping-file>META-INF/inherited-entity-mappings.xml</mapping-file>
-        <mapping-file>META-INF/relationships-entity-mappings.xml</mapping-file>
         <mapping-file>META-INF/orm-annotation-merge-advanced-entity-mappings.xml</mapping-file>
-        <mapping-file>META-INF/unidirectional-relationships-entity-mappings.xml</mapping-file>
-        <mapping-file>META-INF/defaultlistener.xml</mapping-file>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.target-server" value="@server-platform@"/>
@@ -35,32 +32,27 @@
     <persistence-unit name="MulitPU-1" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <@datasource-type@>@data-source-name@</@datasource-type@>
-        <class>org.eclipse.persistence.testing.models.jpa.xml.inheritance.FueledVehicle</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <!-- was multi-tenant-123 PU-->
     <persistence-unit name="MulitPU-2" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <@datasource-type@>@data-source-name@</@datasource-type@>
-        <class>org.eclipse.persistence.testing.models.jpa.xml.inheritance.FueledVehicle</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <persistence-unit name="MulitPU-3" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <@datasource-type@>@data-source-name@</@datasource-type@>
-        <class>org.eclipse.persistence.testing.models.jpa.xml.inheritance.FueledVehicle</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <persistence-unit name="MulitPU-4" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <@datasource-type@>@data-source-name@</@datasource-type@>
-        <class>org.eclipse.persistence.testing.models.jpa.xml.inheritance.FueledVehicle</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <persistence-unit name="MulitPU-5" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <@datasource-type@>@data-source-name@</@datasource-type@>
-        <class>org.eclipse.persistence.testing.models.jpa.xml.inheritance.FueledVehicle</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

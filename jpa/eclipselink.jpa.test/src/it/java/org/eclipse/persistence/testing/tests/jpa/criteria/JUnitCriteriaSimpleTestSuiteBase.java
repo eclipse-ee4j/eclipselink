@@ -85,14 +85,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
-import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
-import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
-import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
-import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
-import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
-import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail;
 
@@ -108,7 +100,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         Employee_managedEmployees, Employee_projects, Employee_address, Employee_status, Employee_hugeProject,
         PhoneNumber_number, PhoneNumber_areaCode, PhoneNumber_owner,
         Address_street, Address_postalCode, Address_city,
-        LargeProject_budget, BeerConsumer_blueBeersToConsume, BlueLight_discount, Person_car, SportsCar_maxSpeed
+        LargeProject_budget
     }
 
     protected interface CriteriaQueryWrapper {
@@ -232,8 +224,6 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             suite.addTest(constructor.newInstance("simpleCoalesceInWhereTest"));
             suite.addTest(constructor.newInstance("simpleCoalesceInSelectTest"));
             suite.addTest(constructor.newInstance("largeProjectCastTest"));
-            suite.addTest(constructor.newInstance("mapCastTest"));
-            suite.addTest(constructor.newInstance("oneToOneCastTest"));
             suite.addTest(constructor.newInstance("testTupleQuery"));
             suite.addTest(constructor.newInstance("testTupleIndexValidation"));
             suite.addTest(constructor.newInstance("testTupleIndexTypeValidation"));
@@ -277,10 +267,6 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         //Persist the examples in the database
         employeePopulator.persistExample(session);
-
-        new InheritedTableManager().replaceTables(session);
-
-        new InheritanceTableCreator().replaceTables(session);
     }
 
     /**
@@ -2849,119 +2835,6 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             assertTrue("LargeProject cast failed.", comparer.compareObjects(result, expectedResult));
         } finally {
             rollbackTransaction(em);
-            closeEntityManager(em);
-        }
-    }
-
-    public void mapCastTest(){
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
-
-            BeerConsumer bc1 = new BeerConsumer();
-            bc1.setName("George");
-            em.persist(bc1);
-            Blue blue = new Blue();
-            blue.setUniqueKey(new BigInteger("1"));
-            em.persist(blue);
-            bc1.addBlueBeerToConsume(blue);
-            blue.setBeerConsumer(bc1);
-
-            BeerConsumer bc2 = new BeerConsumer();
-            bc2.setName("Scott");
-            em.persist(bc2);
-            BlueLight blueLight = new BlueLight();
-            blueLight.setDiscount(10);
-            blueLight.setUniqueKey(new BigInteger("2"));
-            em.persist(blueLight);
-            blueLight.setBeerConsumer(bc2);
-            bc2.addBlueBeerToConsume(blueLight);
-
-            em.flush();
-            em.clear();
-            clearCache();
-
-            ReadAllQuery query = new ReadAllQuery();
-            Expression selectionCriteria = new ExpressionBuilder().anyOf("blueBeersToConsume").treat(BlueLight.class).get("discount").equal(10);
-            query.setSelectionCriteria(selectionCriteria);
-            query.setReferenceClass(BeerConsumer.class);
-            query.dontUseDistinct();
-
-            Query jpaQuery = ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em.getDelegate()).createQuery(query);
-            List expectedResult = jpaQuery.getResultList();
-
-            clearCache();
-            em.clear();
-
-            //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
-            CriteriaBuilder qb1 = em.getCriteriaBuilder();
-            CriteriaQuery<BeerConsumer> cq1 = qb1.createQuery(BeerConsumer.class);
-
-            Root<BeerConsumer> root = wrapper.from(cq1, BeerConsumer.class);
-            Join<BeerConsumer, Blue> join = wrapper.join(root, BeerConsumer_blueBeersToConsume);
-            jakarta.persistence.criteria.Expression exp = wrapper.get((Path)join.as(BlueLight.class), BlueLight_discount);
-            cq1.where(qb1.equal(exp, 10) );
-
-            List<BeerConsumer> result = em.createQuery(cq1).getResultList();
-            assertTrue("LargeProject cast failed.", comparer.compareObjects(result, expectedResult));
-        } finally {
-            if (isTransactionActive(em)) {
-                this.rollbackTransaction(em);
-            }
-            closeEntityManager(em);
-        }
-    }
-
-    public void oneToOneCastTest(){
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
-
-            Person rudy = new Person();
-            rudy.setName("Rudy");
-            em.persist(rudy);
-            SportsCar sportsCar = new SportsCar();
-            sportsCar.setMaxSpeed(200);
-            em.persist(sportsCar);
-            rudy.setCar(sportsCar);
-
-            Person theo = new Person();
-            theo.setName("Theo");
-            em.persist(theo);
-            Car car = new Car();
-            em.persist(car);
-            theo.setCar(car);
-
-            em.flush();
-            em.clear();
-            clearCache();
-
-            ReadAllQuery query = new ReadAllQuery();
-            Expression selectionCriteria = new ExpressionBuilder().get("car").treat(SportsCar.class).get("maxSpeed").equal(200);
-            query.setSelectionCriteria(selectionCriteria);
-            query.setReferenceClass(Person.class);
-            query.dontUseDistinct();
-            //query.setShouldFilterDuplicates(false);
-            Query jpaQuery = ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em.getDelegate()).createQuery(query);
-            List expectedResult = jpaQuery.getResultList();
-
-            clearCache();
-            em.clear();
-            //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
-            CriteriaBuilder qb1 = em.getCriteriaBuilder();
-            CriteriaQuery<Person> cq1 = qb1.createQuery(Person.class);
-
-            Root<Person> root = wrapper.from(cq1, Person.class);
-            Join<Person, Car> join = wrapper.join(root, Person_car);
-            jakarta.persistence.criteria.Expression exp = wrapper.get((Path)join.as(SportsCar.class), SportsCar_maxSpeed);
-            cq1.where(qb1.equal(exp, 200) );
-
-            List<Person> result = em.createQuery(cq1).getResultList();
-            assertTrue("OneToOne cast failed.", comparer.compareObjects(result, expectedResult));
-        } finally {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
             closeEntityManager(em);
         }
     }
