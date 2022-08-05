@@ -12,14 +12,13 @@
 
 // Contributors:
 //     07/29/2022-4.0.0 Tomas Kraus - 1573: Fixed types returned by JPQL EXTRACT()
-package org.eclipse.persistence.expressions;
+package org.eclipse.persistence.internal.expressions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
-import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
-import org.eclipse.persistence.internal.expressions.LiteralExpression;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 
 /**
@@ -42,7 +41,7 @@ public class ExtractOperator extends ExpressionOperator {
      * Creates an instance of {@link ExtractOperator} expression.
      * Default native database Strings are set for EXTRACT expression.
      */
-    protected ExtractOperator() {
+    public ExtractOperator() {
         this(defaultDbStrings());
     }
 
