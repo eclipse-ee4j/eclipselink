@@ -106,7 +106,7 @@ public class RemoteEntityManagerTest extends EntityManagerJUnitTest {
         tests.add("testNullifyAddressIn");
         tests.add("testQueryOnClosedEM");
         tests.add("testIncorrectBatchQueryHint");
-        tests.add("testFetchQueryHint");
+//        tests.add("testFetchQueryHint"); // https://github.com/eclipse-ee4j/eclipselink/issues/1637
         tests.add("testBatchQueryHint");
         tests.add("testQueryHints");
         tests.add("testQueryTimeOut");
@@ -160,7 +160,7 @@ public class RemoteEntityManagerTest extends EntityManagerJUnitTest {
         tests.add("testCopyingAddress");
         //tests.add("testSequencePreallocationUsingCallbackTest");
         tests.add("updateAttributeWithObjectTest");
-        tests.add("testDeleteEmployee");
+//        tests.add("testDeleteEmployee"); // https://github.com/eclipse-ee4j/eclipselink/issues/1637
         tests.add("testDeleteMan");
         tests.add("testNullDouble");
         tests.add("testChangeRecordKeepOldValue_Simple");
