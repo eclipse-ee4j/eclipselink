@@ -102,24 +102,31 @@ public class PLSQLTypeReturnTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_EMP_RECORD_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_EMP_RECORD_PACKAGE_BODY, ddlDebug);
         }
-        DBWS_BUILDER_XML_USERNAME = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "<properties>"
-                + "<property name=\"projectName\">PLSQLRecord</property>" + "<property name=\"logLevel\">off</property>"
-                + "<property name=\"username\">";
-        DBWS_BUILDER_XML_PASSWORD = "</property><property name=\"password\">";
-        DBWS_BUILDER_XML_URL = "</property><property name=\"url\">";
-        DBWS_BUILDER_XML_DRIVER = "</property><property name=\"driver\">";
-        DBWS_BUILDER_XML_PLATFORM = "</property><property name=\"platformClassname\">";
-        DBWS_BUILDER_XML_MAIN = "</property>" + "</properties>" + "<plsql-procedure " + "name=\"GetNewRecordTest\" "
-                + "catalogPattern=\"PACKAGE1\" " + "procedurePattern=\"GETNEWREC\" " + "/>" + "<plsql-procedure "
-                + "name=\"CopyRecordTest\" " + "catalogPattern=\"PACKAGE1\" " + "procedurePattern=\"COPYREC\" " + "/>"
-                + "<plsql-procedure " + "name=\"CopyRecordTest2\" " + "catalogPattern=\"PACKAGE1\" "
-                + "procedurePattern=\"COPYREC2\" " + "/>" + "<plsql-procedure " + "name=\"GetRecordWithTableTest\" "
-                + "catalogPattern=\"PACKAGE1\" " + "procedurePattern=\"GETRECWITHTABLE\" " + "/>" + "<plsql-procedure "
-                + "name=\"GetRecordWithTableTest2\" " + "catalogPattern=\"PACKAGE1\" "
-                + "procedurePattern=\"GETRECWITHTABLE2\" " + "/>" + "<plsql-procedure "
-                + "name=\"TestRecWithPercentTypeField\" " + "catalogPattern=\"EMP_RECORD_PACKAGE\" "
-                + "procedurePattern=\"get_emp_record\" " + "/>" + "</dbws-builder>";
+        DBWS_BUILDER_XML_USERNAME =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+                  "<properties>" +
+                      "<property name=\"projectName\">PLSQLRecord</property>" +
+                      "<property name=\"logLevel\">off</property>" +
+                      "<property name=\"username\">";
+              DBWS_BUILDER_XML_PASSWORD =
+                      "</property><property name=\"password\">";
+              DBWS_BUILDER_XML_URL =
+                      "</property><property name=\"url\">";
+              DBWS_BUILDER_XML_DRIVER =
+                      "</property><property name=\"driver\">";
+              DBWS_BUILDER_XML_PLATFORM =
+                      "</property><property name=\"platformClassname\">";
+              DBWS_BUILDER_XML_MAIN =
+                      "</property>" +
+                  "</properties>" +
+                  "<plsql-procedure " +
+                      "name=\"TestRecWithPercentTypeField\" " +
+                      "catalogPattern=\"EMP_RECORD_PACKAGE\" " +
+                      "procedurePattern=\"get_emp_record\" " +
+                  "/>" +
+                "</dbws-builder>";
+
         builder = null;
         DBWSTestSuite.setUp(".");
 
