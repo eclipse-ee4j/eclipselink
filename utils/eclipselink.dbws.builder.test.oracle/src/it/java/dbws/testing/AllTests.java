@@ -47,7 +47,7 @@ import dbws.testing.ordescriptor.ORDescriptorTestSuite;
 import dbws.testing.oxdescriptor.OXDescriptorTestSuite;
 import dbws.testing.plsqlcollection.PLSQLCollectionTestSuite;
 import dbws.testing.plsqlrecord.PLSQLRecordTestSuite;
-import dbws.testing.plsqlrecord.PLSQLTypeReturnTest;
+import dbws.testing.plsqlrecord.PLSQLTypeReturnTestSuite;
 import dbws.testing.plsqlrecord2.PLSQLRecord2TestSuite;
 import dbws.testing.prependedpackage.PrependedPackageTestSuite;
 import dbws.testing.prependedschema.PrependedSchemaTestSuite;
