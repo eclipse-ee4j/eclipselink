@@ -73,7 +73,7 @@ spec:
       requests:
         memory: "2Gi"
         cpu: "1"
-    image: tkraus/el-build:1.1.9
+    image: tkraus/el-build:2.0.2
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
