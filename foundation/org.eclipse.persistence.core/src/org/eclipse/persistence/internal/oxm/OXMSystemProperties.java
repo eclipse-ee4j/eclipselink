@@ -62,7 +62,7 @@ public final class OXMSystemProperties {
      * <li>Source value: 2003-08-29T03:00:00-04:00  -&gt; Output string: 2003-08-29T03:00:00.0-04:00</li>
      * <li>Source value: 1975-02-21T07:47:15  -&gt; Output string: 1975-02-21T07:47:15.0</li>
      * </ul>
-     * @since 2.7.12
+     * @since 2.7.11
      */
     public static final String XML_CONVERSION_TIME_SUFFIX = "org.eclipse.persistence.xml.time.suffix";
 
