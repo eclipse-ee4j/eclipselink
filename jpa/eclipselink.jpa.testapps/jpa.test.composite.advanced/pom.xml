@@ -76,7 +76,6 @@
 
     <properties>
         <argLine/>
-        <persistence-unit.name>composite-advanced</persistence-unit.name>
     </properties>
 
     <build>

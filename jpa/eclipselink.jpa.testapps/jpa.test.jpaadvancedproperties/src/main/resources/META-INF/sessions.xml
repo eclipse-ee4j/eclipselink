@@ -17,6 +17,6 @@
    <session xsi:type="server-session">
       <name>JPASessionXML</name>
       <logging xsi:type="java-log"/>
-      <primary-project xsi:type="xml">org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/RelationshipProject.xml</primary-project>
+      <primary-project xsi:type="xml">META-INF/RelationshipProject.xml</primary-project>
    </session>
 </sessions>

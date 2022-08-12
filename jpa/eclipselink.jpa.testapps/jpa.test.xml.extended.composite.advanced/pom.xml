@@ -79,7 +79,6 @@
 
     <properties>
         <argLine/>
-        <persistence-unit.name>xml-composite-advanced</persistence-unit.name>
     </properties>
 
     <build>

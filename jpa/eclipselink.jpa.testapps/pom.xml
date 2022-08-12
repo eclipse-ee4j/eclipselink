@@ -51,6 +51,9 @@
         <persistence-unit.data-source-type>jta-data-source</persistence-unit.data-source-type>
         <persistence-unit.transaction-type>JTA</persistence-unit.transaction-type>
         <persistence-unit.server-weaving>true</persistence-unit.server-weaving>
+
+        <!-- used by composite members, WildFly requires these to be XA datasources
+             as each can point to different DB -->
         <persistence-unit.data-source2-name>jdbc/EclipseLinkDS2</persistence-unit.data-source2-name>
         <persistence-unit.data-source3-name>jdbc/EclipseLinkDS3</persistence-unit.data-source3-name>
     </properties>
@@ -485,7 +488,7 @@
                 <!-- see https://github.com/lukasj/eclipselink-build-support -->
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink-testbuild-plugin</artifactId>
-                <version>0.0.4</version>
+                <version>0.0.5</version>
 <!--                <extensions>true</extensions>-->
                 <executions>
                     <execution>

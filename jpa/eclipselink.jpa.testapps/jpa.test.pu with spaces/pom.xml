@@ -69,12 +69,6 @@
                             <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>server-test</id>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
         </plugins>

@@ -29,7 +29,6 @@
 
     <properties>
         <argLine/>
-        <el.packager.descriptors>false</el.packager.descriptors>
     </properties>
 
     <build>
