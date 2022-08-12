@@ -30,29 +30,29 @@ import java.lang.reflect.Field;
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
  */
-public class LobJUnitTestCase extends JUnitTestCase {
+public class LobTest extends JUnitTestCase {
 
     private static Integer imageId;
     private static Image originalImage;
 
-    public LobJUnitTestCase() {
+    public LobTest() {
         super();
     }
 
-    public LobJUnitTestCase(String name) {
+    public LobTest(String name) {
         super(name);
     }
 
     public static Test suite() {
         TestSuite suite = new TestSuite("Lob Model");
-        suite.addTest(new LobJUnitTestCase("testSetup"));
-        suite.addTest(new LobJUnitTestCase("testMerge"));
-        suite.addTest(new LobJUnitTestCase("testCreate"));
-        suite.addTest(new LobJUnitTestCase("testRead"));
-        suite.addTest(new LobJUnitTestCase("testUpdate"));
-        suite.addTest(new LobJUnitTestCase("testDelete"));
-        suite.addTest(new LobJUnitTestCase("testMerge"));
-        suite.addTest(new LobJUnitTestCase("testRetrieveLazyBasicAfterTxnReadCommit"));
+        suite.addTest(new LobTest("testSetup"));
+        suite.addTest(new LobTest("testMerge"));
+        suite.addTest(new LobTest("testCreate"));
+        suite.addTest(new LobTest("testRead"));
+        suite.addTest(new LobTest("testUpdate"));
+        suite.addTest(new LobTest("testDelete"));
+        suite.addTest(new LobTest("testMerge"));
+        suite.addTest(new LobTest("testRetrieveLazyBasicAfterTxnReadCommit"));
 
         return suite;
     }
@@ -250,6 +250,6 @@ public class LobJUnitTestCase extends JUnitTestCase {
     }
 
     public static void main(String[] args) {
-        junit.textui.TestRunner.run(LobJUnitTestCase.suite());
+        junit.textui.TestRunner.run(LobTest.suite());
     }
 }
