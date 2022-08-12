@@ -49,10 +49,6 @@
         </dependency>
     </dependencies>
 
-    <properties>
-        <persistence-unit.name>beanvalidation-dynamic</persistence-unit.name>
-    </properties>
-
     <build>
         <plugins>
             <plugin>

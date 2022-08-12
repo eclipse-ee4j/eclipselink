@@ -40,7 +40,6 @@
 
     <properties>
         <argLine/>
-<!--        <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>-->
         <se.test.skip>true</se.test.skip>
         <server.test.skip>true</server.test.skip>
     </properties>

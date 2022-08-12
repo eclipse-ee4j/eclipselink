@@ -51,7 +51,6 @@
 
     <properties>
         <argLine/>
-        <persistence-unit.name>beanvalidation</persistence-unit.name>
     </properties>
 
     <build>

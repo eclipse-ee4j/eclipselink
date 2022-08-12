@@ -17,7 +17,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
-            <property name="eclipselink.sessions-xml" value="org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/sessions.xml"/>
+            <property name="eclipselink.sessions-xml" value="META-INF/sessions.xml"/>
             <property name="eclipselink.session-name" value="JPASessionXML"/>
             <property name="eclipselink.exception-handler" value="org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.CustomizedExceptionHandler"/>
             <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.CustomizedSessionEventListener"/>

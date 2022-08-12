@@ -39,6 +39,10 @@
 
     <properties>
         <argLine/>
+        <se.test.skip>true</se.test.skip>
+        <!-- for 1 PU we need the SingleUnitTestRunnerBean which would be excluded by default since we don't have PU for SE -->
+        <el.packager.fwk.exclusionFilter>%regex[.*TestRunner[0-9].*]</el.packager.fwk.exclusionFilter>
+        <el.packager.descriptors>false</el.packager.descriptors>
     </properties>
 
     <build>
@@ -47,12 +51,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <executions>
-                    <execution>
-                        <id>default-test</id>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>server-test</id>
                         <configuration>

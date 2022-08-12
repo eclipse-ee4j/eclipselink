@@ -29,7 +29,6 @@
 
     <properties>
         <argLine/>
-        <el.packager.fwk.exclusionFilter>%regex[.*TestRunner.*Bean.*]</el.packager.fwk.exclusionFilter>
         <!-- server tests require Oracle DB -->
         <server.test.skip>true</server.test.skip>
     </properties>
@@ -69,12 +68,6 @@
                         <id>default-test</id>
                         <configuration>
                             <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>server-test</id>
-                        <configuration>
-                            <skip>true</skip>
                         </configuration>
                     </execution>
                 </executions>

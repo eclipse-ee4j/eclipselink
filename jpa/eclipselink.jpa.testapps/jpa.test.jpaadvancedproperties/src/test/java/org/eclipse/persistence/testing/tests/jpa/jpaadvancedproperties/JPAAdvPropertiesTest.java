@@ -12,8 +12,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-
 package org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties;
 
 import jakarta.persistence.EntityManager;
@@ -31,42 +29,40 @@ import org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.ModelExa
 import org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 
 
 /**
- * JUnit test case(s) for the TopLink JPAAdvPropertiesJUnitTestCase.
+ * JUnit test case(s) for the TopLink JPAAdvPropertiesTest.
  */
-public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
-    private static final String persistenceUnitName = "JPAADVProperties";
+public class JPAAdvPropertiesTest extends JUnitTestCase {
 
-
-    public JPAAdvPropertiesJUnitTestCase() {
+    public JPAAdvPropertiesTest() {
         super();
     }
 
-    public JPAAdvPropertiesJUnitTestCase(String name) {
+    public JPAAdvPropertiesTest(String name) {
         super(name);
+        setPuName(getPersistenceUnitName());
     }
 
     @Override
     public String getPersistenceUnitName() {
-        return persistenceUnitName;
+        return "JPAADVProperties";
     }
 
     public static Test suite() {
         TestSuite suite = new TestSuite("JPA Advanced Properties Model");
-        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testSetup"));
-        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testSessionXMLProperty"));
-        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testSessionEventListenerProperty"));
-        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testExceptionHandlerProperty"));
-        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testNativeSQLProperty"));
-        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testCacheStatementsAndItsSizeProperty"));
-        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testBatchwritingProperty"));
-        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testCopyDescriptorNamedQueryToSessionProperty"));
-        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testLoggingTyperProperty"));
-        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testProfilerTyperProperty"));
+        suite.addTest(new JPAAdvPropertiesTest("testSetup"));
+        suite.addTest(new JPAAdvPropertiesTest("testSessionXMLProperty"));
+        suite.addTest(new JPAAdvPropertiesTest("testSessionEventListenerProperty"));
+        suite.addTest(new JPAAdvPropertiesTest("testExceptionHandlerProperty"));
+        suite.addTest(new JPAAdvPropertiesTest("testNativeSQLProperty"));
+        suite.addTest(new JPAAdvPropertiesTest("testCacheStatementsAndItsSizeProperty"));
+        suite.addTest(new JPAAdvPropertiesTest("testBatchwritingProperty"));
+        suite.addTest(new JPAAdvPropertiesTest("testCopyDescriptorNamedQueryToSessionProperty"));
+        suite.addTest(new JPAAdvPropertiesTest("testLoggingTyperProperty"));
 
         return suite;
     }
@@ -75,19 +71,14 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new JPAPropertiesRelationshipTableManager().replaceTables(JUnitTestCase.getServerSession(persistenceUnitName));
+        new JPAPropertiesRelationshipTableManager().replaceTables(getPersistenceUnitServerSession());
         clearCache();
     }
 
 
     public void testSessionEventListenerProperty() {
-        EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = null;
-        if (isOnServer()) {
-                session = getServerSession();
-            } else {
-                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
-            }
+        EntityManager em = createEntityManager();
+        ServerSession session = em.unwrap(ServerSession.class);
         try {
             //Create new customer
             beginTransaction(em);
@@ -143,13 +134,8 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     }
 
     public void testExceptionHandlerProperty() {
-        EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = null;
-        if (isOnServer()) {
-                session = getServerSession();
-            } else {
-                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
-            }
+        EntityManager em = createEntityManager();
+        ServerSession session = em.unwrap(ServerSession.class);
         Expression exp = new ExpressionBuilder().get("name1").equal("George W.");
         try {
             Object result = session.readObject(Customer.class, exp);
@@ -162,13 +148,8 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     }
 
     public void testNativeSQLProperty() {
-        EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = null;
-        if (isOnServer()) {
-                session = getServerSession();
-            } else {
-                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
-            }
+        EntityManager em = createEntityManager();
+        ServerSession session = em.unwrap(ServerSession.class);
         if(!session.getProject().getLogin().shouldUseNativeSQL()){
             fail("The native sql flag specified as true by the property eclipselink.jdbc.native-sql in persistence.xml, it however read as false.");
         }
@@ -176,13 +157,8 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     }
 
     public void testBatchwritingProperty(){
-        EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = null;
-        if (isOnServer()) {
-                session = getServerSession();
-            } else {
-                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
-            }
+        EntityManager em = createEntityManager();
+        ServerSession session = em.unwrap(ServerSession.class);
         if(!(session.getPlatform().usesBatchWriting() &&
            !session.getPlatform().usesJDBCBatchWriting() &&
            !session.getPlatform().usesNativeBatchWriting())){
@@ -192,13 +168,8 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     }
 
     public void testCopyDescriptorNamedQueryToSessionProperty(){
-        EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = null;
-        if (isOnServer()) {
-                session = getServerSession();
-            } else {
-                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
-            }
+        EntityManager em = createEntityManager();
+        ServerSession session = em.unwrap(ServerSession.class);
         org.eclipse.persistence.queries.DatabaseQuery query = session.getQuery("customerReadByName");
         if(query == null){
             fail("The copy descriptor named query is enable by the property eclipselink.session.include.descriptor.queries in persistence.xml, one descriptor named query has not been copied to the session");
@@ -207,13 +178,8 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     }
 
     public void testCacheStatementsAndItsSizeProperty() {
-        EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = null;
-        if (isOnServer()) {
-                session = getServerSession();
-            } else {
-                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
-            }
+        EntityManager em = createEntityManager();
+        ServerSession session = em.unwrap(ServerSession.class);
         if(session.getConnectionPools().size()>0){//And if connection pooling is configured,
             if(!session.getProject().getLogin().shouldCacheAllStatements()){
                 fail("Caching all statements flag set equals to true by property eclipselink.jdbc.cache-statements in persistence.xml, it however read as false.");
@@ -227,43 +193,17 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     }
 
     public void testLoggingTyperProperty(){
-        EntityManager em = createEntityManager(persistenceUnitName);
-        ServerSession session = null;
-        if (isOnServer()) {
-                session = getServerSession();
-            } else {
-                session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
-            }
+        EntityManager em = createEntityManager();
+        ServerSession session = em.unwrap(ServerSession.class);
         if(!(session.getSessionLog() instanceof org.eclipse.persistence.logging.JavaLog)){
             fail("Logging type set to JavaLog, it however has been detected as different type logger.");
         }
         closeEntityManager(em);
     }
 
-    public void testProfilerTyperProperty(){
-        if (isOnServer()) {
-            // Multi-persistece-unit not work on server.
-            return;
-        }
-        EntityManager em = createEntityManager("JPAADVProperties2");
-        org.eclipse.persistence.sessions.server.ServerSession session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
-        if (!(session.getProfiler() instanceof org.eclipse.persistence.tools.profiler.PerformanceProfiler)) {
-            fail("Profiler type set to PerformanceProfiler, it however has been detected as different type Profiler.");
-        }
-        closeEntityManager(em);
-
-        em = createEntityManager("JPAADVProperties3");
-        session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
-        if (session.getProfiler() !=null) {
-            fail("no profiler has been set,it however has been detected.");
-        }
-        closeEntityManager(em);
-    }
-
-
     public void testSessionXMLProperty() {
         Integer customerId;
-        EntityManager em = createEntityManager(persistenceUnitName);
+        EntityManager em = createEntityManager();
 
         //Create customer
         beginTransaction(em);
@@ -294,12 +234,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
             fail("Error finding customer ");
         }
 
-        List<?> orders = null;
-        if (isOnServer()) {
-                orders = (Vector<?>)cm1.getOrders();
-            } else {
-                orders = (ArrayList<?>)cm1.getOrders();
-            }
+        Collection<?> orders = cm1.getOrders();
         if (orders == null || orders.size()!=3){
             fail("Error finding order pertaining to the customer ");
             }
@@ -316,7 +251,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         Customer cm2 = null;
         beginTransaction(em);
         try {
-            Query query = createEntityManager(persistenceUnitName).createNamedQuery("customerReadByName");
+            Query query = createEntityManager().createNamedQuery("customerReadByName");
             query.setParameter("name", "George W.");
             cm2 = (Customer) query.getSingleResult();
             commitTransaction(em);
