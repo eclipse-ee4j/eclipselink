@@ -203,7 +203,6 @@ public class ExtractOperator extends ExpressionOperator {
     }
 
     @Override
-    @SuppressWarnings("fallthrough")
     public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
         if (second instanceof LiteralExpression) {
             switch (((LiteralExpression) second).getValue().toUpperCase()) {
@@ -231,13 +230,15 @@ public class ExtractOperator extends ExpressionOperator {
                 case "SECOND":
                     printSecondSQL(first, second, printer);
                     return;
+                default:
+                    throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "
+                            + ((LiteralExpression) second).getValue().toUpperCase());
             }
         }
         super.printDuo(first, second, printer);
     }
 
     @Override
-    @SuppressWarnings("fallthrough")
     public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
         if (items.size() == 2) {
             final Expression second = items.get(1);
@@ -267,6 +268,9 @@ public class ExtractOperator extends ExpressionOperator {
                     case "SECOND":
                         printSecondSQL(items.get(0), second, printer);
                         return;
+                    default:
+                        throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "
+                                + ((LiteralExpression) second).getValue().toUpperCase());
                 }
             }
         }
@@ -412,7 +416,6 @@ public class ExtractOperator extends ExpressionOperator {
 
 
     @Override
-    @SuppressWarnings("fallthrough")
     public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
         if (second instanceof LiteralExpression) {
             switch (((LiteralExpression) second).getValue().toUpperCase()) {
@@ -440,13 +443,15 @@ public class ExtractOperator extends ExpressionOperator {
                 case "SECOND":
                     printSecondJava(first, second, printer);
                     return;
+                default:
+                    throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "
+                            + ((LiteralExpression) second).getValue().toUpperCase());
             }
         }
         super.printJavaDuo(first, second, printer);
     }
 
     @Override
-    @SuppressWarnings("fallthrough")
     public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
         if (items.size() == 2) {
             final Expression second = items.get(1);
@@ -476,6 +481,9 @@ public class ExtractOperator extends ExpressionOperator {
                     case "SECOND":
                         printSecondJava(items.get(0), second, printer);
                         return;
+                    default:
+                        throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "
+                                + ((LiteralExpression) second).getValue().toUpperCase());
                 }
             }
         }
