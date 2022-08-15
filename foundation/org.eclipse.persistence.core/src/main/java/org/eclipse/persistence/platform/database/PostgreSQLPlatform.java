@@ -147,6 +147,8 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         addOperator(toNumberOperator());
         addOperator(regexpOperator());
         addOperator(pgsqlRoundOperator());
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "LOCALTIME"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalDateTime, "LOCALTIMESTAMP"));
     }
 
     // Emulate ROUND(:x,:n) as FLOOR((:x)*10^(:n)+0.5)/10^(:n)

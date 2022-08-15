@@ -36,6 +36,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.LogicalExpression;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
@@ -3135,22 +3136,7 @@ public class ExpressionOperator implements Serializable {
      * Build operator.
      */
     public static ExpressionOperator extract() {
-        ExpressionOperator exOperator = new ExpressionOperator();
-        exOperator.setType(FunctionOperator);
-        exOperator.setSelector(Extract);
-        exOperator.setName("EXTRACT");
-        List<String> v = new ArrayList<>(5);
-        v.add("EXTRACT(");
-        v.add(" FROM ");
-        v.add(")");
-        exOperator.printsAs(v);
-        int[] indices = new int[2];
-        indices[0] = 1;
-        indices[1] = 0;
-        exOperator.setArgumentIndices(indices);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
+        return new ExtractOperator();
     }
 
     /**

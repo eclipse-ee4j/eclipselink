@@ -42,10 +42,13 @@ import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
@@ -406,6 +409,7 @@ public class MySQLPlatform extends DatabasePlatform {
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Trunc, "TRUNCATE"));
         addOperator(leftTrim2());
         addOperator(rightTrim2());
+        addOperator(mysqlExtractOperator());
     }
 
     /**
@@ -595,6 +599,41 @@ public class MySQLPlatform extends DatabasePlatform {
      */
     protected ExpressionOperator currentDateOperator() {
         return ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "CURRENT_DATE");
+    }
+
+    // MySQL EXTRACT SECOND operator need more complex statement to join values of SECOND and MICROSECOND
+    private static final class MySQLExtractOperator extends ExtractOperator {
+
+        // SECOND emulation: (EXTRACT(MICROSECOND FROM date)/1e6+EXTRACT(SECOND FROM date))
+        private static final String[] SECOND_STRINGS = new String[] {"(EXTRACT(MICROSECOND FROM ", ")/1e6+EXTRACT(SECOND FROM ", "))"};
+
+        private MySQLExtractOperator() {
+            super();
+        }
+
+        @Override
+        protected void printSecondSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(SECOND_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(SECOND_STRINGS[1]);
+            first.printSQL(printer);
+            printer.printString(SECOND_STRINGS[2]);
+        }
+
+        @Override
+        protected void printSecondJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(SECOND_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(SECOND_STRINGS[1]);
+            first.printJava(printer);
+            printer.printString(SECOND_STRINGS[2]);
+        }
+
+    }
+
+    // Create EXTRACT operator form MySQL platform
+    private static ExpressionOperator mysqlExtractOperator() {
+        return new MySQLExtractOperator();
     }
 
     /**

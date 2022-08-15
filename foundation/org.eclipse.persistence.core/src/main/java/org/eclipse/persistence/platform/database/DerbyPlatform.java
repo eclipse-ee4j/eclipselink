@@ -39,14 +39,13 @@ import java.util.Vector;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.expressions.ListExpressionOperator;
+import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.CollectionExpression;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
-import org.eclipse.persistence.internal.expressions.LiteralExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -508,89 +507,65 @@ public class DerbyPlatform extends DB2Platform {
         return operator;
     }
 
-    /**
-     * INTERNAL:
-     * Derby does not support EXTRACT, but does have YEAR, MONTH, DAY, etc.
-     */
-    protected ExpressionOperator derbyExtractOperator() {
+    // Derby does not suport native EXTRACT at all. There are specific functions for most of the date/time parts.
+    // QUARTER part needs to be calculated from MONTH value.
+    // SECOND does not return fraction part and there is no fraction specific function available.
+    private static final class DerbyExtractOperator extends ExtractOperator {
 
-        ExpressionOperator exOperator = new ExpressionOperator() {
+        // QUARTER emulation: ((MONTH(:first)+2)/3)
+        private static final String[] QUARTER_STRINGS = new String[] {"((MONTH(", ")+2)/3)"};
+        // SECOND emulation: CAST(SECOND(:first) AS FLOAT)
+        private static final String[] SECOND_STRINGS = new String[] {"CAST(SECOND(", ") AS FLOAT)"};
 
-            // QUARTER emulation: ((MONTH(:first)+2)/3)
-            private final String[] QUARTER_STRINGS = new String[] {"((MONTH(", ")+2)/3)"};
+        // Derby native database Strings to be printed for EXTRACT expression
+        // Printing of prefix database String is set to be skipped for Derby
+        private static List<String> derbyDbStrings() {
+            final List<String> dbStrings = new ArrayList<>(2);
+            dbStrings.add("(");
+            dbStrings.add(")");
+            return dbStrings;
+        }
 
-            private void printQuarterSQL(final Expression first, final ExpressionSQLPrinter printer) {
-                printer.printString(QUARTER_STRINGS[0]);
-                first.printSQL(printer);
-                printer.printString(QUARTER_STRINGS[1]);
-            }
+        private DerbyExtractOperator() {
+            // Register custom native database Strings
+            super(derbyDbStrings());
+            // Skip prefix to be printed from database Strings
+            bePostfix();
+        }
 
-            private void printQuarterJava(final Expression first, final ExpressionJavaPrinter printer) {
-                printer.printString(QUARTER_STRINGS[0]);
-                first.printJava(printer);
-                printer.printString(QUARTER_STRINGS[1]);
-            }
+        @Override
+        protected void printQuarterSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(QUARTER_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(QUARTER_STRINGS[1]);
+        }
 
-            @Override
-            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-                if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                    printQuarterSQL(first, printer);
-                } else {
-                    super.printDuo(first, second, printer);
-                }
-            }
+        @Override
+        protected void printQuarterJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(QUARTER_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(QUARTER_STRINGS[1]);
+        }
 
-            @Override
-            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
-                if (items.size() == 2) {
-                    Expression first = items.get(0);
-                    Expression second = items.get(1);
-                    if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                        printQuarterSQL(first, printer);
-                        return;
-                    }
-                }
-                super.printCollection(items, printer);
-            }
+        @Override
+        protected void printSecondSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(SECOND_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(SECOND_STRINGS[1]);
+        }
 
-            @Override
-            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
-                if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                    printQuarterJava(first, printer);
-                } else {
-                    super.printJavaDuo(first, second, printer);
-                }
-            }
+        @Override
+        protected void printSecondJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(SECOND_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(SECOND_STRINGS[1]);
+        }
 
-            @Override
-            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
-                if (items.size() == 2) {
-                    Expression first = items.get(0);
-                    Expression second = items.get(1);
-                    if (second instanceof LiteralExpression && "QUARTER".equals(((LiteralExpression)second).getValue().toUpperCase())) {
-                        printQuarterJava(first, printer);
-                        return;
-                    }
-                }
-                super.printJavaCollection(items, printer);
-            }
-        };
+    }
 
-        exOperator.setType(ExpressionOperator.FunctionOperator);
-        exOperator.setSelector(ExpressionOperator.Extract);
-        exOperator.setName("EXTRACT");
-        List<String> v = new ArrayList<>(3);
-        v.add("");
-        v.add("(");
-        v.add(")");
-        exOperator.printsAs(v);
-        int[] indices = new int[2];
-        indices[0] = 1;
-        indices[1] = 0;
-        exOperator.setArgumentIndices(indices);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
+    // Create EXTRACT operator form Derby platform
+    private static ExpressionOperator derbyExtractOperator() {
+        return new DerbyExtractOperator();
     }
 
     /**

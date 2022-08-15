@@ -49,13 +49,13 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
-import org.eclipse.persistence.internal.expressions.LiteralExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -725,117 +725,51 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         return exOperator;
     }
 
-    /**
-     * Oracle does not support EXTRACT QUARTER. Can be emulated using TO_NUMBER(TO_CHAR(", ", 'Q')).
-     */
-    private ExpressionOperator oracleExtractOperator() {
+    // Oracle EXTRACT operator needs emulation of QUARTER and WEEK date/time parts.
+    private static final class OracleExtractOperator extends ExtractOperator {
 
-        ExpressionOperator exOperator = new ExpressionOperator() {
+        // QUARTER emulation: TO_NUMBER(TO_CHAR(", ", 'Q'))
+        private static final String[] QUARTER_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'Q'))"};
+        // ISO WEEK emulation: TO_NUMBER(TO_CHAR(", ", 'IW'))
+        private static final String[] WEEK_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'IW'))"};
 
-            // QUARTER emulation: TO_NUMBER(TO_CHAR(", ", 'Q'))
-            private final String[] QUARTER_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'Q'))"};
-            // ISO WEEK emulation: TO_NUMBER(TO_CHAR(", ", 'IW'))
-            private final String[] WEEK_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'IW'))"};
+        private OracleExtractOperator() {
+            super();
+        }
 
-            private void printQuarterSQL(final Expression first, final ExpressionSQLPrinter printer) {
-                printer.printString(QUARTER_STRINGS[0]);
-                first.printSQL(printer);
-                printer.printString(QUARTER_STRINGS[1]);
-            }
+        @Override
+        protected void printQuarterSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(QUARTER_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(QUARTER_STRINGS[1]);
+        }
 
-            private void printQuarterJava(final Expression first, final ExpressionJavaPrinter printer) {
-                printer.printString(QUARTER_STRINGS[0]);
-                first.printJava(printer);
-                printer.printString(QUARTER_STRINGS[1]);
-            }
+        @Override
+        protected void printQuarterJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(QUARTER_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(QUARTER_STRINGS[1]);
+        }
 
-            private void printWeekSQL(final Expression first, final ExpressionSQLPrinter printer) {
-                printer.printString(WEEK_STRINGS[0]);
-                first.printSQL(printer);
-                printer.printString(WEEK_STRINGS[1]);
-            }
+        @Override
+        protected void printWeekSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(WEEK_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(WEEK_STRINGS[1]);
+        }
 
-            private void printWeekJava(final Expression first, final ExpressionJavaPrinter printer) {
-                printer.printString(WEEK_STRINGS[0]);
-                first.printJava(printer);
-                printer.printString(WEEK_STRINGS[1]);
-            }
+        @Override
+        protected void printWeekJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(WEEK_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(WEEK_STRINGS[1]);
+        }
 
-            @Override
-            public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-                if (second instanceof LiteralExpression) {
-                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
-                        case "QUARTER":
-                            printQuarterSQL(first, printer);
-                            return;
-                        case "WEEK":
-                            printWeekSQL(first, printer);
-                            return;
-                    }
-                }
-                super.printDuo(first, second, printer);
-            }
+    }
 
-            @Override
-            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
-                if (items.size() == 2) {
-                    switch (((LiteralExpression) items.get(1)).getValue().toUpperCase()) {
-                        case "QUARTER":
-                            printQuarterSQL(items.get(0), printer);
-                            return;
-                        case "WEEK":
-                            printWeekSQL(items.get(0), printer);
-                            return;
-                    }
-                }
-                super.printCollection(items, printer);
-            }
-
-            @Override
-            public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
-                if (second instanceof LiteralExpression) {
-                    switch (((LiteralExpression) second).getValue().toUpperCase()) {
-                        case "QUARTER":
-                            printQuarterJava(first, printer);
-                            return;
-                        case "WEEK":
-                            printWeekJava(first, printer);
-                            return;
-                    }
-                }
-                super.printJavaDuo(first, second, printer);
-            }
-
-            @Override
-            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
-                if (items.size() == 2) {
-                    switch (((LiteralExpression) items.get(1)).getValue().toUpperCase()) {
-                        case "QUARTER":
-                            printQuarterJava(items.get(0), printer);
-                            return;
-                        case "WEEK":
-                            printWeekJava(items.get(0), printer);
-                            return;
-                    }
-                }
-                super.printJavaCollection(items, printer);
-            }
-        };
-        List<String> v = new ArrayList<>(5);
-        exOperator.setType(ExpressionOperator.FunctionOperator);
-        exOperator.setSelector(ExpressionOperator.Extract);
-        exOperator.setName("EXTRACT");
-        v.add("EXTRACT(");
-        v.add(" FROM ");
-        v.add(")");
-        exOperator.printsAs(v);
-        int[] indices = new int[2];
-        indices[0] = 1;
-        indices[1] = 0;
-        exOperator.setArgumentIndices(indices);
-        exOperator.bePrefix();
-        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        return exOperator;
+    // Create EXTRACT operator form Oracle platform
+    private static ExpressionOperator oracleExtractOperator() {
+        return new OracleExtractOperator();
     }
 
     /**
