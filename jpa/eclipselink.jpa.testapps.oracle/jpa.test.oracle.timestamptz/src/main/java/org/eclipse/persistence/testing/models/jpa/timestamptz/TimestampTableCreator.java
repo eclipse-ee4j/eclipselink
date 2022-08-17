@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+package org.eclipse.persistence.testing.models.jpa.timestamptz;
+
+import oracle.sql.TIMESTAMPLTZ;
+import oracle.sql.TIMESTAMPTZ;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableCreator;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+public class TimestampTableCreator extends TableCreator {
+    public TimestampTableCreator() {
+        setName("EJB3EmployeeProject");
+        addTableDefinition(buildTIMESTAMPTable());
+    }
+
+     public static TableDefinition buildTIMESTAMPTable() {
+         TableDefinition table = new TableDefinition();
+         table.setName("TIME_STAMP");
+
+         FieldDefinition fieldID = new FieldDefinition();
+         fieldID.setName("ID");
+         fieldID.setTypeName("NUMERIC");
+         fieldID.setSize(15);
+         fieldID.setSubSize(0);
+         fieldID.setIsPrimaryKey(true);
+         fieldID.setIsIdentity(true);
+         fieldID.setUnique(false);
+         fieldID.setShouldAllowNull(false);
+         table.addField(fieldID);
+
+         table.addField("NOZONE", TIMESTAMPTZ.class);
+         table.addField("TSTZ", TIMESTAMPTZ.class);
+         table.addField("TSLTZ", TIMESTAMPLTZ.class);
+
+         return table;
+     }
+
+}

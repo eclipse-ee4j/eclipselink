@@ -286,7 +286,6 @@
                                 <item>eclipselink-xml-only-model</item>
                                 <item>eclipselink-xml-merge-model</item>
                                 <!--Additional for LRG-->
-                                <item>eclipselink-plsql-model</item>
                                 <item>eclipselink-identity-model</item>
                                 <item>eclipselink-xml-extended-model</item>
                             </items>
@@ -407,7 +406,6 @@
                             <skip>${skip-jpa-jse-build}</skip>
                             <items>
                                 <item>eclipselink-annotation-model</item>
-                                <item>eclipselink-plsql-model</item>
                                 <item>eclipselink-xml-extended-model</item>
                             </items>
                             <pluginExecutors>
@@ -552,12 +550,6 @@
                                     <name>server-test-jpa-xmltest</name>
                                     <properties>
                                         <puName>default</puName>
-                                    </properties>
-                                </itemWithProperty>
-                                <itemWithProperty>
-                                    <name>server-test-jpa-plsql</name>
-                                    <properties>
-                                        <puName>plsql</puName>
                                     </properties>
                                 </itemWithProperty>
                             </itemsWithProperties>
@@ -720,8 +712,6 @@
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                <!-- Special model jars for LRG 22_2 test.-->
-                                <additionalClasspathElement>${project.build.directory}/eclipselink-plsql-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -903,7 +893,6 @@
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-annotation-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-only-model.jar</additionalClasspathElement>
                                 <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-xml-merge-model.jar</additionalClasspathElement>
-                                <additionalClasspathElement>${project.build.directory}/${wave.file.prefix}eclipselink-plsql-model.jar</additionalClasspathElement>
                             </additionalClasspathElements>
                             <includes>
                                 <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
@@ -976,7 +965,6 @@
                             <systemPropertiesFile>${testjee.properties.file}</systemPropertiesFile>
                             <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
                             <systemProperties>
-                                <proxy.user.name>${pa.connection.user}</proxy.user.name>
                                 <server.platform>${server.platform}</server.platform>
                                 <server.user>${server.usr}</server.user>
                                 <server.password>${server.pwd}</server.password>
@@ -989,12 +977,6 @@
                                 <server.testrunner5>${server.testrunner.prefix}${server.testrunner5.suffix}</server.testrunner5>
                                 <server.testrunner6>${server.testrunner.prefix}${server.testrunner6.suffix}</server.testrunner6>
                                 <server.run>TRUE</server.run>
-                                <pa.connection.user>${pa.connection.user}</pa.connection.user>
-                                <pa.proxyuser>${pa.proxyuser}</pa.proxyuser>
-                                <pa.proxyuser2>${pa.proxyuser2}</pa.proxyuser2>
-                                <pa.connection.password>${pa.connection.password}</pa.connection.password>
-                                <pa.proxyuser.password>${pa.proxyuser.password}</pa.proxyuser.password>
-                                <pa.proxyuser2.password>${pa.proxyuser2.password}</pa.proxyuser2.password>
                                 <com.ibm.SSL.ConfigURL>${com.ibm.SSL.ConfigURL}</com.ibm.SSL.ConfigURL>
                                 <com.ibm.CORBA.ConfigURL>${com.ibm.CORBA.ConfigURL}</com.ibm.CORBA.ConfigURL>
                                 <run.metadata.cache.test.suite>${run.metadata.cache.test.suite}</run.metadata.cache.test.suite>
@@ -1213,20 +1195,6 @@
                 <extra-model>common-server-generic</extra-model>
                 <packageName>fetchgroups</packageName>
                 <test-client-class>org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupsServerTestSuite</test-client-class>
-            </properties>
-        </profile>
-        <profile>
-            <id>server-test-jpa-plsql</id>
-            <properties>
-                <skip-test-jpa-srg>true</skip-test-jpa-srg>
-                <skip-server-test-jpa>false</skip-server-test-jpa>
-                <skip-jpa-jse-build>true</skip-jpa-jse-build>
-                <puName>plsql</puName>
-                <!--modelname property name is used there due substitution string in application.xml-->
-                <modelname>eclipselink-plsql-model</modelname>
-                <extra-model>common-server-generic</extra-model>
-                <packageName>plsql</packageName>
-                <test-client-class>org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite</test-client-class>
             </properties>
         </profile>
         <profile>

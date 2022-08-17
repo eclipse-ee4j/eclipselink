@@ -75,8 +75,6 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLSimpleTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitNativeQueryTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.plsql.XMLPLSQLTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa22.jta.JTATestSuite;
 import org.eclipse.persistence.testing.tests.jpa22.metadata.MetadataASMFactoryTest;
@@ -141,8 +139,6 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(JUnitNativeQueryTestSuite.suite());
         fullSuite.addTest(suite);
 
-        fullSuite.addTest(PLSQLTestSuite.suite());
-        fullSuite.addTest(XMLPLSQLTestSuite.suite());
         // Has security manager issues on some JVMs.
         //fullSuite.addTest(RemoteEntityManagerTestSuite.suite());
 
