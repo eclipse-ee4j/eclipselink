@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -390,7 +390,7 @@ public class ConnectionWrapper implements Connection {
     }
 
     @Override
-    public PreparedStatement prepareStatement(String sql, int columnIndexes[]) throws SQLException {
+    public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
         }
@@ -398,7 +398,7 @@ public class ConnectionWrapper implements Connection {
     }
 
     @Override
-    public PreparedStatement prepareStatement(String sql, String columnNames[]) throws SQLException {
+    public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
         if(broken) {
             throw new SQLException(getExceptionString());
         }
@@ -408,47 +408,47 @@ public class ConnectionWrapper implements Connection {
     // 236070: Methods introduced in JDK 1.6 (stolen from EmulatedConnection).
     // Those *must* be no-op as long as this code should compile under jdk 1.5
     @Override
-    public Array createArrayOf(String typeName, Object[] elements)  throws SQLException {
+    public Array createArrayOf(String typeName, Object[] elements) {
         return null;
     }
 
     @Override
-    public Blob createBlob() throws SQLException {
+    public Blob createBlob() {
         return null;
     }
 
     @Override
-    public Clob createClob() throws SQLException {
+    public Clob createClob() {
         return null;
     }
 
     @Override
-    public NClob createNClob()  throws SQLException {
+    public NClob createNClob() {
         return null;
     }
 
     @Override
-    public SQLXML createSQLXML()  throws SQLException {
+    public SQLXML createSQLXML() {
         return null;
     }
 
     @Override
-    public Struct createStruct(String typeName, Object[] attributes)  throws SQLException {
+    public Struct createStruct(String typeName, Object[] attributes) {
         return null;
     }
 
     @Override
-    public Properties getClientInfo()  throws SQLException {
+    public Properties getClientInfo() {
         return null;
     }
 
     @Override
-    public String getClientInfo(String name)  throws SQLException {
+    public String getClientInfo(String name) {
         return null;
     }
 
     @Override
-    public boolean isValid(int timeout)  throws SQLException {
+    public boolean isValid(int timeout) {
         return false;
     }
 
@@ -463,12 +463,12 @@ public class ConnectionWrapper implements Connection {
     // From java.sql.Wrapper
 
     @Override
-    public boolean isWrapperFor(Class<?> iFace) throws SQLException {
+    public boolean isWrapperFor(Class<?> iFace) {
         return false;
     }
 
     @Override
-    public <T> T unwrap(Class<T> iFace) throws SQLException {
+    public <T> T unwrap(Class<T> iFace) {
         return iFace.cast(this);
     }
 

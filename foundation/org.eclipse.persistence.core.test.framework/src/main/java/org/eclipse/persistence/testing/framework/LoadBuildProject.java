@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.util.*;
-
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.sequencing.NativeSequence;
+
+import java.util.Vector;
 
 /**
  * TopLink project for storing test results.
@@ -70,7 +70,7 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.framework.LoadBuildSummary.class);
-        Vector vector = new Vector();
+        Vector<String> vector = new Vector<>();
         vector.addElement("LOADBUILD");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("LOADBUILD.id");
@@ -163,7 +163,7 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.framework.TestResult.class);
-        Vector vector = new Vector();
+        Vector<String> vector = new Vector<>();
         vector.addElement("RESULT");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("RESULT.id");
@@ -248,7 +248,7 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.framework.TestResultsSummary.class);
-        Vector vector = new Vector();
+        Vector<String> vector = new Vector<>();
         vector.addElement("SUMMARY");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("SUMMARY.id");

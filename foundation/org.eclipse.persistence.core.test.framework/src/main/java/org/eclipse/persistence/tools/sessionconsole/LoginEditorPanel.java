@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.sessionconsole;
 
-import javax.swing.*;
-
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DefaultConnector;
-import org.eclipse.persistence.tools.beans.*;
+import org.eclipse.persistence.tools.beans.MessageDialog;
+
+import javax.swing.*;
 
 /**
  * Generic login panel.
@@ -32,7 +32,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     private JPanel ivjBindingPage = null;
     private JCheckBox ivjBlobBindingCheckbox = null;
     private JCheckBox ivjBlobStreamBinding = null;
-    private JComboBox ivjBridgeChoice = null;
+    private JComboBox<String> ivjBridgeChoice = null;
     private JCheckBox ivjCacheStatementsCheckbox = null;
     private boolean ivjConnPtoP1Aligning = false;
     private JLabel ivjCreatorLabel = null;
@@ -40,7 +40,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     private JLabel ivjDatabasePlatformLabel = null;
     private JLabel ivjDatabaseURLLabel = null;
     private JTextField ivjDatabaseURLText = null;
-    private JComboBox ivjDriverChoice = null;
+    private JComboBox<String> ivjDriverChoice = null;
     private JLabel ivjDriverClassNameLabel = null;
     private JTextField ivjDriverURLText = null;
     private JPanel ivjFillerPanel1 = null;
@@ -54,7 +54,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     private JCheckBox ivjParameterizedSQLCheckbox = null;
     private JLabel ivjPasswordLabel = null;
     private JPasswordField ivjPasswordText = null;
-    private JComboBox ivjPlatformChoice = null;
+    private JComboBox<String> ivjPlatformChoice = null;
     private JLabel ivjPreallocationSizeLabel = null;
     private JTabbedPane ivjPropertiesBook = null;
     private JLabel ivjSequenceCounterNameLabel = null;
@@ -129,58 +129,70 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         String driver = String.valueOf(getBridgeChoice().getSelectedItem());
         DatabaseLogin login = (DatabaseLogin)getLogin().clone();
 
-        /*if (driver.equals("HSQL")) {
-            login.useHSQLDriver();
-        } else if (driver.equals("PointBase JDBC")) {
-            login.usePointBaseDriver();
-        } else */
-        if (driver.equals("Sun JDBC-ODBC")) {
-            login.useJDBCODBCBridge();
-        } else if (driver.equals("Oracle thin")) {
-            login.useOracle();
-            login.useOracleThinJDBCDriver();
-        } else if (driver.equals("Oracle 8 OCI")) {
-            login.useOracle();
-            login.useOracleJDBCDriver();
-        } /* else if (driver.equals("Oracle 7 OCI")) {
-            login.useOracle();
-            login.useOracleJDBCDriver();
-        }*/ else if (driver.equals("DB2 (App)")) {
-            login.useDB2();
-            login.useDB2JDBCDriver();
-        } else if (driver.equals("DB2 (Net)")) {
-            login.useDB2();
-            login.setDriverClassName("COM.ibm.db2.jdbc.net.DB2Driver");
-        } else if (driver.equals("DB2 (Universal Driver)")) {
-            login.useDB2();
-            login.setDriverClassName("com.ibm.db2.jcc.DB2Driver");
-            login.setDriverURLHeader("jdbc:db2://");
-        } else if (driver.equals("DataDirect for DB2")) {
-            login.useDB2();
-            login.setDriverClassName("com.oracle.ias.jdbc.db2.DB2Driver");
-            login.setDriverURLHeader("jdbc:oracle:db2://");
-        } else if (driver.equals("Sybase JConnect")) {
-            login.useSybase();
-            login.useJConnect50Driver();
-        } else if (driver.equals("DataDirect for Sybase")) {
-            login.useSybase();
-            login.setDriverClassName("com.oracle.ias.jdbc.sybase.SybaseDriver");
-            login.setDriverURLHeader("jdbc:oracle:sybase://");
-        } else if (driver.equals("Weblogic Thin")) {
-            login.useSQLServer();
-            login.useWebLogicSQLServerDriver();
-        } else if (driver.equals("DataDirect for SQLServer")) {
-            login.useSQLServer();
-            login.setDriverClassName("com.oracle.ias.jdbc.sqlserver.SQLServerDriver");
-            login.setDriverURLHeader("jdbc:oracle:sqlserver://");
-        } else if (driver.equals("MS JDBC")) {
-            login.useSQLServer();
-            login.setDriverClassName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
-            login.setDriverURLHeader("jdbc:microsoft:sqlserver://");
-        } else if (driver.equals("Symfoware (RDB2_TCP)")) {
-            login.useSymfoware();
-            login.setDriverClassName("com.fujitsu.symfoware.jdbc.SYMDriver");
-            login.setDriverURLHeader("jdbc:symford://");
+        switch (driver) {
+            case "Sun JDBC-ODBC":
+                login.useJDBCODBCBridge();
+                break;
+            case "Oracle thin":
+                login.useOracle();
+                login.useOracleThinJDBCDriver();
+                break;
+            case "Oracle 8 OCI":
+                login.useOracle();
+                login.useOracleJDBCDriver();
+                break;
+            case "DB2 (App)":
+                login.useDB2();
+                login.useDB2JDBCDriver();
+                break;
+            case "DB2 (Net)":
+                login.useDB2();
+                login.setDriverClassName("COM.ibm.db2.jdbc.net.DB2Driver");
+                break;
+            case "DB2 (Universal Driver)":
+                login.useDB2();
+                login.setDriverClassName("com.ibm.db2.jcc.DB2Driver");
+                login.setDriverURLHeader("jdbc:db2://");
+                break;
+            case "DataDirect for DB2":
+                login.useDB2();
+                login.setDriverClassName("com.oracle.ias.jdbc.db2.DB2Driver");
+                login.setDriverURLHeader("jdbc:oracle:db2://");
+                break;
+            case "Sybase JConnect":
+                login.useSybase();
+                login.useJConnect50Driver();
+                break;
+            case "DataDirect for Sybase":
+                login.useSybase();
+                login.setDriverClassName("com.oracle.ias.jdbc.sybase.SybaseDriver");
+                login.setDriverURLHeader("jdbc:oracle:sybase://");
+                break;
+            case "Weblogic Thin":
+                login.useSQLServer();
+                login.useWebLogicSQLServerDriver();
+                break;
+            case "DataDirect for SQLServer":
+                login.useSQLServer();
+                login.setDriverClassName("com.oracle.ias.jdbc.sqlserver.SQLServerDriver");
+                login.setDriverURLHeader("jdbc:oracle:sqlserver://");
+                break;
+            case "MS JDBC":
+                login.useSQLServer();
+                login.setDriverClassName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
+                login.setDriverURLHeader("jdbc:microsoft:sqlserver://");
+                break;
+            case "Symfoware (RDB2_TCP)":
+                login.useSymfoware();
+                login.setDriverClassName("com.fujitsu.symfoware.jdbc.SYMDriver");
+                login.setDriverURLHeader("jdbc:symford://");
+                break;
+//            case "HSQL":
+//                login.useHSQLDriver();
+//                break;
+//            case "PointBase JDBC":
+//                login.usePointBaseDriver();
+//                break;
         }
         login.setDatabaseURL("");
         login.setUserName("");
@@ -627,7 +639,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     private void connPtoP1SetSource() {
         /* Set the source from the target */
         try {
-            if (ivjConnPtoP1Aligning == false) {
+            if (!ivjConnPtoP1Aligning) {
                 // user code begin {1}
                 // user code end
                 ivjConnPtoP1Aligning = true;
@@ -653,7 +665,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     private void connPtoP1SetTarget() {
         /* Set the target from the source */
         try {
-            if (ivjConnPtoP1Aligning == false) {
+            if (!ivjConnPtoP1Aligning) {
                 // user code begin {1}
                 // user code end
                 ivjConnPtoP1Aligning = true;
@@ -1383,10 +1395,10 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
      * Return the JComboBox1 property value.
      * @return javax.swing.JComboBox
      */
-    private javax.swing.JComboBox getBridgeChoice() {
+    private javax.swing.JComboBox<String> getBridgeChoice() {
         if (ivjBridgeChoice == null) {
             try {
-                ivjBridgeChoice = new javax.swing.JComboBox();
+                ivjBridgeChoice = new javax.swing.JComboBox<>();
                 ivjBridgeChoice.setName("BridgeChoice");
                 ivjBridgeChoice.setBackground(java.awt.SystemColor.window);
                 ivjBridgeChoice.setEditable(false);
@@ -1556,10 +1568,10 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     private
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    javax.swing.JComboBox getDriverChoice() {
+    javax.swing.JComboBox<String> getDriverChoice() {
         if (ivjDriverChoice == null) {
             try {
-                ivjDriverChoice = new javax.swing.JComboBox();
+                ivjDriverChoice = new javax.swing.JComboBox<>();
                 ivjDriverChoice.setName("DriverChoice");
                 ivjDriverChoice.setBackground(java.awt.SystemColor.window);
                 ivjDriverChoice.setEditable(true);
@@ -2299,10 +2311,10 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     private
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    javax.swing.JComboBox getPlatformChoice() {
+    javax.swing.JComboBox<String> getPlatformChoice() {
         if (ivjPlatformChoice == null) {
             try {
-                ivjPlatformChoice = new javax.swing.JComboBox();
+                ivjPlatformChoice = new javax.swing.JComboBox<>();
                 ivjPlatformChoice.setName("PlatformChoice");
                 ivjPlatformChoice.setBackground(java.awt.SystemColor.window);
                 ivjPlatformChoice.setEditable(true);
@@ -2912,7 +2924,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
     private
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void initConnections() throws java.lang.Exception {
+    void initConnections() {
         // user code begin {1}
         // user code end
         this.addPropertyChangeListener(ivjEventHandler);
@@ -3144,7 +3156,6 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
                 handleException(ivjExc);
             }
         }
-        ;
         // user code begin {3}
         // user code end
     }

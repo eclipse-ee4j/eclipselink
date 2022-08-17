@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
-import java.sql.*;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.sessions.DatabaseRecord;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * Emulated database result set meta data.
@@ -41,7 +41,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
         if (resultSet.getRows().isEmpty()) {
             return 1;
         }
-        return ((DatabaseRecord)resultSet.getRows().get(0)).getFields().size();
+        return resultSet.getRows().get(0).getFields().size();
     }
 
     /**
@@ -152,7 +152,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      */
     @Override
     public String getColumnName(int column) throws SQLException {
-        return ((DatabaseRecord)resultSet.getRows().get(0)).getFields().get(column - 1).getName();
+        return resultSet.getRows().get(0).getFields().get(column - 1).getName();
     }
 
     /**

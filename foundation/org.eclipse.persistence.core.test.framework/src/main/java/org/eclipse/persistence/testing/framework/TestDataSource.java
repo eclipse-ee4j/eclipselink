@@ -14,11 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.util.*;
-import java.io.*;
-import java.sql.*;
-
-import javax.sql.*;
+import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 import java.util.logging.Logger;
 /**
  * dummy DataSource that returns a Connection
@@ -53,31 +54,31 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public int getLoginTimeout() throws SQLException {
+    public int getLoginTimeout() {
         return 0;
     }
 
     @Override
-    public PrintWriter getLogWriter() throws SQLException {
+    public PrintWriter getLogWriter() {
         return null;
     }
 
     @Override
-    public void setLoginTimeout(int arg1) throws SQLException {
+    public void setLoginTimeout(int arg1) {
     }
 
     @Override
-    public void setLogWriter(PrintWriter arg1) throws SQLException {
+    public void setLogWriter(PrintWriter arg1) {
     }
 
 
     @Override
-    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
+    public boolean isWrapperFor(Class<?> iFace) {
         return false;
     }
 
     @Override
-    public <T>T unwrap(Class<T> iFace)  throws SQLException {
+    public <T>T unwrap(Class<T> iFace) {
         return iFace.cast(this);
     }
 

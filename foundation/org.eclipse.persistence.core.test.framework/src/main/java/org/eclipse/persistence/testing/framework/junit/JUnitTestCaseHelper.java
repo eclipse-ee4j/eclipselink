@@ -14,14 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework.junit;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 public class JUnitTestCaseHelper {
 
@@ -47,12 +47,12 @@ public class JUnitTestCaseHelper {
     // Maps puName to properties
     //   "composite-advanced" -> Map,
     //   "xml-composite-advanced" -> Map
-    public static Map<String, Map> puPropertiesMap = new HashMap();
+    public static Map<String, Map> puPropertiesMap = new HashMap<>();
 
     // Maps dbIndex to properties
     //   "2" -> Map,
     //   "3" -> Map
-    public static Map<String, Map> dbPropertiesMap = new HashMap();
+    public static Map<String, Map> dbPropertiesMap = new HashMap<>();
 
     /**
      * If this property is set to "true" either in System properties or property file then
@@ -195,7 +195,7 @@ public class JUnitTestCaseHelper {
     public static Map createCompositeProperties(String[] sessions) {
         Map properties = new HashMap();
 
-        Map compositeMap = new HashMap();
+        Map<String, Map<String, String>> compositeMap = new HashMap<>();
         properties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, compositeMap);
         Map<String, String> defaultProperties = getDatabaseProperties();
         String logLevel = defaultProperties.get(PersistenceUnitProperties.LOGGING_LEVEL);
@@ -274,7 +274,7 @@ public class JUnitTestCaseHelper {
                 property = getPropertyFromFile(SINGLE_DB);
             }
             if (property != null) {
-                if (property.toUpperCase().equals("FALSE")) {
+                if (property.equalsIgnoreCase("FALSE")) {
                     shouldUseSingleDb = Boolean.FALSE;
                 }
             }

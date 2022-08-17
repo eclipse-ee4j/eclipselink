@@ -108,7 +108,7 @@ public abstract class JUnitTestCase extends TestCase {
     public String puName = null;
 
     static {
-        emfNamedPersistenceUnits = new Hashtable();
+        emfNamedPersistenceUnits = new Hashtable<>();
     }
 
     protected static boolean isInitialzied;
@@ -327,7 +327,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Return if the Hermes parser is being used for JPQL.
      */
     public boolean isHermesParser() {
-        return getDatabaseSession().getQueryBuilder().getClass().getName().indexOf("Hermes") != -1;
+        return getDatabaseSession().getQueryBuilder().getClass().getName().contains("Hermes");
     }
 
     /**

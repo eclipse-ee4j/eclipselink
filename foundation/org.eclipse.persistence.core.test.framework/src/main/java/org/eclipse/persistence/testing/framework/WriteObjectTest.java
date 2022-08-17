@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.server.ClientSession;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.foundation.*;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -106,7 +106,7 @@ public class WriteObjectTest extends TransactionalTestCase {
          * descriptor, which is then used to find the mappings and determine if
          * one exists that can be mutated
          */
-        Class<? extends Object> objectClass = objectToBeMutated.getClass();
+        Class<?> objectClass = objectToBeMutated.getClass();
         ClassDescriptor descriptor = getSession().getProject().getClassDescriptor(objectClass);
         Vector<DatabaseMapping> mappings = descriptor.getMappings();
 
@@ -133,7 +133,7 @@ public class WriteObjectTest extends TransactionalTestCase {
                     && dbMapping.isDirectToFieldMapping()
                     &&!((AbstractDirectMapping) dbMapping).hasConverter()
                     && (dbMapping.getAttributeAccessor().getAttributeClass())
-                        .getName().indexOf("String") != -1) {
+                    .getName().contains("String")) {
                 mutatableMapping = dbMapping;
                 break;
             }

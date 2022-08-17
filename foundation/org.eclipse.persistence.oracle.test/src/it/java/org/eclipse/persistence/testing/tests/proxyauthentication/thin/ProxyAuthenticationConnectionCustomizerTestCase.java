@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,7 @@
 //       - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
 package org.eclipse.persistence.testing.tests.proxyauthentication.thin;
 
-import java.util.Map;
-import java.util.Properties;
-
+import oracle.jdbc.OracleConnection;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -34,9 +32,11 @@ import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.framework.oracle.ProxyAuthenticationUsersAndProperties;
 import org.eclipse.persistence.testing.framework.oracle.SessionExchanger;
 
-import oracle.jdbc.OracleConnection;
+import java.util.Map;
+import java.util.Properties;
 
 // Test verifying that connectionUser and proxyUser are used as expected.
 public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
@@ -45,13 +45,13 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
     // indicates whether external connection pooling should be used.
     boolean shouldUseExternalConnectionPooling;
 
-    Map mainSessionProxyProperties;
+    Map<String, Object> mainSessionProxyProperties;
     String expectedMainSessionUser;
 
     // (valid on ServerSession only) indicates whether EclusiveIsolatedClientSession should be used.
     boolean shoulUseExclusiveIsolatedSession;
 
-    Map clientSessionProxyProperties;
+    Map<String, Object> clientSessionProxyProperties;
     String expectedClientSessionUser;
 
     // Substitutes the original session with the one required for the test; restores the original one after the test.
@@ -64,8 +64,9 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
     private String writeUser;
     class Listener extends SessionEventAdapter {
         @Override
+        @SuppressWarnings({"unchecked"})
         public void outputParametersDetected(SessionEvent event) {
-            writeUser = (String)((Map)event.getResult()).get("OUT");
+            writeUser = (String)((Map<String, Object>)event.getResult()).get("OUT");
         }
     }
     SessionEventListener listener = new Listener();
@@ -85,23 +86,23 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
 
     String errorMsg = "";
 
-    public static ProxyAuthenticationConnectionCustomizerTestCase createDatabaseSessionTest(boolean shouldUseExternalConnectionPooling, Map databaseSessionProxyProperties) {
+    public static ProxyAuthenticationConnectionCustomizerTestCase createDatabaseSessionTest(boolean shouldUseExternalConnectionPooling, Map<String, Object> databaseSessionProxyProperties) {
         return new ProxyAuthenticationConnectionCustomizerTestCase(shouldUseExternalConnectionPooling, databaseSessionProxyProperties);
     }
 
-    public static ProxyAuthenticationConnectionCustomizerTestCase createServerSessionTest(boolean shouldUseExternalConnectionPooling, Map serverSessionProxyProperties, boolean shoulUseExclusiveIsolatedSession, Map clientSessionProxyProperties) {
+    public static ProxyAuthenticationConnectionCustomizerTestCase createServerSessionTest(boolean shouldUseExternalConnectionPooling, Map<String, Object> serverSessionProxyProperties, boolean shoulUseExclusiveIsolatedSession, Map<String, Object> clientSessionProxyProperties) {
         return new ProxyAuthenticationConnectionCustomizerTestCase(shouldUseExternalConnectionPooling, serverSessionProxyProperties, shoulUseExclusiveIsolatedSession, clientSessionProxyProperties);
     }
 
-    protected ProxyAuthenticationConnectionCustomizerTestCase(boolean shouldUseExternalConnectionPooling, Map databaseSessionProxyProperties) {
+    protected ProxyAuthenticationConnectionCustomizerTestCase(boolean shouldUseExternalConnectionPooling, Map<String, Object> databaseSessionProxyProperties) {
         this(true, shouldUseExternalConnectionPooling, databaseSessionProxyProperties, false, null);
     }
 
-    protected ProxyAuthenticationConnectionCustomizerTestCase(boolean shouldUseExternalConnectionPooling, Map serverSessionProxyProperties, boolean shoulUseExclusiveIsolatedSession, Map clientSessionProxyProperties) {
+    protected ProxyAuthenticationConnectionCustomizerTestCase(boolean shouldUseExternalConnectionPooling, Map<String, Object> serverSessionProxyProperties, boolean shoulUseExclusiveIsolatedSession, Map<String, Object> clientSessionProxyProperties) {
         this(false, shouldUseExternalConnectionPooling, serverSessionProxyProperties, shoulUseExclusiveIsolatedSession, clientSessionProxyProperties);
     }
 
-    protected ProxyAuthenticationConnectionCustomizerTestCase(boolean shouldUseDatabaseSession, boolean shouldUseExternalConnectionPooling, Map mainSessionProxyProperties, boolean shoulUseExclusiveIsolatedSession, Map clientSessionProxyProperties) {
+    protected ProxyAuthenticationConnectionCustomizerTestCase(boolean shouldUseDatabaseSession, boolean shouldUseExternalConnectionPooling, Map<String, Object> mainSessionProxyProperties, boolean shoulUseExclusiveIsolatedSession, Map<String, Object> clientSessionProxyProperties) {
         this.shouldUseDatabaseSession = shouldUseDatabaseSession;
         this.shouldUseExternalConnectionPooling = shouldUseExternalConnectionPooling;
         this.mainSessionProxyProperties = mainSessionProxyProperties;
@@ -143,7 +144,7 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
     // If the session's proxyProperties PersistenceUnitProperties.ORACLE_PROXY_TYPE property has an empty string value
     // then the session should use connectionUser;
     // otherwise it should use proxyUser specified in the proxyProperties.
-    static String getExpectedUserName(Map proxyProperties) {
+    static String getExpectedUserName(Map<String, Object> proxyProperties) {
         Object proxytype = proxyProperties.get(PersistenceUnitProperties.ORACLE_PROXY_TYPE);
         boolean proxytypeIsAnEmptyString = proxytype instanceof String && ((String)proxytype).length()==0;
         if(proxytypeIsAnEmptyString) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,35 +47,35 @@ import java.util.Vector;
 public class TestVariation {
     protected static char separator = ' ';
 
-    public static Vector get(Object object, String str, TestCase test) {
-        Vector testsIn = new Vector(1);
+    public static Vector<TestCase> get(Object object, String str, TestCase test) {
+        Vector<TestCase> testsIn = new Vector<>(1);
         testsIn.add(test);
         return get(object, str, testsIn);
     }
 
-    public static Vector get(Object object, String str, Vector testsIn) {
-        Vector names = getNames(str);
-        Vector testsOut = new Vector();
+    public static Vector<TestCase> get(Object object, String str, Vector<TestCase> testsIn) {
+        Vector<String> names = getNames(str);
+        Vector<TestCase> testsOut = new Vector<>();
         if (names.isEmpty() || testsIn.isEmpty()) {
             return testsOut;
         }
-        Vector getters = new Vector();
-        Vector setters = new Vector();
-        Vector fields = new Vector();
+        Vector<Method> getters = new Vector<>();
+        Vector<Method> setters = new Vector<>();
+        Vector<Field> fields = new Vector<>();
         getMembers(object.getClass(), names, getters, setters, fields, true);
         int numberOfTests = (int)java.lang.Math.pow(2, names.size());
         for (int i = 0; i < numberOfTests; i++) {
-            Enumeration enumtr = testsIn.elements();
+            Enumeration<TestCase> enumtr = testsIn.elements();
             while (enumtr.hasMoreElements()) {
-                TestWrapper testWrapper = createTest(i, object, names, getters, setters, fields, (TestCase)enumtr.nextElement());
+                TestWrapper testWrapper = createTest(i, object, names, getters, setters, fields, enumtr.nextElement());
                 testsOut.addElement(testWrapper);
             }
         }
         return testsOut;
     }
 
-    protected static Vector getNames(String str) {
-        Vector names = new Vector();
+    protected static Vector<String> getNames(String str) {
+        Vector<String> names = new Vector<>();
         String[] strPair = splitString(str);
         while (strPair[0] != null) {
             names.addElement(strPair[0]);
@@ -84,7 +84,7 @@ public class TestVariation {
         return names;
     }
 
-    protected static InnerTestWrapper createTest(int index, Object object, Vector names, Vector getters, Vector setters, Vector fields, TestCase test) {
+    protected static InnerTestWrapper createTest(int index, Object object, Vector<String> names, Vector<Method> getters, Vector<Method> setters, Vector<Field> fields, TestCase test) {
         boolean[] values = new boolean[names.size()];
         int i = 0;
         while (index > 0) {
@@ -93,13 +93,13 @@ public class TestVariation {
             index = index / 2;
         }
         String[] namesArray = new String[names.size()];
-        namesArray = (String[])names.toArray(namesArray);
+        namesArray = names.toArray(namesArray);
         Method[] gettersArray = new Method[names.size()];
-        gettersArray = (Method[])getters.toArray(gettersArray);
+        gettersArray = getters.toArray(gettersArray);
         Method[] settersArray = new Method[names.size()];
-        settersArray = (Method[])setters.toArray(settersArray);
+        settersArray = setters.toArray(settersArray);
         Field[] fieldsArray = new Field[names.size()];
-        fieldsArray = (Field[])fields.toArray(fieldsArray);
+        fieldsArray = fields.toArray(fieldsArray);
         return new InnerTestWrapper(test, object, values, namesArray, gettersArray, settersArray, fieldsArray);
     }
 
@@ -136,18 +136,18 @@ public class TestVariation {
         return out;
     }
 
-    protected static void getMembers(Class<?> cls, Vector names, Vector getters, Vector setters, Vector fields, boolean throwExceptionIfNotFound) {
+    protected static void getMembers(Class<?> cls, Vector<String> names, Vector<Method> getters, Vector<Method> setters, Vector<Field> fields, boolean throwExceptionIfNotFound) {
         Method[] allMethods = cls.getMethods();
         Field[] allFields = cls.getFields();
 
-        Vector candidateGetters = new Vector();
-        Vector candidateSetters = new Vector();
-        Vector candidateFields = new Vector();
+        Vector<Method> candidateGetters = new Vector<>();
+        Vector<Method> candidateSetters = new Vector<>();
+        Vector<Field> candidateFields = new Vector<>();
 
         // Need those to save lower case names
-        Vector candidateGettersNames = new Vector();
-        Vector candidateSettersNames = new Vector();
-        Vector candidateFieldsNames = new Vector();
+        Vector<String> candidateGettersNames = new Vector<>();
+        Vector<String> candidateSettersNames = new Vector<>();
+        Vector<String> candidateFieldsNames = new Vector<>();
 
         for (int i = 0; i < allMethods.length; i++) {
             Class<?> returnType = allMethods[i].getReturnType();
@@ -170,12 +170,12 @@ public class TestVariation {
             }
         }
         for (int i = 0; i < names.size(); i++) {
-            Object getter = null;
-            Object setter = null;
-            Object field = null;
-            String name = ((String)names.elementAt(i)).toLowerCase();
+            Method getter = null;
+            Method setter = null;
+            Field field = null;
+            String name = names.elementAt(i).toLowerCase();
             for (int j = 0; j < candidateGetters.size(); j++) {
-                if (((String)candidateGettersNames.elementAt(j)).indexOf(name) != -1) {
+                if (candidateGettersNames.elementAt(j).contains(name)) {
                     getter = candidateGetters.elementAt(j);
                     candidateGetters.remove(j);
                     candidateGettersNames.remove(j);
@@ -183,7 +183,7 @@ public class TestVariation {
                 }
             }
             for (int j = 0; j < candidateSetters.size(); j++) {
-                if (((String)candidateSettersNames.elementAt(j)).indexOf(name) != -1) {
+                if (candidateSettersNames.elementAt(j).contains(name)) {
                     setter = candidateSetters.elementAt(j);
                     candidateSetters.remove(j);
                     candidateSettersNames.remove(j);
@@ -191,7 +191,7 @@ public class TestVariation {
                 }
             }
             for (int j = 0; j < candidateFields.size(); j++) {
-                if (((String)candidateFieldsNames.elementAt(j)).indexOf(name) != -1) {
+                if (candidateFieldsNames.elementAt(j).contains(name)) {
                     field = candidateFields.elementAt(j);
                     candidateFields.remove(j);
                     candidateFieldsNames.remove(j);

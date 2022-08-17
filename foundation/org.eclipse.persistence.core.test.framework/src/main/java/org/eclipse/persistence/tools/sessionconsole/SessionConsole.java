@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.sessionconsole;
 
-import java.lang.reflect.Constructor;
-import java.net.URL;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.tools.beans.MessageDialog;
 
 import javax.swing.*;
-
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.tools.beans.*;
+import java.lang.reflect.Constructor;
+import java.net.URL;
 
 /**
  * The session console allows for a session to be visually inspected.
@@ -1996,7 +1995,7 @@ public class SessionConsole extends JFrame {
     private
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void initConnections() throws java.lang.Exception {
+    void initConnections() {
         // user code begin {1}
         // user code end
         getCloseMenuItem().addActionListener(ivjEventHandler);
@@ -2107,7 +2106,6 @@ public class SessionConsole extends JFrame {
                 aCtor.newInstance(parms);
             } catch (java.lang.Throwable exc) {
             }
-            ;
             aSessionInspectorFrame.setVisible(true);
         } catch (Throwable exception) {
             System.err.println("Exception occurred in main() of javax.swing.JFrame");

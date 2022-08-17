@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,27 +14,28 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.io.*;
-
-import java.util.*;
-
 import org.eclipse.persistence.internal.helper.Helper;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stores times for runs of tests vs base-line and computes averges/stats on these.
  * The baseline is the first value in the lists, followed by each test's value.
  */
 public class PerformanceComparisonTestResult extends TestResult {
-    public List testCounts;
-    public List testAverages;
-    public List testMaxs;
-    public List testMins;
-    public List testStandardDeviations;
+    public List<List<Number>> testCounts;
+    public List<Double> testAverages;
+    public List<Number> testMaxs;
+    public List<Number> testMins;
+    public List<Double> testStandardDeviations;
 
     /**
      * Percentage differences between the performance comparisons.
      */
-    public List percentageDifferences;
+    public List<Double> percentageDifferences;
 
     /** Records the average test count. */
     public double averageTestCount;
@@ -65,12 +66,12 @@ public class PerformanceComparisonTestResult extends TestResult {
     /**
      * The up to 3 results for the current version.
      */
-    public List currentVersionResults;
+    public List<Number> currentVersionResults;
 
     /**
      * The up to 3 results for the baseline version compared to.
      */
-    public List baselineVersionResults;
+    public List<Number> baselineVersionResults;
 
     /**
      * The regression baseline % standard deviation.
@@ -83,38 +84,38 @@ public class PerformanceComparisonTestResult extends TestResult {
     public double currentStandardDeviation;
 
     public PerformanceComparisonTestResult() {
-        this.testCounts = new ArrayList();
-        this.testAverages = new ArrayList();
-        this.testMaxs = new ArrayList();
-        this.testMins = new ArrayList();
-        this.testStandardDeviations = new ArrayList();
-        this.percentageDifferences = new ArrayList();
-        this.currentVersionResults = new ArrayList();
-        this.baselineVersionResults = new ArrayList();
+        this.testCounts = new ArrayList<>();
+        this.testAverages = new ArrayList<>();
+        this.testMaxs = new ArrayList<>();
+        this.testMins = new ArrayList<>();
+        this.testStandardDeviations = new ArrayList<>();
+        this.percentageDifferences = new ArrayList<>();
+        this.currentVersionResults = new ArrayList<>();
+        this.baselineVersionResults = new ArrayList<>();
     }
 
     public PerformanceComparisonTestResult(TestCase testCase) {
         super(testCase);
-        this.testCounts = new ArrayList();
-        this.testAverages = new ArrayList();
-        this.testMaxs = new ArrayList();
-        this.testMins = new ArrayList();
-        this.testStandardDeviations = new ArrayList();
-        this.percentageDifferences = new ArrayList();
-        this.currentVersionResults = new ArrayList();
-        this.baselineVersionResults = new ArrayList();
+        this.testCounts = new ArrayList<>();
+        this.testAverages = new ArrayList<>();
+        this.testMaxs = new ArrayList<>();
+        this.testMins = new ArrayList<>();
+        this.testStandardDeviations = new ArrayList<>();
+        this.percentageDifferences = new ArrayList<>();
+        this.currentVersionResults = new ArrayList<>();
+        this.baselineVersionResults = new ArrayList<>();
     }
 
     public PerformanceComparisonTestResult(TestCase testCase, String result) {
         super(testCase, result);
-        this.testCounts = new ArrayList();
-        this.testAverages = new ArrayList();
-        this.testMaxs = new ArrayList();
-        this.testMins = new ArrayList();
-        this.testStandardDeviations = new ArrayList();
-        this.percentageDifferences = new ArrayList();
-        this.currentVersionResults = new ArrayList();
-        this.baselineVersionResults = new ArrayList();
+        this.testCounts = new ArrayList<>();
+        this.testAverages = new ArrayList<>();
+        this.testMaxs = new ArrayList<>();
+        this.testMins = new ArrayList<>();
+        this.testStandardDeviations = new ArrayList<>();
+        this.percentageDifferences = new ArrayList<>();
+        this.currentVersionResults = new ArrayList<>();
+        this.baselineVersionResults = new ArrayList<>();
     }
 
     /**
@@ -164,7 +165,7 @@ public class PerformanceComparisonTestResult extends TestResult {
      */
     public void computeResults() {
         for (int testIndex = 0; testIndex < getTestCounts().size(); testIndex++) {
-            List times = (List)getTestCounts().get(testIndex);
+            List<Number> times = getTestCounts().get(testIndex);
             double testAverage = PerformanceComparisonTestResult.averageResults(times);
             double testStandardDeviation = PerformanceComparisonTestResult.standardDeviationResults(times);
 
@@ -190,21 +191,21 @@ public class PerformanceComparisonTestResult extends TestResult {
     /**
      * Return the list of lists of test counts.
      */
-    public List getTestCounts() {
+    public List<List<Number>> getTestCounts() {
         return testCounts;
     }
 
     /**
      * Return the regression results from the current version run.
      */
-    public List getCurrentVersionResults() {
+    public List<Number> getCurrentVersionResults() {
         return currentVersionResults;
     }
 
     /**
      * Return the regression results from the baseline runs.
      */
-    public List getBaselineVersionResults() {
+    public List<Number> getBaselineVersionResults() {
         return baselineVersionResults;
     }
 
@@ -213,9 +214,9 @@ public class PerformanceComparisonTestResult extends TestResult {
      */
     public void addTestCount(long time, int test) {
         if (getTestCounts().size() <= test) {
-            getTestCounts().add(new ArrayList());
+            getTestCounts().add(new ArrayList<>());
         }
-        ((List)getTestCounts().get(test)).add(time);
+        getTestCounts().get(test).add(time);
     }
 
     /**
@@ -237,7 +238,7 @@ public class PerformanceComparisonTestResult extends TestResult {
                 log.write(indentationString + "##FAILURE##" + Helper.cr());
             }
             if (!getTestCounts().isEmpty()) {
-                log.write(indentationString + "RUNS:                    " + ((List)getTestCounts().get(0)).size() + Helper.cr());
+                log.write(indentationString + "RUNS:                    " + getTestCounts().get(0).size() + Helper.cr());
             }
 
             for (int index = 0; index < getTestCounts().size(); index++) {
@@ -277,9 +278,7 @@ public class PerformanceComparisonTestResult extends TestResult {
             }
 
             log.write(Helper.cr() + indentationString + "RESULT:                      " + getOutcome() + Helper.cr());
-        } catch (IOException exception) {
-            // Ignore.
-        } catch (ArrayIndexOutOfBoundsException exception) {
+        } catch (IOException | ArrayIndexOutOfBoundsException exception) {
             // Ignore.
         }
         try {
@@ -296,10 +295,10 @@ public class PerformanceComparisonTestResult extends TestResult {
     /**
      * Compute the max of the results.
      */
-    public static Number maxResults(List times) {
+    public static Number maxResults(List<Number> times) {
         Number testMax = (double) 0;
         for (int index = 0; index < times.size(); index++) {
-            Number time = (Number)times.get(index);
+            Number time = times.get(index);
             if (time.doubleValue() > testMax.doubleValue()) {
                 testMax = time;
             }
@@ -310,10 +309,10 @@ public class PerformanceComparisonTestResult extends TestResult {
     /**
      * Compute the min of the results.
      */
-    public static Number minResults(List times) {
+    public static Number minResults(List<Number> times) {
         Number testMin = (double) 0;
         for (int index = 0; index < times.size(); index++) {
-            Number time = (Number)times.get(index);
+            Number time = times.get(index);
             if ((testMin.doubleValue() == 0) || (time.doubleValue() < testMin.doubleValue())) {
                 testMin = time;
             }
@@ -324,8 +323,8 @@ public class PerformanceComparisonTestResult extends TestResult {
     /**
      * Filter max and min from results.
      */
-    public static List filterMaxMinResults(List times) {
-        List filteredTimes = new ArrayList(times);
+    public static List<Number> filterMaxMinResults(List<Number> times) {
+        List<Number> filteredTimes = new ArrayList<>(times);
         if (filteredTimes.size() > 3) {
             filteredTimes.remove(maxResults(times));
             filteredTimes.remove(minResults(times));
@@ -336,12 +335,12 @@ public class PerformanceComparisonTestResult extends TestResult {
     /**
      * Compute the average of the results rejecting the min and max.
      */
-    public static double averageResults(List allTimes) {
+    public static double averageResults(List<Number> allTimes) {
         // Compute the average reject the min and max to improve consistency.
-        List times = filterMaxMinResults(allTimes);
+        List<Number> times = filterMaxMinResults(allTimes);
         double testAverage = 0;
         for (int index = 0; index < times.size(); index++) {
-            double time = ((Number)times.get(index)).doubleValue();
+            double time = times.get(index).doubleValue();
             testAverage = testAverage + time;
         }
         testAverage = testAverage / times.size();
@@ -351,15 +350,15 @@ public class PerformanceComparisonTestResult extends TestResult {
     /**
      * Compute the standard deviation of the results rejecting the min and max.
      */
-    public static double standardDeviationResults(List allTimes) {
+    public static double standardDeviationResults(List<Number> allTimes) {
         // Compute the average reject the min and max to improve consistency.
         double testAverage = averageResults(allTimes);
 
         // Compute the standard deviation reject the min and max to improve consistency.
-        List times = filterMaxMinResults(allTimes);
+        List<Number> times = filterMaxMinResults(allTimes);
         double testStandardDeviation = 0;
         for (int index = 0; index < times.size(); index++) {
-            double time = ((Number)times.get(index)).doubleValue();
+            double time = times.get(index).doubleValue();
             testStandardDeviation = testStandardDeviation + Math.pow(time - testAverage, 2);
         }
         testStandardDeviation = testStandardDeviation / times.size();

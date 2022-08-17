@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,27 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
-import java.sql.*;
-import java.util.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.NClob;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Savepoint;
+import java.sql.Statement;
+import java.sql.Struct;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Executor;
 /**
  * Emulated database connection.
@@ -24,11 +43,11 @@ import java.util.concurrent.Executor;
  * minimize the database overhead and in-consistency.
  */
 public class EmulatedConnection implements Connection {
-    protected Map<String, List> rows;
+    protected Map<String, List<DatabaseRecord>> rows;
     protected Connection connection;
 
     public EmulatedConnection() {
-        this.rows = new HashMap();
+        this.rows = new HashMap<>();
     }
 
     public EmulatedConnection(Connection connection) {
@@ -46,14 +65,14 @@ public class EmulatedConnection implements Connection {
     /**
      * Return the rows for the sql.
      */
-    public List getRows(String sql) {
+    public List<DatabaseRecord> getRows(String sql) {
         return this.rows.get(sql);
     }
 
     /**
      * Return the rows for the sql.
      */
-    public void putRows(String sql, List rows) {
+    public void putRows(String sql, List<DatabaseRecord> rows) {
         this.rows.put(sql, rows);
     }
 
@@ -111,7 +130,7 @@ public class EmulatedConnection implements Connection {
      */
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
-        if (!EmulatedDriver.emulate || (sql.indexOf("DUAL") != -1) || (sql.indexOf("dual") != -1)) {
+        if (!EmulatedDriver.emulate || (sql.contains("DUAL")) || (sql.contains("dual"))) {
             return connection.prepareStatement(sql);
         }
         return new EmulatedStatement(sql, this);
@@ -556,7 +575,7 @@ public class EmulatedConnection implements Connection {
      * @see #setTypeMap
      */
     @Override
-    public java.util.Map getTypeMap() throws SQLException {
+    public Map<String,Class<?>> getTypeMap() throws SQLException {
         return null;
     }
 
@@ -575,7 +594,7 @@ public class EmulatedConnection implements Connection {
      * @see #getTypeMap
      */
     @Override
-    public void setTypeMap(java.util.Map map) throws SQLException {
+    public void setTypeMap(Map<String,Class<?>> map) throws SQLException {
     }
 
     //--------------------------JDBC 3.0-----------------------------

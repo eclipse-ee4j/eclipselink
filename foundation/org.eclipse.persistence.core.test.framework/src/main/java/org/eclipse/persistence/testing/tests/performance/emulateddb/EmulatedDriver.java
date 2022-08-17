@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.DriverPropertyInfo;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 /**
  * Emulated database driver.
@@ -80,7 +84,7 @@ public class EmulatedDriver implements Driver {
      */
     @Override
     public boolean acceptsURL(String url) throws SQLException {
-        return url.indexOf("emulate:") != -1;
+        return url.contains("emulate:");
     }
 
     /**

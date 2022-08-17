@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.io.*;
-import java.util.*;
+import junit.framework.Test;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.Session;
 
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.sessions.*;
+import java.io.Writer;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: TestCollection is a collection of test suites and models. When a test collection is executed
@@ -30,7 +32,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     private String name;
 
     /** Stores all the tests */
-    private Vector tests;
+    private Vector<Test> tests;
 
     /** Stores the summary of the tests */
     private TestResultsSummary summary;
@@ -49,7 +51,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     private String indentationString;
 
     /** Stores the last tests that were run. */
-    private Vector finishedTests;
+    private Vector<Test> finishedTests;
 
     /** A flag that indicates if the test collection is inside SRG. */
     protected boolean isSRG;
@@ -80,8 +82,8 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     public void initialize() {
         description = "";
         nestedCounter = INITIAL_VALUE;
-        tests = new Vector();
-        finishedTests = new Vector();
+        tests = new Vector<>();
+        finishedTests = new Vector<>();
         summary = new TestResultsSummary(this);
         if ((getName() == null) || (getName().length() == 0)) {
             setName(getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1));
@@ -130,9 +132,9 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Adds a test collection to itself
      */
-    public final void addTests(Vector theTests) {
-        for (Enumeration allTests = theTests.elements(); allTests.hasMoreElements();) {
-            junit.framework.Test test = (junit.framework.Test)allTests.nextElement();
+    public final void addTests(Vector<? extends Test> theTests) {
+        for (Enumeration<? extends Test> allTests = theTests.elements(); allTests.hasMoreElements();) {
+            junit.framework.Test test = allTests.nextElement();
             addTest(test);
         }
     }
@@ -215,7 +217,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
         return executor;
     }
 
-    public Vector getFinishedTests() {
+    public Vector<Test> getFinishedTests() {
         return finishedTests;
     }
 
@@ -273,7 +275,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     /**
      * Return all the test entities associated with this collection.
      */
-    public Vector getTests() {
+    public Vector<Test> getTests() {
         return tests;
     }
 
@@ -301,7 +303,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * Returns the tests as an enumeration
      */
     @Override
-    public Enumeration tests() {
+    public Enumeration<Test> tests() {
         return getTests().elements();
     }
 
@@ -310,7 +312,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      */
     @Override
     public junit.framework.Test testAt(int index) {
-        return (junit.framework.Test)getTests().elementAt(index);
+        return getTests().elementAt(index);
     }
 
     @Override
@@ -393,8 +395,8 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
             logHeadNote(log);
         }
 
-        for (Enumeration tests = getFinishedTests().elements(); tests.hasMoreElements();) {
-            junit.framework.Test test = ((junit.framework.Test)tests.nextElement());
+        for (Enumeration<Test> tests = getFinishedTests().elements(); tests.hasMoreElements();) {
+            junit.framework.Test test = tests.nextElement();
             if (test instanceof TestEntity) {
                 TestEntity testEntity = (TestEntity)test;
                 if (regression) {
@@ -426,8 +428,8 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      */
     public void computeResultSummary() {
         getSummary().resetTotals();
-        for (Enumeration tests = getFinishedTests().elements(); tests.hasMoreElements();) {
-            junit.framework.Test test = ((junit.framework.Test)tests.nextElement());
+        for (Enumeration<Test> tests = getFinishedTests().elements(); tests.hasMoreElements();) {
+            junit.framework.Test test = tests.nextElement();
             if (test instanceof TestCase) {
                 TestCase testEntity = (TestCase)test;
                 testEntity.appendTestResult(getSummary());
@@ -463,7 +465,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     @Override
     public void resetNestedCounter() {
         setNestedCounter(INITIAL_VALUE);
-        for (Enumeration tests = getTests().elements(); tests.hasMoreElements();) {
+        for (Enumeration<Test> tests = getTests().elements(); tests.hasMoreElements();) {
             Object test = tests.nextElement();
             if (test instanceof TestEntity) {
                 ((TestEntity)test).resetNestedCounter();
@@ -493,7 +495,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
         executor = anExecutor;
     }
 
-    public void setFinishedTests(Vector finishedTests) {
+    public void setFinishedTests(Vector<Test> finishedTests) {
         this.finishedTests = finishedTests;
     }
 
@@ -528,7 +530,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
         setSummary((TestResultsSummary)summary);
     }
 
-    protected final void setTests(Vector theTests) {
+    protected final void setTests(Vector<Test> theTests) {
         tests = theTests;
     }
 

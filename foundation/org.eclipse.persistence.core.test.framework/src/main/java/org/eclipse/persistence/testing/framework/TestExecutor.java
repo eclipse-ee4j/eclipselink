@@ -14,14 +14,24 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.io.*;
-import java.util.*;
-import jakarta.persistence.*;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import junit.framework.TestFailure;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.*;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.server.Server;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p>
@@ -57,10 +67,10 @@ public class TestExecutor {
     /** When set to true would log the results */
     protected boolean shouldLogResults;
 
-    protected Hashtable loadedModels;
+    protected Hashtable<String, TestModel> loadedModels;
 
     /** Contains a collection of all the configured systems */
-    protected Vector configuredSystems;
+    protected Vector<TestSystem> configuredSystems;
 
     /** This is used to stop execution thread */
     protected boolean shouldStopExecution;
@@ -155,7 +165,7 @@ public class TestExecutor {
         this.shouldLogResults = true;
         this.shouldHandleErrors = false;
         this.shouldStopExecution = false;
-        this.configuredSystems = new Vector();
+        this.configuredSystems = new Vector<>();
     }
 
     /**
@@ -172,9 +182,9 @@ public class TestExecutor {
      * The loaded models hold all model in use to allow test case
      * The access other model to reuse their to setup.
      */
-    public void addLoadedModels(Vector models) {
-        for (Enumeration theModels = models.elements(); theModels.hasMoreElements();) {
-            TestModel model = (TestModel)theModels.nextElement();
+    public void addLoadedModels(Vector<TestModel> models) {
+        for (Enumeration<TestModel>theModels = models.elements(); theModels.hasMoreElements();) {
+            TestModel model = theModels.nextElement();
             getLoadedModels().put(model.getName(), model);
         }
     }
@@ -194,7 +204,7 @@ public class TestExecutor {
      * Return true if the configuredSystems contains an instance of the class of the TestSystem parameter.
      */
     public boolean configuredSystemsContainsInstanceOf(TestSystem system) {
-        for (Enumeration configuredSystemsEnum = getConfiguredSystems().elements();
+        for (Enumeration<TestSystem> configuredSystemsEnum = getConfiguredSystems().elements();
                  configuredSystemsEnum.hasMoreElements();) {
             if (configuredSystemsEnum.nextElement().getClass().equals(system.getClass())) {
                 return true;
@@ -284,7 +294,7 @@ public class TestExecutor {
     /**
      * Return all the configured systems.
      */
-    public Vector getConfiguredSystems() {
+    public Vector<TestSystem> getConfiguredSystems() {
         return configuredSystems;
     }
 
@@ -300,14 +310,14 @@ public class TestExecutor {
      * If missing null is returned.
      */
     public TestModel getLoadedModel(String modelsName) {
-        return (TestModel)getLoadedModels().get(modelsName);
+        return getLoadedModels().get(modelsName);
     }
 
     /**
      * The loaded models hold all model in use to allow test case
      * The access other model to reuse their to setup.
      */
-    public Hashtable getLoadedModels() {
+    public Hashtable<String, TestModel> getLoadedModels() {
         return loadedModels;
     }
 
@@ -461,7 +471,7 @@ public class TestExecutor {
     }
 
     public void initializeConfiguredSystems() {
-        setConfiguredSystems(new Vector());
+        setConfiguredSystems(new Vector<>());
     }
 
     /**
@@ -619,7 +629,7 @@ public class TestExecutor {
             //        executor.doNotLogResults();
             executor.execute((TestEntity)Class.forName(arguments[0]).getConstructor().newInstance());
         } catch (Throwable exception) {
-            System.out.println(exception.toString());
+            System.out.println(exception);
         }
     }
 
@@ -633,17 +643,17 @@ public class TestExecutor {
      */
     public void removeFromConfiguredSystemsInstanceOf(TestSystem system) {
         // find and record the systems to remove
-        Vector systemsToRemove = new Vector();
-        for (Enumeration systemEnum = getConfiguredSystems().elements();
+        Vector<TestSystem> systemsToRemove = new Vector<>();
+        for (Enumeration<TestSystem> systemEnum = getConfiguredSystems().elements();
                  systemEnum.hasMoreElements();) {
-            TestSystem aSystem = (TestSystem)systemEnum.nextElement();
+            TestSystem aSystem = systemEnum.nextElement();
             if (aSystem.getClass().equals(system.getClass())) {
                 systemsToRemove.addElement(aSystem);
             }
         }
 
         // Do the removing
-        for (Enumeration systemsToRemoveEnum = systemsToRemove.elements();
+        for (Enumeration<TestSystem> systemsToRemoveEnum = systemsToRemove.elements();
                  systemsToRemoveEnum.hasMoreElements();) {
             getConfiguredSystems().removeElement(systemsToRemoveEnum.nextElement());
         }
@@ -654,7 +664,7 @@ public class TestExecutor {
      * to access other model to reuse their to setup.
      */
     public void resetLoadedModels() {
-        setLoadedModels(new Hashtable());
+        setLoadedModels(new Hashtable<>());
     }
 
     /**
@@ -698,7 +708,7 @@ public class TestExecutor {
     /**
      * Set configured systems.
      */
-    public void setConfiguredSystems(Vector configuredSystems) {
+    public void setConfiguredSystems(Vector<TestSystem> configuredSystems) {
         this.configuredSystems = configuredSystems;
     }
 
@@ -713,7 +723,7 @@ public class TestExecutor {
      * The loaded models hold all model in use to allow test case
      * The access other model to reuse their to setup.
      */
-    protected void setLoadedModels(Hashtable loadedModels) {
+    protected void setLoadedModels(Hashtable<String, TestModel> loadedModels) {
         this.loadedModels = loadedModels;
     }
 

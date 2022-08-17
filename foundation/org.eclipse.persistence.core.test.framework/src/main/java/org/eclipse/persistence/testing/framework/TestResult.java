@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.io.*;
-import java.math.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.math.BigDecimal;
 
 /**
  * <p><b>Purpose</b>:Class stores the test exception if raised and decides whether the test was
  * successfull or not.
  */
-public class TestResult implements ResultInterface, Comparable, Serializable {
+public class TestResult implements ResultInterface, Comparable<TestResult>, Serializable {
     public static final String ERROR = "Error";
     public static final String FATAL_ERROR = "FatalError";
     public static final String PASSED = "Passed";
@@ -33,16 +39,16 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
     protected String description;
     protected BigDecimal id;
     protected String outcome;
-    protected transient ValueHolderInterface summary;
-    protected transient ValueHolderInterface loadBuildSummary;
+    protected transient ValueHolderInterface<TestResultsSummary> summary;
+    protected transient ValueHolderInterface<LoadBuildSummary> loadBuildSummary;
     protected EclipseLinkException exception;
     protected transient TestCase testCase;
     protected long totalTime;
     protected long testTime;
 
     public TestResult() {
-        summary = new ValueHolder();
-        loadBuildSummary = new ValueHolder();
+        summary = new ValueHolder<>();
+        loadBuildSummary = new ValueHolder<>();
     }
 
     public TestResult(TestCase testCase) {
@@ -53,8 +59,8 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
             this.description = testCase.getDescription();
         } catch (NullPointerException e) {
         }
-        summary = new ValueHolder();
-        loadBuildSummary = new ValueHolder();
+        summary = new ValueHolder<>();
+        loadBuildSummary = new ValueHolder<>();
     }
 
     public TestResult(TestCase testCase, String result) {
@@ -62,13 +68,13 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
         this.testCase = testCase;
         this.name = testCase.getName();
         this.description = testCase.getDescription();
-        summary = new ValueHolder();
-        loadBuildSummary = new ValueHolder();
+        summary = new ValueHolder<>();
+        loadBuildSummary = new ValueHolder<>();
     }
 
     @Override
-    public int compareTo(Object summary) {
-        return getName().compareTo(((TestResult)summary).getName());
+    public int compareTo(TestResult summary) {
+        return getName().compareTo(summary.getName());
     }
 
     public String getDescription() {
@@ -144,10 +150,10 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
     }
 
     public LoadBuildSummary getLoadBuildSummary() {
-        return (LoadBuildSummary)loadBuildSummary.getValue();
+        return loadBuildSummary.getValue();
     }
 
-    public ValueHolderInterface getLoadBuildSummaryHolder() {
+    public ValueHolderInterface<LoadBuildSummary> getLoadBuildSummaryHolder() {
         return loadBuildSummary;
     }
 
@@ -181,10 +187,10 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
     }
 
     public TestResultsSummary getSummary() {
-        return (TestResultsSummary)summary.getValue();
+        return summary.getValue();
     }
 
-    public ValueHolderInterface getSummaryHolder() {
+    public ValueHolderInterface<TestResultsSummary> getSummaryHolder() {
         return summary;
     }
 
@@ -312,12 +318,12 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
 
     public void setLoadBuildSummary(LoadBuildSummary summary) {
         if (loadBuildSummary == null) {
-            loadBuildSummary = new ValueHolder();
+            loadBuildSummary = new ValueHolder<>();
         }
         loadBuildSummary.setValue(summary);
     }
 
-    public void setLoadBuildSummaryHolder(ValueHolderInterface holder) {
+    public void setLoadBuildSummaryHolder(ValueHolderInterface<LoadBuildSummary> holder) {
         loadBuildSummary = holder;
     }
 
@@ -335,12 +341,12 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
 
     public void setSummary(TestResultsSummary summary) {
         if (this.summary == null) {
-            this.summary = new ValueHolder();
+            this.summary = new ValueHolder<>();
         }
         this.summary.setValue(summary);
     }
 
-    public void setSummaryHolder(ValueHolderInterface holder) {
+    public void setSummaryHolder(ValueHolderInterface<TestResultsSummary> holder) {
         summary = holder;
     }
 

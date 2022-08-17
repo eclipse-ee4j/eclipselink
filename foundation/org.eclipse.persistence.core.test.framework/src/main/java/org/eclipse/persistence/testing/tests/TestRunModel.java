@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Vector;
-
+import junit.framework.Test;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.TestModel;
 
-import junit.framework.Test;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This class create test runs, i.e. models of model to allow all tests to be run a once.
@@ -36,7 +34,7 @@ public class TestRunModel extends TestModel {
     protected boolean usesNativeMode = false;
     protected boolean isLight = true;
     protected boolean isAll = false;
-    protected Vector testList;
+    protected Vector<String> testList;
 
     public TestRunModel() {
         // Setup as LRG by default.
@@ -53,7 +51,7 @@ public class TestRunModel extends TestModel {
         if (!getTests().isEmpty()) {
             return;
         }
-        Vector tests = new Vector();
+        Vector<String> tests = new Vector<>();
 
         if (isLight) {
             tests.add("org.eclipse.persistence.testing.tests.workbenchintegration.MappingWMIntegrationStoredProcedureTestModel");
@@ -159,7 +157,7 @@ public class TestRunModel extends TestModel {
 
         for (int index = 0; index < tests.size(); ++index) {
             try {
-                addTest((TestModel)Class.forName((String)tests.elementAt(index)).getConstructor().newInstance());
+                addTest((TestModel)Class.forName(tests.elementAt(index)).getConstructor().newInstance());
             } catch (Throwable exception) {
                 System.out.println("Failed to set up " + tests.elementAt(index) + " \n" + exception);
                 //exception.printStackTrace();
@@ -167,13 +165,12 @@ public class TestRunModel extends TestModel {
         }
 
         // Sort the tests alphabetically.
-        Collections.sort(this.getTests(), new Comparator() {
-                @Override
-                public int compare(Object left, Object right) {
-                    return Helper.getShortClassName(left.getClass()).compareTo(Helper.getShortClassName(right.getClass()));
-                }
+        this.getTests().sort(new Comparator<Object>() {
+            @Override
+            public int compare(Object left, Object right) {
+                return Helper.getShortClassName(left.getClass()).compareTo(Helper.getShortClassName(right.getClass()));
             }
-        );
+        });
         testList = tests;
     }
 
@@ -182,11 +179,11 @@ public class TestRunModel extends TestModel {
      * To facilitate exporting the testing browser outside of visual age this method has been modified
      * to create the tests reflectively that way if a particular test fails it will not prevent the rest of the tests from building
      */
-    public static Vector buildAllModels() {
-        Vector models = new Vector();
+    public static Vector<TestModel> buildAllModels() {
+        Vector<TestModel> models = new Vector<>();
 
         try {
-            models.add(Class.forName("org.eclipse.persistence.testing.tests.SRGTestModel").getConstructor().newInstance());
+            models.add((TestModel) Class.forName("org.eclipse.persistence.testing.tests.SRGTestModel").getConstructor().newInstance());
         } catch (Exception exception) {
             System.out.println("Failed to set up org.eclipse.persistence.testing.tests.SRGTestModel" + " \n" + exception);
         }
@@ -199,7 +196,7 @@ public class TestRunModel extends TestModel {
         models.add(buildPerformanceTestModel());
         models.add(buildJPAPerformanceTestModel());
 
-        Vector manualTest = new Vector();
+        Vector<String> manualTest = new Vector<>();
         manualTest.add("org.eclipse.persistence.testing.tests.stress.StressTestModel");
         manualTest.add("org.eclipse.persistence.testing.tests.manual.ManualVerificationModel");
 
@@ -207,7 +204,7 @@ public class TestRunModel extends TestModel {
         manual.setName("Manual Tests");
         for (int index = 0; index < manualTest.size(); ++index) {
             try {
-                manual.addTest((TestModel)Class.forName((String)manualTest.elementAt(index)).getConstructor().newInstance());
+                manual.addTest((TestModel)Class.forName(manualTest.elementAt(index)).getConstructor().newInstance());
             } catch (Exception exception) {
                 System.out.println("Failed to set up " + manualTest.elementAt(index) + " \n" + exception);
             }
@@ -221,14 +218,14 @@ public class TestRunModel extends TestModel {
      * Build and return a model of all JPA tests.
      */
     public static TestModel buildJPATestModel() {
-        List tests = new ArrayList();
+        List<String> tests = new ArrayList<>();
         tests.add("org.eclipse.persistence.testing.tests.jpa.AllJPATests");
 
         TestModel model = new TestModel();
         model.setName("JPA Tests");
         for (int index = 0; index < tests.size(); ++index) {
             try {
-                model.addTest((TestModel)Class.forName((String)tests.get(index)).getConstructor().newInstance());
+                model.addTest((TestModel)Class.forName(tests.get(index)).getConstructor().newInstance());
             } catch (Throwable exception) {
                 System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
             }
@@ -240,7 +237,7 @@ public class TestRunModel extends TestModel {
      * Build and return a model of all Oracle specific tests.
      */
     public static TestModel buildOracleTestModel() {
-        List tests = new ArrayList();
+        List<String> tests = new ArrayList<>();
         tests.add("org.eclipse.persistence.testing.tests.OracleTestModel");
         tests.add("org.eclipse.persistence.testing.tests.OracleJPATestSuite");
         // Requires specific oracle database/driver (oci).
@@ -253,7 +250,7 @@ public class TestRunModel extends TestModel {
         for (int index = 0; index < tests.size(); ++index) {
             Class<?> cls;
             try {
-                cls = Class.forName((String)tests.get(index));
+                cls = Class.forName(tests.get(index));
                 if(TestModel.class.isAssignableFrom(cls)) {
                     model.addTest((TestModel)cls.getConstructor().newInstance());
                 } else {
@@ -271,7 +268,7 @@ public class TestRunModel extends TestModel {
      * Build and return a model of all Oracle NoSQL tests.
      */
     public static TestModel buildOracleNoSQLTestModel() {
-        List tests = new ArrayList();
+        List<String> tests = new ArrayList<>();
         tests.add("org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestModel");
         tests.add("org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLTestSuite");
         tests.add("org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLMappedTestSuite");
@@ -282,7 +279,7 @@ public class TestRunModel extends TestModel {
         for (int index = 0; index < tests.size(); ++index) {
             Class<?> cls;
             try {
-                cls = Class.forName((String)tests.get(index));
+                cls = Class.forName(tests.get(index));
                 if(TestModel.class.isAssignableFrom(cls)) {
                     model.addTest((TestModel)cls.getConstructor().newInstance());
                 } else {
@@ -300,7 +297,7 @@ public class TestRunModel extends TestModel {
      * Build and return a model of all EIS specific tests.
      */
     public static TestModel buildNoSQLTestModel() {
-        List tests = new ArrayList();
+        List<String> tests = new ArrayList<>();
         tests.add("org.eclipse.persistence.testing.tests.NoSQLJPATestSuite");
         tests.add("org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel");
         tests.add("org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel");
@@ -310,7 +307,7 @@ public class TestRunModel extends TestModel {
         for (int index = 0; index < tests.size(); ++index) {
             Class<?> cls;
             try {
-                cls = Class.forName((String)tests.get(index));
+                cls = Class.forName(tests.get(index));
                 if(TestModel.class.isAssignableFrom(cls)) {
                     model.addTest((TestModel)cls.getConstructor().newInstance());
                 } else {
@@ -366,7 +363,7 @@ public class TestRunModel extends TestModel {
     /**
      *  Created by Edwin Tang and used for BatchTestRunner
      */
-    public static Vector buildLRGTestList() {
+    public static Vector<String> buildLRGTestList() {
         TestRunModel model = new TestRunModel();
         model.isLight = true;
         model.addTests();
@@ -376,7 +373,7 @@ public class TestRunModel extends TestModel {
     /**
      *  Created by Edwin Tang and used for BatchTestRunner
      */
-    public static Vector buildAllTestModelsList() {
+    public static Vector<String> buildAllTestModelsList() {
         TestRunModel model = new TestRunModel();
         model.isLight = true;
         model.isAll = true;
@@ -387,7 +384,7 @@ public class TestRunModel extends TestModel {
     /**
      *  Created by Edwin Tang and used for BatchTestRunner
      */
-    public static Vector buildNonLRGTestList() {
+    public static Vector<String> buildNonLRGTestList() {
         TestRunModel model = new TestRunModel();
         model.isLight = false;
         model.isAll = true;
@@ -399,7 +396,7 @@ public class TestRunModel extends TestModel {
      * Build and return a model of all core performance tests.
      */
     public static TestModel buildPerformanceTestModel() {
-        Vector performanceTests = new Vector();
+        Vector<String> performanceTests = new Vector<>();
         performanceTests.add("org.eclipse.persistence.testing.tests.performance.PerformanceComparisonModel");
         performanceTests.add("org.eclipse.persistence.testing.tests.performance.PerformanceTestModel");
         performanceTests.add("org.eclipse.persistence.testing.tests.performance.PerformanceTestModelRun");
@@ -411,7 +408,7 @@ public class TestRunModel extends TestModel {
         performanceModel.setName("Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
             try {
-                performanceModel.addTest((TestModel)Class.forName((String)performanceTests.elementAt(index)).getConstructor().newInstance());
+                performanceModel.addTest((TestModel)Class.forName(performanceTests.elementAt(index)).getConstructor().newInstance());
             } catch (Exception exception) {
                 System.out.println("Failed to set up " + performanceTests.elementAt(index) + " \n" + exception);
             }
@@ -423,7 +420,7 @@ public class TestRunModel extends TestModel {
      * Build and return a model of all JPA performance tests.
      */
     public static TestModel buildJPAPerformanceTestModel() {
-        Vector performanceTests = new Vector();
+        Vector<String> performanceTests = new Vector<>();
         performanceTests.add("org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceTestModel");
         performanceTests.add("org.eclipse.persistence.testing.tests.jpa.memory.JPAMemoryTestModel");
 
@@ -431,7 +428,7 @@ public class TestRunModel extends TestModel {
         performanceModel.setName("JPA Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
             try {
-                performanceModel.addTest((TestModel)Class.forName((String)performanceTests.elementAt(index)).getConstructor().newInstance());
+                performanceModel.addTest((TestModel)Class.forName(performanceTests.elementAt(index)).getConstructor().newInstance());
             } catch (Exception exception) {
                 System.out.println("Failed to set up " + performanceTests.elementAt(index) + " \n" + exception);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.util.*;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 
-import org.eclipse.persistence.sessions.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used to compare the performance of two different task/processes.
@@ -42,7 +46,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * List of performance tests, the source test is the baseline,
      * n other tests can be added to compare with.
      */
-    protected List tests;
+    protected List<TestCase> tests;
 
     /**
      * The count of the iterations.
@@ -53,7 +57,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
     public PerformanceComparisonTestCase() {
         this.testRunTime = DEFAULT_TEST_TIME;
         this.allowableDecrease = DEFAULT_ALLOWABLE_DECREASE;
-        this.tests = new ArrayList();
+        this.tests = new ArrayList<>();
     }
 
     /**
@@ -137,7 +141,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * Return the performance tests to compare the base-line with.
      */
     @Override
-    public List getTests() {
+    public List<TestCase> getTests() {
         return tests;
     }
 

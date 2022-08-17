@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2010, 2015 IBM Corporation.
- * Copyright (c) 2010, 2015 Dies Koper (Fujitsu).
+ * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2022 IBM Corporation.
+ * Copyright (c) 2010, 2022 Dies Koper (Fujitsu).
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,6 @@
 //        bug 454917: Moved a few helper methods from child class to be visible to all table creators.
 package org.eclipse.persistence.testing.framework;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -39,6 +34,11 @@ import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Many JPA and a few Core tests use the same tables names, so at the start of
@@ -67,7 +67,7 @@ public class TogglingFastTableCreator extends TableCreator {
     /** Character to separate table name and column name in full column identifier. */
     protected static final char TABLE_FIELD_SEPARATOR = '.';
 
-    protected static Set fastTableCreators = new HashSet();
+    protected static Set<String> fastTableCreators = new HashSet<>();
     protected static boolean useFastTableCreatorAfterInitialCreate = Boolean
             .getBoolean("eclipselink.test.toggle-fast-table-creator");
 
@@ -81,7 +81,7 @@ public class TogglingFastTableCreator extends TableCreator {
     /**
      * Delegates to super's constructor.
      */
-    public TogglingFastTableCreator(Vector tableDefinitions) {
+    public TogglingFastTableCreator(Vector<TableDefinition> tableDefinitions) {
         super(tableDefinitions);
     }
 
@@ -403,8 +403,8 @@ public class TogglingFastTableCreator extends TableCreator {
 
     // Mostly cloned from TableDefinition.buildForeignKeyConstraint()
     private ForeignKeyConstraint buildForeignKeyConstraint(FieldDefinition field, DatabasePlatform platform) {
-        Vector sourceFields = new Vector();
-        Vector targetFields = new Vector();
+        Vector<String> sourceFields = new Vector<>();
+        Vector<String> targetFields = new Vector<>();
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
         DatabaseField tempTargetField = new DatabaseField(field.getForeignKeyFieldName());
         DatabaseField tempSourceField = new DatabaseField(field.getName());

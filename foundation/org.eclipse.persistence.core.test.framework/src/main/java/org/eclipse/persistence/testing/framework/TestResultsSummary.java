@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,22 +14,28 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.io.*;
-import java.math.*;
-import java.util.*;
-import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:Results summary handles results associated with the execution of test suite and
  * test model.
  */
-public class TestResultsSummary implements ResultInterface, Comparable, Serializable {
+public class TestResultsSummary implements ResultInterface, Comparable<TestResultsSummary>, Serializable {
     protected BigDecimal id;
-    protected ValueHolderInterface parent;
+    protected ValueHolderInterface<TestResultsSummary> parent;
     protected String name;
     protected String description;
-    protected ValueHolderInterface results;
-    protected ValueHolderInterface loadBuildSummary;
+    protected ValueHolderInterface<Vector<TestResult>> results;
+    protected ValueHolderInterface<LoadBuildSummary> loadBuildSummary;
     protected Throwable setupException;
     protected int passed;
     protected int warnings;
@@ -45,9 +51,9 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
     public TestResultsSummary() {
         this.name = "";
         this.description = "";
-        this.parent = new ValueHolder();
-        this.loadBuildSummary = new ValueHolder();
-        this.results = new ValueHolder(new Vector());
+        this.parent = new ValueHolder<>();
+        this.loadBuildSummary = new ValueHolder<>();
+        this.results = new ValueHolder<>(new Vector<>());
         this.passed = 0;
         this.warnings = 0;
         this.errors = 0;
@@ -61,9 +67,9 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         this.testCollection = testCollection;
         this.name = testCollection.getName();
         this.description = testCollection.getDescription();
-        this.parent = new ValueHolder();
-        this.loadBuildSummary = new ValueHolder();
-        this.results = new ValueHolder(new Vector());
+        this.parent = new ValueHolder<>();
+        this.loadBuildSummary = new ValueHolder<>();
+        this.results = new ValueHolder<>(new Vector<>());
         this.passed = 0;
         this.warnings = 0;
         this.errors = 0;
@@ -80,8 +86,8 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
     }
 
     @Override
-    public int compareTo(Object summary) {
-        return getName().compareTo(((TestResultsSummary)summary).getName());
+    public int compareTo(TestResultsSummary summary) {
+        return getName().compareTo(summary.getName());
     }
 
     /**
@@ -193,10 +199,10 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
     }
 
     public LoadBuildSummary getLoadBuildSummary() {
-        return (LoadBuildSummary)loadBuildSummary.getValue();
+        return loadBuildSummary.getValue();
     }
 
-    public ValueHolderInterface getLoadBuildSummaryHolder() {
+    public ValueHolderInterface<LoadBuildSummary> getLoadBuildSummaryHolder() {
         return loadBuildSummary;
     }
 
@@ -205,10 +211,10 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
     }
 
     public TestResultsSummary getParent() {
-        return (TestResultsSummary)parent.getValue();
+        return parent.getValue();
     }
 
-    public ValueHolderInterface getParentHolder() {
+    public ValueHolderInterface<TestResultsSummary> getParentHolder() {
         return parent;
     }
 
@@ -229,14 +235,14 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
     /**
      * Return the no. test which passed in the test suite/model.
      */
-    public Vector getResults() {
-        return (Vector)results.getValue();
+    public Vector<TestResult> getResults() {
+        return results.getValue();
     }
 
     /**
      * Return the no. test which passed in the test suite/model.
      */
-    public ValueHolderInterface getResultsHolder() {
+    public ValueHolderInterface<Vector<TestResult>> getResultsHolder() {
         return results;
     }
 
@@ -392,7 +398,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
      * Reset the totals.
      */
     public void resetTotals() {
-        setResults(new Vector());
+        setResults(new Vector<>());
         setPassed(0);
         setWarnings(0);
         setErrors(0);
@@ -422,7 +428,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         loadBuildSummary.setValue(summary);
     }
 
-    public void setLoadBuildSummaryHolder(ValueHolderInterface holder) {
+    public void setLoadBuildSummaryHolder(ValueHolderInterface<LoadBuildSummary> holder) {
         loadBuildSummary = holder;
     }
 
@@ -434,7 +440,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         parent.setValue(result);
     }
 
-    public void setParentHolder(ValueHolderInterface holder) {
+    public void setParentHolder(ValueHolderInterface<TestResultsSummary> holder) {
         parent = holder;
     }
 
@@ -446,11 +452,11 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         problems = theProblem;
     }
 
-    public void setResults(Vector theResults) {
+    public void setResults(Vector<TestResult> theResults) {
         results.setValue(theResults);
     }
 
-    public void setResultsHolder(ValueHolderInterface holder) {
+    public void setResultsHolder(ValueHolderInterface<Vector<TestResult>> holder) {
         results = holder;
     }
 

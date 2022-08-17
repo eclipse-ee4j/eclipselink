@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,24 +16,24 @@
 
 package org.eclipse.persistence.testing.framework;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.expressions.DataExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ReportQueryResult;
+import org.eclipse.persistence.queries.UpdateAllQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
-
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.OneToOneMapping;
-import org.eclipse.persistence.queries.UpdateAllQuery;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.queries.ReportQuery;
-import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.queries.ReportQueryResult;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.expressions.DataExpression;
 
 public class UpdateAllQueryTestHelper {
 
@@ -87,7 +87,7 @@ public class UpdateAllQueryTestHelper {
         clearCache(mainSession);
 
         // original objects
-        Vector objects = mainSession.readAllObjects(rootClass);
+        Vector<?> objects = mainSession.readAllObjects(rootClass);
 
         // first update using the original TopLink approach - one by one.
         // That will be done using report query - it will use the same selection criteria
@@ -96,7 +96,7 @@ public class UpdateAllQueryTestHelper {
         rq.setSelectionCriteria(uq.getSelectionCriteria());
         rq.setShouldRetrievePrimaryKeys(true);
         // some db platforms don't allow nulls in select clause - so add the fields with null values to the query result.
-        Vector fieldsWithNullValues = new Vector();
+        Vector<String> fieldsWithNullValues = new Vector<>();
         Iterator itEntrySets = uq.getUpdateClauses().entrySet().iterator();
         while(itEntrySets.hasNext()) {
             Map.Entry entry = (Map.Entry)itEntrySets.next();
@@ -136,13 +136,14 @@ public class UpdateAllQueryTestHelper {
         AbstractSession session = uow.getParent();
 
         // report query results contain the values to be assigned for each object to be updated.
-        Vector result = (Vector)session.executeQuery(rq);
-        Vector objectsAfterOneByOneUpdate = new Vector(objects.size());
+        @SuppressWarnings({"unchecked"})
+        Vector<ReportQueryResult> result = (Vector<ReportQueryResult>) session.executeQuery(rq);
+        Vector<Object> objectsAfterOneByOneUpdate = new Vector<>(objects.size());
         session.beginTransaction();
         try {
             for (int i = 0; i < result.size(); i++) {
                 // read through uow the object(clone) to be updated
-                ReportQueryResult reportResult = (ReportQueryResult)result.elementAt(i);
+                ReportQueryResult reportResult = result.elementAt(i);
                 // hammer into the object the updated values
                 Object obj = reportResult.readObject(rq.getReferenceClass(), uow);
                 DatabaseRecord row = new DatabaseRecord();
@@ -154,7 +155,7 @@ public class UpdateAllQueryTestHelper {
                 }
                 // some db platforms don't allow nulls in select clause - so add the fields with null values to the query result
                 for (int j = 0; j < fieldsWithNullValues.size(); j++) {
-                    String name = (String)fieldsWithNullValues.elementAt(j);
+                    String name = fieldsWithNullValues.elementAt(j);
                     DatabaseField field = new DatabaseField(name);
                     row.add(field, null);
                 }
@@ -180,7 +181,7 @@ public class UpdateAllQueryTestHelper {
         uow = mainSession.acquireUnitOfWork();
         // mainSession could be a ServerSession
         session = uow.getParent();
-        Vector objectsAfterUpdateAll = new Vector(objects.size());
+        Vector<Object> objectsAfterUpdateAll = new Vector<>(objects.size());
         session.beginTransaction();
         try {
             uow.executeQuery(uq);

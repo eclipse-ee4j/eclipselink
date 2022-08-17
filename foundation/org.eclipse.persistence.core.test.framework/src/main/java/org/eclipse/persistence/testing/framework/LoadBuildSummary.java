@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.sql.Timestamp;
-import java.util.*;
-import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.Version;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.sessions.DatabaseLogin;
-import java.net.*;
-import org.eclipse.persistence.*;
+
+import java.net.InetAddress;
+import java.sql.Timestamp;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: holds all the test results and test summary of a loadBuild<p>
@@ -55,7 +58,7 @@ public class LoadBuildSummary {
             this.toplinkVersion = Version.getVersion() + " :" + Version.getBuildNumber();
             this.machine = InetAddress.getLocalHost().getHostName();
             // Trim the machine name only because of network issues.
-            if (this.machine.indexOf(".") != -1) {
+            if (this.machine.contains(".")) {
                 this.machine = this.machine.substring(0, this.machine.indexOf("."));
             }
         } catch (Exception ignore) {
@@ -162,7 +165,7 @@ public class LoadBuildSummary {
 
     public Vector<TestResultsSummary> getSummaries() {
         if (summaries == null) {
-            summaries = new ValueHolder<>(new Vector<TestResultsSummary>());
+            summaries = new ValueHolder<>(new Vector<>());
         } else if (summaries.getValue() == null) {
             summaries.setValue(new Vector<>());
         }
@@ -184,8 +187,8 @@ public class LoadBuildSummary {
             for (Enumeration<TestResultsSummary> enum1 = getSummaries().elements(); enum1.hasMoreElements();) {
                 TestResultsSummary summary = enum1.nextElement();
                 summary.setLoadBuildSummary(this);
-                for (Enumeration enum2 = summary.getResults().elements(); enum2.hasMoreElements();) {
-                    TestResult result = (TestResult)enum2.nextElement();
+                for (Enumeration<TestResult> enum2 = summary.getResults().elements(); enum2.hasMoreElements();) {
+                    TestResult result = enum2.nextElement();
                     result.setLoadBuildSummary(this);
                 }
             }
@@ -219,8 +222,8 @@ public class LoadBuildSummary {
             for (Enumeration<TestResultsSummary> enum1 = getSummaries().elements(); enum1.hasMoreElements();) {
                 TestResultsSummary summary = enum1.nextElement();
                 summary.setLoadBuildSummary(this);
-                for (Enumeration enum2 = summary.getResults().elements(); enum2.hasMoreElements();) {
-                    TestResult result = (TestResult)enum2.nextElement();
+                for (Enumeration<TestResult> enum2 = summary.getResults().elements(); enum2.hasMoreElements();) {
+                    TestResult result = enum2.nextElement();
                     result.setLoadBuildSummary(this);
                 }
             }

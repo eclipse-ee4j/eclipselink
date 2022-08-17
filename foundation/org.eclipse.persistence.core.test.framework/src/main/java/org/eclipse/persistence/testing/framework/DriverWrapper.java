@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,7 +92,7 @@ public class DriverWrapper implements Driver {
     public static String defaultNewConnectionsBrokenExceptionString =  "DriverWrapper: new connections are broken";
 
     // all created ConnectionWrappers are cached
-    static HashSet<ConnectionWrapper> connections = new HashSet();
+    static HashSet<ConnectionWrapper> connections = new HashSet<>();
 
     // register with DriverManager
     static {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,26 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework.ui;
 
-import java.awt.event.*;
-import java.util.*;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.framework.LoadBuildSummary;
+import org.eclipse.persistence.testing.framework.TestResult;
+import org.eclipse.persistence.testing.framework.TestResultsSummary;
+
 import javax.swing.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * Displays the loadbuild test results.
  */
 public class LoadBuildDisplayPanel extends JPanel implements ActionListener, MouseListener {
     private Vector loadBuildsCache;
-    private Vector testResultsCahce;
-    private Vector testSummaryCahce;
+    private Vector<TestResult> testResultsCahce;
+    private Vector<TestResultsSummary> testSummaryCahce;
     private LoadBuildSummary selectedLoadBuild;
     private final int LOADBUILD = 1;// table selection
     private final int SUMMARY = 2;
@@ -117,20 +124,20 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     public void buildErrorTestResultForSummary() {
         int index = getSelectedTable().getSelectedRow();
 
-        TestResultsSummary selectedSummary = (TestResultsSummary)testSummaryCahce.elementAt(index);
+        TestResultsSummary selectedSummary = testSummaryCahce.elementAt(index);
 
-        Vector testResults = new Vector();
+        Vector<TestResult> testResults = new Vector<>();
 
         if ((selectedSummary.getResults() != null) && (selectedSummary.getResults().size() > 0)) {
-            for (Enumeration enumtr = selectedSummary.getResults().elements();
+            for (Enumeration<TestResult> enumtr = selectedSummary.getResults().elements();
                      enumtr.hasMoreElements();) {
-                TestResult result = (TestResult)enumtr.nextElement();
+                TestResult result = enumtr.nextElement();
                 if (result.hasError() || result.hasFatalError() || result.hasProblem()) {
                     testResults.addElement(result);
                 }
             }
         } else {
-            Vector summariesHasResult = new Vector();
+            Vector<TestResultsSummary> summariesHasResult = new Vector<>();
             for (Enumeration<TestResultsSummary> enumtr = selectedSummary.getLoadBuildSummary().getSummaries().elements();
                  enumtr.hasMoreElements();) {
                 TestResultsSummary summary = enumtr.nextElement();
@@ -138,14 +145,14 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
                     summariesHasResult.addElement(summary);
                 }
             }
-            for (Enumeration enum1 = summariesHasResult.elements(); enum1.hasMoreElements();) {
-                TestResultsSummary summary = (TestResultsSummary)enum1.nextElement();
+            for (Enumeration<TestResultsSummary> enum1 = summariesHasResult.elements(); enum1.hasMoreElements();) {
+                TestResultsSummary summary = enum1.nextElement();
                 TestResultsSummary temp = summary;
                 while (temp.getParent() != null) {
                     if (temp.getParent() == selectedSummary) {
-                        for (Enumeration enum2 = summary.getResults().elements();
+                        for (Enumeration<TestResult> enum2 = summary.getResults().elements();
                                  enum2.hasMoreElements();) {
-                            TestResult result = (TestResult)enum2.nextElement();
+                            TestResult result = enum2.nextElement();
                             if (result.hasError() || result.hasFatalError() || result.hasProblem()) {
                                 testResults.addElement(result);
                             }
@@ -282,7 +289,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
                 poppulateTestSummaryTable(testSummaryCahce);
             }
         } else if (tableSelection == SUMMARY) {
-            initilaizeTestSummaryCache((TestResultsSummary)testSummaryCahce.elementAt(index));
+            initilaizeTestSummaryCache(testSummaryCahce.elementAt(index));
             if (tableSelection == RESULT) {
                 poppulateTestResultTable(testResultsCahce);
             } else {
@@ -553,7 +560,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
 
         if (theResult.getSummary() != null) {
             for (int i = 0; i < testSummaryCahce.size(); i++) {
-                TestResultsSummary summary = (TestResultsSummary)testSummaryCahce.elementAt(i);
+                TestResultsSummary summary = testSummaryCahce.elementAt(i);
                 if (summary.getName().equals(theResult.getSummary().getName())) {
                     return i;
                 }
@@ -578,7 +585,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             }
 
             for (int i = 0; i < testSummaryCahce.size(); i++) {
-                TestResultsSummary summary = (TestResultsSummary)testSummaryCahce.elementAt(i);
+                TestResultsSummary summary = testSummaryCahce.elementAt(i);
                 if (summary.getName().equals(theSummary.getParent().getName())) {
                     return i;
                 }
@@ -708,7 +715,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    private void initConnections() throws java.lang.Exception {
+    private void initConnections() {
         // user code begin {1}
         getSelectedTable().addMouseListener(this);
         // user code end
@@ -758,7 +765,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
     }
 
     public void initilaizeTestSummaryCache(LoadBuildSummary loadBuild) {
-        Vector rootSummaries = new Vector();
+        Vector<TestResultsSummary> rootSummaries = new Vector<>();
 
         for (Enumeration<TestResultsSummary> enumtr = loadBuild.getSummaries().elements(); enumtr.hasMoreElements();) {
             TestResultsSummary summary = enumtr.nextElement();
@@ -776,7 +783,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             return;
         }
 
-        Vector children = new Vector();
+        Vector<TestResultsSummary> children = new Vector<>();
 
         for (Enumeration<TestResultsSummary> enumtr = theSummary.getLoadBuildSummary().getSummaries().elements();
              enumtr.hasMoreElements();) {
@@ -871,7 +878,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         for (Enumeration enumtr = summaries.elements(); enumtr.hasMoreElements();) {
             TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
 
-            Vector row = new Vector();
+            Vector<Object> row = new Vector<>();
             row.addElement(summary.getName());
             row.addElement(summary.getLoadBuildSummary().timestamp);
             row.addElement(summary.getLoadBuildSummary().loginChoice);
@@ -893,7 +900,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         getSelectedTable().repaint();
     }
 
-    public void poppulateTestResultTable(Vector results) {
+    public void poppulateTestResultTable(Vector<TestResult> results) {
         Collections.sort(results);
         testResultsCahce = results;
         tableSelection = RESULT;
@@ -901,9 +908,9 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         resetButtons();
 
         NonEditableDefaultTableModel tableModel = new NonEditableDefaultTableModel(new String[] { "Name", "Outcome", "Test Time", "Total Time", "Has Exception", "Time", "Database", "OS", "JVM", "Machine", "TopLink Version" }, 0);
-        for (Enumeration enumtr = results.elements(); enumtr.hasMoreElements();) {
-            TestResult result = (TestResult)enumtr.nextElement();
-            Vector row = new Vector();
+        for (Enumeration<TestResult> enumtr = results.elements(); enumtr.hasMoreElements();) {
+            TestResult result = enumtr.nextElement();
+            Vector<Object> row = new Vector<>();
             row.addElement(result.getName());
             row.addElement(result.getOutcome());
             row.addElement(result.getTestTime());
@@ -923,7 +930,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         getSelectedTable().repaint();
     }
 
-    public void poppulateTestSummaryTable(Vector summaries) {
+    public void poppulateTestSummaryTable(Vector<TestResultsSummary> summaries) {
         Collections.sort(summaries);
         testSummaryCahce = summaries;
         tableSelection = SUMMARY;
@@ -931,9 +938,9 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         resetButtons();
 
         NonEditableDefaultTableModel tableModel = new NonEditableDefaultTableModel(new String[] { "Name", "Total Tests", "Setup Failures", "Passed", "Errors", "Fatal Errors", "Problems", "Warnings", "Total Time" }, 0);
-        for (Enumeration enumtr = summaries.elements(); enumtr.hasMoreElements();) {
-            TestResultsSummary summary = (TestResultsSummary)enumtr.nextElement();
-            Vector row = new Vector();
+        for (Enumeration<TestResultsSummary> enumtr = summaries.elements(); enumtr.hasMoreElements();) {
+            TestResultsSummary summary = enumtr.nextElement();
+            Vector<Object> row = new Vector<>();
             row.addElement(summary.getName());
             row.addElement(summary.getTotalTests());
             row.addElement(summary.getSetupFailures());
@@ -1006,7 +1013,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             return;
         }
         if (tableSelection == SUMMARY) {
-            TestResultsSummary summary = (TestResultsSummary)testSummaryCahce.elementAt(index);
+            TestResultsSummary summary = testSummaryCahce.elementAt(index);
             upIndex = getUpIndex(summary);
             if (summary.getParent() == null) {
                 poppulateLoadBuildTable(loadBuildsCache);
@@ -1015,7 +1022,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
             }
             getSelectedTable().setRowSelectionInterval(upIndex, upIndex);
         } else if (tableSelection == RESULT) {
-            TestResult result = (TestResult)testResultsCahce.elementAt(index);
+            TestResult result = testResultsCahce.elementAt(index);
             upIndex = getUpIndex(result);
             if (result.getSummary() != null) {
                 poppulateTestSummaryTable(testSummaryCahce);
@@ -1036,7 +1043,7 @@ public class LoadBuildDisplayPanel extends JPanel implements ActionListener, Mou
         if (index < 0) {
             return;
         }
-        TestResult result = (TestResult)testResultsCahce.elementAt(index);
+        TestResult result = testResultsCahce.elementAt(index);
         getViewTextArea().setText(result.getExceptionStackTrace());
         getLoadBuildTabbedPanel().setSelectedComponent(getViewPage());
         getViewTextArea().setCaretPosition(1);
