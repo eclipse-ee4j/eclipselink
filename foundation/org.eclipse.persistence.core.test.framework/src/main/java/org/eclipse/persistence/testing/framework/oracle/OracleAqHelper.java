@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,10 @@
 //       - 492077: Use Oracle DB AQ credentials from test properties
 package org.eclipse.persistence.testing.framework.oracle;
 
-import java.util.Map;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
+
+import java.util.Map;
 
 /**
  * Oracle AQ database setup helper.

@@ -831,38 +831,10 @@
             <!-- All files as a Oracle JDBC driver CQ #21154 -->
             <dependency>
                 <groupId>com.oracle.database.jdbc</groupId>
-                <artifactId>ojdbc8</artifactId>
+                <artifactId>ojdbc-bom</artifactId>
                 <version>${oracle.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle.database.xml</groupId>
-                <artifactId>xmlparserv2</artifactId>
-                <version>${oracle.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle.database.jdbc</groupId>
-                <artifactId>ucp</artifactId>
-                <version>${oracle.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle.database.xml</groupId>
-                <artifactId>xdb</artifactId>
-                <version>${oracle.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle.database.observability</groupId>
-                <artifactId>dms</artifactId>
-                <version>${oracle.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle.database.ha</groupId>
-                <artifactId>simplefan</artifactId>
-                <version>${oracle.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle.database.ha</groupId>
-                <artifactId>ons</artifactId>
-                <version>${oracle.jdbc.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <!--TODO resolve dependency later
                                 <dependency>
@@ -871,11 +843,6 @@
                                     <version>${oracle.version}</version>
                                 </dependency>
             -->
-            <dependency>
-                <groupId>com.oracle.database.nls</groupId>
-                <artifactId>orai18n</artifactId>
-                <version>${oracle.jdbc.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.oracle.database.messaging</groupId>
                 <artifactId>aqapi</artifactId>
@@ -1798,7 +1765,7 @@
                 <test.properties.fileName>${test.oracle.properties.file}</test.properties.fileName>
                 <!--Used by sql-maven-plugin-->
                 <db.driver.groupId>com.oracle.database.jdbc</db.driver.groupId>
-                <db.driver.artifactId>ojdbc8</db.driver.artifactId>
+                <db.driver.artifactId>ojdbc11</db.driver.artifactId>
                 <db.driver.version>${oracle.jdbc.version}</db.driver.version>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
