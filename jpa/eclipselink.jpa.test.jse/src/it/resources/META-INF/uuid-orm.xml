@@ -4,6 +4,14 @@
     https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd"
   version="3.1">
 
+  <entity class="org.eclipse.persistence.jpa.test.uuid.model.XMLUUIDAutoGenEntity">
+     <attributes>
+        <id name="id">
+            <generated-value strategy="UUID" />
+        </id>
+        <basic name="name" />
+     </attributes>
+  </entity>
   <entity class="org.eclipse.persistence.jpa.test.uuid.model.XMLUUIDEmbeddableIdEntity">
      <attributes>
         <embedded-id name="id"/>
@@ -32,7 +40,7 @@
         <basic name="name" />
      </attributes>
   </entity>
-  
+
   <embeddable class="org.eclipse.persistence.jpa.test.uuid.model.XMLEmbeddableUUID_ID">
      <attributes>
         <basic name="eid" />

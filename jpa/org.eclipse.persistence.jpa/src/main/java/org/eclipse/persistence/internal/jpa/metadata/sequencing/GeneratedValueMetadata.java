@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle, IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,8 @@
 //       - 237902: DDL GEN doesn't qualify SEQUENCE table with persistence unit schema
 //     03/24/2011-2.3 Guy Pelletier
 //       - 337323: Multi-tenant with shared schema support (part 1)
+//     08/17/2022-4.0 Jody Grassel
+//       - ECL1625: AUTO for UUID generation does not comply with JPA spec
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
 import java.util.Map;
@@ -29,6 +31,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 
@@ -129,7 +132,16 @@ public class GeneratedValueMetadata extends ORMetadata {
         if (sequence == null) {
             // A null strategy will default to AUTO.
             if (m_strategy == null || m_strategy.equals(JPA_GENERATION_AUTO)) {
-                if (sequences.containsKey(MetadataProject.DEFAULT_AUTO_GENERATOR)) {
+                final MetadataField mf = (getAccessibleObject() != null && getAccessibleObject() instanceof MetadataField) ?  (MetadataField) getAccessibleObject(): null;
+                if (mf != null && "java.util.UUID".equals(mf.getType())) {
+                    // JPA Spec says to treat AUTO on java.util.UUID types as UUIDGenerator.
+                    if (m_generator.equals("")) {
+                        sequence = sequences.get(MetadataProject.DEFAULT_UUID_GENERATOR);
+                    } else {
+                        sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_UUID_GENERATOR).clone();
+                        sequence.setName(m_generator);
+                    }
+                } else if (sequences.containsKey(MetadataProject.DEFAULT_AUTO_GENERATOR)) {
                     login.setDefaultSequence(sequences.get(MetadataProject.DEFAULT_AUTO_GENERATOR));
                 }
             } else if (m_strategy.equals(JPA_GENERATION_TABLE)) {
