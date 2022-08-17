@@ -173,6 +173,11 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.partitioned</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.testapps.performance</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -567,6 +572,15 @@
 
     <profiles>
         <profile>
+            <id>oracle</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.oracle</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <!-- run tests on the server
                  requires manual JDBC DS creation
                  EAR/EJB-jars are built by the eclipselink-testbuild-plugin plugin
@@ -583,7 +597,7 @@
                     <dependency>
                         <groupId>org.wildfly</groupId>
                         <artifactId>wildfly-client-all</artifactId>
-                        <version>27.0.0.Alpha2</version>
+                        <version>27.0.0.Alpha4</version>
                     </dependency>
                 </dependencies>
             </dependencyManagement>

@@ -17,6 +17,7 @@ module org.eclipse.persistence.oracle {
     requires transitive jakarta.persistence;
     requires transitive jakarta.json;
     requires transitive com.oracle.database.jdbc;
+    requires com.oracle.database.ucp;
 
     exports org.eclipse.persistence.platform.database.oracle;
     exports org.eclipse.persistence.platform.database.oracle.converters;

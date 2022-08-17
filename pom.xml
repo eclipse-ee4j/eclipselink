@@ -2022,6 +2022,7 @@
 
                 <!-- testapps -->
                 <module>jpa/eclipselink.jpa.testapps</module>
+                <module>jpa/eclipselink.jpa.testapps.oracle</module>
             </modules>
         </profile>
         <profile>
@@ -2033,13 +2034,6 @@
                 <!--JPA JPA-RS test module-->
                 <!--TODO FIXIT Doesn't work well. -->
                 <module>jpa/eclipselink.jpars.test</module>
-
-                <!-- Oracle DB specific tests -->
-                <!--TODO sdoapi dependency resolution is not solved-->
-                <module>foundation/eclipselink.extension.oracle.spatial.test</module>
-                <!--JPA test module-->
-                <!--TODO sdoapi dependency resolution is not solved-->
-                <module>jpa/eclipselink.jpa.oracle.test</module>
             </modules>
         </profile>
     </profiles>
