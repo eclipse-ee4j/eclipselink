@@ -87,7 +87,7 @@ public class TIMESTAMPTZWrapper implements Serializable, PlatformWrapper {
 
     Map<Class<? extends Object>, Function<TIMESTAMPTZWrapper, ? extends Object>> initUnwrappers() {
         Map<Class<? extends Object>, Function<TIMESTAMPTZWrapper, ? extends Object>> unwrappers = new HashMap<>();
-        unwrappers.put(TIMESTAMPLTZWrapper.class, (wrapper) -> wrapper);
+        unwrappers.put(TIMESTAMPTZWrapper.class, (wrapper) -> wrapper);
         unwrappers.put(LocalDate.class, (wrapper) -> wrapper.toLocalDate());
         unwrappers.put(LocalTime.class, (wrapper) -> wrapper.toLocalTime());
         unwrappers.put(LocalDateTime.class, (wrapper) -> wrapper.toLocalDateTime());
