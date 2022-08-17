@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,15 +17,17 @@
 //       these may be SQL warnings or other ORM warnings that happen to use the SQL category
 package org.eclipse.persistence.testing.framework;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.logging.SessionLogEntry;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.SessionEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class can be used to replace the session log. It stores the SQL and EclipseLink queries produced
@@ -35,8 +37,8 @@ public class QuerySQLTracker extends DefaultSessionLog {
     private SessionLog originalLog;
     private SessionEventListener listener;
     // Track SQL statements
-    private List sqlStatements = new ArrayList();
-    private List queries = new ArrayList();
+    private List<String> sqlStatements = new ArrayList<>();
+    private List<DatabaseQuery> queries = new ArrayList<>();
     private boolean isSuspended;
 
     /**
@@ -106,7 +108,7 @@ public class QuerySQLTracker extends DefaultSessionLog {
      * Get a list of all the EclipseLink Queries that have been executed in while this QuerySQLTracker
      * has been logging.  Queries are gathered in the preExecuteQuery event.
      */
-    public List getQueries() {
+    public List<DatabaseQuery> getQueries() {
         return queries;
     }
 

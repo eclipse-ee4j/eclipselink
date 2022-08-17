@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,29 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework.naming;
 
+import javax.naming.Binding;
+import javax.naming.CompositeName;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.NameAlreadyBoundException;
+import javax.naming.NameClassPair;
+import javax.naming.NameNotFoundException;
+import javax.naming.NameParser;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
 import java.util.Hashtable;
-import javax.naming.*;
 
 public class InitialContextImpl implements Context {
-    Hashtable env;
+    Hashtable<?, ?> env;
 
     // Single global namespace
-    static Hashtable stringNamespace = new Hashtable();
-    static Hashtable namespace = new Hashtable();
+    static Hashtable<String, Object> stringNamespace = new Hashtable<>();
+    static Hashtable<Name, Object> namespace = new Hashtable<>();
 
     public InitialContextImpl() {
     }
 
-    public InitialContextImpl(Hashtable env) {
+    public InitialContextImpl(Hashtable<?, ?> env) {
         this.env = env;
     }
 
@@ -93,24 +102,24 @@ public class InitialContextImpl implements Context {
     }
 
     @Override
-    public void rebind(Name name, Object obj) throws NamingException {
+    public void rebind(Name name, Object obj) {
         namespace.put(name, obj);
     }
 
     @Override
-    public Hashtable getEnvironment() throws NamingException {
+    public Hashtable<?, ?> getEnvironment() {
         return env;
     }
 
     @Override
-    public void close() throws NamingException {
+    public void close() {
     }
 
     /*************************************/
     /***** Not supported Context API *****/
     /*************************************/
     @Override
-    public void unbind(Name name) throws NamingException {
+    public void unbind(Name name) {
         namespace.remove(name);
     }
 
@@ -122,93 +131,93 @@ public class InitialContextImpl implements Context {
     }
 
     @Override
-    public void rename(Name oldName, Name newName) throws NamingException {
+    public void rename(Name oldName, Name newName) {
     }
 
     @Override
-    public void rename(String oldName, String newName) throws NamingException {
+    public void rename(String oldName, String newName) {
     }
 
     @Override
-    public NamingEnumeration list(Name name) throws NamingException {
+    public NamingEnumeration<NameClassPair> list(Name name) {
         return null;
     }
 
     @Override
-    public NamingEnumeration list(String name) throws NamingException {
+    public NamingEnumeration<NameClassPair> list(String name) {
         return null;
     }
 
     @Override
-    public NamingEnumeration listBindings(Name name) throws NamingException {
+    public NamingEnumeration<Binding> listBindings(Name name) {
         return null;
     }
 
     @Override
-    public NamingEnumeration listBindings(String name) throws NamingException {
+    public NamingEnumeration<Binding> listBindings(String name) {
         return null;
     }
 
     @Override
-    public void destroySubcontext(Name name) throws NamingException {
+    public void destroySubcontext(Name name) {
     }
 
     @Override
-    public void destroySubcontext(String name) throws NamingException {
+    public void destroySubcontext(String name) {
     }
 
     @Override
-    public Context createSubcontext(Name name) throws NamingException {
+    public Context createSubcontext(Name name) {
         return null;
     }
 
     @Override
-    public Context createSubcontext(String name) throws NamingException {
+    public Context createSubcontext(String name) {
         return null;
     }
 
     @Override
-    public Object lookupLink(Name name) throws NamingException {
+    public Object lookupLink(Name name) {
         return null;
     }
 
     @Override
-    public Object lookupLink(String name) throws NamingException {
+    public Object lookupLink(String name) {
         return null;
     }
 
     @Override
-    public NameParser getNameParser(Name name) throws NamingException {
+    public NameParser getNameParser(Name name) {
         return null;
     }
 
     @Override
-    public NameParser getNameParser(String name) throws NamingException {
+    public NameParser getNameParser(String name) {
         return null;
     }
 
     @Override
-    public Name composeName(Name name, Name prefix) throws NamingException {
+    public Name composeName(Name name, Name prefix) {
         return null;
     }
 
     @Override
-    public String composeName(String name, String prefix) throws NamingException {
+    public String composeName(String name, String prefix) {
         return null;
     }
 
     @Override
-    public Object addToEnvironment(String propName, Object propVal) throws NamingException {
+    public Object addToEnvironment(String propName, Object propVal) {
         return null;
     }
 
     @Override
-    public Object removeFromEnvironment(String propName) throws NamingException {
+    public Object removeFromEnvironment(String propName) {
         return null;
     }
 
     @Override
-    public String getNameInNamespace() throws NamingException {
+    public String getNameInNamespace() {
         return null;
     }
 }

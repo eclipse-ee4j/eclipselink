@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,6 +54,7 @@ public class ReflectionHelper {
      * @throws IllegalArgumentException If an unwrapping conversion fails.
      * @throws IllegalAccessException If the underlying field is either inaccessible or final.
      */
+    @SuppressWarnings({"unchecked"})
     public static final <T> T getPrivateStatic(final Class<?> c, final String name)
             throws ReflectiveOperationException {
         final Field field = c.getDeclaredField(name);

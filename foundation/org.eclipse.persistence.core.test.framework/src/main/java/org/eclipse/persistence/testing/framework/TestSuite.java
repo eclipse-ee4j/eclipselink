@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.io.*;
-import java.util.*;
+import junit.framework.Test;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Test suite is a collection of test cases and/or sub test suites. When a
@@ -65,19 +69,20 @@ public class TestSuite extends TestCollection {
      * Executes all the test entities in the collection.
      */
     @Override
+    @SuppressWarnings({"unchecked"})
     public void execute(TestExecutor executor) throws Throwable {
         setSummary(new TestResultsSummary(this));
         setExecutor(executor);
         computeNestedLevel();
         setupEntity();
-        setFinishedTests(new Vector());
+        setFinishedTests(new Vector<>());
         if (getNestedCounter() < 1) {
             System.out.println();
             System.out.println("Running " + getSummary().getName());
         }
         long startTime = System.nanoTime();
-        for (Enumeration tests = getTests().elements(); tests.hasMoreElements();) {
-            junit.framework.Test test = (junit.framework.Test)tests.nextElement();
+        for (Enumeration<Test> tests = getTests().elements(); tests.hasMoreElements();) {
+            junit.framework.Test test = tests.nextElement();
             if ((TestExecutor.getDefaultJUnitTestResult() != null) && TestExecutor.getDefaultJUnitTestResult().shouldStop()) {
                 break;
             }
@@ -86,7 +91,7 @@ public class TestSuite extends TestCollection {
         }
         long endTime = System.nanoTime();
         getSummary().setTotalTime(endTime - startTime);
-        setFinishedTests((Vector)getTests().clone());
+        setFinishedTests((Vector<Test>)getTests().clone());
         if (getNestedCounter() < 1) {
             computeResultSummary();
             System.out.printf("Tests run: %d, Failures: %d, Errors: %d, Skipped: %d, Time elapsed: %.3f sec",
@@ -152,7 +157,7 @@ public class TestSuite extends TestCollection {
     }
 
     @Override
-    public void setupEntity() throws Throwable {
+    public void setupEntity() {
         try {
             setup();
         } catch (Throwable exception) {

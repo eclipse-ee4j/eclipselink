@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.sessionconsole;
 
-import java.util.*;
+import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.tools.beans.MessageDialog;
+import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
+import org.eclipse.persistence.tools.profiler.Profile;
+
 import javax.swing.*;
 import java.net.URL;
-
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.tools.profiler.*;
-import org.eclipse.persistence.tools.beans.*;
+import java.util.List;
 
 public class ProfileBrowser extends JFrame {
     private JPanel ivjMainPanel = null;

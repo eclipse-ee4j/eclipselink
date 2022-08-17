@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,16 +35,13 @@ public class OracleDBPlatformHelper {
             Class<?> helperClass = null;
 
             try {
-                helperClass = new PrivilegedClassForName("org.eclipse.persistence.testing.framework.oracle.OracleDBPlatformHelper").run();
+                helperClass = new PrivilegedClassForName<>("org.eclipse.persistence.testing.framework.oracle.OracleDBPlatformHelper").run();
             } catch (ClassNotFoundException cnfe) {
                 helperClass = OracleDBPlatformHelper.class;
             }
             try {
-                singleton = (OracleDBPlatformHelper) new PrivilegedNewInstanceFromClass(helperClass).run();
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                throw new RuntimeException("Helper create failed: " + helperClass);
-            } catch (InstantiationException e) {
+                singleton = (OracleDBPlatformHelper) new PrivilegedNewInstanceFromClass<>(helperClass).run();
+            } catch (IllegalAccessException | InstantiationException e) {
                 // TODO Auto-generated catch block
                 throw new RuntimeException("Helper create failed: " + helperClass);
             }

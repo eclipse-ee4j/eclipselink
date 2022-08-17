@@ -14,6 +14,14 @@
 //     21/08/2013-2.6 Chris Delahunt
 package org.eclipse.persistence.testing.tests;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ArrayRecord;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.testing.framework.TestCase;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -22,14 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
-
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.ArrayRecord;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.testing.framework.TestCase;
 
 /**
  * This test is used to allow clearing the schema before running automated tests.
@@ -132,6 +132,7 @@ public class ClearDatabaseSchemaTest extends TestCase {
         session.executeNonSelectingSQL("PURGE recyclebin");
     }
 
+    @SuppressWarnings({"unchecked"})
     private void resetDerby(AbstractSession session) {
         Vector<ArrayRecord> result = session.executeSQL("SELECT 'ALTER TABLE '||S.SCHEMANAME||'.'||T.TABLENAME||' DROP CONSTRAINT \"'||C.CONSTRAINTNAME||'\"'\n"
                 + "FROM SYS.SYSCONSTRAINTS C, SYS.SYSSCHEMAS S, SYS.SYSTABLES T\n"
@@ -178,6 +179,7 @@ public class ClearDatabaseSchemaTest extends TestCase {
     }
 
     private void resetHsql(AbstractSession session) {
+        @SuppressWarnings({"unchecked"})
         Vector<ArrayRecord> result = session.executeSQL("select 'DROP TABLE \"' || table_name || '\" CASCADE' FROM INFORMATION_SCHEMA.system_tables "
                 + "WHERE table_type = 'TABLE' and table_schem = CURRENT_SCHEMA");
         List<String> toRetry = execStatements(session, result);
@@ -185,6 +187,7 @@ public class ClearDatabaseSchemaTest extends TestCase {
     }
 
     private void resetPostgres(AbstractSession session) {
+        @SuppressWarnings({"unchecked"})
         Vector<ArrayRecord> result = getSession().executeSQL("SELECT 'DROP TABLE \"' || tablename || '\" CASCADE;' "
                 + "FROM pg_tables WHERE schemaname = current_schema();");
         List<String> toRetry = execStatements(session, result);
@@ -192,7 +195,7 @@ public class ClearDatabaseSchemaTest extends TestCase {
     }
 
     private List<String> execStatements(AbstractSession session, Vector<ArrayRecord> records) {
-        List<String> failures = new ArrayList<String>();
+        List<String> failures = new ArrayList<>();
         for (ArrayRecord ar : records) {
             for (Object o : ar.values()) {
                 String stmt = (String) o;

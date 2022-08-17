@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.beans;
 
-import java.util.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.expressions.*;
+import java.util.Hashtable;
 
 /**
  * Used for the tree view within expression editor.
@@ -42,8 +44,8 @@ public class ExpressionNode {
     protected static String Lower = "Lower Case";
     protected static String KeyWordAll = "All Key Words";
     protected static String KeyWordAny = "Any Key Words";
-    protected static Hashtable operators;
-    protected static Hashtable methods;
+    protected static Hashtable<Integer, String> operators;
+    protected static Hashtable<String, String> methods;
     protected Expression expression;
 
     public ExpressionNode(Expression expression) {
@@ -55,12 +57,12 @@ public class ExpressionNode {
     }
 
     public static String getMethod(String method) {
-        return (String)getMethods().get(method);
+        return getMethods().get(method);
     }
 
-    public static Hashtable getMethods() {
+    public static Hashtable<String, String> getMethods() {
         if (methods == null) {
-            methods = new Hashtable();
+            methods = new Hashtable<>();
             methods.put(Equals, "equal");
             methods.put(NotEquals, "notEqual");
             methods.put(LessThan, "lessThan");
@@ -86,12 +88,12 @@ public class ExpressionNode {
     }
 
     public static String getOperator(int anOperator) {
-        return (String)getOperators().get(anOperator);
+        return getOperators().get(anOperator);
     }
 
-    public static Hashtable getOperators() {
+    public static Hashtable<Integer, String> getOperators() {
         if (operators == null) {
-            operators = new Hashtable();
+            operators = new Hashtable<>();
             operators.put(ExpressionOperator.Equal, Equals);
             operators.put(ExpressionOperator.NotEqual, NotEquals);
             operators.put(ExpressionOperator.LessThan, LessThan);
@@ -130,7 +132,7 @@ public class ExpressionNode {
         if (getExpression() instanceof ConstantExpression) {
             return ((ConstantExpression)getExpression()).getValue().toString();
         } else if (getExpression() instanceof QueryKeyExpression) {
-            return getExpression().getName().toString();
+            return getExpression().getName();
         } else {
             String anOperator =
                 getOperator(getExpression().getOperator().getSelector());

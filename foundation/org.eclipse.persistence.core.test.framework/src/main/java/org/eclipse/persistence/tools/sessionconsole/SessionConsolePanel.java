@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,26 +14,52 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.sessionconsole;
 
-import java.lang.reflect.Method;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
-
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.tools.beans.*;
-import org.eclipse.persistence.tools.profiler.*;
-import org.eclipse.persistence.sessions.factories.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReportQueryResult;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.tools.beans.ExpressionPanel;
+import org.eclipse.persistence.tools.beans.MessageDialog;
+import org.eclipse.persistence.tools.beans.TextAreaOutputStream;
+import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Main panel for the session console. The session console is used by the
@@ -43,8 +69,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         ItemListener, MouseListener, java.beans.PropertyChangeListener,
         ListSelectionListener {
     protected int compileCount = 0;
-    protected Vector results;
-    protected Vector cacheResults;
+    protected Vector<?> results;
+    protected Vector<CacheKey> cacheResults;
     private Session fieldSession = null;
     private JButton mBrowseProfileButton = null;
     private JMenuItem mBrowseProfileMenuItem = null;
@@ -77,7 +103,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     private JMenuItem mSQLUpdateMenuItem = null;
     private JScrollPane cacheScrollPane = null;
 
-    private JList mClassList = null;
+    private JList<ClassInfo> mClassList = null;
     private JScrollPane mClassScrollPane = null;
     private JButton mClearButton = null;
     private JMenuItem mClearDescriptorsMenuItem = null;
@@ -101,7 +127,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     private JSeparator mJSeparator7 = null;
     private JButton mLoadProjectButton = null;
     private JTabbedPane mLogBook = null;
-    private JComboBox logLevelChoice = null;
+    private JComboBox<String> logLevelChoice = null;
     private JButton mLoginButton = null;
     private LoginEditorPanel mLoginEditorPanel = null;
     private JPopupMenu mLoginMenu = null;
@@ -323,7 +349,6 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     public void clearCache() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
-        ;
         resetCache();
     }
 
@@ -351,7 +376,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     public void clearResults() {
-        setResults(new Vector());
+        setResults(new Vector<>());
         DefaultTableModel model = new DefaultTableModel();
         getResultsTable().setModel(model);
         getResultsTable().repaint();
@@ -670,16 +695,17 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     public void descriptorChanged() {
         resetCache();
-        ClassInfo info = (ClassInfo) getClassList().getSelectedValue();
+        ClassInfo info = getClassList().getSelectedValue();
         if (info != null) {
             getExpressionPanel().setDescriptor(info.descriptor);
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     public void executeQuery() {
         showBusyCursor();
         try {
-            ClassInfo info = (ClassInfo) getClassList().getSelectedValue();
+            ClassInfo info = getClassList().getSelectedValue();
             if (info == null) {
                 return;
             }
@@ -688,7 +714,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                     .getDescriptor().getJavaClass());
             query.setSelectionCriteria(getExpressionPanel().getExpression());
 
-            setResultObjects((Vector) getSession().executeQuery(query),
+            setResultObjects((Vector<Object>) getSession().executeQuery(query),
                     getExpressionPanel().getDescriptor());
 
             getLogBook().setSelectedComponent(getResultPage());
@@ -710,6 +736,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     public void executeJPQL() {
         showBusyCursor();
         try {
@@ -721,7 +748,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             }
             DatabaseQuery query = ((AbstractSession)getSession()).getQueryBuilder().buildQuery(jpql, (AbstractSession)getSession());
             if (query.isReadQuery()) {
-                setResultReports((Vector) getSession().executeQuery(query));
+                setResultReports((Vector<Object>) getSession().executeQuery(query));
                 getLogBook().setSelectedComponent(getResultPage());
             } else {
                 getSession().executeQuery(query);
@@ -759,7 +786,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 writer.write("public Session session;\n");
                 writer.write("public Object exec() {\n");
                 writer.write(java);
-                if (java.indexOf("return") < 0) {
+                if (!java.contains("return")) {
                     writer.write("return \"success\";\n");
                 }
                 writer.write("}\n");
@@ -1027,7 +1054,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         return sqlPagePopupMenu;
     }
 
-    public Vector getCacheResults() {
+    public Vector<CacheKey> getCacheResults() {
         return cacheResults;
     }
 
@@ -1079,10 +1106,10 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @return JList
      */
     private/* WARNING: THIS METHOD WILL BE REGENERATED. */
-    JList getClassList() {
+    JList<ClassInfo> getClassList() {
         if (mClassList == null) {
             try {
-                mClassList = new JList();
+                mClassList = new JList<>();
                 mClassList.setName("ClassList");
                 mClassList
                         .setBorder(new javax.swing.plaf.basic.BasicBorders.MarginBorder());
@@ -1847,10 +1874,10 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         return mLogBook;
     }
 
-    private JComboBox getLogLevelChoice() {
+    private JComboBox<String> getLogLevelChoice() {
         if (logLevelChoice == null) {
             try {
-                logLevelChoice = new JComboBox();
+                logLevelChoice = new JComboBox<>();
                 logLevelChoice.setName("LogLevelChoice");
                 logLevelChoice.addItem("All");
                 logLevelChoice.addItem("Finest");
@@ -2497,7 +2524,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         return mResultPage;
     }
 
-    public Vector getResults() {
+    public Vector<?> getResults() {
         return results;
     }
 
@@ -2979,7 +3006,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * Initializes connections
      */
-    private void initConnections() throws Exception {
+    private void initConnections() {
         getClassList().addListSelectionListener(this);
         getLoginButton().addActionListener(this);
         getLogoutButton().addActionListener(this);
@@ -3072,7 +3099,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     public void inspectDescriptor() {
-        ClassInfo classInfo = ((ClassInfo) getClassList().getSelectedValue());
+        ClassInfo classInfo = getClassList().getSelectedValue();
         if (classInfo == null) {
             return;
         }
@@ -3168,7 +3195,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         javax.swing.filechooser.FileFilter filer = new javax.swing.filechooser.FileFilter() {
             @Override
             public boolean accept(File file) {
-                return (file.getName().indexOf(".xml") != -1)
+                return (file.getName().contains(".xml"))
                         || file.isDirectory();
             }
 
@@ -3396,9 +3423,9 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     public void resetCache() {
-        Vector cacheResults = new Vector();
+        Vector<CacheKey> cacheResults = new Vector<>();
         setCacheResults(cacheResults);
-        ClassInfo info = (ClassInfo) getClassList().getSelectedValue();
+        ClassInfo info = getClassList().getSelectedValue();
         DefaultTableModel model = new DefaultTableModel();
         if (info == null) {
             getCacheTable().setModel(model);
@@ -3423,9 +3450,9 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         columns[3] = "Object";
 
         model.setColumnIdentifiers(columns);
-        for (Enumeration cacheEnumeration = cacheResults.elements(); cacheEnumeration
+        for (Enumeration<CacheKey> cacheEnumeration = cacheResults.elements(); cacheEnumeration
                 .hasMoreElements();) {
-            CacheKey key = (CacheKey) cacheEnumeration.nextElement();
+            CacheKey key = cacheEnumeration.nextElement();
             String[] values = new String[4];
             values[0] = key.getKey().toString();
             values[1] = Integer.valueOf(key.getObject().hashCode()).toString();
@@ -3455,7 +3482,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         }
         Arrays.sort(classes, new ClassInfoCompare());
 
-        DefaultListModel list = new DefaultListModel();
+        DefaultListModel<ClassInfo> list = new DefaultListModel<>();
         for (index = 0; index < classes.length; index++) {
             list.addElement(classes[index]);
         }
@@ -3471,7 +3498,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             if ((sql == null) || (sql.length() == 0)) {
                 return;
             }
-            Vector rows = getSession().executeSelectingCall(new SQLCall(sql));
+            @SuppressWarnings({"unchecked"})
+            Vector<DatabaseRecord> rows = getSession().executeSelectingCall(new SQLCall(sql));
             setResultRows(rows);
 
             getLogBook().setSelectedComponent(getResultPage());
@@ -3480,17 +3508,14 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         }
     }
 
-    public void setCacheResults(Vector cacheResults) {
+    public void setCacheResults(Vector<CacheKey> cacheResults) {
         this.cacheResults = cacheResults;
     }
 
     public void setLog() {
-        boolean autoscroll = false;
-
         // Check if from testing, then set manual autoscroll.
-        if (getParent() instanceof JSplitPane) {
-            autoscroll = true;
-        }
+        boolean autoscroll = getParent() instanceof JSplitPane;
+
         Writer log = new OutputStreamWriter(new TextAreaOutputStream(
                 getLogText(), autoscroll));
         if (getSession() == null) {
@@ -3500,7 +3525,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         getSession().setLog(log);
     }
 
-    public void setResultObjects(Vector resultObjects,
+    public void setResultObjects(Vector<Object> resultObjects,
             ClassDescriptor descriptor) {
         setResults(resultObjects);
         DefaultTableModel model = new DefaultTableModel();
@@ -3517,7 +3542,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         }
 
         model.setColumnIdentifiers(columns);
-        for (Enumeration objectsEnumeration = resultObjects.elements(); objectsEnumeration
+        for (Enumeration<Object> objectsEnumeration = resultObjects.elements(); objectsEnumeration
                 .hasMoreElements();) {
             Object object = objectsEnumeration.nextElement();
             String[] values = new String[descriptor.getMappings().size()];
@@ -3534,7 +3559,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         getResultsTable().repaint();
     }
 
-    public void setResultRows(Vector resultRows) {
+    public void setResultRows(Vector<DatabaseRecord> resultRows) {
         setResults(resultRows);
         DefaultTableModel model = new DefaultTableModel();
         if (resultRows.isEmpty()) {
@@ -3542,16 +3567,16 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             getResultsTable().repaint();
             return;
         }
-        DatabaseRecord firstRow = (DatabaseRecord) resultRows.firstElement();
+        DatabaseRecord firstRow = resultRows.firstElement();
         String[] columns = new String[firstRow.getFields().size()];
         for (int index = 0; index < firstRow.getFields().size(); index++) {
             columns[index] = firstRow.getFields().elementAt(
                     index).getName();
         }
         model.setColumnIdentifiers(columns);
-        for (Enumeration rowsEnumeration = resultRows.elements(); rowsEnumeration
+        for (Enumeration<DatabaseRecord> rowsEnumeration = resultRows.elements(); rowsEnumeration
                 .hasMoreElements();) {
-            DatabaseRecord row = (DatabaseRecord) rowsEnumeration.nextElement();
+            DatabaseRecord row = rowsEnumeration.nextElement();
             String[] values = new String[row.getValues().size()];
             for (int index = 0; index < row.getValues().size(); index++) {
                 values[index] = String
@@ -3564,7 +3589,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         getResultsTable().repaint();
     }
 
-    public void setResultReports(Vector results) {
+    public void setResultReports(Vector<Object> results) {
         setResults(results);
         DefaultTableModel model = new DefaultTableModel();
         if (results.isEmpty()) {
@@ -3580,7 +3605,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 columns[index] = result.getNames().get(index);
             }
             model.setColumnIdentifiers(columns);
-            for (Iterator iterator = results.iterator(); iterator.hasNext();) {
+            for (Iterator<?> iterator = results.iterator(); iterator.hasNext();) {
                 result = (ReportQueryResult) iterator.next();
                 String[] values = new String[result.getResults().size()];
                 for (int index = 0; index < result.getResults().size(); index++) {
@@ -3595,7 +3620,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 columns[index] = String.valueOf(index);
             }
             model.setColumnIdentifiers(columns);
-            for (Iterator iterator = results.iterator(); iterator.hasNext();) {
+            for (Iterator<?> iterator = results.iterator(); iterator.hasNext();) {
                 result = (Object[]) iterator.next();
                 String[] values = new String[result.length];
                 for (int index = 0; index < result.length; index++) {
@@ -3607,7 +3632,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             String[] columns = new String[1];
             columns[0] = "value";
             model.setColumnIdentifiers(columns);
-            for (Iterator iterator = results.iterator(); iterator.hasNext();) {
+            for (Iterator<?> iterator = results.iterator(); iterator.hasNext();) {
                 Object result = iterator.next();
                 String[] values = new String[1];
                 values[0] = String.valueOf(result);
@@ -3619,11 +3644,11 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         getResultsTable().repaint();
     }
 
-    public void setResults(Vector results) {
+    public void setResults(Vector<?> results) {
         this.results = results;
     }
 
-    /**
+    /**>
      * Sets the session property (org.eclipse.persistence.sessions.Session)
      * value.
      *

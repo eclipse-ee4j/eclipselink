@@ -14,19 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.util.*;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.TimesTenPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Used in a test model to configure the database and session.
@@ -49,16 +53,16 @@ public class TestSystem {
      * Return all descriptor for the system.
      * This can be used so that subclasses do not have to add descriptors themselves.
      */
-    public Vector buildDescriptors() {
-        return new Vector();
+    public Vector<ClassDescriptor> buildDescriptors() {
+        return new Vector<>();
     }
 
     /**
      * Return all tables for the system.
      * This can be used so that subclasses do not have to create the tables themselves.
      */
-    public Vector buildTables() {
-        return new Vector();
+    public Vector<TableDefinition> buildTables() {
+        return new Vector<>();
     }
 
     /**
@@ -82,24 +86,24 @@ public class TestSystem {
      * Then add the constraints back.
      */
     public void createTables(DatabaseSession session) throws Exception {
-        Vector tables = buildTables();
+        Vector<TableDefinition> tables = buildTables();
         SchemaManager schemaManager = new SchemaManager(session);
-        for (Enumeration dropForeignKeyEnum = tables.elements();
+        for (Enumeration<TableDefinition> dropForeignKeyEnum = tables.elements();
                  dropForeignKeyEnum.hasMoreElements();) {
-            TableDefinition table = (TableDefinition)dropForeignKeyEnum.nextElement();
+            TableDefinition table = dropForeignKeyEnum.nextElement();
             try {
                 schemaManager.dropConstraints(table);
             } catch (DatabaseException exception) {
                 // Ignore
             }
         }
-        for (Enumeration replaceEnum = tables.elements(); replaceEnum.hasMoreElements();) {
-            TableDefinition table = (TableDefinition)replaceEnum.nextElement();
+        for (Enumeration<TableDefinition> replaceEnum = tables.elements(); replaceEnum.hasMoreElements();) {
+            TableDefinition table = replaceEnum.nextElement();
             schemaManager.replaceObject(table);
         }
-        for (Enumeration createForeignKeyEnum = tables.elements();
+        for (Enumeration<TableDefinition> createForeignKeyEnum = tables.elements();
                  createForeignKeyEnum.hasMoreElements();) {
-            TableDefinition table = (TableDefinition)createForeignKeyEnum.nextElement();
+            TableDefinition table = createForeignKeyEnum.nextElement();
             schemaManager.createConstraints(table);
         }
     }

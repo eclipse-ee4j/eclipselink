@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework.ui;
 
-import java.util.*;
-import java.awt.event.*;
-import org.eclipse.persistence.logging.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.testing.framework.LoadBuildSystem;
+import org.eclipse.persistence.testing.framework.TestResult;
+import org.eclipse.persistence.testing.framework.TestResultsSummary;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowListener;
+import java.util.Calendar;
 
 /**
  * UI frame for the load query tool.
@@ -42,12 +48,12 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
     private javax.swing.JPanel ivjJPanel3 = null;
     private javax.swing.JCheckBox ivjTesterCheckBox1 = null;
     private javax.swing.JCheckBox ivjWarningCheckBox1 = null;
-    private javax.swing.JComboBox ivjMonth1 = null;
-    private javax.swing.JComboBox ivjMonth2 = null;
-    private javax.swing.JComboBox ivjMonth3 = null;
-    private javax.swing.JComboBox ivjYear1 = null;
-    private javax.swing.JComboBox ivjYear2 = null;
-    private javax.swing.JComboBox ivjYear3 = null;
+    private javax.swing.JComboBox<String> ivjMonth1 = null;
+    private javax.swing.JComboBox<String> ivjMonth2 = null;
+    private javax.swing.JComboBox<String> ivjMonth3 = null;
+    private javax.swing.JComboBox<String> ivjYear1 = null;
+    private javax.swing.JComboBox<String> ivjYear2 = null;
+    private javax.swing.JComboBox<String> ivjYear3 = null;
     private javax.swing.JTextField ivjTesterNameText = null;
     private javax.swing.JLabel ivjJLabel1111 = null;
     private javax.swing.JCheckBox ivjLogMessageCheckBox = null;
@@ -780,10 +786,10 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    private javax.swing.JComboBox getMonth1() {
+    private javax.swing.JComboBox<String> getMonth1() {
         if (ivjMonth1 == null) {
             try {
-                ivjMonth1 = new javax.swing.JComboBox();
+                ivjMonth1 = new javax.swing.JComboBox<>();
                 ivjMonth1.setName("Month1");
                 ivjMonth1.setBackground(java.awt.Color.white);
                 ivjMonth1.setBounds(110, 43, 80, 21);
@@ -805,10 +811,10 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    private javax.swing.JComboBox getMonth2() {
+    private javax.swing.JComboBox<String> getMonth2() {
         if (ivjMonth2 == null) {
             try {
-                ivjMonth2 = new javax.swing.JComboBox();
+                ivjMonth2 = new javax.swing.JComboBox<>();
                 ivjMonth2.setName("Month2");
                 ivjMonth2.setBackground(java.awt.Color.white);
                 ivjMonth2.setBounds(205, 43, 80, 21);
@@ -830,10 +836,10 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    private javax.swing.JComboBox getMonth3() {
+    private javax.swing.JComboBox<String> getMonth3() {
         if (ivjMonth3 == null) {
             try {
-                ivjMonth3 = new javax.swing.JComboBox();
+                ivjMonth3 = new javax.swing.JComboBox<>();
                 ivjMonth3.setName("Month3");
                 ivjMonth3.setBackground(java.awt.Color.white);
                 ivjMonth3.setBounds(396, 43, 80, 21);
@@ -948,10 +954,10 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    private javax.swing.JComboBox getYear1() {
+    private javax.swing.JComboBox<String> getYear1() {
         if (ivjYear1 == null) {
             try {
-                ivjYear1 = new javax.swing.JComboBox();
+                ivjYear1 = new javax.swing.JComboBox<>();
                 ivjYear1.setName("Year1");
                 ivjYear1.setOpaque(true);
                 ivjYear1.setBackground(java.awt.Color.white);
@@ -974,10 +980,10 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    private javax.swing.JComboBox getYear2() {
+    private javax.swing.JComboBox<String> getYear2() {
         if (ivjYear2 == null) {
             try {
-                ivjYear2 = new javax.swing.JComboBox();
+                ivjYear2 = new javax.swing.JComboBox<>();
                 ivjYear2.setName("Year2");
                 ivjYear2.setBackground(java.awt.Color.white);
                 ivjYear2.setBounds(206, 88, 80, 21);
@@ -999,10 +1005,10 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    private javax.swing.JComboBox getYear3() {
+    private javax.swing.JComboBox<String> getYear3() {
         if (ivjYear3 == null) {
             try {
-                ivjYear3 = new javax.swing.JComboBox();
+                ivjYear3 = new javax.swing.JComboBox<>();
                 ivjYear3.setName("Year3");
                 ivjYear3.setBackground(java.awt.Color.white);
                 ivjYear3.setBounds(396, 88, 80, 21);
@@ -1031,7 +1037,7 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    private void initConnections() throws java.lang.Exception {
+    private void initConnections() {
         // user code begin {1}
         // user code end
         getQueryButton().addActionListener(this);
@@ -1180,10 +1186,10 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
                 getLoadBuildDisplayPanel1().setSession(loadBuildSystem.getSession());
             }
             if (getTesterCheckBox1().isSelected()) {
-                java.util.Vector loadBuilds = loadBuildSystem.readAllTestModelSummaries(buildExpression());
+                java.util.Vector<TestResultsSummary> loadBuilds = loadBuildSystem.readAllTestModelSummaries(buildExpression());
                 getLoadBuildDisplayPanel1().poppulateLoadBuildTable(loadBuilds);
             } else {
-                java.util.Vector loadBuilds = loadBuildSystem.readAllTests(buildTestExpression());
+                java.util.Vector<TestResult> loadBuilds = loadBuildSystem.readAllTests(buildTestExpression());
                 getLoadBuildDisplayPanel1().poppulateTestResultTable(loadBuilds);
             }
         } catch (Exception e) {
@@ -1238,7 +1244,6 @@ public class LoadBuildBrowserFrame extends javax.swing.JFrame implements ActionL
             getYear1().setEnabled(false);
             getMonth2().setEnabled(false);
             getYear2().setEnabled(false);
-            return;
         } else if (getInCheckBox().isEnabled()) {
             getMonth3().setEnabled(false);
             getYear3().setEnabled(false);

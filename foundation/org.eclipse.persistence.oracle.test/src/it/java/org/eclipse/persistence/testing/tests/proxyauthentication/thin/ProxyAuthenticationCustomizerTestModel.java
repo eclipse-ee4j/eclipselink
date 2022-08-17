@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,13 @@
 //     - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
 package org.eclipse.persistence.testing.tests.proxyauthentication.thin;
 
-import java.util.Map;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.framework.oracle.ProxyAuthenticationUsersAndProperties;
+
+import java.util.Map;
 
 /**
  * TestModel for Proxy Authentication using Oracle thin driver (10.1.0.2 or later).
@@ -55,9 +59,9 @@ public class ProxyAuthenticationCustomizerTestModel extends TestModel {
 
     @Override
     public void addTests() {
-        Map proxyProperties = ProxyAuthenticationUsersAndProperties.proxyProperties;
-        Map proxyProperties2 = ProxyAuthenticationUsersAndProperties.proxyProperties2;
-        Map cancelProxyProperties = ProxyAuthenticationUsersAndProperties.cancelProxyProperties;
+        Map<String, Object> proxyProperties = ProxyAuthenticationUsersAndProperties.proxyProperties;
+        Map<String, Object> proxyProperties2 = ProxyAuthenticationUsersAndProperties.proxyProperties2;
+        Map<String, Object> cancelProxyProperties = ProxyAuthenticationUsersAndProperties.cancelProxyProperties;
 
         // DatabaseSession tests - proxy properties set on the DatabaseSession
         // useExternalConnectionPooling == false, databaseSessionProxyProperties

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,34 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.history;
 
-import java.util.*;
-
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.history.*;
-import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.broker.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.sessions.server.*;
+import org.eclipse.persistence.history.HistoryPolicy;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.history.HistoricalSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
+import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableCreator;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <b>Purpose:</b>One stop shopping for all your history needs.

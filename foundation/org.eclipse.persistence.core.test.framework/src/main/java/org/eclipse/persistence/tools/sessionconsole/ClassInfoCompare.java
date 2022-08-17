@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,9 +19,9 @@ import java.util.Comparator;
 /**
  * Use to sort vectors of descriptors.
  */
-public class ClassInfoCompare implements Comparator {
+public class ClassInfoCompare implements Comparator<ClassInfo> {
     @Override
-    public int compare(Object arg1, Object arg2) {
-        return ((ClassInfo)arg1).descriptor.getJavaClass().getName().compareTo(((ClassInfo)arg2).descriptor.getJavaClass().getName());
+    public int compare(ClassInfo arg1, ClassInfo arg2) {
+        return arg1.descriptor.getJavaClass().getName().compareTo(arg2.descriptor.getJavaClass().getName());
     }
 }

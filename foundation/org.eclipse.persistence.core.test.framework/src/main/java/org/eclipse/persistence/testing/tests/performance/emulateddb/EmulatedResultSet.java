@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,26 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
-import java.sql.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+
 import java.io.InputStream;
 import java.io.Reader;
-import java.math.*;
-import java.util.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
+import java.math.BigDecimal;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.DatabaseMetaData;
+import java.sql.NClob;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.RowId;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Statement;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Emulated database result set.
@@ -29,7 +43,7 @@ public class EmulatedResultSet implements ResultSet {
     protected List<DatabaseRecord> rows;
     protected int index;
 
-    public EmulatedResultSet(List rows) {
+    public EmulatedResultSet(List<DatabaseRecord> rows) {
         this.rows = rows;
         this.index = 0;
     }
@@ -37,7 +51,7 @@ public class EmulatedResultSet implements ResultSet {
     /**
      * Return the database records.
      */
-    public List getRows() {
+    public List<DatabaseRecord> getRows() {
         return rows;
     }
 

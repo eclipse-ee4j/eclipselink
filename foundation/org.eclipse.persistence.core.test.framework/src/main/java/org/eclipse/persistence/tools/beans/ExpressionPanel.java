@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.beans;
 
-import java.util.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 import javax.swing.*;
-
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+import java.util.Enumeration;
 
 /**
  * Reusable visual component for editing expressions.
@@ -29,13 +30,13 @@ public class ExpressionPanel extends JPanel {
     protected Expression expression;
     protected ClassDescriptor descriptor;
     private JButton ivjAndButton = null;
-    private JComboBox ivjAttributeCombo = null;
+    private JComboBox<String> ivjAttributeCombo = null;
     private JLabel ivjAttributeLabel = null;
     private JButton ivjClearButton = null;
     private JTree ivjExpressionTree = null;
     private JScrollPane ivjExpressionTreeScroll = null;
     private JButton ivjNotBuuton = null;
-    private JComboBox ivjOperatorCombo = null;
+    private JComboBox<String> ivjOperatorCombo = null;
     private JLabel ivjOperatorLabel = null;
     private JButton ivjOrButton = null;
     private JToolBar ivjToolBar = null;
@@ -247,10 +248,10 @@ public class ExpressionPanel extends JPanel {
     private
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    javax.swing.JComboBox getAttributeCombo() {
+    javax.swing.JComboBox<String> getAttributeCombo() {
         if (ivjAttributeCombo == null) {
             try {
-                ivjAttributeCombo = new javax.swing.JComboBox();
+                ivjAttributeCombo = new javax.swing.JComboBox<>();
                 ivjAttributeCombo.setName("AttributeCombo");
                 ivjAttributeCombo.setBackground(java.awt.SystemColor.window);
                 // user code begin {1}
@@ -402,10 +403,10 @@ public class ExpressionPanel extends JPanel {
     private
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    javax.swing.JComboBox getOperatorCombo() {
+    javax.swing.JComboBox<String> getOperatorCombo() {
         if (ivjOperatorCombo == null) {
             try {
-                ivjOperatorCombo = new javax.swing.JComboBox();
+                ivjOperatorCombo = new javax.swing.JComboBox<>();
                 ivjOperatorCombo.setName("OperatorCombo");
                 ivjOperatorCombo.setBackground(java.awt.SystemColor.window);
                 // user code begin {1}
@@ -558,7 +559,7 @@ public class ExpressionPanel extends JPanel {
     private
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void initConnections() throws java.lang.Exception {
+    void initConnections() {
         // user code begin {1}
         // user code end
         getOrButton().addActionListener(ivjEventHandler);

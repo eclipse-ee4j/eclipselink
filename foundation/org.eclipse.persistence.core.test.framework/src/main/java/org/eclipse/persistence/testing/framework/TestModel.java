@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
+import junit.framework.Test;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.testing.framework.TestExecutor;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Enumeration;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p><b>Purpose</b>: Test model is a collection of test suites and/or sub test models. When a
@@ -36,13 +37,13 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
 public class TestModel extends TestCollection {
 
     /** Configurations that must be set before this model is run */
-    private Vector requiredSystems;
+    private Vector<TestSystem> requiredSystems;
 
     /** The model will force these Configurations to be set even if they are set before */
-    private Vector forcedRequiredSystems;
+    private Vector<TestSystem> forcedRequiredSystems;
 
     /** Used to store tests added when the model is built. */
-    private Vector originalTests;
+    private Vector<Test> originalTests;
 
     /** Keep track of setup state. */
     private boolean isSetup;
@@ -93,10 +94,10 @@ public class TestModel extends TestCollection {
     }
 
     public TestModel() {
-        this.requiredSystems = new Vector();
-        this.forcedRequiredSystems = new Vector();
+        this.requiredSystems = new Vector<>();
+        this.forcedRequiredSystems = new Vector<>();
         this.isSetup = false;
-        this.originalTests = new Vector();
+        this.originalTests = new Vector<>();
     }
 
     /**
@@ -152,10 +153,11 @@ public class TestModel extends TestCollection {
     /**
      * Build the required systems, but ensure that the variable is not modified.
      */
-    public Vector buildForcedRequiredSystems() {
-        Vector constructedSystems = (Vector)getForcedRequiredSystems().clone();
+    public Vector<TestSystem> buildForcedRequiredSystems() {
+        @SuppressWarnings({"unchecked"})
+        Vector<TestSystem> constructedSystems = (Vector<TestSystem>)getForcedRequiredSystems().clone();
         addForcedRequiredSystems();
-        Vector allSystems = getForcedRequiredSystems();
+        Vector<TestSystem> allSystems = getForcedRequiredSystems();
         setForcedRequiredSystems(constructedSystems);
         return allSystems;
     }
@@ -163,10 +165,11 @@ public class TestModel extends TestCollection {
     /**
      * Build the required systems, but ensure that the variable is not modified.
      */
-    public Vector buildRequiredSystems() {
-        Vector constructedSystems = (Vector)getRequiredSystems().clone();
+    public Vector<TestSystem> buildRequiredSystems() {
+        @SuppressWarnings({"unchecked"})
+        Vector<TestSystem> constructedSystems = (Vector<TestSystem>)getRequiredSystems().clone();
         addRequiredSystems();
-        Vector allSystems = getRequiredSystems();
+        Vector<TestSystem> allSystems = getRequiredSystems();
         setRequiredSystems(constructedSystems);
         return allSystems;
     }
@@ -175,10 +178,10 @@ public class TestModel extends TestCollection {
      * Goes through each systems and configures them.
      */
     private void configure() throws Exception {
-        Vector systems = buildRequiredSystems();
+        Vector<TestSystem> systems = buildRequiredSystems();
 
-        for (Enumeration enumtr = systems.elements(); enumtr.hasMoreElements();) {
-            TestSystem system = (TestSystem)enumtr.nextElement();
+        for (Enumeration<TestSystem> enumtr = systems.elements(); enumtr.hasMoreElements();) {
+            TestSystem system = enumtr.nextElement();
 
             // To improve test consistency always force systems to be reset.
             if (shouldResetSystemAfterEachTestModel()) {
@@ -190,8 +193,8 @@ public class TestModel extends TestCollection {
 
         systems = buildForcedRequiredSystems();
 
-        for (Enumeration enumtr = systems.elements(); enumtr.hasMoreElements();) {
-            TestSystem system = (TestSystem)enumtr.nextElement();
+        for (Enumeration<TestSystem> enumtr = systems.elements(); enumtr.hasMoreElements();) {
+            TestSystem system = enumtr.nextElement();
             getExecutor().forceConfigureSystem(system);
         }
     }
@@ -206,10 +209,10 @@ public class TestModel extends TestCollection {
         long startTime = System.nanoTime();
         try {
             setupEntity();
-            setFinishedTests(new Vector());
+            setFinishedTests(new Vector<>());
             try {
-                for (Enumeration tests = getTests().elements(); tests.hasMoreElements();) {
-                    junit.framework.Test test = (junit.framework.Test)tests.nextElement();
+                for (Enumeration<Test> tests = getTests().elements(); tests.hasMoreElements();) {
+                    junit.framework.Test test = tests.nextElement();
                     if ((TestExecutor.getDefaultJUnitTestResult() != null) && TestExecutor.getDefaultJUnitTestResult().shouldStop()) {
                             break;
                     }
@@ -233,21 +236,21 @@ public class TestModel extends TestCollection {
     /**
      * Return all the required systems that need to be configured even if they are already configured.
      */
-    public Vector getForcedRequiredSystems() {
+    public Vector<TestSystem> getForcedRequiredSystems() {
         return forcedRequiredSystems;
     }
 
     /**
      * Return test that existed before setup.
      */
-    protected Vector getOriginalTests() {
+    protected Vector<Test> getOriginalTests() {
         return originalTests;
     }
 
     /**
      * Return all the required systems that need to be configured if they are not already configured.
      */
-    public Vector getRequiredSystems() {
+    public Vector<TestSystem> getRequiredSystems() {
         return requiredSystems;
     }
 
@@ -316,7 +319,7 @@ public class TestModel extends TestCollection {
         // To improve test consistency cleanup the session and executor better.
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         if (shouldResetSystemAfterEachTestModel()) {
-            getExecutor().setConfiguredSystems(new Vector());
+            getExecutor().setConfiguredSystems(new Vector<>());
 
             // Logout and clean/reset the session in case test model failed ungracefully.
             if (getSession().isDatabaseSession()) {
@@ -366,7 +369,7 @@ public class TestModel extends TestCollection {
             }
             ConversionManager.setDefaultManager(null);
             getSession().getDatasourceLogin().getDatasourcePlatform().setConversionManager(null);
-            SessionManager.getManager().setSessions(new ConcurrentHashMap<String, Session>());
+            SessionManager.getManager().setSessions(new ConcurrentHashMap<>());
             getDatabaseSession().login();
         }
         setIsSetup(false);
@@ -375,7 +378,7 @@ public class TestModel extends TestCollection {
     /**
      * Set all the required systems that need to be configured even if they are already configured.
      */
-    public void setForcedRequiredSystems(Vector systems) {
+    public void setForcedRequiredSystems(Vector<TestSystem> systems) {
         this.forcedRequiredSystems = systems;
     }
 
@@ -386,14 +389,14 @@ public class TestModel extends TestCollection {
     /**
      * Set the test that existed before setup.
      */
-    protected void setOriginalTests(Vector originalTests) {
+    protected void setOriginalTests(Vector<Test> originalTests) {
         this.originalTests = originalTests;
     }
 
     /**
      * Set all the required sytems that need to be configured if they are not already configured.
      */
-    public void setRequiredSystems(Vector systems) {
+    public void setRequiredSystems(Vector<TestSystem> systems) {
         this.requiredSystems = systems;
     }
 
@@ -409,6 +412,7 @@ public class TestModel extends TestCollection {
      * To set up the model also look at resetEntity
      */
     @Override
+    @SuppressWarnings({"unchecked"})
     public void setupEntity() throws Throwable {
         if (isSetup()) {
             return;
@@ -422,7 +426,7 @@ public class TestModel extends TestCollection {
             this.sessionLog = (SessionLog)getSession().getSessionLog().clone();
         }
         try {
-            setOriginalTests((Vector)getTests().clone());
+            setOriginalTests((Vector<Test>)getTests().clone());
             configure();
             setup();
             if (isSRG) {
@@ -475,7 +479,7 @@ public class TestModel extends TestCollection {
      * If not setup, return the finished tests.
      */
     @Override
-    public Enumeration tests() {
+    public Enumeration<Test> tests() {
         if (isSetup() || (!getTests().isEmpty())) {
             return super.tests();
         }
@@ -491,6 +495,6 @@ public class TestModel extends TestCollection {
         if (isSetup() || (!getTests().isEmpty())) {
             return super.testAt(index);
         }
-        return (junit.framework.Test)getFinishedTests().elementAt(index);
+        return getFinishedTests().elementAt(index);
     }
 }

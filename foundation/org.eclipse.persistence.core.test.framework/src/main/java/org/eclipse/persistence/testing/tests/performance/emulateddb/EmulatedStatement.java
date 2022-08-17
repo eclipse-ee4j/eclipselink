@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,32 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
-import java.sql.*;
-import java.io.InputStream;
-import java.io.Reader;
-import java.math.*;
-import java.util.*;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.sql.Array;
+import java.sql.BatchUpdateException;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.NClob;
+import java.sql.ParameterMetaData;
+import java.sql.PreparedStatement;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.RowId;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Emulated database driver.
@@ -29,12 +47,12 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class EmulatedStatement implements PreparedStatement {
     protected EmulatedConnection connection;
     protected String sql;
-    protected List parameters;
+    protected List<Object> parameters;
     protected int batch;
 
     public EmulatedStatement(EmulatedConnection connection) {
         this.connection = connection;
-        this.parameters = new ArrayList();
+        this.parameters = new ArrayList<>();
     }
 
     public EmulatedStatement(String sql, EmulatedConnection connection) {
@@ -45,8 +63,8 @@ public class EmulatedStatement implements PreparedStatement {
     /**
      * If the rows have not be fetched, fetch them from the database.
      */
-    protected List fetchRows() throws SQLException {
-        List rows = this.connection.getRows(this.sql);
+    protected List<DatabaseRecord> fetchRows() throws SQLException {
+        List<DatabaseRecord> rows = this.connection.getRows(this.sql);
         if (rows == null) {
             Connection realConnection = this.connection.getRealConnection();
             PreparedStatement statement = realConnection.prepareStatement(this.sql);
@@ -54,7 +72,7 @@ public class EmulatedStatement implements PreparedStatement {
                 statement.setObject(index+1, this.parameters.get(index));
             }
             ResultSet result = statement.executeQuery();
-            rows = new ArrayList();
+            rows = new ArrayList<>();
             ResultSetMetaData metaData = result.getMetaData();
             while (result.next()) {
                 DatabaseRecord row = new DatabaseRecord();
@@ -1289,7 +1307,7 @@ public class EmulatedStatement implements PreparedStatement {
      */
     @Override
     public int[] executeBatch() throws SQLException {
-        int result[] = new int[this.batch];
+        int[] result = new int[this.batch];
         for (int index = 0; index < this.batch; index++) {
             result[index] = 1;
         }

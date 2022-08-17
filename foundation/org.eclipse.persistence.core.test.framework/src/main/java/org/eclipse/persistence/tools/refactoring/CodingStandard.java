@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,12 @@
 package org.eclipse.persistence.tools.refactoring;
 
 // no blank line here - first specify Java imports:
-import java.lang.reflect.*;
-// blank line - next specify all the TopLink imports:
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.exceptions.*;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.sessions.Session;
+
+import java.lang.reflect.InvocationTargetException;
 // another blank line
 /**
  * <p><b>Purpose</b>: Describe the purpose of the Class.

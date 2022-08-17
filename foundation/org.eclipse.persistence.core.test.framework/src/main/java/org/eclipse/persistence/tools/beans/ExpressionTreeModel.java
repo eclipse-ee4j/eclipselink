@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,12 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.tools.beans;
 
-import javax.swing.event.*;
-import javax.swing.tree.*;
+import org.eclipse.persistence.internal.expressions.CompoundExpression;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
 
-import org.eclipse.persistence.internal.expressions.*;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 /**
  * Used for the tree view within expression editor.

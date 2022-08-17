@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,36 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework.ui;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.tree.*;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.DefaultConnector;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.testing.framework.LoadBuildSystem;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestCollection;
+import org.eclipse.persistence.testing.framework.TestEntity;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestExecutor;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestResultsSummary;
+import org.eclipse.persistence.testing.framework.TestSystem;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.sessionconsole.SessionConsolePanel;
+
+import javax.swing.*;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Main panel for the testing browser.
@@ -35,7 +52,7 @@ import org.eclipse.persistence.tools.sessionconsole.SessionConsolePanel;
 public class TestingBrowserPanel extends JPanel implements ItemListener, junit.framework.TestListener, SynchronizedTester {
     protected SynchronizedTestExecutor executionThread;
     protected TestExecutor executor;
-    protected Vector models;
+    protected Vector<TestModel> models;
     protected junit.framework.Test currentRun;
     private JButton theKillButton = null;
     private JButton theResetButton = null;
@@ -51,7 +68,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     private JCheckBox theHandleErrorsCheckBox = null;
     private JCheckBox runFastCheckBox = null;
     private JCheckBox logErrorsOnlyCheckBox = null;
-    private JComboBox theLoginChoice = null;
+    private JComboBox<String> theLoginChoice = null;
     private JLabel theQuickLoginLabel = null;
     private JButton theloadBuildButton = null;
     private JLabel theCurrentTestLabel = null;
@@ -302,10 +319,10 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     private
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    JComboBox getLoginChoice() {
+    JComboBox<String> getLoginChoice() {
         if (theLoginChoice == null) {
             try {
-                theLoginChoice = new JComboBox();
+                theLoginChoice = new JComboBox<>();
                 theLoginChoice.setName("LoginChoice");
                 theLoginChoice.setBackground(SystemColor.window);
 
@@ -323,7 +340,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     /**
      * Return the loaded models.
      */
-    public Vector getModels() {
+    public Vector<TestModel> getModels() {
         return models;
     }
 
@@ -844,11 +861,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
      * Toggle the run fast/recreate system option.
      */
     public void runFastChanged() {
-        if (getRunFastCheckBox().isSelected()) {
-            SchemaManager.FAST_TABLE_CREATOR = true;
-        } else {
-            SchemaManager.FAST_TABLE_CREATOR = false;
-        }
+        SchemaManager.FAST_TABLE_CREATOR = getRunFastCheckBox().isSelected();
         //TestModel.setShouldResetSystemAfterEachTestModel(!getRunFastCheckBox().isSelected());
     }
 
@@ -876,7 +889,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     /**
      * Initializes connections
      */
-    private void initConnections() throws Exception {
+    private void initConnections() {
         getRunTestButton().addActionListener(theEventHandler);
         getSetupButton().addActionListener(theEventHandler);
         getStopButton().addActionListener(theEventHandler);
@@ -1096,11 +1109,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
             getResetButton().setEnabled(false);
             getRunTestButton().setEnabled(false);
         }
-        if (isLoggedIn) {
-            getLoginChoice().setEnabled(false);
-        } else {
-            getLoginChoice().setEnabled(true);
-        }
+        getLoginChoice().setEnabled(!isLoggedIn);
     }
 
     /**
@@ -1184,7 +1193,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
 
         try {
             TestEntity test = getSelectedEntity();
-            if ((test == null) || (!(test instanceof TestCollection))) {
+            if ((!(test instanceof TestCollection))) {
                 return;
             }
             test.resetEntity();
@@ -1273,7 +1282,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
     /**
      * Return the loaded models.
      */
-    public void setModels(Vector models) {
+    public void setModels(Vector<TestModel> models) {
         this.models = models;
     }
 
@@ -1303,18 +1312,17 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
      * Reset the models from code.
      */
     public void setupDefaultModels() {
-        Vector allModels = new Vector();
-
-        Class<?> testModelClass;
+        Vector<TestModel> allModels = new Vector<>();
 
         // Look for standard tests.
         try {
-            testModelClass = Class.forName("org.eclipse.persistence.testing.tests.TestRunModel");
-            java.lang.reflect.Method buildTestsMethod = testModelClass.getMethod("buildAllModels");
-            Vector result = (Vector)buildTestsMethod.invoke(null, new Object[0]);
+            Class<?> testModelClass = Class.forName("org.eclipse.persistence.testing.tests.TestRunModel");
+            Method buildTestsMethod = testModelClass.getMethod("buildAllModels");
+            @SuppressWarnings({"unchecked"})
+            Vector<TestModel> result = (Vector<TestModel>)buildTestsMethod.invoke(null, new Object[0]);
             Helper.addAllToVector(allModels, result);
         } catch (Exception exception) {
-            System.out.println("Problems loading BasicTestModel " + exception.toString());
+            System.out.println("Problems loading BasicTestModel " + exception);
             exception.printStackTrace();
         }
 
@@ -1328,7 +1336,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, junit.f
         showBusyCursor();
 
         TestEntity entity = getSelectedEntity();
-        if ((entity == null) || (!(entity instanceof TestCollection))) {
+        if ((!(entity instanceof TestCollection))) {
             showNormalCursor();
             return;
         }

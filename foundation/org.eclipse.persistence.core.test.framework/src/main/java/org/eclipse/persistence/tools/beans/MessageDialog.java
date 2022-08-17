@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -306,7 +306,7 @@ public class MessageDialog extends JDialog {
     private
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void initConnections() throws java.lang.Exception {
+    void initConnections() {
         // user code begin {1}
         // user code end
         getOKButton().addActionListener(ivjEventHandler);

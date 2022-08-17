@@ -14,12 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.ref.WeakReference;
-
 import jakarta.persistence.EntityManager;
-
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -27,6 +22,10 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.ref.WeakReference;
 
 /**
  * <p><b>Purpose</b>:
@@ -270,7 +269,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Create a default executor and run the test.
      */
     @Override
-    public void runBare() throws Throwable {
+    public void runBare() {
         TestExecutor executor = getExecutor();
         if (executor == null) {
             executor = TestExecutor.getDefaultExecutor();
@@ -727,7 +726,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Force a garbage collection.
      */
     public void forceGC() {
-        WeakReference ref = new WeakReference(new Object());
+        WeakReference<Object> ref = new WeakReference<>(new Object());
         for (int loops = 0; loops < 10; loops++) {
             //List junk = new ArrayList (10);
             for (int i = 0; i < 10; i++) {

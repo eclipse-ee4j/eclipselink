@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework.naming;
 
-import java.util.Hashtable;
 import javax.naming.Context;
-import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
+import java.util.Hashtable;
 
 /**
  * A simple InitialContextFactory implementation.
@@ -28,7 +27,7 @@ public class InitialContextFactoryImpl implements InitialContextFactory {
     }
 
     @Override
-    public Context getInitialContext(Hashtable environment) throws NamingException {
+    public Context getInitialContext(Hashtable<?, ?> environment) {
         return new InitialContextImpl(environment);
     }
 }

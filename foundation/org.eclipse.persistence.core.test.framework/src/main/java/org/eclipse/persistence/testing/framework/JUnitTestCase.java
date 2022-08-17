@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,8 @@ package org.eclipse.persistence.testing.framework;
 
 import junit.framework.Test;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -49,7 +50,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
         } catch (InvocationTargetException exception) {
             throw exception.getTargetException();
         } catch (Exception exception) {
-            throw new TestException("Test Case: " + this.testCase.getClass() + " failed to setup: " + this.testCase.getName() + " with:" + exception.toString(), exception);
+            throw new TestException("Test Case: " + this.testCase.getClass() + " failed to setup: " + this.testCase.getName() + " with:" + exception, exception);
         }
     }
 
@@ -65,7 +66,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
         } catch (InvocationTargetException exception) {
             throw exception.getTargetException();
         } catch (Exception exception) {
-            throw new TestException("Test Case: " + this.testCase.getClass() + " failed to reset: " + this.testCase.getName() + " with:" + exception.toString(), exception);
+            throw new TestException("Test Case: " + this.testCase.getClass() + " failed to reset: " + this.testCase.getName() + " with:" + exception, exception);
         }
     }
 
@@ -86,7 +87,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
         } catch (InvocationTargetException exception) {
             throw exception.getTargetException();
         } catch (Exception exception) {
-            throw new TestException("Test Case: " + this.testCase.getClass() + " failed to run: " + this.testCase.getName() + " with:" + exception.toString(), exception);
+            throw new TestException("Test Case: " + this.testCase.getClass() + " failed to run: " + this.testCase.getName() + " with:" + exception, exception);
         }
     }
 
@@ -105,7 +106,7 @@ public class JUnitTestCase extends AutoVerifyTestCase {
      *   void testC() {...
      * }
      */
-    public static Vector suite(Class<?> junitTestCaseClass) {
+    public static Vector<JUnitTestCase> suite(Class<?> junitTestCaseClass) {
         if (!(junit.framework.TestCase.class.isAssignableFrom(junitTestCaseClass))) {
             throw new TestProblemException("Class " + junitTestCaseClass + " is not derived from junit.framework.TestCase");
         }
@@ -123,9 +124,9 @@ public class JUnitTestCase extends AutoVerifyTestCase {
         } catch (InvocationTargetException invocationEx) {
             throw new TestProblemException("suite method failed on class " + junitTestCaseClass.getName() + " with InvocationTargetException, targetException: " + invocationEx.getTargetException().toString(), invocationEx.getTargetException());
         } catch (Exception exception) {
-            throw new TestProblemException("suite method failed on class " + junitTestCaseClass.getName() + " with: " + exception.toString(), exception);
+            throw new TestProblemException("suite method failed on class " + junitTestCaseClass.getName() + " with: " + exception, exception);
         }
-        Vector testsOut = new Vector(suite.countTestCases());
+        Vector<JUnitTestCase> testsOut = new Vector<>(suite.countTestCases());
         Enumeration<Test> tests = suite.tests();
         while (tests.hasMoreElements()) {
             junit.framework.TestCase testCaseToAdd = (junit.framework.TestCase)tests.nextElement();

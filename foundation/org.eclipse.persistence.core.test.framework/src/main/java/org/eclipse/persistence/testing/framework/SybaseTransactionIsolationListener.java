@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,17 +18,16 @@
 //        to org.eclipse.persistence.testing.framework
 package org.eclipse.persistence.testing.framework;
 
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
+import org.eclipse.persistence.sessions.server.ServerSession;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.sessions.SessionEvent;
-import org.eclipse.persistence.sessions.SessionEventAdapter;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.testing.framework.TestProblemException;
 
 /*
  * According to http://manuals.sybase.com/onlinebooks/group-as/asg1250e/sqlug/@Generic__BookTextView/53713;pt=52735/*
@@ -64,7 +63,7 @@ import org.eclipse.persistence.testing.framework.TestProblemException;
  *
  */
 public class SybaseTransactionIsolationListener extends SessionEventAdapter {
-    HashMap<Connection, Integer> connections = new HashMap<Connection, Integer>();
+    HashMap<Connection, Integer> connections = new HashMap<>();
     public static int requiredVersion = 15;
     // verify that it's version 15 or higher - this doesn't work with version 12.5
     public static boolean isDatabaseVersionSupported(ServerSession serverSession) {
@@ -87,7 +86,7 @@ public class SybaseTransactionIsolationListener extends SessionEventAdapter {
         Statement stmt1 = null;
         Statement stmt2 = null;
         ResultSet result = null;
-        Integer isolationLevel;
+        int isolationLevel;
         try {
             stmt1 = conn.createStatement();
             result = stmt1.executeQuery("select @@isolation");

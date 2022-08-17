@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,10 +15,6 @@
 //     July 13, 2011 - Andrei Ilitchev (Oracle) - initial API and implementation
 package org.eclipse.persistence.testing.framework;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -26,6 +22,10 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionEventManager;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: Used to test handling of session events.
@@ -152,8 +152,8 @@ public class SessionEventTracker implements SessionEventListener {
         }
     }
 
-    protected static List<Handling> handlings = new ArrayList();
-    protected static List<Handling> errors = new ArrayList();
+    protected static List<Handling> handlings = new ArrayList<>();
+    protected static List<Handling> errors = new ArrayList<>();
 
     protected String name = "";
 
@@ -190,8 +190,8 @@ public class SessionEventTracker implements SessionEventListener {
     }
 
     public static void clearLog() {
-        handlings = new ArrayList();
-        errors = new ArrayList();
+        handlings = new ArrayList<>();
+        errors = new ArrayList<>();
     }
 
     public static void allEvents() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This test compares the concurrency of an operation defined run().
@@ -26,7 +27,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
     public static int DEFAULT_THREADS = 32;
     protected int maxThreads;
     protected Exception caughtException;
-    protected List workerThreads;
+    protected List<WorkerThread> workerThreads;
 
     public ConcurrentPerformanceRegressionTest() {
         this.maxThreads = DEFAULT_THREADS;
@@ -79,7 +80,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
         caughtException = null;
         // Spawn worker threads.
         for (int index = 0; index < (numberOfThreads - 1); index++) {
-            WorkerThread thread = (WorkerThread)getWorkerThreads().get(index);
+            WorkerThread thread = getWorkerThreads().get(index);
             thread.resumeExecution();
         }
     }
@@ -92,7 +93,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
         // Suspend the worker threads,
         // suspend all no matter what number of threads was to even out performance.
         for (int index = 0; index < getMaxThreads(); index++) {
-            WorkerThread thread = (WorkerThread)getWorkerThreads().get(index);
+            WorkerThread thread = getWorkerThreads().get(index);
             thread.suspendExecution();
         }
         // Let workers finish.
@@ -100,12 +101,12 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
         // Wait for workers to finish,
         // wait all no matter what number of threads was to even out performance.
         for (int index = 0; index < getMaxThreads(); index++) {
-            WorkerThread thread = (WorkerThread)getWorkerThreads().get(index);
+            WorkerThread thread = getWorkerThreads().get(index);
             thread.joinExecution();
         }
     }
 
-    public List getWorkerThreads() {
+    public List<WorkerThread> getWorkerThreads() {
         return workerThreads;
     }
 
@@ -114,7 +115,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
      */
     @Override
     public void setup() {
-        this.workerThreads = new ArrayList(getMaxThreads());
+        this.workerThreads = new ArrayList<>(getMaxThreads());
         for (int index = 0; index < getMaxThreads(); index++) {
             WorkerThread thread = new WorkerThread();
             this.workerThreads.add(thread);
@@ -147,7 +148,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
     public void reset() {
         // Stop the worker threads.
         for (int index = 0; index < getWorkerThreads().size(); index++) {
-            WorkerThread thread = (WorkerThread)getWorkerThreads().get(index);
+            WorkerThread thread = getWorkerThreads().get(index);
             thread.stopExecution();
         }
         // Let workers finish.

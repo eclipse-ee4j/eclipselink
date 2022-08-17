@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.util.*;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.UnitOfWork;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Provide write/read load builds functionalities<p>
@@ -162,17 +168,18 @@ public class LoadBuildSystem {
         session.logout();
     }
 
+    @SuppressWarnings({"unchecked"})
     public void populateSampleData() {
         ReadAllQuery query = new ReadAllQuery(LoadBuildSummary.class);
         query.addBatchReadAttribute("results");
         query.addBatchReadAttribute("summaries");
         query.addBatchReadAttribute(query.getExpressionBuilder().get("summaries").get("results"));
-        List list = (List)session.executeQuery(query);
-        Iterator summaries = list.iterator();
+        List<LoadBuildSummary> list = (List<LoadBuildSummary>)session.executeQuery(query);
+        Iterator<LoadBuildSummary> summaries = list.iterator();
         System.out.println("Size: " + list.size());
         UnitOfWork uow = session.acquireUnitOfWork();
         while (summaries.hasNext()) {
-            LoadBuildSummary summary = (LoadBuildSummary)summaries.next();
+            LoadBuildSummary summary = summaries.next();
             for (Iterator<TestResultsSummary> iterator = summary.getSummaries().iterator(); iterator.hasNext(); ) {
                 iterator.next().getResults();
             }
@@ -185,7 +192,7 @@ public class LoadBuildSystem {
             //}
         }
         uow.commit();
-        list = session.readAllObjects(LoadBuildSummary.class);
+        list = (List<LoadBuildSummary>) session.readAllObjects(LoadBuildSummary.class);
         System.out.println("Size: " + list.size());
     }
 
@@ -204,23 +211,25 @@ public class LoadBuildSystem {
     /**
      * Read all the test summaries, join the load build result.
      */
-    public Vector readAllTestModelSummaries(org.eclipse.persistence.expressions.Expression expression) {
+    @SuppressWarnings({"unchecked"})
+    public Vector<TestResultsSummary> readAllTestModelSummaries(org.eclipse.persistence.expressions.Expression expression) {
         ReadAllQuery query = new ReadAllQuery(TestResultsSummary.class, expression);
         query.addAscendingOrdering("name");
         //query.addOrdering(query.getExpressionBuilder().get("loadBuildSummary").get("timestamp").ascending());
         query.addJoinedAttribute("loadBuildSummary");
-        return (Vector)session.executeQuery(query);
+        return (Vector<TestResultsSummary>)session.executeQuery(query);
     }
 
     /**
      * Read all the tests, join the load build result.
      */
-    public Vector readAllTests(org.eclipse.persistence.expressions.Expression expression) {
+    @SuppressWarnings({"unchecked"})
+    public Vector<TestResult> readAllTests(org.eclipse.persistence.expressions.Expression expression) {
         ReadAllQuery query = new ReadAllQuery(TestResult.class, expression);
         query.addAscendingOrdering("name");
         //query.addOrdering(query.getExpressionBuilder().get("loadBuildSummary").get("timestamp").ascending());
         query.addJoinedAttribute("loadBuildSummary");
-        return (Vector)session.executeQuery(query);
+        return (Vector<TestResult>)session.executeQuery(query);
     }
 
     /**

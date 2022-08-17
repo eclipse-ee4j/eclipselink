@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,15 +16,15 @@
 
 package org.eclipse.persistence.testing.framework;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+
 import java.util.Iterator;
 import java.util.Vector;
-
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.queries.DeleteAllQuery;
-import org.eclipse.persistence.sessions.UnitOfWork;
 
 public class DeleteAllQueryTestHelper {
 
@@ -86,7 +86,7 @@ public class DeleteAllQueryTestHelper {
         // so that comparison of the deletion result would be possible.
         session.beginTransaction();
 
-        Vector objectsToDelete = uow.readAllObjects(referenceClass, selectionExpression);
+        Vector<?> objectsToDelete = uow.readAllObjects(referenceClass, selectionExpression);
 
         ClassDescriptor descriptor = mainSession.getClassDescriptor(referenceClass);
 
@@ -94,7 +94,7 @@ public class DeleteAllQueryTestHelper {
         mainSession.logMessage("***delete one by one");
         uow.commit();
 
-        Vector objectsLeftAfterOriginalDeletion = session.readAllObjects(rootClass);
+        Vector<?> objectsLeftAfterOriginalDeletion = session.readAllObjects(rootClass);
 
         session.rollbackTransaction();
 
