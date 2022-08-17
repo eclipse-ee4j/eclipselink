@@ -15,21 +15,19 @@
 //        - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
 package org.eclipse.persistence.testing.framework.oracle;
 
+import oracle.ucp.jdbc.PoolDataSource;
+import oracle.ucp.jdbc.PoolDataSourceFactory;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
-
-import oracle.ucp.jdbc.PoolDataSource;
-import oracle.ucp.jdbc.PoolDataSourceFactory;
-
-import org.eclipse.persistence.sessions.JNDIConnector;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
-import org.eclipse.persistence.testing.framework.TestProblemException;
 
 // Intended usage:
 // 1.1 Obtains a session from the TestExecutor, logs it out, and keeps;
@@ -67,7 +65,7 @@ public class SessionExchanger {
     //   loginProperties - if not null set into the new session's login;
     //   propertyProperties - if not null set into the new session;
     // returns the new session
-    public DatabaseSession createNewSession(DatabaseSession originalSession, boolean useDatabaseSession, boolean useExternalConnectionPooling, Properties loginProperties, Map sessionProperties) {
+    public DatabaseSession createNewSession(DatabaseSession originalSession, boolean useDatabaseSession, boolean useExternalConnectionPooling, Properties loginProperties, Map<String, Object> sessionProperties) {
         if(useExternalConnectionPooling) {
             return createNewSession(originalSession, useDatabaseSession, useExternalConnectionPooling, loginProperties, sessionProperties, -1, -1, -1, -1);
         } else {
@@ -80,7 +78,7 @@ public class SessionExchanger {
     //        pass -1 value for minWriteConnection and/or maxWriteConnection if no min and/or max number of connections should be set in the data source.
     //   in internal pooling case the min / max values used for write and read connection pools.
     // returns the new session
-    public DatabaseSession createNewSession(DatabaseSession originalSession, boolean useDatabaseSession, boolean useExternalConnectionPooling, Properties loginProperties, Map sessionProperties,
+    public DatabaseSession createNewSession(DatabaseSession originalSession, boolean useDatabaseSession, boolean useExternalConnectionPooling, Properties loginProperties, Map<String, Object> sessionProperties,
                                             int minWriteConnections, int maxWriteConnections, int minReadConnections, int maxReadConnections)
     {
         setup(originalSession);
@@ -173,7 +171,7 @@ public class SessionExchanger {
         return cloneLogin;
     }
 
-    void setProperties(Properties loginProperties, Map sessionProperties) {
+    void setProperties(Properties loginProperties, Map<String, Object> sessionProperties) {
         if(loginProperties != null) {
             newSession.getLogin().setProperties(loginProperties);
         }
