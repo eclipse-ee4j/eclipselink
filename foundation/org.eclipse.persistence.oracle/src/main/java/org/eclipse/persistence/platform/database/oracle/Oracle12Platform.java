@@ -34,7 +34,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.EmptyRecord;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
@@ -142,7 +141,8 @@ public class Oracle12Platform extends Oracle11Platform {
         // Also TableDefinition.buildCreationWriter(AbstractSession,Writer) does not have support for quoting table names
         // to make them case sensitive on Oracle DB.
         final String sql = "SELECT SEQUENCE_NAME FROM USER_TAB_IDENTITY_COLS WHERE TABLE_NAME='" + tableName.toUpperCase() + "'";
-        return (String)(new ValueReadQuery(sql)).execute((AbstractSession)session, EmptyRecord.getEmptyRecord());
+        final ValueReadQuery query = new ValueReadQuery(sql);
+        return (String) session.executeQuery(query);
     }
 
     /**
