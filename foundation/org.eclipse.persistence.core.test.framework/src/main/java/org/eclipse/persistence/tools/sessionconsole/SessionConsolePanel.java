@@ -3648,7 +3648,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         this.results = results;
     }
 
-    /**>
+    /**
      * Sets the session property (org.eclipse.persistence.sessions.Session)
      * value.
      *
