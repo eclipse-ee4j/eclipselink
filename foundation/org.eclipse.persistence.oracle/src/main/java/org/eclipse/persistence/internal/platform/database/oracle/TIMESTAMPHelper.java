@@ -39,52 +39,6 @@ public class TIMESTAMPHelper {
     }
 
     /**
-     * Build a calendar from TIMESTAMPTZWrapper.
-     */
-    public static Calendar buildCalendar(TIMESTAMPTZWrapper timestampTZ) throws SQLException{
-        Timestamp ts = timestampTZ.getTimestamp();
-        TimeZone tz = timestampTZ.getTimeZone();
-
-        Calendar gCal;
-        if(timestampTZ.isTimestampInGmt()) {
-            gCal = Calendar.getInstance(tz);
-            gCal.setTime(ts);
-        } else {
-            gCal = Calendar.getInstance();
-            gCal.setTime(ts);
-            gCal.getTimeZone().setID(tz.getID());
-            gCal.getTimeZone().setRawOffset(tz.getRawOffset());
-        }
-        return gCal;
-    }
-
-   /**
-    * Build a calendar from TIMESTAMPLTZWrapper.
-    */
-    public static Calendar buildCalendar(TIMESTAMPLTZWrapper timestampLTZ) throws SQLException{
-        Calendar gCal;
-        if (timestampLTZ.getZoneId() != null) {
-            gCal = Calendar.getInstance(TimeZone.getTimeZone(timestampLTZ.getZoneId()));
-        } else {
-            gCal = Calendar.getInstance();
-        }
-
-        //This is the only way to set time in Calendar.  Passing Timestamp directly to the new
-        //calendar does not work because the GMT time is wrong.
-        if(timestampLTZ.isLtzTimestampInGmt()) {
-            gCal.setTimeInMillis(timestampLTZ.getTimestamp().getTime());
-        } else {
-            Calendar localCalendar = Helper.allocateCalendar();
-            localCalendar.setTime(timestampLTZ.getTimestamp());
-            gCal.set(localCalendar.get(Calendar.YEAR), localCalendar.get(Calendar.MONTH), localCalendar.get(Calendar.DATE), localCalendar.get(Calendar.HOUR_OF_DAY), localCalendar.get(Calendar.MINUTE), localCalendar.get(Calendar.SECOND));
-            Helper.releaseCalendar(localCalendar);
-        }
-        gCal.set(Calendar.MILLISECOND, timestampLTZ.getTimestamp().getNanos() / 1000000);
-
-        return gCal;
-    }
-
-    /**
      * Build a calendar string based on the calendar fields.
      * If the daylight savings time should be printed and the zone is in daylight savings time,
      * print the short representation of daylight savings from the calendar's timezone data.
