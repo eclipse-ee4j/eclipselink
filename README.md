@@ -1,4 +1,4 @@
-[//]: # " Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved. "
+[//]: # " Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved. "
 [//]: # "  "
 [//]: # " This program and the accompanying materials are made available under the "
 [//]: # " terms of the Eclipse Public License v. 2.0 which is available at "
@@ -61,7 +61,7 @@ the terms of [Eclipse Contributor Agreement](http://www.eclipse.org/legal/ECA.ph
 * [Nightly builds](https://www.eclipse.org/eclipselink/downloads/nightly.php)
 * [Maven staging repository](https://jakarta.oss.sonatype.org/content/groups/staging/org/eclipse/persistence/)
 * [Maven snapshots repository](https://jakarta.oss.sonatype.org/content/repositories/snapshots/org/eclipse/persistence/), another output from the nightly builds
-
+* [EclipseLink Persistence Test Applications](https://github.com/eclipse-ee4j/eclipselink/tree/master/jpa/eclipselink.jpa.testapps/README.md)
 
 ## Issue/bug trackers
 
