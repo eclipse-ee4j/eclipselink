@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -88,7 +88,7 @@ ECLIPSELINK_STAGING_KEY=$(echo ${ECLIPSELINK_STAGING_DESC} | sed -e 's/\./\\\./g
 
 # Set release versions
 echo '-[ EclipseLink release version ]--------------------------------------------------------'
-set_version 'ECLIPSELINK' "${ECLIPSELINK_DIR}" "${ECLIPSELINK_RELEASE_VERSION}" "${ECLIPSELINK_GROUP_ID}" "${ECLIPSELINK_ARTIFACT_ID}" ''
+set_version 'ECLIPSELINK' "${ECLIPSELINK_DIR}" "${ECLIPSELINK_RELEASE_VERSION}" "${ECLIPSELINK_GROUP_ID}" "${ECLIPSELINK_ARTIFACT_ID}" '' "${OVERWRITE_GIT}"
 
 if [ "${OVERWRITE_STAGING}" = 'true' ]; then
   drop_artifacts "${ECLIPSELINK_STAGING_KEY}" "${ECLIPSELINK_DIR}"
@@ -113,7 +113,7 @@ git tag "${RELEASE_TAG}" -m "EclipseLink ${ECLIPSELINK_RELEASE_VERSION} release"
 
 # Set next release cycle snapshot version
 echo '-[ EclipseLink next snapshot version ]--------------------------------------------------'
-set_version 'ECLIPSELINK' "${ECLIPSELINK_DIR}" "${ECLIPSELINK_NEXT_SNAPSHOT}" "${ECLIPSELINK_GROUP_ID}" "${ECLIPSELINK_ARTIFACT_ID}" ''
+set_version 'ECLIPSELINK' "${ECLIPSELINK_DIR}" "${ECLIPSELINK_NEXT_SNAPSHOT}" "${ECLIPSELINK_GROUP_ID}" "${ECLIPSELINK_ARTIFACT_ID}" '' "${OVERWRITE_GIT}"
 
 if [ ${DRY_RUN} = 'true' ]; then
   echo '-[ Skipping GitHub update ]-----------------------------------------------------'
