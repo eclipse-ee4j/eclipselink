@@ -96,14 +96,14 @@ fi
 
 echo '-[ Build project mvn clean install ]-----------------------------'
 #This step is needed to populate local Maven repository with required but not deployed artifacts
-mvn --no-transfer-progress -DskipTests clean install
+mvn --no-transfer-progress -DskipTests clean install -Dbuild.type=RELEASE
 #Deploy selected artifacts. There is Maven property -Ddeploy to control which modules will be deployed
 echo '-[ Deploy artifacts to staging repository ]-----------------------------'
 # Verify, sign and deploy release
 (cd ${ECLIPSELINK_DIR} && \
   mvn --no-transfer-progress -U -C -B -V \
       -Poss-release,staging -DskipTests \
-      -DskipTests -Ddoclint=none \
+      -Dbuild.type=RELEASE -Ddoclint=none \
       -DstagingDescription="${ECLIPSELINK_STAGING_DESC}" \
       -Ddeploy \
       clean ${MVN_DEPLOY_ARGS})
