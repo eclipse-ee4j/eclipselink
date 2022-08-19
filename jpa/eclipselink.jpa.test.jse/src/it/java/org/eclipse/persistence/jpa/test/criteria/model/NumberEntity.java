@@ -15,6 +15,9 @@
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.jpa.test.criteria.model;
 
+import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -33,14 +36,19 @@ public class NumberEntity {
 
     private Double doubleValue;
 
+    @Column(precision=15, scale=10)
+    private BigDecimal bdValue;
+
     public NumberEntity() {
     }
 
-    public NumberEntity(final Integer id, final Long longValue, final Float floatValue, final Double doubleValue) {
+    public NumberEntity(final Integer id, final Long longValue,
+                        final Float floatValue, final Double doubleValue, final BigDecimal bdValue) {
         this.setId(id);
         this.setLongValue(longValue);
         this.setFloatValue(floatValue);
         this.setDoubleValue(doubleValue);
+        this.setBdValue(bdValue);
     }
 
     public Integer getId() {
@@ -73,6 +81,14 @@ public class NumberEntity {
 
     public void setDoubleValue(final Double doubleValue) {
         this.doubleValue = doubleValue;
+    }
+
+    public BigDecimal getBdValue() {
+        return bdValue;
+    }
+
+    public void setBdValue(BigDecimal bdValue) {
+        this.bdValue = bdValue;
     }
 
 }

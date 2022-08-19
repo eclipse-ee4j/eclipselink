@@ -1280,7 +1280,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <N extends Number> Expression<N> ceiling(Expression<N> x) {
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER,
+        return new FunctionExpressionImpl(this.metamodel, x.getJavaType(),
                 ExpressionMath.ceil(((InternalSelection)x).getCurrentNode()), buildList(x), "ceiling");
     }
 
@@ -1293,7 +1293,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <N extends Number> Expression<N> floor(Expression<N> x) {
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER,
+        return new FunctionExpressionImpl(this.metamodel, x.getJavaType(),
                 ExpressionMath.floor(((InternalSelection)x).getCurrentNode()), buildList(x), "floor");
     }
 
@@ -1359,7 +1359,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <T extends Number> Expression<T> round(Expression<T> x, Integer n) {
-        return new FunctionExpressionImpl(this.metamodel, ClassConstants.NUMBER,
+        return new FunctionExpressionImpl(this.metamodel, x.getJavaType(),
                 ExpressionMath.round(((InternalSelection)x).getCurrentNode(), n),
                 buildList(x, internalLiteral(n)), "round");
     }

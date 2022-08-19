@@ -15,6 +15,7 @@
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.jpa.test.query;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
@@ -58,16 +59,16 @@ public class TestMathFunctions {
     private EntityManagerFactory emf;
 
     private final NumberEntity[] NUMBER = {
-            new NumberEntity(0, 0L, 0F, 0D),
-            new NumberEntity(1, 1L, 1F, 1D),
-            new NumberEntity(2, -1L, -1F, -1D),
-            new NumberEntity(3, 42L, 42.42F, 42.42D),
-            new NumberEntity(4, -342L, -342.42F, -342.42D),
-            new NumberEntity(5, 4L, 4F, 4D),
-            new NumberEntity(6, -4L, -4F, -4D),
-            new NumberEntity(7, 4L, 14.23F, 14.23D),
-            new NumberEntity(8, 6L, 44.7542383252F, 44.7542383252D),
-            new NumberEntity(9, 8L, -214.2457321233F, -214.2457321233D)
+            new NumberEntity(0, 0L, 0F, 0D, BigDecimal.valueOf(0D)),
+            new NumberEntity(1, 1L, 1F, 1D, BigDecimal.valueOf(1D)),
+            new NumberEntity(2, -1L, -1F, -1D, BigDecimal.valueOf(-1D)),
+            new NumberEntity(3, 42L, 42.42F, 42.42D, BigDecimal.valueOf(42.42D)),
+            new NumberEntity(4, -342L, -342.42F, -342.42D, BigDecimal.valueOf(-342.42D)),
+            new NumberEntity(5, 4L, 4F, 4D, BigDecimal.valueOf(4D)),
+            new NumberEntity(6, -4L, -4F, -4D, BigDecimal.valueOf(-4D)),
+            new NumberEntity(7, 4L, 14.23F, 14.23D, BigDecimal.valueOf(14.23D)),
+            new NumberEntity(8, 6L, 44.7542383252F, 44.7542383252D, BigDecimal.valueOf(44.7542383252D)),
+            new NumberEntity(9, 8L, -214.2457321233F, -214.2457321233D, BigDecimal.valueOf(-214.2457321233D))
     };
 
     @Before

@@ -15,6 +15,7 @@
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.jpa.test.criteria;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
@@ -60,16 +61,16 @@ public class TestMathFunctions {
     private EntityManagerFactory emf;
 
     private final NumberEntity[] NUMBER = {
-            new NumberEntity(0, 0L, 0F, 0D),
-            new NumberEntity(1, 1L, 1F, 1D),
-            new NumberEntity(2, -1L, -1F, -1D),
-            new NumberEntity(3, 42L, 42.42F, 42.42D),
-            new NumberEntity(4, -342L, -342.42F, -342.42D),
-            new NumberEntity(5, 4L, 4F, 4D),
-            new NumberEntity(6, -4L, -4F, -4D),
-            new NumberEntity(7, 4L, 14.23F, 14.23D),
-            new NumberEntity(8, 6L, 44.7542383252F, 44.7542383252D),
-            new NumberEntity(9, 8L, -214.2457321233F, -214.2457321233D)
+            new NumberEntity(0, 0L, 0F, 0D, BigDecimal.valueOf(0D)),
+            new NumberEntity(1, 1L, 1F, 1D, BigDecimal.valueOf(1D)),
+            new NumberEntity(2, -1L, -1F, -1D, BigDecimal.valueOf(-1D)),
+            new NumberEntity(3, 42L, 42.42F, 42.42D, BigDecimal.valueOf(42.42D)),
+            new NumberEntity(4, -342L, -342.42F, -342.42D, BigDecimal.valueOf(-342.42D)),
+            new NumberEntity(5, 4L, 4F, 4D, BigDecimal.valueOf(4D)),
+            new NumberEntity(6, -4L, -4F, -4D, BigDecimal.valueOf(-4D)),
+            new NumberEntity(7, 4L, 14.23F, 14.23D, BigDecimal.valueOf(14.23D)),
+            new NumberEntity(8, 6L, 44.7542383252F, 44.7542383252D, BigDecimal.valueOf(44.7542383252D)),
+            new NumberEntity(9, 8L, -214.2457321233F, -214.2457321233D, BigDecimal.valueOf(-214.2457321233D))
     };
 
     @Before
@@ -660,6 +661,51 @@ public class TestMathFunctions {
             } else {
                 Assert.assertEquals(Float.valueOf(-214.245732F), result);
             }
+        }
+    }
+
+    // Issue #1641: Returned value must match argument type for CEILING(n)
+    @Test
+    public void testCeilingKeepBigDecimalParamType() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Number> cq = cb.createQuery(Number.class);
+            Root<NumberEntity> number = cq.from(NumberEntity.class);
+            cq.select(cb.ceiling(number.get("bdValue")));
+            cq.where(cb.equal(number.get("id"), 8));
+            Number result = em.createQuery(cq).getSingleResult();
+            MatcherAssert.assertThat(result, Matchers.is(Matchers.instanceOf(BigDecimal.class)));
+            Assert.assertEquals(BigDecimal.valueOf(Math.ceil(NUMBER[8].getDoubleValue())), result);
+        }
+    }
+
+    // Issue #1641: Returned value must match argument type for FLOOR(n)
+    @Test
+    public void testFloorKeepBigDecimalParamType() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Number> cq = cb.createQuery(Number.class);
+            Root<NumberEntity> number = cq.from(NumberEntity.class);
+            cq.select(cb.floor(number.get("bdValue")));
+            cq.where(cb.equal(number.get("id"), 8));
+            Number result = em.createQuery(cq).getSingleResult();
+            MatcherAssert.assertThat(result, Matchers.is(Matchers.instanceOf(BigDecimal.class)));
+            Assert.assertEquals(BigDecimal.valueOf(Math.floor(NUMBER[8].getDoubleValue())), result);
+        }
+    }
+
+    // Issue #1641: Returned value must match argument type for ROUND(n,1)
+    @Test
+    public void testRoundKeepBigDecimalParamType() {
+        try (final EntityManager em = emf.createEntityManager()) {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Number> cq = cb.createQuery(Number.class);
+            Root<NumberEntity> number = cq.from(NumberEntity.class);
+            cq.select(cb.round(number.get("bdValue"), 1));
+            cq.where(cb.equal(number.get("id"), 8));
+            Number result = em.createQuery(cq).getSingleResult();
+            MatcherAssert.assertThat(result, Matchers.is(Matchers.instanceOf(BigDecimal.class)));
+            Assert.assertEquals(BigDecimal.valueOf(Double.valueOf(Math.round(NUMBER[8].getDoubleValue()*10))/10), result);
         }
     }
 
