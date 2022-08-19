@@ -439,7 +439,7 @@ public class Oracle9Platform extends Oracle8Platform {
             //Bug#4364359 Used when database type is TIMESTAMPTZ.  Timestamp and session timezone are wrapped
             //in TIMESTAMPTZWrapper.  Separate Calendar from any other types.
             if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
-                return (T) ((TIMESTAMPTZWrapper) sourceObject).toCalendar();
+                return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPTZWrapper) sourceObject);
             } else {
                 try {
                     valueToConvert = ((TIMESTAMPTZWrapper) sourceObject).unwrap(javaClass);
@@ -452,7 +452,7 @@ public class Oracle9Platform extends Oracle8Platform {
             //Bug#4364359 Used when database type is TIMESTAMPLTZ.  Timestamp and session timezone id are wrapped
             //in TIMESTAMPLTZWrapper.  Separate Calendar from any other types.
             if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
-                return (T) ((TIMESTAMPLTZWrapper)sourceObject).toCalendar();
+                return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPLTZWrapper) sourceObject);
             } else {
                 try {
                     valueToConvert = ((TIMESTAMPLTZWrapper) sourceObject).unwrap(javaClass);

@@ -34,7 +34,6 @@ import java.util.function.Function;
 import oracle.sql.TIMESTAMPLTZ;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.PlatformWrapper;
-import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * This class is used as a wrapper for TIMESTAMPLTZ.  It stores a Timestamp and a timezone id.
@@ -82,28 +81,7 @@ public class TIMESTAMPLTZWrapper implements Serializable, PlatformWrapper {
     }
 
     public Calendar toCalendar() {
-        final Calendar calendar;
-        if (getZoneId() != null) {
-            calendar = Calendar.getInstance(TimeZone.getTimeZone(getZoneId()));
-        } else {
-            calendar = Calendar.getInstance();
-        }
-
-        // This is the only way to set time in Calendar.  Passing Timestamp directly to the new
-        // calendar does not work because the GMT time is wrong.
-        if (isLtzTimestampInGmt) {
-            calendar.setTimeInMillis(getTimestamp().getTime());
-        } else {
-            final Calendar localCalendar = Helper.allocateCalendar();
-            localCalendar.setTime(getTimestamp());
-            calendar.set(
-                    localCalendar.get(Calendar.YEAR), localCalendar.get(Calendar.MONTH), localCalendar.get(Calendar.DATE),
-                    localCalendar.get(Calendar.HOUR_OF_DAY), localCalendar.get(Calendar.MINUTE), localCalendar.get(Calendar.SECOND));
-            Helper.releaseCalendar(localCalendar);
-        }
-        calendar.set(Calendar.MILLISECOND, getTimestamp().getNanos() / 1000000);
-
-        return calendar;
+        return TIMESTAMPHelper.buildCalendar(this);
     }
 
     public Timestamp getTimestamp() {
@@ -116,6 +94,10 @@ public class TIMESTAMPLTZWrapper implements Serializable, PlatformWrapper {
 
     public ZoneId getZoneId() {
         return zonedDateTime.getZone();
+    }
+
+    public boolean isLtzTimestampInGmt() {
+        return isLtzTimestampInGmt;
     }
 
     private final Map<Class<?>, Function<TIMESTAMPLTZWrapper,?>> UNWRAP = initUnwrappers();

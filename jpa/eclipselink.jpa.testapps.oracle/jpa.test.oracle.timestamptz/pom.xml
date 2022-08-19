@@ -28,8 +28,8 @@
     <name>Test - oracle.timestamptz</name>
 
     <properties>
-        <ignore.se.failures>true</ignore.se.failures>
-        <ignore.server.failures>true</ignore.server.failures>
+        <ignore.se.failures>false</ignore.se.failures>
+        <ignore.server.failures>false</ignore.server.failures>
         <argLine/>
     </properties>
 

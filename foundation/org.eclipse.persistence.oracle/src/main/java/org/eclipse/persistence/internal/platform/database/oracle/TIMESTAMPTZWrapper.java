@@ -66,12 +66,7 @@ public class TIMESTAMPTZWrapper implements Serializable, PlatformWrapper {
     }
 
     public Calendar toCalendar() {
-        final TimeZone tz = getTimeZone();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(getTimestamp());
-        calendar.getTimeZone().setID(tz.getID());
-        calendar.getTimeZone().setRawOffset(tz.getRawOffset());
-        return calendar;
+        return TIMESTAMPHelper.buildCalendar(this);
     }
 
     public Timestamp getTimestamp() {
