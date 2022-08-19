@@ -240,8 +240,10 @@
         <module>jpa/org.eclipse.persistence.jpa.jpql</module>
 
         <module>foundation/org.eclipse.persistence.core</module>
+        <module>foundation/org.eclipse.persistence.core.test.framework</module>
 
         <module>jpa/org.eclipse.persistence.jpa</module>
+        <module>jpa/org.eclipse.persistence.jpa.test.framework</module>
         <module>jpa/org.eclipse.persistence.jpa.modelgen</module>
         <module>jpa/org.eclipse.persistence.jpars</module>
 
@@ -1849,9 +1851,7 @@
                 <!--Helper parent pom for server side test modules-->
                 <module>testing/server</module>
                 <module>testing/server-oracle</module>
-                <module>foundation/org.eclipse.persistence.core.test.framework</module>
                 <module>foundation/eclipselink.core.test</module>
-                <module>jpa/org.eclipse.persistence.jpa.test.framework</module>
                 <module>sdo/eclipselink.sdo.test.server</module>
 
                 <!--JPA test modules-->
