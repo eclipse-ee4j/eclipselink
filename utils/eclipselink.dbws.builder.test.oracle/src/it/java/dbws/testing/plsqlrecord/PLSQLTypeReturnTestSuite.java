@@ -40,30 +40,37 @@ import dbws.testing.DBWSTestSuite;
 public class PLSQLTypeReturnTestSuite extends DBWSTestSuite {
     static final String EMPREC_TYPE = "TYPE EMP_RECORD_PACKAGE_EMPREC";
 
-    static final String CREATE_EMPTYPE_TABLE = "CREATE TABLE EMPTYPEX (" + "\nEMPNO NUMERIC(4) NOT NULL,"
+    static final String CREATE_EMPTYPE_TABLE = "CREATE TABLE EMPTYPEX1 (" + "\nEMPNO NUMERIC(4) NOT NULL,"
             + "\nENAME VARCHAR(25)," + "\nPRIMARY KEY (EMPNO)" + "\n)";
     static final String[] POPULATE_EMPTYPE_TABLE = new String[] {
-            "INSERT INTO EMPTYPEX (EMPNO, ENAME) VALUES (69, 'Holly')",
-            "INSERT INTO EMPTYPEX (EMPNO, ENAME) VALUES (70, 'Brooke')",
-            "INSERT INTO EMPTYPEX (EMPNO, ENAME) VALUES (71, 'Patty')" };
-    static final String DROP_EMPTYPE_TABLE = "DROP TABLE EMPTYPEX";
+            "INSERT INTO EMPTYPEX1 (EMPNO, ENAME) VALUES (69, 'Holly')",
+            "INSERT INTO EMPTYPEX1 (EMPNO, ENAME) VALUES (70, 'Brooke')",
+            "INSERT INTO EMPTYPEX1 (EMPNO, ENAME) VALUES (71, 'Patty')" };
+    static final String DROP_EMPTYPE_TABLE = "DROP TABLE EMPTYPEX1";
 
-    static final String CREATE_EMP_RECORD_PACKAGE = "create or replace PACKAGE EMP_RECORD_PACKAGE IS \r\n"
-            + "function get_emp_record (l_empno EMPTYPEX.EMPNO%TYPE) return EMPTYPEX.ENAME%TYPE;\r\n"
-            + "END EMP_RECORD_PACKAGE;";
+    static final String CREATE_EMP_RECORD_PACKAGE = "CREATE PACKAGE EMP_RECORD_PACKAGE IS\r\n" + 
+    		"FUNCTION get_emp_record(l_empno in number) return EMPTYPEX1.ENAME%TYPE;\r\n" + 
+    		"END EMP_RECORD_PACKAGE;";
     static final String DROP_EMP_RECORD_PACKAGE = "DROP PACKAGE EMP_RECORD_PACKAGE";
 
     static final String DROP_EMP_RECORD_PACKAGE_BODY = "DROP PACKAGE BODY EMP_RECORD_PACKAGE";
 
-    static final String CREATE_EMP_RECORD_PACKAGE_BODY = "create or replace PACKAGE BODY EMP_RECORD_PACKAGE IS\r\n"
-            + "function get_emp_record (l_empno EMPTYPEX.EMPNO%TYPE) return EMPTYPEX.ENAME%TYPE\r\n" + "is\r\n"
-            + "ename_result EMPTYPEX.ENAME%TYPE;\r\n" + "BEGIN\r\n" + "SELECT ENAME into ename_result\r\n"
-            + "FROM EMPTYPEX\r\n" + "WHERE \r\n" + "EMPNO = l_empno;\r\n" + "return ename_result;\r\n" + "END;\r\n"
-            + "END EMP_RECORD_PACKAGE;";
+    static final String CREATE_EMP_RECORD_PACKAGE_BODY = "create or replace PACKAGE BODY EMP_RECORD_PACKAGE IS\r\n" + 
+            "function get_emp_record(l_empno in number) return EMPTYPEX1.ENAME%TYPE\r\n" + 
+            "is\r\n" + 
+            "ename_result EMPTYPEX1.ENAME%TYPE;\r\n" + 
+            "BEGIN\r\n" + 
+            "SELECT ENAME into ename_result\r\n" + 
+            "FROM EMPTYPEX1\r\n" + 
+            "WHERE \r\n" + 
+            "EMPNO = l_empno;\r\n" + 
+            "return ename_result;\r\n" + 
+            "END;\r\n" + 
+            "END EMP_RECORD_PACKAGE;\r\n";
 
-    static boolean ddlCreate = false;
-    static boolean ddlDrop = false;
-    static boolean ddlDebug = false;
+    static boolean ddlCreate = true;
+    static boolean ddlDrop = true;
+    static boolean ddlDebug = true;
 
     @BeforeClass
     public static void setUp() throws WSDLException {
@@ -87,6 +94,8 @@ public class PLSQLTypeReturnTestSuite extends DBWSTestSuite {
             ddlDebug = true;
         }
         if (ddlCreate) {
+            runDdl(conn, CREATE_EMP_RECORD_PACKAGE, ddlDebug);
+            runDdl(conn, CREATE_EMP_RECORD_PACKAGE_BODY, ddlDebug);
             runDdl(conn, CREATE_EMPTYPE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
@@ -99,15 +108,13 @@ public class PLSQLTypeReturnTestSuite extends DBWSTestSuite {
                     e.printStackTrace();
                 }
             }
-            runDdl(conn, CREATE_EMP_RECORD_PACKAGE, ddlDebug);
-            runDdl(conn, CREATE_EMP_RECORD_PACKAGE_BODY, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
                   "<properties>" +
                       "<property name=\"projectName\">PLSQLRecord</property>" +
-                      "<property name=\"logLevel\">off</property>" +
+                      "<property name=\"logLevel\">on</property>" +
                       "<property name=\"username\">";
               DBWS_BUILDER_XML_PASSWORD =
                       "</property><property name=\"password\">";
@@ -176,10 +183,13 @@ public class PLSQLTypeReturnTestSuite extends DBWSTestSuite {
     }
 
     @Test
-    public void testRecordWithPercentTypeField() {
+    public void testRecWithPercentTypeField() {
         Invocation invocation = new Invocation("TestRecWithPercentTypeField");
-        invocation.setParameter("EMPNO", 69);
+        invocation.setParameter("l_empno", 69);
         Operation op = xrService.getOperation(invocation.getName());
+        System.out.println("XRSERVICE  " + xrService);
+        System.out.println("invocation  " + invocation.getName());
+        System.out.println("op  " + invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
         Document doc = xmlPlatform.createDocument();
