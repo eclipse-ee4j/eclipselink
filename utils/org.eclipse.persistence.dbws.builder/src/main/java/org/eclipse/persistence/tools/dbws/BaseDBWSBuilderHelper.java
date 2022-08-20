@@ -1320,7 +1320,6 @@ public abstract class BaseDBWSBuilderHelper {
                 typeType.setCompatibleType(compatibleType);
                 typeType.setJavaTypeName(getGeneratedWrapperClassName(javaTypeName, dbwsBuilder.getProjectName()));
                 typeType.setNestedType(buildDatabaseTypeFromMetadataType(((TYPEType) dType).getEnclosedType(), null));
-                System.out.println(">>RETURNING >>>>>>>>>>>>>>  " + typeType);
                 return typeType;
             }
             // handle advanced Oracle types
