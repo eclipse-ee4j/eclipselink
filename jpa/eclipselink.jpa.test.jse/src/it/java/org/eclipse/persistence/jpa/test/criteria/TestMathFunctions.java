@@ -675,7 +675,7 @@ public class TestMathFunctions {
             cq.where(cb.equal(number.get("id"), 8));
             Number result = em.createQuery(cq).getSingleResult();
             MatcherAssert.assertThat(result, Matchers.is(Matchers.instanceOf(BigDecimal.class)));
-            Assert.assertEquals(BigDecimal.valueOf(Math.ceil(NUMBER[8].getDoubleValue())), result);
+            MatcherAssert.assertThat(result.doubleValue(), Matchers.equalTo(Math.ceil(NUMBER[8].getBdValue().doubleValue())));
         }
     }
 
@@ -690,7 +690,7 @@ public class TestMathFunctions {
             cq.where(cb.equal(number.get("id"), 8));
             Number result = em.createQuery(cq).getSingleResult();
             MatcherAssert.assertThat(result, Matchers.is(Matchers.instanceOf(BigDecimal.class)));
-            Assert.assertEquals(BigDecimal.valueOf(Math.floor(NUMBER[8].getDoubleValue())), result);
+            MatcherAssert.assertThat(result.doubleValue(), Matchers.equalTo(Math.floor(NUMBER[8].getBdValue().doubleValue())));
         }
     }
 
@@ -705,7 +705,7 @@ public class TestMathFunctions {
             cq.where(cb.equal(number.get("id"), 8));
             Number result = em.createQuery(cq).getSingleResult();
             MatcherAssert.assertThat(result, Matchers.is(Matchers.instanceOf(BigDecimal.class)));
-            Assert.assertEquals(BigDecimal.valueOf(Double.valueOf(Math.round(NUMBER[8].getDoubleValue()*10))/10), result);
+            MatcherAssert.assertThat(result.doubleValue(), Matchers.equalTo(Double.valueOf(Math.round(NUMBER[8].getBdValue().doubleValue()*10))/10));
         }
     }
 
