@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,13 @@ public final class EISExceptionResource extends ListResourceBundle {
                                            { "17022", "Input must contain a single raw element." },
                                            { "17023", "An exception occurred setting MQQueueConnectionFactory attributes." },
                                            { "17024", "Could not delete file: {0}" },
-                                           { "17025", "This mapping requires a foreign key grouping element, as mulitple foreign keys exist." }
+                                           { "17025", "This mapping requires a foreign key grouping element, as multiple foreign keys exist." },
+                                           { "17026", "Operation property must be set on the query's interaction." },
+                                           { "17027", "Target table name is not set. It must be set on the query's interaction." },
+                                           { "17028", "Invalid consistency property value: {0}" },
+                                           { "17029", "Invalid durability property value: {0}" },
+                                           { "17030", "XMLInteraction is only valid for object queries, use MappedInteraction for native queries: {0}" },
+                                           { "17031", "Query too complex for Oracle NoSQL translation, only select queries are supported in query: {0}" }
     };
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -259,7 +259,7 @@ public class XMLInteraction extends MappedInteraction {
      */
     protected XMLRecord createXMLRecord(String rootName) {
         XMLRecord xmlRec;
-        if (getQuery().getDescriptor() != null && getQuery().getDescriptor() instanceof EISDescriptor) {
+        if (getQuery().getDescriptor() != null && getQuery().getDescriptor() instanceof EISDescriptor && this.getQuery().getDescriptor().getObjectBuilder() instanceof XMLObjectBuilder) {
             xmlRec = (XMLRecord)((XMLObjectBuilder)this.getQuery().getDescriptor().getObjectBuilder()).createRecord(getInputRootElementName(), getQuery().getSession());
         } else {
             xmlRec = new org.eclipse.persistence.oxm.record.DOMRecord(getInputRootElementName());

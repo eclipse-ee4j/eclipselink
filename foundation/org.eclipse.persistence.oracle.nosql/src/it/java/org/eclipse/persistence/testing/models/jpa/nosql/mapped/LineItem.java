@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,21 +17,25 @@ package org.eclipse.persistence.testing.models.jpa.nosql.mapped;
 import java.io.Serializable;
 import java.math.*;
 
-//import jakarta.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
-//import org.eclipse.persistence.annotations.DataFormatType;
-//import org.eclipse.persistence.annotations.NoSql;
+import org.eclipse.persistence.nosql.annotations.DataFormatType;
+import org.eclipse.persistence.nosql.annotations.NoSql;
 
 /**
  * Model line item class, maps to LINE record.
  */
-// The mapped format does not currently support collections.
-//@Embeddable
-//@NoSql(dataFormat=DataFormatType.MAPPED)
+@Embeddable
+@NoSql(dataFormat=DataFormatType.MAPPED)
 public class LineItem implements Serializable {
+    @Column(name="linenumber")
     public long lineNumber;
+    @Column(name="itemname")
     public String itemName;
+    @Column(name="quantity")
     public long quantity;
+    @Column(name="itemprice")
     public BigDecimal itemPrice;
 
     public String toString() {

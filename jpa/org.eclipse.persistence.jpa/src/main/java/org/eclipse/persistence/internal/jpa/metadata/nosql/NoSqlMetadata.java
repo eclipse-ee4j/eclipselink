@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@
 //     Oracle - initial implementation
 package org.eclipse.persistence.internal.jpa.metadata.nosql;
 
+import jakarta.persistence.Table;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -21,6 +23,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 
 /**
  * Defines the metadata for the @EIS annotation for mapping an EISDescriptor.
@@ -115,7 +118,15 @@ public class NoSqlMetadata extends ORMetadata {
         } else {
             String defaultName = Helper.getShortClassName(descriptor.getJavaClassName());
             defaultName = getProject().useDelimitedIdentifier() ? defaultName : defaultName.toUpperCase();
-            newDescriptor.setDataTypeName(defaultName);
+            if (!descriptor.isEmbeddable()) {
+                MetadataAnnotation tableAnnotation = descriptor.getEntityAccessor().getAnnotation(Table.class);
+                if (tableAnnotation != null) {
+                    TableMetadata tableMetadata = new TableMetadata(tableAnnotation, descriptor.getEntityAccessor());
+                    newDescriptor.setDataTypeName(tableMetadata.getName());
+                } else {
+                    newDescriptor.setDataTypeName(defaultName);
+                }
+            }
         }
         if (this.dataFormat != null) {
             if (this.dataFormat.equals("XML")) {

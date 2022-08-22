@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.nosql.annotations.NoSql;
  * Model customer class, maps to CUSTOMER record.
  */
 @Entity
-@NoSql(dataFormat=DataFormatType.MAPPED, dataType="Customer-mapped")
+@NoSql(dataFormat=DataFormatType.MAPPED, dataType="customer_mapped")
 public class Customer {
     @Id
     public String id;

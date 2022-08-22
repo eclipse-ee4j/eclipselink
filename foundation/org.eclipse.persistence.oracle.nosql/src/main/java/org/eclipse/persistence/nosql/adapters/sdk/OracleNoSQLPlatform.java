@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,11 +12,10 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-package org.eclipse.persistence.nosql.adapters.nosql;
+package org.eclipse.persistence.nosql.adapters.sdk;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +23,19 @@ import java.util.Vector;
 
 import jakarta.resource.cci.InteractionSpec;
 import jakarta.resource.cci.MappedRecord;
+import oracle.nosql.driver.values.MapValue;
+import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.record.DOMRecord;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.w3c.dom.Element;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -37,34 +49,41 @@ import org.eclipse.persistence.eis.EISPlatform;
 import org.eclipse.persistence.eis.interactions.EISInteraction;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
 import org.eclipse.persistence.eis.interactions.XMLInteraction;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
-import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLInteractionSpec;
-import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLOperation;
-import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLRecord;
+import org.eclipse.persistence.internal.nosql.adapters.sdk.OracleNoSQLInteractionSpec;
+import org.eclipse.persistence.internal.nosql.adapters.sdk.OracleNoSQLOperation;
+import org.eclipse.persistence.internal.nosql.adapters.sdk.OracleNoSQLRecord;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.UUIDSequence;
-import org.w3c.dom.Element;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
-import oracle.kv.Consistency;
-import oracle.kv.Durability;
-import oracle.kv.Version;
+import oracle.nosql.driver.Consistency;
+import oracle.nosql.driver.Durability;
+import oracle.nosql.driver.Version;
+import oracle.nosql.driver.values.ArrayValue;
+import oracle.nosql.driver.values.BinaryValue;
+import oracle.nosql.driver.values.BooleanValue;
+import oracle.nosql.driver.values.DoubleValue;
+import oracle.nosql.driver.values.FieldValue;
+import oracle.nosql.driver.values.IntegerValue;
+import oracle.nosql.driver.values.LongValue;
+import oracle.nosql.driver.values.NumberValue;
+import oracle.nosql.driver.values.StringValue;
+import oracle.nosql.driver.values.TimestampValue;
+import org.w3c.dom.Node;
 
 /**
  * Platform for Oracle NoSQL database.
  *
- * @author James
- * @since EclipseLink 2.4
- *
- * @deprecated
- * This class is no longer supported according to changes in Oracle NoSQL Database access.
- * <p> Use {@link org.eclipse.persistence.nosql.adapters.sdk.OracleNoSQLPlatform} instead.
- *
+ * @author Radek Felcman
+ * @since EclipseLink 4.0
  */
-@Deprecated
 public class OracleNoSQLPlatform extends EISPlatform {
 
     /** OracleNoSQL interaction spec properties. */
@@ -73,6 +92,10 @@ public class OracleNoSQLPlatform extends EISPlatform {
     public static String DURABILITY = "nosql.durability";
     public static String TIMEOUT = "nosql.timeout";
     public static String VERSION = "nosql.version";
+    public static String QUERY = "nosql_query";
+    public static String QUERY_ARGUMENTS = "arguments";
+    public static String QUERY_ARGUMENT_TYPE_SUFFIX = "_type";
+    public static String QUERY_ARGUMENT_VALUE_SUFFIX = "_value";
 
     /**
      * Default constructor.
@@ -93,16 +116,21 @@ public class OracleNoSQLPlatform extends EISPlatform {
     public InteractionSpec buildInteractionSpec(EISInteraction interaction) {
         InteractionSpec spec = interaction.getInteractionSpec();
         if (spec == null) {
-            OracleNoSQLInteractionSpec noSqlSpec = new OracleNoSQLInteractionSpec();
+            OracleNoSQLInteractionSpec noSqlSpec = new OracleNoSQLInteractionSpec(interaction);
             Object operation = interaction.getProperty(OPERATION);
             if (operation == null) {
-                throw new EISException("'" + OPERATION + "' property must be set on the query's interation.");
+                throw EISException.operationPropertyIsNotSet();
             }
             if (operation instanceof String) {
                 operation = OracleNoSQLOperation.valueOf((String)operation);
             }
             noSqlSpec.setOperation((OracleNoSQLOperation)operation);
 
+            String tableName = interaction.getQuery().getDescriptor().getTableName();
+            if (tableName == null) {
+                throw EISException.tableNameIsNotSet();
+            }
+            noSqlSpec.setTableName(tableName);
             // Allows setting of consistency as a property.
             Object consistency = interaction.getProperty(CONSISTENCY);
             if (consistency == null) {
@@ -112,13 +140,12 @@ public class OracleNoSQLPlatform extends EISPlatform {
             if (consistency instanceof Consistency) {
                 noSqlSpec.setConsistency((Consistency)consistency);
             } else if (consistency instanceof String) {
-                String constant = (String)consistency;
-                if (constant.equals("ABSOLUTE")) {
+                if ("ABSOLUTE".equals(consistency)) {
                     noSqlSpec.setConsistency(Consistency.ABSOLUTE);
-                } else if (constant.equals("NONE_REQUIRED")) {
-                    noSqlSpec.setConsistency(Consistency.NONE_REQUIRED );
+                } else if ("EVENTUAL".equals(consistency)) {
+                    noSqlSpec.setConsistency(Consistency.EVENTUAL );
                 } else {
-                    throw new EISException("Invalid consistency property value: " + constant);
+                    throw EISException.invalidConsistencyPropertyValue((String)consistency);
                 }
             }
 
@@ -131,15 +158,14 @@ public class OracleNoSQLPlatform extends EISPlatform {
             if (durability instanceof Durability) {
                 noSqlSpec.setDurability((Durability)durability);
             } else if (durability instanceof String) {
-                String constant = (String)durability;
-                if (constant.equals("COMMIT_NO_SYNC")) {
+                if ("COMMIT_NO_SYNC".equals(durability)) {
                     noSqlSpec.setDurability(Durability.COMMIT_NO_SYNC);
-                } else if (constant.equals("COMMIT_SYNC")) {
+                } else if ("COMMIT_SYNC".equals(durability)) {
                     noSqlSpec.setDurability(Durability.COMMIT_SYNC );
-                }  else if (constant.equals("COMMIT_WRITE_NO_SYNC")) {
+                }  else if ("COMMIT_WRITE_NO_SYNC".equals(durability)) {
                     noSqlSpec.setDurability(Durability.COMMIT_WRITE_NO_SYNC );
                 } else {
-                    throw new EISException("Invalid durability property value: " + constant);
+                    throw EISException.invalidDurabilityPropertyValue((String)durability);
                 }
             }
 
@@ -150,9 +176,9 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 timeout = interaction.getQuery().getSession().getProperty(TIMEOUT);
             }
             if (timeout instanceof Number) {
-                noSqlSpec.setTimeout(((Number)timeout).longValue());
+                noSqlSpec.setTimeout(((Number)timeout).intValue());
             } else if (timeout instanceof String) {
-                noSqlSpec.setTimeout(Long.parseLong(((String)timeout)));
+                noSqlSpec.setTimeout(Integer.parseInt(((String)timeout)));
             } else if (interaction.getQuery().getQueryTimeout() > 0) {
                 noSqlSpec.setTimeout(interaction.getQuery().getQueryTimeout());
             }
@@ -177,7 +203,11 @@ public class OracleNoSQLPlatform extends EISPlatform {
             if (version instanceof Version) {
                 noSqlSpec.setVersion((Version)version);
             } else if (version instanceof byte[]) {
-                noSqlSpec.setVersion(Version.fromByteArray((byte[])version));
+                noSqlSpec.setVersion(Version.createVersion((byte[])version));
+            }
+
+            if (interaction.getQuery().getDescriptor() != null) {
+                noSqlSpec.setDescriptor(interaction.getQuery().getDescriptor());
             }
 
             spec = noSqlSpec;
@@ -195,14 +225,6 @@ public class OracleNoSQLPlatform extends EISPlatform {
             return null;
         }
         OracleNoSQLRecord output = (OracleNoSQLRecord)record;
-        if ((output.size() == 1) && (interaction.getQuery().getDescriptor() != null)) {
-            // Check for a nested mapped record.
-            Object value = output.values().iterator().next();
-            if (value instanceof OracleNoSQLRecord) {
-                convertRecordBytesToString((OracleNoSQLRecord)value);
-                output = (OracleNoSQLRecord)value;
-            }
-        }
         jakarta.resource.cci.Record result = output;
         if (getRecordConverter() != null) {
             result = getRecordConverter().converterFromAdapterRecord(output);
@@ -219,56 +241,15 @@ public class OracleNoSQLPlatform extends EISPlatform {
             return new Vector<>(0);
         }
         OracleNoSQLRecord output = (OracleNoSQLRecord)record;
-        if ((output.size() == 1) && (interaction.getQuery().getDescriptor() != null)) {
-            // Check for a nested mapped record.
-            Object value = output.values().iterator().next();
-            if (value instanceof OracleNoSQLRecord) {
-                Vector<AbstractRecord> rows = new Vector<>(1);
-                convertRecordBytesToString((OracleNoSQLRecord)value);
-                rows.add(interaction.buildRow((OracleNoSQLRecord)value, accessor));
-                return rows;
-            } else if (value instanceof Collection) {
-                Vector<AbstractRecord> rows = new Vector<>(((Collection<?>)value).size());
-                for (Object nestedValue : (Collection<?>)value) {
-                    if (nestedValue instanceof OracleNoSQLRecord) {
-                        rows.add(interaction.buildRow((OracleNoSQLRecord)nestedValue, accessor));
-                    }
-                }
-                return rows;
-            }
-        }
         if (interaction.getQuery().getDescriptor() != null) {
             // Check for a map of values.
             Vector<AbstractRecord> rows = new Vector<>();
             for (Object value : output.values()) {
-                if (value instanceof OracleNoSQLRecord) {
-                    convertRecordBytesToString((OracleNoSQLRecord)value);
-                    rows.add(interaction.buildRow((OracleNoSQLRecord)value, accessor));
-                } else if (value instanceof byte[]) {
-                    EISDOMRecord domRecord = new EISDOMRecord();
-                    domRecord.transformFromXML(new String((byte[])value));
-                    rows.add(domRecord);
-                }
+                rows.add(buildRow((jakarta.resource.cci.Record)value, interaction, accessor));
             }
             return rows;
         }
         return interaction.buildRows(record, accessor);
-    }
-
-    /**
-     * INTERNAL:
-     * Convert the record and nested records bytes to strings.
-     */
-    protected void convertRecordBytesToString(OracleNoSQLRecord record) {
-        // Convert byte[] to String.
-        for (Iterator<Map.Entry<?, Object>> iterator = record.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry<?, Object> entry = iterator.next();
-            if (entry.getValue() instanceof byte[]) {
-                entry.setValue(new String((byte[])entry.getValue()));
-            } else if (entry.getValue() instanceof OracleNoSQLRecord) {
-                convertRecordBytesToString((OracleNoSQLRecord)entry.getValue());
-            }
-        }
     }
 
     /**
@@ -307,13 +288,13 @@ public class OracleNoSQLPlatform extends EISPlatform {
      */
     @Override
     public void setDOMInRecord(Element dom, jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
-        OracleNoSQLRecord noSqlRecord = (OracleNoSQLRecord)record;
+        org.eclipse.persistence.internal.nosql.adapters.sdk.OracleNoSQLRecord noSqlRecord = (org.eclipse.persistence.internal.nosql.adapters.sdk.OracleNoSQLRecord)record;
         org.eclipse.persistence.oxm.record.DOMRecord domRecord = new org.eclipse.persistence.oxm.record.DOMRecord(dom);
         domRecord.setSession(interaction.getQuery().getSession());
         // Create the key from the objects id.
         ClassDescriptor descriptor = interaction.getQuery().getDescriptor();
         if (descriptor == null) {
-            throw new EISException("XMLInteraction is only valid for object queries, use MappedIneraction for native queries: " + interaction);
+            throw EISException.xmlInteractionIsValidOnly(interaction.toString());
         }
         Object key = createMajorKey(descriptor, domRecord, interaction, accessor);
         noSqlRecord.put(key, domRecord.transformToXML().getBytes());
@@ -359,35 +340,83 @@ public class OracleNoSQLPlatform extends EISPlatform {
         OracleNoSQLRecord noSqlRecord = (OracleNoSQLRecord)record;
         if (noSqlRecord.size() == 0) {
             return null;
-        } else if (noSqlRecord.size() == 1) {
-            domRecord = new EISDOMRecord();
-            Object value = noSqlRecord.values().iterator().next();
-            String xml = null;
-            if (value instanceof byte[]) {
-                xml = new String ((byte[])value);
-            } else {
-                xml = (String) value;
-            }
-            if (xml != null) {
-                domRecord.transformFromXML(xml);
-            }
         } else {
-            domRecord = new EISDOMRecord();
-            for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>)noSqlRecord.entrySet()) {
-                Object value = entry.getValue();
-                String xml = null;
-                if (value instanceof byte[]) {
-                    xml = new String ((byte[])value);
-                } else {
-                    xml = (String)value;
-                }
-                if (xml != null) {
-                    EISDOMRecord dom = new EISDOMRecord();
-                    dom.transformFromXML(xml);
-                    domRecord.put(entry.getKey(), dom);
+            Map<String, DatabaseMapping> mappings = new HashMap<>();
+            ClassDescriptor descriptor = call.getQuery().getDescriptor();
+            String sessionName = descriptor.getSessionName();
+            Session session = null;
+            if (sessionName != null && !sessionName.isEmpty()) {
+                session = SessionManager.getManager().getSession(sessionName);
+            } else {
+                session = SessionManager.getManager().getDefaultSession();
+            }
+            for (DatabaseMapping mapping: descriptor.getMappings()) {
+                for (DatabaseField field : mapping.getFields()) {
+                    mappings.put(field.getName().replaceAll("/text\\(\\)", "").toLowerCase(), mapping);
                 }
             }
-
+            domRecord = new EISDOMRecord();
+            domRecord.setDOM(domRecord.createNewDocument(((XMLInteraction)call).getOutputRootElementName()));
+            domRecord.setSession((AbstractSession) session);
+            for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>)noSqlRecord.entrySet()) {
+                DatabaseMapping mapping = mappings.get(entry.getKey().toLowerCase());
+                if (mapping != null) {
+                    //Nested record type
+                    if (entry.getValue() instanceof Map) {
+                        Map<String, String> subRecord = (Map) entry.getValue();
+                        domRecord.put(mapping.getField(), "");
+                        EISDOMRecord domSubRecord = (EISDOMRecord) domRecord.buildNestedRow((Element) domRecord.getDOM().getLastChild());
+                        domSubRecord.setSession((AbstractSession) session);
+                        Map<String, DatabaseMapping> subMappings = new HashMap<>();
+                        for (DatabaseMapping subMapping : mapping.getReferenceDescriptor().getMappings()) {
+                            subMappings.put(subMapping.getField().getName().replaceAll("\\@", "").replaceAll("/text\\(\\)", "").toLowerCase(), subMapping);
+                        }
+                        for (Map.Entry<String, String> subEntry : subRecord.entrySet()) {
+                            domSubRecord.put(subMappings.get(subEntry.getKey().toLowerCase()).getField(), subEntry.getValue());
+                        }
+                    //Nested array of records
+                    } else if (entry.getValue() != null && (entry.getValue().getClass().isArray() || (entry.getValue() instanceof List))) {
+                        Map<String, DatabaseMapping> subMappings = new HashMap<>();
+                        if (mapping.getReferenceDescriptor() == null) {
+                            subMappings.put(mapping.getField().getName().replaceAll("\\@", "").replaceAll("/text\\(\\)", "").toLowerCase(), mapping);
+                        } else {
+                            for (DatabaseMapping subMapping : mapping.getReferenceDescriptor().getMappings()) {
+                                subMappings.put(subMapping.getField().getName().replaceAll("\\@", "").replaceAll("/text\\(\\)", "").toLowerCase(), subMapping);
+                            }
+                        }
+                        if (mapping instanceof EISCompositeCollectionMapping) {
+                            domRecord.put(mapping.getField(), "");
+                        }
+                        Object[] entryValue;
+                        if (entry.getValue() instanceof List) {
+                            entryValue = ((List)entry.getValue()).toArray();
+                        } else {
+                            entryValue = (Object[])entry.getValue();
+                        }
+                        for (int i = 0; i < entryValue.length; i++) {
+                            Object arrayItem = entryValue[i];
+                            if (i > 0) {
+                                Element lastChild = (Element)domRecord.getDOM().getLastChild();
+                                Element newLastChild = (Element)lastChild.cloneNode(false);
+                                domRecord.getDOM().appendChild(newLastChild);
+                            }
+                            if (arrayItem instanceof Map) {
+                                EISDOMRecord domSubRecord = (EISDOMRecord) domRecord.buildNestedRow((Element) domRecord.getDOM().getLastChild());
+                                domSubRecord.setSession((AbstractSession) session);
+                                for (Map.Entry<String, Object> subEntry : (Set<Map.Entry<String, Object>>) ((Map) arrayItem).entrySet()) {
+                                    if (subEntry.getValue() != null) {
+                                        domSubRecord.put(subMappings.get(subEntry.getKey().toLowerCase()).getField(), subEntry.getValue());
+                                    }
+                                }
+                            } else {
+                                domRecord.add(subMappings.get(entry.getKey()).getField(), arrayItem);
+                            }
+                        }
+                    } else if (entry.getValue() != null) {
+                        domRecord.put(mapping.getField(), entry.getValue());
+                    }
+                }
+            }
         }
         return domRecord;
     }
@@ -442,6 +471,47 @@ public class OracleNoSQLPlatform extends EISPlatform {
         }
     }
 
+    @Override
+    public DatasourceCall buildCallFromStatement(SQLStatement statement, DatabaseQuery query, AbstractSession session) {
+        boolean isXML = ((EISDescriptor)query.getDescriptor()).isXMLFormat();
+        if (query.isObjectLevelReadQuery()) {
+            MappedInteraction call = isXML ? new XMLInteraction() : new MappedInteraction();
+            call.setProperty(OPERATION, OracleNoSQLOperation.ITERATOR_QUERY);
+            DatabaseRecord row = new DatabaseRecord();
+
+            //Prepare SQL query for NoSQL
+            DatabaseCall sqlCall = ((SQLSelectStatement)statement).buildCall(session, query);
+            String sqlString = sqlCall.getSQLString();
+            StringBuilder sqlVariables = null;
+            StringBuilder parameterNames = null;
+            sqlString = sqlString.replaceAll("/text\\(\\)", "");
+            List<ParameterExpression> parameters = sqlCall.getParameters();
+            for (ParameterExpression parameter: parameters) {
+                if (sqlVariables == null && parameterNames == null) {
+                    sqlVariables = new StringBuilder("DECLARE");
+                    parameterNames = new StringBuilder();
+                }
+                String parameterName = parameter.getField().getName();
+                Object parameterValue = parameter.getValue(statement.getTranslationRow(), session);
+                String parameterTypeName = ((Class)parameter.getType()).getName();
+                FieldValue fieldValue = getFieldValue(parameterTypeName, parameterValue.toString(), false);
+                parameterNames.append(parameterName + ";");
+                sqlVariables.append(" $" + parameterName + " " + fieldValue.getType().name() + ";");
+                sqlString = sqlString.replaceFirst("\\?", "\\$" + parameterName);
+                row.put(parameterName + QUERY_ARGUMENT_VALUE_SUFFIX, parameterValue);
+                row.put(parameterName + QUERY_ARGUMENT_TYPE_SUFFIX, parameterTypeName);
+            }
+            if (parameters.size() > 0) {
+                sqlString = sqlVariables + " " + sqlString;
+                row.put(QUERY_ARGUMENTS, parameterNames);
+            }
+            row.put(QUERY, sqlString);
+            call.setInputRow(row);
+            return call;
+        }
+        throw EISException.queryIsTooComplexForOracleNoSQLDB(query.toString());
+    }
+
     /**
      * Do not prepare to avoid errors being triggered for id and all queries.
      */
@@ -457,5 +527,57 @@ public class OracleNoSQLPlatform extends EISPlatform {
     @Override
     protected Sequence createPlatformDefaultSequence() {
         return new UUIDSequence();
+    }
+
+    public static FieldValue getFieldValue(String typeName, Object value, boolean isLob) {
+        FieldValue fieldValue = null;
+        if ("boolean".equals(typeName) || "java.lang.Boolean".equals(typeName)) {
+            fieldValue = (Boolean.valueOf(value.toString())) ? BooleanValue.trueInstance() : BooleanValue.falseInstance();
+        } else if ("double".equals(typeName) || "java.lang.Double".equals(typeName)) {
+            fieldValue = new DoubleValue(value.toString());
+        } else if ("int".equals(typeName) || "java.lang.Integer".equals(typeName)) {
+            fieldValue = new IntegerValue(value.toString());
+        } else if ("long".equals(typeName) || "java.lang.Long".equals(typeName)) {
+            fieldValue = new LongValue(value.toString());
+        } else if ("java.lang.String".equals(typeName)) {
+            fieldValue = new StringValue(value.toString());
+        } else if ("java.sql.Timestamp".equals(typeName)) {
+            fieldValue = new TimestampValue(value.toString());
+        } else if ("java.math.BigDecimal".equals(typeName)) {
+            fieldValue = new NumberValue(value.toString());
+        } else if (typeName.contains("byte[]") && isLob) {
+            fieldValue = new BinaryValue((byte[]) value);
+        } else if (typeName.contains("[]") && !isLob) {
+            fieldValue = new ArrayValue();
+            for (Object item: (Object[])value) {
+                ((ArrayValue)fieldValue).add(getFieldValue(typeName.replace("[]", ""), item, false));
+            }
+        } else if ("java.util.Map".equals(typeName)) {
+            fieldValue = new MapValue();
+            for (Map.Entry<Object, Object> entry : (Set<Map.Entry<Object, Object>>)((Map)value).entrySet()) {
+                String valueTypeName = entry.getValue().getClass().getName();
+                ((MapValue)fieldValue).put(entry.getKey().toString(), getFieldValue(valueTypeName, entry.getValue(), false));
+            }
+        } else {
+            fieldValue = new StringValue(value.toString());
+        }
+        return fieldValue;
+    }
+
+    public static boolean isLob(String typeName) {
+        return ClassConstants.BLOB.getName().equals(typeName) || ClassConstants.CLOB.getName().equals(typeName);
+    }
+
+    /**
+     * INTERNAL:
+     * Allow for conversion from the Oracle type to the Java type.
+     */
+    @Override
+    @SuppressWarnings({"unchecked"})
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass) throws ConversionException, DatabaseException {
+        if (sourceObject instanceof DOMRecord) {
+            sourceObject = ((Node)((DOMRecord)sourceObject).getValues().get(0)).getNodeValue();
+        }
+        return super.convertObject(sourceObject, javaClass);
     }
 }
