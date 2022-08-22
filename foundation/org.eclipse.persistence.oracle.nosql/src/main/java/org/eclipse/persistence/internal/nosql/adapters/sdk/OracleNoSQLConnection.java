@@ -39,8 +39,7 @@ public class OracleNoSQLConnection implements Connection {
     private NoSQLHandle noSQLHandle = null;
 
     /**
-     * Create the connection on a native AQ session.
-     * The session must be connected to a JDBC connection.
+     * Create the connection on a native OracleNoSQLHandle (connection).
      */
     public OracleNoSQLConnection(NoSQLHandle noSQLHandle, OracleNoSQLJCAConnectionSpec spec) {
         this.noSQLHandle = noSQLHandle;
@@ -49,7 +48,7 @@ public class OracleNoSQLConnection implements Connection {
     }
 
     /**
-     * Close the AQ native session and the database connection.
+     * Close the native OracleNoSQLHandle (connection).
      */
     @Override
     public void close() throws ResourceException {

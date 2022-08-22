@@ -34,11 +34,13 @@ public class OracleNoSQLRecordFactory implements RecordFactory {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public IndexedRecord createIndexedRecord(String recordName) {
         throw ValidationException.operationNotSupported("createIndexedRecord");
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public MappedRecord createMappedRecord(String recordName) {
         return new OracleNoSQLRecord(recordName);
     }

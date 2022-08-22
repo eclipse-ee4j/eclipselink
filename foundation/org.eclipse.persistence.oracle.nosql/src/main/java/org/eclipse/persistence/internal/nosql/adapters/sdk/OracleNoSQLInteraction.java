@@ -307,7 +307,7 @@ public class OracleNoSQLInteraction implements Interaction {
                 }
             } else if (mapping instanceof EISCompositeDirectCollectionMapping) {
                 ArrayValue arrayValue = new ArrayValue();
-                List<DOMRecord> domRecordList = (List) domRecord.getValues(key);
+                List<DOMRecord> domRecordList = (List<DOMRecord>) domRecord.getValues(key);
                 for (DOMRecord domRecordListItem : domRecordList) {
                     StringValue recordValue = null;
                     for (Node domRecordListItemValue : (List<Node>) domRecordListItem.getValues()) {

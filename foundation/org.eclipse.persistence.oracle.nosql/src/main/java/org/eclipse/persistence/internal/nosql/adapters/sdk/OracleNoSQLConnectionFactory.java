@@ -62,8 +62,7 @@ public class OracleNoSQLConnectionFactory implements ConnectionFactory {
 
             noSQLHandle = NoSQLHandleFactory.createNoSQLHandle(config);
         } catch (Exception exception) {
-            ResourceException resourceException = new ResourceException(exception.toString(), exception);
-            throw resourceException;
+            throw new ResourceException(exception.toString(), exception);
         }
         return new OracleNoSQLConnection(noSQLHandle, connectionSpec);
     }

@@ -39,7 +39,7 @@ public class OracleNoSQLJCAConnectionSpec implements ConnectionSpec {
         INSTANCE("instance"),
         RESOURCE("resource");
 
-        private String authPrincipalName;
+        private final String authPrincipalName;
 
         AuthPrincipalType(String authPrincipalName) {
             this.authPrincipalName = authPrincipalName;
@@ -69,7 +69,7 @@ public class OracleNoSQLJCAConnectionSpec implements ConnectionSpec {
         ON_PREMISE("onpremise"),
         CLOUD_SIMULATOR("cloudsim");
 
-        private String serviceName;
+        private final String serviceName;
 
         ServiceType(String serviceName) {
             this.serviceName = serviceName;
