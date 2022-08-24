@@ -64,12 +64,12 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
         // does not break the CORBA Extension tests.
         if (this.getJsonPlatform() instanceof PostgreSQL10JsonExtension) {
             postgreSQL10JsonExtension = (PostgreSQL10JsonExtension) this.getJsonPlatform();
-            DefaultSessionLog.getLog().log(SessionLog.CONFIG, "pgsql10_platform_with_json_extension", null);
+            DefaultSessionLog.getLog().log(SessionLog.FINE, "pgsql10_platform_with_json_extension", null);
         // Missing PostgreSQL10JsonPlatform from org.eclipse.persistence.pgsql module.
         // This will cause JSON related functionality to fail.
         } else {
             postgreSQL10JsonExtension = null;
-            DefaultSessionLog.getLog().log(SessionLog.CONFIG, "pgsql10_platform_without_json_extension", null);
+            DefaultSessionLog.getLog().log(SessionLog.FINE, "pgsql10_platform_without_json_extension", null);
         }
     }
 

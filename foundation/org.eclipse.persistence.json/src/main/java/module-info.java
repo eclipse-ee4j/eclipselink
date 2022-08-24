@@ -17,6 +17,8 @@ module org.eclipse.persistence.json {
 
     requires transitive org.eclipse.persistence.core;
 
+    provides org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider with org.eclipse.persistence.json.DefaultJsonPlatformProvider;
+
     exports org.eclipse.persistence.json to
             org.eclipse.persistence.jpa,
             org.eclipse.persistence.pgsql,
