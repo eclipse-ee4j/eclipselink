@@ -19,4 +19,6 @@ module org.eclipse.persistence.pgsql {
     requires transitive org.eclipse.persistence.core;
     requires transitive org.eclipse.persistence.json;
 
+    provides org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider with org.eclipse.persistence.pgsql.PostgreSQLJsonPlatformProvider;
+
 }
