@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -61,7 +61,7 @@ else
     fi
   fi
   echo '-[ Release tag cleanup ]--------------------------------------------------------'
-  if [[ -n `git ls-remote --tags ${GIT_ORIGIN} | grep "${RELEASE_TAG}"` ]]; then
+  if [[ -n `git ls-remote --tags ${GIT_ORIGIN} | grep "${RELEASE_TAG}$"` ]]; then
     if [ "${OVERWRITE_GIT}" = 'true' ]; then
       echo "${RELEASE_TAG} tag already exists, deleting"
       git push --delete origin "${RELEASE_TAG}" && true
@@ -88,7 +88,7 @@ ECLIPSELINK_STAGING_KEY=$(echo ${ECLIPSELINK_STAGING_DESC} | sed -e 's/\./\\\./g
 
 # Set release versions
 echo '-[ EclipseLink release version ]--------------------------------------------------------'
-set_version 'ECLIPSELINK' "${ECLIPSELINK_DIR}" "${ECLIPSELINK_RELEASE_VERSION}" "${ECLIPSELINK_GROUP_ID}" "${ECLIPSELINK_ARTIFACT_ID}" ''
+set_version 'ECLIPSELINK' "${ECLIPSELINK_DIR}" "${ECLIPSELINK_RELEASE_VERSION}" "${ECLIPSELINK_GROUP_ID}" "${ECLIPSELINK_ARTIFACT_ID}" '' "${OVERWRITE_GIT}"
 
 if [ "${OVERWRITE_STAGING}" = 'true' ]; then
   drop_artifacts "${ECLIPSELINK_STAGING_KEY}" "${ECLIPSELINK_DIR}"
@@ -96,14 +96,14 @@ fi
 
 echo '-[ Build project mvn clean install ]-----------------------------'
 #This step is needed to populate local Maven repository with required but not deployed artifacts
-mvn --no-transfer-progress -V -DskipTests clean install
+mvn --no-transfer-progress -DskipTests clean install -Dbuild.type=RELEASE
 #Deploy selected artifacts. There is Maven property -Ddeploy to control which modules will be deployed
 echo '-[ Deploy artifacts to staging repository ]-----------------------------'
 # Verify, sign and deploy release
 (cd ${ECLIPSELINK_DIR} && \
   mvn --no-transfer-progress -U -C -B -V \
       -Poss-release,staging -DskipTests \
-      -DskipTests -Ddoclint=none \
+      -Dbuild.type=RELEASE -Ddoclint=none \
       -DstagingDescription="${ECLIPSELINK_STAGING_DESC}" \
       -Ddeploy \
       clean ${MVN_DEPLOY_ARGS})
@@ -113,7 +113,7 @@ git tag "${RELEASE_TAG}" -m "EclipseLink ${ECLIPSELINK_RELEASE_VERSION} release"
 
 # Set next release cycle snapshot version
 echo '-[ EclipseLink next snapshot version ]--------------------------------------------------'
-set_version 'ECLIPSELINK' "${ECLIPSELINK_DIR}" "${ECLIPSELINK_NEXT_SNAPSHOT}" "${ECLIPSELINK_GROUP_ID}" "${ECLIPSELINK_ARTIFACT_ID}" ''
+set_version 'ECLIPSELINK' "${ECLIPSELINK_DIR}" "${ECLIPSELINK_NEXT_SNAPSHOT}" "${ECLIPSELINK_GROUP_ID}" "${ECLIPSELINK_ARTIFACT_ID}" '' "${OVERWRITE_GIT}"
 
 if [ ${DRY_RUN} = 'true' ]; then
   echo '-[ Skipping GitHub update ]-----------------------------------------------------'
