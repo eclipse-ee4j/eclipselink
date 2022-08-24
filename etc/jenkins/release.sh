@@ -61,7 +61,7 @@ else
     fi
   fi
   echo '-[ Release tag cleanup ]--------------------------------------------------------'
-  if [[ -n `git ls-remote --tags ${GIT_ORIGIN} | grep "${RELEASE_TAG}"` ]]; then
+  if [[ -n `git ls-remote --tags ${GIT_ORIGIN} | grep "${RELEASE_TAG}$"` ]]; then
     if [ "${OVERWRITE_GIT}" = 'true' ]; then
       echo "${RELEASE_TAG} tag already exists, deleting"
       git push --delete origin "${RELEASE_TAG}" && true
