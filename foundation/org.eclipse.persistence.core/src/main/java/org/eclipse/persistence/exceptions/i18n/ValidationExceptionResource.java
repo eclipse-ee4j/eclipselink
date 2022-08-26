@@ -357,7 +357,7 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7340", "There are multiple mapping files called [{0}] in classpath."},
                                            { "7341", "No eclipselink-orm.xml was specified for the XMLMetadataSource.  Please specify one using either persistence unit property eclipselink.metadata-source.xml.file or eclipselink.metadata-source.xml.url"},
                                            { "7342", "The specified boolean value [{0}] for setting allow native sql queries is invalid, the value must either be \"true\" or \"false\"."},
-                                           { "7343", "Multiple VPD identifiers (tenant discriminator context property) have been specified. Entity [{1}] uses [{0}] and Entity [{3}] uses [{2}]. When using a Multitenant VPD strategy, there can only be one tenant discriminator column per entity and its context property must be consistent across all the Multitenant VPD entities."},
+                                           { "7343", "Multiple VPD identifiers (tenant discriminator context property) have been specified. Entity [{1}] uses [{0}] and Entity [{3}] uses [{2}]. The Multitenant VPD strategy allows only one tenant discriminator column for each entity and its context property must be consistent across all the Multitenant VPD entities."},
                                            { "7344", "VPD (connections and DDL generation) is not supported for the platform: [{0}]."},
                                            { "7345", "{0} file specified for XMLMetadataSource is not found"},
                                            { "7346", "The multitenant context property [{0}] has not been provided. When the persistence unit property (" + PersistenceUnitProperties.MULTITENANT_SHARED_EMF + ") is set to false, all multitenant context properties must be provided up front. This can be done through the persistence unit definition directly or by passing a properties map containing all the multitenant context properties on the create EntityManagerFactory call."},
@@ -370,7 +370,7 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7354", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a map key convert specification." },
                                            { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },
                                            { "7356", "Procedure: [{1}] cannot be executed because {0} does not currently support multiple out parameters"},
-                                           { "7357", "URL [{0}] for resource [{1}] does not belong to a valid persistence root (as per JPA Specification)"},
+                                           { "7357", "The \"[{0}]\" URL for \"[{1}]\" resource does not belong to a valid persistence root (as per JPA Specification)"},
  };
 
     /**
