@@ -96,7 +96,7 @@ public class SimpleTypes_OneToMany {
     }
 
     @Test
-    public void verifyConfig() throws Exception {
+    public void verifyConfig() {
         ClassDescriptor descriptorA = helper.getSession().getClassDescriptorForAlias("SimpleA");
         assertNotNull("No descriptor found for alias='SimpleA'", descriptorA);
         DynamicType simpleTypeA = helper.getType("SimpleA");
@@ -187,7 +187,7 @@ public class SimpleTypes_OneToMany {
         em.getTransaction().begin();
         DynamicEntity a = em.find(simpleAType.getJavaClass(), 1);
         assertNotNull(a);
-        assertEquals(1, a.<Collection> get("b").size());
+        assertEquals(1, a.<Collection<?>> get("b").size());
         em.remove(a);
         // em.remove(a.get("b", List.class).get(0));
         em.getTransaction().commit();

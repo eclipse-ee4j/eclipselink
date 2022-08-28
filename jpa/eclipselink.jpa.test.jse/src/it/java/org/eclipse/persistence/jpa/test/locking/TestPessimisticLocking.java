@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2019 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -216,9 +216,7 @@ public class TestPessimisticLocking {
 
     /**
      * This test verifies that aggregate queries will not fail with locking
-     * set.
-     *
-     * @see org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite#testQueryPESSIMISTIC_FORCE_INCREMENTLock()
+     * set. See {@code org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite#testQueryPESSIMISTIC_FORCE_INCREMENTLock()}
      */
     @Test
     public void testAggregateResultPessimisticForceIncrement() {
@@ -241,9 +239,7 @@ public class TestPessimisticLocking {
 
     /**
      * This test verifies that queries that return non-Entity results will not
-     * fail up with locking set.
-     *
-     * @see org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite#testQueryPESSIMISTIC_FORCE_INCREMENTLock()
+     * fail up with locking set. See {@code org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite#testQueryPESSIMISTIC_FORCE_INCREMENTLock()}
      */
     @Test
     public void testObjectQueryPessimisticForceIncrement() {

@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.jpa.jpql.relationships;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -117,14 +118,14 @@ public class JUnitJPQLComplexAggregateTest extends JUnitTestCase {
         Collections.sort(expectedResult);
 
         String jpql = "SELECT COUNT(o) FROM Customer c LEFT JOIN c.orders o GROUP BY c.name";
-        Query q = em.createQuery(jpql);
-        List result = q.getResultList();
+        TypedQuery<Long> q = em.createQuery(jpql, Long.class);
+        List<Long> result = q.getResultList();
         Collections.sort(result);
 
         Assert.assertEquals("Complex COUNT on joined variable simple PK", expectedResult, result);
 
         jpql = "SELECT COUNT(DISTINCT o) FROM Customer c LEFT JOIN c.orders o GROUP BY c.name";
-        q = em.createQuery(jpql);
+        q = em.createQuery(jpql, Long.class);
         result = q.getResultList();
         Collections.sort(result);
 

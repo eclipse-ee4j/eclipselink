@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
+    <entity name="XMLStudent" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Student">
+        <table name="JPA_XML_AC_STUDENT"/>
+        <attributes>
+            <id name="id">
+                <generated-value generator="AC_XML_STUDENT_SEQ"/>
+                <sequence-generator name="AC_XML_STUDENT_SEQ" allocation-size="25"/>
+            </id>
+            <basic name="name"/>
+            <many-to-one name="school"/>
+        </attributes>
+    </entity>
+    <entity name="XMLSchool" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.School">
+        <table name="JPA_XML_AC_SCHOOL"/>
+        <named-query name="findJPQLXMLSchools">
+            <query>SELECT s from XMLSchool s</query>
+        </named-query>
+        <attributes>
+            <id name="id">
+                <generated-value generator="AC_XML_SCHOOL_SEQ"/>
+                <sequence-generator name="AC_XML_SCHOOL_SEQ" allocation-size="25"/>
+            </id>
+            <basic name="name"/>
+            <one-to-many name="students" mapped-by="school">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-many>
+        </attributes>
+    </entity>
+    <entity name="XMLBolt" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Bolt">
+        <table name="JPA_XML_AC_BOLT"/>
+        <attributes>
+            <id name="id">
+                <generated-value generator="AC_XML_BOLT_SEQ"/>
+                <sequence-generator name="AC_XML_BOLT_SEQ" allocation-size="25"/>
+            </id>
+            <one-to-one name="nut">
+                <join-column name="NUT_ID"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLNut" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.additionalcriteria.Nut">
+        <table name="JPA_XML_AC_NUT"/>
+        <attributes>
+            <id name="id">
+                <generated-value generator="AC_XML_NUT_SEQ"/>
+                <sequence-generator name="AC_XML_NUT_SEQ" allocation-size="25"/>
+            </id>
+            <basic name="size">
+                <column name="B_SIZE"/>
+            </basic>
+            <basic name="color"/>
+        </attributes>
+    </entity>
+</entity-mappings>

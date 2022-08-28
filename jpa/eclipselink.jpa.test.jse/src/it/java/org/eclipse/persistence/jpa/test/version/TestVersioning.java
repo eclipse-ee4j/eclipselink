@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -241,7 +241,7 @@ public class TestVersioning {
 	}
 	
 	/**
-	 * Test based on org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSuite.JTAOptimisticLockExceptionTest()
+	 * Test based on org.eclipse.persistence.testing.tests.jpa.jpql.advanced.JUnitJPQLValidationTestSuite.JTAOptimisticLockExceptionTest()
 	 * 
 	 */
 	@Test

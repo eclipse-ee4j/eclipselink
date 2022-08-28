@@ -128,7 +128,27 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.advanced</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.xml.advanced</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.testapps.cacheable</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.compositepk</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.testapps.derivedid</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -236,10 +256,13 @@
     </dependencies>
 
     <modules>
+        <module>jpa.test.advanced</module>
         <module>jpa.test.advanced2</module>
+        <module>jpa.test.advanced.additionalcriteria</module>
         <module>jpa.test.advanced.cacheimpl</module>
         <module>jpa.test.advanced.cascadepersist</module>
-        <module>jpa.test.criteria</module>
+        <module>jpa.test.advanced.compositepk</module>
+        <module>jpa.test.advanced.derivedid</module>
         <module>jpa.test.advanced.customer</module>
         <module>jpa.test.advanced.embeddable</module>
         <module>jpa.test.advanced.fetchgroup</module>
@@ -254,17 +277,21 @@
         <module>jpa.test.composite.advanced/member_1</module>
         <module>jpa.test.composite.advanced/member_2</module>
         <module>jpa.test.composite.advanced/member_3</module>
+        <module>jpa.test.criteria</module>
         <module>jpa.test.datatypes</module>
         <module>jpa.test.datetime</module>
         <module>jpa.test.ddlgeneration</module>
         <module>jpa.test.delimited</module>
         <module>jpa.test.extensibility</module>
+        <module>jpa.test.fetchgroups</module>
         <module>jpa.test.fieldaccess.advanced</module>
         <module>jpa.test.fieldaccess.relationships</module>
+        <module>jpa.test.identity</module>
         <module>jpa.test.inheritance</module>
         <module>jpa.test.inherited</module>
         <module>jpa.test.jpaadvancedproperties</module>
         <module>jpa.test.jpql</module>
+        <module>jpa.test.jta</module>
         <module>jpa.test.lob</module>
         <module>jpa.test.memory</module>
         <module>jpa.test.metamodel</module>
@@ -279,27 +306,34 @@
         <module>jpa.test.sessionbean</module>
         <module>jpa.test.sessionbean.ha</module>
         <module>jpa.test.validation</module>
-        <module>jpa.test.xml.advanced.multitenant</module>
-        <module>jpa.test.xml.cacheable</module>
         <module>jpa.test.xml.composite.advanced</module>
         <module>jpa.test.xml.composite.advanced/common</module>
         <module>jpa.test.xml.composite.advanced/member_1</module>
         <module>jpa.test.xml.composite.advanced/member_2</module>
         <module>jpa.test.xml.composite.advanced/member_3</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.advanced</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.advanced.additionalcriteria</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.advanced.fetchgroup</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.complexaggregate</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.inheritance</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.relationships</module>
         <module>jpa.test.xml.extended.composite.advanced</module>
         <module>jpa.test.xml.extended.composite.advanced/member_1</module>
         <module>jpa.test.xml.extended.composite.advanced/member_2</module>
         <module>jpa.test.xml.extended.composite.advanced/member_3</module>
-        <module>jpa.test.xml.extended.inheritance</module>
-        <module>jpa.test.xml.extended.relationships</module>
-        <module>jpa.test.xml.inheritance</module>
-        <module>jpa.test.xml.merge.incompletemappings.nonowning</module>
-        <module>jpa.test.xml.merge.incompletemappings.owning</module>
-        <module>jpa.test.xml.merge.inherited</module>
-        <module>jpa.test.xml.merge.relationships</module>
-        <module>jpa.test.xml.metadatacomplete</module>
-        <module>jpa.test.xml.relationships</module>
-        <module>jpa.test.xml.relationships.unidirectional</module>
+        <module>jpa.test.xml.merge/jpa.test.xml.merge.advanced</module>
+        <module>jpa.test.xml.merge/jpa.test.xml.merge.incompletemappings.nonowning</module>
+        <module>jpa.test.xml.merge/jpa.test.xml.merge.incompletemappings.owning</module>
+        <module>jpa.test.xml.merge/jpa.test.xml.merge.inherited</module>
+        <module>jpa.test.xml.merge/jpa.test.xml.merge.relationships</module>
+        <module>jpa.test.xml.only/jpa.test.xml.advanced</module>
+        <module>jpa.test.xml.only/jpa.test.xml.advanced.multitenant</module>
+        <module>jpa.test.xml.only/jpa.test.xml.cacheable</module>
+        <module>jpa.test.xml.only/jpa.test.xml.inheritance</module>
+        <module>jpa.test.xml.only/jpa.test.xml.inherited</module>
+        <module>jpa.test.xml.only/jpa.test.xml.metadatacomplete</module>
+        <module>jpa.test.xml.only/jpa.test.xml.relationships</module>
+        <module>jpa.test.xml.only/jpa.test.xml.relationships.unidirectional</module>
         <module>jpa.test.xml.xmlmetadatacomplete</module>
         <module>nativeapi</module>
     </modules>

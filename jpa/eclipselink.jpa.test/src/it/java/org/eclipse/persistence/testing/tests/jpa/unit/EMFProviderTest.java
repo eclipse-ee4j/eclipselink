@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,12 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.tests.jpa.unit;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import junit.framework.TestCase;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 
-import junit.framework.TestCase;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EMFProviderTest extends TestCase {
 

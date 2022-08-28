@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Guy Pelletier - initial API and implementation
 package org.eclipse.persistence.testing.tests.jpa.config;
+
+import java.util.Objects;
 
 /**
  * JPA scripting API implementation helper class.
@@ -50,5 +52,10 @@ public class PhoneNumberPK  {
             return false;
         }
         return (getId().equals(((PhoneNumberPK)anotherPhoneNumber).getId()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

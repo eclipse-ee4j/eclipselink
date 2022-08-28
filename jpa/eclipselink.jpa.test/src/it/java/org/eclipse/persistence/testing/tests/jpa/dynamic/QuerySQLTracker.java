@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,7 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic;
 
 //javase imports
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-//EclipseLink imports
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.DefaultSessionLog;
@@ -38,6 +33,11 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
+
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -94,7 +94,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
      * Reset the lists of SQL and queries being tracked
      */
     public void reset() {
-        this.queries = new ArrayList<QueryResult>();
+        this.queries = new ArrayList<>();
     }
 
     public List<QueryResult> getQueries() {
@@ -181,7 +181,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
     public class QueryResult {
         private DatabaseQuery query;
         private String resultString = null;
-        public List<String> sqlStatements = new ArrayList<String>();
+        public List<String> sqlStatements = new ArrayList<>();
 
         QueryResult(DatabaseQuery q) {
             query = q;
@@ -205,7 +205,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
 
             Object result = queryResult;
             if (queryResult instanceof Collection) {
-                result = ((Collection) queryResult).toArray();
+                result = ((Collection<?>) queryResult).toArray();
             }
 
             if (result == null) {

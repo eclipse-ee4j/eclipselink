@@ -15,11 +15,11 @@
 //       - TODO Bug#: Bug Description
 //     07/05/2010-2.1.1 Michael O'Brien
 //       - 321716: modelgen and jpa versions of duplicate code in both copies of
-//       JUnitCriteriaSimpleTestSuite must be kept in sync (to avoid only failing on WebSphere under Derby)
+//       JUnitCriteriaSimpleTest must be kept in sync (to avoid only failing on WebSphere under Derby)
 //       (ideally there should be only one copy of the code - the other suite should reference or subclass for changes)
 //       see
-//       org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.simpleModTest():1796
-//       org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.simpleModTest():1766
+//       org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTest.simpleModTest():1796
+//       org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTest.simpleModTest():1766
 //       - 321902: this copied code should be renamed, merged or subclassed off the original
 package org.eclipse.persistence.testing.tests.jpa.criteria.inherited;
 
@@ -112,7 +112,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
     public static <T extends JUnitCriteriaSimpleTestSuiteBase> Test suite(Class<T> implementingClass) {
         TestSuite suite = new TestSuite();
-        suite.setName("JUnitCriteriaSimpleTestSuite");
+        suite.setName("JUnitCriteriaSimpleTest");
 
         try {
             Constructor<T> constructor = implementingClass.getConstructor(String.class);
@@ -189,7 +189,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
             Root<BeerConsumer> root = wrapper.from(cq1, BeerConsumer.class);
             Join<BeerConsumer, Blue> join = wrapper.join(root, BeerConsumer_blueBeersToConsume);
-            jakarta.persistence.criteria.Expression exp = wrapper.get((Path)join.as(BlueLight.class), BlueLight_discount);
+            jakarta.persistence.criteria.Expression<?> exp = wrapper.get((Path<?>)join.as(BlueLight.class), BlueLight_discount);
             cq1.where(qb1.equal(exp, 10) );
 
             List<BeerConsumer> result = em.createQuery(cq1).getResultList();

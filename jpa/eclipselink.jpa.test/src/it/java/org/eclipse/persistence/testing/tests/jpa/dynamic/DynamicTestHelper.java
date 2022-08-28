@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,22 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic;
 
 //javase imports
-import java.io.IOException;
+
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.spi.PersistenceProvider;
+import jakarta.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.ProviderUtil;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
+import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -30,26 +45,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.Map;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
-//java eXtension imports
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.spi.PersistenceProvider;
-import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.spi.ProviderUtil;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-//EclipseLink imports
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
-import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
-import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
-import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHandler;
-
-//domain-specific (testing) imports
 import static org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper.getDatabaseProperties;
 
 public class DynamicTestHelper {
@@ -73,14 +69,14 @@ public class DynamicTestHelper {
         try {
             dynamicTestUrl = new URL(null, "inmemory:", new URLStreamHandler() {
                 @Override
-                protected URLConnection openConnection(URL url) throws IOException {
+                protected URLConnection openConnection(URL url) {
                     return new URLConnection(url) {
                         @Override
-                        public InputStream getInputStream() throws IOException {
+                        public InputStream getInputStream() {
                             return null;
                         }
                         @Override
-                        public void connect() throws IOException {
+                        public void connect() {
                         }
                     };
                 }
@@ -117,6 +113,7 @@ public class DynamicTestHelper {
                 return null;
             }
             @Override
+            @SuppressWarnings({"rawtypes", "unchecked"})
             public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
                 if (emName.equals(puInfo.getPersistenceUnitName())) {
                     EntityManagerSetupImpl entityManagerSetupImpl =

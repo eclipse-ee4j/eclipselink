@@ -54,7 +54,7 @@ public class EmployeeUpdateTestSuite {
   static QuerySQLTracker qTracker = null;
 
   @BeforeClass
-  public static void setUp() throws Exception {
+  public static void setUp() {
       emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
       helper = new JPADynamicHelper(emf);
       deSystem = DynamicEmployeeSystem.buildProject(helper);

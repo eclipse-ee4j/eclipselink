@@ -13,6 +13,131 @@
 -->
 
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="advanced" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Buyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Customer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Dealer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Door</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Equipment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Golfer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.HugeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Jigsaw</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.JigsawPiece</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.LargeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Man</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.MyTestEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.PartnerLink</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.PlatinumBuyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Project</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Room</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.SmallProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.SimpleRoom</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Woman</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.WorldRank</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyA</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyB</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyD</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+<!--            <property name="NAME" value="Montreal%"/>-->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="advanced1" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Buyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Customer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Dealer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Door</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Equipment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Golfer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.HugeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Jigsaw</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.JigsawPiece</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.LargeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Man</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.MyTestEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.PartnerLink</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.PlatinumBuyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Project</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Room</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.SmallProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.SimpleRoom</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Woman</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.WorldRank</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyA</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyB</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyD</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+<!--            <property name="NAME" value="Montreal%"/>-->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="advanced-compositepk" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Competency</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Office</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="advanced-derivedid" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Captain</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Major</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
     <persistence-unit name="relationships" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.relationships.Auditor</class>
@@ -100,9 +225,6 @@
         <class>org.eclipse.persistence.testing.models.jpa.inheritance.ImaginaryCar</class>
         <class>org.eclipse.persistence.testing.models.jpa.inheritance.IndirectElimination</class>
         <class>org.eclipse.persistence.testing.models.jpa.inheritance.IndirectWeapon</class>
-        <class>org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceModelExamples</class>
-        <class>org.eclipse.persistence.testing.models.jpa.inheritance.InheritancePopulator</class>
-        <class>org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator</class>
         <class>org.eclipse.persistence.testing.models.jpa.inheritance.Jalopy</class>
         <class>org.eclipse.persistence.testing.models.jpa.inheritance.Knife</class>
         <class>org.eclipse.persistence.testing.models.jpa.inheritance.Laptop</class>
@@ -175,7 +297,6 @@
         <class>org.eclipse.persistence.testing.models.jpa.inherited.EmbeddedTimeCaption</class>
         <class>org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer</class>
         <class>org.eclipse.persistence.testing.models.jpa.inherited.Heineken</class>
-        <class>org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager</class>
         <class>org.eclipse.persistence.testing.models.jpa.inherited.LawnMower</class>
         <class>org.eclipse.persistence.testing.models.jpa.inherited.Location</class>
         <class>org.eclipse.persistence.testing.models.jpa.inherited.NodeImpl</class>

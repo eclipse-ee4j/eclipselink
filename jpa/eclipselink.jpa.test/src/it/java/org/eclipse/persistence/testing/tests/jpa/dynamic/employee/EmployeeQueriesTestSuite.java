@@ -24,6 +24,7 @@ package org.eclipse.persistence.testing.tests.jpa.dynamic.employee;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -53,7 +54,7 @@ public class EmployeeQueriesTestSuite {
     static DynamicEmployeeSystem deSystem = null;
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
         helper = new JPADynamicHelper(emf);
         deSystem = DynamicEmployeeSystem.buildProject(helper);
@@ -122,25 +123,25 @@ public class EmployeeQueriesTestSuite {
     }
 
     public List<DynamicEntity> readAllEmployeesUsingJPQL(EntityManager em) {
-        return em.createQuery("SELECT e FROM Employee e ORDER BY e.id ASC").getResultList();
+        return em.createQuery("SELECT e FROM Employee e ORDER BY e.id ASC", DynamicEntity.class).getResultList();
     }
 
     public List<DynamicEntity> joinFetchJPQL(EntityManager em) {
         return em.createQuery("SELECT e FROM Employee e JOIN FETCH e.address " +
-            "ORDER BY e.lastName ASC, e.firstName ASC").getResultList();
+            "ORDER BY e.lastName ASC, e.firstName ASC", DynamicEntity.class).getResultList();
     }
 
     public List<DynamicEntity> joinFetchHint(EntityManager em) {
-        Query query = em.createQuery(
+        TypedQuery<DynamicEntity> query = em.createQuery(
             "SELECT e FROM Employee e WHERE e.manager.address.city = 'Ottawa' " +
-                "ORDER BY e.lastName ASC, e.firstName ASC");
+                "ORDER BY e.lastName ASC, e.firstName ASC", DynamicEntity.class);
         query.setHint(QueryHints.FETCH, "e.address");
         query.setHint(QueryHints.FETCH, "e.manager");
         query.setHint(QueryHints.FETCH, "e.manager.address");
         query.setHint(QueryHints.BATCH, "e.manager.phoneNumbers");
         List<DynamicEntity> emps = query.getResultList();
         for (DynamicEntity emp : emps) {
-            emp.<DynamicEntity>get("manager").<Collection>get("phoneNumbers").size();
+            emp.<DynamicEntity>get("manager").<Collection<?>>get("phoneNumbers").size();
         }
         return emps;
     }
@@ -158,12 +159,13 @@ public class EmployeeQueriesTestSuite {
 
     public List<DynamicEntity> findEmployeesUsingGenderIn(EntityManager em) {
         return em.createQuery("SELECT e FROM Employee e WHERE e.gender IN " +
-            "(:GENDER1, :GENDER2)")
+            "(:GENDER1, :GENDER2)", DynamicEntity.class)
             .setParameter("GENDER1", "Male")
             .setParameter("GENDER2", "Female")
             .getResultList();
     }
 
+    @SuppressWarnings({"unchecked"})
     public List<DynamicEntity> findUsingNativeReadAllQuery(EntityManager em) {
         ClassDescriptor descriptor = serverSession.getDescriptorForAlias("Employee");
         ReadAllQuery raq = new ReadAllQuery(descriptor.getJavaClass());

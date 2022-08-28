@@ -93,7 +93,7 @@ public class SimpleTypes_OneToOne {
     }
 
     @Test
-    public void verifyConfig() throws Exception {
+    public void verifyConfig() {
         ClassDescriptor descriptorA = helper.getSession().getClassDescriptorForAlias("SimpleA");
         assertNotNull("No descriptor found for alias='SimpleA'", descriptorA);
         DynamicType simpleTypeA = helper.getType("SimpleA");
