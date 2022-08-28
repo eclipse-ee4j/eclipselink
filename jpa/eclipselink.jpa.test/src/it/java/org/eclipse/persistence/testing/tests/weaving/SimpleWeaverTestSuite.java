@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.weaving;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
@@ -31,16 +29,17 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.weaving.SimpleObject;
 import org.eclipse.persistence.testing.models.weaving.SimpleProject;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class SimpleWeaverTestSuite extends TestCase {
 
     // fixtures
     public static SimpleClassLoader simpleClassLoader = null;
     public static byte[] originalBytes = null;
-    public static Collection entities = null;
+    public static Collection<MetadataClass> entities = null;
 
     static {
         setUpFixtures();
@@ -49,7 +48,7 @@ public class SimpleWeaverTestSuite extends TestCase {
         simpleClassLoader = new SimpleClassLoader();
         InputStream is = simpleClassLoader.getResourceAsStream(SimpleObject.class.getName().replace('.','/') + ".class");
         originalBytes = readStreamContentsIntoByteArray(is);
-        entities = new ArrayList();
+        entities = new ArrayList<>();
         entities.add(new MetadataAsmFactory(new MetadataLogger(null), SimpleWeaverTestSuite.class.getClassLoader()).getMetadataClass(SimpleObject.class.getName()));
     }
     public static void tearDownFixtures() {
@@ -170,27 +169,27 @@ public class SimpleWeaverTestSuite extends TestCase {
             TransformerFactory.createTransformerAndModifyProject(session, null, Thread.currentThread().getContextClassLoader(), true, false, true, true, true, false);
         }
         catch (Exception e) {
-            fail(getName() + " failed: " + e.toString());
+            fail(getName() + " failed: " + e);
         }
     }
 
     public void emptyEntitiesTest(Session session) {
         try {
-            TransformerFactory.createTransformerAndModifyProject(session, new ArrayList(), Thread.currentThread().getContextClassLoader(), true, false, true, true, true, false);
+            TransformerFactory.createTransformerAndModifyProject(session, new ArrayList<>(), Thread.currentThread().getContextClassLoader(), true, false, true, true, true, false);
         }
         catch (Exception e) {
-            fail(getName() + " failed: " + e.toString());
+            fail(getName() + " failed: " + e);
         }
     }
 
-    public PersistenceWeaver buildWeaver(Session session, Collection entities) {
+    public PersistenceWeaver buildWeaver(Session session, Collection<MetadataClass> entities) {
 
         PersistenceWeaver tw = null;
         try {
             tw = TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, false, true, true, true, false);
         }
         catch (Exception e) {
-            fail(getName() + " failed: " + e.toString());
+            fail(getName() + " failed: " + e);
         }
         assertNotNull("could not build TopLinkWeaver", tw);
         return tw;
@@ -203,7 +202,7 @@ public class SimpleWeaverTestSuite extends TestCase {
             weavedClass = simpleClassLoader.define_class(SimpleObject.class.getName(), weavedBytes, 0, weavedBytes.length);
         }
         catch (Exception e) {
-            fail(getName() + " failed: " + e.toString());
+            fail(getName() + " failed: " + e);
         }
         assertNotNull("could not build weaved class", weavedClass);
 
@@ -212,7 +211,7 @@ public class SimpleWeaverTestSuite extends TestCase {
             interfaces = weavedClass.getInterfaces();
         }
         catch (Exception e) {
-            fail(getName() + " failed: " + e.toString());
+            fail(getName() + " failed: " + e);
         }
         assertNotNull("Weaved class has no interfaces", interfaces);
         boolean containsSerializable = false;
@@ -241,12 +240,12 @@ public class SimpleWeaverTestSuite extends TestCase {
     public static byte[] readStreamContentsIntoByteArray(InputStream is) {
 
         byte[] result = null;
-        try {
+        try (is) {
             int readPosition = 0;
             result = new byte[is.available()];
             while (true) {
                 int bytesRead = is.read(result, readPosition,
-                    result.length - readPosition);
+                        result.length - readPosition);
                 if (bytesRead == -1) {
                     break;
                 }
@@ -267,14 +266,8 @@ public class SimpleWeaverTestSuite extends TestCase {
                 System.arraycopy(result, 0, temp, 0, readPosition);
                 result = temp;
             }
-        }
-        catch (Exception e) { /* ignore */ }
-        finally {
-            try {
-                is.close();
-            }
-            catch (IOException e) { /* ignore */ }
-        }
+        } catch (Exception e) { /* ignore */ }
+        /* ignore */
         return result;
     }
 

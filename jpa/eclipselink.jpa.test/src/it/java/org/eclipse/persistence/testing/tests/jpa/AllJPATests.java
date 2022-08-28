@@ -17,7 +17,6 @@
 package org.eclipse.persistence.testing.tests.jpa;
 
 import org.eclipse.persistence.testing.framework.TestModel;
-import org.eclipse.persistence.testing.tests.jpa.advanced.JPAAdvancedTestModel;
 
 /**
  * <p><b>Purpose</b>: Test run for all JPA tests.
@@ -34,7 +33,6 @@ public class AllJPATests extends TestModel {
         }
 
         public AllJPATests() {
-            addTest(new JPAAdvancedTestModel());
             addTest(FullRegressionTestSuite.suite());
         }
 }

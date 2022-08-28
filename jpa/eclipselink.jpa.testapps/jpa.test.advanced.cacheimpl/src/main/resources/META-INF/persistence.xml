@@ -16,6 +16,16 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
     <persistence-unit name="cacheimpl" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Customer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Dealer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Equipment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.HugeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Project</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.ChestProtector</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Gear</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.GoalieGear</class>
@@ -35,7 +45,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.metamodel.ArrayProcessor</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop"/>
             <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
             <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
             <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>

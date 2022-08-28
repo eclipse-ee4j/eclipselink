@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,14 +20,9 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.simple.sequencing;
 
 //java eXtension imports
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
@@ -36,9 +31,12 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.sessions.server.Server;
-//JUnit4 imports
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 //domain-specific (testing) imports
 
@@ -53,7 +51,7 @@ public abstract class BaseSequencingTestSuite  {
     static JPADynamicHelper helper;
 
     @Test
-    public void verifyConfig() throws Exception {
+    public void verifyConfig() {
         Server session = JpaHelper.getServerSession(emf);
         ClassDescriptor descriptor = session.getClassDescriptorForAlias(ENTITY_TYPE);
         assertNotNull("No descriptor found for alias: " + ENTITY_TYPE, descriptor);

@@ -14,21 +14,10 @@
 //     Guy Pelletier, dclarke - initial API and implementation
 package org.eclipse.persistence.testing.tests.jpa.config;
 
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_DATABASE_GENERATION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_AND_CREATE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_DRIVER;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_PASSWORD;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_URL;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_USER;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
-
-import java.util.Map;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.internal.jpa.config.persistenceunit.PersistenceUnitImpl;
@@ -49,10 +38,19 @@ import org.eclipse.persistence.jpa.config.RuntimeFactory;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
-
 import org.junit.Assert;
-import junit.framework.Test;
-import junit.framework.TestSuite;
+
+import java.util.Map;
+
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_DATABASE_GENERATION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_AND_CREATE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_DRIVER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_PASSWORD;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_URL;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_USER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
 
 /**
  * JPA scripting API implementation helper class.
@@ -101,7 +99,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         pu.setProperty(DDL_GENERATION_MODE, DDL_DATABASE_GENERATION);
         pu.setProperty(DDL_GENERATION, DROP_AND_CREATE);
 
-        pu.setProperty(LOGGING_LEVEL, "FINE");
+        pu.setProperty(LOGGING_LEVEL, "INFO");
 
         Mappings mappings = pu.addMappings();
         mappings.setPersistenceUnitMetadata().setXmlMappingMetadataComplete(true).setPersitenceUnitDefault().setAccess("VIRTUAL");

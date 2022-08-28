@@ -99,7 +99,7 @@ public class SimpleTypes_ManyToMany {
     }
 
     @Test
-    public void verifyConfig() throws Exception {
+    public void verifyConfig() {
         ClassDescriptor descriptorA = helper.getSession().getClassDescriptorForAlias("SimpleA");
         assertNotNull("No descriptor found for alias='SimpleA'", descriptorA);
         DynamicType simpleTypeA = helper.getType("SimpleA");
@@ -189,7 +189,7 @@ public class SimpleTypes_ManyToMany {
         em.getTransaction().begin();
         DynamicEntity a = em.find(simpleTypeA.getJavaClass(), 1);
         assertNotNull(a);
-        List<DynamicEntity> bs = a.<List<DynamicEntity>>get("b");
+        List<DynamicEntity> bs = a.get("b");
         assertNotNull(bs);
         assertEquals(1, bs.size());
         bs.remove(0);

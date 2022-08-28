@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,8 @@ package org.eclipse.persistence.testing.tests.jpa.dynamic.simple.mappings;
 
 //java eXtensions
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -39,9 +41,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 
 import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
 import static org.junit.Assert.assertEquals;
@@ -105,7 +104,7 @@ public class SimpleTypes_AggregateObject {
     }
 
     @Test
-    public void verifyConfig() throws Exception {
+    public void verifyConfig() {
         ClassDescriptor descriptorA = helper.getSession().getClassDescriptorForAlias("SimpleA");
         assertNotNull("No descriptor found for alias='SimpleA'", descriptorA);
         DynamicTypeImpl simpleTypeA = (DynamicTypeImpl)helper.getType("SimpleA");
@@ -198,7 +197,7 @@ public class SimpleTypes_AggregateObject {
         DynamicEntityImpl a = (DynamicEntityImpl)em.find(simpleTypeA.getJavaClass(), 1);
         assertNotNull(a);
         assertNotNull(a._persistence_getPropertyChangeListener());
-        DynamicEntityImpl c = a.<DynamicEntityImpl>get("c");
+        DynamicEntityImpl c = a.get("c");
         assertNotNull(c);
         assertNotNull(c._persistence_getPropertyChangeListener());
         assertTrue(c._persistence_getPropertyChangeListener() instanceof AggregateAttributeChangeListener);

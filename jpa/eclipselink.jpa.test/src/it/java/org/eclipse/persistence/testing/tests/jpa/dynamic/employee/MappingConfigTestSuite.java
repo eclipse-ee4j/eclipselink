@@ -50,7 +50,7 @@ public class MappingConfigTestSuite {
     static Server serverSession = null;
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
         helper = new JPADynamicHelper(emf);
         DynamicEmployeeSystem.buildProject(helper);
@@ -81,15 +81,15 @@ public class MappingConfigTestSuite {
     }
 
     @Test
-    public void verifyServerSession() throws Exception {
+    public void verifyServerSession() {
         assertNotNull(serverSession);
         assertTrue(serverSession.isConnected());
         assertTrue(serverSession.isServerSession());
-        assertTrue(serverSession.getName().equals(DYNAMIC_PERSISTENCE_NAME));
+        assertEquals(DYNAMIC_PERSISTENCE_NAME, serverSession.getName());
     }
 
     @Test
-    public void verifyEmployeeDescriptor() throws Exception {
+    public void verifyEmployeeDescriptor() {
         ClassDescriptor descriptor = serverSession.getDescriptorForAlias("Employee");
         assertNotNull(descriptor);
         assertEquals("Employee", descriptor.getAlias());
@@ -123,7 +123,7 @@ public class MappingConfigTestSuite {
 }
 
     @Test
-    public void verifyAddressDescriptor() throws Exception {
+    public void verifyAddressDescriptor() {
         ClassDescriptor descriptor = serverSession.getDescriptorForAlias("Address");
         assertNotNull(descriptor);
         assertEquals("Address", descriptor.getAlias());

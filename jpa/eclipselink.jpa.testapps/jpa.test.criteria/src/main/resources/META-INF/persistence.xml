@@ -13,6 +13,73 @@
 -->
 
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+
+    <persistence-unit name="advanced" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Buyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Customer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Dealer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Equipment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.HugeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.LargeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.MyTestEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Project</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.SmallProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Competency</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Office</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="advanced-compositepk" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Competency</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Office</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="advanced-derivedid" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MasterCorporal</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Sargeant</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
     <persistence-unit name="inheritance" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.inheritance.AAA</class>

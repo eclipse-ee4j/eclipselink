@@ -30,6 +30,27 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.advanced</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.advanced.compositepk</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.testapps.advanced.derivedid</artifactId>
+            <version>${project.version}</version>
+            <classifier>model</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.testapps.inheritance</artifactId>
             <version>${project.version}</version>
             <classifier>model</classifier>

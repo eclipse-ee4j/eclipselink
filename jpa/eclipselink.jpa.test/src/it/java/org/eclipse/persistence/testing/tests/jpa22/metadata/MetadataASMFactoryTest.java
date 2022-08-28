@@ -16,6 +16,8 @@
 //       - 535250: Test meta-annotations with dependency cycle
 package org.eclipse.persistence.testing.tests.jpa22.metadata;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -26,9 +28,6 @@ import org.eclipse.samples.annotations.CycleA;
 import org.eclipse.samples.annotations.CycleB;
 import org.eclipse.samples.annotations.CycleSelf;
 import org.junit.Assert;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class MetadataASMFactoryTest extends JUnitTestCase {
     

@@ -40,7 +40,7 @@ import static org.junit.Assert.assertNotNull;
 public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
         helper = new JPADynamicHelper(emf);
         DynamicClassLoader dcl = helper.getDynamicClassLoader();
@@ -58,7 +58,7 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         if (emf != null && emf.isOpen()) {
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();

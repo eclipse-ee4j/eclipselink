@@ -841,7 +841,7 @@ public class CriteriaQueryCastTest extends JUnitTestCase {
             CriteriaQuery<Bus> cq = qb.createQuery(Bus.class);
             Root<Bus> root = cq.from(Bus.class);
             Join b = qb.treat(root.join("tires"), PerformanceTireInfo.class);
-            cq.where(qb.greaterThan(qb.treat(root.get("tires"), PerformanceTireInfo.class).<Integer>get("speedRating"), 100));
+            cq.where(qb.greaterThan(qb.treat(root.get("tires"), PerformanceTireInfo.class).get("speedRating"), 100));
 
             List<?> resultList = em.createQuery(cq).getResultList();
             assertEquals("Incorrect results returned", 2, resultList.size());

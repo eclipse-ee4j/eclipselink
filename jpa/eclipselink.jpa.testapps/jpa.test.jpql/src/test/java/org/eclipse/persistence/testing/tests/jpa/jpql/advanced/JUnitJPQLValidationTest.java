@@ -1,0 +1,1264 @@
+/*
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+package org.eclipse.persistence.testing.tests.jpa.jpql.advanced;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
+import jakarta.persistence.RollbackException;
+import jakarta.persistence.TransactionRequiredException;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.exceptions.JPQLException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
+import org.junit.Assert;
+
+import java.io.EOFException;
+import java.util.List;
+
+/**
+ * <p>
+ * <b>Purpose</b>: Test EJBQL exceptions.
+ * </p>
+ * <b>Description</b>: This class creates a test suite, initializes the database
+ * and adds tests to the suite.
+ * <p>
+ * <b>Responsibilities</b>:
+ * </p>
+ * <ul>
+ * <li> Run tests for expected EJBQL exceptions thrown
+ * </ul>
+ * @see org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator
+ * @see JUnitDomainObjectComparer
+ */
+
+public class JUnitJPQLValidationTest extends JUnitTestCase
+{
+    static JUnitDomainObjectComparer comparer;        //the global comparer object used in all tests
+
+    public JUnitJPQLValidationTest()
+    {
+        super();
+    }
+
+    public JUnitJPQLValidationTest(String name)
+    {
+        super(name);
+        setPuName(getPersistenceUnitName());
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+        return "advanced";
+    }
+
+    //This method is run at the end of EVERY test case method
+    @Override
+    public void tearDown()
+    {
+        clearCache();
+    }
+    //This suite contains all tests contained in this class
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite();
+        suite.setName("JUnitJPQLValidationTest");
+        suite.addTest(new JUnitJPQLValidationTest("testSetup"));
+        suite.addTest(new JUnitJPQLValidationTest("generalExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("recognitionExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("missingSelectExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("malformedJPQLExceptionTest1"));
+        suite.addTest(new JUnitJPQLValidationTest("malformedJPQLExceptionTest2"));
+        suite.addTest(new JUnitJPQLValidationTest("malformedJPQLExceptionTest3"));
+        suite.addTest(new JUnitJPQLValidationTest("malformedJPQLExceptionTest4"));
+        suite.addTest(new JUnitJPQLValidationTest("malformedJPQLExceptionTest5"));
+        suite.addTest(new JUnitJPQLValidationTest("malformedJPQLExceptionTest6"));
+        suite.addTest(new JUnitJPQLValidationTest("malformedJPQLExceptionTest7"));
+        //gf1166
+        suite.addTest(new JUnitJPQLValidationTest("malformedJPQLExceptionTest8"));
+        suite.addTest(new JUnitJPQLValidationTest("noAliasWithWHEREAndParameterExceptionTest"));
+        //suite.addTest(new JUnitJPQLValidationTest("unknownAbstractSchemaTypeTest"));
+        suite.addTest(new JUnitJPQLValidationTest("multipleDeclarationOfIdentificationVariable"));
+        suite.addTest(new JUnitJPQLValidationTest("aliasResolutionException"));
+        suite.addTest(new JUnitJPQLValidationTest("illegalArgumentExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("createNamedQueryThrowsIllegalArgumentExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("flushTxExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("testExecuteUpdateTxException"));
+        suite.addTest(new JUnitJPQLValidationTest("noResultExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("testGetSingleResultOnUpdate"));
+        suite.addTest(new JUnitJPQLValidationTest("testGetSingleResultOnDelete"));
+        suite.addTest(new JUnitJPQLValidationTest("testExecuteUpdateOnSelect"));
+        suite.addTest(new JUnitJPQLValidationTest("flushOptimisticLockExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("commitOptimisticLockExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("JTAOptimisticLockExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("testParameterNameValidation"));
+        // JPQL should not validate floats, database may allow (could be 1.0 and valid, or db could truncate)
+        //suite.addTest(new JUnitJPQLValidationTest("testModArgumentValidation"));
+        suite.addTest(new JUnitJPQLValidationTest("testInExpressionValidation"));
+        suite.addTest(new JUnitJPQLValidationTest("testOrderableTypeInOrderByItem"));
+        suite.addTest(new JUnitJPQLValidationTest("testNonExistentOrderByAlias"));
+        suite.addTest(new JUnitJPQLValidationTest("testInvalidNavigation"));
+        suite.addTest(new JUnitJPQLValidationTest("testInvalidCollectionNavigation"));
+        suite.addTest(new JUnitJPQLValidationTest("testUnknownAttribute"));
+        suite.addTest(new JUnitJPQLValidationTest("testUnknownEnumConstant"));
+        suite.addTest(new JUnitJPQLValidationTest("testCommitRollbackException"));
+        suite.addTest(new JUnitJPQLValidationTest("testParameterPositionValidation"));
+        suite.addTest(new JUnitJPQLValidationTest("testParameterPositionValidation2"));
+        suite.addTest(new JUnitJPQLValidationTest("testParameterTypeValidation"));
+        suite.addTest(new JUnitJPQLValidationTest("testEjbqlCaseSensitivity"));
+        suite.addTest(new JUnitJPQLValidationTest("testEjbqlSupportJoinArgument"));
+        suite.addTest(new JUnitJPQLValidationTest("testInvalidSetClause"));
+        suite.addTest(new JUnitJPQLValidationTest("testUnsupportedCountDistinctOnOuterJoinedCompositePK"));
+        suite.addTest(new JUnitJPQLValidationTest("testInvalidHint"));
+        suite.addTest(new JUnitJPQLValidationTest("invalidCharTest"));
+        suite.addTest(new JUnitJPQLValidationTest("invalidOnClauseTest"));
+        suite.addTest(new JUnitJPQLValidationTest("invalidSQLExpressionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("invalidColumnExpressionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("invalidFunctionExpressionTest"));
+        suite.addTest(new JUnitJPQLValidationTest("invalidOperatorExpressionTest"));
+
+        return suite;
+    }
+
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        clearCache();
+        //get session to start setup
+        DatabaseSession session = getPersistenceUnitServerSession();
+
+        //create a new EmployeePopulator
+        EmployeePopulator employeePopulator = new EmployeePopulator(supportsStoredProcedures());
+
+        new AdvancedTableCreator().replaceTables(session);
+
+        //initialize the global comparer object
+        comparer = new JUnitDomainObjectComparer();
+
+        //set the session for the comparer to use
+        comparer.setSession((AbstractSession)session.getActiveSession());
+
+        //Populate the tables
+        employeePopulator.buildExamples();
+
+        //Persist the examples in the database
+        employeePopulator.persistExample(session);
+    }
+
+    public void ensureInvalid(String jpql)
+    {
+        try {
+            createEntityManager().createQuery(jpql).getResultList();
+            fail("Illegal Argument Exception must be thrown");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void illegalArgumentExceptionTest() {
+        ensureInvalid("SELECT FROM EMPLOYEE emp");
+    }
+
+
+    public void generalExceptionTest() {
+        ensureInvalid("SELECT FROM EMPLOYEE emp");
+    }
+
+    public void recognitionExceptionTest() {
+        ensureInvalid("SELECT OBJECT(emp) FROW Employee emp");
+    }
+
+    public void invalidCharTest() {
+        ensureInvalid("Select !e from Employee e where ! e = e");
+    }
+
+    public void invalidOnClauseTest() {
+        if (!isHermesParser()) {
+            warning("invalidOnClauseTest only works with Hermes");
+            return;
+        }
+        ensureInvalid("Select e from Employee e on e.id = 5");
+        ensureInvalid("Select e from Employee e on");
+        ensureInvalid("Select e from Employee e like");
+        ensureInvalid("Select e from Employee e upper");
+        ensureInvalid("Select e from Employee e case");
+        ensureInvalid("Select e from Employee e select");
+    }
+
+    public void invalidSQLExpressionTest() {
+        if (!isHermesParser()) {
+            warning("invalidSQLExpressionTest only works with Hermes");
+            return;
+        }
+        ensureInvalid("Select e from Employee e where sql");
+        ensureInvalid("Select e from Employee e where sql(");
+        ensureInvalid("Select e from Employee e where sql()");
+        ensureInvalid("Select e from Employee e where sql(')");
+    }
+
+    public void invalidColumnExpressionTest() {
+        if (!isHermesParser()) {
+            warning("invalidColumnExpressionTest only works with Hermes");
+            return;
+        }
+        ensureInvalid("Select e from Employee e where column");
+        ensureInvalid("Select e from Employee e where column(");
+        ensureInvalid("Select e from Employee e where column()");
+        ensureInvalid("Select e from Employee e where column(')");
+        ensureInvalid("Select e from Employee e where column('foo')");
+        ensureInvalid("Select e from Employee e where column('foo', e.id, e.id)");
+        ensureInvalid("Select e from Employee e where column('foo', 5)");
+    }
+
+    public void invalidOperatorExpressionTest() {
+        if (!isHermesParser()) {
+            warning("invalidColumnExpressionTest only works with Hermes");
+            return;
+        }
+        ensureInvalid("Select e from Employee e where operator");
+        ensureInvalid("Select e from Employee e where operator(");
+        ensureInvalid("Select e from Employee e where operator()");
+        ensureInvalid("Select e from Employee e where operator(')");
+    }
+
+    public void invalidFunctionExpressionTest() {
+        if (!isHermesParser()) {
+            warning("invalidFunctionExpressionTest only works with Hermes");
+            return;
+        }
+        ensureInvalid("Select e from Employee e where function");
+        ensureInvalid("Select e from Employee e where function(");
+        ensureInvalid("Select e from Employee e where function()");
+        ensureInvalid("Select e from Employee e where function(')");
+    }
+
+   public void missingSelectExceptionTest() {
+       ensureInvalid("OBJECT(emp) FROM Employee emp");
+   }
+
+
+   public void malformedJPQLExceptionTest1()
+   {
+
+        String ejbqlString =  "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName == \"F";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Recognition Exception must be thrown");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+   }
+
+   public void malformedJPQLExceptionTest2()
+   {
+
+        String ejbqlString =  "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" AND 1";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Recognition Exception must be thrown");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+   }
+
+    public void malformedJPQLExceptionTest3()
+    {
+
+        String ejbqlString =  "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" OR \"Freda\"";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Recognition Exception must be thrown");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void malformedJPQLExceptionTest4()
+    {
+
+        String ejbqlString =  "SLEECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" OR \"Freda\"";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Recognition Exception must be thrown");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+    }
+
+    public void malformedJPQLExceptionTest5()
+    {
+
+        String ejbqlString =  "SELECT c FORM Customer c";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword FORM");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        ejbqlString =  "SELECT COUNT(c FROM Customer c";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword FROM");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        ejbqlString =  "SELECT c* FROM Customer c";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword *");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void malformedJPQLExceptionTest6()
+    {
+
+        /*String ejbqlString =  "SELECT c FROM Customer c WHERE c.name LIKE 1";
+
+        try
+        {
+            List result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword 1");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertEquals(JPQLException.unexpectedToken, ((JPQLException) ex.getCause()).getErrorCode());
+            assertTrue("Failed to throw expected IllegalArgumentException for a query having an unexpected keyword 1.", ex.getCause().getMessage().contains("unexpected token [1]"));
+        }*/
+
+        String ejbqlString =  "SELECT c FROM Customer c WHERE c.name is not nall";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword nall");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        ejbqlString =  "SELECT c FROM Customer c WHERE c.name is net null";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword net");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        ejbqlString =  "SELECT c FROM Customer c WHERE c.name is EMPYT";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword EMPYT");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        ejbqlString =  "SELECT c FROM Customer c WHERE c.name in 3.5";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword 3.5");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        ejbqlString =  "SELECT c FROM Customer c WHERE c.name MEMBER 6";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword 6");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        ejbqlString =  "SELECT c FROM Customer c WHERE c.name NOT BETEEN 6 and 7";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query using invalid keyword BETEEN");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+    }
+
+    public void malformedJPQLExceptionTest7()
+    {
+
+        String ejbqlString =  "SELECT e FROM";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Expected unexpected end of query exception.");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+    }
+
+    //gf1166  Wrap ANTLRException inside JPQLException
+    public void malformedJPQLExceptionTest8()
+    {
+
+        String ejbqlString =  "SELECT e FROM";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Expected unexpected end of query exception.");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+    }
+
+    public void noAliasWithWHEREAndParameterExceptionTest()
+    {
+
+        String ejbqlString =  "FROM Employee WHERE firstName = ?1";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Recognition Exception must be thrown");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void aliasResolutionException()
+    {
+        String ejbqlString = null;
+
+        try {
+            // invalid identification variable in WHERE clause
+            ejbqlString = "SELECT employee FROM Employee employee WHERE emp.firstName = 'Fred'";
+            createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query " +
+                 "using an invalid identification variable in the WHERE clause.");
+        } catch(IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        try {
+            // invalid identification variable in SELECT clause
+            ejbqlString = "SELECT OBJECT(nullRoot) FROM Employee emp";
+            createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query " +
+                 "selecting an invalid identification variable.");
+        } catch(IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        try {
+            // invalid identification variable in JOIN clause
+            ejbqlString = "SELECT emp FROM Employee emp JOIN e.projects p WHERE p.name = 'Enterprise'";
+            createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query " +
+                 "using an invalid identification variable in a JOIN clause.");
+        } catch(IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void unknownAbstractSchemaTypeTest()
+    {
+        String ejbqlString =  " SELECT OBJECT(i) FROM Integer i WHERE i.city = \"Ottawa\"";
+
+        try
+        {
+            List<?> result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Missing exception for query using unknown abstract schema type");
+        }
+
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void multipleDeclarationOfIdentificationVariable()
+    {
+        String ejbqlString;
+        List<?> result;
+
+        try
+        {
+            ejbqlString = "SELECT o FROM Employee o, Customer o";
+            result = createEntityManager().createQuery(ejbqlString).getResultList();
+            fail("Multiple declaration of identification variable must be thrown");
+        }
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        if (isHermesParser()) {
+            // This should be valid now.
+            ejbqlString = "SELECT e FROM Employee e JOIN e.projects p WHERE NOT EXISTS (SELECT p FROM e.projects p)";
+            result = createEntityManager().createQuery(ejbqlString).getResultList();
+        }
+    }
+
+    public void testParameterNameValidation(){
+        EntityManager em = this.createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.lastName like :name ");
+        try{
+            query.setParameter("l", "%ay");
+            query.getResultList();
+        }catch (IllegalArgumentException ex){
+            assertTrue("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used", ex.getMessage().contains("using a name"));
+            return;
+        }
+        fail("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used");
+    }
+
+    public void testParameterPositionValidation(){
+        EntityManager em = this.createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.firstName like ?1 ");
+        try{
+            query.setParameter(2, "%ay");
+            query.getResultList();
+        }catch (IllegalArgumentException ex){
+            assertTrue("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used", ex.getMessage().contains("parameter at position"));
+            return;
+        }
+        fail("Failed to throw expected IllegalArgumentException, when incorrect parameter position is used");
+    }
+
+    public void testParameterPositionValidation2() {
+
+        EntityManager em = this.createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.firstName = ?1 AND e.lastName = ?3 ");
+        try {
+            query.setParameter(1, "foo");
+            query.setParameter(2, "");
+            query.setParameter(3, "bar");
+            query.getResultList();
+        } catch (IllegalArgumentException ex) {
+            assertTrue("Failed to throw expected IllegalArgumentException, when incorrect parameter name is used", ex.getMessage().contains("parameter at position"));
+            return;
+        }
+        fail("Failed to throw expected IllegalArgumentException, when incorrect parameter position is used");
+    }
+
+    public void testParameterTypeValidation() {
+        EntityManager em = this.createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.firstName = :fname AND e.lastName = :lname ");
+        try {
+            query.setParameter("fname", "foo");
+            query.setParameter("lname", 1);
+            query.getResultList();
+        } catch (IllegalArgumentException ex) {
+            assertTrue("Failed to throw expected IllegalArgumentException, when parameter with incorrect type is used", ex.getMessage().contains("attempted to set a value of type"));
+            return;
+        }
+        fail("Failed to throw expected IllegalArgumentException, when parameter with incorrect type is used");
+    }
+
+    public void testModArgumentValidation()
+    {
+        //Assert.assertFalse("Warning SQL/Sybase doesnot support MOD function",  getPersistenceUnitServerSession().getPlatform().isSQLServer() || getPersistenceUnitServerSession().getPlatform().isSybase() || getPersistenceUnitServerSession().getPlatform().isSybase());
+
+        String ejbqlString;
+        List<?> result;
+
+        try
+        {
+            ejbqlString = "SELECT p FROM LargeProject p WHERE MOD(p.budget, 10) = 5";
+            result = createEntityManager().createQuery(ejbqlString).getResultList();
+            //fail("wrong data type for MOD function must be thrown");
+        }
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+
+        try
+        {
+            ejbqlString = "SELECT p FROM LargeProject p WHERE MOD(10, p.budget) = 5";
+            result = createEntityManager().createQuery(ejbqlString).getResultList();
+            //fail("wrong data type for MOD function must be thrown");
+        }
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void testInExpressionValidation()
+    {
+        String ejbqlString;
+        List<?> result;
+
+        try {
+            ejbqlString = "SELECT e FROM Employee e WHERE e.firstName IN (1, 2)";
+            result = createEntityManager().createQuery(ejbqlString).getResultList();
+            //fail("wrong type for IN expression exception must be thrown");
+        }
+        catch(IllegalArgumentException ex)
+        {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void testOrderableTypeInOrderByItem() {
+        EntityManager em = this.createEntityManager();
+
+        if (isHermesParser()) {
+            // This is now supported, orders by the address foreign key.
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY e.address");
+            query.getResultList();
+        }
+    }
+
+    public void testNonExistentOrderByAlias() {
+        EntityManager em = this.createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT e FROM Employee e ORDER BY firstName");
+            query.getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query having an ORDER BY item with a non-existent alias");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void testInvalidNavigation() {
+        EntityManager em = this.createEntityManager();
+        try {
+            em.createQuery("SELECT e.firstName.invalid FROM Employee e").getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query " +
+                 "navigating a state field of type String in the SELECT clause.");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+        try {
+            em.createQuery("SELECT e FROM Employee e WHERE e.firstName.invalid = 1").getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query " +
+                 "navigating a state field of type String in the WHERE clause.");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void testInvalidCollectionNavigation() {
+        EntityManager em = this.createEntityManager();
+        try {
+            String jpql = "SELECT e.phoneNumbers.type FROM Employee e";
+            em.createQuery(jpql).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query " +
+                 "navigating a collection valued association field in the SELECT clause.");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+        try {
+            String jpql =
+                "SELECT e FROM Employee e WHERE e.phoneNumbers.type = 'Work'";
+            em.createQuery(jpql).getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query " +
+                 "navigating a collection valued association field in the WHERE clause.");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void testInvalidHint() {
+        EntityManager em = createEntityManager();
+        try {
+            String jpql = "SELECT e.phoneNumbers.type FROM Employee e";
+            Query query = em.createQuery(jpql);
+            query.setHint(QueryHints.BATCH, "e.phoneNumbers");
+            query.getResultList();
+            fail("Failed to throw expected IllegalArgumentException for invalid query hint.");
+        } catch (IllegalArgumentException ex) {
+            // Expected.
+        }
+        try {
+            String jpql = "SELECT e FROM Employee e";
+            Query query = em.createQuery(jpql);
+            query.setHint(QueryHints.BATCH, "e.phoneNumbers.areaCode");
+            query.getResultList();
+            fail("Failed to throw expected IllegalArgumentException for invalid query hint.");
+        } catch (QueryException ex) {
+            // Expected.
+        }
+        try {
+            String jpql = "SELECT e FROM Employee e";
+            Query query = em.createQuery(jpql);
+            query.setHint(QueryHints.CACHE_USAGE, "foobar");
+            query.getResultList();
+            fail("Failed to throw expected IllegalArgumentException for invalid query hint.");
+        } catch (IllegalArgumentException ex) {
+            // Expected.
+        }
+        closeEntityManager(em);
+    }
+
+    public void testUnknownAttribute() {
+        EntityManager em = this.createEntityManager();
+        try {
+            em.createQuery("SELECT e.unknown FROM Employee e").getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query " +
+                 "selecting an unknown state or association field.");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+        try {
+            em.createQuery("SELECT e FROM Employee e WHERE e.unknown = 1").getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query " +
+                 "using an unknown state or association field in the WHERE clause.");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+    public void testUnknownEnumConstant() {
+        EntityManager em = this.createEntityManager();
+        try {
+            //em.createQuery("SELECT e FROM Employee e WHERE e.status = EmployeeStatus.FULL_TIME");
+            Query query = em.createQuery("SELECT e FROM Employee e WHERE e.status = EmployeeStatus.FULL_TIME");
+            query.getResultList();
+            fail("Failed to throw expected IllegalArgumentException for a query"+
+                "unknown enumerated class constant.");
+        } catch (IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        }
+    }
+
+  /**
+   * For this test you need to add a persistence unit named default1 in the persistence.xml file
+   * in essentials_testmodels.jar.
+   */
+    public void flushOptimisticLockExceptionTest()
+    {
+        if (isOnServer()) {
+            // Multi-persistece-unit not work on server.
+            return;
+        }
+        EntityManager firstEm = createEntityManager();
+        EntityManager secondEm = createAlternateEntityManager();
+
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";
+
+        secondEm.getTransaction().begin();
+        try{
+            firstEm.getTransaction().begin();
+            try{
+                Employee firstEmployee = (Employee) firstEm.createQuery(ejbqlString).getSingleResult();
+                firstEmployee.setLastName("test");
+
+                Employee secondEmployee = (Employee) secondEm.createQuery(ejbqlString).getSingleResult();
+                secondEmployee.setLastName("test");
+
+                firstEm.flush();
+                firstEm.getTransaction().commit();
+            }catch (RuntimeException ex){
+                if (firstEm.getTransaction().isActive()){
+                    firstEm.getTransaction().rollback();
+                }
+                firstEm.close();
+                throw ex;
+            }
+            secondEm.flush();
+            fail("jakarta.persistence.OptimisticLockException must be thrown during flush");
+        } catch (PersistenceException e) {
+            if (secondEm.getTransaction().isActive()){
+                secondEm.getTransaction().rollback();
+            }
+            secondEm.close();
+            undoEmployeeChanges();
+            if (isKnownMySQLIssue(e.getCause())) {
+                warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
+            } else {
+                //temporary logging
+                AbstractSessionLog.getLog().log(SessionLog.WARNING, "[TEMPORARY LOGGING]", new Object[] {}, false);
+                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, e);
+                Assert.assertTrue("Got Exception type: " + e, e instanceof jakarta.persistence.OptimisticLockException);
+            }
+        }
+    }
+
+
+     /* For this test you need to add a persistence unit named default1 in the persistence.xml file
+       in essentials_testmodels.jar */
+    public void commitOptimisticLockExceptionTest()
+    {
+          if (isOnServer()) {
+            // Multi-persistece-unit not work on server.
+            return;
+        }
+        EntityManager firstEm = createEntityManager();
+        EntityManager secondEm = createAlternateEntityManager();
+
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";
+
+       secondEm.getTransaction().begin();
+       try{
+            firstEm.getTransaction().begin();
+            try{
+
+                Employee firstEmployee = (Employee) firstEm.createQuery(ejbqlString).getSingleResult();
+                firstEmployee.setLastName("test");
+
+                Employee secondEmployee = (Employee) secondEm.createQuery(ejbqlString).getSingleResult();
+                secondEmployee.setLastName("test");
+
+                firstEm.getTransaction().commit();
+            }catch (RuntimeException ex){
+                if (firstEm.getTransaction().isActive()){
+                    firstEm.getTransaction().rollback();
+                }
+                firstEm.close();
+                throw ex;
+            }
+            secondEm.getTransaction().commit();
+        } catch (Exception e){
+            if (secondEm.getTransaction().isActive()){
+                secondEm.getTransaction().rollback();
+            }
+            secondEm.close();
+            undoEmployeeChanges();
+            if (isKnownMySQLIssue(e.getCause())) {
+                warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
+            } else {
+                Assert.assertTrue("Exception not instance of opt Lock exception: " + e.getCause(), e.getCause() instanceof jakarta.persistence.OptimisticLockException);
+            }
+            return;
+        }
+        fail("jakarta.persistence.OptimisticLockException must be thrown during commit");
+    }
+
+    public void JTAOptimisticLockExceptionTest()
+    {
+        // This test is skipped for Symfoware as Symfoware does not support SQL generated by this test.
+        // Bug 381302 In Symfoware, a base table name to be updated cannot be identical to
+        // table name in from clause in query or subquery specification or to table name
+        // referenced by view table identified by table name.
+        if ( getPersistenceUnitServerSession().getPlatform().isSymfoware() ) {
+            return;
+        }
+
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            try {
+
+                Employee emp = (Employee) em.createQuery("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ").getSingleResult();
+                em.createQuery("Update Employee set lastName = 'test-bad' WHERE firstName='Bob' ").executeUpdate();
+                emp.setLastName("test");
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                closeEntityManagerAndTransaction(em);
+                Throwable lockException = ex;
+                while ((lockException != null) && !(lockException instanceof OptimisticLockException)) {
+                    lockException = lockException.getCause();
+                }
+                if (lockException instanceof OptimisticLockException) {
+                    return;
+                }
+                throw ex;
+            }
+            fail("Lock exception should have been thrown");
+        } finally {
+            clearCache();
+        }
+    }
+
+    /**
+     * This method is a temporary solution to avoid failures in our nightly testing.
+     * This allows a warning to be printed when MySQL fails with a specific error.
+     * This is a known error in the MySQL db, and this method will be removed
+     * when this error is resolved.
+     *
+     * @return true if this exception is a specific known MySQL failure
+     */
+    public boolean isKnownMySQLIssue(Throwable exception) {
+        Throwable e1 = exception;
+        if (exception == null) {
+            return false;
+        }
+
+        if (!(exception instanceof jakarta.persistence.OptimisticLockException) &&
+                getPersistenceUnitServerSession().getPlatform().isMySQL()) {
+            while(e1 != null) {
+                if (e1 instanceof EOFException) {
+                    //found it - return true
+                    return true;
+                }
+                e1 = e1.getCause();
+            }
+        }
+        return false;
+    }
+
+    public void flushTxExceptionTest()
+    {
+        try
+        {
+            createEntityManager().flush();
+        }
+        catch (TransactionRequiredException e) {
+            // ok.
+        }
+    }
+
+    public void testExecuteUpdateTxException()
+    {
+        boolean testPass=false;
+        String ejbqlString = "DELETE FROM Employee e WHERE e.lastName=\"doesNotExist\"";
+
+        EntityManager em = createEntityManager();
+        try
+        {
+            Object result = em.createQuery(ejbqlString).executeUpdate();
+
+            //rollback for clean-up if above call does not fail, otherwise this may affect other tests
+            if(!isTransactionActive(em)){
+                beginTransaction(em);
+            }
+            rollbackTransaction(em);
+        }
+        catch (TransactionRequiredException e)
+        {
+            testPass = true;
+        }
+        finally
+        {
+            closeEntityManager(em);
+        }
+        Assert.assertTrue("TransactionRequiredException is expected", testPass);
+    }
+
+    public void createNamedQueryThrowsIllegalArgumentExceptionTest()
+    {
+        try
+        {
+            List<?> result = createEntityManager().createNamedQuery("test").getResultList();
+        }
+        catch (IllegalArgumentException e) {
+            // ok.
+        }
+    }
+
+    public void noResultExceptionTest()
+    {
+        String ejbqlString = "SELECT OBJECT (emp) FROM Employee emp WHERE emp.lastName=\"doestNotExist\" ";
+
+        try
+        {
+            Object result = createEntityManager().createQuery(ejbqlString).getSingleResult();
+        }
+        catch (Exception e)
+        {
+            Assert.assertTrue(e instanceof NoResultException);
+        }
+    }
+
+    public void testGetSingleResultOnUpdate()
+    {
+        boolean testPass=false;
+        String ejbqlString = "UPDATE Employee e SET e.salary = (e.salary + 1000) WHERE e.lastName='Chanley' ";
+
+        try
+        {
+            Object result = createEntityManager().createQuery(ejbqlString).getSingleResult();
+        }
+        catch (IllegalStateException e)
+        {
+            testPass = true;
+        }
+        Assert.assertTrue(testPass);
+    }
+
+
+    public void testGetSingleResultOnDelete()
+    {
+        boolean testPass=false;
+        String ejbqlString = "DELETE FROM Employee e WHERE e.lastName='Chanley' ";
+
+        try
+        {
+            Object result = createEntityManager().createQuery(ejbqlString).getSingleResult();
+        }
+        catch (IllegalStateException e)
+        {
+            testPass = true;
+        }
+        Assert.assertTrue(testPass);
+    }
+
+    public void testExecuteUpdateOnSelect()
+    {
+        boolean testPass=false;
+        String ejbqlString = "SELECT emp FROM Employee emp  WHERE emp.lastName='Smith' ";
+
+        EntityManager em = createEntityManager();
+        try  {
+            beginTransaction(em);
+            em.createQuery(ejbqlString).executeUpdate();
+            commitTransaction(em);
+        } catch (IllegalStateException e) {
+            testPass = true;
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+        Assert.assertTrue(testPass);
+    }
+
+
+    public void testCommitRollbackException()
+    {
+        if (isOnServer()) {
+            // Cannot create parallel entity managers in the server.
+            return;
+        }
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT OBJECT (emp) FROM Employee emp WHERE emp.firstName='Bob'";
+        DirectToFieldMapping idMapping = null;
+        String defaultFieldName = "";
+        beginTransaction(em);
+        try{
+            Employee emp = (Employee) em.createQuery(ejbqlString).getSingleResult();
+            idMapping = (DirectToFieldMapping) em.unwrap(ServerSession.class).getClassDescriptor(Employee.class).getMappingForAttributeName("id");
+            defaultFieldName = idMapping.getFieldName();
+            idMapping.setFieldName("fake_id");
+            emp.setId(323);
+            commitTransaction(em);
+        } catch (Exception e) {
+            if(isTransactionActive(em)){
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+            Assert.assertTrue(e instanceof RollbackException);
+        } finally {
+            em = createEntityManager();
+            beginTransaction(em);
+            try{
+                idMapping.setFieldName(defaultFieldName);
+                commitTransaction(em);
+            } catch (Exception e) {
+                if(isTransactionActive(em)){
+                    rollbackTransaction(em);
+                    closeEntityManager(em);
+                }
+            }
+        }
+    }
+
+    //fix for bugID 4670705
+    public void testEjbqlCaseSensitivity()
+    {
+        boolean testPass = true;
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT OBJECT (E) FROM Employee e";
+
+        try {
+            List<?> result = em.createQuery(ejbqlString).getResultList();
+        } catch (Exception e) {
+            testPass = false;
+        }
+        Assert.assertTrue(testPass);
+    }
+
+    //this test resets the last name of the employee Bob that is changed in some tests
+    public void undoEmployeeChanges()
+    {
+        EntityManager em = createEntityManager();
+
+        beginTransaction(em);
+        try{
+            String ejbqlString = "SELECT OBJECT (emp) FROM Employee emp WHERE emp.firstName ='Bob' ";
+
+            Employee emp = (Employee) em.createQuery(ejbqlString).getSingleResult();
+            emp.setLastName("Smith");
+
+            em.flush();
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if(isTransactionActive(em)){
+                rollbackTransaction(em);
+                closeEntityManager(em);
+            }
+        }
+    }
+
+    public void testEjbqlSupportJoinArgument() {
+        boolean testPass = true;
+        String ejbqlString;
+
+        try
+        {
+            ejbqlString = "SELECT e.firstName FROM Employee e JOIN e.period ep";
+            createEntityManager().createQuery(ejbqlString).getResultList();
+        } catch(Exception ex) {
+            testPass = false;
+        }
+        Assert.assertTrue(testPass);
+
+        try
+        {
+            ejbqlString = "SELECT e.firstName FROM Employee e JOIN FETCH e.period";
+            createEntityManager().createQuery(ejbqlString).getResultList();
+        } catch(Exception ex) {
+            testPass = false;
+        }
+        Assert.assertTrue(testPass);
+    }
+
+    public void testInvalidSetClause() {
+        String ejbqlString;
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            ejbqlString = "UPDATE Employee e SET e.projects = NULL";
+            em.createQuery(ejbqlString).executeUpdate();
+            fail ("Failed to throw expected IllegalArgumentException for query " +
+                    " updating a collection valued relationship.");
+        } catch(IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+
+        //above exception would have marked the transaction for rollback,
+        //so the test needs to start a new one
+        em = createEntityManager();
+        beginTransaction(em);
+
+        try
+        {
+            ejbqlString = "UPDATE Employee e SET e.department.name = 'CHANGED'";
+            em.createQuery(ejbqlString).executeUpdate();
+            fail ("Failed to throw expected IllegalArgumentException for query " +
+                    " updating a sate field of a related instance.");
+        } catch(IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+
+    public void testUnsupportedCountDistinctOnOuterJoinedCompositePK() {
+        try  {
+            String jpql = "SELECT COUNT(DISTINCT p) FROM Employee e LEFT JOIN e.phoneNumbers p GROUP BY e.lastName";
+            createEntityManager().createQuery(jpql).getResultList();
+            if (!((DatabasePlatform)getPlatform()).supportsCountDistinctWithMultipleFields()) {
+                fail ("Failed to throw expected IllegalArgumentException for query " +
+                      " having a COUNT DISTINCT on a joined variable with a composite primary key.");
+            }
+        } catch(IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        } catch(QueryException ex) {
+            // OK
+        }
+    }
+
+    public static EntityManager createAlternateEntityManager() {
+        return Persistence.createEntityManagerFactory("advanced1", JUnitTestCaseHelper.getDatabaseProperties()).createEntityManager();
+    }
+}

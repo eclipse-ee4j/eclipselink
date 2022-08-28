@@ -24,8 +24,10 @@ import jakarta.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.holders.EmployeeDetail;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
 import org.eclipse.persistence.testing.models.jpa.inherited.BecksTag;
@@ -137,33 +139,32 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
 
     public void complexConstructorMapTest()
     {
-        warning("requires inherited + advanced model");
 //        if (isOnServer()) {
 //            // Not work on the server.
 //            return;
 //        }
-//        JpaEntityManager em = (JpaEntityManager) createEntityManager();
-//
-//        beginTransaction(em);
-//        BeerConsumer consumer = new BeerConsumer();
-//        consumer.setName("Marvin Monroe");
-//        em.persist(consumer);
-//        Blue blue = new Blue();
-//        blue.setAlcoholContent(5.0f);
-//        blue.setUniqueKey(BigInteger.ONE);
-//        consumer.addBlueBeerToConsume(blue);
-//        em.persist(blue);
-//        em.flush();
-//
-//
-//        // constructor query using a map key
-//        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail('Mel', 'Ott', Key(b)) FROM BeerConsumer bc join bc.blueBeersToConsume b";
-//        Query query = em.createQuery(jpqlString);
-//        EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
-//        EmployeeDetail expectedResult = new EmployeeDetail("Mel", "Ott", BigInteger.ONE);
-//
-//        rollbackTransaction(em);
-//        Assert.assertTrue("Constructor with variable argument Test Case Failed", result.equals(expectedResult));
+        JpaEntityManager em = createEntityManager().unwrap(JpaEntityManager.class);
+
+        beginTransaction(em);
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Marvin Monroe");
+        em.persist(consumer);
+        Blue blue = new Blue();
+        blue.setAlcoholContent(5.0f);
+        blue.setUniqueKey(BigInteger.ONE);
+        consumer.addBlueBeerToConsume(blue);
+        em.persist(blue);
+        em.flush();
+
+
+        // constructor query using a map key
+        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.models.jpa.advanced.holders.EmployeeDetail('Mel', 'Ott', Key(b)) FROM BeerConsumer bc join bc.blueBeersToConsume b";
+        Query query = em.createQuery(jpqlString);
+        EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
+        EmployeeDetail expectedResult = new EmployeeDetail("Mel", "Ott", BigInteger.ONE);
+
+        rollbackTransaction(em);
+        Assert.assertEquals("Constructor with variable argument Test Case Failed", result, expectedResult);
     }
 
     public void complexIndexOfInSelectClauseTest(){
