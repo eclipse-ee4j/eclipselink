@@ -1534,6 +1534,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
                             : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
                 }
             }
+        } else if (fieldType == ClassConstants.BIGDECIMAL) {
+            value = resultSet.getBigDecimal(columnNumber);
         } else if (fieldType == ClassConstants.BIGINTEGER) {
             value = resultSet.getBigDecimal(columnNumber);
             if (value != null) return ((BigDecimal)value).toBigInteger();

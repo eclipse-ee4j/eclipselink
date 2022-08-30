@@ -15,6 +15,7 @@
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.jpa.test.criteria;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -56,12 +57,12 @@ public class TestSimpleCase {
     private EntityManagerFactory emf;
 
     private final NumberEntity[] NUMBER = {
-            new NumberEntity(1, 0L, 0F, 0D),
-            new NumberEntity(2, 3L, 10F, 10D),
-            new NumberEntity(3, 3L, 100F, 100D),
-            new NumberEntity(4, 5L, 10F, 10D),
-            new NumberEntity(5, 5L, 100F, 100D),
-            new NumberEntity(6, 5L, 1000F, 1000D)
+            new NumberEntity(1, 0L, 0F, 0D, BigDecimal.valueOf(0D)),
+            new NumberEntity(2, 3L, 10F, 10D, BigDecimal.valueOf(10D)),
+            new NumberEntity(3, 3L, 100F, 100D, BigDecimal.valueOf(100D)),
+            new NumberEntity(4, 5L, 10F, 10D, BigDecimal.valueOf(10D)),
+            new NumberEntity(5, 5L, 100F, 100D, BigDecimal.valueOf(100D)),
+            new NumberEntity(6, 5L, 1000F, 1000D, BigDecimal.valueOf(1000D))
     };
 
     @Before
