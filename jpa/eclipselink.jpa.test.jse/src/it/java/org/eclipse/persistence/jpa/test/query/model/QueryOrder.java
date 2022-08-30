@@ -37,7 +37,7 @@ import java.util.List;
                 query="SELECT o FROM QueryOrder o WHERE o.queryOrderLines IS EMPTY"
                 ,
                 hints={
-                       @QueryHint(name=QueryHints.PRINT_INNER_JOIN_IN_WHERE_CLAUSE, value="true")
+                       @QueryHint(name=QueryHints.INNER_JOIN_IN_WHERE_CLAUSE, value="true")
                 }
         ),
         //PRINT_INNER_JOIN_IN_WHERE true
@@ -46,7 +46,7 @@ import java.util.List;
                 query="SELECT o FROM QueryOrder o WHERE o.queryOrderLines IS EMPTY"
                 ,
                 hints={
-                        @QueryHint(name=QueryHints.PRINT_INNER_JOIN_IN_WHERE_CLAUSE, value="false")
+                        @QueryHint(name=QueryHints.INNER_JOIN_IN_WHERE_CLAUSE, value="false")
                 }
         )
 })

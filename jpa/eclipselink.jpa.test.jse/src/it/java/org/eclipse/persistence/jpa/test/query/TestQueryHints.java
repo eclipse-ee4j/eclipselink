@@ -335,7 +335,7 @@ public class TestQueryHints implements PUPropertiesProvider {
             //JPQL Query test
             String jpql = "SELECT o FROM QueryOrder o WHERE o.queryOrderLines IS EMPTY";
             Query query4 = em.createQuery(jpql, QueryOrder.class);
-            query4.setHint(QueryHints.PRINT_INNER_JOIN_IN_WHERE_CLAUSE, "false");
+            query4.setHint(QueryHints.INNER_JOIN_IN_WHERE_CLAUSE, "false");
             List<QueryOrder> result4 = query4.getResultList();
             assertEquals(0, result4.size());
 

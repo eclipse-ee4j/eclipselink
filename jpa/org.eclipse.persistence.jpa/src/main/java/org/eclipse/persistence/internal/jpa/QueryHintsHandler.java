@@ -2208,7 +2208,7 @@ public class QueryHintsHandler {
 
     protected static class PrintInnerJoinInWhereClauseHint extends Hint {
         PrintInnerJoinInWhereClauseHint() {
-            super(QueryHints.PRINT_INNER_JOIN_IN_WHERE_CLAUSE, HintValues.TRUE);
+            super(QueryHints.INNER_JOIN_IN_WHERE_CLAUSE, HintValues.TRUE);
             valueArray = new Object[][] {
                     {HintValues.TRUE, Boolean.TRUE},
                     {HintValues.FALSE, Boolean.FALSE}
