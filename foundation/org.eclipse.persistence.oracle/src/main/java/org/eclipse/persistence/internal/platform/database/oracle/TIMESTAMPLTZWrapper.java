@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.platform.database.oracle;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -24,11 +25,14 @@ import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
 
+import oracle.sql.TIMESTAMPLTZ;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.PlatformWrapper;
 
 /**
@@ -44,6 +48,16 @@ public class TIMESTAMPLTZWrapper implements Serializable, PlatformWrapper {
     public TIMESTAMPLTZWrapper(final ZonedDateTime zonedDateTime, final boolean isLtzTimestampInGmt) throws SQLException {
         this.zonedDateTime = zonedDateTime;
         this.isLtzTimestampInGmt = isLtzTimestampInGmt;
+    }
+
+    // Calendar to TIMESTAMPLTZ uses wrapper to delay TIMESTAMPLTZ constructor call until session is available
+    // in setParameterValueInDatabaseCall.
+    public TIMESTAMPLTZ builtTimestampLtz(Connection connection) {
+        try {
+            return new TIMESTAMPLTZ(connection, zonedDateTime);
+        } catch (SQLException exception) {
+            throw DatabaseException.sqlException(exception);
+        }
     }
 
     public LocalTime toLocalTime() {
@@ -66,6 +80,10 @@ public class TIMESTAMPLTZWrapper implements Serializable, PlatformWrapper {
         return zonedDateTime.toOffsetDateTime();
     }
 
+    public Calendar toCalendar() {
+        return TIMESTAMPHelper.buildCalendar(this);
+    }
+
     public Timestamp getTimestamp() {
         return Timestamp.valueOf(zonedDateTime.toLocalDateTime());
     }
@@ -82,24 +100,25 @@ public class TIMESTAMPLTZWrapper implements Serializable, PlatformWrapper {
         return isLtzTimestampInGmt;
     }
 
-    private final Map<Class<? extends Object>, Function<TIMESTAMPLTZWrapper,? extends Object>> UNWRAP = initUnwrappers();
+    private final Map<Class<?>, Function<TIMESTAMPLTZWrapper,?>> UNWRAP = initUnwrappers();
 
-    Map<Class<? extends Object>, Function<TIMESTAMPLTZWrapper, ? extends Object>> initUnwrappers() {
-        Map<Class<? extends Object>, Function<TIMESTAMPLTZWrapper, ? extends Object>> unwrappers = new HashMap<>();
+    Map<Class<?>, Function<TIMESTAMPLTZWrapper, ?>> initUnwrappers() {
+        Map<Class<?>, Function<TIMESTAMPLTZWrapper, ?>> unwrappers = new HashMap<>();
         unwrappers.put(TIMESTAMPLTZWrapper.class, (wrapper) -> wrapper);
-        unwrappers.put(LocalDate.class, (wrapper) -> wrapper.toLocalDate());
-        unwrappers.put(LocalTime.class, (wrapper) -> wrapper.toLocalTime());
-        unwrappers.put(LocalDateTime.class, (wrapper) -> wrapper.toLocalDateTime());
-        unwrappers.put(OffsetTime.class, (wrapper) -> wrapper.toOffsetTime());
-        unwrappers.put(OffsetDateTime.class, (wrapper) -> wrapper.toOffsetDateTime());
-        unwrappers.put(Timestamp.class, (wrapper) -> wrapper.getTimestamp());
-        unwrappers.put(TimeZone.class, (wrapper) -> wrapper.getTimeZone());
-        unwrappers.put(ZoneId.class, (wrapper) -> wrapper.getZoneId());
+        unwrappers.put(LocalDate.class, TIMESTAMPLTZWrapper::toLocalDate);
+        unwrappers.put(LocalTime.class, TIMESTAMPLTZWrapper::toLocalTime);
+        unwrappers.put(LocalDateTime.class, TIMESTAMPLTZWrapper::toLocalDateTime);
+        unwrappers.put(OffsetTime.class, TIMESTAMPLTZWrapper::toOffsetTime);
+        unwrappers.put(OffsetDateTime.class, TIMESTAMPLTZWrapper::toOffsetDateTime);
+        unwrappers.put(Timestamp.class, TIMESTAMPLTZWrapper::getTimestamp);
+        unwrappers.put(TimeZone.class, TIMESTAMPLTZWrapper::getTimeZone);
+        unwrappers.put(ZoneId.class, TIMESTAMPLTZWrapper::getZoneId);
+        unwrappers.put(Calendar.class, TIMESTAMPLTZWrapper::toCalendar);
         return unwrappers;
     }
 
     public <T> T unwrap(final Class<T> type) {
-        Function<TIMESTAMPLTZWrapper,? extends Object> unwrapper = UNWRAP.get(type);
+        Function<TIMESTAMPLTZWrapper, ?> unwrapper = UNWRAP.get(type);
         if (unwrapper != null) {
             return type.cast(unwrapper.apply(this));
         }

@@ -30,6 +30,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
@@ -205,7 +206,7 @@ public class Oracle9Platform extends Oracle8Platform {
         if ((type == Types.TIMESTAMP) || (type == Types.DATE)) {
             return resultSet.getTimestamp(columnNumber);
         } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPTZ) {
-            return getTIMESTAMPTZFromResultSet(resultSet, columnNumber, session);
+            return getTIMESTAMPTZFromResultSet(resultSet, columnNumber);
         } else if (type == oracle.jdbc.OracleTypes.TIMESTAMPLTZ) {
             return getTIMESTAMPLTZFromResultSet(resultSet, columnNumber, session);
         } else if (type == OracleTypes.ROWID) {
@@ -240,14 +241,14 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Get a TIMESTAMPTZ value from a result set.
      */
-    public Object getTIMESTAMPTZFromResultSet(ResultSet resultSet, int columnNumber, AbstractSession session) throws java.sql.SQLException {
+    public Object getTIMESTAMPTZFromResultSet(ResultSet resultSet, int columnNumber) throws java.sql.SQLException {
         TIMESTAMPTZ tsTZ = (TIMESTAMPTZ)resultSet.getObject(columnNumber);
         //Need to call timestampValue once here with the connection to avoid null point
         //exception later when timestampValue is called in converObject()
         if ((tsTZ != null) && (tsTZ.getLength() != 0)) {
             //Bug#4364359  Add a wrapper to overcome TIMESTAMPTZ not serializable as of jdbc 9.2.0.5 and 10.1.0.2.
             //It has been fixed in the next version for both streams
-            return new TIMESTAMPTZWrapper(tsTZ.toZonedDateTime(), this.isTimestampInGmt);
+            return new TIMESTAMPTZWrapper(tsTZ.toZonedDateTime());
         }
         return null;
     }
@@ -374,15 +375,47 @@ public class Oracle9Platform extends Oracle8Platform {
         Object valueToConvert = sourceObject;
 
         //Used in Type Conversion Mapping on write
-        if ((javaClass == TIMESTAMPTypes.TIMESTAMP_CLASS) || (javaClass == TIMESTAMPTypes.TIMESTAMPLTZ_CLASS)) {
+        if (javaClass == TIMESTAMPTypes.TIMESTAMP_CLASS) {
+            if (sourceObject instanceof java.util.Calendar) {
+                return (T) new TIMESTAMP(
+                        new Timestamp(((Calendar) sourceObject).getTimeInMillis()),
+                        ((Calendar) sourceObject));
+            }
+            return (T) sourceObject;
+        }
+
+        if (javaClass == TIMESTAMPTypes.TIMESTAMPLTZ_CLASS) {
+            if (sourceObject instanceof java.util.Calendar) {
+                // TIMESTAMPLTZ constructor always requires connection. It must be delayed until session is available
+                // using wrapper.
+                // This must be handled properly in setParameterValueInDatabaseCall methods.
+                try {
+                    return (T) new TIMESTAMPLTZWrapper(
+                            ZonedDateTime.ofInstant(
+                                    ((Calendar) sourceObject).toInstant(),
+                                    ((Calendar) sourceObject).getTimeZone().toZoneId()),
+                            this.isLtzTimestampInGmt);
+                } catch (SQLException exception) {
+                    throw DatabaseException.sqlException(exception);
+                }
+            }
             return (T) sourceObject;
         }
 
         if (javaClass == TIMESTAMPTypes.TIMESTAMPTZ_CLASS) {
             if (sourceObject instanceof java.util.Date) {
                 Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(((java.util.Date)sourceObject).getTime());
+                cal.setTimeInMillis(((java.util.Date) sourceObject).getTime());
                 return (T) cal;
+            } else if (sourceObject instanceof java.util.Calendar) {
+                try {
+                    return (T) new TIMESTAMPTZ(
+                            ZonedDateTime.ofInstant(
+                                    ((Calendar) sourceObject).toInstant(),
+                                    ((Calendar) sourceObject).getTimeZone().toZoneId()));
+                } catch (SQLException exception) {
+                    throw DatabaseException.sqlException(exception);
+                }
             } else {
                 return (T) sourceObject;
             }
@@ -406,11 +439,7 @@ public class Oracle9Platform extends Oracle8Platform {
             //Bug#4364359 Used when database type is TIMESTAMPTZ.  Timestamp and session timezone are wrapped
             //in TIMESTAMPTZWrapper.  Separate Calendar from any other types.
             if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
-                try {
-                    return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPTZWrapper) sourceObject);
-                } catch (SQLException exception) {
-                    throw DatabaseException.sqlException(exception);
-                }
+                return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPTZWrapper) sourceObject);
             } else {
                 try {
                     valueToConvert = ((TIMESTAMPTZWrapper) sourceObject).unwrap(javaClass);
@@ -423,11 +452,7 @@ public class Oracle9Platform extends Oracle8Platform {
             //Bug#4364359 Used when database type is TIMESTAMPLTZ.  Timestamp and session timezone id are wrapped
             //in TIMESTAMPLTZWrapper.  Separate Calendar from any other types.
             if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
-                try {
-                    return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPLTZWrapper)sourceObject);
-                } catch (SQLException exception) {
-                    throw DatabaseException.sqlException(exception);
-                }
+                return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPLTZWrapper) sourceObject);
             } else {
                 try {
                     valueToConvert = ((TIMESTAMPLTZWrapper) sourceObject).unwrap(javaClass);
@@ -547,10 +572,14 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     @Override
     public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
-        if (parameter instanceof Calendar) {
-            Calendar calendar = (Calendar)parameter;
+        if (parameter instanceof TIMESTAMP || parameter instanceof TIMESTAMPTZ) {
+            statement.setObject(index, parameter);
+        } else if (parameter instanceof TIMESTAMPLTZWrapper) {
             Connection conn = getConnection(session, statement.getConnection());
-            TIMESTAMPTZ tsTZ = TIMESTAMPHelper.buildTIMESTAMPTZ(calendar, conn, this.shouldPrintCalendar);
+            statement.setObject(index, ((TIMESTAMPLTZWrapper) parameter).builtTimestampLtz(conn));
+        } else if (parameter instanceof Calendar) {
+            Connection conn = getConnection(session, statement.getConnection());
+            TIMESTAMPTZ tsTZ = TIMESTAMPHelper.buildTIMESTAMPTZ((Calendar) parameter, conn, shouldPrintCalendar);
             statement.setObject(index, tsTZ);
         } else if (this.shouldTruncateDate && parameter instanceof java.sql.Date) {
             // hours, minutes, seconds all set to zero
@@ -568,10 +597,14 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     @Override
     public void setParameterValueInDatabaseCall(Object parameter, CallableStatement statement, String name, AbstractSession session) throws SQLException {
-        if (parameter instanceof Calendar) {
-            Calendar calendar = (Calendar)parameter;
+        if (parameter instanceof TIMESTAMP || parameter instanceof TIMESTAMPTZ) {
+            statement.setObject(name, parameter);
+        } else if (parameter instanceof TIMESTAMPLTZWrapper) {
             Connection conn = getConnection(session, statement.getConnection());
-            TIMESTAMPTZ tsTZ = TIMESTAMPHelper.buildTIMESTAMPTZ(calendar, conn, this.shouldPrintCalendar);
+            statement.setObject(name, ((TIMESTAMPLTZWrapper) parameter).builtTimestampLtz(conn));
+        } else if (parameter instanceof Calendar) {
+            Connection conn = getConnection(session, statement.getConnection());
+            TIMESTAMPTZ tsTZ = TIMESTAMPHelper.buildTIMESTAMPTZ((Calendar) parameter, conn, this.shouldPrintCalendar);
             statement.setObject(name, tsTZ);
         } else if (this.shouldTruncateDate && parameter instanceof java.sql.Date) {
             // hours, minutes, seconds all set to zero

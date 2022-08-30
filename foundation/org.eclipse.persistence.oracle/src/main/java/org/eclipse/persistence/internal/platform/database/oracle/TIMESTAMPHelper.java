@@ -41,27 +41,19 @@ public class TIMESTAMPHelper {
     /**
      * Build a calendar from TIMESTAMPTZWrapper.
      */
-    public static Calendar buildCalendar(TIMESTAMPTZWrapper timestampTZ) throws SQLException{
-        Timestamp ts = timestampTZ.getTimestamp();
-        TimeZone tz = timestampTZ.getTimeZone();
-
-        Calendar gCal;
-        if(timestampTZ.isTimestampInGmt()) {
-            gCal = Calendar.getInstance(tz);
-            gCal.setTime(ts);
-        } else {
-            gCal = Calendar.getInstance();
-            gCal.setTime(ts);
-            gCal.getTimeZone().setID(tz.getID());
-            gCal.getTimeZone().setRawOffset(tz.getRawOffset());
-        }
+    public static Calendar buildCalendar(TIMESTAMPTZWrapper timestampTZ) {
+        final TimeZone tz = timestampTZ.getTimeZone();
+        final Calendar gCal = Calendar.getInstance();
+        gCal.setTime(timestampTZ.getTimestamp());
+        gCal.getTimeZone().setID(tz.getID());
+        gCal.getTimeZone().setRawOffset(tz.getRawOffset());
         return gCal;
     }
 
    /**
     * Build a calendar from TIMESTAMPLTZWrapper.
     */
-    public static Calendar buildCalendar(TIMESTAMPLTZWrapper timestampLTZ) throws SQLException{
+    public static Calendar buildCalendar(TIMESTAMPLTZWrapper timestampLTZ) {
         Calendar gCal;
         if (timestampLTZ.getZoneId() != null) {
             gCal = Calendar.getInstance(TimeZone.getTimeZone(timestampLTZ.getZoneId()));
