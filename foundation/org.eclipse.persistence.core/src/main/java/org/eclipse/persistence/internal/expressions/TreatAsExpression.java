@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -621,7 +621,7 @@ public class TreatAsExpression extends QueryKeyExpression {
                 normalizer.addAdditionalLocalExpression(typeExpression.and(additionalTreatExpressionCriteria()).and(this.onClause));
                 return this;
             } else if (((!getSession().getPlatform().shouldPrintOuterJoinInWhereClause()))
-                    || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
+                    || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause((normalizer.getStatement().getParentStatement() != null ? normalizer.getStatement().getParentStatement().getQuery() : normalizer.getStatement().getQuery())))) {
 
                 //Adds the left joins from treat to the base QKE joins.
                 Map<DatabaseTable, Expression> map = statement.getOuterJoinExpressionsHolders().get(postition).outerJoinedAdditionalJoinCriteria;
@@ -633,7 +633,7 @@ public class TreatAsExpression extends QueryKeyExpression {
                 return this;
             }
         } else if (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause()
-                || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
+                || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause((normalizer.getStatement().getParentStatement() != null ? normalizer.getStatement().getParentStatement().getQuery() : normalizer.getStatement().getQuery())))) {
             //the base is not using an outer join, so we add a new one for this class' tables.
             Map additionalExpMap = additionalTreatExpressionCriteriaMap();
             if (additionalExpMap!=null && !additionalExpMap.isEmpty()) {
