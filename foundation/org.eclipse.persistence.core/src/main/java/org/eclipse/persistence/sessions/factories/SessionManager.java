@@ -179,7 +179,7 @@ public class SessionManager {
      */
     public void destroy() {
         if (supportPartitions) {
-            if (managers.remove(getPartitionID()) == null) {
+            if (!managers.isEmpty() && managers.remove(getPartitionID()) == null) {
                 //should not happen
                 LOG.log(SessionLog.WARNING, "session_manager_no_partition", new Object[0]);
            }

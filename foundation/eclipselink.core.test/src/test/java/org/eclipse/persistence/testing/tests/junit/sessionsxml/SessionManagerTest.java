@@ -14,6 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.junit.sessionsxml;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -184,6 +187,25 @@ public class SessionManagerTest {
             Assert.assertTrue("invalid excpetion type: " + t, t instanceof ServerPlatformException);
         } finally {
             Platform.forceNPE = false;
+        }
+    }
+
+    @Test
+    public void testDestroyManager() {
+        reinitManager(true, true);
+        SessionManager m1 = SessionManager.getManager();
+        SessionLog logger = (SessionLog) getField(SessionManager.class, "LOG", null);
+        Writer orig = logger.getWriter();
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        Writer newWriter = new PrintWriter(outStream);
+        logger.setWriter(newWriter);
+        m1.destroy();
+        SessionManager m2 = SessionManager.getManager();
+        m2.destroy();
+        logger.setWriter(orig);
+        String message = outStream.toString();
+        if(message != null && message.contains("No partition instance associated with current SessionManager instance")){
+            Assert.fail("Test failed due to warning message " + message);
         }
     }
 
