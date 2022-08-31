@@ -96,7 +96,7 @@ fi
 
 echo '-[ Build project mvn clean install ]-----------------------------'
 #This step is needed to populate local Maven repository with required but not deployed artifacts
-mvn --no-transfer-progress -DskipTests clean install -Dbuild.type=RELEASE
+mvn --no-transfer-progress -DskipTests clean install -Dbuild.type=RELEASE -Pstaging
 #Deploy selected artifacts. There is Maven property -Ddeploy to control which modules will be deployed
 echo '-[ Deploy artifacts to staging repository ]-----------------------------'
 # Verify, sign and deploy release
