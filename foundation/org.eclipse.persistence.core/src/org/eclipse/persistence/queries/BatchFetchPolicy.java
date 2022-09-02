@@ -79,7 +79,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
         clone.setDataResults(dataResults);
 
         if(this.attributeExpressions != null) {
-            this.attributeExpressions = new ArrayList<>(this.attributeExpressions);
+            clone.attributeExpressions = new ArrayList<>(this.attributeExpressions);
         }
         return clone;
     }
