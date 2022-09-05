@@ -21,7 +21,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import oracle.jdbc.OracleType;
-import oracle.sql.json.OracleJsonFactory;
 import oracle.sql.json.OracleJsonValue;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -34,15 +33,11 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class Oracle21Platform extends Oracle19Platform {
 
-    // Oracle JSON factory.
-    private final OracleJsonFactory factory;
-
     /**
      * Creates an instance of Oracle 21c database platform.
      */
     public Oracle21Platform() {
         super();
-        this.factory = new OracleJsonFactory();
     }
 
     /**
