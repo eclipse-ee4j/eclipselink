@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,6 @@
 //       - #539822: JPA Canonical metamodel not processing metamodelMappedSuperclasses
 package org.eclipse.persistence.jpa.test.canonical;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -30,6 +27,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.sessions.Session;
 import org.junit.Test;
+import static org.junit.Assert.assertNotNull;
 
 public class TestCanonicalMetaModel {
 
@@ -61,7 +59,7 @@ public class TestCanonicalMetaModel {
 
         try (AutoCloseableEntityManagerFactory acemf = new AutoCloseableEntityManagerFactory(persistenceProvider,
                 persistenceUnitInfo, properties)) {
-            assertThat("The \"name\" field is properly initialized", DomainInterface_.name, notNullValue());
+            assertNotNull("The \"name\" field is properly initialized", DomainInterface_.name);
         }
 
     }

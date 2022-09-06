@@ -32,14 +32,14 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.sessions.Session;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test math functions in CriteriaBuilder.
@@ -469,12 +469,10 @@ public class TestMathFunctions {
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 2, 3, "doubleValue");
             if (emf.unwrap(Session.class).getPlatform().isDerby()) {
-                MatcherAssert.assertThat(
-                        Math.abs(Math.pow(NUMBER[3].getDoubleValue(), 2) - result), Matchers.lessThan(0.0000001D));
+                assertTrue(Math.abs(Math.pow(NUMBER[3].getDoubleValue(), 2) - result) < 0.0000001D);
             // Oracle DB result is less accurate
             } else if (emf.unwrap(Session.class).getPlatform().isOracle()) {
-                MatcherAssert.assertThat(
-                        Math.abs(Math.pow(NUMBER[3].getDoubleValue(), 2) - result), Matchers.lessThan(0.0001D));
+                assertTrue(Math.abs(Math.pow(NUMBER[3].getDoubleValue(), 2) - result) < 0.0001D);
             } else {
                 Assert.assertEquals(
                         Double.valueOf(Math.pow(NUMBER[3].getDoubleValue(), 2)), result);
@@ -503,11 +501,9 @@ public class TestMathFunctions {
             Double result = callPower(em, 2, 4, "doubleValue");
             // Oracle DB result is less accurate
             if (emf.unwrap(Session.class).getPlatform().isOracle()) {
-                MatcherAssert.assertThat(
-                        Math.abs(Math.pow(NUMBER[4].getDoubleValue(), 2) - result), Matchers.lessThan(0.0001D));
+                assertTrue(Math.abs(Math.pow(NUMBER[4].getDoubleValue(), 2) - result) < 0.0001D);
             } else {
-                Assert.assertEquals(
-                        Double.valueOf(Math.pow(NUMBER[4].getDoubleValue(), 2)), result);
+                assertEquals(Double.valueOf(Math.pow(NUMBER[4].getDoubleValue(), 2)), result);
             }
         }
     }
@@ -519,8 +515,7 @@ public class TestMathFunctions {
         Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callPower(em, 3, 4, "longValue");
-            Assert.assertEquals(
-                    Double.valueOf(Math.pow(NUMBER[4].getLongValue(), 3)), result);
+            assertEquals(Double.valueOf(Math.pow(NUMBER[4].getLongValue(), 3)), result);
         }
     }
 
@@ -533,11 +528,9 @@ public class TestMathFunctions {
             Double result = callPower(em, 3, 4, "doubleValue");
             // Oracle DB result is less accurate
             if (emf.unwrap(Session.class).getPlatform().isOracle()) {
-                MatcherAssert.assertThat(
-                        Math.abs(Math.pow(NUMBER[4].getDoubleValue(), 3) - result), Matchers.lessThan(0.0000001D));
+                assertTrue(Math.abs(Math.pow(NUMBER[4].getDoubleValue(), 3) - result) < 0.0000001D);
             } else {
-                Assert.assertEquals(
-                        Double.valueOf(Math.pow(NUMBER[4].getDoubleValue(), 3)), result);
+                assertEquals(Double.valueOf(Math.pow(NUMBER[4].getDoubleValue(), 3)), result);
             }
         }
     }
@@ -560,12 +553,9 @@ public class TestMathFunctions {
         try (final EntityManager em = emf.createEntityManager()) {
             Double result = callExprPower(em, 7);
             if (emf.unwrap(Session.class).getPlatform().isDerby() || emf.unwrap(Session.class).getPlatform().isOracle()) {
-                MatcherAssert.assertThat(
-                        Math.abs(Math.pow(NUMBER[7].getDoubleValue(), NUMBER[7].getLongValue()) - result),
-                        Matchers.lessThan(0.0000001d));
+                assertTrue(Math.abs(Math.pow(NUMBER[7].getDoubleValue(), NUMBER[7].getLongValue()) - result) < 0.0000001d);
             } else {
-                Assert.assertEquals(
-                        Double.valueOf(Math.pow(NUMBER[7].getDoubleValue(), NUMBER[7].getLongValue())), result);
+                assertEquals(Double.valueOf(Math.pow(NUMBER[7].getDoubleValue(), NUMBER[7].getLongValue())), result);
             }
         }
     }
@@ -611,10 +601,9 @@ public class TestMathFunctions {
             Double result = callDoubleRound(em, 6,8);
             // Oracle DB result is less accurate
             if (emf.unwrap(Session.class).getPlatform().isOracle()) {
-                MatcherAssert.assertThat(
-                        Math.abs(Double.valueOf(44.754238D) - result), Matchers.lessThan(0.0001D));
+                assertTrue(Math.abs(Double.valueOf(44.754238D) - result) < 0.0001D);
             } else {
-                Assert.assertEquals(Double.valueOf(44.754238D), result);
+                assertEquals(Double.valueOf(44.754238D), result);
             }
         }
     }
@@ -626,10 +615,9 @@ public class TestMathFunctions {
             Float result = callFloatRound(em, 6,8);
             // Oracle DB result is less accurate
             if (emf.unwrap(Session.class).getPlatform().isOracle()) {
-                MatcherAssert.assertThat(
-                        Math.abs(Float.valueOf(44.754238F) - result), Matchers.lessThan(0.0001F));
+                assertTrue(Math.abs(Float.valueOf(44.754238F) - result) < 0.0001F);
             } else {
-                Assert.assertEquals(Float.valueOf(44.754238F), result);
+                assertEquals(Float.valueOf(44.754238F), result);
             }
         }
     }
@@ -641,10 +629,9 @@ public class TestMathFunctions {
             Double result = callDoubleRound(em, 6, 9);
             // Oracle DB result is less accurate
             if (emf.unwrap(Session.class).getPlatform().isOracle()) {
-                MatcherAssert.assertThat(
-                        Math.abs(Double.valueOf(-214.245732D) - result), Matchers.lessThan(0.0001D));
+                assertTrue(Math.abs(Double.valueOf(-214.245732D) - result) < 0.0001D);
             } else {
-                Assert.assertEquals(Double.valueOf(-214.245732D), result);
+                assertEquals(Double.valueOf(-214.245732D), result);
             }
         }
     }
@@ -656,10 +643,9 @@ public class TestMathFunctions {
             Float result = callFloatRound(em, 6, 9);
             // Oracle DB result is less accurate
             if (emf.unwrap(Session.class).getPlatform().isOracle()) {
-                MatcherAssert.assertThat(
-                        Math.abs(Float.valueOf(-214.245732F) - result), Matchers.lessThan(0.0001F));
+                assertTrue(Math.abs(Float.valueOf(-214.245732F) - result) < 0.0001F);
             } else {
-                Assert.assertEquals(Float.valueOf(-214.245732F), result);
+                assertEquals(Float.valueOf(-214.245732F), result);
             }
         }
     }
@@ -674,8 +660,8 @@ public class TestMathFunctions {
             cq.select(cb.ceiling(number.get("bdValue")));
             cq.where(cb.equal(number.get("id"), 8));
             Number result = em.createQuery(cq).getSingleResult();
-            MatcherAssert.assertThat(result, Matchers.is(Matchers.instanceOf(BigDecimal.class)));
-            MatcherAssert.assertThat(result.doubleValue(), Matchers.equalTo(Math.ceil(NUMBER[8].getBdValue().doubleValue())));
+            assertTrue(result instanceof BigDecimal);
+            assertEquals(Math.ceil(NUMBER[8].getBdValue().doubleValue()), result.doubleValue(), 0);
         }
     }
 
@@ -689,8 +675,8 @@ public class TestMathFunctions {
             cq.select(cb.floor(number.get("bdValue")));
             cq.where(cb.equal(number.get("id"), 8));
             Number result = em.createQuery(cq).getSingleResult();
-            MatcherAssert.assertThat(result, Matchers.is(Matchers.instanceOf(BigDecimal.class)));
-            MatcherAssert.assertThat(result.doubleValue(), Matchers.equalTo(Math.floor(NUMBER[8].getBdValue().doubleValue())));
+            assertTrue(result instanceof BigDecimal);
+            assertEquals(result.doubleValue(), Math.floor(NUMBER[8].getBdValue().doubleValue()), 0);
         }
     }
 
@@ -704,9 +690,8 @@ public class TestMathFunctions {
             cq.select(cb.round(number.get("bdValue"), 1));
             cq.where(cb.equal(number.get("id"), 8));
             Number result = em.createQuery(cq).getSingleResult();
-            MatcherAssert.assertThat(result, Matchers.is(Matchers.instanceOf(BigDecimal.class)));
-            MatcherAssert.assertThat(result.doubleValue(), Matchers.equalTo(Double.valueOf(Math.round(NUMBER[8].getBdValue().doubleValue()*10))/10));
+            assertTrue(result instanceof BigDecimal);
+            assertEquals(result.doubleValue(), Double.valueOf(Math.round(NUMBER[8].getBdValue().doubleValue()*10))/10, 0);
         }
     }
-
 }

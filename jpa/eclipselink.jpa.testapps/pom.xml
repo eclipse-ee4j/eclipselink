@@ -227,11 +227,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--EclipseLink JPA test framework-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>

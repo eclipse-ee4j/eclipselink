@@ -34,12 +34,11 @@ import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(EmfRunner.class)
 public class TestDateTimeFunctions {
@@ -199,7 +198,7 @@ public class TestDateTimeFunctions {
             em.getTransaction().begin();
             List<DateTimeEntity> result = query.getResultList();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(result.size(), Matchers.equalTo(4));
+            assertEquals(4, result.size());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -219,7 +218,7 @@ public class TestDateTimeFunctions {
             em.getTransaction().begin();
             List<DateTimeEntity> result = query.getResultList();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(result.size(), Matchers.equalTo(4));
+            assertEquals(4, result.size());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -227,5 +226,4 @@ public class TestDateTimeFunctions {
             em.close();
         }
     }
-
 }

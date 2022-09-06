@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,7 +19,6 @@
 package org.eclipse.persistence.jpa.test.oraclefeatures;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,14 +34,12 @@ import org.eclipse.persistence.jpa.test.oraclefeatures.model.OracleLobEntity;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-
-import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 @RunWith(EmfRunner.class)
 public class TestOracleLOBLocatorFeature {
@@ -138,10 +135,10 @@ public class TestOracleLOBLocatorFeature {
             em.clear();
 
             OracleLobEntity findEntity = em.find(OracleLobEntity.class, blobEntity.getId());
-            Assert.assertNotNull(findEntity);
-            Assert.assertEquals(blobEntity.getStrData(), findEntity.getStrData());
-            Assert.assertEquals(blobEntity.getBlobData(), findEntity.getBlobData());
-            Assert.assertEquals(blobEntity.getClobData(), findEntity.getClobData());
+            assertNotNull(findEntity);
+            assertEquals(blobEntity.getStrData(), findEntity.getStrData());
+            assertEquals(blobEntity.getBlobData(), findEntity.getBlobData());
+            assertEquals(blobEntity.getClobData(), findEntity.getClobData());
         } finally {
             if(em != null) {
                 if (em.getTransaction().isActive()) {
@@ -190,11 +187,15 @@ public class TestOracleLOBLocatorFeature {
                 em.persist(blobEntity);
                 em.getTransaction().commit();
             } catch (jakarta.persistence.RollbackException re) {
-                // Expected
-                MatcherAssert.assertThat(re, getExceptionChainMatcher(java.sql.SQLIntegrityConstraintViolationException.class));
+                Throwable t = (Throwable) re;
+                while (t != null) {
+                    if (t instanceof java.sql.SQLIntegrityConstraintViolationException) {
+                        return;
+                    }
+                    t = t.getCause();
+                }
             }
-
-            
+            fail("No \"jakarta.persistence.RollbackException\" found in the exceptions stack.");
         } finally {
             if(em != null) {
                 if (em.getTransaction().isActive()) {
@@ -217,47 +218,4 @@ public class TestOracleLOBLocatorFeature {
         DatabasePlatform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getPlatform();
         return platform;
     }
-    
-    @SuppressWarnings("rawtypes")
-    protected Matcher getExceptionChainMatcher(final Class<?> t) {
-        return new BaseMatcher() {
-            final protected Class<?> expected = t;
-
-            @Override
-            public boolean matches(Object obj) {
-                if (obj == null) {
-                    return (expected == null);
-                }
-
-                if (!(obj instanceof Throwable)) {
-                    return false;
-                }
-
-                final ArrayList<Throwable> tList = new ArrayList<Throwable>();
-
-                Throwable t = (Throwable) obj;
-                while (t != null) {
-                    tList.add(t);
-                    if (expected.equals(t.getClass())) {
-                        return true;
-                    }
-
-                    if (expected.isAssignableFrom(t.getClass())) {
-                        return true;
-                    }
-
-                    t = t.getCause();
-                }
-
-                return false;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText(expected.toString());
-            }
-
-        };
-    }
-
 }

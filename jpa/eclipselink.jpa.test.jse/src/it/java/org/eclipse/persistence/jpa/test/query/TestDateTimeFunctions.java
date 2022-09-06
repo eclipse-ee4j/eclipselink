@@ -28,14 +28,13 @@ import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.query.model.DateTimeQueryEntity;
 import org.eclipse.persistence.sessions.Session;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test {@code LocalTime}/{@code LocalDate}/{@code LocalDateTime} functions in queries.
@@ -113,7 +112,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(2022L));
+            assertEquals(y, 2022L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -135,7 +134,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(1L));
+            assertEquals(y, 1L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -157,7 +156,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(3L));
+            assertEquals(y, 3L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -179,7 +178,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(9L));
+            assertEquals(y, 9L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -201,7 +200,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(14L));
+            assertEquals(y, 14L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -223,7 +222,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(30L));
+            assertEquals(y, 30L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -245,7 +244,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(25L));
+            assertEquals(y, 25L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -267,7 +266,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(2022L));
+            assertEquals(y, 2022L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -289,7 +288,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(1L));
+            assertEquals(y, 1L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -311,7 +310,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(3L));
+            assertEquals(y, 3L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -333,7 +332,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(9L));
+            assertEquals(y, 9L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -355,7 +354,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(14L));
+            assertEquals(y, 14L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -377,7 +376,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(30L));
+            assertEquals(y, 30L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -399,7 +398,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 1);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(25L));
+            assertEquals(y, 25L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -422,7 +421,7 @@ public class TestDateTimeFunctions {
             query.setParameter("datetimeValue", TS[1]);
             List<DateTimeQueryEntity> result = query.getResultList();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(result.size(), Matchers.equalTo(1));
+            assertEquals(result.size(), 1);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -445,7 +444,7 @@ public class TestDateTimeFunctions {
             Number year = query.getSingleResult();
             em.getTransaction().commit();
             // Check returned year value
-            MatcherAssert.assertThat(year.intValue(), Matchers.equalTo(2022));
+            assertEquals(year.intValue(),2022);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -474,7 +473,7 @@ public class TestDateTimeFunctions {
                     found = true;
                 }
             }
-            Assert.assertTrue("Record with ID = 1 containing year 2022 was not found", found);
+            assertTrue("Record with ID = 1 containing year 2022 was not found", found);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -498,7 +497,7 @@ public class TestDateTimeFunctions {
             q.setParameter("id", 3);
             long y = q.getSingleResult().longValue();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(y, Matchers.equalTo(23L));
+            assertEquals(y, 23L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -522,7 +521,7 @@ public class TestDateTimeFunctions {
             for (String operand : extractOps) {
                 TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(" + operand + " FROM qdte.dateValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1", Number.class);
                 Number value = query.getSingleResult();
-                MatcherAssert.assertThat(value, Matchers.anyOf(Matchers.instanceOf(Integer.class), Matchers.instanceOf(Long.class)));
+                assertTrue(value instanceof Integer || value instanceof Long);
             }
             em.getTransaction().commit();
         } catch (Throwable t) {
@@ -546,7 +545,7 @@ public class TestDateTimeFunctions {
             for (String operand : extractOps) {
                 TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(" + operand + " FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1", Number.class);
                 Number value = query.getSingleResult();
-                MatcherAssert.assertThat(value, Matchers.instanceOf(Integer.class));
+                assertTrue(value instanceof Integer);
             }
             em.getTransaction().commit();
         } catch (Throwable t) {
@@ -568,7 +567,7 @@ public class TestDateTimeFunctions {
             em.getTransaction().begin();
             TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(SECOND FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1", Number.class);
             Number value = query.getSingleResult();
-            MatcherAssert.assertThat(value, Matchers.instanceOf(Double.class));
+            assertTrue(value instanceof Double);
             em.getTransaction().commit();
         } catch (Throwable t) {
             t.printStackTrace();
@@ -591,10 +590,10 @@ public class TestDateTimeFunctions {
             em.getTransaction().begin();
             TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(SECOND FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 4", Number.class);
             Number value = query.getSingleResult();
-            MatcherAssert.assertThat(value, Matchers.instanceOf(Double.class));
+            assertTrue(value instanceof Double);
             double secWithNs = (double)TS[3].getNano() / 1000000000 + TS[3].getSecond();
             double diff = Math.abs(secWithNs - value.doubleValue());
-            MatcherAssert.assertThat(diff, Matchers.lessThan(0.000001));
+            assertTrue(diff < 0.000001);
             em.getTransaction().commit();
         } catch (Throwable t) {
             t.printStackTrace();
@@ -606,5 +605,4 @@ public class TestDateTimeFunctions {
             em.close();
         }
     }
-
 }
