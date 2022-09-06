@@ -26,7 +26,7 @@ import java.util.Map;
 public class TopLinkJPAPerformanceRegressionModel extends JPAPerformanceRegressionModel {
 
     public TopLinkJPAPerformanceRegressionModel() {
-        setDescription("Performance tests that compares TopLink JPA performance.");
+        setDescription("Performance tests that compares TopLink Jakarta Persistence performance.");
     }
 
     /**

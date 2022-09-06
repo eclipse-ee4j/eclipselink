@@ -67,7 +67,7 @@ import java.util.Map;
 public class JPAConcurrencyComparisonModel extends TestModel {
 
     public JPAConcurrencyComparisonModel() {
-        setDescription("Performance tests that compare JPA concurrency.");
+        setDescription("Performance tests that compare Jakarta Persistence concurrency.");
     }
 
     @Override
@@ -79,7 +79,7 @@ public class JPAConcurrencyComparisonModel extends TestModel {
 
     public TestSuite getReadingTestSuite() {
         TestSuite suite = new TestSuite();
-        suite.setName("JPAConcurrentReadingTestSuite");
+        suite.setName("JakartaPersistenceConcurrentReadingTestSuite");
         suite.setDescription("This suite tests reading concurrency.");
 
         suite.addTest(new ConcurrencyTestAdapter(new JPAReadAllAddressPerformanceComparisonTest(true)));
@@ -113,7 +113,7 @@ public class JPAConcurrencyComparisonModel extends TestModel {
 
     public TestSuite getWritingTestSuite() {
         TestSuite suite = new TestSuite();
-        suite.setName("JPAConcurrentWritingTestSuite");
+        suite.setName("JakartaPersistenceConcurrentWritingTestSuite");
         suite.setDescription("This suite tests writing concurrency.");
 
         suite.addTest(new ConcurrencyTestAdapter(new JPAInsertAddressPerformanceComparisonTest()));

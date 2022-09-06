@@ -322,7 +322,7 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7304", "PersistenceUnitProperties.ORACLE_PROXY_TYPE property set to unknown type [{0}], known types are [{1}], [{2}], [{3}]." },
                                            { "7305", "An exception was thrown while processing the mapping file from URL: [{0}]." },
                                            { "7306", "The annotated element [{0}] from the class [{1}] has an incorrect explicit access type specified. It should specify an access type of [{2}]." },
-                                           { "7307", "Missing a logging context string for the context [{0}]. This is an internal exception that occurred retrieving a log message for JPA metadata processing, please report a bug." },
+                                           { "7307", "Missing a logging context string for the context [{0}]. This is an internal exception that occurred retrieving a log message for Jakarta Persistence metadata processing, please report a bug." },
                                            { "7308", "The specified value [{0}] for for the persistence property [{1}] is invalid - [{2}]."},
                                            { "7309", "The attribute named [{1}] from the embeddable class [{0}] is not a valid mapping to use with an attribute-override for the attribute [{3}] on class [{2}]." },
                                            { "7310", "The target class of the element collection attribute [{0}] on the class [{1}] cannot be determined.  When not using generics, ensure the target class is defined on the element collection mapping."},
@@ -351,7 +351,7 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7334", "Class [{0}] has an incomplete primary key specification. When specifying primary key columns, the names of those columns must be specified."},
                                            { "7335", "Duplicate partition value [{1}] given for @ValuePartitioning named [{0}]"},
                                            { "7336", "Multiple context properties [{2}] and [{3}] specified for the same tenant discriminator field [{1}] for class [{0}]"},
-                                           { "7337", "The mapped tenant discriminator column [{1}] on the class [{0}] must be marked as read only. In JPA this is done by setting insertable=false and updatable=false on the column e.g. @Column(name=\"TENANT_ID\", insertable=false, updatable=false)."},
+                                           { "7337", "The mapped tenant discriminator column [{1}] on the class [{0}] must be marked as read only. In Jakarta Persistence API this is done by setting insertable=false and updatable=false on the column e.g. @Column(name=\"TENANT_ID\", insertable=false, updatable=false)."},
                                            { "7338", "You cannot add sequences to a SessionBroker." },
                                            { "7339", "Alias [{0}] is used by both [{1}] and [{2}] classes. Descriptor alias must be unique." },
                                            { "7340", "There are multiple mapping files called [{0}] in classpath."},
@@ -365,12 +365,12 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7348", "The embedded mapping [{1}] from [{0}] does not specify an attribute name to which the convert is to be applied. You must specify an attribute name on the Embeddable."},
                                            { "7350", "The convert attribute name [{3}] from the mapping [{1}] from the class [{0}] was not found on the embeddable class [{2}]. Please ensure the attribute exists and is correctly named." },
                                            { "7351", "The converter class [{2}] specified on the mapping attribute [{1}] from the class [{0}] was not found. Please ensure the converter class name is correct and exists with the persistence unit definition." },
-                                           { "7352", "The converter class [{0}] must implement the JPA jakarta.persistence.AttributeConverter<X, Y> interface to be a valid converter class." },
+                                           { "7352", "The converter class [{0}] must implement the Jakarta Persistence jakarta.persistence.AttributeConverter<X, Y> interface to be a valid converter class." },
                                            { "7353", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert specification." },
                                            { "7354", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a map key convert specification." },
                                            { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },
                                            { "7356", "Procedure: [{1}] cannot be executed because {0} does not currently support multiple out parameters"},
-                                           { "7357", "The \"[{0}]\" URL for \"[{1}]\" resource does not belong to a valid persistence root (as per JPA Specification)"},
+                                           { "7357", "The \"[{0}]\" URL for \"[{1}]\" resource does not belong to a valid persistence root (as per Jakarta Persistence Specification)"},
  };
 
     /**

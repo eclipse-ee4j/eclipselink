@@ -27,7 +27,7 @@ import java.util.Map;
 public class HibernateJPAConcurrencyComparisonModel extends JPAConcurrencyComparisonModel {
 
     public HibernateJPAConcurrencyComparisonModel() {
-        setDescription("Performance tests that compares Hibernate JPA concurrency.");
+        setDescription("Performance tests that compares Hibernate Jakarta Persistence concurrency.");
     }
 
     /**

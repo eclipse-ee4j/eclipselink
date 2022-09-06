@@ -20,7 +20,7 @@ package org.eclipse.persistence.testing.tests.jpa.performance;
 public class JPAEmulatedIsolatedPerformanceRegressionModel extends JPAIsolatedPerformanceRegressionModel {
 
     public JPAEmulatedIsolatedPerformanceRegressionModel() {
-        setDescription("Performance tests that compare JPA non-caching performance using an emulated database.");
+        setDescription("Performance tests that compare Jakarta Persistence non-caching performance using an emulated database.");
         this.isEmulated = true;
     }
 }

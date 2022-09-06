@@ -20,7 +20,7 @@ package org.eclipse.persistence.testing.tests.jpa.performance;
 public class JPAEmulatedPerformanceRegressionModel extends JPAPerformanceRegressionModel {
 
     public JPAEmulatedPerformanceRegressionModel() {
-        setDescription("Performance tests that compare JPA performance using an emulated database.");
+        setDescription("Performance tests that compare Jakarta Persistence performance using an emulated database.");
         this.isEmulated = true;
     }
 }

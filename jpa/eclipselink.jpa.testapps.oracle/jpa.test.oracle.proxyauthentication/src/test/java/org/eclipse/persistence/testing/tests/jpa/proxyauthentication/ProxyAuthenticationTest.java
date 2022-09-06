@@ -100,7 +100,7 @@ public class ProxyAuthenticationTest extends JUnitTestCase {
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite("Proxy Authentication JPA Test Suite");
+        TestSuite suite = new TestSuite("Proxy Authentication Jakarta Persistence Test Suite");
 
         suite.addTest(new ProxyAuthenticationTest("testInternalPool_EMFProxyProperties"));
         suite.addTest(new ProxyAuthenticationTest("testInternalPool_EMFProxyProperties_ExclusiveIsolated"));

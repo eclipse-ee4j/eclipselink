@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.framework.PerformanceRegressionTestCase;
 public class JPABootstrapPerformanceTest extends PerformanceRegressionTestCase {
 
     public JPABootstrapPerformanceTest() {
-        setDescription("This tests the JPA deployment and bootstraping performance.");
+        setDescription("This tests the Jakarta Persistence deployment and bootstraping performance.");
     }
 
     /**

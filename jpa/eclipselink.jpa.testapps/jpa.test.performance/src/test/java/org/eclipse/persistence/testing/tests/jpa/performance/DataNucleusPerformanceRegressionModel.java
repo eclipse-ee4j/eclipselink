@@ -26,7 +26,7 @@ import java.util.Map;
 public class DataNucleusPerformanceRegressionModel extends JPAPerformanceRegressionModel {
 
     public DataNucleusPerformanceRegressionModel() {
-        setDescription("Performance tests that compares DataNucleus JPA performance.");
+        setDescription("Performance tests that compares DataNucleus Jakarta Persistence performance.");
     }
 
     /**

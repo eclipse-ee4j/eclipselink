@@ -3216,9 +3216,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             // execute a non historical query through JPQL against the Oyster entity
             oysters = em.createQuery("SELECT e FROM Oyster e", Oyster.class).getResultList();
-            assertTrue("JPA query: Oysters should be non-empty", oysters.size() > 0);
+            assertTrue("Jakarta Persistence query: Oysters should be non-empty", oysters.size() > 0);
             for (Oyster oysterElem : oysters) {
-                assertNotNull("JPA query: Oyster should have a pearl, historical query executed", oysterElem.getPearl());
+                assertNotNull("Jakarta Persistence query: Oyster should have a pearl, historical query executed", oysterElem.getPearl());
             }
         } finally {
             closeEntityManager(em);

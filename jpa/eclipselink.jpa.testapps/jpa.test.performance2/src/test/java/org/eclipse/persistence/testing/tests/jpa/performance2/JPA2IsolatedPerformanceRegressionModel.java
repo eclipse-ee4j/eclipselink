@@ -22,7 +22,7 @@ import java.util.Map;
 public class JPA2IsolatedPerformanceRegressionModel extends JPA2PerformanceRegressionModel {
 
     public JPA2IsolatedPerformanceRegressionModel() {
-        setDescription("Performance tests that compares JPA performance.");
+        setDescription("Performance tests that compares Jakarta Persistence performance.");
     }
 
     /**

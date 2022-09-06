@@ -27,7 +27,7 @@ import java.util.Map;
 public class HibernateJPAPerformanceRegressionModel extends JPAPerformanceRegressionModel {
 
     public HibernateJPAPerformanceRegressionModel() {
-        setDescription("Performance tests that compares Hibernate JPA performance.");
+        setDescription("Performance tests that compares Hibernate Jakarta Persistence performance.");
     }
 
     /**

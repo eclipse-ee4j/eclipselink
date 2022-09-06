@@ -50,7 +50,7 @@ import java.util.Map;
 public class JPAPerformanceComparisonModel extends TestModel {
 
     public JPAPerformanceComparisonModel() {
-        setDescription("Performance tests that compare JPA performance.");
+        setDescription("Performance tests that compare Jakarta Persistence performance.");
     }
 
     @Override
