@@ -28,5 +28,5 @@ extraction:
       java_version: 11
       maven:
         version: 3.6.3
-      build_command: "mvn -DskipTests -Denforcer.skip clean package"
+      build_command: "mvn -DskipTests -Denforcer.skip clean package -Pstaging"
 
