@@ -907,7 +907,7 @@ public class MetadataProject {
     }
 
     private void createRestInterfaces(ClassLoader loader) {
-        if (DynamicClassLoader.class.isAssignableFrom(loader.getClass())) {
+        if (loader != null && DynamicClassLoader.class.isAssignableFrom(loader.getClass())) {
             DynamicClassLoader dcl = (DynamicClassLoader) loader;
             for (EntityAccessor accessor : getEntityAccessors()) {
                 String className = accessor.getParentClassName();
