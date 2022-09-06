@@ -30,12 +30,11 @@ import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test new API 3.1.0 when methods of SimpleCase subclass of CriteriaBuilder.
@@ -114,7 +113,7 @@ public class TestSimpleCase {
                     .otherwise(0);
             cq.where(cb.equal(entity.get("doubleValue"), selectCase));
             List<NumberEntity> result = em.createQuery(cq).getResultList();
-            MatcherAssert.assertThat(result.size(), Matchers.equalTo(3));
+            assertEquals(3, result.size());
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -136,11 +135,10 @@ public class TestSimpleCase {
                     .otherwise(0);
             cq.where(cb.equal(entity.get("doubleValue"), selectCase));
             List<NumberEntity> result = em.createQuery(cq).getResultList();
-            MatcherAssert.assertThat(result.size(), Matchers.equalTo(3));
+            assertEquals(3, result.size());
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
         }
     }
-
 }

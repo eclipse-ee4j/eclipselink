@@ -24,14 +24,11 @@ import java.time.Period;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
-import jakarta.enterprise.inject.Typed;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
@@ -45,12 +42,12 @@ import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test {@code LocalTime}/{@code LocalDate}/{@code LocalDateTime} functions in CriteriaBuilder.
@@ -191,10 +188,10 @@ public class TestDateTimeFunctions {
             long diffMilis = Duration.between(data.getTimeValue(), LocalTime.now().plusSeconds(dbOffset + 1)).toMillis();
             // Positive value means that test did not pass midnight.
             if (diffMilis > 0) {
-                MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
+                assertTrue(diffMilis < 30000L);
             // Midnight pass correction.
             } else {
-                MatcherAssert.assertThat(86400000L + diffMilis, Matchers.lessThan(30000L));
+                assertTrue(86400000L + diffMilis < 30000L);
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -226,9 +223,9 @@ public class TestDateTimeFunctions {
             // Verify updated entity
             DateTimeEntity data = em.find(DateTimeEntity.class, 2);
             Period diff = Period.between(data.getDateValue(), LocalDate.now());
-            MatcherAssert.assertThat(diff.getYears(), Matchers.equalTo(0));
-            MatcherAssert.assertThat(diff.getMonths(), Matchers.equalTo(0));
-            MatcherAssert.assertThat(diff.getDays(), Matchers.lessThan(2));
+            assertEquals(0, diff.getYears());
+            assertEquals(0, diff.getMonths());
+            assertTrue(diff.getDays() < 2);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -258,7 +255,7 @@ public class TestDateTimeFunctions {
             // Verify updated entity
             DateTimeEntity data = em.find(DateTimeEntity.class, 3);
             long diffMilis = Duration.between(data.getDatetimeValue(), LocalDateTime.now().plusSeconds(dbOffset + 1)).toMillis();
-            MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
+            assertTrue(diffMilis < 30000L);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -306,7 +303,7 @@ public class TestDateTimeFunctions {
             cq.where(cb.and(cb.greaterThan(entity.get("timeValue"), cb.localTime()), cb.equal(entity.get("id"), 4)));
             List<DateTimeEntity> data = em.createQuery(cq).getResultList();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(data.size(), Matchers.equalTo(0));
+            assertEquals(0, data.size());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -354,7 +351,7 @@ public class TestDateTimeFunctions {
             cq.where(cb.and(cb.greaterThan(entity.get("dateValue"), cb.localDate()), cb.equal(entity.get("id"), 4)));
             List<DateTimeEntity> data = em.createQuery(cq).getResultList();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(data.size(), Matchers.equalTo(0));
+            assertEquals(0, data.size());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -402,7 +399,7 @@ public class TestDateTimeFunctions {
             cq.where(cb.and(cb.greaterThan(entity.get("datetimeValue"), cb.localDateTime()), cb.equal(entity.get("id"), 4)));
             List<DateTimeEntity> data = em.createQuery(cq).getResultList();
             em.getTransaction().commit();
-            MatcherAssert.assertThat(data.size(), Matchers.equalTo(0));
+            assertEquals(0, data.size());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -427,10 +424,10 @@ public class TestDateTimeFunctions {
             long diffMilis = Duration.between(time, LocalTime.now().plusSeconds(1 + dbOffset)).toMillis();
             // Positive value means that test did not pass midnight.
             if (diffMilis > 0) {
-                MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
+                assertTrue(diffMilis < 30000L);
             // Midnight pass correction.
             } else {
-                MatcherAssert.assertThat(86400000L + diffMilis, Matchers.lessThan(30000L));
+                assertTrue(86400000L + diffMilis < 30000L);
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -454,9 +451,9 @@ public class TestDateTimeFunctions {
             LocalDate date = em.createQuery(cq).getSingleResult();
             em.getTransaction().commit();
             Period diff = Period.between(date, LocalDate.now());
-            MatcherAssert.assertThat(diff.getYears(), Matchers.equalTo(0));
-            MatcherAssert.assertThat(diff.getMonths(), Matchers.equalTo(0));
-            MatcherAssert.assertThat(diff.getDays(), Matchers.lessThan(2));
+            assertEquals(0, diff.getYears());
+            assertEquals(0, diff.getMonths());
+            assertTrue(diff.getDays() < 2);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -479,7 +476,7 @@ public class TestDateTimeFunctions {
             LocalDateTime datetime = em.createQuery(cq).getSingleResult();
             em.getTransaction().commit();
             long diffMilis = Duration.between(datetime, LocalDateTime.now().plusSeconds(dbOffset + 1)).toMillis();
-            MatcherAssert.assertThat(diffMilis, Matchers.lessThan(30000L));
+            assertTrue(diffMilis < 30000L);
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -490,5 +487,4 @@ public class TestDateTimeFunctions {
             em.close();
         }
     }
-
 }

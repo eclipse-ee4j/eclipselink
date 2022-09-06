@@ -865,12 +865,6 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
             </dependency>
-            <!--Required for JPA server test server-test-jpa21-sessionbean.-->
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-core</artifactId>
-                <version>${hamcrest.version}</version>
-            </dependency>
             <!--APIs and other libs used in test classes-->
             <dependency>
                 <groupId>jakarta.el</groupId>
