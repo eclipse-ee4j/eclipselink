@@ -425,7 +425,7 @@ public class TestRunModel extends TestModel {
         performanceTests.add("org.eclipse.persistence.testing.tests.jpa.memory.JPAMemoryTestModel");
 
         TestModel performanceModel = new TestModel();
-        performanceModel.setName("JPA Performance Tests");
+        performanceModel.setName("Jakarta Persistence Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
             try {
                 performanceModel.addTest((TestModel)Class.forName(performanceTests.elementAt(index)).getConstructor().newInstance());

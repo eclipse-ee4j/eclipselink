@@ -75,7 +75,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
     public boolean isEmulated;
 
     public JPAPerformanceRegressionModel() {
-        setDescription("Performance tests that compare JPA performance.");
+        setDescription("Performance tests that compare Jakarta Persistence performance.");
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -138,8 +138,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa_helper_invalid_report_query", "The query of type {0} is not an EclipseLink report query and therefore, could not be converted."},
                                            { "jpa_helper_invalid_read_all_query", "The query of type {0} is not an EclipseLink read all query and therefore, could not be converted."},
                                            { "jpa_helper_invalid_query", "The query of type {0} is not an EclipseLink query and therefore, could not be converted."},
-                                           { "jpa_helper_invalid_entity_manager_factory", "The JPA EntityManagerFactory {0} is not an EclipseLink EntityManagerFactory and therefore, could not be converted."},
-                                           { "jpa_helper_invalid_entity_manager_factory_for_refresh", "The JPA EntityManagerFactory {0} is not an EclipseLink EntityManagerFactory and therefore, could not have its metadata refreshed."},
+                                           { "jpa_helper_invalid_entity_manager_factory", "The Jakarta Persistence EntityManagerFactory {0} is not an EclipseLink EntityManagerFactory and therefore, could not be converted."},
+                                           { "jpa_helper_invalid_entity_manager_factory_for_refresh", "The Jakarta Persistence EntityManagerFactory {0} is not an EclipseLink EntityManagerFactory and therefore, could not have its metadata refreshed."},
                                            { "null_not_supported_identityweakhashmap", "The IdentityWeakHashMap does not support \"null\" as a key or value."},
                                            { "entity_manager_properties_conflict_default_connector_vs_jndi_connector", "EntityManager properties conflict: jakarta.persistence.driver and/or jakarta.persistence.url require DefaultConnector, but jakarta.persistence.jtaDataSource and/or jakarta.persistence.nonjtaDataSource require JNDIConnector."},
                                            { "entity_manager_properties_conflict_default_connector_vs_external_transaction_controller", "EntityManager properties conflict: jakarta.persistence.driver and/or jakarta.persistence.url require DefaultConnector, but persistence unit uses external transaction controller, therefore JNDIConnector is required."},

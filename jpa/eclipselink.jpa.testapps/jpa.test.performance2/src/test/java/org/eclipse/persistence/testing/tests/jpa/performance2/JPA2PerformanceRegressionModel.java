@@ -54,7 +54,7 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
     public boolean isEmulated;
 
     public JPA2PerformanceRegressionModel() {
-        setDescription("Performance tests that compare JPA 2 performance.");
+        setDescription("Performance tests that compare Jakarta Persistence 2 performance.");
     }
 
     @Override

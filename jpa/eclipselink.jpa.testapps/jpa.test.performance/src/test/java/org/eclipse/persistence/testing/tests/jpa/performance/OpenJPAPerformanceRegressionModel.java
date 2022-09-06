@@ -28,7 +28,7 @@ import java.util.Map;
 public class OpenJPAPerformanceRegressionModel extends JPAPerformanceRegressionModel {
 
     public OpenJPAPerformanceRegressionModel() {
-        setDescription("Performance tests that compares OpenJPA JPA performance.");
+        setDescription("Performance tests that compares OpenJPA Jakarta Persistence performance.");
     }
 
     /**

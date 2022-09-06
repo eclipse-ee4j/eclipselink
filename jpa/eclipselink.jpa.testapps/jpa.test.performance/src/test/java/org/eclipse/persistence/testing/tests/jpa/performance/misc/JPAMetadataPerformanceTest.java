@@ -25,7 +25,7 @@ import org.eclipse.persistence.testing.framework.PerformanceRegressionTestCase;
 public class JPAMetadataPerformanceTest extends PerformanceRegressionTestCase {
 
     public JPAMetadataPerformanceTest() {
-        setDescription("This tests the JPA metadata processing.");
+        setDescription("This tests the Jakarta Persistence metadata processing.");
     }
 
     /**

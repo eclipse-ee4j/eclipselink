@@ -53,7 +53,7 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite("JPA Advanced Properties Model");
+        TestSuite suite = new TestSuite("Jakarta Persistence Advanced Properties Model");
         suite.addTest(new JPAAdvPropertiesTest("testSetup"));
         suite.addTest(new JPAAdvPropertiesTest("testSessionXMLProperty"));
         suite.addTest(new JPAAdvPropertiesTest("testSessionEventListenerProperty"));

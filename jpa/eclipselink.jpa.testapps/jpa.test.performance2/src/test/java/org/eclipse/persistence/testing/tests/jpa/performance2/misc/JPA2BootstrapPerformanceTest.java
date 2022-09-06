@@ -27,7 +27,7 @@ import java.util.Map;
 public class JPA2BootstrapPerformanceTest extends PerformanceRegressionTestCase {
 
     public JPA2BootstrapPerformanceTest() {
-        setDescription("This tests the JPA deployment and bootstraping performance.");
+        setDescription("This tests the Jakarta Persistence deployment and bootstraping performance.");
     }
 
     /**

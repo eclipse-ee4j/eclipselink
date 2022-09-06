@@ -26,7 +26,7 @@ import java.util.Map;
 public class EssentialsJPAPerformanceRegressionModel extends JPAPerformanceRegressionModel {
 
     public EssentialsJPAPerformanceRegressionModel() {
-        setDescription("Performance tests that compares TopLink Essentials JPA performance.");
+        setDescription("Performance tests that compares TopLink Essentials Jakarta Persistence performance.");
     }
 
     /**
