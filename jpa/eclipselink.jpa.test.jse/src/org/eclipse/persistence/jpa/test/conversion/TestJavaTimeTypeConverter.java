@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,7 +26,10 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalField;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -77,8 +80,12 @@ public class TestJavaTimeTypeConverter {
         Assert.assertEquals(2, date.getDate());
 
         LocalDate ld = (LocalDate) cm.convertObject(date, ClassConstants.TIME_LDATE);
+        ZonedDateTime check = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 
         Assert.assertNotNull(ld);
+        Assert.assertEquals(check.getYear(), ld.getYear());
+        Assert.assertEquals(check.getMonth(), ld.getMonth());
+        Assert.assertEquals(check.getDayOfMonth(), ld.getDayOfMonth());
         Assert.assertEquals(2020, ld.getYear());
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(2, ld.getDayOfMonth());

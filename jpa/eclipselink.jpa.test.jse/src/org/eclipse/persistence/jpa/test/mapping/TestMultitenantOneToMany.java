@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,6 +64,8 @@ public class TestMultitenantOneToMany {
             supportedPlatform = true;
             try {
                 em.getTransaction().begin();
+                em.createNativeQuery("DROP SCHEMA IF EXISTS tenant_1").executeUpdate();
+                em.createNativeQuery("DROP SCHEMA IF EXISTS tenant_2").executeUpdate();
                 em.createNativeQuery("CREATE SCHEMA tenant_1").executeUpdate();
                 em.createNativeQuery("CREATE SCHEMA tenant_2").executeUpdate();
                 em.createNativeQuery("CREATE TABLE tenant_1.parent(id bigint primary key)").executeUpdate();
