@@ -14,19 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework.jpa.junit;
 
-import java.util.HashMap;
-import java.util.Map;
 import jakarta.persistence.EntityManager;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.TestModel;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>: Base class for CMP3 Test Models.

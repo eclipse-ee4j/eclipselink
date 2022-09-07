@@ -18,8 +18,6 @@ module org.eclipse.persistence.oracle.nosql {
     requires transitive jakarta.resource;
 
     requires transitive org.eclipse.persistence.core;
-    requires oracle.nosql.client;
-    requires nosqldriver;
 
     exports org.eclipse.persistence.eis.adapters.aq;
     exports org.eclipse.persistence.nosql.adapters.nosql;

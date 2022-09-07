@@ -38,41 +38,39 @@ public class PessimisticLockEntityRefreshTestSuite extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("PessimisticLocking Entity Refresh TestSuite");
-        if (!isJPA10()) {
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testSetup"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testSetup"));
 
-            // test lock-on-find an object multiple times with the same lock type
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockFind"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockFind"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementLockFind"));
+        // test lock-on-find an object multiple times with the same lock type
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockFind"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockFind"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementLockFind"));
 
-            // test lock-on-find  an object then find it again with no lock type
-            // no refresh is expected on a subsequent normal (no lock) find
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockAndNormalFind"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockAndNormalFind"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementLockAndNormalFind"));
+        // test lock-on-find  an object then find it again with no lock type
+        // no refresh is expected on a subsequent normal (no lock) find
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockAndNormalFind"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockAndNormalFind"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementLockAndNormalFind"));
 
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadThenWriteLockFind"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteThenReadLockFind"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenReadLockFind"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenWriteLockFind"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadThenWriteLockFind"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteThenReadLockFind"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenReadLockFind"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenWriteLockFind"));
 
-            // test finding and locking an object multiple times with the same lock type
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockFindAndLock"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockFindAndLock"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementLockFindAndLock"));
+        // test finding and locking an object multiple times with the same lock type
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockFindAndLock"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockFindAndLock"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementLockFindAndLock"));
 
-            // test finding and lock an object then find it again with no lock type
-            // no refresh is ever expected on a subsequent normal (no lock) find
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockAndNormalFindAndLock"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockAndNormalFindAndLock"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementLockAndNormalFindAndLock"));
+        // test finding and lock an object then find it again with no lock type
+        // no refresh is ever expected on a subsequent normal (no lock) find
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadLockAndNormalFindAndLock"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteLockAndNormalFindAndLock"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementLockAndNormalFindAndLock"));
 
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadThenWriteLockFindAndLock"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteThenReadLockFindAndLock"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenReadLockFindAndLock"));
-            suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenWriteLockFindAndLock"));
-        }
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticReadThenWriteLockFindAndLock"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticWriteThenReadLockFindAndLock"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenReadLockFindAndLock"));
+        suite.addTest(new PessimisticLockEntityRefreshTestSuite("testPessimisticForceIncrementThenWriteLockFindAndLock"));
         return suite;
     }
 

@@ -14,15 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework.jpa.server;
 
-import javax.naming.InitialContext;
-
-import javax.naming.NamingException;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
 import jakarta.transaction.Status;
 import jakarta.transaction.UserTransaction;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * Generic JEE server platform.
