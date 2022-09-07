@@ -184,16 +184,6 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-jar</id>
-                        <configuration>
-                            <!--Some classifier is required there. Otherwise maven-jar-plugin throw error.-->
-                            <classifier>client</classifier>
-                        </configuration>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>default-test-jar</id>
                         <goals>
                             <goal>test-jar</goal>
