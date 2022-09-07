@@ -245,10 +245,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.addTest(suiteSpring());
         suite.addTest(new EntityManagerJUnitTestSuite("testCacheUsage"));
-
-        if (!isJPA10()) {
-            suite.addTest(new EntityManagerJUnitTestSuite("testIsLoaded"));
-        }
+        suite.addTest(new EntityManagerJUnitTestSuite("testIsLoaded"));
         return suite;
     }
 
@@ -492,33 +489,32 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 //        if (isJPA21()){
 //            tests.add("testUnsynchronizedPC");
 //        }
-        if (!isJPA10()) {
-            tests.add("testDetachNull");
-            tests.add("testDetachRemovedObject");
-            tests.add("testLockingLeftJoinOneToOneQuery");
-            tests.add("testLockingLeftJoinOneToOneQuery2");
-            tests.add("testGetProperties");
-            tests.add("testDetachNonEntity");
-            tests.add("testFindWithProperties");
-            tests.add("testDetachManagedObject");
-            tests.add("testDetachNonManagedObject");
-            tests.add("testPESSIMISTIC_FORCE_INCREMENTLock");
-            tests.add("testGetLockModeType");
-            tests.add("testGetEntityManagerFactory");
-            tests.add("testConnectionPolicySetProperty");
-            //Does not return underlying entitymanager tests.add("testUnWrapClass");
-            tests.add("testIsLoaded");
-            tests.add("testIsLoadedAttribute");
-            tests.add("testGetIdentifier");
-            tests.add("testGetHints");
-            tests.add("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity");
-            tests.add("testSelectEmbeddable");
-            tests.add("testNonPooledConnection");
-            tests.add("testExclusiveIsolatedLeaksConnectionOnClear");
-            tests.add("testSetTargetQueryOneToMany");
-            tests.add("testNestedFetchQueryHints");
-            tests.add("testInheritanceFetchJoinSecondCall");
-        }
+        tests.add("testDetachNull");
+        tests.add("testDetachRemovedObject");
+        tests.add("testLockingLeftJoinOneToOneQuery");
+        tests.add("testLockingLeftJoinOneToOneQuery2");
+        tests.add("testGetProperties");
+        tests.add("testDetachNonEntity");
+        tests.add("testFindWithProperties");
+        tests.add("testDetachManagedObject");
+        tests.add("testDetachNonManagedObject");
+        tests.add("testPESSIMISTIC_FORCE_INCREMENTLock");
+        tests.add("testGetLockModeType");
+        tests.add("testGetEntityManagerFactory");
+        tests.add("testConnectionPolicySetProperty");
+        //Does not return underlying entitymanager tests.add("testUnWrapClass");
+        tests.add("testIsLoaded");
+        tests.add("testIsLoadedAttribute");
+        tests.add("testGetIdentifier");
+        tests.add("testGetHints");
+        tests.add("testPESSIMISTIC_FORCE_INCREMENTLockOnNonVersionedEntity");
+        tests.add("testSelectEmbeddable");
+        tests.add("testNonPooledConnection");
+        tests.add("testExclusiveIsolatedLeaksConnectionOnClear");
+        tests.add("testSetTargetQueryOneToMany");
+        tests.add("testNestedFetchQueryHints");
+        tests.add("testInheritanceFetchJoinSecondCall");
+
         tests.add("testDetachChildObjects");
         tests.add("testAutoCloseable");
 
@@ -527,9 +523,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         for (String test : tests) {
             suite.addTest(new EntityManagerJUnitTestSuite(test));
         }
-        if (!isJPA10()) {
-            suite.addTest(new EntityManagerJUnitTestSuite("testCascadeDetach"));
-        }
+        suite.addTest(new EntityManagerJUnitTestSuite("testCascadeDetach"));
         // Test must be last as clears database.
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEverything"));
         return suite;

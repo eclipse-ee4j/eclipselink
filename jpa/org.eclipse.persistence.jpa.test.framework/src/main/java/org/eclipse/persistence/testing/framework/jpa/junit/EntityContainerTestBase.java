@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.framework.jpa.junit;
 
 import jakarta.persistence.EntityManager;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 
 public class EntityContainerTestBase extends AutoVerifyTestCase {
 

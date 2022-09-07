@@ -20,24 +20,10 @@
 //       - 520387: multiple owning descriptors for an embeddable are not set
 package org.eclipse.persistence.testing.framework.jpa.junit;
 
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.LockModeType;
 import jakarta.persistence.Persistence;
-
+import junit.framework.TestCase;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -53,13 +39,24 @@ import org.eclipse.persistence.sessions.DefaultConnector;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.jpa.server.JEEPlatform;
 import org.eclipse.persistence.testing.framework.jpa.server.ServerPlatform;
 import org.eclipse.persistence.testing.framework.jpa.server.TestRunner;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
-import org.eclipse.persistence.testing.framework.jpa.server.JEEPlatform;
 import org.eclipse.persistence.transaction.JTA11TransactionController;
 
-import junit.framework.TestCase;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * This is the superclass for all EclipseLink JUnit tests
@@ -84,7 +81,7 @@ public abstract class JUnitTestCase extends TestCase {
     private static Map<String, EntityManagerFactory> emfNamedPersistenceUnits = null;
 
     /** Default persistence unit name. */
-    private static String DEFAULT_PU_NAME = "default";
+    private static final String DEFAULT_PU_NAME = "default";
 
     /** Determine if the test is running on a JEE server, or in JSE. */
     protected static Boolean isOnServer;
@@ -286,20 +283,6 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public static boolean isWeavingEnabled(String persistenceUnitName) {
         return System.getProperty("TEST_NO_WEAVING") == null;
-    }
-
-    /**
-     * Return if the test is running against JPA 1.0. Any test that uses 2.0
-     * functionality should call this method to avoid been run against a 1.0
-     * container.
-     */
-    public static boolean isJPA10() {
-        try {
-            LockModeType.valueOf("NONE");
-        } catch (Exception e) {
-           return true;
-        }
-        return false;
     }
 
     /**
@@ -766,57 +749,7 @@ public abstract class JUnitTestCase extends TestCase {
                 }
             }
         } else {
-            //use defined set of pre-configured test runners
-            Throwable exception = null;
-            if (puName == null) {
-                String testrunner = System.getProperty("server.testrunner");
-                if (testrunner == null) {
-                    fail("System property 'server.testrunner' must be set.");
-                }
-                TestRunner runner = (TestRunner) context.lookup(testrunner);
-                exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
-            } else {
-                int i = puName.charAt(8) - 48;
-                String testRunner[] = new String[7];
-                for (int j = 1; j <= 6; j++) {
-                    String serverRunner = "server.testrunner" + j;
-                    testRunner[j] = System.getProperty(serverRunner);
-                    if (testRunner[j] == null && j < 6) {
-                        fail("System property 'server.testrunner'" + j + " must be set.");
-                    }
-                }
-                switch (i) {
-                    case 1:
-                        TestRunner runner1 = (TestRunner) context.lookup(testRunner[1]);
-                        exception = runner1.runTest(getClass().getName(), getName(), getServerProperties());
-                        break;
-                    case 2:
-                        TestRunner runner2 = (TestRunner) context.lookup(testRunner[2]);
-                        exception = runner2.runTest(getClass().getName(), getName(), getServerProperties());
-                        break;
-                    case 3:
-                        TestRunner runner3 = (TestRunner) context.lookup(testRunner[3]);
-                        exception = runner3.runTest(getClass().getName(), getName(), getServerProperties());
-                        break;
-                    case 4:
-                        TestRunner runner4 = (TestRunner) context.lookup(testRunner[4]);
-                        exception = runner4.runTest(getClass().getName(), getName(), getServerProperties());
-                        break;
-                    case 5:
-                        TestRunner runner5 = (TestRunner) context.lookup(testRunner[5]);
-                        exception = runner5.runTest(getClass().getName(), getName(), getServerProperties());
-                        break;
-                    case 6:
-                        TestRunner runner6 = (TestRunner) context.lookup(testRunner[6]);
-                        exception = runner6.runTest(getClass().getName(), getName(), getServerProperties());
-                        break;
-                    default:
-                        break;
-                }
-            }
-            if (exception != null) {
-                throw exception;
-            }
+            fail("System property 'server.testrunner.context' must be set.");
         }
     }
 
