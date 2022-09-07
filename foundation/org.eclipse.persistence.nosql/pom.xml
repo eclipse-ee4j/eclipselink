@@ -72,35 +72,16 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--EclipseLink JPA-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--EclipseLink Core test framework-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--EclipseLink JPA test framework-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--EclipseLink Core test classes-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core.test</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <!--EclipseLink JPA test classes (test framework) additional classes-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.test</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -164,38 +145,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <!--Set system properties required for tests-->
-                    <systemPropertiesFile>${test.mongodb.properties.file}</systemPropertiesFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>test-nosql</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-nosql}</skipTests>
-                            <reportNameSuffix>test-nosql</reportNameSuffix>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.tests.NoSQLJPATestSuite</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>verify-integration-tests</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${integration.test.skip.verify}</skip>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <additionalOptions>
@@ -206,20 +155,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>mongodb</id>
-            <properties>
-                <test-skip-nosql>false</test-skip-nosql>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>test-nosql</id>
-            <properties>
-                <test-skip-nosql>false</test-skip-nosql>
-            </properties>
-        </profile>
-    </profiles>
 </project>
