@@ -519,10 +519,8 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- see https://github.com/lukasj/eclipselink-build-support -->
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink-testbuild-plugin</artifactId>
-                <version>0.0.5</version>
 <!--                <extensions>true</extensions>-->
                 <executions>
                     <execution>

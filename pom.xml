@@ -1019,16 +1019,6 @@
                     <version>1.6.8</version>
                 </plugin>
                 <plugin>
-                    <groupId>com.google.code.maven-replacer-plugin</groupId>
-                    <artifactId>replacer</artifactId>
-                    <version>1.5.3</version>
-                </plugin>
-                <plugin>
-                    <groupId>com.soebes.maven.plugins</groupId>
-                    <artifactId>iterator-maven-plugin</artifactId>
-                    <version>0.5.1</version>
-                </plugin>
-                <plugin>
                     <groupId>com.sun.wts.tools.ant</groupId>
                     <artifactId>package-rename-task</artifactId>
                     <version>1.5.2</version>
@@ -1137,11 +1127,6 @@
                     <version>3.3.2</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.bsc.maven</groupId>
-                    <artifactId>maven-processor-plugin</artifactId>
-                    <version>5.0-rc3</version>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.cargo</groupId>
                     <artifactId>cargo-maven3-plugin</artifactId>
                     <version>1.9.0</version>
@@ -1198,6 +1183,12 @@
                     <version>2.0.0</version>
                 </plugin>
                 <plugin>
+                    <!-- see https://github.com/eclipse-ee4j/eclipselink-build-support -->
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>eclipselink-testbuild-plugin</artifactId>
+                    <version>0.0.10</version>
+                </plugin>
+                <plugin>
                     <groupId>org.carlspring.maven</groupId>
                     <artifactId>derby-maven-plugin</artifactId>
                     <version>1.10</version>
@@ -1218,6 +1209,11 @@
                             <version>${derby.version}</version>
                         </dependency>
                     </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.joelittlejohn.embedmongo</groupId>
+                    <artifactId>embedmongo-maven-plugin</artifactId>
+                    <version>0.4.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -2003,8 +1999,6 @@
                 <!--JPA test modules-->
                 <!--JPA test module (JSE, JEE tests)-->
                 <module>jpa/eclipselink.jpa.test</module>
-                <!--JPA NoSQL test module-->
-                <module>jpa/eclipselink.jpa.nosql.test</module>
                 <!--JPA JSE test module-->
                 <module>jpa/eclipselink.jpa.test.jse</module>
                 <!--JPA Spring test module-->
@@ -2024,6 +2018,7 @@
 
                 <!-- testapps -->
                 <module>jpa/eclipselink.jpa.testapps</module>
+                <module>jpa/eclipselink.jpa.testapps.nosql</module>
                 <module>jpa/eclipselink.jpa.testapps.oracle</module>
             </modules>
         </profile>
