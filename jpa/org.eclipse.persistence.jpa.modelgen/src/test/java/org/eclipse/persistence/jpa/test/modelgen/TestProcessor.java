@@ -52,6 +52,8 @@ import org.junit.Test;
 
 public class TestProcessor {
 
+    public TestProcessor() {}
+
     @BeforeClass
     public static void prepare() throws IOException {
         File testRoot = new File(System.getProperty("run.dir"));

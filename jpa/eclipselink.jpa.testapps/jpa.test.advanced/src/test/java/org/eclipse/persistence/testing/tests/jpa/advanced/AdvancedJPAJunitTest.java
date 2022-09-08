@@ -208,7 +208,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testEmployeeFetchWithAlias"));
 
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
-//        suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeCacheSettings")); // see https://github.com/eclipse-ee4j/eclipselink/issues/1678
+        suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeCacheSettings"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeCustomizerSettings"));
 
         suite.addTest(new AdvancedJPAJunitTest("testUpdateEmployee"));

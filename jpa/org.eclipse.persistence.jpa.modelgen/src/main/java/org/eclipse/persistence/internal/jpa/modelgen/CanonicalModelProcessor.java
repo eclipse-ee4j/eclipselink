@@ -393,6 +393,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 writer.append(")\n");
             }
             writer.append("@StaticMetamodel(").append(className).append(".class)\n");
+            writer.append("@SuppressWarnings({\"rawtypes\", \"deprecation\"})\n");
 
             int modifier = accessor.getAccessibleObject().getModifiers();
             writer.append(java.lang.reflect.Modifier.toString(modifier)).append(" class ").append(canonicalName);
@@ -427,9 +428,10 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         for (Element roundElement : roundElements.keySet()) {
             MetadataClass roundClass = roundElements.get(roundElement);
 
-            if (persistenceUnit.containsClass(roundClass)) {
+            if (persistenceUnit.containsClass(roundClass) && !factory.isProcessed(roundElement)) {
                 log(SessionLog.FINEST, "Generating class: {0}", roundClass.getName());
                 generateCanonicalModelClass(roundClass, roundElement, persistenceUnit);
+                factory.addProcessed(roundElement);
             }
         }
     }
