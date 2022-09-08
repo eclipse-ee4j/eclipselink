@@ -60,7 +60,7 @@ public class JsonPlatformManager {
                 if (platformsMap != null) {
                     fallbackMap.putAll(platformsMap);
                 }
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException ex) {
+            } catch (ReflectiveOperationException ex) {
                 AbstractSessionLog.getLog().log(
                         SessionLog.FINE,
                         String.format("Invocation of static platform method on class %s failed: %s", className, ex.getMessage()));
