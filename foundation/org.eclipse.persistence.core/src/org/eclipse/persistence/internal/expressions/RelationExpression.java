@@ -783,7 +783,7 @@ public class RelationExpression extends CompoundExpression {
             //.equal(anyOf() or get())
             (first.isExpressionBuilder() && second.isQueryKeyExpression()
                     &&  (!((QueryKeyExpression)second).hasDerivedExpressions()) // The right side is not used for anything else.
-                    && normalizer.getSession().getPlatform().shouldPrintInnerJoinInWhereClause()) {
+                    && normalizer.getSession().getPlatform().shouldPrintInnerJoinInWhereClause((normalizer.getStatement().getParentStatement() != null ? normalizer.getStatement().getParentStatement().getQuery() : normalizer.getStatement().getQuery()))) {
             first = (ExpressionBuilder)first.normalize(normalizer);
 
             // If FK joins go in the WHERE clause, want to get hold of it and

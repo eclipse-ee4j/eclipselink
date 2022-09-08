@@ -157,7 +157,7 @@ spec:
                         container('el-build') {
                             sh """
                                 echo '-[ EclipseLink Core LRG ]-----------------------------------------------------------'
-                                $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true test-core
+                                $ANT_HOME/bin/ant -f antbuild.xml -Dfail.on.error=true test-core
                             """
                         }
                     }
@@ -166,7 +166,7 @@ spec:
                     steps {
                         container('el-build') {
                             sh """
-                                $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true test-moxy
+                                $ANT_HOME/bin/ant -f antbuild.xml -Dfail.on.error=true test-moxy
                             """
                         }
                     }
@@ -178,7 +178,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                        $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true test-jpa22
+                        $ANT_HOME/bin/ant -f antbuild.xml -Dfail.on.error=true test-jpa22
                     """
                 }
             }
@@ -187,7 +187,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                        $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true test-sdo
+                        $ANT_HOME/bin/ant -f antbuild.xml -Dfail.on.error=true test-sdo
                     """
                 }
             }
@@ -196,7 +196,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                        $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true test-jpa-jse test-ext test-jpql test-wdf test-jpars test-dbws test-dbws-builder test-osgi
+                        $ANT_HOME/bin/ant -f antbuild.xml -Dfail.on.error=true test-jpa-jse test-ext test-jpql test-wdf test-jpars test-dbws test-dbws-builder test-osgi
                     """
                 }
             }
@@ -205,7 +205,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                        $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true build-distribution
+                        $ANT_HOME/bin/ant -f antbuild.xml -Dfail.on.error=true build-distribution
                     """
                 }
             }
