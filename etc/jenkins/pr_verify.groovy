@@ -159,9 +159,7 @@ spec:
                     steps {
                         container('el-build') {
                             sh """
-                                /opt/bin/mongo-start.sh
-                                mvn -B -V verify -pl :org.eclipse.persistence.nosql -P staging,mongodb
-                                /opt/bin/mongo-stop.sh                                
+                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.testapps.nosql.mongo -P staging
                             """
                         }
                     }
