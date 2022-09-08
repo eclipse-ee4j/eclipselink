@@ -571,7 +571,7 @@ public class SQLSelectStatement extends SQLStatement {
         if (hasOuterJoinExpressions()) {
             if (session.getPlatform().isInformixOuterJoin()) {
                 appendFromClauseForInformixOuterJoin(printer, outerJoinedAliases);
-            } else if (!session.getPlatform().shouldPrintOuterJoinInWhereClause() || !session.getPlatform().shouldPrintInnerJoinInWhereClause()) {
+            } else if (!session.getPlatform().shouldPrintOuterJoinInWhereClause() || !session.getPlatform().shouldPrintInnerJoinInWhereClause(query)) {
                 appendFromClauseForOuterJoin(printer, outerJoinedAliases, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
             }
             firstTable = false;

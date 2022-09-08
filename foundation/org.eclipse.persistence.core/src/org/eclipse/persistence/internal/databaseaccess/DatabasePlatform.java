@@ -97,6 +97,8 @@ import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCa
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
@@ -2351,11 +2353,16 @@ public class DatabasePlatform extends DatasourcePlatform {
      * By default most platforms put inner joins in the WHERE clause.
      * If set to false, inner joins will be printed in the FROM clause.
      */
-    public boolean shouldPrintInnerJoinInWhereClause() {
-        if (this.printInnerJoinInWhereClause == null) {
-            return true;
+    public boolean shouldPrintInnerJoinInWhereClause(ReadQuery query) {
+        Boolean printInnerJoinInWhereClauseQueryHint = ((query != null) && (query instanceof ObjectBuildingQuery)) ? ((ObjectBuildingQuery)query).printInnerJoinInWhereClause() : null;
+        if (printInnerJoinInWhereClauseQueryHint != null) {
+            return printInnerJoinInWhereClauseQueryHint;
+        } else {
+            if (this.printInnerJoinInWhereClause == null) {
+                return true;
+            }
+            return this.printInnerJoinInWhereClause;
         }
-        return this.printInnerJoinInWhereClause;
     }
 
     /**

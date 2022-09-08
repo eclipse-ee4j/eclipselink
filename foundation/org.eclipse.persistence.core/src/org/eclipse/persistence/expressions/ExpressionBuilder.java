@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -270,7 +270,7 @@ public class ExpressionBuilder extends ObjectExpression {
         // Normalize the ON clause if present.  Need to use rebuild, not twist as parameters are real parameters.
         if (this.onClause != null) {
             this.onClause = this.onClause.normalize(normalizer);
-            if (shouldUseOuterJoin() || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
+            if (shouldUseOuterJoin() || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause((normalizer.getStatement().getParentStatement() != null ? normalizer.getStatement().getParentStatement().getQuery() : normalizer.getStatement().getQuery())))) {
                 normalizer.getStatement().addOuterJoinExpressionsHolders(this, null, null, null);
                 if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
                     Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, this);

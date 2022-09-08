@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -193,7 +193,7 @@ public class QueryKeyExpression extends ObjectExpression {
         Vector tables = getDescriptor().getTables();
         // skip the main table - start with i=1
         int tablesSize = tables.size();
-        if (shouldUseOuterJoin() || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
+        if (shouldUseOuterJoin() || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause(getDescriptor().getQueryManager().getReadAllQuery()))) {
             for (int i=1; i < tablesSize; i++) {
                 DatabaseTable table = (DatabaseTable)tables.elementAt(i);
                 Expression joinExpression = getDescriptor().getQueryManager().getTablesJoinExpressions().get(table);
@@ -841,7 +841,7 @@ public class QueryKeyExpression extends ObjectExpression {
                 normalizer.addAdditionalExpression(mappingExpression.and(additionalExpressionCriteria()));
                 return this;
             } else if ((shouldUseOuterJoin() && (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause()))
-                    || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
+                    || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause((normalizer.getStatement().getParentStatement() != null ? normalizer.getStatement().getParentStatement().getQuery() : normalizer.getStatement().getQuery())))) {
                 setOuterJoinExpIndex(statement.addOuterJoinExpressionsHolders(this, mappingExpression, additionalExpressionCriteriaMap(), null));
                 if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
                     Expression historyOnClause = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, this, 0);

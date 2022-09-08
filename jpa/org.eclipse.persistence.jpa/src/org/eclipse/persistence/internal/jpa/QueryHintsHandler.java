@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -315,6 +315,7 @@ public class QueryHintsHandler {
             addHint(new ResultSetAccess());
             addHint(new SerializedObject());
             addHint(new ReturnNameValuePairsHint());
+            addHint(new PrintInnerJoinInWhereClauseHint());
         }
 
         Hint(String name, String defaultValue) {
@@ -2124,6 +2125,26 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setShouldUseSerializedObjectPolicy((Boolean)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    protected static class PrintInnerJoinInWhereClauseHint extends Hint {
+        PrintInnerJoinInWhereClauseHint() {
+            super(QueryHints.INNER_JOIN_IN_WHERE_CLAUSE, HintValues.TRUE);
+            valueArray = new Object[][] {
+                    {HintValues.TRUE, Boolean.TRUE},
+                    {HintValues.FALSE, Boolean.FALSE}
+            };
+        }
+
+        @Override
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery)query).setPrintInnerJoinInWhereClause((Boolean)valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
