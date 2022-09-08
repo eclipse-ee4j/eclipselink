@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -567,7 +567,7 @@ public class SQLSelectStatement extends SQLStatement {
         if (hasOuterJoinExpressions()) {
             if (session.getPlatform().isInformixOuterJoin()) {
                 appendFromClauseForInformixOuterJoin(printer, outerJoinedAliases);
-            } else if (!session.getPlatform().shouldPrintOuterJoinInWhereClause() || !session.getPlatform().shouldPrintInnerJoinInWhereClause()) {
+            } else if (!session.getPlatform().shouldPrintOuterJoinInWhereClause() || !session.getPlatform().shouldPrintInnerJoinInWhereClause(query)) {
                 appendFromClauseForOuterJoin(printer, outerJoinedAliases, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
             }
             firstTable = false;

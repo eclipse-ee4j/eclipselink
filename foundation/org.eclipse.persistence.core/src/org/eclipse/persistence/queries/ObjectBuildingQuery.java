@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -98,6 +98,13 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     protected boolean isCacheCheckComplete;
 
     protected Map<Object, CacheKey> prefetchedCacheKeys;
+
+    /** Indicates whether the query printer/normalizer changes the way that inner joins are printed
+     * in generated SQL for the database. With a value of true, inner joins are printed in the WHERE clause,
+     * if false, inner joins are printed in the FROM clause.
+     * If value is set it overrides printInnerJoinInWhereClause persistence unit property.
+     * Default value null - value from printInnerJoinInWhereClause persistence unit property is used*/
+    protected Boolean printInnerJoinInWhereClause;
 
     /**
      * INTERNAL:
@@ -790,5 +797,26 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      */
     public boolean shouldUseSerializedObjectPolicy() {
         return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the query will change the way that inner joins are printed in generated SQL for the database.
+     * With a value of true, inner joins are printed in the WHERE clause, if false, inner joins are printed in the FROM clause.
+     */
+    public Boolean printInnerJoinInWhereClause() {
+        return this.printInnerJoinInWhereClause;
+    }
+
+    /**
+     * INTERNAL:
+     * Set a flag that indicates whether the query will change the way that inner joins are printed in generated SQL for the database.
+     * With a value of true, inner joins are printed in the WHERE clause, if false, inner joins are printed in the FROM clause.
+     */
+    public void setPrintInnerJoinInWhereClause(boolean printInnerJoinInWhereClause) {
+        if (this.printInnerJoinInWhereClause == null || this.printInnerJoinInWhereClause != printInnerJoinInWhereClause) {
+            this.printInnerJoinInWhereClause = printInnerJoinInWhereClause;
+            setIsPrepared(false);
+        }
     }
 }
