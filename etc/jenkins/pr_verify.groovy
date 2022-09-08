@@ -155,15 +155,6 @@ spec:
                         }
                     }
                 }
-                stage('NoSQL Tests') {
-                    steps {
-                        container('el-build') {
-                            sh """
-                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.testapps.nosql.mongo -P staging
-                            """
-                        }
-                    }
-                }
             }
         }
         //Not in parallel
@@ -171,7 +162,8 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.test -P staging,test-jpa-lrg,mysql
+                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.test -P staging,mysql
+                                mvn -B -V verify -rf :org.eclipse.persistence.jpa.testapps -P staging,mysql
                             """
                 }
             }
