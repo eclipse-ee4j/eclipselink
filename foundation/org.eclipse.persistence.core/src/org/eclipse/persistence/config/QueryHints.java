@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -901,4 +901,13 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ResultSetMappingQuery#shouldReturnNameValuePairs()
      */
     public static final String RETURN_NAME_VALUE_PAIRS = "eclipselink.query-return-name-value-pairs";
+
+    /**
+     * "eclipselink.inner-join-in-where-clause"
+     * <p>Changes the way that inner joins are printed in generated SQL for the database.
+     * With a value of true, inner joins are printed in the WHERE clause, if false, inner joins are printed in the FROM clause.
+     * This query hint should override global/session switch {@link org.eclipse.persistence.internal.databaseaccess.DatabasePlatform#setPrintInnerJoinInWhereClause(boolean)}
+     * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform#setPrintInnerJoinInWhereClause(boolean)
+     */
+    public static final String INNER_JOIN_IN_WHERE_CLAUSE = "eclipselink.inner-join-in-where-clause";
 }
