@@ -366,7 +366,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "broadcast_listening_sleep_on_error", "Warning: {0}: Exception {1} was thrown. The thread will sleep for {2} milliseconds before resuming listening." },
         { "dbPlatformHelper_defaultingPlatform", "Not able to detect platform for vendor name [{0}]. Defaulting to [{1}]. The database dialect used may not match with the database you are using. Please explicitly provide a platform using property \"eclipselink.target-database\"."},
         { "dbPlatformHelper_noMappingFound", "Can not load resource [{0}] that loads mapping from vendor name to database platform. Autodetection of database platform will not work."},
-        { "pgsql10_platform_missing_json_extension", "Missing PostgreSQL10JsonPlatform from org.eclipse.persistence.pgsql module. JSON extension will not work properly. "},
+        { "pgsql10_platform_with_json_extension", "PostgreSQL10Platform with org.eclipse.persistence.pgsql module. JSON extension is enabled."},
+        { "pgsql10_platform_without_json_extension", "PostgreSQL10Platform without org.eclipse.persistence.pgsql module. JSON extension is disabled."},
 
         { "sessions_xml_path_where_session_load_from", "The session info is loaded from [{0}]."},
         { "resource_local_persistence_init_info_ignores_jta_data_source", "PersistenceUnitInfo {0} has transactionType RESOURCE_LOCAL and therefore jtaDataSource will be ignored"},

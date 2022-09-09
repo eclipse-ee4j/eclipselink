@@ -45,6 +45,8 @@ module eclipselink {
 
     requires static com.sun.xml.bind.core;
 
+    uses org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider;
+
     exports org.eclipse.persistence.jpa.jpql;
     exports org.eclipse.persistence.jpa.jpql.parser;
     exports org.eclipse.persistence.jpa.jpql.utility.iterable;

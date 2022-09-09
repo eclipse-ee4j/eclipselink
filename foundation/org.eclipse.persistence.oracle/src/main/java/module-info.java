@@ -29,4 +29,7 @@ module org.eclipse.persistence.oracle {
     //exported through PUBLIC API
     exports org.eclipse.persistence.internal.platform.database.oracle;
     exports org.eclipse.persistence.platform.database.oracle.json;
+
+    provides org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider with org.eclipse.persistence.platform.database.oracle.json.OracleJsonPlatformProvider;
+
 }
