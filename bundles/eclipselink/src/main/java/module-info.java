@@ -45,8 +45,6 @@ module eclipselink {
 
     requires static com.sun.xml.bind.core;
 
-    uses org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider;
-
     exports org.eclipse.persistence.jpa.jpql;
     exports org.eclipse.persistence.jpa.jpql.parser;
     exports org.eclipse.persistence.jpa.jpql.utility.iterable;
@@ -293,6 +291,7 @@ module eclipselink {
     exports org.eclipse.persistence.internal.xr.sxf;
 
     uses org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
+    uses org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider;
 
     provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;
     provides jakarta.xml.bind.JAXBContextFactory with org.eclipse.persistence.jaxb.XMLBindingContextFactory;

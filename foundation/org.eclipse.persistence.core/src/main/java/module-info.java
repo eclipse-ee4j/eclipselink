@@ -38,8 +38,6 @@ module org.eclipse.persistence.core {
     requires static jakarta.messaging;
     requires static jakarta.resource;
 
-    uses org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider;
-
     exports org.eclipse.persistence;
     exports org.eclipse.persistence.annotations;
     exports org.eclipse.persistence.config;
@@ -214,4 +212,5 @@ module org.eclipse.persistence.core {
             org.eclipse.persistence.pgsql,
             org.eclipse.persistence.oracle;
 
+    uses org.eclipse.persistence.internal.databaseaccess.spi.JsonPlatformProvider;
 }
