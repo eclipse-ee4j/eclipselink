@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +14,7 @@ package org.eclipse.persistence.jpa.embeddable.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -21,6 +23,7 @@ import javax.persistence.TemporalType;
 public class ElementCollectionEmbeddableTemporal {
 
     @Temporal(value = TemporalType.DATE)
+    @Column(name = "TEMPORALVALUE", columnDefinition = "DATE")
     private Date temporalValue;
 
     public ElementCollectionEmbeddableTemporal() { }

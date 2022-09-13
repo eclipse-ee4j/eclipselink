@@ -1209,15 +1209,17 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     @Override
-    public Expression createExpressionFor(DatabaseField field, Expression builder) {
-        if (field.getType() == java.sql.Clob.class || 
-                field.getType() == java.sql.Blob.class) {
+    public Expression createExpressionFor(DatabaseField field, Expression builder, String fieldClassificationClassName) {
+        if (field.getType() == java.sql.Clob.class ||
+                field.getType() == java.sql.Blob.class ||
+                "java.sql.Clob".equals(fieldClassificationClassName) ||
+                "java.sql.Blob".equals(fieldClassificationClassName)) {
             Expression subExp1 = builder.getField(field);
             Expression subExp2 = builder.getParameter(field);
             subExp1 = subExp1.getFunction("dbms_lob.compare", subExp2);
             return subExp1.equal(0);
         }
-        return super.createExpressionFor(field, builder);
+        return super.createExpressionFor(field, builder, fieldClassificationClassName);
     }
 
     // Value of shouldCheckResultTableExistsQuery must be true.
