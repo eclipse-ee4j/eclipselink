@@ -52,12 +52,6 @@
             </modules>
         </profile>
         <profile>
-            <id>test-lrg</id>
-            <modules>
-                <module>nightly</module>
-            </modules>
-        </profile>
-        <profile>
             <id>no-deploy</id>
             <activation>
                 <property>

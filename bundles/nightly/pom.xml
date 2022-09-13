@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.nightly</artifactId>
     <packaging>pom</packaging>
+    <description>This project file is used as a standalone module/project to prepare EclipseLink bundles and test results for publishing into nightly builds storage/page.</description>
 
     <parent>
         <groupId>org.eclipse.persistence</groupId>
@@ -35,51 +36,6 @@
         <nightlyVersion>-${release.version}.v${build.date}-${buildNumber}</nightlyVersion>
         <nightlyTestReportsDir>${project.build.directory}${nightlyDir}/Eclipse</nightlyTestReportsDir>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.core.test</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.dbws</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.moxy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.test</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.wdf.test</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.sdo</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>eclipselink</artifactId>
-            <type>zip</type>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.bundles.other</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -108,6 +64,67 @@
                         <goals>
                             <goal>create</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy todir="${project.build.directory}/jpa-test-reports">
+                                    <fileset dir="${project.build.directory}/../../../jpa/eclipselink.jpa.test">
+                                        <include name="**/target/surefire-reports/TEST*.xml"/>
+                                        <include name="**/target/failsafe-reports/TEST*.xml"/>
+                                    </fileset>
+                                    <flattenmapper/>
+                                </copy>
+                                <copy todir="${project.build.directory}/jpa-test-reports">
+                                    <fileset dir="${project.build.directory}/../../../jpa/eclipselink.jpa.testapps">
+                                        <include name="**/target/surefire-reports/TEST*.xml"/>
+                                        <include name="**/target/failsafe-reports/TEST*.xml"/>
+                                    </fileset>
+                                    <flattenmapper/>
+                                </copy>
+                                <copy todir="${project.build.directory}/jpa-test-reports">
+                                    <fileset dir="${project.build.directory}/../../../jpa/eclipselink.jpa.test.jse">
+                                        <include name="**/target/surefire-reports/TEST*.xml"/>
+                                        <include name="**/target/failsafe-reports/TEST*.xml"/>
+                                    </fileset>
+                                    <flattenmapper/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <configuration>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-test-summary-html-report</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>failsafe-report-only</goal>
+                        </goals>
+                        <configuration>
+                            <reportsDirectories>
+                                <reportsDirectory>${project.build.directory}/jpa-test-reports</reportsDirectory>
+                            </reportsDirectories>
+                            <outputDirectory>${project.build.directory}/jpa-test-reports/${project.build.testReports.subdirectory}</outputDirectory>
+                            <outputName>${project.build.testReports.summaryFile}</outputName>
+                            <title>EclipseLink JPA Test - Test Summary (more details on ${env.BUILD_URL} )</title>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -157,7 +174,7 @@
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>
-                                        ../../jpa/eclipselink.jpa.test/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                        ${project.build.directory}/jpa-test-reports/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
                                         ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jpa-lrg${nightlyVersion}.html

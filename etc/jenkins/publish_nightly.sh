@@ -16,5 +16,6 @@ if [ ${CONTINUOUS_BUILD} = "true" ]; then
     echo '-[ EclipseLink Continuous Build -> No publishing any artifacts]-------------------------------'
 else
     echo '-[ EclipseLink Publish to Nightly ]-----------------------------------------------------------'
+    mvn -V -B clean package -f bundles/nightly/pom.xml
     scp -r $WORKSPACE/bundles/nightly/target/nightlybuild/* genie.eclipselink@projects-storage.eclipse.org:$BUILD_RESULTS_TARGET_DIR
 fi
