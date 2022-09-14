@@ -173,6 +173,16 @@ spec:
                 }
             }
         }
+        // Prepare artifacts to nightly
+        stage('Prepare to nightly') {
+            steps {
+                container('el-build') {
+                    sh """
+                            etc/jenkins/prepare_nightly.sh
+                        """
+                }
+            }
+        }
         // Publish to nightly
         stage('Publish to nightly') {
             steps {
