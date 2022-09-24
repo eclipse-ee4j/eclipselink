@@ -21,9 +21,11 @@ import java.util.Vector;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.expressions.SQLModifyStatement;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
+import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -91,6 +93,20 @@ public class StatementQueryMechanism extends CallQueryMechanism {
             }
         }
         return clone;
+    }
+
+    @Override
+    protected void configureDatabaseCall(DatabaseCall call) {
+        // ReturnGeneratedKeys is only applicable for insert queries
+        if (this.query.isInsertObjectQuery()) {
+            if(!(this.sqlStatement instanceof SQLUpdateStatement)) {
+                // Some InsertQuerys spawn UpdateStatements that execute within the Insert scope
+                // ReturnGeneratedKeys is not applicable for UpdateStatements
+                call.setShouldReturnGeneratedKeys(this.query.shouldReturnGeneratedKeys());
+            }
+        }
+
+        super.configureDatabaseCall(call);
     }
 
     /**
