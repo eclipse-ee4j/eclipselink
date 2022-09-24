@@ -162,10 +162,6 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
             call.setIsNativeConnectionRequired(true);
         }
 
-        if (this.query.isInsertObjectQuery()) {
-            call.setShouldReturnGeneratedKeys(this.query.shouldReturnGeneratedKeys());
-        }
-
         if (this.query.isReadQuery()) {
             ReadQuery readQuery = (ReadQuery)this.query;
             // Some DB don't support FirstRow in SELECT statements in spite of supporting MaxResults(Symfoware).
