@@ -86,6 +86,20 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         return clone;
     }
 
+    @Override
+    protected void configureDatabaseCall(DatabaseCall call) {
+        // ReturnGeneratedKeys is only applicable for insert queries
+        if (this.query.isInsertObjectQuery()) {
+            if(!(this.sqlStatement instanceof SQLUpdateStatement)) {
+                // Some InsertQuerys spawn UpdateStatements that execute within the Insert scope
+                // ReturnGeneratedKeys is not applicable for UpdateStatements
+                call.setShouldReturnGeneratedKeys(this.query.shouldReturnGeneratedKeys());
+            }
+        }
+
+        super.configureDatabaseCall(call);
+    }
+
     /**
      * INTERNAL:
      * delete the object

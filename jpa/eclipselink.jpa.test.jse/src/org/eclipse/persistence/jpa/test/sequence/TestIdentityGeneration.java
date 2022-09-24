@@ -37,10 +37,16 @@ import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
 public class TestIdentityGeneration {
-    @Emf(createTables = DDLGen.DROP_CREATE, classes = { Coffee.class, Tea.class, TeaShop.class }, 
+    @Emf(name = "baseEMF", createTables = DDLGen.DROP_CREATE, classes = { Coffee.class, Tea.class, TeaShop.class }, 
             properties = { 
                     @Property(name="eclipselink.logging.level", value="FINE")})
     private EntityManagerFactory emf;
+
+    @Emf(name = "propertyEMF", createTables = DDLGen.DROP_CREATE, classes = { Coffee.class, Tea.class, TeaShop.class, StepExecutionEntity.class }, 
+            properties = { 
+                    @Property(name="eclipselink.target-database-properties", value="supportsReturnGeneratedKeys=true"),
+                    @Property(name="eclipselink.logging.level", value="FINE")})
+    private EntityManagerFactory emf2;
 
     @Test
     public void testPersistWithSecondaryTables() {
@@ -85,6 +91,39 @@ public class TestIdentityGeneration {
             Assert.assertEquals("wrong set size", teas.size(), referenceSet.size());
             Assert.assertTrue("missing element", referenceSet.contains(tea1));
             Assert.assertTrue("missing element", referenceSet.contains(tea2));
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Test to cover updating foreign key field after insert.
+     * 
+     * https://github.com/eclipse-ee4j/eclipselink/issues/1711
+     */
+    @Test
+    public void testPersistWithSecondaryTables2() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        // Only these platforms support {@link java.sql.Statement#getGeneratedKeys()}
+        Assume.assumeTrue(platform.isDB2() || platform.isDerby() || platform.isMySQL() || platform.isSQLServer());
+
+        try {
+            StepExecutionEntity e1 = new StepExecutionEntity();
+            e1.setChildEntity(e1);
+
+            em.getTransaction().begin();
+            em.persist(e1);
+            em.getTransaction().commit();
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
