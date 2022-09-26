@@ -29,6 +29,11 @@ import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Test for: Specifying QName in XmlVariableNode results namespace written twice
+ *
+ * https://github.com/eclipse-ee4j/eclipselink/issues/1709
+ */
 public class XmlVariableNodeQNameNS2TestCases extends JAXBWithJSONTestCases {
      protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootqname2NS.xml";
      protected final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootqname2NSWrite.xml";
