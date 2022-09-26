@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -211,6 +211,11 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
                     frag.setPrefix(prefix);
                     returnString = prefix + namespaceSep + returnString;
                 }
+                //In case of JSON marshalling namespace separator there should different like '.', than  default in XPathFragment ':'.
+                //Namespace separator from there should be promoted to XPathFragment to correctly set localName.
+                if(namespaceSep != 0){
+                    frag.setNamespaceSeparator(namespaceSep);
+                }
             }
             frag.setXPath(returnString);
             frag.setNamespaceURI(uri);
@@ -229,7 +234,4 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
         public void setAttribute(boolean isAttribute) {
             this.isAttribute = isAttribute;
         }
-
-
-
 }
