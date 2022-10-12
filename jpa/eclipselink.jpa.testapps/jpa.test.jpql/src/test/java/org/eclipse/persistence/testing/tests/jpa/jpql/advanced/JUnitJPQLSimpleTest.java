@@ -215,7 +215,10 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTest("testOrderByWithParenthesesCalculatedAndNormalDefault"));
         suite.addTest(new JUnitJPQLSimpleTest("testOrderByWithParenthesesAllAttributes"));
         suite.addTest(new JUnitJPQLSimpleTest("testOrderByWithParenthesesAllAttributesHybrid"));
-        
+        // Issue #1727 - Error execution delete operation without identification_variable on FQN entity
+        suite.addTest(new JUnitJPQLSimpleTest("testDeleteFQNEntityNoAlias"));
+        suite.addTest(new JUnitJPQLSimpleTest("testDeleteFQNEntityAlias"));
+
         return suite;
     }
 
@@ -2632,5 +2635,43 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
+    /**
+     * Test simple DELETE query with fully qualified entity class name and no alias.
+     */
+    public void testDeleteFQEntityNoAlias() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createQuery(
+                    "DELETE FROM org.eclipse.persistence.testing.models.jpa.advanced.Employee " +
+                            "WHERE firstName = :fName AND lastName = :lName");
+            query.setParameter("fName", "Peter");
+            query.setParameter("lName", "Parker");
+            query.executeUpdate();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Test simple DELETE query with fully qualified entity class name and an alias.
+     */
+    public void testDeleteFQEntityAlias() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createQuery(
+                    "DELETE FROM org.eclipse.persistence.testing.models.jpa.advanced.Employee e " +
+                            "WHERE e.firstName = :fName AND e.lastName = :lName");
+            query.setParameter("fName", "Peter");
+            query.setParameter("lName", "Parker");
+            query.executeUpdate();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
 }
