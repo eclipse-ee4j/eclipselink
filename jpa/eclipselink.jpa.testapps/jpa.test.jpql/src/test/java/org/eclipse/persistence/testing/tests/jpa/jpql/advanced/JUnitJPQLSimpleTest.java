@@ -2639,7 +2639,7 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
     /**
      * Test simple DELETE query with fully qualified entity class name and no alias.
      */
-    public void testDeleteFQEntityNoAlias() {
+    public void testDeleteFQNEntityNoAlias() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -2658,7 +2658,7 @@ public class JUnitJPQLSimpleTest extends JUnitTestCase {
     /**
      * Test simple DELETE query with fully qualified entity class name and an alias.
      */
-    public void testDeleteFQEntityAlias() {
+    public void testDeleteFQNEntityAlias() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
