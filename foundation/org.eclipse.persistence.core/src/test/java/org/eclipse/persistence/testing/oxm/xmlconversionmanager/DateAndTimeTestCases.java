@@ -2867,7 +2867,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testCalendarToString_default_time_0ms() {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(Calendar.HOUR, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 7);
         calendar.set(Calendar.MINUTE, 47);
         calendar.set(Calendar.SECOND, 15);
         calendar.set(Calendar.MILLISECOND, 0);
@@ -2879,7 +2879,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testCalendarToString_default_time_1ms() {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(Calendar.HOUR, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 7);
         calendar.set(Calendar.MINUTE, 47);
         calendar.set(Calendar.SECOND, 15);
         calendar.set(Calendar.MILLISECOND, 1);
@@ -2891,7 +2891,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testCalendarToString_default_time_10ms() {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(Calendar.HOUR, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 7);
         calendar.set(Calendar.MINUTE, 47);
         calendar.set(Calendar.SECOND, 15);
         calendar.set(Calendar.MILLISECOND, 10);
@@ -2903,7 +2903,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testCalendarToString_default_time_100ms() {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(Calendar.HOUR, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 7);
         calendar.set(Calendar.MINUTE, 47);
         calendar.set(Calendar.SECOND, 15);
         calendar.set(Calendar.MILLISECOND, 100);
@@ -3786,7 +3786,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3818,7 +3818,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3857,7 +3857,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3876,7 +3876,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3912,7 +3912,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3944,7 +3944,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3963,7 +3963,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3981,7 +3981,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -4010,7 +4010,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);

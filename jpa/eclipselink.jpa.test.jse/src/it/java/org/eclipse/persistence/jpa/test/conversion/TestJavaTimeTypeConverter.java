@@ -29,7 +29,6 @@ import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.temporal.TemporalField;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -150,7 +149,7 @@ public class TestJavaTimeTypeConverter {
     // LocalDateTime
     @Test
     public void timeConvertLocalDateTimeToLocalDateTime() {
-        LocalDateTime src = LocalDateTime.of(2020, 1, 1, 1, 0, 0);
+        LocalDateTime src = LocalDateTime.of(2020, 1, 1, 16, 0, 0);
         LocalDateTime ld = cm.convertObject(src, ClassConstants.TIME_LDATETIME);
         
         Assert.assertNotNull(ld);
@@ -158,21 +157,21 @@ public class TestJavaTimeTypeConverter {
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(1, ld.getDayOfMonth());
         Assert.assertEquals(2020,  ld.getYear());
-        Assert.assertEquals(1, ld.getHour());
+        Assert.assertEquals(16, ld.getHour());
         Assert.assertEquals(0, ld.getMinute());
         Assert.assertEquals(0, ld.getSecond());
     }
     
     @Test
     public void timeConvertStringToLocalDateTime() {
-        String date = "2020-01-01T1:15:30";
+        String date = "2020-01-01T16:15:30";
         LocalDateTime ld = cm.convertObject(date, ClassConstants.TIME_LDATETIME);
         
         Assert.assertNotNull(ld);
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(1, ld.getDayOfMonth());
         Assert.assertEquals(2020,  ld.getYear());
-        Assert.assertEquals(1, ld.getHour());
+        Assert.assertEquals(16, ld.getHour());
         Assert.assertEquals(15, ld.getMinute());
         Assert.assertEquals(30, ld.getSecond());
     }
@@ -183,7 +182,7 @@ public class TestJavaTimeTypeConverter {
         java.util.Date date = null;
         LocalDateTime ldt = null;
         
-        cal.set(2020, 0, 1, 2, 15, 30);
+        cal.set(2020, 0, 1, 16, 15, 30);
         date = cal.getTime();
                
         ldt = cm.convertObject(date, ClassConstants.TIME_LDATETIME);
@@ -192,7 +191,7 @@ public class TestJavaTimeTypeConverter {
         Assert.assertEquals(Month.JANUARY, ldt.getMonth());
         Assert.assertEquals(1, ldt.getDayOfMonth());
         Assert.assertEquals(2020,  ldt.getYear());
-        Assert.assertEquals(2, ldt.getHour());
+        Assert.assertEquals(16, ldt.getHour());
         Assert.assertEquals(15, ldt.getMinute());
         Assert.assertEquals(30, ldt.getSecond());
     }
@@ -200,7 +199,7 @@ public class TestJavaTimeTypeConverter {
     @Test
     public void timeConvertCalendarToLocalDateTime() {
         Calendar cal = Calendar.getInstance();
-        cal.set(2020, 0, 1, 2, 15, 30);
+        cal.set(2020, 0, 1, 16, 15, 30);
         
         LocalDateTime ldt = cm.convertObject(cal, ClassConstants.TIME_LDATETIME);
         
@@ -208,7 +207,7 @@ public class TestJavaTimeTypeConverter {
         Assert.assertEquals(Month.JANUARY, ldt.getMonth());
         Assert.assertEquals(1, ldt.getDayOfMonth());
         Assert.assertEquals(2020,  ldt.getYear());
-        Assert.assertEquals(2, ldt.getHour());
+        Assert.assertEquals(16, ldt.getHour());
         Assert.assertEquals(15, ldt.getMinute());
         Assert.assertEquals(30, ldt.getSecond());
     }
@@ -239,47 +238,47 @@ public class TestJavaTimeTypeConverter {
     // LocalTime
     @Test
     public void timeConvertLocalTimeToLocalTime() {
-        LocalTime src = LocalTime.of(1, 15, 30);
+        LocalTime src = LocalTime.of(16, 15, 30);
         LocalTime ld = cm.convertObject(src, ClassConstants.TIME_LTIME);
         
         Assert.assertNotNull(ld);
         Assert.assertEquals(src, ld);
-        Assert.assertEquals(1, ld.getHour());
+        Assert.assertEquals(16, ld.getHour());
         Assert.assertEquals(15, ld.getMinute());
         Assert.assertEquals(30, ld.getSecond());
     }
     
     @Test
     public void timeConvertStringToLocalTime() {
-        String date = "T1:15:30";
+        String date = "T16:15:30";
         LocalTime ld = cm.convertObject(date, ClassConstants.TIME_LTIME);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(1, ld.getHour());
+        Assert.assertEquals(16, ld.getHour());
         Assert.assertEquals(15, ld.getMinute());
         Assert.assertEquals(30, ld.getSecond());
     }
     
     @Test
     public void timeConvertTimestampToLocalTime() {
-        java.sql.Timestamp ts = java.sql.Timestamp.valueOf("2020-01-01 01:15:30");
+        java.sql.Timestamp ts = java.sql.Timestamp.valueOf("2020-01-01 16:15:30");
         
         LocalTime ld = cm.convertObject(ts, ClassConstants.TIME_LTIME);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(1, ld.getHour());
+        Assert.assertEquals(16, ld.getHour());
         Assert.assertEquals(15, ld.getMinute());
         Assert.assertEquals(30, ld.getSecond());
     }
     
     @Test
     public void timeConvertTimeToLocalTime() {
-        java.sql.Time ts = java.sql.Time.valueOf("01:15:30");
+        java.sql.Time ts = java.sql.Time.valueOf("16:15:30");
         
         LocalTime ld = cm.convertObject(ts, ClassConstants.TIME_LTIME);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(1, ld.getHour());
+        Assert.assertEquals(16, ld.getHour());
         Assert.assertEquals(15, ld.getMinute());
         Assert.assertEquals(30, ld.getSecond());
     }
@@ -290,24 +289,24 @@ public class TestJavaTimeTypeConverter {
         java.util.Date date = null;
         LocalTime ld = null;
         
-        cal.set(2020, 0, 1, 2, 15, 30);
+        cal.set(2020, 0, 1, 16, 15, 30);
         date = cal.getTime();
                
         ld = cm.convertObject(date, ClassConstants.TIME_LTIME);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(2, ld.getHour());
+        Assert.assertEquals(16, ld.getHour());
         Assert.assertEquals(15, ld.getMinute());
         Assert.assertEquals(30, ld.getSecond());
     }
     
     @Test
     public void convertLongToLocalTime() {
-        long sod = 60*60 + 60*15 + 30;
+        long sod = 16*60*60 + 60*15 + 30;
         LocalTime ld = cm.convertObject(sod, ClassConstants.TIME_LTIME);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(1, ld.getHour());
+        Assert.assertEquals(16, ld.getHour());
         Assert.assertEquals(15, ld.getMinute());
         Assert.assertEquals(30, ld.getSecond());
     }
@@ -329,7 +328,7 @@ public class TestJavaTimeTypeConverter {
     @Test
     public void timeConvertCalendarToOffsetDateTime() {
         Calendar cal = Calendar.getInstance();
-        cal.set(2020, 0, 1, 0, 0, 0);
+        cal.set(2020, 0, 1, 16, 15, 30);
         
         OffsetDateTime odt = cm.convertObject(cal, ClassConstants.TIME_ODATETIME);
         
@@ -337,6 +336,9 @@ public class TestJavaTimeTypeConverter {
         Assert.assertEquals(Month.JANUARY, odt.getMonth());
         Assert.assertEquals(1, odt.getDayOfMonth());
         Assert.assertEquals(2020,  odt.getYear());
+        Assert.assertEquals(16, odt.getHour());
+        Assert.assertEquals(15, odt.getMinute());
+        Assert.assertEquals(30, odt.getSecond());
     }
     
     @Test
@@ -345,7 +347,7 @@ public class TestJavaTimeTypeConverter {
         java.util.Date date = null;
         OffsetDateTime odt = null;
         
-        cal.set(2020, 0, 1, 0, 0, 0);
+        cal.set(2020, 0, 1, 16, 15, 30);
         date = cal.getTime();
                
         odt = cm.convertObject(date, ClassConstants.TIME_ODATETIME);
@@ -354,11 +356,14 @@ public class TestJavaTimeTypeConverter {
         Assert.assertEquals(Month.JANUARY, odt.getMonth());
         Assert.assertEquals(1, odt.getDayOfMonth());
         Assert.assertEquals(2020,  odt.getYear());
+        Assert.assertEquals(16, odt.getHour());
+        Assert.assertEquals(15, odt.getMinute());
+        Assert.assertEquals(30, odt.getSecond());
     }
     
     @Test
     public void timeConvertStringToOffsetDateTime() {
-        String date = "2020-01-01T1:15:30";
+        String date = "2020-01-01T16:15:30";
         OffsetDateTime odt = null;
                
         odt = cm.convertObject(date, ClassConstants.TIME_ODATETIME);
@@ -367,14 +372,14 @@ public class TestJavaTimeTypeConverter {
         Assert.assertEquals(Month.JANUARY, odt.getMonth());
         Assert.assertEquals(1, odt.getDayOfMonth());
         Assert.assertEquals(2020,  odt.getYear());
-        Assert.assertEquals(1, odt.getHour());
+        Assert.assertEquals(16, odt.getHour());
         Assert.assertEquals(15,  odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
     
     @Test
     public void timeConvertOffsetDateTimeToOffsetDateTime() {
-        OffsetDateTime original = OffsetDateTime.of(2020, 1, 1, 1, 15, 30, 0, ZoneOffset.UTC);
+        OffsetDateTime original = OffsetDateTime.of(2020, 1, 1, 16, 15, 30, 0, ZoneOffset.UTC);
         OffsetDateTime odt = null;
                
         odt = cm.convertObject(original, ClassConstants.TIME_ODATETIME);
@@ -384,7 +389,7 @@ public class TestJavaTimeTypeConverter {
         Assert.assertEquals(Month.JANUARY, odt.getMonth());
         Assert.assertEquals(1, odt.getDayOfMonth());
         Assert.assertEquals(2020,  odt.getYear());
-        Assert.assertEquals(1, odt.getHour());
+        Assert.assertEquals(16, odt.getHour());
         Assert.assertEquals(15,  odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
@@ -405,27 +410,27 @@ public class TestJavaTimeTypeConverter {
     
     @Test
     public void timeConvertOffsetTimeToOffsetTime() {
-        OffsetTime original = OffsetTime.of(1, 15, 30, 0, ZoneOffset.UTC);
+        OffsetTime original = OffsetTime.of(16, 15, 30, 0, ZoneOffset.UTC);
         OffsetTime odt = null;
                
         odt = cm.convertObject(original, ClassConstants.TIME_OTIME);
         
         Assert.assertNotNull(odt);
         Assert.assertSame(original,  odt);
-        Assert.assertEquals(1, odt.getHour());
+        Assert.assertEquals(16, odt.getHour());
         Assert.assertEquals(15,  odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
     
     @Test
     public void timeConvertStringToOffsetTime() {
-        String date = "T1:15:30";
+        String date = "T16:15:30";
         OffsetTime odt = null;
                
         odt = cm.convertObject(date, ClassConstants.TIME_OTIME);
         
         Assert.assertNotNull(odt);
-        Assert.assertEquals(1, odt.getHour());
+        Assert.assertEquals(16, odt.getHour());
         Assert.assertEquals(15,  odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
@@ -436,13 +441,13 @@ public class TestJavaTimeTypeConverter {
         java.util.Date date = null;
         OffsetTime odt = null;
         
-        cal.set(2020, 0, 1, 1, 15, 30);
+        cal.set(2020, 0, 1, 16, 15, 30);
         date = cal.getTime();
                
         odt = cm.convertObject(date, ClassConstants.TIME_OTIME);
         
         Assert.assertNotNull(odt);
-        Assert.assertEquals(1, odt.getHour());
+        Assert.assertEquals(16, odt.getHour());
         Assert.assertEquals(15,  odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
@@ -450,23 +455,23 @@ public class TestJavaTimeTypeConverter {
     @Test
     public void timeConvertCalendarToOffsetTime() {
         Calendar cal = Calendar.getInstance();
-        cal.set(2020, 0, 1, 1, 15, 30);
+        cal.set(2020, 0, 1, 16, 15, 30);
         
         OffsetTime odt = cm.convertObject(cal, ClassConstants.TIME_OTIME);
         
         Assert.assertNotNull(odt);
-        Assert.assertEquals(1, odt.getHour());
+        Assert.assertEquals(16, odt.getHour());
         Assert.assertEquals(15,  odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
     
     @Test
     public void testConvertLongToOffsetTime() {
-        long l = 18262 * (60 * 60 * 24) + (60*60 + 60*15 + 30); // 2020-01-01  T01:15:30     
+        long l = 18262 * (60 * 60 * 24) + (16*60*60 + 60*15 + 30); // 2020-01-01  T16:15:30     
         OffsetTime ldt = cm.convertObject(l, ClassConstants.TIME_OTIME);
         
         Assert.assertNotNull(ldt);
-        Assert.assertEquals(1, ldt.getHour());
+        Assert.assertEquals(16, ldt.getHour());
         Assert.assertEquals(15,  ldt.getMinute());
         Assert.assertEquals(30, ldt.getSecond());
     }

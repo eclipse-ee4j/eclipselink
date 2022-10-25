@@ -93,13 +93,13 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         Locale lc = Locale.US;
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
-        controlCalendar.set(Calendar.HOUR, 1);
+        controlCalendar.set(Calendar.HOUR_OF_DAY, 1);
         controlCalendar.set(Calendar.MINUTE, 21);
         controlCalendar.set(Calendar.SECOND, 12);
         controlCalendar.set(Calendar.MILLISECOND, 0);
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("01:21:12", lc);
-        assertTrue("Expected HOUR: " + controlCalendar.get(Calendar.HOUR) + ", but was: " + aCalendar.get(Calendar.HOUR), controlCalendar.get(Calendar.HOUR) == aCalendar.get(Calendar.HOUR));
+        assertTrue("Expected HOUR: " + controlCalendar.get(Calendar.HOUR_OF_DAY) + ", but was: " + aCalendar.get(Calendar.HOUR_OF_DAY), controlCalendar.get(Calendar.HOUR_OF_DAY) == aCalendar.get(Calendar.HOUR_OF_DAY));
         assertTrue("Expected MINUTE: " + controlCalendar.get(Calendar.MINUTE) + ", but was: " + aCalendar.get(Calendar.MINUTE), controlCalendar.get(Calendar.MINUTE) == aCalendar.get(Calendar.MINUTE));
         assertTrue("Expected SECOND: " + controlCalendar.get(Calendar.SECOND) + ", but was: " + aCalendar.get(Calendar.SECOND), controlCalendar.get(Calendar.SECOND) == aCalendar.get(Calendar.SECOND));
         assertTrue("Expected MILLISECOND: " + controlCalendar.get(Calendar.MILLISECOND) + ", but was: " + aCalendar.get(Calendar.MILLISECOND), controlCalendar.get(Calendar.MILLISECOND) == aCalendar.get(Calendar.MILLISECOND));
@@ -130,7 +130,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 0);
         controlCalendar.set(Calendar.DATE, 1);
-        controlCalendar.set(Calendar.HOUR, 0);
+        controlCalendar.set(Calendar.HOUR_OF_DAY, 0);
         controlCalendar.set(Calendar.MINUTE, 0);
         controlCalendar.set(Calendar.SECOND, 1);
         controlCalendar.set(Calendar.MILLISECOND, 0);
@@ -139,7 +139,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
         assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
         assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
-        assertTrue("Expected HOUR: " + controlCalendar.get(Calendar.HOUR) + ", but was: " + aCalendar.get(Calendar.HOUR), controlCalendar.get(Calendar.HOUR) == aCalendar.get(Calendar.HOUR));
+        assertTrue("Expected HOUR: " + controlCalendar.get(Calendar.HOUR_OF_DAY) + ", but was: " + aCalendar.get(Calendar.HOUR_OF_DAY), controlCalendar.get(Calendar.HOUR_OF_DAY) == aCalendar.get(Calendar.HOUR_OF_DAY));
         assertTrue("Expected MINUTE: " + controlCalendar.get(Calendar.MINUTE) + ", but was: " + aCalendar.get(Calendar.MINUTE), controlCalendar.get(Calendar.MINUTE) == aCalendar.get(Calendar.MINUTE));
         assertTrue("Expected SECOND: " + controlCalendar.get(Calendar.SECOND) + ", but was: " + aCalendar.get(Calendar.SECOND), controlCalendar.get(Calendar.SECOND) == aCalendar.get(Calendar.SECOND));
         assertTrue("Expected MILLISECOND: " + controlCalendar.get(Calendar.MILLISECOND) + ", but was: " + aCalendar.get(Calendar.MILLISECOND), controlCalendar.get(Calendar.MILLISECOND) == aCalendar.get(Calendar.MILLISECOND));
@@ -154,7 +154,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 12);
         controlCalendar.set(Calendar.MONTH, Calendar.OCTOBER);
         controlCalendar.set(Calendar.DATE, 2);
-        controlCalendar.set(Calendar.HOUR, 0);
+        controlCalendar.set(Calendar.HOUR_OF_DAY, 0);
         controlCalendar.set(Calendar.MINUTE, 40);
         controlCalendar.set(Calendar.SECOND, 27);
         controlCalendar.set(Calendar.MILLISECOND, 870);
@@ -163,7 +163,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
         assertTrue("Expected MONTH: " + controlCalendar.get(Calendar.MONTH) + ", but was: " + aCalendar.get(Calendar.MONTH), controlCalendar.get(Calendar.MONTH) == aCalendar.get(Calendar.MONTH));
         assertTrue("Expected DATE: " + controlCalendar.get(Calendar.DATE) + ", but was: " + aCalendar.get(Calendar.DATE), controlCalendar.get(Calendar.DATE) == aCalendar.get(Calendar.DATE));
-        assertTrue("Expected HOUR: " + controlCalendar.get(Calendar.HOUR) + ", but was: " + aCalendar.get(Calendar.HOUR), controlCalendar.get(Calendar.HOUR) == aCalendar.get(Calendar.HOUR));
+        assertTrue("Expected HOUR: " + controlCalendar.get(Calendar.HOUR_OF_DAY) + ", but was: " + aCalendar.get(Calendar.HOUR_OF_DAY), controlCalendar.get(Calendar.HOUR_OF_DAY) == aCalendar.get(Calendar.HOUR_OF_DAY));
         assertTrue("Expected MINUTE: " + controlCalendar.get(Calendar.MINUTE) + ", but was: " + aCalendar.get(Calendar.MINUTE), controlCalendar.get(Calendar.MINUTE) == aCalendar.get(Calendar.MINUTE));
         assertTrue("Expected SECOND: " + controlCalendar.get(Calendar.SECOND) + ", but was: " + aCalendar.get(Calendar.SECOND), controlCalendar.get(Calendar.SECOND) == aCalendar.get(Calendar.SECOND));
         assertTrue("Expected MILLISECOND: " + controlCalendar.get(Calendar.MILLISECOND) + ", but was: " + aCalendar.get(Calendar.MILLISECOND), controlCalendar.get(Calendar.MILLISECOND) == aCalendar.get(Calendar.MILLISECOND));

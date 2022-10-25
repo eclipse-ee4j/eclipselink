@@ -115,13 +115,13 @@ public class TypedDirectMappingTestCases extends XMLMappingTestCases {
 
             parsedDate = new SimpleDateFormat(DATE_FORMAT).parse("2013-02-17");
             date = Calendar.getInstance();
-            date.setTime(parsedDate); date.clear(Calendar.HOUR); date.clear(Calendar.MINUTE); date.clear(Calendar.SECOND); date.clear(Calendar.MILLISECOND); date.clear(Calendar.ZONE_OFFSET);
+            date.setTime(parsedDate); date.clear(Calendar.HOUR_OF_DAY); date.clear(Calendar.MINUTE); date.clear(Calendar.SECOND); date.clear(Calendar.MILLISECOND); date.clear(Calendar.ZONE_OFFSET);
             parsedDate = new SimpleDateFormat(DATE_FORMAT).parse("2013-04-09");
             date2 = Calendar.getInstance();
-            date2.setTime(parsedDate); date2.clear(Calendar.HOUR); date2.clear(Calendar.MINUTE); date2.clear(Calendar.SECOND); date2.clear(Calendar.MILLISECOND); date2.clear(Calendar.ZONE_OFFSET);
+            date2.setTime(parsedDate); date2.clear(Calendar.HOUR_OF_DAY); date2.clear(Calendar.MINUTE); date2.clear(Calendar.SECOND); date2.clear(Calendar.MILLISECOND); date2.clear(Calendar.ZONE_OFFSET);
             parsedDate = new SimpleDateFormat(DATE_FORMAT).parse("2013-04-18");
             date3 = Calendar.getInstance();
-            date3.setTime(parsedDate); date3.clear(Calendar.HOUR); date3.clear(Calendar.MINUTE); date3.clear(Calendar.SECOND); date3.clear(Calendar.MILLISECOND); date3.clear(Calendar.ZONE_OFFSET);
+            date3.setTime(parsedDate); date3.clear(Calendar.HOUR_OF_DAY); date3.clear(Calendar.MINUTE); date3.clear(Calendar.SECOND); date3.clear(Calendar.MILLISECOND); date3.clear(Calendar.ZONE_OFFSET);
 
             parsedDate = new SimpleDateFormat(DATE_TIME_FORMAT).parse("2013-02-17T23:21:00");
             dateTime = Calendar.getInstance(); dateTime.clear();

@@ -1175,7 +1175,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     }
 
     private String stringFromCalendar(Calendar sourceCalendar) {
-        if (!(sourceCalendar.isSet(Calendar.HOUR) || sourceCalendar.isSet(Calendar.MINUTE) || sourceCalendar.isSet(Calendar.SECOND) || sourceCalendar.isSet(Calendar.MILLISECOND))) {
+        if (!(sourceCalendar.isSet(Calendar.HOUR_OF_DAY) || sourceCalendar.isSet(Calendar.MINUTE) || sourceCalendar.isSet(Calendar.SECOND) || sourceCalendar.isSet(Calendar.MILLISECOND))) {
             return stringFromCalendar(sourceCalendar, Constants.DATE_QNAME);
         } else if (!(sourceCalendar.isSet(Calendar.YEAR) || sourceCalendar.isSet(Calendar.MONTH) || sourceCalendar.isSet(Calendar.DATE))) {
             return stringFromCalendar(sourceCalendar, Constants.TIME_QNAME);

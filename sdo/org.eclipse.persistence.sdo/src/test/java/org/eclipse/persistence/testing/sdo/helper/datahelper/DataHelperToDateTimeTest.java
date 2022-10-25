@@ -31,7 +31,7 @@ public class DataHelperToDateTimeTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 4);
         controlCalendar.set(Calendar.DATE, 1);
-        controlCalendar.set(Calendar.HOUR, 12);
+        controlCalendar.set(Calendar.HOUR_OF_DAY, 12);
         controlCalendar.set(Calendar.MINUTE, 23);
         controlCalendar.set(Calendar.SECOND, 11);
         controlCalendar.set(Calendar.MILLISECOND, 1);
