@@ -54,7 +54,7 @@ public class CacheInvalidationPolicyCloneTest extends TestCase {
             assertFalse("Clone should not be the same instance", policy == policyClone);
             assertEquals("Clone should be of the same type", policy.getClass(), policyClone.getClass());
             assertEquals("Clone's expiry time should be the same", policy.getExpiryTime().getTimeInMillis(), policyClone.getExpiryTime().getTimeInMillis());
-            assertEquals("Clone's expiry time should be 01:02:03.004 - hour", 1, policyClone.getExpiryTime().get(Calendar.HOUR));
+            assertEquals("Clone's expiry time should be 01:02:03.004 - hour", 1, policyClone.getExpiryTime().get(Calendar.HOUR_OF_DAY));
             assertEquals("Clone's expiry time should be 01:02:03.004 - minute", 2, policyClone.getExpiryTime().get(Calendar.MINUTE));
             assertEquals("Clone's expiry time should be 01:02:03.004 - second", 3, policyClone.getExpiryTime().get(Calendar.SECOND));
             assertEquals("Clone's expiry time should be 01:02:03.004 - millisecond", 4, policyClone.getExpiryTime().get(Calendar.MILLISECOND));

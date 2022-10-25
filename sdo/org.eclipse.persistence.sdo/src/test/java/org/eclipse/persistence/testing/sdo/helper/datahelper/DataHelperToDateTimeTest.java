@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ public class DataHelperToDateTimeTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 4);
         controlCalendar.set(Calendar.DATE, 1);
-        controlCalendar.set(Calendar.HOUR, 12);
+        controlCalendar.set(Calendar.HOUR_OF_DAY, 12);
         controlCalendar.set(Calendar.MINUTE, 23);
         controlCalendar.set(Calendar.SECOND, 11);
         controlCalendar.set(Calendar.MILLISECOND, 1);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -270,7 +270,7 @@ public class SDODataHelper implements DataHelper {
         dur.append("M");
         dur.append(calendar.get(Calendar.DATE));
         dur.append("DT");
-        dur.append(calendar.get(Calendar.HOUR));
+        dur.append(calendar.get(Calendar.HOUR_OF_DAY));
         dur.append("H");
         dur.append(calendar.get(Calendar.MINUTE));
         dur.append("M");
@@ -574,7 +574,7 @@ public class SDODataHelper implements DataHelper {
             c.set(Calendar.DATE, data);
             break;
         case 3:
-            c.set(Calendar.HOUR, data);
+            c.set(Calendar.HOUR_OF_DAY, data);
             break;
         case 4:
             c.set(Calendar.MINUTE, data);
