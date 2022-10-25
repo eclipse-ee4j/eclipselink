@@ -30,7 +30,7 @@ public class DataHelperToDurationWithCalnTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 12);
         controlCalendar.set(Calendar.MONTH, 10);
         controlCalendar.set(Calendar.DATE, 2);
-        controlCalendar.set(Calendar.HOUR, 0);
+        controlCalendar.set(Calendar.HOUR_OF_DAY, 0);
         controlCalendar.set(Calendar.MINUTE, 40);
         controlCalendar.set(Calendar.SECOND, 27);
         controlCalendar.set(Calendar.MILLISECOND, 870);

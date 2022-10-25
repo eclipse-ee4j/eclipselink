@@ -59,7 +59,7 @@ public class DatePrintingTest extends PerformanceComparisonTestCase {
                 writer.write(String.valueOf(calendar.get(Calendar.YEAR)));
                 writer.write(String.valueOf(calendar.get(Calendar.DATE)));
                 writer.write(String.valueOf(calendar.get(Calendar.MONTH)));
-                writer.write(String.valueOf(calendar.get(Calendar.HOUR)));
+                writer.write(String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
                 writer.write(String.valueOf(calendar.get(Calendar.MINUTE)));
                 writer.write(String.valueOf(calendar.get(Calendar.SECOND)));
                 writer.toString();

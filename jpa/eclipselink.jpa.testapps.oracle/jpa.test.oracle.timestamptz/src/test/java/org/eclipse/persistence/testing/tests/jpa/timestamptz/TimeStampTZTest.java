@@ -85,7 +85,7 @@ public class TimeStampTZTest extends JUnitTestCase {
         assertEquals("The year is not match", year, dbCal.get(Calendar.YEAR));
         assertEquals("The month is not match", month, dbCal.get(Calendar.MONTH));
         assertEquals("The date is not match", date, dbCal.get(Calendar.DATE));
-        assertEquals("The hour is not match", hour, dbCal.get(Calendar.HOUR));
+        assertEquals("The hour is not match", hour, dbCal.get(Calendar.HOUR_OF_DAY));
         assertEquals("The minute is not match", minute, dbCal.get(Calendar.MINUTE));
         assertEquals("The second is not match", second, dbCal.get(Calendar.SECOND));
     }
@@ -120,7 +120,7 @@ public class TimeStampTZTest extends JUnitTestCase {
             assertEquals("The year is not match", year, dbCal.get(Calendar.YEAR));
             assertEquals("The month is not match", month, dbCal.get(Calendar.MONTH));
             assertEquals("The date is not match", date, dbCal.get(Calendar.DATE));
-            assertEquals("The hour is not match", hour, dbCal.get(Calendar.HOUR));
+            assertEquals("The hour is not match", hour, dbCal.get(Calendar.HOUR_OF_DAY));
             assertEquals("The minute is not match", minute, dbCal.get(Calendar.MINUTE));
             assertEquals("The second is not match", second, dbCal.get(Calendar.SECOND));
         } finally {
