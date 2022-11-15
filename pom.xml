@@ -180,7 +180,7 @@
         <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
 
         <!--Eclipse Dependencies version-->
-        <eclipselink.asm.version>9.3.0</eclipselink.asm.version>
+        <eclipselink.asm.version>9.4.0</eclipselink.asm.version>
         <activation-api.version>2.1.0</activation-api.version>
         <angus-activation.version>1.0.0</angus-activation.version>
         <annotation.version>2.1.1</annotation.version>
@@ -1186,7 +1186,7 @@
                     <!-- see https://github.com/eclipse-ee4j/eclipselink-build-support -->
                     <groupId>org.eclipse.persistence</groupId>
                     <artifactId>eclipselink-testbuild-plugin</artifactId>
-                    <version>0.0.10</version>
+                    <version>1.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.carlspring.maven</groupId>

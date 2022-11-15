@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.AbstractElementVisitor8;
+import javax.tools.Diagnostic;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -297,5 +298,11 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnota
         metadataClass.addField(field);
 
         return field;
+    }
+
+    @Override
+    public MetadataAnnotatedElement visitUnknown(Element e, MetadataClass metadataClass) {
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Unsupported element", e);
+        return null;
     }
 }
