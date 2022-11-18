@@ -352,7 +352,6 @@ public class DerbyPlatform extends DB2Platform {
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DOUBLE"));
         addOperator(derbyExtractOperator());
         addOperator(derbyPowerOperator());
-        addOperator(derbyRoundOperator());
 
         addOperator(avgOperator());
         addOperator(sumOperator());
@@ -484,26 +483,6 @@ public class DerbyPlatform extends DB2Platform {
         argumentIndices[0] = 1;
         argumentIndices[1] = 0;
         operator.setArgumentIndices(argumentIndices);
-        return operator;
-    }
-
-    // Emulate ROUND as FLOOR((:x)*1e:n+0.5)/1e:n
-    private static ExpressionOperator derbyRoundOperator() {
-        ExpressionOperator operator = disableAllBindingExpression();
-        ExpressionOperator.round().copyTo(operator);
-
-        List<String> v = new ArrayList<>(4);
-        v.add("FLOOR((");
-        v.add(")*1e");
-        v.add("+0.5)/1e");
-        v.add("");
-        operator.printsAs(v);
-        int[] argumentIndices = new int[3];
-        argumentIndices[0] = 0;
-        argumentIndices[1] = 1;
-        argumentIndices[2] = 1;
-        operator.setArgumentIndices(argumentIndices);
-        operator.setIsBindingSupported(false);
         return operator;
     }
 
@@ -803,6 +782,29 @@ public class DerbyPlatform extends DB2Platform {
             }
         };
         ExpressionOperator.in().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Emulate ROUND as FLOOR((:x)*1e:n+0.5)/1e:n
+     */
+    @Override
+    protected ExpressionOperator roundOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.round().copyTo(operator);
+
+        List<String> v = new ArrayList<>(4);
+        v.add("FLOOR((");
+        v.add(")*1e");
+        v.add("+0.5)/1e");
+        v.add("");
+        operator.printsAs(v);
+        int[] argumentIndices = new int[3];
+        argumentIndices[0] = 0;
+        argumentIndices[1] = 1;
+        argumentIndices[2] = 1;
+        operator.setArgumentIndices(argumentIndices);
+        operator.setIsBindingSupported(false);
         return operator;
     }
 

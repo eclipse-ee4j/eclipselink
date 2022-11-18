@@ -591,6 +591,21 @@ public class DB2ZPlatform extends DB2Platform {
         return operator;
     }
 
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The data type, the length, or the value of an argument of a scalar function 
+     * is incorrect. DB2 SQL Error: SQLCODE=-171, SQLSTATE=42815</pre>
+     */
+    @Override
+    protected ExpressionOperator roundOperator() {
+        ExpressionOperator operatorS = super.roundOperator();
+        ExpressionOperator operator = disableAllBindingExpression();
+        operatorS.copyTo(operator);
+        return operator;
+    }
+
     @Override
     public boolean isDB2Z() {
         return true;
