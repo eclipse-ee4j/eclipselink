@@ -193,6 +193,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testTransparentIndirectionValueHolderSessionReset"));
         suite.addTest(new AdvancedJPAJunitTest("testTransparentIndirectionQuerySessionReset"));
         suite.addTest(new AdvancedJPAJunitTest("testHistoryRelationshipQueryInitialization"));
+        suite.addTest(new AdvancedJPAJunitTest("testQueryJoinTablesWithHistory"));
         return suite;
     }
 
@@ -2827,7 +2828,23 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
+    /**
+     * Bug 526836
+     * NPE when joining tables that have a history policy applied.
+     * Internal Exception: java.lang.NullPointerException: Cannot invoke
+     * "org.eclipse.persistence.history.AsOfClause.getValue()" because the return value of
+     * "org.eclipse.persistence.internal.expressions.ObjectExpression.getAsOfClause()" is null
+     */
+    public void testQueryJoinTablesWithHistory() {
+
+        EntityManager em = createEntityManager();
+
+        // Previously would throw a null pointer exception if both tables had a history
+        // policy applied like @Customizer(AdvancedHistoryCustomizer.class)
+        em.createQuery("select d from Door d left join Room r on d.room = r");
+    }
+
     /**
      * Bug 464088
      * Test non-historized Entity eager-referencing a historized Entity's queries function correctly

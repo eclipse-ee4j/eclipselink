@@ -23,6 +23,7 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.QueryHint;
 import jakarta.persistence.Table;
+import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.config.QueryHints;
 
 import java.io.Serializable;
@@ -42,6 +43,7 @@ import java.util.Collection;
                 @QueryHint(name = QueryHints.QUERY_RESULTS_CACHE, value = "true"),
         })
 })
+@Customizer(AdvancedHistoryCustomizer.class)
 public class Room implements Serializable, Cloneable {
     @Id
     private int id;
