@@ -1,0 +1,74 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ELWLS]]
+== Using EclipseLink with WebLogic Server
+
+This chapter describes how to use EclipseLink as the persistence
+provider for applications deployed to Oracle WebLogic Server.
+
+The chapter includes the following sections:
+
+* xref:{relativedir}/tlandwls001.adoc#ELWLS001[Introduction to the Solution]
+* xref:{relativedir}/tlandwls002.adoc#ELWLS002[Implementing the Solution]
+* xref:{relativedir}/tlandwls003.adoc#ELWLS003[Additional Resources]
+
+*Use Case*
+
+WebLogic Server developers, administrators, and user want to take
+advantage of all the persistence and transformation services provided by
+EclipseLink.
+
+*Solution*
+
+While WebLogic Server can use other persistence providers and
+EclipseLink can be used with other application servers, using WebLogic
+Server with EclipseLink provides a number of advantages.
+
+*Components*
+
+* WebLogic Server 12__c__ or later. WebLogic Server includes
+EclipseLink.
+
+NOTE: EclipseLink's core functionality is provided by EclipseLink, the open
+source persistence framework from the Eclipse Foundation. EclipseLink
+implements Jakarta Persistence API (JPA), Java Architecture for XML
+Binding (JAXB), and other standards-based persistence technologies, plus
+extensions to those standards. EclipseLink includes all of EclipseLink,
+plus additional functionality from Oracle.
+
+* A compliant Java Database Connectivity (JDBC) database including
+Oracle Database, Oracle Express, MySQL, and so on.
+* While it is not required, you may want to use a Jakarta EE integrated
+development environment (IDE) for convenience during development.
+
+*Samples*
+
+See the following EclipseLink samples for related information:
+
+* `http://wiki.eclipse.org/EclipseLink/Examples/JPA/WebLogic_Web_Tutorial`
+* `http://wiki.eclipse.org/EclipseLink/Examples/JPA/WLS_AppScoped_DataSource`
+* `http://wiki.eclipse.org/EclipseLink/Examples/Distributed`
+
+//Introduction to the Solution
+include::{rootdir}/tlandwls001.adoc[]
+
+//Implementing the Solution
+include::{rootdir}/tlandwls002.adoc[]
+
+//Additional Resources
+include::{rootdir}/tlandwls003.adoc[]

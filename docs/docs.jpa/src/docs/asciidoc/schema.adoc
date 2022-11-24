@@ -1,0 +1,581 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, schema
+
+== eclipselink-orm.xml Schema Reference
+
+[[TLJPA54097]]
+
+This chapter describes how you can use EclipseLink's native metadata XML
+file, `eclipselink-orm.xml`, to override mappings defined in the JPA
+configuration file (`orm.xml`) and to provide extended ORM features.
+
+NOTE: Using the `eclipselink-orm.xml` mapping file enables many EclipseLink
+advanced features, but it may prevent the persistence unit from being
+portable to other JPA implementations.
+
+The `eclipselink-orm.xml` file defines object-relational mapping
+metadata for EclipseLink. It has the same basic structure as the
+`orm.xml` file, which makes it more intuitive, requires minimum
+configuration, and makes it easy to override.
+
+For more information, see:
+
+* Section 12.2 "XML Overriding Rules" in the JPA Specification
+* `http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Configuration/JPA/orm.xml`
+
+The schema for EclipseLink is `eclipselink_orm_X_X.xsd` where X_X is the
+current EclipseLink version number (such as `2_4` for *2.4*). All
+EclipseLink schemas are available from
+`http://wiki.eclipse.org/EclipseLink/XSDs`.
+
+This chapter includes the following sections:
+
+* link:#BGBBEIEA[Overriding and Merging]
+
+[[BGBBEIEA]][[TLJPA689]]
+
+=== Overriding and Merging
+
+To override the `orm.xml` file's mapping, you must define the
+`META-INF/eclipselink-orm.xml` file in the project. When both `orm.xml`
+and `eclipselink-orm.xml` are specified, the contents of
+`eclipselink-orm.xml` will override `orm.xml` and any other JPA mapping
+file specified in the persistence unit. If there are overlapping
+specifications in multiple ORM files, the files are merged if they are
+no conflicting entities.
+
+NOTE: The order of files defined in `persistence.xml` _does not_ define the
+order of their processing. The files are processed, merged, and
+overridden as determined by the rules.
+
+
+See the following sections for more information:
+
+* link:#BGBJBFDH[Rules for Overriding and Merging]
+* link:#BGBGFDDF[Examples of Overriding and Merging]
+
+[[BGBJBFDH]][[TLJPA690]]
+
+==== Rules for Overriding and Merging
+
+EclipseLink provides specific overriding and merging rules for the
+following elements defined in the `orm.xml` file:
+
+* link:#BGBFCDBF[Persistence Unit Metadata]
+* link:#BGBDIICB[Entity Mappings]
+* link:#BGBIAAAH[Mapped Superclasses]
+* link:#BGBJAIBF[Entity override and merging rules]
+* link:#BGBIJGGA[Embeddable]
+
+[[BGBFCDBF]][[TLJPA691]]
+
+===== Persistence Unit Metadata
+
+In `eclipselink-orm.xml`, a `persistence-unit-metadata` element merges
+or overrides the values of existing `persistence-unit-metadata`
+specification as defined in link:#BGBGIFHH[Table 6-1].
+
+[[TLJPA692]][[sthref1246]][[BGBGIFHH]]
+
+*_Table 6-1 Overriding and Merging Persistence Unit Metadata_*
+
+|=======================================================================
+|*entity-mappings/ persistence-unit-metadata* |*Rule* |*Description*
+|`xml-mapping-metadata- complete` |Full override |If specified, the
+complete set of mapping metadata for the persistence unit is contained
+in the XML mapping files for the persistence unit.
+
+|`persistence-unit-defaults/ schema` |Full override |If a `schema`
+setting exists, then the `eclipselink-orm.xml` `schema` setting
+overrides the existing setting or creates a new `schema` setting.
+
+|`persistence-unit-defaults/ catalog` |Full override |If a `catalog`
+setting exists, then the `eclipselink-orm.xml` `catalog` setting
+overrides the existing setting or creates a new `catalog` setting
+
+|`persistence-unit-defaults/ access` |Full override |If an `access`
+setting exists, then the `eclipselink-orm.xml` `access` setting
+overrides the existing setting, or creates a new `access` setting.
+
+|`entity-mappings/persistence-unit-metadata/persistence-unit-defaults/cascade- persist`
+|Full override |If a `cascade-persist` setting exists, then the
+`eclipselink-orm.xml` `cascade-persist` setting overrides the existing
+setting or creates a new `cascade-persist` setting.
+
+|`entity-mappings/persistence-unit-metadata/persistence-unit-defaults/entity- listeners`
+|Merge |If an `entity-listeners` exists, then the `eclipselink-orm.xml`
+`entity-listeners` will be merged with the list of all
+`entity-listeners` from the persistence unit
+|=======================================================================
+
+
+[[BGBDIICB]][[TLJPA693]]
+
+===== Entity Mappings
+
+Entities, embeddables and mapped superclasses are defined within the
+`entity-mappings` section. The `eclipselink-orm.xml` entities,
+embeddables and mapped superclasses are added to the persistence unit as
+defined in link:#BGBJEBHG[Table 6-2].
+
+[[TLJPA694]][[sthref1247]][[BGBJEBHG]]
+
+*_Table 6-2 Overriding and Merging Entity Mappings_*
+
+|=======================================================================
+|*`entity-mappings/`* |*Rule* |*Description*
+|`package` |None |The `package` element specifies the package of the
+classes listed within the subelements and attributes of the same mapping
+file only. It is only applicable to those entities that are fully
+defined within the `eclipselink-orm.xml` file, else its usage remains
+local and is same as described in the JPA specification.
+
+|`catalog` |None |The `catalog` element applies only to the subelements
+and attributes listed within the `eclipselink-orm.xml` file that are not
+an extension to another mapping file. Otherwise, the use of the catalog
+element within the `eclipselink-orm.xml` file remains local and is same
+as described in the JPA specification.
+
+|`schema` |None |The schema element applies only to the subelements and
+attributes listed within the `eclipselink-orm.xml` file that are not an
+extension to another mapping file. Otherwise, the use of the schema
+element within the `eclipselink-orm.xml` file remains local and is same
+as described in the JPA specification.
+
+|`access` |None |The access element applies only to the subelements and
+attributes listed within the `eclipselink-orm.xml` file that are not an
+extension to another mapping file. Otherwise, the use of the access
+element within the `eclipselink-orm.xml` file remains local and is same
+as described in the JPA specification.
+
+|`sequence-generator` |Full override |A `sequence-generator` is unique
+by name. The sequence-generator defined in the `eclipselink-orm.xml`
+will override a sequence-generator of the same name defined in another
+mapping file. Outside of the overriding case, an exception is thrown if
+two or more `sequence-generators` with the same name are defined in one
+or across multiple mapping files.
+
+|`table-generator` |Full override |A `table-generator` is unique by
+name. The table-generator defined in the `eclipselink-orm.xml` will
+override a table-generator of the same name defined in another mapping
+file. Outside of the overriding case, an exception is thrown if two or
+more `table-generators` with the same name are defined in one or across
+multiple mapping files.
+
+|`named-query` |Full override |A `named-query` is unique by name. The
+named-query defined in the `eclipselink-orm.xml` will override a
+named-query of the same name defined in other mapping files. Outside of
+the overriding case, an exception is thrown if two or more
+`named-querys` with the same name are defined in one or across multiple
+mapping file.
+
+|`named-native-query` |Full override |A `named-native-query` is unique
+by name. The `named-native-query` defined in the `eclipselink-orm.xml`
+will override a `named-native-query` of the same name defined in other
+mapping files. Outside of the overriding case, an exception is thrown if
+two or more `named-native-querys` with the same name are defined in one
+or across multiple mapping files.
+
+|`sql-result-set-mapping` |Full override |A `sql-result-set-mapping` is
+unique by name. The sql-result-set-mapping defined in the
+`eclipselink-orm.xml` will override a `sql-result-set-mapping` of the
+same name defined in other mapping files. Outside of the overriding
+case, an exception is thrown if two or more `sql-result-set-mapping`
+entities with the same name are defined in one or across multiple
+mapping files.
+|=======================================================================
+
+
+[[BGBIAAAH]][[TLJPA695]]
+
+===== Mapped Superclasses
+
+A mapped-superclass can be defined completely, or with specific elements
+to provide extensions to a mapped-superclass from another mapping file.
+link:#BGBBFABH[Table 6-3] lists individual override and merging rules:
+
+[[TLJPA696]][[sthref1248]][[BGBBFABH]]
+
+*_Table 6-3 Overriding and Merging Mapped Superclasses_*
+
+|=======================================================================
+|*`entity-mappings/mapped-superclass`* |*Rule* |*Description*
+|`id-class` |Full override |If an `id-class` exists, then the
+`eclipselink-orm.xml` `id-class` setting overrides the existing setting,
+or creates a new `id-class` setting.
+
+|`exclude-default- listeners` |Full override |If an
+`exclude-default-listeners` exists, then the `eclipselink-orm.xml`
+`exclude-default-listeners` setting will be applied. If the
+`exclude-default-listeners` setting is not specified, it will not
+override an existing setting, that is essentially turning it off.
+
+|`exclude-superclass- listeners` |Full override |If an
+`exclude-superclass-listeners` setting exists, then the
+`eclipselink-orm.xml` `exclude-superclass-listeners` setting will be
+applied. If exclud`e-superclass-listen`ers setting is not specified, it
+will not override an existing setting, that is essentially turning it
+off.
+
+|`entity-listeners` |Merge and full override a|
+If an `entity-listeners` setting exists, then the `eclipselink-orm.xml`
+`entity-listeners` setting will override and merge with an existing
+setting, or creates a new `entity-listeners` setting all together.
+
+*Note:* An entity listener override must be complete. All lifecycle
+methods of that listener must be specified and no merging of individual
+lifecycle methods of an entity listener is allowed. The class name of
+the listener is the key to identify the override.
+
+|`pre-persist` |Full override |If a `pre-persist` setting exists, then
+the `eclipselink-orm.xml` `pre-persist` setting overrides the existing
+setting, or creates a new `pre-persist` setting.
+
+|`post-persist` |Full override |If a `post-persist` setting exists, then
+the `eclipselink-orm.xml` `post-persist` setting overrides the existing
+setting, or creates a new `post-persist` setting.
+
+|`pre-remove` |Full override |If a pre-remove setting exists, then the
+eclipselink-orm.xml's pre-remove setting overrides the existing setting,
+or creates a new pre-remove setting.
+
+|`post-remove` |Full override |If a post-remove setting exists, then the
+eclipselink-orm.xml's post-remove setting overrides the existing
+setting, or creates a new post-remove setting.
+
+|`pre-update` |Full override |If a pre-update setting exists, then the
+eclipselink-orm.xml's pre-update setting overrides the existing setting,
+or creates a new pre-update setting.
+
+|`post-update` |Full override |If a post-update setting exists, then the
+eclipselink-orm.xml's post-update setting overrides the existing
+setting, or creates a new post-update setting.
+
+|`post-load` |Full override |If a post-load setting exists, then the
+eclipselink-orm.xml's post-load setting overrides the existing setting,
+or creates a new post-load setting.
+
+|`attributes` |Merge and mapping level override |If the `attribute`
+settings (such as `id`, `embedded-id`, `basic`, `version`,
+`many-to-one`, `one-to-many`, or `one-to-one`) exist at the mapping
+level, then the `eclipselink-orm.xml` attributes merges or overrides the
+existing settings, else creates new attributes.
+
+|`class` |None |
+
+|`access` |Full override |If an access setting exists, then the
+eclipselink-orm.xml's access setting overrides the existing setting, or
+creates a new access setting. It also overrides the default class
+setting.
+
+|`metadata-complete` |Full override |If a metadata-complete setting
+exists, then the eclipselink-orm.xml's metadata-complete setting will be
+applied. If metadata-complete setting is not specified, it will not
+override an existing setting, that is essentially turning it off.
+|=======================================================================
+
+
+[[BGBJAIBF]][[TLJPA697]]
+
+===== Entity override and merging rules
+
+An entity can be defined completely, or with specific elements to
+provide extensions to an entity from another mapping file. The following
+table lists individual override and merging rules:
+
+[[TLJPA698]][[sthref1249]][[BGBEDIBC]]
+
+*_Table 6-4 Overriding and Merging Entities_*
+
+|=======================================================================
+|*entity-mappings/entity* |*Rule* |*Description*
+|`table` |Full override |The table definition overrides any other table
+setting (with the same name) for this entity. There is no merging of
+individual table values.
+
+|`secondary-table` |Full override |The secondary-table definition
+overrides another secondary-table setting (with the same name) for this
+entity. There is no merging of individual secondary-table(s) values.
+
+|`primary-key-join-column` |Full override |The
+primary-key-join-column(s) definition overrides any other
+primary-key-join-column(s) setting for this entity. There is no merging
+of the primary-key-join-column(s). The specification is assumed to be
+complete and these primary-key-join-columns are the source of truth.
+
+|`id-class` |Full override |If an id-class setting exists, then the
+eclipselink-orm.xml's id-class setting overrides the existing setting,
+or creates a new id-class .
+
+|`inheritance` |Full override |If an inheritance setting exists, then
+the eclipselink-orm.xml's inheritance setting overrides the existing
+setting, or creates a new inheritance setting.
+
+|`discriminator-value` |Full override |If a discriminator-value setting
+exists, then the eclipselink-orm.xml's discriminator-value setting
+overrides the existing setting, or creates a new discriminator-value
+setting.
+
+|`discriminator-column` |Full override |If a discriminator-column
+setting exists, then the eclipselink-orm.xml's discriminator-column
+setting overrides the existing setting, or creates a new
+discriminator-column setting.
+
+|`sequence-generator` |Full override |A sequence-generator is unique by
+name. The sequence-generator defined in eclipselink-orm.xml overrides
+sequence-generator of the same name defined in other mapping files.
+Outside of the overriding case, an exception is thrown if two or more
+sequence-generators with the same name are defined in one or across
+multiple mapping files.
+
+|`table-generator` |Full override |A table-generator is unique by name.
+The table-generator defined in eclipselink-orm.xml overrides
+table-generator of the same name defined in other mapping files. Outside
+of the overriding case, an exception is thrown if two or more
+table-generators with the same name are defined in one or across
+multiple mapping files.
+
+|`named-query` |Merge and full override |A named-query is unique by
+name. The named-query defined in eclipselink-orm.xml overrides any
+named-query of the same name defined in other mapping files. Outside of
+the overriding case, an exception is thrown if two or more `named-query`
+elements with the same name are defined in one or across multiple
+mapping files.
+
+|`named-native-query` |Merge and full override |A named-native-query is
+unique by name. The named-native-query defined in eclipselink-orm.xml
+overrides named-native-query of the same name defined in other mapping
+files. Outside of the overriding case, an exception is thrown if two or
+more named-native-query elements with the same name are defined in one
+or across multiple mapping files.
+
+|`sql-result-set-mapping` |Merge and full override |A
+sql-result-set-mapping is unique by name. sql-result-set-mapping defined
+in eclipselink-orm.xml overrides sql-result-set-mapping of the same name
+defined in other mapping files. Outside of the overriding case, an
+exception is thrown if two or more sql-result-set-mapping elements with
+the same name are defined in one or across multiple mapping files.
+
+|`exclude-default-listeners` |Full override |If an
+exclude-default-listeners setting exists, then the eclipselink-orm.xml's
+exclude-default-listeners setting will be applied. If an
+exclude-default-listeners setting is not specified, it will not override
+an existing setting, that is essentially turning it off.
+
+|`exclude-superclass-listeners` |Full override |If an
+exclude-superclass-listeners setting exists, then the
+eclipselink-orm.xml's exclude-superclass-listeners setting will be
+applied. If an exclude-superclass-listeners setting is not specified, it
+will not override an existing setting, that is essentially turning it
+off.
+
+|`entity-listeners` |Full override a|
+If an entity-listeners setting exists, then the eclipselink-orm.xml's
+entity-listeners setting will override and merge with an existing
+setting, or creates a new entity-listeners setting all together.
+
+*Note*: An entity listener override must be complete. All lifecycle
+methods of that listener must be specified and no merging of individual
+lifecycle methods of an entity listener is allowed. The class name of
+the listener is the key to identify the override.
+
+|`pre-persist` |Full override |If a pre-persist setting exists, then the
+eclipselink-orm.xml's pre-persist setting overrides the existing
+setting, or creates a new pre-persist setting.
+
+|`post-persist` |Full override |If a post-persist setting exists, then
+the eclipselink-orm.xml's post-persist setting overrides the existing
+setting, or creates a new post-persist setting.
+
+|`pre-remove` |Full override |If a pre-remove setting exists, then the
+eclipselink-orm.xml's pre-remove setting overrides the existing setting,
+or creates a new pre-remove setting.
+
+|`post-remove` |Full override |If a post-remove setting exists, then the
+eclipselink-orm.xml's post-remove setting overrides the existing
+setting, or creates a new post-remove setting.
+
+|`pre-update` |Full override |If a pre-update setting exists, then the
+eclipselink-orm.xml's pre-update setting overrides the existing setting,
+or creates a new pre-update setting.
+
+|`post-update` |Full override |f a post-update setting exists, then the
+eclipselink-orm.xml's post-update setting overrides the existing
+setting, or creates a new post-update setting.
+
+|`post-load` |Full override |If a post-load setting exists, then the
+eclipselink-orm.xml's post-load setting overrides the existing setting,
+or creates a new post-load setting.
+
+|`attributes` |Merge and mapping level override |If the attribute
+settings (id, embedded-id, basic, version, many-to-one, one-to-many,
+one-to-one) exist at the mapping level, then the eclipselink-orm.xml's
+attributes merges or overrides the existing settings, else creates new
+attributes.
+
+|`association-override` |Merge and mapping level override |If an
+association-override setting exists, then the eclipselink-orm.xml's
+association-override setting overrides the existing setting, or creates
+a new association-override setting.
+
+|`name` |Full override |If a name setting exists, then the
+eclipselink-orm.xml's name setting overrides the existing setting, or
+creates a new name setting.
+
+|`class` |None |
+
+|`access` |Full override |If an access setting exists, then the
+eclipselink-orm.xml's access setting overrides the existing setting, or
+creates a new access setting. It also overrides the default class
+setting
+
+|`metadata-complete` |Full override |If a metadata-complete setting
+exists, then the eclipselink-orm.xml's metadata-complete setting will be
+applied. If a metadata-complete setting is not specified, it will not
+override an existing setting, that is essentially turning it off.
+|=======================================================================
+
+[[BGBIJGGA]][[TLJPA699]]
+
+===== Embeddable
+
+An embeddable can be defined wholly or may be defined so as to provide
+extensions to an embeddable from another mapping file. Therefore, we
+will allow the merging of that class' metadata. link:#BGBEDIBC[Table
+6-4] lists the individual override rules Embeddable classes.
+
+[[TLJPA700]][[sthref1250]][[sthref1251]]
+
+*_Table 6-5 Overriding and Merging Embeddable Classes_*
+
+|=======================================================================
+|*entity-mappings/ embeddable* |*Rule* |*Description*
+|`attributes` |Override and merge |If the attribute settings (id,
+embedded-id, basic, version, many-to-one, one-to-many, one-to-one,
+many-to-many, embedded, transient) exist at the mapping level, then the
+eclipselink-orm.xml's attributes merges or overrides the existing
+settings, or creates new attributes.
+
+|`class` |None |
+
+|`access` |Full override |If an access setting exists, then the
+eclipselink-orm.xml's access setting overrides the existing setting, or
+creates a new access setting. It also overrides the default class
+setting.
+
+|`metadata-complete` |Full override |If a metadata-complete setting
+exists, then the eclipselink-orm.xml's metadata-complete setting will be
+applied. If a metadata-complete setting is not specified, it will not
+override an existing setting, that is essentially turning it off.
+|=======================================================================
+
+ +
+
+[[BGBGFDDF]][[TLJPA701]]
+
+===== Examples of Overriding and Merging
+
+[[TLJPA702]]
+
+*_Example 6-1 Overriding/Merging Example 1_*
+
+In this example, your EclipseLink project contains:
+
+* `META-INF/orm.xml` – Defines Entity *A* with the mappings *b* and *c*
+* `META-INF/eclipselink-orm.xml` – Defines Entity *A* with the mappings
+*c* and *d*
+
+Results in:
+
+* Entity *A* containing:
+** mapping *b* (from `orm.xml`)
+** mappings *c* and *d* (from `eclipselink-orm.xml`)
+
+[[TLJPA703]]
+
+*_Example 6-2 Overriding/Merging Example 2_*
+
+In this example, your EclipseLink project contains:
+
+* `META-INF/orm.xml` – Defines Entity *A* with mappings *b* and *c*
+* `META-INF/some-other-mapping-file.xml` – Defines Entity *B* with
+mappings *a* and *b*
+* `META-INF/eclipselink-orm.xml` – Defines Entity *A* with the mappings
+*c* and *d*, and Entity *B* with mapping *b* and *c*
+
+Results in:
+
+* Entity A containing:
+** mapping *b* (from `orm.xml`)
+** mappings *c* and *d* (from `eclipselink-orm.xml`)
+* Entity B containing:
+** mapping *a* (from `some-other-mapping-file`)
+** mappings *b* and *c* (from `eclipselink-orm.xml`)
+
+[[TLJPA704]]
+
+*_Example 6-3 Overriding/Merging Example 3_*
+
+In this example, your EclipseLink project contains:
+
+* `META-INF/orm.xml` – Defines Entity *A* with mappings *b* and *c*.
+* `META-INF/eclipselink-orm.xml` – Defines Entity *A* with mappings *c*
+and *d*.
+* `META-INF/some-other-mapping-file.xml` – Defines Entity *A* with
+mapping *x*.
+
+Results in:
+
+* Entity *A* containing:
+** mapping *b* (from `orm.xml`)
+** mappings *c* and *d* (from `eclipselink-orm.xml`)
+** mapping *x* (from `some-other-mapping-file.xml`)
+
+[[TLJPA705]]
+
+*_Example 6-4 Overriding/Merging Example 4_*
+
+In this example, your EclipseLink project contains:
+
+* `META-INF/orm.xml` – Defines Entity *A* with mappings *b* and *c*.
+* `META-INF/extensions/eclipselink-orm.xml` – Defines defines Entity *A*
+with mappings *c* and *d*.
++
+Note: The file is added through a `<mapping-file>` tag in the
+`persistence.xml` file.
+
+Results in an exception, due to conflicting specifications for mapping
+*c*.
+
+[[TLJPA706]]
+
+*_Example 6-5 Overriding/Merging Example 5_*
+
+In this example, your EclipseLink project contains:
+
+* `META-INF/orm.xml` – Defines Entity *A* with mappings *b* and *c*
+* `META-INF/jpa-mapping-file.xml` – Defines Entity *A* with mappings *a*
+and *d*
+* `META-INF/extensions/eclipse-mapping-file.xml` – Defines defines
+Entity *A* with mappings *c* and *d*
+
+Results in an exception, due to conflicting specifications for mapping
+*c* or *d* (which ever is processed first).

@@ -1,0 +1,73 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+= Developing JAXB Applications Using EclipseLink MOXy
+:nofooter:
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, moxy
+:commondir: ../../../../common
+include::{commondir}/attributes.adoc[]
+
+//Title and Copyright Information
+include::{rootdir}/title_eclipselink.adoc[]
+
+//Preface
+[preface]
+include::{rootdir}/preface.adoc[]
+
+//List of Examples
+:sectnums!:
+include::{rootdir}/loe.adoc[]
+
+//List of Figures
+:sectnums!:
+include::{rootdir}/lof.adoc[]
+
+//Overview of EclipseLink
+:sectnums:
+:sectnumlevels: 1
+include::{rootdir}/overview.adoc[]
+
+//EclipseLink MOXy Runtime
+include::{rootdir}/runtime.adoc[]
+
+//Mapping Type Levels
+include::{rootdir}/type_level.adoc[]
+
+//Mapping Simple Values
+include::{rootdir}/simple_values.adoc[]
+
+//Mapping Special Schema Types
+include::{rootdir}/special_schema_types.adoc[]
+
+//Privately Owned Relationships
+include::{rootdir}/privately_owned_relations.adoc[]
+
+//Mapping Shared Reference Relationships
+include::{rootdir}/shared_reference_relations.adoc[]
+
+//Advanced Concepts
+include::{rootdir}/advanced_concepts.adoc[]
+
+//Using Dynamic JAXB
+include::{rootdir}/dynamic_jaxb.adoc[]
+
+//Using JSON Documents
+include::{rootdir}/json.adoc[]
+
+include::{commondir}/copyright.adoc[]

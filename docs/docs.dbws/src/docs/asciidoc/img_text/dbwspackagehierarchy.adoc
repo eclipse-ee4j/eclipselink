@@ -1,0 +1,6 @@
+:nofooter:
+This figure shows the concrete implementations of the `DBWSPackager`
+interface. Both the `JavasePackager` and `WebServicePackager` (which is
+an implementation of the `WebLogicPackager` and `JDevPackger`) implement
+the ProviderPackager which, in turn, implements the XRPackager, which
+implements the `DBWSPackgter` interface.

@@ -1,0 +1,34 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ORACLEDB003]]
+=== Additional Resources
+
+See the following links for additional resources about the solutions
+discussed in this chapter.
+
+* _Java API Reference for EclipseLink_
+* _Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_
+* _Oracle Database JDBC Java API Reference_
+* _Oracle Database PL/SQL Language Reference_
+* _Oracle Database Security Guide_
+* _Oracle Label Security Administrator's Guide_
+* _Oracle Fusion Middleware Configuring and Managing JDBC Data Sources
+for Oracle WebLogic Server_
+* _Oracle Real Application Clusters Administration and Deployment Guide_
+* _Oracle Universal Connection Pool for JDBC Developer's Guide_
+* _Oracle Spatial and Graph Developer's Guide_

@@ -1,0 +1,46 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MIGRATEHIBERNATE001]]
+=== Introduction to the Solution
+
+Hibernate is an object-relational mapping (ORM) tool for Java
+environments. It provides a framework for mapping Java objects to
+relational database artifacts, and Java data types to SQL data types. It
+also provides the ability to query the database and retrieve data.
+
+For more information about Hibernate, see `http://www.hibernate.org`.
+
+*Reasons to Migrate*
+
+Reasons why you would want to migrate from Hibernate to EclipseLink
+include:
+
+* *Performance and scalability*: EclipseLink's caching architecture
+allows you to minimize object creation and share instances.
+EclipseLink's caching supports single-node and clustered deployments.
+* *Support for leading relation databases*: EclipseLink continues to
+support all leading relational databases with extensions specific to
+each. EclipseLink is also the best ORM solution for Oracle Database.
+* *A comprehensive persistence solution*: While EclipseLink offers
+industry leading object-relational support, EclipseLink also uses its
+core mapping functionality to deliver Object-XML (JAXB), Service Data
+Object (SDO), and Database Web Services (DBWS). Depending on your
+requirements, you can use one or more of the persistence services based
+on the same core persistence engine.
+* *JPA Support*: EclipseLink is the JPA reference implementation, and it
+will support future versions of JPA.

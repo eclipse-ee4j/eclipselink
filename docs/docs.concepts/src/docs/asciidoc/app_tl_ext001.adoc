@@ -1,0 +1,209 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[APP_TL_EXT001]]
+=== Database Support
+
+EclipseLink supports any relational database that is compliant with SQL
+and has a compliant JDBC driver. EclipseLink has extended support for
+several database platforms. The extended support mainly consists of
+providing native sequencing support, schema creation, and certain
+database functions.
+
+The databases in link:#BABBCIGC[Table A-1] are supported. The Java
+classes are in the `org.eclipse.persistence.platform.database` package
+and are described in _Java API Reference for EclipseLink_.
+
+[[OTLCG94455]][[sthref70]][[BABBCIGC]]
+
+*_Table A-1 Supported Database Platforms_*
+
+|=======================================================================
+|*Database* |*Java Class* |*Features*
+|Apache Derby |`org.eclipse.persistence.platform.database.DerbyPlatform`
+|Provides Derby-specific behavior.
+
+|Attunity |`org.eclipse.persistence.platform.database.AttunityPlatform`
+|Platform class that works with Attunity's Connect JDBC driver.
+
+|dBASE |`org.eclipse.persistence.platform.database.DBasePlatform` `` a|
+Provides dBASE-specific behavior, including:
+
+* Writes `Time` and `Timestamp` as strings (dBASE does not support
+`Time`s or `Timestamp`s)
+
+|Firebird |`org.eclipse.persistence.platform.database.FirebirdPlatform`
+|Provides Firebird-specific behavior.
+
+|H2 |`org.eclipse.persistence.platform.database.H2Platform` |Provides
+H2-specific behavior.
+
+|HyperSQL DataBase (HSQL)
+|`org.eclipse.persistence.platform.database.HSQLPlatform` a|
+Provides HSQL-specific behavior. Supports HSQL functionality as of
+1.8.1. Features include:
+
+* DDL creation
+* `IDENTITY` sequencing
+* `SEQUENCE` objects
+* Functions
+* Pagination
+
+|IBM Cloudscape
+|`org.eclipse.persistence.platform.database.CloudscapePlatform`
+|Provides CloudScape DBMS-specific behavior.
+
+|IBM DB2 Mainframe
+|`org.eclipse.persistence.platform.database.DB2MainframePlatform` a|
+Provides DB2 Mainframe-specific behavior. This provides for some
+additional compatibility in certain DB2 versions on OS390. Features
+include:
+
+* Specialized `CONCAT` syntax
+
+|IBM DB2 |`org.eclipse.persistence.platform.database.DB2Platform` a|
+Provides DB2-specific behavior, including:
+
+* Schema creation
+* Native SQL for `byte[]`, `Date`, `Time`, and `Timestamp`
+* Table qualified names.
+* Stored procedures
+* Temporary tables
+* Casting
+* Database functions
+* Identity sequencing
+* `SEQUENCE` sequencing
+
+|IBM Informix
+|`org.eclipse.persistence.platform.database.InformixPlatform` a|
+Provides Informix-specific behavior, including:
+
+* Types for schema creation.
+* Native sequencing using `@SERIAL`.
+
+|Microsoft Access
+|`org.eclipse.persistence.platform.database.AccessPlatformPlatform`
+|Provides Microsoft Access-specific behavior.
+
+|Microsoft SQLServer
+|`org.eclipse.persistence.platform.database.SQLServerPlatform` a|
+Provides Microsoft SQL Server-specific behavior, including:
+
+* Native SQL for `byte[]`, `Date`, `Time`, and `Timestamp`.
+* Native sequencing using `@IDENTITY`.
+
+|MySQL |`org.eclipse.persistence.platform.database.MySQLPlatform` a|
+Provides MySQL-specific behavior, including:
+
+* Native SQL for `Date`, `Time`, and `Timestamp`
+* Native sequencing
+* Mapping of class types to database types for the schema framework
+* Pessimistic locking
+* Platform specific operators
+
+|Oracle |`org.eclipse.persistence.platform.database.OraclePlatform` a|
+Provides Oracle Database-specific behavior, including:
+
+* `LOB`
+* `NChar`
+* `XMLType`
+* `TIMESTAMP` (`TZ`, `LTZ`)
+* Native batch writing
+* Structured object-relational data-types
+* PLSQL datatypes and stored procedures
+* VPD, RAC, proxy authentication
+* XDK XML parser
+* Hierarchical selects (Select by prior)
+* Returning clause
+* Flashback history and queries
+* Stored procedures, output parameters and output cursors
+* Stored functions
+* Oracle AQ
+
+|Oracle JavaDB
+|`org.eclipse.persistence.platform.database.JavaDBPlatform` |Allows the
+use of `JavaDBPlatform` as a synonym for `DerbyPlatform`.
+
+|Oracle TimesTen
+|`org.eclipse.persistence.platform.database.TimesTenPlatform` |Provides
+Oracle TimesTen database-specific behavior.
+
+|Oracle TimesTen7
+|`org.eclipse.persistence.platform.database.TimesTen7Platform` |Provides
+Oracle TimesTen 7 database-specific behavior.
+
+|PervasivePlatform
+|`org.eclipse.persistence.platform.database.PervasivePlatform` |Provides
+Pervasive PSQL-specific behavior.
+
+|PointBase
+|`org.eclipse.persistence.platform.database.PointBasePlatform` |Provides
+PointBase database-specific behavior.
+
+|PostgreSQL
+|`org.eclipse.persistence.platform.database.PostgreSQLPlatform` a|
+Provides PostgreSQL database-specific behavior, including:
+
+* Native SQL for `Date`, `Time`, and `Timestamp`
+* Native sequencing
+* Mapping of class types to database types for the schema framework
+* Pessimistic locking
+* Platform specific operators
+* `LIMIT`/`OFFSET` query syntax for select statements
+
+See also PostgreSQL:
+`http://wiki.eclipse.org/EclipseLink/FAQ/JPA/PostgreSQL`
+
+|SAP MaxDB |`org.eclipse.persistence.platform.database.MaxDBPlatform`
+|Provides MaxDB database-specific behavior.
+
+|SAP SyBase SQLAnywhere
+|`org.eclipse.persistence.platform.database.SQLAnywherePlatform`
+|Provides SQL Anywhere-specific behavior.
+
+|Sybase |`org.eclipse.persistence.platform.database.SybasePlatform` a|
+Provides Sybase-specific behavior, including:
+
+* Native SQL for `byte[]`, `Date`, `Time`, and `Timestamp`
+* Native sequencing using `@IDENTITY`
+
+|Fujitsu Symfoware
+|`org.eclipse.persistence.platform.database.SymfowarePlatform` a|
+Provides Symfoware-specific behavior, including:
+
+* DDL Generation
+* Outer Join
+* Subquery (with limitations)
+* Stored Procedure Calls
+* Stored Procedure Generation
+* Native Sequences/Identifier fields
+* JPA Bulk Update/Delete (with limitations)
+* Batch Reading
+* Batch Writing
+* Pessimistic Locking (with limitations)
+* First Result/Limit (with limitations)
+* Expression Framework (with limitations)
+* Delimiters
+* Auto Detection
+
+|=======================================================================
+
+It also possible to extend EclipseLink to add extended support for
+additional platforms. There are also several user-contributed platforms
+in the EclipseLink incubator project. See Platform Incubator:
+
+`http://wiki.eclipse.org/EclipseLink/Development/Incubator/Platform`

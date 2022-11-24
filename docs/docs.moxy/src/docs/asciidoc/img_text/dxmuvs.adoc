@@ -1,0 +1,5 @@
+:nofooter:
+This figure illustrates a Java class mapped to a union field in a
+corresponding XML document. The *Customer* class contains the attribute
+*shoeSize* with a value of *M*. The *shoeSize* attribute maps to the
+`<shoe-size>` element in the XML document.

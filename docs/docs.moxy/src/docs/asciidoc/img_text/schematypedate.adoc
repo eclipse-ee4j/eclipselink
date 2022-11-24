@@ -1,0 +1,5 @@
+:nofooter:
+This figure illustrates an XML direct mapping to a specific schema Type
+in a corresponding XML document. The *Customer* class contains the
+attribute *hireDate*. The *hireDate* attribute is mapped to the
+`<hire-date>` element in the XML document.

@@ -1,0 +1,367 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[APPDEV001]]
+=== About the Persistence Unit
+
+A persistence unit defines the details that are required when you
+acquire an entity manager. To package your EclipseLink JPA application,
+you must configure the persistence unit during the creation of the
+`persistence.xml` file. Define each persistence unit in a
+`persistence-unit` element in the `persistence.xml` file.
+
+Use the `persistence.xml` file to package your entities. Once you choose
+a packaging strategy, place the `persistence.xml` file in the `META-INF`
+directory of the archive of your choice. The following sections provide
+more detail on how to specify the persistence unit. For more information
+and examples, see "persistence.xml file" in the
+http://jcp.org/en/jsr/detail?id=338[JPA Specification]. For information
+on EclipseLink extensions to the `persistence.xml` file, see
+"Persistence Property Extensions Reference" in _Jakarta Persistence API
+(JPA) Extensions Reference for EclipseLink_.
+
+* link:#BGBCGCBI[About the Persistence Unit Name]
+* link:#BGBJGFGJ[About the Transaction Type Data Source]
+* link:#BGBEGAEA[About Mapping Files]
+* link:#BGBHFFAG[About Managed Classes]
+* link:#BGBBEFAC[About Vendor Properties]
+* link:#BGBDCBJJ[About the Deployment Classpath]
+* link:#BGBJGHBG[About Persistence Unit Packaging Options]
+* link:#BGBCJBGD[About the Persistence Unit Scope]
+* link:#CHDBJIEH[About Composite Persistence Units]
+
+[[BGBCGCBI]][[OTLCG94291]]
+
+==== About the Persistence Unit Name
+
+If you are developing your application in a Jakarta EE environment,
+ensure that the persistence unit name is unique within each module. For
+example, you can define only one persistence unit with the name
+`EmployeeService` in an `emp_ejb.jar` file.
+
+For more information, see http://jcp.org/en/jsr/detail?id=338["name" in
+the JPA Specification].
+
+[[sthref23]]
+
+==== About the Persistence Provider
+
+The persistence provider defines the implementation of JPA. It is
+defined in the `provider` element of the `persistence.xml` file.
+Persistence providers are vendor-specific. The persistence provider for
+EclipseLink is `org.eclipse.persistence.jpa.PersistenceProvider`.
+
+[[BGBJGFGJ]][[OTLCG94292]]
+
+==== About the Transaction Type Data Source
+
+If you are developing your application in a Jakarta EE environment, use
+the default transaction type: `JTA` (for Java Transaction API) and
+specify the data source in a `jta-data-source` element.
+
+If you are using a data source that does not conform to the JTA, then
+set the `transaction-type` element to `RESOURCE_LOCAL` and specify a
+value for the `non-jta-data-source` element.
+
+If you are using the default persistence provider,
+`org.eclipse.persistence.jpa.PersistenceProvider`, then the provider
+attempts to automatically detect the database type based on the
+connection metadata. This database type is used to issue SQL statements
+specific to the detected database type. You can specify the optional
+`eclipselink.target-database` property to guarantee that the database
+type is correct.
+
+For more information, see
+http://jcp.org/en/jsr/detail?id=338["transaction-type"] and
+http://jcp.org/en/jsr/detail?id=338["provider" in the JPA
+Specification].
+
+[[sthref24]]
+
+==== About Logging
+
+EclipseLink provides a logging utility even though logging is not part
+of the JPA specification. Hence, the information provided by the log is
+EclipseLink JPA-specific. With EclipseLink, you can enable logging to
+view the following information:
+
+* Configuration details
+* Information to facilitate debugging
+* The SQL that is being sent to the database
+
+You can specify logging in the `persistence.xml` file. EclipseLink
+logging properties let you specify the level of logging and whether the
+log output goes to a file or standard output. Because the logging
+utility is based on `java.util.logging`, you can specify a logging level
+to use.
+
+The logging utility provides nine levels of logging control over the
+amount and detail of the log output. Use `eclipselink.logging.level` to
+set the logging level, for example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.logging.level" value="FINE"/>
+----
+
+By default, the log output goes to `System.out` or to the console. To
+configure the output to be logged to a file, set the property
+`eclipselink.logging.file`, for example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.logging.file" value="output.log"/>
+----
+
+EclipseLink's logging utility is pluggable, and several different
+logging integrations are supported, including `java.util.logging`. To
+enable `java.util.logging`, set the property
+`eclipselink.logging.logger`, for example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.logging.logger" value="JavaLogger"/>
+----
+
+For more information about EclipseLink logging and the levels of logging
+available in the logging utility, see "Persistence Property Extensions
+Reference" in _Jakarta Persistence API (JPA) Extensions Reference for
+EclipseLink_.
+
+[[BGBBEFAC]][[OTLCG94295]]
+
+==== About Vendor Properties
+
+The last section in the `persistence.xml` file is the `properties`
+section. The `properties` element gives you the chance to supply
+EclipseLink persistence provider-specific settings for the persistence
+unit. See http://jcp.org/en/jsr/detail?id=338["properties" in the JPA
+Specification]. see also "Persistence Property Extensions Reference" in
+_Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+[[BGBEGAEA]][[OTLCG94293]]
+
+==== About Mapping Files
+
+Apply the metadata to the persistence unit. This metadata is a union of
+all the mapping files and the annotations (if there is no
+`xml-mapping-metadata-complete` element). If you use one mapping
+`orm.xml` file for your metadata, and place this file in a `META-INF`
+directory on the classpath, then you do not need to explicitly list it.
+The EclipseLink persistence provider will automatically search for this
+file and use it. If you named your mapping files differently or placed
+them in a different location, then you must list them in the
+mapping-file elements in the `persistence.xml` file.
+
+For more information, see
+http://jcp.org/en/jsr/detail?id=338["mapping-file, jar-file, class,
+exclude-unlisted-classes" in the JPA Specification].
+
+[[BGBHFFAG]][[OTLCG94294]]
+
+==== About Managed Classes
+
+Typically, you put all of the entities and other managed classes in a
+single JAR file, along with the `persistence.xml` file in the `META-INF`
+directory, and one or more mapping files (when you store metadata in
+XML).
+
+At the time the EclipseLink persistence provider processes the
+persistence unit, it determines which set of entities, mapped
+superclasses, embedded objects, and converters each particular
+persistence unit will manage.
+
+At deployment time, the EclipseLink persistence provider may obtain
+managed classes from any of the following sources. A managed class will
+be included if it is one of the following:
+
+* Local classes: the classes annotated with `@Entity`,
+`@MappedSuperclass`, `@Embeddable`, or `@Converter` in the deployment
+unit in which its `persistence.xml` file was packaged. For more
+information, see http://jcp.org/en/jsr/detail?id=338["Entity" in the JPA
+Specification].
+
+NOTE: If you are deploying your application in the Jakarta EE environment, the
+application server itself, not the EclipseLink persistence provider,
+will discover local classes. In the Java SE environment, you can use the
+`exclude-unlisted-classes` element to `false` to enable this
+functionality—EclipseLink persistence provider will attempt to find
+local classes if you set this element to false. See
+http://jcp.org/en/jsr/detail?id=338["mapping-file, jar-file, class,
+exclude-unlisted-classes" in the JPA Specification].
+
+* Classes in mapping files: the classes that have mapping entries, such
+as entity (see http://jcp.org/en/jsr/detail?id=338["entity" in the JPA
+Specification]), mapped-superclass or embeddable, in an XML mapping
+file. For more information, see
+http://jcp.org/en/jsr/detail?id=338["mapped-superclass"] and
+http://jcp.org/en/jsr/detail?id=338["embeddable" in the JPA
+Specification].
++
+If these classes are in the deployed component archive, then they will
+already be on the classpath. If they are not, you must explicitly
+include them in the classpath.
+* Explicitly listed classes: the classes that are listed as class
+elements in the `persistence.xml` file.
+Consider listing classes explicitly if one of the following applies:
+** there are additional classes that are not local to the deployment
+unit JAR. For example, there is an embedded object class in a different
+JAR that you want to use in an entity in your persistence unit. You
+would list the fully qualified class in the class element in the
+`persitence.xml` file. You would also need to ensure that the JAR or
+directory that contains the class is on the classpath of the deployed
+component (by adding it to the manifest classpath of the deployment JAR,
+for example);
+** you want to exclude one or more classes that may be annotated as an
+entity. Even though the class may be annotated with the `@Entity`
+annotation, you do not want it treated as an entity in this particular
+deployed context. For example, you may want to use this entity as a
+transfer object and it needs to be part of the deployment unit. In this
+case, in the Jakarta EE environment, you have to use the
+`exclude-unlisted-classes` element of the `persistence.xml` file—the use
+of the default setting of this element prevents local classes from being
+added to the persistence unit. For more information, see "mapping-file,
+jar-file, class, exclude-unlisted-classes" of the
+http://jcp.org/en/jsr/detail?id=338[JPA Specification].
+** you plan to run your application in the Java SE environment, and you
+list your classes explicitly because that is the only portable way to do
+so in Java SE.
+* Additional JAR files of managed classes: the annotated classes in a
+named JAR file listed in a `jar-file` element in the `persistence.xml`
+file. For more information, see
+http://jcp.org/en/jsr/detail?id=338["mapping-file, jar-file, class,
+exclude-unlisted-classes" in the JPA Specification].
++
+You have to ensure that any JAR file listed in the `jar-file` element is
+on the classpath of the deployment unit. Do so by manually adding the
+JAR file to the manifest classpath of the deployment unit.
++
+Note that you must list the JAR file in the `jar-file` element relative
+to the parent of the JAR file in which the `persistence.xml` file is
+located. This matches what you would put in the classpath entry in the
+manifest file.
+
+[[BGBDCBJJ]][[OTLCG94296]]
+
+==== About the Deployment Classpath
+
+To be accessible to the EJB JAR, WAR, or EAR file, a class or a JAR file
+must be on the deployment classpath. You can achieve this in one of the
+following ways:
+
+* Put the JAR file in the manifest classpath of the EJB JAR or WAR file.
++
+To do this, add a classpath entry to the `META-INF/MANIFEST.MF` file in
+the JAR or WAR file. You can specify one or more directories or JAR
+files, separating them by spaces.
+* Place the JAR file in the library directory of the EAR file.
++
+This will make the JAR file available on the application classpath and
+accessible by all of the modules deployed within the EAR file. By
+default, this would be the `lib` directory of the EAR file, although you
+may configure it to be any directory in the EAR file using the
+`library-directory` element in the `application.xml` deployment
+descriptor.
+
+[[BGBJGHBG]][[OTLCG94297]]
+
+==== About Persistence Unit Packaging Options
+
+Jakarta EE allows for persistence support in a variety of packaging
+configurations. You can deploy your application to the following module
+types:
+
+* EJB modules: you can package your entities in an EJB JAR. When
+defining a persistence unit in an EJB JAR, the `persistence.xml` file is
+not optional–you must create and place it in the `META-INF` directory of
+the JAR alongside the deployment descriptor, if it exists.
+* Web modules: you can use a WAR file to package your entities. In this
+case, place the `persistence.xml` file in the `WEB-INF/classes/META-INF`
+directory. Since the `WEB-INF/classes` directory is automatically on the
+classpath of the WAR, specify the mapping file relative to that
+directory.
+* Persistence archives: a persistence archive is a JAR that contains a
+`persistence.xml` file in its `META-INF` directory and the managed
+classes for the persistence unit defined by the `persistence.xml` file.
+Use a persistence archive if you want to allow multiple components in
+different Jakarta EE modules to share or access a persistence unit.
++
+Once you create a persistence archive, you can place it in either the
+root or the application library directory of the EAR. Alternatively, you
+can place the persistence archive in the `WEB-INF/lib` directory of a
+WAR. This will make the persistence unit accessible only to the classes
+inside the WAR, but it enables the decoupling of the definition of the
+persistence unit from the web archive itself.
+
+For more information, see
+http://jcp.org/en/jsr/detail?id=338["Persistence Unit Packaging" in the
+JPA Specification].
+
+[[BGBCJBGD]][[OTLCG94298]]
+
+==== About the Persistence Unit Scope
+
+You can define any number of persistence units in single
+`persistence.xml` file. The following are the rules for using defined
+and packaged persistence units:
+
+* Persistence units are accessible only within the scope of their
+definition.
+* Persistence units names must be unique within their scope.
+
+For more information, see
+http://jcp.org/en/jsr/detail?id=338["Persistence Unit Scope" in the JPA
+Specification].
+
+[[CHDBJIEH]]
+
+==== About Composite Persistence Units
+
+You can expose multiple persistence units (each with unique sets of
+entity types) as a single persistence context by using a composite
+persistence unit. Individual persistence units that are part of this
+composite persistence unit are called composite member persistence
+units.
+
+With a composite persistence unit, you can:
+
+* Map relationships among any of the entities in multiple persistence
+units
+* Access entities stored in multiple databases and different data
+sources
+* Easily perform queries and transactions across the complete set of
+entities
+
+link:#BABFADBE[Figure 3-1] illustrates a simple composite persistence
+unit. EclipseLink processes the `persistence.xml` file and detects the
+composite persistence unit, which contains two composite member
+persistence units:
+
+* Class *A* is mapped by a persistence unit named *memberPu1* located in
+the `member1.jar` file.
+* Class *B* is mapped by a persistence unit named *memberPu2* located in
+the `member2.jar` file.
+
+[[BABFADBE]]
+
+*_Figure 3-1 A Simple Composite Persistence Unit_*
+
+image:{imagesrelativedir}/composite_persistence_units.png[Description of Figure 3-1 follows,title="Description of Figure 3-1 follows"] +
+xref:{imagestextrelativedir}/composite_persistence_units.adoc[Description of "Figure 3-1 A Simple Composite Persistence Unit"]
+
+For more information, see "Using Multiple Databases with a Composite
+Persistence Unit" in _Solutions Guide for EclipseLink_.

@@ -1,0 +1,66 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ELWLS001]]
+=== Introduction to the Solution
+
+WebLogic Server is a scalable, enterprise-ready Java Platform,
+Enterprise Edition (Jakarta EE platform) application server. WebLogic
+Server's complete implementation of the Jakarta EE 6 specification
+provides a standard set of APIs for creating distributed Java
+applications that can access a wide variety of services, such as
+databases, messaging services, and connections to external enterprise
+systems. In addition to the Jakarta EE implementation, WebLogic Server
+enables enterprises to deploy critical applications in a robust, secure,
+highly available, and scalable environment. These features allow
+enterprises to configure clusters of WebLogic Server instances to
+distribute load, and provide extra capacity in case of hardware or other
+failures. For more details about these and other WebLogic Server
+features, see _Introduction to WebLogic Server_.
+
+EclipseLink provides APIs and a run-time environment for implementing
+the persistence layer of Jakarta EE applications (as well as Java SE
+applications).
+
+==== Advantages to Using EclipseLink with WebLogic Server
+
+While WebLogic Server can use other persistence providers and
+EclipseLink can be used with other application servers, using WebLogic
+Server with EclipseLink provides a number of advantages:
+
+* EclipseLink is the default persistence provider for WebLogic Server
+domains, with support for JPA 2.1.
+* The EclipseLink implementation of Java Architecture for XML Binding
+(JAXB) is the default JAXB implementation in WebLogic Server.
+EclipseLink fully implements JAXB and also includes other advanced
+features. By default, you can take advantage of EclipseLink JAXB in Java
+API for XML Web Services (JAX-WS) and Java API for RESTful Web Services
+(JAX-RS) applications.
+* EclipseLink logging integration in WebLogic Server provides a
+comprehensive, integrated logging infrastructure. See
+xref:{relativedir}/tlandwls002.adoc#BABIIEHD[Task 4: Use or Reconfigure the Logging
+Integration.]
+
+>
+
+This graphic shows how WebLogic Server, EclipseLink, Coherence and
+TopLink Grid are related to each other and to the data source(s). A box
+representing WebLogic Suite contains Coherence and a box containing
+WebLogic Server, which contains EclipseLink, which contains TopLink Grid
+and EclipseLink. Above this box is a box containing JDeveloper, which
+points to EclipseLink and EclipseLink. Below the box is the Oracle
+Database, which points to EclipseLink and WebLogic Server.

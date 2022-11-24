@@ -1,0 +1,71 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSOVERVIEW004]]
+=== Using the DBWS Design Time Component
+
+You can use the EclipseLink DBWS design-time utility `DBWSBuilder` to
+create deployment files. `DBWSBuilder` is a Java application that
+processes the operations described in an EclipseLink DBWS builder XML
+file to produce all the required deployment artifacts.
+
+Be sure to set the following environment variables in the
+`<ECLIPSELINK_HOME>\utils\dbws\setenv.cmd` (or `setenv.sh file`) before
+invoking DBWSBuilder:
+
+* `JAVA_HOME`
+* `DRIVER_CLASSPATH`
+
+There are script files provided for invoking `DBWSBuilder`. They are
+located in the `<ECLIPSELINK_HOME>\utils\dbws` directory. The scripts
+are `dbwsbuilder.cmd` for Windows usage, and `dbwsbuilder.sh` for other
+operating systems.
+
+[[sthref30]]
+
+*_Example 1-12 DBWSBuilder usage_*
+
+[source,oac_no_warn]
+----
+prompt > dbwsbuilder.cmd -builderFile {path_to_dbws_builder.xml} -stageDir  {path_to_stageDir}
+-packageAs[:archive_flag - archive, noArchive, ignore] {packager} [additional args]
+Available packagers:
+    -packageAs:[default=not supported] jdev
+    -packageAs:[default=archive] javase [jarFilename]
+    -packageAs:[default=archive] wls [warFilename]
+    -packageAs:[default=archive] glassfish [warFilename]
+    -packageAs:[default=archive] jboss [warFilename]
+    -packageAs:[default=archive] war [warFilename]
+    -packageAs:[default=archive] was [warFilename]
+    -packageAs:[default=not supported] eclipse
+ 
+----
+
+Using `DBWSBuilder`, you can generate an EclipseLink DBWS service from
+the following sources:
+
+* an existing relational database table. See
+xref:{relativedir}/overview003.adoc#BABCIEID["Creating an EclipseLink DBWS Service from
+a Database Table"].
+* one or more SQL SELECT statements. See
+xref:{relativedir}/overview003.adoc#BABEFADD["Creating an EclipseLink DBWS Service from
+a SQL Statement"].
+* a stored procedure. See xref:{relativedir}/overview003.adoc#BABJIGIC["Creating an
+EclipseLink DBWS Service from a Stored Procedure"].
+* a stored function . See
+xref:{relativedir}/creating_dbws_services006.adoc#DBWSCREATE006["Creating from a Stored
+Function"].

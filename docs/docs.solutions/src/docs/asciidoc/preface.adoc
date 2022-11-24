@@ -1,0 +1,103 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+== Preface
+
+EclipseLink delivers a standards-based enterprise Java solution for all
+of your relational, XML, and JSON persistence requirements, based on
+high performance and scalability, developer productivity, and
+flexibility in architecture and design.
+
+[[TLADG102]][[sthref2]]
+
+=== Audience
+
+A variety of engineers use EclipseLink. Users of EclipseLink are
+expected to be proficient in the use of technologies and services
+related to EclipseLink (for example, Jakarta Persistence API). This
+guide does not include details about related common tasks, but focuses
+on EclipseLink functionality.
+
+Users of this guide include:
+
+* Developers who want to develop applications using any of the following
+technologies for persistence services:
+** Jakarta Persistence API (JPA) 2._n_ plus EclipseLink JPA extensions
+** Java Architecture for XML Binding 2._n_ (JAXB) plus EclipseLink
+Object-XML extensions
+** EclipseLink Database Web Services (DBWS)
++
+Developers should be familiar with the concepts and programming
+practices of Java Platform, Standard Edition (Java SE platform), and
+Java Platform, Enterprise Edition (Jakarta EE platform).
++
+Developers using EclipseLink JPA should be familiar with the concepts
+and programming practices of JPA 2.2, as specified in the Java
+Persistence Architecture 2.2 specification at
+`http://jcp.org/en/jsr/detail?id=338`.
++
+Developers using EclipseLink Object-XML should be familiar with the
+concepts and programming practices of JAXB 2.0, as specified in the Java
+Architecture for XML Binding 2.0 specification at
+`http://jcp.org/aboutJava/communityprocess/pfd/jsr222/index.html`.
++
+Developers using EclipseLink DBWS should be familiar with the concepts
+and programming practices of JAX-WS 2.0, as specified in the Java API
+for XML-Based Web Services 2.0 specification at
+`http://jcp.org/aboutJava/communityprocess/pfd/jsr222/index.html`.
+* Administrators and deployers who want to deploy and manage
+applications using EclipseLink persistence technologies. These users
+should be familiar with basic operations of the chosen application
+server.
+
+[[TLADG105]][[sthref3]]
+
+=== Related Documents
+
+For more information, see the following documents:
+
+* _EclipseLink Concepts_
+* _Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_
+* _Developing Persistence Architectures Using EclipseLink Database Web
+Services Developer's Guide_
+* _Developing JAXB Applications Using EclipseLink MOXy_
+* _Java API Reference for EclipseLink_
+* EclipseLink Documentation Center at
+`http://www.eclipse.org/eclipselink/documentation/`
+
+[[TLADG106]][[sthref4]]
+
+=== Conventions
+
+The following text conventions are used in this guide:
+
+|===
+|*Convention* |*Meaning*
+|*boldface* |Boldface type indicates graphical user interface elements
+associated with an action, or terms defined in text or the glossary.
+
+|_italic_ |Italic type indicates book titles, emphasis, or placeholder
+variables for which you supply particular values.
+
+|`monospace` |Monospace type indicates commands within a paragraph,
+URLs, code in examples, text that appears on the screen, or text that
+you enter.
+
+|*`bold monospace`* |Bold monospace type is used in code examples to
+emphasize certain items.
+|===

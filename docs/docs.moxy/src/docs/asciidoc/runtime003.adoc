@@ -1,0 +1,527 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RUNTIME003]]
+=== Using XML Bindings
+
+In addition to standard JAXB annotations, EclipseLink offers another way
+of expressing your metadata: the EclipseLink XML Bindings document. Not
+only can XML Bindings separate your mapping information from your actual
+Java class, it can also be used for more advanced metadata tasks such
+as:
+
+* Augmenting or overriding existing annotations with additional mapping
+information
+* Specifying all mappings information externally, with no annotations in
+Java at all
+* Defining your mappings across multiple Bindings documentsSpecifying
+"virtual" mappings that do not correspond to concrete Java fieldsand
+more..
+
+This section describes the XML Bindings format and demonstrates some
+basic use cases.
+
+==== Understanding the XML Bindings Format
+
+An XML Bindings document is XML that specifies Java type information,
+mapping information, context-wide properties – everything you need to
+define your JAXB system. An example Bindings document is shown in
+link:#CACDBJHE[Example 2-9].
+
+[[CACDBJHE]]
+
+*_Example 2-9 Sample Bindings Document_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    package-name="example" xml-accessor-type="PUBLIC_MEMBER" xml-accessor-order="ALPHABETICAL"
+    xml-mapping-metadata-complete="false" xml-name-transformer="example.NameGenerator"
+    supported-versions="2.4" >
+ 
+    <xml-schema element-form-default="QUALIFIED">
+        <xml-ns prefix="ns1" namespace-uri="http://www.example.org/type" />
+    </xml-schema>
+     <java-types>
+        <java-type name="Employee">
+            <xml-type namespace="http://www.example.org/type" />
+            <java-attributes>
+                <xml-attribute java-attribute="empId" xml-path="@id" />
+                <xml-element java-attribute="empName" name="name" />
+                <xml-element java-attribute="salary" />
+                <xml-element java-attribute="type" type="EmployeeType" />
+            </java-attributes>
+        </java-type>
+        <java-type name="Company">
+            <xml-root-element name="company" />
+            <xml-attribute java-attribute="empId" xml-path="@id" />
+            <xml-element java-attribute="empName" name="name" />
+            <java-attributes>
+                <xml-element java-attribute="employees" name="employee"
+                    type="example.Employee" container-type="java.util.ArrayList" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+ 
+    <xml-registries>
+        <xml-registry name="example.ObjectFactory">
+            <xml-element-decl java-method="createEmpleado"
+                name="empleado" type="example.Employee" />
+            <xml-element-decl java-method="createCorporacion"
+                name="corporacion" type="example.Company" />
+        </xml-registry>
+    </xml-registries>
+ 
+    <xml-enums>
+        <xml-enum java-enum="EmployeeType" value="java.lang.String">
+            <xml-enum-value java-enum-value="CONTRACT">CONTRACT</xml-enum-value>
+            <xml-enum-value java-enum-value="PART_TIME">PART_TIME</xml-enum-value>
+            <xml-enum-value java-enum-value="FULL_TIME">FULL_TIME</xml-enum-value>
+        </xml-enum>
+    </xml-enums>
+ </xml-bindings>
+----
+
+[[sthref18]]
+
+*_Table 2-1 Binding Document Attributes_*
+
+|===
+|*Attribute* |*Description*
+|`<xml-bindings>` |The root of the XML Bindings document. This is also
+where you can define top-level properties for your JAXB system, such as
+the `package-name` of your classes, specify a default
+`xml-accessor-type`, and so on.
+
+|`<xml-schema>` |Defines properties related to the schema-level of your
+JAXB system. Corresponds to the JAXB `@XmlSchema` annotation.
+
+|`<java-types>` |Defines mapping information for each of your Java
+classes.
+
+|`<xml-enums>` |Defines Java enumerations that can be used with your
+Java types.
+
+|`<xml-registries>` |Defines an `ObjectFactory` for use in your JAXB
+system.
+|===
+
+==== Bootstrapping with XML Bindings
+
+When instantiating a `JAXBContext`, links to Bindings documents are
+passed in via the properties parameter, using a special key,
+`JAXBContextProperties.OXM_METADATA_SOURCE`. The value of this key will
+be a handle to the Bindings document, in the form of one of the
+following:
+
+* `java.io.File`
+* `java.io.InputStream`
+* `java.io.Reader`
+* `java.net.URL`
+* `javax.xml.stream.XMLEventReader`
+* `javax.xml.stream.XMLStreamReader`
+* `javax.xml.transform.Source`
+* `org.w3c.dom.Node`
+* `org.xml.sax.InputSource`
+
+To bootstrap from multiple XML Bindings documents:
+
+* Maps of the above inputs are supported, keyed on Java package name.
+* Lists of the above inputs are acceptable as well (`<xml-bindings>`
+must have package attribute).
+
+==== Using XML Bindings with Annotations
+
+The most typical use of an XML Bindings document is in conjunction with
+JAXB annotations. You may have situation where you are not permitted to
+edit your Java domain classes, but want to add additional mapping
+functionality. Or, you may wish to avoid importing any EclipseLink code
+into your domain model, but still take advantage of MOXy's advanced
+mapping features. When Bindings metadata is provided during context
+creation, its mapping information will be combined with any JAXB
+annotation information.
+
+For example, consider the simple JAXB domain class and its default JAXB
+XML representation shown in link:#CACJAIBJ[Example 2-10].
+
+[[CACJAIBJ]]
+
+*_Example 2-10 Sample JAXB Domain Class and XML_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlAttribute
+   private Integer custId;
+   private String name;
+   private Double salary;
+   private byte[] picture;
+   ...
+}
+
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<customer custId="15">
+   <name>Bob Dobbs</name>
+   <salary>51727.61</salary>
+   <picture>AgQIECBA</picture>
+</customer>
+----
+
+Now, assume that we would like to make the following mapping changes:
+
+* Change the XML element name of `custId` to `customer-id`
+* Change the root element name of the class to `customer-info`
+* Write the picture to XML as `picture-hex` in hex `binary` format, and
+use our own custom converter, `MyHexConverter`.
+
+We can specify these three customizations in an XML Bindings document as
+shown in link:#CACEDHHB[Example 2-11].
+
+[[CACEDHHB]]
+
+*_Example 2-11 Customized XML Bindings_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="example">
+ 
+    <java-types>
+        <java-type name="Customer">
+            <xml-root-element name="customer-info" />
+            <java-attributes>
+                <xml-attribute java-attribute="custId" name="customer-id" />
+                <xml-element java-attribute="picture" name="picture-hex">
+                    <xml-schema-type name="hexBinary" />
+                    <xml-java-type-adapter
+                        value="example.adapters.MyHexConverter" />
+                </xml-element>
+            </java-attributes>
+        </java-type>
+    </java-types>
+ 
+</xml-bindings>
+----
+
+The Bindings must then be provided during JAXB context creation.
+Bindings information is passed in via the `properties` argument:
+
+[[sthref22]]
+
+*_Example 2-12 Providing Bindings_*
+
+[source,oac_no_warn]
+----
+ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+InputStream iStream = classLoader.getResourceAsStream("metadata/xml-bindings.xml");
+ 
+Map<String, Object> properties = new HashMap<String, Object>();
+properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
+ 
+JAXBContext ctx = JAXBContext.newInstance(new Class[] { Customer.class }, properties);
+----
+
+When providing Bindings, during JAXB context creation EclipseLink will:
+
+. `Customer.class` will be analyzed and JAXB mappings will be generated
+as usual.
+. The Bindings document is then analyzed, and the original JAXB mappings
+will be merged with the information in the Bindings document.
+
+After applying the XML Bindings, we have the desired XML representation:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<customer-info customer-id="15">
+   <name>Bob Dobbs</name>
+   <salary>51727.61</salary>
+   <picture-hex>020408102040</picture-hex>
+</customer-info>
+----
+
+==== Using Multiple Bindings Documents
+
+Starting with version 2.3, EclipseLink allows you to use mapping
+information from multiple XML Bindings documents. Using this approach,
+you can split your metadata up as you wish.
+
+[[sthref24]]
+
+*_Example 2-13 Using a List of XML Bindings:_*
+
+[source,oac_no_warn]
+----
+...
+FileReader file1 = new FileReader("base-bindings.xml");
+FileReader file2 = new FileReader("override-bindings.xml");
+ 
+List<Object> fileList = new ArrayList<Object>();
+fileList.add(file1);
+fileList.add(file2);
+ 
+Map<String, Object> properties = new HashMap<String, Object>();
+properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, fileList);
+ 
+JAXBContext ctx = JAXBContext.newInstance(new Class[] { Customer.class }, properties);
+
+...
+----
+
+When using a List of Bindings documents, each one must define the
+package attribute of `<xml-bindings>`, to indicate the package for each
+set of Bindings.
+
+[[sthref25]]
+
+*_Example 2-14 Using a Map for multiple packages:_*
+
+[source,oac_no_warn]
+----
+...
+ 
+FileReader fooFile1 = new FileReader("foo/base-bindings.xml");
+FileReader fooFile2 = new FileReader("foo/override-bindings.xml");
+ 
+List<Object> fooFileList = new ArrayList<Object>();
+fooFileList.add(fooFile1);
+fooFileList.add(fooFile2);
+ 
+FileReader barFile1 = new FileReader("bar/base-bindings.xml");
+FileReader barFile2 = new FileReader("bar/override-bindings.xml");
+ 
+List<Object> barFileList = new ArrayList<Object>();
+barFileList.add(barFile1);
+barFileList.add(barFile2);
+ 
+Map<String, List> metadataMap = new HashMap<String, List>();
+metadataMap.put("foo", fooFileList);
+metadataMap.put("bar", barFileList);
+ 
+properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
+ 
+JAXBContext ctx = JAXBContext.newInstance(new Class[] { Customer.class }, properties);
+ 
+...
+----
+
+==== Understanding Override Rules
+
+When multiple sources of metadata are encountered for the same package,
+a unified set of mappings will be created by merging the complete set of
+metadata. First, the annotations from the Java class will be processed,
+and then any XML Bindings information will be applied. The order that
+Bindings are specified is relevant; values in subsequent documents will
+override the ones defined in previous ones.
+
+The following rules will be used for merging:
+
+* `xml-schema`
+** For values such as `namespace`, `elementform`, `attributeform`, the
+later file will override.
+** The list of namespace declarations from `XmlNs` will be merged into a
+single list containing all entries from all files.
++
+In the case of conflicting entries (the same prefix bound to multiple
+namespaces), the last file will override the declarations from previous
+files.
+* `java-types`
+** The merged bindings will contain all unique `java-type` entries from
+all bindings files.
+** If the same `java-type` occurs in multiple files, any values that are
+set in the later file will override values from the previous file.
+** Properties on each `java-type` will be merged into a unified list. If
+the same property is referenced in multiple files, this will be an
+exception case.
+** Class-level `XmlJavaTypeAdpater` entries will be overridden if
+specified in a later bindings file.
+** Class-level `XmlSchemaTypes` will create a merged list. If an entry
+for the same type is listed in multiple bindings files at this level,
+the last file's entry will override all previous ones.
+* `xml-enums`
+** The merged bindings will contain all unique `xml-enum` entries from
+all bindings files.
+** For any duplicated java-enums, a merged list of `XmlEnumValues` will
+be created. If an entry for the same enum facet occurs in multiple
+files, the last file will override the value for that facet.
+* `xml-java-type-adapters`
+** Package-level Java type adapters will be merged into a single list.
+In the case that an adapter is specified for the same class in multiple
+files, the last file's entry will win.
+* `xml-registries`
+** Each unique `XmlRegistry` entry will be added to the final merged
+list of `XmlRegistries`.
+** For any duplicated `XmlRegistry` entries, a merged list of
+`XmlElementDecls` will be created.
++
+In the case that an `XmlElementDecl` for the same `XmlRegistry` class
+appears in multiple bindings files, that `XmlElementDecl` will be
+replaced with the one from the later bindings.
+* `xml-schema-types`
+** `XmlSchemaType` entries will be merged into a unified list.
+** In the case that an `XmlSchemaType` entry for the same java-type
+appears at the package level in multiple bindings files, the merged
+bindings will only contain the entry for the last one specified.
+
+==== Using Complete Metadata
+
+If you would like to store all of your metadata in XML Bindings and
+ignore any JAXB annotations in your Java class, you can include the
+`xml-mapping-metadata-complete` attribute in the `<xml-bindings>`
+element of your Bindings document. Default JAXB mappings will still be
+generated (the same as if you were using a completely un-annotated class
+with JAXB), and then any mapping data defined in the XML Bindings will
+be applied.
+
+This could be used, for example, to map the same Java class to two
+completely different XML representations: the annotations on the actual
+Java class would define the first XML representation, and then a second
+XML representation could be defined in an XML Bindings document with
+`xml-mapping-metadata-complete="true"`. This would essentially give you
+a "blank canvas" to remap your Java class.
+
+If you would like to ignore the default mappings that JAXB generates,
+you can specify `xml-accessor-type="NONE"` in your `<java-type>`
+element. Using this approach, only mappings that are explicitly defined
+in Bindings document will be applied.
+
+Using the *Customer* example from above, the following examples
+demonstrate the XML representations that will be generated when using
+`xml-mapping-metadata-complet`e:
+
+[[sthref28]]
+
+*_Example 2-15 Sample Customer Class_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlAttribute
+   private Integer custId;
+   private String name;
+   private Double salary;
+   private byte[] picture;
+   ...
+}
+----
+
+[[sthref29]]
+
+*_Example 2-16 XML Bindings_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="example" xml-mapping-metadata-complete="true">
+ 
+    <java-types>
+        <java-type name="Customer">
+            <xml-root-element />
+            <java-attributes>
+                <xml-attribute java-attribute="name" name="customer-name" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+ 
+</xml-bindings>
+----
+
+[[sthref30]]
+
+*_Example 2-17 XML Representation_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<customer>
+   <custId>15</custId>
+   <customer-name>Bob Dobbs</customer-name>
+   <picture>AgQIECBA</picture>
+   <salary>51727.61</salary>
+</customer>
+----
+
+* Default JAXB mapping is generated for `custId` (note that `custId` is
+now an XML element, as if there were no annotation on the Java field)
+* The name element has been renamed to `customer-name`
+* Default JAXB mappings are generated for `picture` and `salary`
+
+[[sthref31]]
+
+*_Example 2-18 XML Bindings (with xml-accessor-type="NONE")_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="example" xml-mapping-metadata-complete="true">
+ 
+    <java-types>
+        <java-type name="Customer" xml-accessor-type="NONE">
+            <xml-root-element />
+            <java-attributes>
+                <xml-attribute java-attribute="name" name="customer-name" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+ 
+</xml-bindings>
+----
+
+[[sthref32]]
+
+*_Example 2-19 XML Representation_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<customer>
+   <customer-name>Bob Dobbs</customer-name>
+</customer>
+----
+
+* Specifying `xml-accessor-type="NONE"` will prevent any default
+mappings from being generated
+* The XML representation contains only the mappings defined in the XML
+Bindings document
+
+==== Using Virtual Mappings
+
+XML Bindings can also be used to specify virtual mappings – mappings
+that do not correspond to a concrete Java field. For example, you might
+want to use a `HashMap` as the underlying structure to hold data for
+certain mappings. For information on using Virtual Mappings, see
+xref:{relativedir}/advanced_concepts003.adoc#ADVANCEDCONCEPTS003["Using Virtual Access Methods"].

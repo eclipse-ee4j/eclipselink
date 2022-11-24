@@ -1,0 +1,56 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[CACHE005]]
+=== About Explicit Query Refreshes
+
+Some distributed systems require only a small number of objects to be
+consistent across the servers in the system. Conversely, other systems
+require that several specific objects must always be guaranteed to be
+up-to-date, regardless of the cost. If you build such a system, you can
+explicitly refresh selected objects from the database at appropriate
+intervals, without incurring the full cost of distributed cache
+coordination.
+
+To implement this type of strategy, do the following:
+
+1.  Configure a set of queries that refresh the required objects.
+2.  Establish an appropriate refresh policy.
+3.  Invoke the queries as required to refresh the objects.
+
+The `@Cache` annotation provides the `alwaysRefresh` and
+`refreshOnlyIfNewer` attributes which force all queries that go to the
+database to refresh the cache. The cache is only actually refreshed if
+the optimistic lock value in the database is newer than in the cache.
+For more information, see "Refreshing the Cache" in _Solutions Guide for
+EclipseLink_.
+
+When you execute a query, if the required objects are in the cache,
+EclipseLink returns the cached objects without checking the database for
+a more recent version. This reduces the number of objects that
+EclipseLink must build from database results, and is optimal for
+noncoordinated cache environments. However, this may not always be the
+best strategy for a coordinated cache environment.
+
+To override this behavior, set the `alwaysRefresh` attribute to specify
+that the objects from the database always take precedence over objects
+in the cache. This updates the cached objects with the data from the
+database.
+
+You can implement this type of refresh policy on each EclipseLink
+entity, or just on certain queries, depending upon the nature of the
+application.

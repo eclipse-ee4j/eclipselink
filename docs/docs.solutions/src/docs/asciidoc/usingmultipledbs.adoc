@@ -1,0 +1,65 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[USINGMULTIDBS]]
+== Using Multiple Databases with a Composite Persistence Unit
+
+With EclipseLink, you can expose multiple persistence units (each with
+unique sets of entity types) as a single persistence context by using a
+_composite persistence unit_. Individual persistence units that are part
+of this composite persistence unit are called _composite member
+persistence units_.
+
+NOTE: EclipseLink also supports multiple databases through partitioning. See
+xref:{relativedir}/scaling.adoc#SCALING[Chapter 10, "Scaling Applications in
+Clusters"] for more information.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/usingmultipledbs001.adoc#USINGMULTIDBS001[Introduction to the Solution]
+* xref:{relativedir}/usingmultipledbs002.adoc#USINGMULTIDBS002[Implementing the Solution]
+* xref:{relativedir}/usingmultipledbs003.adoc#USINGMULTIDBS003[Additional Resources]
+
+*Use Case*
+
+Users need to map expose multiple persistence units as a single
+persistence context within an application.
+
+*Solution*
+
+EclipseLink supports a "composite" persistence unit which can include
+multiple member persistence units.
+
+*Components*
+
+* EclipseLink 2.4.2 or later.
+* Multiple databases.
+
+*Sample*
+
+See the following EclipseLink examples for related information:
+
+* `http://wiki.eclipse.org/EclipseLink/Examples/JPA/Composite`
+
+//Introduction to the Solution
+include::{rootdir}/usingmultipledbs001.adoc[]
+
+//Implementing the Solution
+include::{rootdir}/usingmultipledbs002.adoc[]
+
+//Additional Resources
+include::{rootdir}/usingmultipledbs003.adoc[]

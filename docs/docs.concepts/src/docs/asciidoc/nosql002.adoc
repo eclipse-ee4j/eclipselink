@@ -1,0 +1,65 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[NOSQL002]]
+=== About NoSQL Persistence Units
+
+NoSQL persistence units are configured the same as JPA persistence
+units. The `persistence.xml` file is used to define the persistence
+unit. NoSQL persistence units can be application managed, JTA managed,
+injected, or created through Persistence the same as regular JPA
+persistence units. NoSQL persistence units do have some specific
+persistence unit properties that are required, and have some
+limitations.
+
+NoSQL defines the following persistence unit properties:
+
+* `eclipselink.nosql.connection-spec`
+* `eclipselink.nosql.connection-factory`
+* `eclipselink.nosql.property`
+* `eclipselink.target-database`—this is used to set the NoSQL platform
+class, or use `org.eclipse.persistence.eis.EISPlatform` for a generic
+platform.
+
+For more information on these properties, see "Persistence Property
+Extensions Reference"in _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.
+
+NoSQL persistence units have the following restrictions:
+
+* `<jta-data-source>`, `<non-jta-data-source>`—these elements are not
+supported, as they refer to JDBC `DataSources`.
+* JTA—JTA-managed persistence units are supported, but XA transactions
+may not be provided unless the NoSQL JCA resource adapter supports JTA.
+* `javax.jdbc`, `eclipselink.jdbc`—JDBC-specific properties are not
+supported as NoSQL does not use JDBC.
+
+[[OTLCG94415]]
+
+[[sthref67]]
+
+==== Persistence Unit Properties for NoSQL Platforms
+
+To use a NoSQL platform you must set both the
+`eclipselink.nosql.connection-spec` to the connection spec class name
+and the `eclipselink.target-database` to the platform class name. Each
+NoSQL platform also supports platform-specific properties that can be
+set using `eclipselink.nosql.property`. For more information on values
+for MongoDB, Oracle NoSQL, XML, JMS, and Oracle AQ, see "@NoSql" in
+_Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.
+See also xref:app_tl_ext003.adoc#APP_TL_EXT003[Non-SQL Standard Database
+Support: NoSQL.]

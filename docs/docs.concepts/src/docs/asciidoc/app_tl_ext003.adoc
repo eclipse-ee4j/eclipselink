@@ -1,0 +1,92 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[APP_TL_EXT003]]
+=== Non-SQL Standard Database Support: NoSQL
+
+EclipseLink JPA can be used with NoSQL databases. A Java class can be
+mapped to a NoSQL datasource using the `@NoSQL` annotation or `<no-sql>`
+XML element.
+
+EclipseLink also provides JPA access to EIS (Enterprise Information
+Systems) such as legacy databases and systems (CICS, ADA, VSAM, IMS, MQ,
+AQ).
+
+EclipseLink's NoSQL support allows complex hierarchical data to be
+mapped, including XML, indexed, and hierarchical mapped data such as
+JSON data. CRUD operations, embedded objects and collections,
+inheritance, and relationships are supported. A subset of JPQL and the
+Criteria API are supported, dependent on the NoSQL database's query
+support.
+
+It is also possible to add support for other NoSQL data-sources by
+defining your own `EISPlatform` subclass and JCA adapter. There are also
+several user-contributed platforms in the EclipseLink incubator project.
+See "Platform Incubator" at this URL:
+
+`http://wiki.eclipse.org/EclipseLink/Development/Incubator/Platform`
+
+link:#CJAFHFBJ[Table A-3] lists the NoSQL and EIS data-sources that are
+supported by EclipseLink. For more information on the Java classes
+listed in the table, see _Java API Reference for EclipseLink_.
+
+[[OTLCG94459]][[sthref73]][[CJAFHFBJ]]
+
+*_Table A-3 Supported NoSQL and EIS Platforms_*
+
+|=======================================================================
+|*Data-source* |*Java Class* |*Features*
+|MongoDB |`org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform`
+a|
+Provides MongoDB support including:
+
+* `MAPPED` JSON data
+* JPQL and Criteria queries
+* Native queries
+* hints for `READ_PREFERENCE`, `WRITE_CONCERN`, `OPTIONS`, `SKIP`,
+`LIMIT`, `BATCH_SIZE`
+
+|Oracle NoSQL
+|`org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLPlatform` a|
+Provides Oracle NoSQL support including:
+
+* `MAPPED` key/value data
+* XML data
+* `find()` and `SELECT` all queries
+* hints for `CONSISTENCY`, `DURABILITY`, `TIMEOUT`, `VERSION`
+
+|XML files
+|`org.eclipse.persistence.eis.adapters.xmlfile.XMLFilePlatform` a|
+Provides support for persistence to XML file including:
+
+* XML data
+* `find()` and `SELECT` all queries
+* XPath interactions
+
+|JMS |`org.eclipse.persistence.eis.adapters.jms.JMSPlatform` a|
+Provides support for persistence through JMS messaging:
+
+* XML data
+* `send`/`receive` operations
+
+|Oracle AQ |`org.eclipse.persistence.eis.adapters.aq.AQPlatform` a|
+Provides support for persistence through Oracle AQ messaging:
+
+* XML data
+* `enqueue`/`dequeue` operations
+
+|=======================================================================

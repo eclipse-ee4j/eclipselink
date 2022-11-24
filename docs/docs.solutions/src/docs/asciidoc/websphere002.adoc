@@ -1,0 +1,233 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ELWS002]]
+=== Implementing the Solution
+
+To develop, deploy, and run EclipseLink applications in IBM WebSphere,
+you must add various modules including EclipseLink to WebSphere, and you
+must configure various aspects of WebSphere to support EclipseLink.
+
+This section contains the following tasks for using EclipseLink with IBM
+WebSphere, Version 7 or later:
+
+* link:#CFHIHHBB[Task 1: Prerequisites]
+* link:#CEGCHAJB[Task 2: Configure Persistence Units]
+* link:#CEGCGFJB[Task 3: Configure the Server and the Application to Use
+EclipseLink]
+
+[[CFHIHHBB]]
+
+==== Task 1: Prerequisites
+
+Ensure that you have installed the following components:
+
+* IBM WebSphere, Version 7 or later. These instructions are based on
+WebSphere, Version 8.5.
++
+Obtain IBM WebSphere from
+`http://www-01.ibm.com/software/webservers/appserv/was/`.
+* EclipseLink 2.4 or later.
++
+Download EclipseLink from
+`http://www.eclipse.org/eclipselink/downloads/`.
++
+You will use the following files:
+** `eclipselink.jar`
+** `jakarta.persistence_`__`ver_no`__`.jar`
+
+[[CEGCHAJB]]
+
+==== Task 2: Configure Persistence Units
+
+Configure persistence units to use EclipseLink as the persistence
+provider and to use WebSphere as the target server.
+
+link:#CEGCBJCA[Example 6-1] shows a sample configuration for a
+container-managed persistence unit.
+
+[[CEGCBJCA]]
+
+*_Example 6-1 Sample persistence.xml for a container-managed persistence
+unit_*
+
+[source,oac_no_warn]
+----
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd"
+      version="1.0">
+    <persistence-unit name="default" transaction-type="JTA">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <jta-data-source>jdbc/EclipseLinkDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="WebSphere_7"/>
+            <property name="eclipselink.target-database"
+                value="org.eclipse.persistence.platform.database.oracle.Oracle11Platform"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="true"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+----
+
+link:#CEGBBBJE[Example 6-2] shows a sample configuration for an
+application-managed persistence unit.
+
+[[CEGBBBJE]]
+
+*_Example 6-2 Sample persistence.xml for an application-managed
+persistence unit_*
+
+[source,oac_no_warn]
+----
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <non-jta-data-source>jdbc/ELNonJTADS</non-jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="WebSphere_7"/>
+            <property name="eclipselink.target-database" 
+                  value="org.eclipse.persistence.platform.database.oracle.Oracle11Platform"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="true"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+----
+
+Note the following about the two examples above:
+
+* The `eclipselink.target-server` value `WebSphere_7` is used for
+WebSphere Application Server version 7 and later.
+* Specifying `persistence_1_0.xsd" version="1.0"` for the persistence
+schema version works with both JPA 1 and JPA 2. For a JPA 2._n_ -only
+application, you can change the version to
+`persistence_2_0.xsd" version="2.`__n__`"` (WebSphere's support for JPA
+2 began in WebSphere Application Server 7.0.0.9.
+
+[[CEGCGFJB]]
+
+==== Task 3: Configure the Server and the Application to Use EclipseLink
+
+The following are typical scenarios for using EclipseLink with the
+application server:
+
+* link:#CEGFHBBI[*Modify Server to Make EclipseLink Available Globally*]
+* link:#CEGFFJEA[*Package EclipseLink in the Application EAR*]
+* link:#CEGJBCHB[*Package EclipseLink in the WAR*]
+
+[[CEGFHBBI]]
+
+===== Modify Server to Make EclipseLink Available Globally
+
+You can make EclipseLink available globally for both container-managed
+and application-managed persistence units in either of the following
+ways:
+
+* link:#CEGGAEGJ[Option 1: Create a Global Shared Library (Recommended)]
+* link:#CEGGCCFC[Option 2: Add EclipseLink as a Server Library Extension]
+
+[[CEGGAEGJ]]
+
+*Option 1: Create a Global Shared Library (Recommended)*
+
+. Create a global shared library containing the following files:
+* `eclipselink.jar`
++
+Find this file in the
+__`TOPLINK_INSTALLATION`__`\oracle_common\modules\oracle.toplink_`_`ver_no`_
+directory created by the EclipseLink quick installer.
+* `xmlparserv2.jar`
++
+Find this file in the __`TOPLINK_INSTALLATION`__`\toplink\modules`
+directory created by the s quick installer.
+* If you use Oracle Database features such as `NCHAR`, `XMLTYPE`, and
+`MDSYS.SDO_GEOMETRY` with JPA, you must also include `xdb.jar` and
+`sdoapi.jar` in the shared library. Those files are available in your
+Oracle Database distribution.
++
+See the WebSphere documentation for instructions on how to use WebSphere
+to facilitate the creation of shared libraries.
+. Associate the shared library with the application.
++
+See the WebSphere documentation for instructions on how to use WebSphere
+to associate the shared library with an application.
+
+[[CEGGCCFC]]
+
+*Option 2: Add EclipseLink as a Server Library Extension*
+
+To add EclipseLink as a server library extension, copy `eclipselink.jar`
+and the other JAR file(s) listed in Option 1, above, to the
+__`WAS_HOME`__`\lib\ext` directory.
+
+[[CEGFFJEA]]
+
+===== Package EclipseLink in the Application EAR
+
+You can also implement container-managed persistence by adding
+`eclipselink.jar` in the application EAR, without making any
+modifications to the server configuration. In this case, the persistence
+unit is managed by `@PersistenceContext` entity manager proxy injection
+on a stateless session bean. The following instructions show a example
+of this approach.
+
+. Add `eclipselink.jar` to the application EAR in the following
+location:
++
+__`EAR_archive`__`/APP-INF/lib/`
+. Add the path to the `eclipselink.jar` to the
+__`ejbModule`__`/META-INF/MANIFEST.MF` file(s) in your EJB JAR(s), as
+shown below:
++
+[source,oac_no_warn]
+----
+Manifest-Version: 1.0
+Class-Path: APP-INF/lib/eclipselink.jar
+----
++
+This is the manifest at the root of the entities' location, in this case
+as part of the `ejb.jar.`
+. Configure the class loader to load the classes with the application
+class loader first.
+. Deploy and start the application. See the IBM WebSphere documentation
+for instructions.
+
+[[CEGJBCHB]]
+
+==== Package EclipseLink in the WAR
+
+If you do not or cannot implement container-managed persistence, as
+described in the previous two scenarios, you can create an application
+managed entity manager. In this case, all library configuration and
+classloader scope changes must be done inside the EAR itself.
+
+. Add `eclipselink.jar` and `jakarta.persistence_`__`ver_no`__`.jar` to
+the web application archive (WAR) file in the following location:
++
+__`WAR_archive`__`/WEB-INF/lib/`
+. Configure the class loader order for your application to load the
+classes with the application class loader first. See the WebSphere
+documentation for instructions on setting class loader order using the
+Administrative console.
+. Deploy and start the application. See the IBM WebSphere documentation
+for instructions.

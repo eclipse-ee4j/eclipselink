@@ -1,0 +1,565 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[EXTENSIBLE002]]
+=== Making JAXB Beans Extensible
+
+Use the `@XmlVirtualAccessMethods` annotation to specify that a JAXB
+bean is extensible. By using virtual properties in an extensible bean,
+you can specify mappings external to the bean. This allows you to modify
+the mappings without modifying the bean source file and without
+redeploying the bean's persistence unit.
+
+In a multi-tenant (or SaaS) architecture, a single application runs on a
+server, serving multiple client organizations (tenants). Good
+multi-tenant applications allow per-tenant customizations. When these
+customizations are made to data, it can be difficult for the binding
+layer to handle them. JAXB is designed to work with domain models that
+have real fields and properties. EclipseLink extensions to JAXB
+introduce the concept of virtual properties which can easily handle this
+use case. Virtual properties are defined by the Object-XML metadata
+file, and provide a way to extend a class without modifying the source.
+
+This section has the following subsections:
+
+* link:#CIAFIAAF[Main Steps]
+* link:#CIAEDJHB[Code Examples]
+
+[[CIAFIAAF]]
+
+==== Main Steps
+
+To create and support an extensible JAXB bean:
+
+* link:#CIAEGGCB[Task 1: Configure the Bean]
+* link:#CIAIDAED[Task 2: Provide Additional Mappings]
+
+[[CIAEGGCB]]
+
+===== Task 1: Configure the Bean
+
+Configure the bean by annotating the bean class with the
+`@XmlVirtualAccessMethods`, adding `get` and `set` methods for the
+property values, and adding a data structure to store the extended
+attributes and values. Alternatively, you can use the
+`<xml-virtual-access-methods>` element in `eclipselink-orm.xml`.
+
+====== Annotate the Bean Class with @Xml VirtualAccessMethods
+
+Annotate the bean with `@XmlVirtualAccessMethods` to specify that it is
+extensible and to define virtual properties.
+
+link:#CIAFAFCH[Table 12-2] describes the attributes available to the
+`@XmlVirtualAccessMethods` annotation.
+
+[[CIAFAFCH]]
+
+*_Table 12-2 Attributes for the @XmlVirtualAccessMethods Annotation_*
+
+|===
+|*Attribute* |*Description*
+|`get` a|
+The name of the getter method to use for the virtual property. This
+method must take a single `java.lang.String` parameter and return a
+`java.lang.Object`.
+
+Default: `get`
+
+Required? No
+
+|`set` a|
+The name of the setter method to use for the virtual property. This
+method must take a `java.lang.String` and a `java.lang.Object` parameter
+and return a `java.lang.Object` parameter.
+
+Default: `set`
+
+Required? No
+
+|===
+
+====== Add get and set Methods to the Bean
+
+Add `get(String)` and `set(String, Object)` methods to the bean. The
+`get()` method returns a value by property name and the `set()` method
+stores a value by property name. The default names for these methods are
+`get` and `set`, and they can be overridden with the
+`@XmlVirtualAccessMethods` annotation.
+
+====== Define Virtual Attribute Storage
+
+Add a data structure to store the extended attributes and values, that
+is, the virtual mappings. These can then be mapped to the database. See
+link:#CIAIDAED["Task 2: Provide Additional Mappings"].
+
+A common way to store the virtual mappings is in a `Map`, but you can
+use other ways, as well. For example you could store the virtual
+mappings in a directory system.
+
+When using field-based access, annotate the data structure with
+`@XmlTransient` so it cannot use it for another mapping. When using
+property-based access, `@XmlTransient` is unnecessary.
+
+====== Use XML
+
+As an alternative to, or in addition to, using
+`@XmlVirtualAccessMethods`, you can use the XML equivalents, for
+example:
+
+* XML to enable virtual access methods using `get` and `set`:
++
+[source,oac_no_warn]
+----
+<xml-virtual-access-methods/>
+----
+* XML to enable virtual access methods using `put` instead of `set`
+(default):
++
+[source,oac_no_warn]
+----
+<xml-virtual-access-methods set-method="put"/>
+----
+* XML to enable virtual access methods using `retrieve` instead of `get`
+(default):
++
+[source,oac_no_warn]
+----
+<xml-virtual-access-methods get-method="retrieve"/>
+----
+* XML to enable virtual access methods using `retrieve` and `put`
+instead of `get` and `set` (default):
++
+[source,oac_no_warn]
+----
+<xml-virtual-access-methods get-method="retrieve" set-method="put"/>
+----
+
+[[CIAIDAED]]
+
+===== Task 2: Provide Additional Mappings
+
+To provide additional mappings, add the mappings to the
+`eclipselink-oxm.xml` file, for example:
+
+[source,oac_no_warn]
+----
+<xml-element java-attribute="idNumber"/> 
+----
+
+[[CIAEDJHB]]
+
+==== Code Examples
+
+The examples in this section illustrate how to use extensible JAXB
+beans. The example begins with the creation of a base class that other
+classes can extend. In this case the extensible classes are for
+`Customers` and `PhoneNumbers`. Mapping files are created for two
+separate tenants. Even though both tenants share several real
+properties, they will define virtual properties that are unique to their
+requirements.
+
+===== Basic Setup
+
+link:#CIAHDEGG[Example 12-5] illustrates a base class, `ExtensibleBase`,
+which other extensible classes can extend. In the example, the use of
+the `@XmlTransient` annotation prevents `ExtensibleBase` from being
+mapped as an inheritance relationship. The real properties represent the
+parts of the model that will be common to all tenants. The per-tenant
+extensions will be represented as virtual properties.
+
+[[CIAHDEGG]]
+
+*_Example 12-5 A Base Class for Extensible Classes_*
+
+[source,oac_no_warn]
+----
+package examples.virtual;
+ 
+import java.util.HashMap;
+import java.util.Map;
+ 
+import jakarta.xml.bind.annotation.XmlTransient;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
+ 
+@XmlTransient
+@XmlVirtualAccessMethods(setMethod="put")
+public class ExtensibleBase {
+ 
+    private Map<String, Object> extensions = new HashMap<String, Object>();
+ 
+    public <T> T get(String property) {
+        return (T) extensions.get(property);
+    }
+ 
+    public void put(String property, Object value) {
+        extensions.put(property, value);
+    }
+}
+----
+
+link:#CIAECFAH[Example 12-6] illustrates the definition of a `Customer`
+class. The `Customer` class is extensible because it inherits from a
+domain class that has been annotated with `@XmlVirtualAccessMethods`.
+
+[[CIAECFAH]]
+
+*_Example 12-6 An Extensible Customer Class_*
+
+[source,oac_no_warn]
+----
+package examples.virtual;
+ 
+import jakarta.xml.bind.annotation.XmlRootElement;
+ 
+@XmlRootElement
+public class Customer extends ExtensibleBase {
+ 
+    private String firstName;
+    private String lastName;
+    private Address billingAddress;
+ 
+    public String getFirstName() {
+        return firstName;
+    }
+ 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+ 
+    public String getLastName() {
+        return lastName;
+    }
+ 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+ 
+    public Address getBillingAddress() {
+        return billingAddress;
+    }
+ 
+    public void setBillingAddress(Address billingAddress) {
+        this.billingAddress = billingAddress;
+    }
+ 
+}
+----
+
+link:#CIAGABCC[Example 12-7] illustrates an `Address` class. It is not
+necessary for every class in your model to be extensible. In this
+example, the `Address` class does not have any virtual properties.
+
+[[CIAGABCC]]
+
+*_Example 12-7 A Nonextensible Address Class_*
+
+[source,oac_no_warn]
+----
+package examples.virtual;
+ 
+public class Address {
+ 
+    private String street;
+ 
+    public String getStreet() {
+        return street;
+    }
+ 
+    public void setStreet(String street) {
+        this.street = street;
+    }
+ 
+}
+----
+
+link:#CIAEEBIG[Example 12-8] illustrates a `PhoneNumber` class. Like
+`Customer`, `PhoneNumber` will be an extensible class.
+
+[[CIAEEBIG]]
+
+*_Example 12-8 An Extensible PhoneNumber Class_*
+
+[source,oac_no_warn]
+----
+package examples.virtual;
+ 
+import jakarta.xml.bind.annotation.XmlValue;
+ 
+public class PhoneNumber extends ExtensibleBase {
+ 
+    private String number;
+ 
+    @XmlValue
+    public String getNumber() {
+        return number;
+    }
+ 
+    public void setNumber(String number) {
+        this.number = number;
+    }
+ 
+}
+----
+
+===== Define the Tenants
+
+The examples in this section define two separate tenants. Even though
+both tenants share several real properties, the corresponding XML
+representation can be quite different due to virtual properties.
+
+*Tenant 1*
+
+The first tenant is an online sporting goods store that requires the
+following extensions to its model:
+
+* Customer ID
+* Customer's middle name
+* Shipping address
+* A collection of contact phone numbers
+* Type of phone number (that is, home, work, or cell)
+
+The metadata for the virtual properties is captured in the
+`eclipselink-oxm.xml` mapping file or in files using the
+`eclipselink-orm.xml` schema.. Virtual properties are mapped in the same
+way as real properties. Some additional information is required,
+including type (since this cannot be determined through reflection), and
+for collection properties, a container type. The virtual properties
+defined below for `Customer` are `middleName`, `shippingAddress`, and
+`phoneNumbers`. For `PhoneNumber`, the virtual property is the `type`
+property.
+
+link:#CIAJHHAJ[Example 12-9] illustrates the `binding-tenant1.xml`
+mapping file.
+
+[[CIAJHHAJ]]
+
+*_Example 12-9 Defining Virtual Properties for Tenant 1_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0"?>
+<xml-bindings
+    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="examples.virtual">
+    <java-types>
+        <java-type name="Customer">
+            <xml-type prop-order="firstName middleName lastName billingAddress shippingAddress phoneNumbers"/>
+            <java-attributes>
+                <xml-attribute
+                    java-attribute="id"
+                    type="java.lang.Integer"/>
+                <xml-element
+                    java-attribute="middleName"
+                    type="java.lang.String"/>
+                <xml-element
+                    java-attribute="shippingAddress"
+                    type="examples.virtual.Address"/>
+                <xml-element
+                    java-attribute="phoneNumbers"
+                    name="phoneNumber"
+                    type="examples.virtual.PhoneNumber"
+                    container-type="java.util.List"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="PhoneNumber">
+            <java-attributes>
+                <xml-attribute
+                    java-attribute="type"
+                    type="java.lang.String"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>
+----
+
+The `get` and `set` methods are used on the domain model to interact
+with the real properties and the accessors defined on the
+`@XmlVirtualAccessMethods` annotation are used to interact with the
+virtual properties. The normal JAXB mechanisms are used for marshal and
+unmarshal operations. link:#CIAIIDAD[Example 12-10] illustrates the
+`Customer` class code for tenant 1 to obtain the data associated with
+virtual properties.
+
+[[CIAIIDAD]]
+
+*_Example 12-10 Tenant 1 Code to Provide the Data Associated with
+Virtual Properties_*
+
+[source,oac_no_warn]
+----
+...
+Customer customer = new Customer();
+ 
+//Set Customer's real properties
+customer.setFirstName("Jane");
+customer.setLastName("Doe");
+ 
+Address billingAddress = new Address();
+billingAddress.setStreet("1 Billing Street");
+customer.setBillingAddress(billingAddress);
+ 
+//Set Customer's virtual 'middleName' property
+customer.put("middleName", "Anne");
+ 
+//Set Customer's virtual 'shippingAddress' property
+Address shippingAddress = new Address();
+shippingAddress.setStreet("2 Shipping Road");
+customer.put("shippingAddress", shippingAddress);
+ 
+List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+customer.put("phoneNumbers", phoneNumbers);
+ 
+PhoneNumber workPhoneNumber = new PhoneNumber();
+workPhoneNumber.setNumber("555-WORK");
+//Set the PhoneNumber's virtual 'type' property
+workPhoneNumber.put("type", "WORK");
+phoneNumbers.add(workPhoneNumber);
+ 
+PhoneNumber homePhoneNumber = new PhoneNumber();
+homePhoneNumber.setNumber("555-HOME");
+//Set the PhoneNumber's virtual 'type' property
+homePhoneNumber.put("type", "HOME");
+phoneNumbers.add(homePhoneNumber);
+ 
+Map<String, Object> properties = new HashMap<String, Object>();
+properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, "examples/virtual/binding-tenant1.xml");
+JAXBContext jc = JAXBContext.newInstance(new Class[] {Customer.class, Address.class}, properties);
+ 
+Marshaller marshaller = jc.createMarshaller();
+marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+marshaller.marshal(customer, System.out);
+...
+ 
+----
+
+link:#CIAECIAH[Example 12-11] illustrates the XML output from the
+`Customer` class for tenant 1.
+
+[[CIAECIAH]]
+
+*_Example 12-11 XML Output from the Customer Class for Tenant 1_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<customer>
+   <firstName>Jane</firstName>
+   <middleName>Anne</middleName>
+   <lastName>Doe</lastName>
+   <billingAddress>
+      <street>1 Billing Street</street>
+   </billingAddress>
+   <shippingAddress>
+      <street>2 Shipping Road</street>
+   </shippingAddress>
+   <phoneNumber type="WORK">555-WORK</phoneNumber>
+   <phoneNumber type="HOME">555-HOME</phoneNumber>
+</customer>
+----
+
+*Tenant 2*
+
+The second tenant is a streaming media provider that offers on-demand
+movies and music to its subscribers. It requires a different set of
+extensions to the core model:
+
+* A single contact phone number
+
+For this tenant, the mapping file is also used to customize the mapping
+of the real properties.
+
+link:#CIAGBEGJ[Example 12-12] illustrates the `binding-tenant2.xml`
+mapping file.
+
+[[CIAGBEGJ]]
+
+*_Example 12-12 Defining Virtual Properties for Tenant 2_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0"?>
+<xml-bindings
+    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="examples.virtual">
+    <xml-schema namespace="urn:tenant1" element-form-default="QUALIFIED"/>
+    <java-types>
+        <java-type name="Customer">
+            <xml-type prop-order="firstName lastName billingAddress phoneNumber"/>
+            <java-attributes>
+                <xml-attribute java-attribute="firstName"/>
+                <xml-attribute java-attribute="lastName"/>
+                <xml-element java-attribute="billingAddress" name="address"/>
+                <xml-element
+                    java-attribute="phoneNumber"
+                    type="examples.virtual.PhoneNumber"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>
+----
+
+link:#CIACHCHF[Example 12-13] illustrates the tenant 2 `Customer` class
+code to obtain the data associated with virtual properties.
+
+[[CIACHCHF]]
+
+*_Example 12-13 Tenant 2 Code to Provide the Data Associated with
+Virtual Properties_*
+
+[source,oac_no_warn]
+----
+...
+Customer customer = new Customer();
+customer.setFirstName("Jane");
+customer.setLastName("Doe");
+ 
+Address billingAddress = new Address();
+billingAddress.setStreet("1 Billing Street");
+customer.setBillingAddress(billingAddress);
+ 
+PhoneNumber phoneNumber = new PhoneNumber();
+phoneNumber.setNumber("555-WORK");
+customer.put("phoneNumber", phoneNumber);
+ 
+Map<String, Object> properties = new HashMap<String, Object>();
+properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, "examples/virtual/binding-tenant2.xml");
+JAXBContext jc = JAXBContext.newInstance(new Class[] {Customer.class, Address.class}, properties);
+ 
+Marshaller marshaller = jc.createMarshaller();
+marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+marshaller.marshal(customer, System.out);
+...
+----
+
+link:#CIAGDDIG[Example 12-14] illustrates the XML output from the
+`Customer` class for tenant 2.
+
+[[CIAGDDIG]]
+
+*_Example 12-14 XML Output from the Customer Class for Tenant 2_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<customer xmlns="urn:tenant1" firstName="Jane" lastName="Doe">
+   <address>
+      <street>1 Billing Street</street>
+   </address>
+   <phoneNumber>555-WORK</phoneNumber>
+</customer>
+----

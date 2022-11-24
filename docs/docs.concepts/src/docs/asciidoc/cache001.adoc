@@ -1,0 +1,343 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[CACHE001]]
+=== About Cache Architecture
+
+EclipseLink uses two types of cache: the shared *persistence unit cache*
+(L2) maintains objects retrieved from and written to the data source;
+and the isolated *persistence context cache* (L1) holds objects while
+they participate in transactions. When a persistence context (entity
+manager) successfully commits to the data source, EclipseLink updates
+the persistence unit cache accordingly. Conceptually the persistence
+context cache is represented by the `EntityManager` and the persistence
+unit cache is represented by the `EntityManagerFactory`.
+
+Internally, EclipseLink stores the persistence unit cache on a
+EclipseLink session, and the persistence context cache on a EclipseLink
+persistence unit. As link:#i1129035[Figure 8-1] shows, the persistence
+unit (session) cache and the persistence context (unit of work) cache
+work together with the data source connection to manage objects in a
+EclipseLink application.
+
+Read requests from the database are sent to the persistence unit
+(session) cache in EclipseLink session. Write requests from the database
+are sent to the EclipseLink persistence context (unit of work) cache.
+The persistence unit (session) cache registers objects with the
+persistence context. During a commit or merge transaction, the
+persistence context cache refreshes the persistence unit cache. The
+object life cycle relies on these mechanisms.
+
+[[i1129035]][[OTLCG93796]]
+
+*_Figure 8-1 Object Life Cycle and the EclipseLink Caches_*
+
+image:{imagesrelativedir}/cacharch.png[Description of Figure 8-1 follows,title="Description of Figure 8-1 follows"] +
+xref:{imagestextrelativedir}/cacharch.adoc[Description of "Figure 8-1 Object Life Cycle and the EclipseLink Caches"] +
+
+[[CACHIFGC]][[OTLCG93797]]
+
+==== Persistence Unit Cache
+
+The persistence unit cache is a shared cache (L2) that services clients
+attached to a given persistence unit. When you read objects from or
+write objects to the data source using an `EntityManager` object,
+EclipseLink saves a copy of the objects in the persistence unit's cache
+and makes them accessible to all other processes accessing the same
+persistence unit.
+
+EclipseLink adds objects to the persistence unit cache from the
+following:
+
+* The data store, when EclipseLink executes a read operation
+* The persistence context cache, when a persistence context successfully
+commits a transaction
+
+EclipseLink defines three cache isolation levels: Isolated, Shared, and
+Protected. For more information on these levels, see
+link:#CDEEGICF[Shared, Isolated, Protected, Weak, and Read-only Caches.]
+
+There is a separate persistence unit cache for each unique persistence
+unit name. Although the cache is conceptually stored with the
+`EntityManagerFactory`, two factories with the same persistence unit
+name will share the same cache (and effectively be the same persistence
+unit instance). If the same persistence unit is deployed in two separate
+applications in Jakarta EE, their full persistence unit name will
+normally still be unique, and they will use separate caches. Certain
+persistence unit properties, such as data-source, database URL, user,
+and tenant id can affect the unique name of the persistence unit, and
+result in separate persistence unit instances and separate caches. The
+`eclipselink.session.name` persistence unit property can be used to
+force two persistence units to resolve to the same instance and share a
+cache.
+
+[[OTLCG93798]]
+
+[[sthref55]]
+
+==== Persistence Context Cache
+
+The persistence context cache is an isolated cache (L1) that services
+operations within an EntityManager. It maintains and isolates objects
+from the persistence unit cache, and writes changed or new objects to
+the persistence unit cache after the persistence context commits changes
+to the data source.
+
+NOTE: Only committed changes are merged into the shared persistence unit
+cache, flush or other operations do not affect the persistence unit
+cache until the transaction is committed.
+
+The life-cycle for the persistence context cache differs between
+application managed, and container managed persistence contexts. The
+persistence context (unit of work) cache services operations within the
+persistence unit. It maintains and isolates objects from the persistence
+context (session) cache, and writes changed or new objects to the
+persistence context cache after the persistence unit commits changes to
+the data source.
+
+[[OTLCG94324]]
+
+[[sthref56]]
+
+===== Application Managed Persistence Contexts
+
+An application managed persistence context is created by the application
+from an `EntityManagerFactory`. The application managed persistence
+context's cache will remain until the `EntityManager` is closed or
+`clear()` is called. It is important to keep application managed
+persistence units short lived, or to make use of `clear()` to avoid the
+persistence context cache from growing too big, or from becoming out of
+sync with the persistence unit cache and the database. Typically a
+separate `EntityManager` should be created for each transaction or
+request.
+
+An extended persistence context has the same caching behavior as an
+application managed persistence context, even if it is managed by the
+container.
+
+EclipseLink also supports a `WEAK` reference mode option for long lived
+persistence contexts, such as two-tier applications. See
+link:#CDEJAHDJ[Weak Reference Mode.]
+
+[[OTLCG94325]]
+
+[[sthref57]]
+
+===== Container Managed Persistence Contexts
+
+A container managed persistence context is typically injected into a
+`SessionBean` or other managed object by a Jakarta EE container, or
+frameworks such as Spring. The container managed persistence context's
+cache will only remain for the duration of the transaction. Entities
+read in a transaction will become detached after the completion of the
+transaction and will require merging or editing in subsequent
+transactions.
+
+NOTE: EclipseLink supports accessing an entity's LAZY relationships after the
+persistence context has been closed.
+
+[[CDEEGICF]][[OTLCG94326]]
+
+==== Shared, Isolated, Protected, Weak, and Read-only Caches
+
+EclipseLink defines three cache isolation levels. The cache isolation
+level defines how caching for an entity is performed by the persistence
+unit and the persistence context. The cache isolation levels can be set
+with the `isolation` attribute on the `@Cache` annotation. the possible
+values of the isolation attribute are:
+
+* `isolated`—entities are only cached in the persistence context, not in
+the persistence unit. See link:#CDEBIHCH[Isolated Cache.]
+* `shared`—entities are cached both in the persistence context and
+persistence unit, read-only entities are shared and only cached in the
+persistence unit. See link:#CDEEIBAC[Shared Cache.]
+* `protected`—entities are cached both in the persistence context and
+persistence unit, read-only entities are isolated and cached in the
+persistence unit and persistence context. See link:#CDEHCDJD[Protected
+Cache.]
+
+[[CDEBIHCH]][[OTLCG94327]]
+
+===== Isolated Cache
+
+The isolated cache (L1) is the cache stored in the persistence context.
+It is a transactional or user session based cache. Setting the cache
+isolation to `isolated` for an entity disables its shared cache. With an
+isolated cache all queries and find operations will access the database
+unless the object has already been read into the persistence context and
+refreshing is not used.
+
+Use a isolated cache to do the following:
+
+* avoid caching highly volatile data in the shared cache
+* achieve serializable transaction isolation
+
+Each persistence context owns an initially empty isolated cache. The
+persistence context's isolated cache is discarded when the persistence
+context is closed, or the `EntityManager.clear()` operation is used.
+
+When you use an `EntityManager` to read an isolated entity, the
+`EntityManager` reads the entity directly from the database and stores
+it in the persistence context's isolated cache. When you read a
+read-only entity it is still stored in the isolated cache, but is not
+change tracked.
+
+The persistence context can access the database using a connection pool
+or an exclusive connection. The persistence unit property
+`eclipselink.jdbc.exclusive-connection.mode` can be used to use an
+exclusive connection. Using an exclusive connection provides improved
+user-based security for reads and writes. Specific queries can also be
+configured to use the persistence context's exclusive connection.
+
+NOTE: If an `EntityManager` contains an exclusive connection, you must close
+the `EntityManager` when you are finished using it. We do not recommend
+relying on the finalizer to release the connection when the
+`EntityManager` is garbage-collected. If you are using a managed
+persistence context, then you do not need to close it.
+
+[[CDEEIBAC]][[OTLCG94328]]
+
+===== Shared Cache
+
+The shared cache (L2) is the cache stored in the persistence unit. It is
+a shared object cache for the entire persistence unit. Setting the cache
+isolation to `shared` for an entity enables its shared cache. With a
+shared cache queries and find operations will resolve against the shared
+cache unless refreshing is used.
+
+Use a shared cache to do the following:
+
+* improve performance by avoiding database access when finding or
+querying an entity by Id or index;
+* improve performance by avoiding database access when accessing an
+entity's relationships;
+* preserve object identity across persistence contexts for read-only
+entities.
+
+When you use an `EntityManager` to find a shared entity, the
+`EntityManager` first checks the persistence unit's shared cache. If the
+entity is not in the persistence unit's shared cache, it will be read
+from the database and stored in the persistence unit's shared cache, a
+copy will also be stored in the persistence context's isolated cache.
+Any query not by Id, and not by an indexed attribute will first access
+the database. For each query result row, if the object is already in the
+shared cache, the shared object (with its relationships) will be used,
+otherwise a new object will be built from the row and put into the
+shared cache, and a copy will be put into the isolated cache. The
+isolated copy is always returned, unless read-only is used. For
+read-only the shared object is returned as the isolated copy is not
+required.
+
+The size and memory usage of the shared cache depends on the entities
+cache type. attributes on the `@Cache` annotation can also be used to
+invalidate or clear the cache.
+
+[[CDEHCDJD]][[OTLCG94329]]
+
+===== Protected Cache
+
+The protected cache option allows for shared objects to reference
+isolated objects. Setting the cache isolation to `protected` for an
+entity enables its shared cache. The protected option is mostly the same
+as the shared option, except that protected entities can have
+relationships to isolated entities, whereas shared cannot.
+
+Use a protected cache to do the following:
+
+* improve performance by avoiding database access when finding or
+querying an entity by Id or index
+* improve performance by avoiding database access when accessing an
+entity's relationships to shared entities
+* ensure read-only entities are isolated to the persistence context
+* allow relationships to isolated entities
+
+Protected entities have the same life-cycle as shared entities, except
+for relationships, and read-only. Protected entities relationships to
+shared entities are cached in the shared cache, but their relationships
+to isolated entities are isolated and not cached in the shared cache.
+The `@Noncacheable` annotation can also be used to disable caching of a
+relationship to shared entities. Protected entities that are read-only
+are always copied into the isolated cache, but are not change tracked.
+
+[[CDEJAHDJ]][[OTLCG94330]]
+
+===== Weak Reference Mode
+
+EclipseLink offers a specialized persistence context cache for
+long-lived persistence contexts. Normally it is best to keep persistence
+contexts short-lived, such as creating a new `EntityManager` per
+request, or per transaction. This is referred to as a stateless model.
+This ensures the persistence context does not become too big, causing
+memory and performance issues. It also ensures the objects cached in the
+persistence context do not become stale or out of sync with their
+committed state.
+
+Some two-tier applications, or stateful models require long-lived
+persistence contexts. EclipseLink offers a special weak reference mode
+option for these types of applications. A weak reference mode maintains
+weak references to the objects in the persistence context. This allows
+the objects to garbage-collected if not referenced by the application.
+This helps prevent the persistence context from becoming too big,
+reducing memory usage and improving performance. Any new, removed or
+changed objects will be held with strong references until a commit
+occurs.
+
+A weak reference mode can be configured through the
+`eclipselink.persistence-context.reference-mode` persistence unit
+property. The following options can be used:
+
+* `HARD`—This is the default, weak references are not used. The
+persistence context will grow until cleared or closed.
+* `WEAK`—Weak references are used. Unreferenced unchanged objects will
+be eligible for garbage collection. Objects that use deferred change
+tracking will not be eligible for garbage collection.
+* `FORCE_WEAK`—Weak references are used. Unreferenced, unchanged objects
+will be eligible for garbage collection. Changed (but unreferenced)
+objects that use deferred change tracking will also be eligible for
+garbage collection, causing any changes to be lost.
+
+[[OTLCG94331]]
+
+[[sthref58]]
+
+===== Read-Only Entities
+
+An entity can be configured as read-only using the `@ReadOnly`
+annotation or the `read-only` XML attribute. A read-only entity will not
+be tracked for changes and any updates will be ignored. Read-only
+entities cannot be persisted or removed. A read-only entity must not be
+modified, but EclipseLink does not currently enforce this. Modification
+to read-only objects can corrupt the persistence unit cache.
+
+Queries can also be configured to return read-only objects using the
+`eclipselink.read-only` query hint.
+
+A `shared` entity that is read-only will return the shared instance from
+queries. The same entity will be returned from all queries from all
+persistence contexts. Shared read-only entities will never be copied or
+isolated in the persistence context. This improves performance by
+avoiding the cost of copying the object, and tracking the object for
+changes. This both reduces memory, reduces heap usage, and improves
+performance. Object identity is also maintained across the entire
+persistence unit for read-only entities, allowing the application to
+hold references to these shared objects.
+
+An `isolated` or `protected` entity that is read-only will still have an
+isolated copy returned from the persistence context. This gives some
+improvement in performance and memory usage because it does not track
+the object for changes, but it is not as significant as `shared`
+entities.

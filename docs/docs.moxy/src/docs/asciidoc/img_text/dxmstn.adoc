@@ -1,0 +1,5 @@
+:nofooter:
+This figure illustrates an XML direct mapping to a simple text node in a
+corresponding XML document. The *PhoneNumber* class contains a *number*
+attribute. The *number* attribute maps to the *<phone-number>* element
+in the XML document. The XPath for the *number* is *text()*.

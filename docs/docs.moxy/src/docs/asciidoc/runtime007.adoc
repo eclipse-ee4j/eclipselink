@@ -1,0 +1,279 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RUNTIME007]]
+=== Understanding Events
+
+JAXB offers several mechanisms to get event callbacks during the
+marshalling and unmarshalling processes. You can specify callback
+methods directly on your mapped objects, or define separate `Listener`
+classes and register them with the JAXB runtime.
+
+[[sthref51]]
+
+==== Adding Event Listener Methods on JAXB Mapped Objects
+
+On any of your objects you have mapped with JAXB, you have the option of
+specifying some special methods to allow you to receive event
+notification when that object is marshalled or unmarshalled. The methods
+must have the following signatures:
+
+[source,oac_no_warn]
+----
+/**
+ * Invoked by Marshaller after it has created an instance of this object.
+ */
+void beforeMarshal(Marshaller m);
+ 
+/**
+ * Invoked by Marshaller after it has marshalled all properties of this object.
+ */
+void afterMarshal(Marshaller m);
+ 
+/**
+ * This method is called immediately after the object is created and before the unmarshalling of this 
+ * object begins. The callback provides an opportunity to initialize JavaBean properties prior to unmarshalling.
+ */
+void beforeUnmarshal(Unmarshaller u, Object parent);
+ 
+/**
+ * This method is called after all the properties (except IDREF) are unmarshalled for this object, 
+ * but before this object is set to the parent object.
+ */
+void afterUnmarshal(Unmarshaller u, Object parent);
+ 
+----
+
+The following example shows how to write to a log every time a *Company*
+object is processed.
+
+[[sthref52]]
+
+*_Example 2-29 Sample Event Listener_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.util.Date;
+import java.util.logging.Logger;
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Company {
+ 
+   @XmlAttribute
+   private String id;
+ 
+   void beforeMarshal(Marshaller m) {
+      Logger.getLogger("example").info("COMPANY:[id=" + id + "] " + Thread.currentThread());
+   }
+ 
+   void afterMarshal(Marshaller m) {
+      Logger.getLogger("example").info("COMPANY:[id=" + id + "] " + Thread.currentThread());
+   }
+ 
+   void beforeUnmarshal(Unmarshaller u, Object parent) {
+      Logger.getLogger("example").info("COMPANY:[id=" + id + "] " + Thread.currentThread());
+   }
+ 
+   void afterUnmarshal(Unmarshaller u, Object parent) {
+      Logger.getLogger("example").info("COMPANY:[id=" + id + "] " + Thread.currentThread());
+   }
+ 
+}
+----
+
+[[sthref53]]
+
+==== Registering Listeners on Marshallers and Unmarshallers
+
+JAXB's Marshaller and Unmarshaller interfaces both define a
+`setListener()` method, which allows you to set your own custom Listener
+to intercept marshal and unmarshal events.
+
+[source,oac_no_warn]
+----
+package jakarta.xml.bind;
+ 
+public interface Marshaller {
+   ...
+   public static abstract class Listener {
+     /**
+      * Callback method invoked before marshalling from source to XML.
+      *
+      * This method is invoked just before marshalling process starts to marshal source.
+      * Note that if the class of source defines its own beforeMarshal method,
+      * the class specific callback method is invoked just before this method is invoked.
+      *
+      * @param source instance of JAXB mapped class prior to marshalling from it.
+      */
+      public void beforeMarshal(Object source) {}
+ 
+     /**
+      * Callback method invoked after marshalling source to XML.
+      *
+      * This method is invoked after source and all its descendants have been marshalled.
+      * Note that if the class of source defines its own afterMarshal method,
+      * the class specific callback method is invoked just before this method is invoked.
+      *
+      * @param source instance of JAXB mapped class after marshalling it.
+      */
+      public void afterMarshal(Object source) {}
+   }
+}
+ 
+package jakarta.xml.bind;
+ 
+public interface Unmarshaller {
+   ...
+   public static abstract class Listener {
+ 
+     /**
+      * Callback method invoked before unmarshalling into target.
+      *
+      * This method is invoked immediately after target was created and
+      * before the unmarshalling of this object begins. Note that
+      * if the class of target defines its own beforeUnmarsha method,
+      * the class specific callback method is invoked before this method is invoked.
+      *
+      * @param target non-null instance of JAXB mapped class prior to unmarshalling into it.
+      * @param parent instance of JAXB mapped class that will eventually reference target.
+      *               null when target is root element.
+      */
+      public void beforeUnmarshal(Object target, Object parent) {}
+ 
+     /**
+      * Callback method invoked after unmarshalling XML data into target.
+      *
+      * This method is invoked after all the properties (except IDREF) are unmarshalled into target,
+      * but before target is set into its parent object.
+      * Note that if the class of target defines its own afterUnmarshal method,
+      * the class specific callback method is invoked before this method is invoked.
+      *
+      * @param target non-null instance of JAXB mapped class prior to unmarshalling into it.
+      * @param parent instance of JAXB mapped class that will reference target.
+      *               null when target is root element.
+      */
+      public void afterUnmarshal(Object target, Object parent) {}
+   }
+}
+ 
+----
+
+This example performs the same logging as above, but using generic
+`Listener` classes. This makes it easier to log all JAXB objects in the
+system.
+
+[[sthref54]]
+
+*_Example 2-30 Logging with the Listener Class_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.util.logging.Logger;
+ 
+private class MarshalLogger extends Marshaller.Listener {
+   @Override
+   public void afterMarshal(Object source) {
+      Logger.getLogger("example").info(source + " "   + Thread.currentThread());
+   }
+ 
+   @Override
+   public void beforeMarshal(Object source) {
+      Logger.getLogger("example").info(source + " "   + Thread.currentThread());
+   }
+}
+ 
+package example;
+ 
+import java.util.logging.Logger;
+ 
+private class UnmarshalLogger extends Unmarshaller.Listener {
+   @Override
+   public void afterUnmarshal(Object target, Object parent) {
+      Logger.getLogger("example").info(target + " "   + Thread.currentThread());
+   }
+ 
+   @Override
+   public void beforeUnmarshal(Object target, Object parent) {
+      Logger.getLogger("example").info(target + " "   + Thread.currentThread());
+   }
+}
+----
+
+The following code sets up the listeners:
+
+[source,oac_no_warn]
+----
+Marshaller marshaller = jaxbContext.createMarshaller();
+marshaller.setListener(new MarshalLogger());
+ 
+Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+unmarshaller.setListener(new UnmarshalLogger());
+ 
+----
+
+An example of a typical marshal/unmarshal example, showing both the
+class-level and Marshaller/Unmarshaller-level event output:
+
+[source,oac_no_warn]
+----
+Jun 2, 2011 6:31:59 PM example.Company beforeMarshal
+INFO: COMPANY:[id=Zoltrix] Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$MarshalLogger beforeMarshal
+INFO: example.Company@10e790c Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$MarshalLogger beforeMarshal
+INFO: example.Employee@1db7df8 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$MarshalLogger afterMarshal
+INFO: example.Employee@1db7df8 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$MarshalLogger beforeMarshal
+INFO: example.Employee@3570b0 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$MarshalLogger afterMarshal
+INFO: example.Employee@3570b0 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$MarshalLogger beforeMarshal
+INFO: example.Employee@79717e Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$MarshalLogger afterMarshal
+INFO: example.Employee@79717e Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Company afterMarshal
+INFO: COMPANY:[id=Zoltrix] Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$MarshalLogger afterMarshal
+INFO: example.Company@10e790c Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Company beforeUnmarshal
+INFO: COMPANY:[id=null] Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$UnmarshalLogger beforeUnmarshal
+INFO: example.Company@f0c0d3 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$UnmarshalLogger beforeUnmarshal
+INFO: example.Employee@4f80d6 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$UnmarshalLogger afterUnmarshal
+INFO: example.Employee@4f80d6 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$UnmarshalLogger beforeUnmarshal
+INFO: example.Employee@1ea0252 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$UnmarshalLogger afterUnmarshal
+INFO: example.Employee@1ea0252 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$UnmarshalLogger beforeUnmarshal
+INFO: example.Employee@3e89c3 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$UnmarshalLogger afterUnmarshal
+INFO: example.Employee@3e89c3 Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Company afterUnmarshal
+INFO: COMPANY:[id=Zoltrix] Thread[main,5,main]
+Jun 2, 2011 6:31:59 PM example.Tester$UnmarshalLogger afterUnmarshal
+INFO: example.Company@f0c0d3 Thread[main,5,main]
+----

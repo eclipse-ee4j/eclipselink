@@ -1,0 +1,110 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[TESTINGJPA003]]
+=== Using a Property Map
+
+You can use a property map to override the default persistence
+properties and use container deployment.
+
+==== Main Tasks
+
+To use a property map, perform the following steps:
+
+* link:#CHDHHIIJ[Task 1: Configure the persistence.xml File]
+* link:#CHDCAFIA[Task 2: Configure the Bootstrapping API]
+* link:#CHDGCFBH[Task 3: Instantiate the EntityManagerFactory]
+
+[[CHDHHIIJ]]
+
+===== Task 1: Configure the persistence.xml File
+
+link:#CHDEHGEG[Example 17-3] illustrates a `persistence.xml` file that
+uses container deployment.
+
+[[CHDEHGEG]]
+
+*_Example 17-3 A persistence.xml File Specifying the Java SE Platform
+Configuration, for use with a Property Map_*
+
+[source,oac_no_warn]
+----
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="employee" transaction-type="RESOURCE_LOCAL">
+        <non-jta-data-source>jdbc/MyDS</non-jta-data-source>
+    </persistence-unit>
+</persistence>
+----
+
+NOTE: There is no data source available when tested outside a container.
+
+
+[[CHDCAFIA]]
+
+===== Task 2: Configure the Bootstrapping API
+
+To test the persistence unit shown in link:#CHDEHGEG[Example 17-3]
+outside the container, you must use the Java SE platform bootstrapping
+API. link:#CHDDHBCC[Example 17-4] contains sample code that illustrates
+this bootstrapping.
+
+[[CHDDHBCC]]
+
+*_Example 17-4 Sample Configuration_*
+
+[source,oac_no_warn]
+----
+import static org.eclipse.persistence.config.PersistenceUnitProperties.*;
+
+...
+
+  Map properties = new HashMap();
+
+  // Ensure RESOURCE_LOCAL transactions is used.
+  properties.put(TRANSACTION_TYPE,
+    PersistenceUnitTransactionType.RESOURCE_LOCAL.name());
+
+  // Configure the internal connection pool
+  properties.put(JDBC_DRIVER, "oracle.jdbc.OracleDriver");
+  properties.put(JDBC_URL, "jdbc:oracle:thin:@localhost:1521:ORCL");
+  properties.put(JDBC_USER, "scott");
+  properties.put(JDBC_PASSWORD, "tiger");
+
+  // Configure logging. FINE ensures all SQL is shown
+  properties.put(LOGGING_LEVEL, "FINE");
+  properties.put(LOGGING_TIMESTAMP, "false");
+  properties.put(LOGGING_THREAD, "false");
+  properties.put(LOGGING_SESSION, "false");
+
+  // Ensure that no server-platform is configured
+  properties.put(TARGET_SERVER, TargetServer.None);
+----
+
+[[CHDGCFBH]]
+
+===== Task 3: Instantiate the EntityManagerFactory
+
+An `EntityManagerFactory` provides an efficient way to construct
+`EntityManager` instances for a database. You can instantiate the
+`EntityManagerFactory` for the application (illustrated in
+link:#CHDDHBCC[Example 17-4]) by using:
+
+[source,oac_no_warn]
+----
+Persistence.
+createEntityManagerFactory("unitName", "properties");
+----

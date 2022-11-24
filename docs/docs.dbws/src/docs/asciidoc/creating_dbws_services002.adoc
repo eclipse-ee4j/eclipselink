@@ -1,0 +1,136 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSCREATE002]]
+=== Using an EclipseLink SessionCustomizer
+
+When using an EclipseLink `SessionCustomizer` with DBWS, you can access
+to the EclipseLink API to retrieve the OR (`object-relational`) or OX
+(`object-XML`) mapping descriptors from the session. You can then use
+the descriptors to add, change, or delete mappings.
+
+For more information, see "Session Customization in the EclipseLink
+documentation: +
+`http://wiki.eclipse.org/Introduction_to_EclipseLink_Sessions_%28ELUG%29#Session_Customization`
+
+==== Example
+
+This example illustrates how to implement an EclipseLink
+`SessionCustomizer`:
+
+[source,oac_no_warn]
+----
+package some.java.package;
+ 
+import org.eclipse.persistence.config.SessionCustomizer; 
+import org.eclipse.persistence.sessions.Session; 
+import org.eclipse.persistence.sessions.DatabaseLogin; 
+ 
+public class MySessionCustomizer implements SessionCustomizer {
+ 
+  public MySessionCustomizer() {
+  }
+ 
+  public void customize(Sesssion session) { 
+    DatabaseLogin login = (DatabaseLogin)session.getDatasourceLogin();
+    // enable 'dirty' reads
+    login.setTransactionIsolation(DatabaseLogin.TRANSACTION_READ_UNCOMMITTED); 
+  } 
+}
+ 
+----
+
+In the `DBWSBuilder` configuration file, you must use the
+`orSessionCustomizerClassName` or `oxSessionCustomizerClassName` to
+specify if the customization applies to the ORM or ORX project
+(respectively), as shown here:
+
+[[sthref38]]
+
+*_Example 2-3 ORM Project_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?> 
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  <properties>
+    <property name="projectName">customize_test</property>
+     ...
+    <property name="orSessionCustomizerClassName">some.java.package.MyORSessionCustomizer</property>
+ 
+----
+
+[[sthref39]]
+
+*_Example 2-4 ORX Project_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?> 
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  <properties>
+    <property name="projectName">customize_test</property>
+     ...
+    <property name="oxSessionCustomizerClassName">some.java.package.MyOXSessionCustomizer</property>
+ 
+----
+
+==== Advanced Customization
+
+You can further customize an EclipseLink DBWS service by creating your
+own EclipseLink `project.xml` and `sessions.xml` files. Using your
+preferred utility, you can:
+
+* map your objects to your relational database in an EclipseLink
+relational project
+* map your objects to your XML schema in an EclipseLink XML project
+* create an EclipseLink `sessions.xml` file that references both
+projects.
+
+In this way, you can control all aspects of the relational and XML
+mapping. This approach is best when you want to customize most or all
+details.
+
+In link:#CJADIDDI[Example 2-5], a DBWS service is constructed from
+existing EclipseLink project maps with identical case-sensitive aliases
+(for Descriptors that are common between the projects).
+
+[[CJADIDDI]]
+
+*_Example 2-5 Sample DBWS Service_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="Eclipse Persistence Services - some version (some build date)" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">
+   <name>SomeORProject</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>some.package.SomeClass</class>
+         <alias>SomeAlias</alias>
+...
+ 
+
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="Eclipse Persistence Services - some version (some build date)" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">
+   <name>SomeOXProject</name>
+   <class-mapping-descriptor xsi:type="xml-class-mapping-descriptor">
+      <class>some.package.SomeClass</class>
+      <alias>SomeAlias</alias>
+...
+ 
+----

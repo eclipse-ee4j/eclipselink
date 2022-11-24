@@ -1,0 +1,71 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSCREATE006]]
+=== Creating from a Stored Function
+
+EclipseLink DBWS can create a Web service that exposes a simple Stored
+Function.
+
+==== Example
+
+In this example, the following stored function will be used:
+
+[source,oac_no_warn]
+----
+DROP FUNCTION TESTECHO;
+CREATE OR REPLACE FUNCTION TESTECHO(T IN VARCHAR2) RETURN VARCHAR2 IS retVal VARCHAR2
+BEGIN
+              retVal := CONCAT('test-' , T);
+              RETURN retVal;
+END TESTECHO;
+ 
+----
+
+The DBWSBuilder utility requires a DBWS configuration XML file as input,
+as shown here:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <properties>
+    <property name="projectName">testEcho</property>
+    ... database properties
+  </properties>
+  <procedure
+    name="testEcho"
+    procedurePattern="TESTECHO"
+    returnType="xsd:string"
+  />
+</dbws-builder>
+ 
+----
+
+Execute the *DBWSBuilder*, as shown here:
+
+[source,oac_no_warn]
+----
+prompt > dbwsbuilder.cmd -builderFile dbws-builder.xml -stageDir output_directory -packageAs wls testEcho.war
+ 
+----
+
+where
+
+* `dbws-builder.xml` is the DBWS builder configuration XML file above
+* `output_directory` is the output directory for the generated files
+* `-packageAs` the platform on which the web service will be deployed

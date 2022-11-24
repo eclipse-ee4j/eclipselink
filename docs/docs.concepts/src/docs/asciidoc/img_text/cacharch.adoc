@@ -1,0 +1,8 @@
+:nofooter:
+This illustration shows the object life cycle and the EclipseLink cache.
+Read requests from the database are sent to the persistence unit
+(session) cache in EclipseLink session. Write requests from the database
+are sent to the EclipseLink persistence context cache (also known as the
+unit of work cache). The persistence unit (session) cache registers
+objects with the unit of work. During a commit or merge transaction, the
+unit of work cache refreshes the persistence unit (session) cache.
