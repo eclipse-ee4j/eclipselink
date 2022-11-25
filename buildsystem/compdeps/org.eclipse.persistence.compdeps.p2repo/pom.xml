@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,37 +112,37 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <groupId>com.oracle.database.jdbc</groupId>
                                     <artifactId>ojdbc8</artifactId>
                                     <version>${oracle.jdbc.version}</version>
                                     <destFileName>ojdbc.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <groupId>com.oracle.database.nls</groupId>
                                     <artifactId>orai18n</artifactId>
                                     <version>${oracle.jdbc.version}</version>
                                     <destFileName>orai18n.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <groupId>com.oracle.database.xml</groupId>
                                     <artifactId>xdb</artifactId>
                                     <version>${oracle.jdbc.version}</version>
                                     <destFileName>xdb.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <groupId>com.oracle.database.xml</groupId>
                                     <artifactId>xmlparserv2</artifactId>
                                     <version>${oracle.jdbc.version}</version>
                                     <destFileName>xmlparserv2.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <groupId>com.oracle.database.jdbc</groupId>
                                     <artifactId>ucp</artifactId>
                                     <version>${oracle.jdbc.version}</version>
                                     <destFileName>ucp.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <groupId>com.oracle.database.observability</groupId>
                                     <artifactId>dms</artifactId>
                                     <version>${oracle.jdbc.version}</version>
                                     <destFileName>dms.jar</destFileName>
@@ -150,7 +150,7 @@
                                 <artifactItem>
                                     <groupId>com.oracle.database.messaging</groupId>
                                     <artifactId>aqapi</artifactId>
-                                    <version>${oracle.jdbc.version}</version>
+                                    <version>${oracle.apapi.version}</version>
                                     <destFileName>aqapi.jar</destFileName>
                                 </artifactItem>
                                 <!--Oracle NoSQL DB-->
