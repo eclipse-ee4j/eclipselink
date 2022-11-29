@@ -143,6 +143,7 @@
         <test.oracle.properties.file>el-test.oracle.properties</test.oracle.properties.file>
         <test.mongodb.properties.file>el-test.mongodb.properties</test.mongodb.properties.file>
         <test.derby.properties.file>el-test.derby.properties</test.derby.properties.file>
+        <test.db2.properties.file>el-test.db2.properties</test.db2.properties.file>
         <test.mssql.properties.file>el-test.mssql.properties</test.mssql.properties.file>
         <test.pgsql.properties.file>el-test.pgsql.properties</test.pgsql.properties.file>
 
@@ -219,6 +220,7 @@
         <ant.version>1.10.12</ant.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.15.2.0</derby.version>
+        <db2.version>11.5.8.0</db2.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
         <exam.version>4.13.2</exam.version>
         <hamcrest.version>1.3</hamcrest.version>
@@ -957,6 +959,11 @@
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derbyclient</artifactId>
                 <version>${derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.db2</groupId>
+                <artifactId>jcc</artifactId>
+                <version>${db2.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.microsoft.sqlserver</groupId>
@@ -1746,6 +1753,18 @@
                 <db.driver.groupId>org.apache.derby</db.driver.groupId>
                 <db.driver.artifactId>derbyclient</db.driver.artifactId>
                 <db.driver.version>${derby.version}</db.driver.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>db2</id>
+            <properties>
+                <test.properties.file>${user.home}/${test.db2.properties.file}</test.properties.file>
+                <test.properties.fileName>${test.db2.properties.file}</test.properties.fileName>
+                <!--Used by sql-maven-plugin-->
+                <db.driver.groupId>com.ibm.db2</db.driver.groupId>
+                <db.driver.artifactId>jcc</db.driver.artifactId>
+                <db.driver.version>${db2.version}</db.driver.version>
+                <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
         </profile>
         <profile>

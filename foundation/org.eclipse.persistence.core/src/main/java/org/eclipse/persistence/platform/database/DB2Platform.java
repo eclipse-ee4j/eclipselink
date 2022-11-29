@@ -507,6 +507,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         addOperator(lengthOperator());
         addOperator(nullifOperator());
         addOperator(coalesceOperator());
+
+        addOperator(roundOperator());
     }
 
     /**
@@ -1494,6 +1496,19 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         operator.setArgumentIndices(indices);
 
         operator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return operator;
+    }
+
+    /**
+     * DB2 requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 will throw an error:
+     * <pre>Db2 cannot determine how to implicitly cast the arguments between string and 
+     * numeric data types. DB2 SQL Error: SQLCODE=-245, SQLSTATE=428F5</pre>
+     */
+    protected ExpressionOperator roundOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.round().copyTo(operator);
         return operator;
     }
 
