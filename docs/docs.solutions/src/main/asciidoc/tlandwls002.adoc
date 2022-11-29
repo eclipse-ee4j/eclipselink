@@ -1,0 +1,737 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ELWLS002]]
+=== Implementing the Solution
+
+To run EclipseLink JPA applications in WebLogic Server, you must
+configure WebLogic Server and coordinate certain settings in it and in
+your application, as described in the following tasks:
+
+* link:#BABJHCFG[Task 1: Prerequisites]
+* link:#BABJDGGE[Task 3: Configure JMX MBean Extensions in WebLogic Server]
+* link:#BABIIEHD[Task 4: Use or Reconfigure the Logging Integration]
+* link:#BABJEFBD[Task 5: Add Persistence to Your Java Application Using EclipseLink]
+* link:#BABEEIFH[Task 6: Configure a Data Source]
+* link:#BABHICHE[Task 7: Extend the Domain to Use Advanced Oracle Database Features]
+* link:#BABICGHA[Task 8: Start WebLogic Server and Deploy the Application]
+* link:#BABEEJDE[Task 9: Run the Application]
+* link:#BABIJAAD[Task 10: Configure and Monitor Persistence Settings in WebLogic Server]
+
+[[BABJHCFG]]
+
+==== Task 1: Prerequisites
+
+This document is based on the following products and tools, although the
+principles apply to any supported database or development environment.
+It is assumed that the software is already installed, except where noted
+in later sections.
+
+* WebLogic Server 12__c__ or later.
++
+For more information and downloads, see
+`http://www.oracle.com/technetwork/middleware/weblogic/overview/index.html`
+on the Oracle Technology Network.
+
+* Any compliant Java Database Connectivity (JDBC) database including
+Oracle Database, Oracle Express, MySQL, and so on.
++
+For Oracle Database, see
+`http://www.oracle.com/technetwork/database/enterprise-edition/overview/index.html`.
+For Oracle Database, Express Edition, see
+`http://www.oracle.com/technetwork/database/express-edition/overview/index.html`.
+For MySQL, see `http://www.oracle.com/us/products/mysql/index.html`.
+* While it is not required, you may want to use a Java development
+environment (IDE) for convenience during development. For example
+JDeveloper, Oracle Enterprise Pack for Eclipse, and NetBeans all provide
+sophisticated Jakarta EE development tools. Both JDeveloper and Oracle
+Enterprise Pack for Eclipse include embedded versions of WebLogic
+Server, although this guide describes a standalone instance of WebLogic
+Server.
++
+For JDeveloper, see
+`http://www.oracle.com/technetwork/developer-tools/jdev/downloads/index.html`.
+For Oracle Enterprise Pack for Eclipse, see
+`http://www.oracle.com/technetwork/developer-tools/eclipse/overview/index.html`.
+For NetBeans, see `http://www.oracle.com/us/products/tools/050845.html`.
+
+[[BABJDGGE]]
+
+==== Task 3: Configure JMX MBean Extensions in WebLogic Server
+
+WebLogic Server uses Java Management Extensions (JMX) MBeans to
+configure, monitor, and manage WebLogic Server resources. For
+EclipseLink applications, MBeans are used to monitor and configure
+aspects of persistence units and are also used for logging.
+
+NOTE: When deployed to WebLogic Server, EclipseLink applications deploy MBeans
+when they connect to the database, not at deployment time.
+
+For information about how MBeans are used in WebLogic Server, see
+_Oracle Fusion Middleware Developing Custom Management Utilities With
+JMX for Oracle WebLogic Server_ and _Oracle Fusion Middleware Developing
+Manageable Applications With JMX for Oracle WebLogic Server_.
+
+For information about EclipseLink logging in WebLogic Server, see
+link:#BABIIEHD[Task 4: Use or Reconfigure the Logging Integration.]
+
+By default, when you deploy an EclipseLink application to WebLogic
+Server, the EclipseLink runtime deploys the following JMX MBeans to the
+WebLogic Server JMX service for each EclipseLink session:
+
+* `org.eclipse.persistence.services.DevelopmentServices` - This class
+provides facilities for managing an EclipseLink session internal to
+EclipseLink over JMX.
+* `org.eclipse.persistence.services.RuntimeServices` - This class
+provides facilities for managing an EclipseLink session external to
+EclipseLink over JMX.
+
+Use the API that this JMX MBean exposes to access and configure your
+EclipseLink sessions at runtime, using JMX code that you write, or to
+integrate your EclipseLink application with a third-party JMX management
+application, such as JConsole.
+
+To find out how to access information about custom MBeans, you must
+first enable anonymous lookup and then use a separate tool to access the
+MBean information.
+
+To enable anonymous lookup in the WebLogic Server Administration
+Console, do the following:
+
+. If you have not already done so, in the Change Center of the
+Administration Console, click *Lock & Edit*.
+. In the left pane, select your domain to open the Settings page for
+your domain.
+. Expand *Security > General*.
+. Select *Anonymous Admin Lookup Enabled*.
+. To activate these changes, in the Change Center of the Administration
+Console, click *Activate Changes*.
+
+For the information about accessing the MBean information using various
+tools, see "Accessing Custom MBeans," in _Oracle Fusion Middleware
+Developing Manageable Applications With JMX for Oracle WebLogic Server_.
+
+For information about monitoring custom MBeans in the Administration
+Console, see "Monitor Custom MBeans" in _Oracle Fusion Middleware Oracle
+WebLogic Server Administration Console Online Help_.
+
+[[BABIIEHD]]
+
+==== Task 4: Use or Reconfigure the Logging Integration
+
+By default, EclipseLink logging is integrated into the WebLogic Server
+logging infrastructure. Details about how the integration works and how
+to override it are described in the following sections. For detailed
+information about WebLogic Server logging, see the following:
+
+* _Oracle Fusion Middleware Using Logging Services for Application
+Logging for Oracle WebLogic Server_
+* _Oracle Fusion Middleware Configuring Log Files and Filtering Log
+Messages for Oracle WebLogic Server_
+* The logging topics in _Oracle Fusion Middleware Oracle WebLogic Server
+Administration Console Online Help_
+
+For information about configuring logging for JPA persistence units, see
+"How to Configure Logging" in the EclipseLink documentation at
+`http://wiki.eclipse.org/EclipseLink/Examples/JPA/Logging`.
+
+===== How the Logging Integration Works
+
+By default, the WebLogic Server logging implementation is injected into
+the persistence context, which results in all EclipseLink logging
+messages being produced according to the WebLogic Server logging
+configuration.
+
+As a result of this integration, EclipseLink logging levels are
+converted to WebLogic Server logging levels as shown in
+link:#BABCAIDJ[Table 3-1].
+
+[[BABCAIDJ]]
+
+*_Table 3-1 Mapping of EclipseLink Logging Levels to WebLogic Server
+Logging Levels_*
+
+|===
+|*EclipseLink Logging Levels* |*WebLogic Server Logging Levels*
+|ALL, FINEST, FINER, FINE |DEBUG
+|CONFIG |INFO
+|INFO |NOTICE
+|WARNING |WARNING
+|SEVERE |ALERT
+|OFF |OFF
+|===
+
+WebLogic Server logging levels are mapped to EclipseLink levels as shown
+in link:#BABHEBHF[Table 3-2].
+
+[[BABHEBHF]]
+
+*_Table 3-2 Mapping of WebLogic Server Logging Levels to EclipseLink
+Logging Levels_*
+
+|===
+|*WebLogic Server Logging Levels* |*EclipseLink Logging Levels*
+|TRACE, DEBUG |FINEST
+|INFO |CONFIG
+|NOTICE |INFO
+|WARNING |WARNING
+|ERROR, CRITICAL, ALERT |SEVERE
+|EMERGENCY, OFF |OFF
+|===
+
+===== Viewing Persistence Unit Logging Levels in the Administration Console
+
+You can see the EclipseLink logging level defined for the persistence
+unit in the Administration Console, as described in link:#BABIJAAD[Task
+10: Configure and Monitor Persistence Settings in WebLogic Server.]
+However, be aware that this logging level, set in the `persistence.xml`
+file, is overridden when the default WebLogic Server and EclipseLink
+logging integration is used. For information about overriding the
+integration, see link:#TLADG128[Overriding the Default Logging
+Integration.]
+
+When the default integration is used, the Enterprise JavaBeans (EJB)
+logging options for persistence are mapped through and control
+EclipseLink's logging output in the Administration Console.
+
+[[TLADG128]]
+
+===== Overriding the Default Logging Integration
+
+You set EclipseLink logging levels in the `persistence.xml` file.
+However, when you accept the default logging integration with WebLogic
+Server, those settings are ignored, and the logging configuration set in
+WebLogic Server is used. The EclipseLink logging levels are used only
+when you use the native EclipseLink logging implementation.
+
+You can override the default logging integration by setting the
+`eclipselink.logging.logger` property name to a different setting. For
+example, to enable the default EclipseLink logging, set the
+`eclipselink.logging.logger` property as follows:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.logging.logger" value="DefaultLogger"/>
+----
+
+You can also use a different logging implementation for EclipseLink
+messages, for example the `java.util.logging` package:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.logging.logger" value="JavaLogger"/>
+----
+
+[[BABFGGFE]]
+
+===== Configuring WebLogic Server to Expose EclipseLink Logging
+
+If you use the native EclipseLink logging implementation, you can still
+display EclipseLink logging messages in the WebLogic Server domain's log
+files by configuring WebLogic Server to redirect Java Virtual Machine
+(JVM) output to the registered log destinations.
+
+For more information and instructions for redirecting, see "Redirecting
+JVM Output" in _Oracle Fusion Middleware Configuring Log Files and
+Filtering Log Messages for Oracle WebLogic Server_. To set this option
+in the Administration Console, see "Redirect JVM output" in _Oracle
+Fusion Middleware Oracle WebLogic Server Administration Console Online
+Help_.
+
+[[BABCAEDA]]
+
+===== Other Considerations
+
+Other things to consider include the following:
+
+* The message ID `2005000` is used for all EclipseLink log messages.
+* Some logging messages handled by the WebLogic Server integrated logger
+may show up in the WebLogic Server console or the server log (depending
+on the settings of logging levels) during deployment, even though at
+runtime the application's entity manager factory will use only the
+EclipseLink logging infrastructure and only the EclipseLink logging
+settings.
+* If you use a different release of EclipseLink than the release bundled
+in your WebLogic Server installation (by using a filtering class
+loader), then trying to use the default integrated logging can lead to
+errors, due to classloading conflicts. To work around this issue,
+explicitly set the `eclipselink.logging.logger` property to something
+other than the integrated WebLogic Server logger.
+
+[[BABJEFBD]]
+
+==== Task 5: Add Persistence to Your Java Application Using EclipseLink
+
+Using EclipseLink JPA to provide persistence for an application is the
+fundamental task presumed by all the other tasks described in this
+chapter; yet the actual JPA programming practice is mostly outside the
+scope of this guide. WebLogic Server imposes no special requirements on
+your EclipseLink application, other than the details described in this
+chapter.
+
+This chapter describes features, settings, and tasks that are specific
+to using EclipseLink (runtime and API) with WebLogic Server. For
+information about developing, packaging, and deploying a Java
+application using JPA, see the following:
+
+* The EclipseLink project wiki at `http://wiki.eclipse.org/EclipseLink`
+* The EclipseLink Documentation Center at
+`https://www.eclipse.org/eclipselink/documentation/`
+* The _Jakarta Persistence API, Version 2.1_ specification at
+`http://jcp.org/en/jsr/detail?id=317`
+* "Part V, Persistence" in "The Jakarta EE 6 Tutorial" at
+`http://download.oracle.com/javaee/6/tutorial/doc/bnbpy.html`
+* Any third-party book that describes programming Java applications
+using JPA
+
+For more information about EclipseLink features and concepts, see
+xref:{relativedir}/intro.adoc#CHDGIDEA[Chapter 1, "Introduction"] and _EclipseLink
+Concepts_.
+
+For related WebLogic Server programming topics, see any book in the
+WebLogic Server documentation set, in particular the following:
+
+* _Oracle Fusion Middleware Programming Enterprise JavaBeans, Version
+3.0, for Oracle WebLogic Server_
+* _Oracle Fusion Middleware Developing Applications for Oracle WebLogic
+Server_
+* _Oracle Fusion Middleware Deploying Applications to Oracle WebLogic
+Server_
+* _Oracle Fusion Middleware Programming JDBC for Oracle WebLogic Server_
+
+[[BABEEIFH]]
+
+==== Task 6: Configure a Data Source
+
+In WebLogic Server, you configure database connectivity by adding JDBC
+data sources to WebLogic Server domains. Each WebLogic data source
+contains a pool of database connections. Applications look up the data
+source on the Java Naming and Directory Interface (JNDI) tree or in the
+local application context and then reserve a database connection with
+the `getConnection()` method. Data sources and their connection pools
+provide connection management processes to keep the system running
+efficiently.
+
+For information about using JDBC with WebLogic Server, see the
+following:
+
+* For complete documentation about working with JDBC in WebLogic Server,
+see _Oracle Fusion Middleware Configuring and Managing JDBC Data Sources
+for Oracle WebLogic Server_, in particular:
+** "Configuring WebLogic JDBC Resources"
+** "Configuring JDBC Data Sources"
+* For information about working with JDBC data sources in the WebLogic
+Server Administration Console, see the topics under "Configure JDBC" in
+_Oracle Fusion Middleware Oracle WebLogic Server Administration Console
+Online Help_.
+
+===== Ways to Configure Data Sources for JPA Applications
+
+You can configure data sources for JPA applications deployed to WebLogic
+Server in a variety of ways, including the following:
+
+* link:#BABEHDCG[Configure a Globally Scoped JTA Data Source]
+* link:#BABFIHAE[Configure an Application-Scoped JTA Data Source]
+* link:#BABCGGEJ[Configure a non-JTA Data Source and Manage Transactions in the Application]
+
+[[BABEHDCG]]
+
+===== Configure a Globally Scoped JTA Data Source
+
+The most common data source configuration is a globally-scoped JNDI data
+source, using Java Transaction API (JTA) for transaction management,
+specified in the `persistence.xml` file. Configuration is
+straightforward, as shown in the following steps, and multiple
+applications can access the data source:
+
+* link:#BABHCDIG[Create the Data Source in WebLogic Server]
+* link:#BABBHEBJ[Configure the persistence.xml File]
+
+[[BABHCDIG]]
+
+====== Create the Data Source in WebLogic Server
+
+To set up a globally scoped JNDI data source in the WebLogic Server
+Administration Console, do the following:
+
+. Create a new data source, as described in "Configure JDBC generic data
+sources" in _Oracle Fusion Middleware Oracle WebLogic Server
+Administration Console Online Help_.
++
+NOTE: EclipseLink is compatible with any WebLogic Server data source that can
+be accessed using standard JNDI data source lookup by name. These
+instructions describe the wizard for a generic data source.
++
+. Enter values in the Create a New JDBC data source wizard, according to
+your requirements. For more information, see "Create a JDBC Data Source"
+in _Oracle Fusion Middleware Oracle WebLogic Server Administration
+Console Online Help_.
++
+IMPORTANT: The value used for *JNDI Name* (on the JDBC Datasource Properties page
+must be the same as the value used for the `<jta-data-source>` element
+in the `persistence.xml` file.
++
+. Configure connection pools, as described in "Configuring Connection
+Pool Features" in _Oracle Fusion Middleware Configuring and Managing
+JDBC Data Sources for Oracle WebLogic Server_. The connection pool
+configuration can affect EclipseLink's ability to handle concurrent
+requests from the application. Properties should be tuned in the same
+way any connection pool would be tuned to optimize resources and
+application responsiveness.
+
+[[BABBHEBJ]]
+
+====== Configure the persistence.xml File
+
+In the `persistence.xml` file, specify that `transaction-type` is `JTA`,
+and provide the name of the data source in the `jta-data-source` element
+(prefaced by `jdbc/` or not), as shown in link:#BABCFFHC[Example 3-1]:
+
+[[BABCFFHC]]
+
+*_Example 3-1 persistence.xml File With JNDI Data Source Using JTA_*
+
+[source,oac_no_warn]
+----
+...
+  <persistence-unit name="example" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>JDBC Data Source-1</jta-data-source>
+    <class>org.eclipse.persistence.example.jpa.server.business.Cell</class>
+    <class>org.eclipse.persistence.example.jpa.server.business.CellAttribute</class>
+  </persistence-unit>
+----
+
+[[BABFIHAE]]
+
+===== Configure an Application-Scoped JTA Data Source
+
+To configure an application-scoped data source that uses JTA for
+transaction management, perform the following steps:
+
+. link:#BABDBBAE["Specify that the Data Source Is Application-Scoped"]
+. link:#BABCGDDA["Add the JDBC Module to the WebLogic Server Application Configuration"]
+. link:#BABHFJED["Configure the JPA Persistence Unit to Use the JTA Data Source"]
+
+[[BABDBBAE]]
+
+====== Specify that the Data Source Is Application-Scoped
+
+To define an application-scoped data source, create a
+__`name`__`-jdbc.xml` JDBC module file and place it in the `META-INF`
+folder of the application's EAR file. In that file, add
+`<scope>Application</scope>` to the `jdbc-data-source-params` section,
+as shown in link:#BABDAEFC[Example 3-2].
+
+[[BABDAEFC]]
+
+*_Example 3-2 JDBC Data Source Defined in the _name_-jdbc.xml File_*
+
+[source,oac_no_warn]
+----
+<jdbc-data-source ...>
+... 
+  <jdbc-data-source-params>
+    <jndi-name>SimpleAppScopedDS</jndi-name>
+    <scope>Application</scope>
+  </jdbc-data-source-params>
+</jdbc-data-source>
+----
+
+[TIP]
+====
+You can create the framework for the a __`name`__`-jdbc.xml` file by
+creating a globally scoped data source from the WebLogic Server
+Administration Console, as described in link:#BABEHDCG[Configure a
+Globally Scoped JTA Data Source,] with these differences:
+
+* Do not associate the data source with a server.
+* Add the `<scope>` element manually.
+
+====
+
+For more information about JDBC module configuration files and
+`jdbc-data-source` (including `<jdbc-driver-params>` and
+`<jdbc-connection-pool-params>`), see "Configuring WebLogic JDBC
+Resources" in _Oracle Fusion Middleware Configuring and Managing JDBC
+Data Sources for Oracle WebLogic Server_.
+
+[[BABCGDDA]]
+
+====== Add the JDBC Module to the WebLogic Server Application Configuration
+
+Add a reference to the JDBC module in the
+`/META-INF/weblogic-application.xml` application deployment descriptor
+in the EAR file, as shown in link:#BABCJEDI[Example 3-3]. This registers
+the data source for use in the application.
+
+[[BABCJEDI]]
+
+*_Example 3-3 JDBC Module Defined in the weblogic-application.xml File_*
+
+[source,oac_no_warn]
+----
+<wls:module>
+  <wls:name>SimpleAppScopedDS</wls:name>
+  <wls:type>JDBC</wls:type>
+  <wls:path>META-INF/simple-jdbc.xml</wls:path>
+</wls:module>
+----
+
+For more information about `weblogic-application.xml` application
+deployment descriptors, see "Understanding Application Deployment
+Descriptors" in _Oracle Fusion Middleware Deploying Applications to
+Oracle WebLogic Server_ and "Enterprise Application Deployment
+Descriptor Elements" in _Oracle Fusion Middleware Developing
+Applications for Oracle WebLogic Server_.
+
+[[BABHFJED]]
+
+====== Configure the JPA Persistence Unit to Use the JTA Data Source
+
+To make it possible for EclipseLink runtime to lazily look up an
+application-scoped data source, you must specify an additional data
+source property in the definition of the persistence unit in the
+`persistence.xml` file. For a JTA data source, add a fully qualified
+`jakarta.persistence.jtaDataSource` property, with the value
+`java:/app/jdbc/`__`data_source_name`__, as shown in
+link:#BABFIHHE[Example 3-4].
+
+The values of the `<jta-data-source>` and
+`<jakarta.persistence.jtaDataSource>` properties must match.
+
+[[BABFIHHE]]
+
+*_Example 3-4 JTA Data Source Definition in the persistence.xml File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="windows-1252" ?>
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+  version="1.0" xmlns="http://java.sun.com/xml/ns/persistence">
+  <persistence-unit name="employee" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>java:/app/jdbc/SimpleAppScopedDS</jta-data-source>
+    <properties>
+      <property name="jakarta.persistence.jtaDataSource" 
+          value="java:/app/jdbc/SimpleAppScopedDS" />
+    </properties>
+  </persistence-unit>
+</persistence>
+        
+----
+
+[[BABCGGEJ]]
+
+===== Configure a non-JTA Data Source and Manage Transactions in the Application
+
+To configure a non-JTA data source managed by the application, follow
+the procedures described in link:#BABFIHAE[Configure an
+Application-Scoped JTA Data Source,] but configure the JPA persistence
+unit to use a non-JTA data source by specifying a not-JTA data source,
+as shown in link:#BABHFADF[Example 3-5].
+
+[[BABHFADF]]
+
+*_Example 3-5 non-JTA Data Source Definition in the persistence.xml
+File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="windows-1252" ?>
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+  version="1.0" xmlns="http://java.sun.com/xml/ns/persistence">
+  <persistence-unit name="employee" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <non-jta-data-source>OracleDS</non-jta-data-source>
+    <properties>
+      <property name="jakarta.persistence.nonJtaDataSource" 
+          value="OracleDS" />
+    </properties>
+  </persistence-unit>
+</persistence>
+        
+----
+
+Write the code in your application to handle the transactions as
+described, for example, in "Transactions in EJB Applications" in _Oracle
+Fusion Middleware Programming JTA for Oracle WebLogic Server_.
+
+===== Ensure the Settings Match
+
+Certain settings in the data source configuration must match certain
+settings in the application's `ejbModule/META-INF/persistence.xml` file.
+For the data source configuration in WebLogic Server, you can check the
+settings in the configuration files or in the Administration Console.
+
+In the Administration Console, review the settings as follows:
+
+. In the *Domain Structure* tree, expand *Services*, then select *Data
+Sources*.
+. On the Summary of JDBC Data Sources page, click the name of the data
+source.
+. On the *Settings for* *_data_source_name_* *> Configuration > General*
+page, find the value for *JNDI Name*, for example *localDS*. If you are
+using JTA, then the name must match `<jta-data-source>` in the
+`persistence.xml` file.
+. On the *Settings for* *_data_source_name_* *> Configuration >
+Connection Pool* page, review these settings:
+* The value for *URL* must match the `jakarta.persistence.jdbc.url`
+value in the `persistence.xml` file, for example,
+`jdbc:oracle:thin:@127.0.0.1:1521:XE`.
+* The value for *Driver Class Name* must match the
+`jakarta.persistence.jdbc.driver` value in the `persistence.xml` file,
+for example (for a JTA data source),
+`oracle.jdbc.xa.client.OracleXADataSource`.
+
+link:#CHDDDDIE[Example 3-6] shows the values that must be shared in the
+domain's `config.xml` file and the application's `persistence.xml` file.
+
+[[CHDDDDIE]]
+
+*_Example 3-6 Server Domain config.xml File_*
+
+[source,oac_no_warn]
+----
+...
+<domain...>
+  <jdbc-system-resource>
+    <name>localJTA</name>
+    <target>AdminServer,ManagedServer_1,ManagedServer_2</target>
+    <descriptor-file-name>jdbc/localJTA-4636-jdbc.xml</descriptor-file-name>
+  </jdbc-system-resource>
+</domain>
+----
+
+[[BABHICHE]]
+
+==== Task 7: Extend the Domain to Use Advanced Oracle Database Features
+
+To fully support Oracle Spatial and Oracle XDB mapping capabilities (in
+both standalone WebLogic Server and the JDeveloper Integrated WebLogic
+Server), you must use the `toplink-spatial-template.jar` file and the
+`toplink-xdb-template.jar` file to extend the WebLogic Server domain to
+support Oracle Spatial and Oracle XDB, respectively.
+
+To extend your WebLogic Server domain:
+
+. Download the `toplink-spatial-template.jar` (to support Oracle
+Spatial) and `toplink-xdb-template.jar` (to support Oracle XDB) files
+from:
+* `http://download.oracle.com/otn/java/toplink/111110/toplink-spatial-template.jar`
+* `http://download.oracle.com/otn/java/toplink/111110/toplink-xdb-template.jar`
+. Copy the files, as shown in link:#BABGIJJJ[Table 3-3] and
+link:#BABGEIFF[Table 3-4].
++
+[[BABGIJJJ]]
++
+*_Table 3-3 File to Support Oracle Spatial_*
++
+|===
+|*File* |*From...* |*To...*
+|`sdoapi.jar` |__`ORACLE_DATABASE_HOME`__`/md/jlib`
+|__`WL_HOME`__`/server/lib`
+|===
++
+[[BABGEIFF]]
++
+*_Table 3-4 Files to Support Oracle XDB_*
++
+|===
+|*File* |*From...* |*To...*
+|`xdb.jar` |__`ORACLE_DATABASE_HOME`__`/rdbms/jlib`
+|__`WL_HOME`__`/server/lib`
+
+|`xml.jar` |__`ORACLE_DATABASE_HOME`__`/lib` |__`WL_HOME`__`/server/lib`
+
+|`xmlparserv2.jar` |__`ORACLE_DATABASE_HOME`__`/lib`
+|__`WL_HOME`__`/server/lib`
+|===
++
+. Start the Config wizard (__`WL_HOME`__`/common/bin/config.sh` (or
+`.bat`)).
+. Select *Extend an existing WebLogic domain*.
+. Browse and select your WebLogic Server domain.
+. Select *Extend my domain using an existing extension template*.
+. Browse and select the required template JAR file
+(`toplink-spatial-template.jar` for Oracle Spatial,
+`toplink-xdb-template.jar` for Oracle XDB).
+. Complete the remaining pages of the wizard.
+
+For information about using WebLogic Server domain templates, see
+_Oracle Fusion Middleware Domain Template Reference_.
+
+[[BABICGHA]]
+
+==== Task 8: Start WebLogic Server and Deploy the Application
+
+For information about deploying to WebLogic Server, see _Oracle Fusion
+Middleware Deploying Applications to Oracle WebLogic Server_. See also
+"Deploying Fusion Web Applications" in _Oracle Fusion Middleware Fusion
+Developer's Guide for Oracle Application Development Framework_.
+
+[[BABEEJDE]]
+
+==== Task 9: Run the Application
+
+For instructions for starting a deployed application from the WebLogic
+Server Administration Console, see "Start and stop a deployed Enterprise
+application" in _Oracle Fusion Middleware Oracle WebLogic Server
+Administration Console Online Help_.
+
+[[BABIJAAD]]
+
+==== Task 10: Configure and Monitor Persistence Settings in WebLogic Server
+
+In the WebLogic Server Administration Console, you can configure a
+persistence unit and configure JTA and non-JTA data sources of a
+persistence unit, as follows:
+
+. If you have not already done so, in the Change Center of the
+Administration Console, click *Lock & Edit*.
+. In the left pane of the Administration Console, select *Deployments*.
+. In the right pane, select the application or module you want to
+configure.
+. Select *Configuration*.
+. Select *Persistence*.
+. Select the persistence unit that you want to configure from the table.
+. Review and edit properties on the configuration pages. For help on any
+page, click the *Help* link at the top of the Administration Console.
++
+Properties that can be viewed include:
+* Name
+* Provider
+* Description
+* Transaction type
+* Data cache time out
+* Fetch batch size
+* Default schema name
+* Values of persistence unit properties defined in the `persistence.xml`
+file, for example, `eclipselink.session-name`,
+`eclipselink.logging.level`, and `eclipselink.target-server`.
+You can also set attributes related to the transactional and
+non-transactional data sources of a persistence unit, on the Data
+Sources configuration page.
+. To activate these changes, in the Change Center of the Administration
+Console, click *Activate Changes*.
+
+For links to other help topics about working with persistence in the
+Administration Console, search for "Persistence" in the Table of
+Contents of _Oracle Fusion Middleware Oracle WebLogic Server
+Administration Console Online Help_.

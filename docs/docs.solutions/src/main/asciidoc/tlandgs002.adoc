@@ -1,0 +1,502 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ELGS002]]
+=== Implementing the Solution
+
+To run EclipseLink JPA applications in GlassFish Server, you must
+configure the server and coordinate certain server and application
+settings. These are described in the following tasks.
+
+* link:#CIHDCDJD[Task 1: Prerequisites]
+* link:#CIHEJFFA[Task 2: Install GlassFish Server]
+* link:#CIHFCJJI[Task 3: Set Up the Data Source]
+* link:#CIHBFDDB[Task 4: Create the persistence.xml File]
+* link:#CIHDDACF[Task 5: Set Up GlassFish Server for JPA]
+* link:#CIHHDEFE[Task 6: Create the Application]
+* link:#CIHCFJDE[Task 7: Deploy the Application to GlassFish Server]
+* link:#CIHFIGGB[Task 8: Run the Application]
+* link:#CIHIFGEF[Task 9: Monitor the Application]
+
+[[CIHDCDJD]]
+
+==== Task 1: Prerequisites
+
+This document is based on the following products and tools, although the
+principles apply to any supported database or development environment.
+It is assumed that the software is already installed, except where noted
+in later sections.
+
+* GlassFish Server 3.1.2.
++
+For more information and downloads, see
+`http://www.oracle.com/technetwork/middleware/glassfish/overview/index.html`
+on the Oracle Technology Network.
+* EclipseLink 2.4.1.
++
+For more information and downloads, see
+`http://www.eclipse.org/eclipselink/` on the EclipseLink website.
+* Any compliant JDBC database including Oracle Database, Oracle Database
+Express Edition, MySQL, and so on.
++
+For Oracle Database, see
+`http://www.oracle.com/technetwork/database/enterprise-edition/overview/index.html`.
++
+For Oracle Database Express Edition, see
+`http://www.oracle.com/technetwork/database/express-edition/overview/index.html`.
++
+For MySQL, see `http://www.oracle.com/us/products/mysql/index.html`.
+* While it is not required, you may want to use a Jakarta EE integrated
+development environment (IDE) for convenience during development. For
+example, Oracle JDeveloper, Oracle Enterprise Pack for Eclipse, and
+NetBeans all provide sophisticated Jakarta EE development tools.
++
+For JDeveloper, see
+`http://www.oracle.com/technetwork/developer-tools/jdev/downloads/index.html`.
++
+For Oracle Enterprise Pack for Eclipse, see
+`http://www.oracle.com/technetwork/developer-tools/eclipse/overview/index.html`.
++
+For NetBeans, see `http://www.oracle.com/us/products/tools/050845.html`.
+
+[[CIHEJFFA]]
+
+==== Task 2: Install GlassFish Server
+
+EclipseLink is included with the GlassFish Server distribution. You can
+find instructions for installing and configuring GlassFish Server at
+this URL:
+
+`http://docs.oracle.com/cd/E26576_01/index.htm`
+
+The EclipseLink modules appear as separate JAR files in the `modules`
+directory.
+
+[source,oac_no_warn]
+----
+* \glassfish\modules
+      .
+      .
+      .
+      o org.eclipse.persistence.antlr.jar
+      o org.eclipse.persistence.asm.jar
+      o org.eclipse.persistence.core.jar
+      o org.eclipse.persistence.jpa.jar
+      o org.eclipse.persistence.jpa.modelgen.jar
+      o org.eclipse.persistence.moxy.jar
+      o org.eclipse.persistence.oracle.jar
+      .
+      .
+      .
+----
+
+[NOTE]
+====
+* The `org.eclipse.persistence.oracle.jar` file is available with
+GlassFish and provides Oracle Database-specific functionality for
+EclipseLink. This file is used only for applications running against an
+Oracle Database.
+====
+
+Object-XML (also known as JAXB support, or _MOXy_) is a component that
+enables you to bind Java classes to XML schemas. This support is
+provided by the `org.eclipse.persistence.moxy.jar`.
+
+[[CIHFCJJI]]
+
+==== Task 3: Set Up the Data Source
+
+Configuring an Oracle database as a JDBC resource for a Jakarta EE
+application involves the following steps:
+
+. link:#CIHDEDEE[Integrate the JDBC Driver for Oracle Database into
+GlassFish Server]
+. link:#CIHFIGGF[Create a JDBC Connection Pool for the Resource]
+. link:#CIHIDADF[Create the JDBC Resource]
+
+[[CIHDEDEE]]
+
+===== Integrate the JDBC Driver for Oracle Database into GlassFish Server
+
+To integrate the JDBC driver, copy its JAR file into the domain and then
+restart the domain and instances to make the driver available.
+
+. Copy the JAR file for the JDBC driver into the domain's `lib`
+subdirectory, for example:
++
+[source,oac_no_warn]
+----
+cd /home/gfuser/glassfish3
+cp oracle-jdbc-drivers/ojdbc6.jar glassfish/domains/domain1/lib
+----
++
+Note that you do not have to restart GlassFish Server; the drivers are
+picked up dynamically.
++
+If the application uses Oracle Database-specific extensions provided by
+EclipseLink, then the driver must be copied to the `lib/ext` directory.
+For more information, see "Oracle Database Enhancements" in the _Oracle
+GlassFish Server Application Development Guide_ at:
++
+`http://docs.oracle.com/cd/E26576_01/doc.312/e24930/jpa.htm#giqbi`
+. You can use the GlassFish Server Administration Console or the command
+line to restart instances in the domain to make the JDBC driver
+available to the instances.
++
+*To use the GlassFish Server Administration Console:*
++
+In the GlassFish Server Administration Console, expand the *Cluster*
+node. Select the node for the cluster and on its General Information
+page, click the *Instances* tab. Select the instances you want to
+restart. For more information, see "To Start Clustered GlassFish Server
+Instances" in _GlassFish Server Administration Console Online Help_.
++
+To start a standalone instance, expand the *Standalone* *Instances*
+node. For each instance that you are starting, select the instance in
+the Server Instances table. Click Start. The status of each instance is
+updated in the Server Instances table when the instance is started. For
+more information, see "To Start Standalone GlassFish Server Instances"
+in _GlassFish Server Administration Console Online Help_.
++
+*To use the command line:*
++
+Run the `restart-instance` subcommand to restart the instances. These
+commands assume that your instances are named `pmd-i1` and `pmd-i2`.
++
+[source,oac_no_warn]
+----
+restart-instance pmd-i1
+restart-instance pmd-i2
+----
+
+[[CIHFIGGF]]
+
+===== Create a JDBC Connection Pool for the Resource
+
+You can create a JDBC connection pool from the GlassFish Server
+Administration Console or from the command line.
+
+*To use the GlassFish Server Administration Console:*
+
+In the GlassFish Server Administration Console, expand the *Common*
+*Tasks* node, then click the *Create New JDBC Connection Pool* button in
+the Common Tasks page. Specify the name of the pool, the resource type,
+the name of the database provider, the data source and driver class
+names, and other details. For more information, see "To Create a JDBC
+Connection Pool" in _GlassFish Server Administration Console Online
+Help_.
+
+*To use the command line:*
+
+. Use the `create-jdbc-connection-pool` subcommand to create the JDBC
+connection pool, specifying the database connectivity values. In this
+command, note the use of two backslashes (`\\`) preceding the colons in
+the URL property value. These backslashes cause the colons to be
+interpreted as part of the property value instead of as separators
+between property-value pairs, for example:
++
+[source,oac_no_warn]
+----
+create-jdbc-connection-pool 
+  --datasourceclassname oracle.jdbc.pool.OracleDataSource 
+  --restype javax.sql.DataSource 
+  --property User=smith\\:Password=password\\:url=jdbc\\:oracle\\:thin\\:@node_name.example.com\\:1521\\:smithdb 
+    poolbvcallbackbmt 
+----
+. Verify connectivity to the database.
++
+[source,oac_no_warn]
+----
+ping-connection-pool pool_name 
+----
+
+[[CIHIDADF]]
+
+===== Create the JDBC Resource
+
+You can use the GlassFish Server Administration Console to create the
+JDBC resource or you can use the command line.
+
+*To use the GlassFish Server Administration Console:*
+
+In the GlassFish Server Administration Console, expand the *Resources*
+node, then the *JDBC* node, then the *JDBC* *Resources* node to open the
+JDBC Resources page. Provide a unique JNDI resource name and associate
+the resource with a connection pool. For more information, see "To
+Create a JDBC Resource" in the _GlassFish Server Administration Console
+Online Help_.
+
+*To use the command line:*
+
+Use the `create-jdbc-resource` subcommand to create the JDBC resource,
+and name it so that the application can discover it using JNDI lookup,
+for example:
+
+[source,oac_no_warn]
+----
+create-jdbc-resource --connectionpoolid poolbvcallbackbmt jdbc/bvcallbackbmt
+----
+
+[[CIHBFDDB]]
+
+==== Task 4: Create the persistence.xml File
+
+link:#CIHJGIEF[Example 4-1] illustrates a sample `persistence.xml` file
+that specifies the default persistence provider for EclipseLink,
+`org.eclipse.persistence.jpa.PersistenceProvider`. For more information
+about this file, see "About the Persistence Unit" in _EclipseLink
+Concepts_.
+
+If you are using the default persistence provider, then you can specify
+additional database properties described in _Jakarta Persistence API
+(JPA) Extensions Reference for EclipseLink_.
+
+Several of the values you enter in the file must match the values you
+chose when you defined the cluster, connection, and connection pool
+properties in GlassFish Server, as follows:
+
+*JDBC Data Source Properties:*
+
+* *Name*: The name of the data source, which is typically the same as
+the JNDI name, for example `jdbc/bvcallbackbmt`.
+* *JNDI* *Name*: The JNDI path to where this data source is bound. This
+must be the same name as the value for the `<jta-data-source>` element
+in `persistence.xml`, for example `jdbc/bvcallbackbmt`.
+* *Database* *Type*: `Oracle`
+* *Database* *Driver*: (default) Oracle's Driver (Thin XA) for Instance
+connections; Versions: 9.0.1 and later
+
+*Connection Properties:*
+
+* *Database* *Name*: The name of the database, for example, `XE` for
+Oracle Database Express Edition samples.
+* *Host* *Name*: The IP address of the database server, for example
+`127.0.0.1` for a locally hosted database.
+* *Port*: The port number on which your database server listens for
+connection requests, for example, `1521`, the default for Oracle
+Database Express Edition 11__g__.
+* *Database* *User* *Name*: The database account user name used to
+create database connections, for example `hr` for Oracle Database
+Express Edition 11__g__ samples.
+* *Password*: Your password.
+
+*Select Targets:*
+
+* *Servers* */* *Clusters*: Select the administration server, managed
+servers, or clusters to which you want to deploy the data source. You
+can choose one or more.
+
+The sample `persistence.xml` file in link:#CIHJGIEF[Example 4-1]
+highlights the properties defining the persistence provider, the JTA
+data source, and logging details. In this example, the logging level is
+set to `FINE`. At this level, SQL code generated by EclipseLink is
+logged to the `server.log` file. For more information about these
+properties, see:
+
+* link:#CIHFFHAE[Specify the Persistence Provider.]
+* link:#CIHCBCIC[Specify an Oracle Database.]
+* link:#CIHHJIGF[Specify Logging.]
+
+[[CIHJGIEF]]
+
+*_Example 4-1 Sample persistence.xml File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+  <persistence-unit name="pu1" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>jdbc/bvcallbackbmt</jta-data-source>
+    <properties>
+       <property name="eclipselink.logging.level" value="FINE"/>
+       <property name="eclipselink.ddl-generation" 
+                 value="drop-and-create-tables"/>
+    </properties>
+  </persistence-unit>
+</persistence>
+----
+
+[[CIHFFHAE]]
+
+===== Specify the Persistence Provider
+
+The persistence provider defines the implementation of JPA. It is
+defined in the `provider` element of the `persistence.xml` file.
+Persistence providers are vendor-specific. The persistence provider for
+EclipseLink is `org.eclipse.persistence.jpa.PersistenceProvider`.
+
+[[CIHCBCIC]]
+
+===== Specify an Oracle Database
+
+You specify the database connection details in the `persistence.xml`
+file. GlassFish Server uses the bundled Java DB (Derby) database by
+default, named `jdbc/__default`. To use a nondefault database, such as
+the Oracle Database, either specify a value for the `jta-data-source`
+element, or set the `transaction-type` element to `RESOURCE_LOCAL` and
+specify a value for the `non-jta-data-source` element.
+
+If you are using the default persistence provider,
+`org.eclipse.persistence.jpa.PersistenceProvider`, then the provider
+attempts to automatically detect the database type based on the
+connection metadata. This database type is used to issue SQL statements
+specific to the detected database type. You can specify the optional
+`eclipselink.target-database` property to guarantee that the database
+type is correct.
+
+For more information about specifying database properties in a
+`persistence.xml` file for GlassFish Server, see "Specifying the
+Database for an Application" in the _Oracle GlassFish Server Application
+Development Guide_, at:
+
+`http://docs.oracle.com/cd/E26576_01/doc.312/e24930/jpa.htm#gbwmj`
+
+[[CIHHJIGF]]
+
+===== Specify Logging
+
+EclipseLink provides a logging utility even though logging is not part
+of the JPA specification. Hence, the information provided by the log is
+EclipseLink JPA-specific. With EclipseLink, you can enable logging to
+view the following information:
+
+* Configuration details
+* Information to facilitate debugging
+* The SQL that is being sent to the database
+
+You can specify logging in the `persistence.xml` file. EclipseLink
+logging properties let you specify the level of logging and whether the
+log output goes to a file or standard output. Because the logging
+utility is based on `java.util.logging`, you can specify a logging level
+to use.
+
+The logging utility provides nine levels of logging control over the
+amount and detail of the log output. Use `eclipselink.logging.level` to
+set the logging level, for example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.logging.level" value="FINE"/>
+----
+
+By default, the log output goes to `System.out` or to the console. To
+configure the output to be logged to a file, set the property
+`eclipselink.logging.file`, for example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.logging.file" value="output.log"/>
+----
+
+EclipseLink's logging utility is pluggable, and several different
+logging integrations are supported, including `java.util.logging`. To
+enable `java.util.logging`, set the property
+`eclipselink.logging.logger`, for example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.logging.logger" value="JavaLogger"/>
+----
+
+While running inside GlassFish Server, EclipseLink is configured by
+GlassFish Server to use `JavaLogger` by default. The log is always
+redirected to the GlassFish Server `server.log` file. For more
+information, see "Setting Log Levels" in _Oracle GlassFish Server
+Administration Guide_, at:
+
+`http://docs.oracle.com/cd/E26576_01/doc.312/e24928/logging.htm#gklml`
+
+For more information about EclipseLink logging and the levels of logging
+available in the logging utility, see "Persistence Property Extensions
+Reference" in _Jakarta Persistence API (JPA) Extensions Reference for
+EclipseLink_.
+
+[[CIHDDACF]]
+
+==== Task 5: Set Up GlassFish Server for JPA
+
+_GlassFish Server Application Development Guide_ describes
+server-specific considerations on setting up GlassFish Server to run
+applications that employ JPA:
+
+`http://docs.oracle.com/cd/E26576_01/doc.312/e24930/jpa.htm`
+
+It provides more information about these topics:
+
+* "Specifying the Database for an Application," for information about
+database connection properties
+* "Specifying the Persistence Provider for an Application," for setting
+the default or non-default persistence provider for an application
+* "Primary Key Generation Defaults," for the default persistence
+provider's primary key generation defaults
+* "Automatic Schema Generation," for information on annotations and
+options to manage automatic schema generation
+* "Restrictions and Optimizations," for restrictions and performance
+optimizations that affect using the Jakarta Persistence API
+
+[[CIHHDEFE]]
+
+==== Task 6: Create the Application
+
+To create an application that uses EclipseLink as its JPA persistence
+provider, you may want to use a Jakarta EE IDE for convenience during
+development. For example, JDeveloper, Oracle Enterprise Pack for
+Eclipse, and NetBeans provide sophisticated Jakarta EE development
+tools, including support for EclipseLink. See "Key Tools" in
+_EclipseLink Concepts_.
+
+For guidance in writing your application, see these topics from the
+"Configuring the Java Persistence Provider" chapter in _Oracle GlassFish
+Server Application Development Guide_, at:
+
+`http://docs.oracle.com/cd/E26576_01/doc.312/e24930/jpa.htm`
+
+[[CIHCFJDE]]
+
+==== Task 7: Deploy the Application to GlassFish Server
+
+For information about deploying to GlassFish Server, see "Deploy
+Applications or Modules," "To Deploy an Enterprise Application," and "To
+Deploy a Web Application" in _GlassFish Server Administration Console
+Online Help_. See also _Oracle GlassFish Server Application Deployment
+Guide_, at:
+
+`http://docs.oracle.com/cd/E26576_01/index.htm`
+
+[[CIHFIGGB]]
+
+==== Task 8: Run the Application
+
+For instructions for starting a deployed application from the GlassFish
+Server Administration Console, see "Application Client Launch" and "To
+Launch an Application" in _GlassFish Server Administration Console
+Online Help_.
+
+[[CIHIFGEF]]
+
+==== Task 9: Monitor the Application
+
+GlassFish Server provides a monitoring service to track the health and
+performance of an application. For information about monitoring an
+application from the console, see the "Monitoring" and "Monitoring Data"
+topics in _GlassFish Server Administration Console Online Help_. For
+information about monitoring the application from the command line, see
+"Administering the Monitoring Service" in _Oracle GlassFish Server
+Administration Guide_, at:
+
+`http://docs.oracle.com/cd/E26576_01/doc.312/e24928/monitoring.htm`

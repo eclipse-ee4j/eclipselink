@@ -1,0 +1,62 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, query
+
+== Understanding Queries
+
+This chapter describes how EclipseLink enables you to create, read,
+update, and delete persistent objects or data using queries in both
+Jakarta EE and non-Jakarta EE applications for both relational and
+nonrelational data sources.
+
+This chapter includes the following sections:
+
+* link:#QUERY001[Query Concepts]
+* link:#QUERY002[About JPQL Queries]
+* link:#QUERY003[About SQL Query Language]
+* link:#QUERY004[About the Criteria API]
+* link:#QUERY005[About Native SQL Queries, EclipseLink Extensions to Native Query Support]
+* link:#QUERY006[About Query Hints]
+* link:#QUERY007[About Query Casting]
+* link:#QUERY008[About Oracle Extensions for Queries]
+
+//Query Concepts
+include::{rootdir}/queries001.adoc[]
+
+//About JPQL Queries
+include::{rootdir}/queries002.adoc[]
+
+//About SQL Query Language
+include::{rootdir}/queries003.adoc[]
+
+//About the Criteria API
+include::{rootdir}/queries004.adoc[]
+
+//About Native SQL Queries, EclipseLink Extensions to Native Query Support
+include::{rootdir}/queries005.adoc[]
+
+//About Query Hints
+include::{rootdir}/queries006.adoc[]
+
+//About Query Casting
+include::{rootdir}/queries007.adoc[]
+
+//About Oracle Extensions for Queries
+include::{rootdir}/queries008.adoc[]

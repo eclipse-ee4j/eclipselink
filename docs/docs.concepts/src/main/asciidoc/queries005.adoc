@@ -1,0 +1,92 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[QUERY005]]
+=== About Native SQL Queries
+
+JPA allows SQL to be used for querying entity objects, or data. SQL
+queries are not translated, and passed directly to the database. SQL
+queries can be used for advanced queries that require database specific
+syntax, or by users who are more comfortable in the SQL language than
+JPQL or Java.
+
+SQL queries are created from the `EntityManager` using the
+`createNativeQuery` API or via named queries. A Query object is returned
+and executed the same as any other JPA query. An SQL query can be
+created for an entity class, or return an object array of data. If
+returning entities, the SQL query must return the column names that the
+entity's mappings expect, or an `SqlResultSetMapping` can be used. An
+`SqlResultSetMapping` allows the SQL result set to be mapped to an
+entity, or set of entities and data.
+
+SQL queries can be used to execute SQL or DML (Data Manipulation
+Language) statements. For SQL queries that return results,
+`getSingleResult` or `getResultList` can be used. For SQL queries that
+do not return results, `executeUpdate` must be used. `executeUpdate` can
+only be used within a transaction. SQL queries can be used to execute
+database operations and some stored procedures and functions. Stored
+procedures that return output parameters, or certain complex stored
+procedures, cannot be executed with SQL queries.
+
+Parameters to SQL queries are delimited using the question mark (`?`)
+character. Only indexed parameters are supported, named parameters are
+not supported. The index can be used in the delimiter, such as `?1`.
+Parameter values are set on the Query using the `setParameter` API.
+Indexed parameters start at the index 1 not 0.
+
+Native SQL queries can be defined as named queries in annotations or XML
+using the `NamedNativeQuery` annotation or `<named-native-query>` XML
+element. Named native SQL queries are executed the same as any named
+query.
+
+An `SqlResultSetMapping` can be used to map the results of an SQL query
+to an entity if the result column names do not match what the entity
+mappings expect. It can also be used to return multiple entities, or
+entities and data from a single SQL query. `EntityResult` and
+`FieldResult` are used to map the SQL query result column to the entity
+attribute. `ColumnResult` can be used to add a data element to the
+result.
+
+`SqlResultSetMappings` are defined through annotations or XML using the
+`@SqlResultSetMapping` annotation or `<sql-result-set-mapping>` XML
+element. They are referenced from native SQL queries by name.
+
+[[CHDFHBJD]][[OTLCG154]]
+
+==== EclipseLink Extensions to Native Query Support
+
+EclipseLink expressions let you specify query search criteria based on
+your domain object model. When you execute the query, EclipseLink
+translates these search criteria into the appropriate query language for
+your platform.
+
+The EclipseLink API provides the following two public classes to support
+expressions:
+
+* The `Expression` class represents an expression that can be anything
+from a simple constant to a complex clause with boolean logic. You can
+manipulate, group, and integrate expressions.
+* The `ExpressionBuilder` class is the factory for constructing new
+expressions.
+
+You can specify a selection criterion as an `Expression` with
+`DatabaseQuery` method `setSelectionCriteria`, and in a finder that
+takes an `Expression`.
+
+For more information about using EclipseLink expressions, see
+xref:expressions001.adoc#EXPRESSIONS001[Chapter 10, "Understanding EclipseLink
+Expressions"].

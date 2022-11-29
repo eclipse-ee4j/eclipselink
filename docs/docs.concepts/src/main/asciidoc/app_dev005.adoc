@@ -1,0 +1,116 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[APPDEV005]]
+=== About Weaving
+
+Weaving is a technique of manipulating the byte-code of compiled Java
+classes. The EclipseLink JPA persistence provider uses weaving to
+enhance both JPA entities and Plain Old Java Object (POJO) classes for
+such things as lazy loading, change tracking, fetch groups, and internal
+optimizations.
+
+Weaving can be performed either dynamically at runtime, when entities
+are loaded, or statically at compile time by post-processing the entity
+`.class` files. By default, EclipseLink uses dynamic weaving whenever
+possible, including inside a Jakarta EE application server and in Java
+SE when the EclipseLink agent is configured. Dynamic weaving is
+recommended as it is easy to configure and does not require any changes
+to a project's build process.
+
+This section describes the following:
+
+* link:#CCHHBDAJ[Using Dynamic Weaving]
+* link:#CCHGIFEG[Using Static Weaving]
+* link:#CHDHAAHE[Weaving POJO Classes]
+* link:#CHDGACIJ[Weaving and Jakarta EE Application Servers]
+* link:#CHDECEBI[Disabling Weaving with Persistence Unit Properties]
+
+[[CCHHBDAJ]][[OTLCG91217]]
+
+==== Using Dynamic Weaving
+
+Use dynamic weaving to weave application class files one at a time, as
+they are loaded at run time. Consider this option when the number of
+classes to weave is few or when the time taken to weave the classes is
+short.
+
+If the number of classes to weave is large or the time required to weave
+the classes is long, consider using static weaving.
+
+[[CCHGIFEG]][[OTLCG91219]]
+
+==== Using Static Weaving
+
+Use static weaving to weave all application class files at build time so
+that you can deliver prewoven class files. Consider this option to weave
+all applicable class files at build time so that you can deliver
+prewoven class files. By doing so, you can improve application
+performance by eliminating the runtime weaving step required by dynamic
+weaving.
+
+In addition, consider using static weaving to weave in Java environments
+where you cannot configure an agent.
+
+[[CHDHAAHE]][[OTLCG94274]]
+
+==== Weaving POJO Classes
+
+EclipseLink uses weaving to enable the following for POJO classes:
+
+* Lazy loading
+* Change tracking
+* Fetch groups
+
+EclipseLink weaves all the POJO classes in the JAR you create when you
+package a POJO application for weaving.
+
+EclipseLink weaves all the classes defined in the `persistence.xml`
+file, that is:
+
+* All the classes you list in the `persistence.xml` file.
+* All classes relative to the JAR containing the `persistence.xml` file
+if element `<exclude-unlisted-classes>` is false.
+
+[[CHDGACIJ]][[OTLCG94275]]
+
+==== Weaving and Jakarta EE Application Servers
+
+The default EclipseLink weaving behavior applies in any Jakarta EE
+JPA-compliant application server using the EclipseLink JPA persistence
+provider. To change this behavior, modify your `persistence.xml` file
+(for your JPA entities or POJO classes) to use EclipseLink JPA
+properties, EclipseLink JPA annotations, or both.
+
+[[CHDECEBI]][[OTLCG94276]]
+
+==== Disabling Weaving with Persistence Unit Properties
+
+To disable weaving using EclipseLink persistence unit properties,
+configure your `persistence.xml` file with one or more of the following
+properties set to false:
+
+* `eclipse.weaving`; disables all weaving
+* `eclipselink.weaving.lazy`; disables weaving for lazy loading
+(indirection)
+* `eclipselink.weaving.changetracking`; disables weaving for change
+tracking
+* `eclipselink.weaving.fetchgroups`; disables weaving for fetch groups
+* `eclipselink.weaving.internal`; disables weaving for internal
+optimization
+* `eclipselink.weaving.eager`; disables weaving for indirection on eager
+relationships

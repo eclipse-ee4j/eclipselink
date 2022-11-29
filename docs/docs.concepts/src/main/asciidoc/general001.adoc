@@ -1,0 +1,164 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[GENERAL001]]
+=== Understanding EclipseLink
+
+EclipseLink is an open-source mapping and persistence framework for use
+in a Java environment, including Java Platform, Standard Edition (Java
+SE) and Java Platform, Enterprise Edition (Jakarta EE). The EclipseLink
+project is under the stewardship of the Eclipse Foundation.
+
+EclipseLink completely implements the following specifications, plus
+extensions to those specifications:
+
+* *Jakarta Persistence API (JPA)*
++
+JPA is the Java API for object/relational mapping (ORM), where Java
+objects are mapped to database artifacts, for the purpose of managing
+relational data in Java applications. JPA includes Java Persistence
+Query Language (JPQL), the Java Persistence Criteria API, and the Java
+API and XML schema for defining object/relational mapping metadata.
++
+The latest version of the specification is _JSR 338: Java Persistence
+2.2_. See `http://jcp.org/en/jsr/detail?id=338`.
++
+Some of the EclipseLink extensions to standard JPA are:
+** Support for mapping to nonrelational (NoSQL) databases.
+** Features useful in Software as a Service (SaaS) environments,
+including tenant isolation, extensible entities, external metadata
+sources.
+** Java API for RESTful Web Services (JAX-RS, defined in JSR 311).
+** Many other additional annotations, annotation extensions, Java
+Persistence Query Language (JPQL) extensions, JPA query customizations
+extensions, and persistence property extensions.
+* *Java Architecture for XML Binding (JAXB)*
++
+JAXB is the Java API for object/XML mapping (OXM), where an XML document
+is bound to Java objects, based on the XML document's XSD schema. JAXB
+provides methods for unmarshalling (reading) XML instance documents into
+Java content trees, and then marshalling (writing) Java content trees
+back into XML instance documents. JAXB also provides a way to generate
+XML schema from Java objects.
++
+The latest version of the specification is _JSR 222: Java Architecture
+for XML Binding (JAXB) 2.0_. See `http://jcp.org/en/jsr/detail?id=222`.
+
+
+NOTE: The EclipseLink JAXB implementation is part of the *EclipseLink MOXy*
+component, which extends EclipseLink JAXB to support JavaScript Object
+Notation (JSON) documents. EclipseLink supports all object/XML options
+when reading and writing JSON. MOXy also includes support for the older
+native EclipseLink object/XML API).
+
+In addition to the implementations of the standard specifications
+described above, EclipseLink includes the following:
+
+* *EclipseLink Database Web Services (DBWS)*
++
+DBWS is a development tool and a runtime for providing Jakarta
+EE-compliant, client-neutral access to relational database artifacts via
+a Web service. The development tool, DBWS Builder, is a command-line
+utility that generates the necessary deployment artifacts. (DBWS Builder
+is integrated into the Eclipse Dali Java Persistence toolset and into
+Oracle JDeveloper.) The runtime provider takes a service descriptor
+(along with related deployment artifacts) and realizes it as a JAX-WS
+2.0 Web service. The runtime uses EclipseLink to bridge between the
+database and the XML SOAP Messages used by Web service clients.
+* *EclipseLink Enterprise Information Services (EIS)*
++
+EIS is a facility for enabling the use of data stores through Java
+Connector Architecture (JCA) resource adapters. Using XML metadata, the
+interactions and their exchanged data are configured and mapped onto a
+domain model. The interactions data can be mapped from either the Common
+Client interface (CCI) or using XML schemas. This use is intended for
+non-relational data stores where no JDBC or SQL access is provided.
+
+EclipseLink can be used with a wide range of Java Enterprise Edition
+(Jakarta EE) and Java application architectures. Use EclipseLink to
+design, implement, deploy, and optimize an advanced, object-persistence
+and object-transformation layer that supports a variety of data sources
+and formats, including relational databases, nonrelational (NoSQL)
+databases, XML, JSON, and Web Services.
+
+EclipseLink supports Java persistence in Jakarta EE, Java SE and web
+containers including integration with various application servers
+including:
+
+* Oracle WebLogic Server
+* Oracle Glassfish Server
+* JBoss Web Server
+* IBM WebSphere application server
+* SAP NetWeaver
+* Oracle Containers for Jakarta EE (OC4J)
+* Various other web containers, such as Apache Tomcat, Eclipse Gemini,
+IBM WebSphere CE, and SpringSource Server
+
+EclipseLink lets you quickly capture and define object-to-data source
+and object-to-data representation mappings in a flexible, efficient
+metadata format.
+
+The runtime lets your application exploit this mapping metadata with a
+simple session facade that provides in-depth support for data access,
+queries, transactions (both with and without an external transaction
+controller), and caching.
+
+For more information about EclipseLink, see
+link:general002.htm#CHDCFGIC["Key Features"].
+
+==== What Is the Object-Persistence Impedance Mismatch?
+
+Java-to-data source integration is a widely underestimated problem when
+creating enterprise Java applications. This complex problem involves
+more than simply reading from and writing to a data source. The data
+source elements include tables, rows, columns, and primary and foreign
+keys. The Java and Jakarta EE programming languages include entity
+classes (regular Java classes), business rules, complex relationships,
+and inheritance. In a nonrelational data source, you must match your
+Java entities with XML elements and schemas.
+
+A successful solution requires bridging these different technologies and
+solving the object-persistence impedance mismatch—a challenging and
+resource-intensive problem. To solve this problem, you must resolve the
+following issues between Jakarta EE and the data source elements:
+
+* Fundamentally different technologies
+* Different skill sets
+* Different staff and ownership for each of the technologies
+* Different modeling and design principles
+
+As an application developer, you need a product that lets you integrate
+Java applications with any data source, without compromising application
+design or data integrity. In addition, as a Java developer, you need the
+ability to store (that is, persist) and retrieve business domain objects
+using a relational database or a nonrelational data source as a
+repository.
+
+==== The EclipseLink Solution
+
+EclipseLink addresses the disparity between Java objects and data
+sources. It contains a persistence framework that lets you build
+applications that combine the best aspects of object technology with a
+specific data source. You can do the following:
+
+* Persist Java objects to virtually any relational database
+* Perform in-memory conversions between Java objects and XML and JSON
+documents
+* Map any object model to any relational or nonrelational schema
+* Use EclipseLink successfully, even if you are unfamiliar with SQL or
+JDBC, because EclipseLink offers a clear, object-oriented view of data
+sources

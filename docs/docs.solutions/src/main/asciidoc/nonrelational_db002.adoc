@@ -1,0 +1,390 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[NOSQL002]]
+=== Implementing the Solution
+
+This section contains the following tasks for converting objects to and
+from JSON documents.
+
+* link:#BABEBADB[Task 1: Prerequisites]
+* link:#BABIGCEC[Task 2: Mapping the Data]
+* link:#BABEIBBG[Task 3: Defining IDs]
+* link:#BABFIIFG[Task 4: Defining Mappings]
+* link:#BABFIJAA[Task 5: Using Locking]
+* link:#BABIIDED[Task 6: Defining Queries]
+* link:#BABFJIJE[Task 7: Connecting to the Database]
+
+[[BABEBADB]]
+
+==== Task 1: Prerequisites
+
+[[BABIGCEC]]
+
+==== Task 2: Mapping the Data
+
+You can configure mappings to NoSQL data with the EclipseLink `@NoSQL`
+annotation and `<no-sql>` XML element. The `@NoSQL` annotation defines
+the class as mapping to non-relational data. You can use `@NoSQL` with
+JPA Entity or Embeddable classes.
+
+The `@NoSQL` annotation allows you to specify the `dataType` and
+`dataFormat` of the data. The `dataType` will vary, depending on your
+NoSQL datasource:
+
+* For MongoDB, `dataType` is the collection name that the JSON documents
+are stored to.
+* For Oracle NoSQL, `dataType` is the first part of the major key value.
+
+The `dataFormat` depends on the type structure (data format) of data
+being stored.
+
+* For MongoDB, use `MAPPED` for its structured database.
+* For Oracle NoSQL, use `MAPPED` (for key/value data) or `XML` (for a
+single XML document).
+
+link:#BABBBHHD[Example 21-1] illustrates how to use `@NoSQL` with
+`@Entity` and `@Embeddable` classes.
+
+[[BABBBHHD]]
+
+*_Example 21-1 Using @NoSql Annotation with JSON_*
+
+[source,oac_no_warn]
+----
+@Entity
+@NoSQL(dataType="orders", dataFormat=DataFormatType.MAPPED)
+public class Order {
+  @Id
+  @GeneratedValue
+  @Field(name="_id")
+  private long id;
+  @Basic
+  @Field(name="description")
+  private String description;
+  @Embedded
+  @Field(name="deliveryAddress")
+  private Address deliveryAddress
+  @ElementCollection
+  @Field(name="orderLines")
+  private List<OrderLine> orderLines;
+  @ManyToOne
+  @JoinField(name="customerId")
+  private Customer customer;
+}
+ 
+@Embeddable
+@NoSQL(dataFormat=DataFormatType.MAPPED)
+public class OrderLine {
+    @Field(name="lineNumber")
+    private int lineNumber;
+    @Field(name="itemName")
+    private String itemName;
+    @Field(name="quantity")
+    private int quantity;  
+}
+----
+
+[[BABEIBBG]]
+
+==== Task 3: Defining IDs
+
+With EclipseLink, you can use any field (or set of fields) as your ID
+when using a non-relational database, just like any other relational
+Entity. You can use a _natural_ ID (that is, assigned by the
+application) or a _generated_ ID (that is, assigned by EclipseLink).
+
+MongoDB also requires an `_id` field in every document. If no `_id`
+field is present, Mongo will automatically generate and assign the `_id`
+field using an OID (object identifier), which is similar to a UUID
+(universally unique identifier).
+
+* To use a natural ID as the Mongo ID, simply name the field as `_id` by
+using the `@Field` (or `@Column`) annotation without any of the
+relational details.
++
+For example:
++
+[source,oac_no_warn]
+----
+@Field(name="_id")
+private long id;
+----
+* To use the generated Mongo OID as your ID, simply include `@Id`,
+`@GeneratedValue`, and `@Field(name="_id")` annotations in the object's
+ID field mapping.
++
+The `@GeneratedValue` tells EclipseLink to use the Mongo OID to generate
+this ID value. To use a UUID instead of the Mongo OID, use the
+@UUIDGenerator annotation.
++
+NOTE: MongoDB does not support `@SequenceGenerator` or `@TableGenerator` nor
+the `IDENTITY`, `TABLE`, and `SEQUENCE` generation types.
+
+The ID of the Mongo OID or UUID is not a numerical value; you must map
+it as a `String` or `byte[]`.
+
+For example:
+[source,oac_no_warn]
+----
+@Id
+@GeneratedValue
+@Field(name="_id")
+private String id;
+----
+
+[[BABFIIFG]]
+
+==== Task 4: Defining Mappings
+
+With non-relational databases, EclipseLink maps objects to structured
+data such as XML or JSON. NoSQL supports all existing JPA mapping
+annotations and XML, including embedded data and embedded collections.
+If you do not define a mapping annotation (or XML) for an attribute
+EclipseLink uses the default mapping.
+
+*Basic Mappings*
+
+Because the NoSQL defaults follow the JPA defaults, most simple mappings
+do not require any configuration. Field names used in the Mongo BSON
+document will mirror the object attribute names (in uppercase). To use a
+different BSON field name, use the `@Field` annotation.
+
+NOTE: Do not use `@Column` or `@JoinColumn`. Instead use `@Field` and
+`@JoinField`. Additionally, the `@JoinTable` and `@CollectionTable`
+annotations are not supported or required.
+
+[[BABIFJJG]]
+
+*Embedded Values*
+
+Use the `@Embedded` annotation to persist embedded values and the
+`@ElementCollection` annotation for embedded collections. Because all
+data is stored in the XML document, no separate table (that is,
+`@CollectionTable`) is needed. Additionally, because embedded objects
+are nested in the document and do not require unique field names, the
+`@AttributeOverride` attribute is not needed.
+
+NOTE: Normally, you will not need to use the `@Embedded` annotation, since it
+will default correctly.
+
+However, EclipseLink does not default `@ElementCollection` mappings,
+therefore you must include that annotation.
+
+*Relationships*
+
+You should use the relationship annotations (such as `@OneToOne`,
+`@ManyToOne`, `@OneToMany` and `@ManyToMany`) only with _external_
+relationships. Relationships _within_ the document should use the
+link:#BABIFJJG[Embedded Values].
+
+EclipseLink fully supports external relationships to other documents by
+using a foreign key. The ID of the target object is stored in the source
+object's document. For a collection, a collection of IDs is stored. Use
+the `@JoinField` annotation to define the name of the foreign key field
+in the BSON document.
+
+NOTE: EclipseLink does not support the `mappedBy` option for relationships
+with non-relational databases, as the foreign keys would need to be
+stored on both sides.
+
+You can also define a relationship mapping by using a query. However you
+must use a `DescriptorCustomizer` instead of an annotation.
+
+[[sthref229]]
+
+*_Example 21-2 Sample Mappings_*
+
+[source,oac_no_warn]
+----
+@Basic
+private String description;
+@Basic
+private double totalCost = 0;
+@Embedded
+private Address billingAddress;
+@Embedded
+private Address shippingAddress;
+@ElementCollection
+private List<OrderLine> orderLines = new ArrayList<OrderLine>();
+@ManyToOne(fetch=FetchType.LAZY)
+private Customer customer;
+----
+
+[[BABFIJAA]]
+
+==== Task 5: Using Locking
+
+Locking support is dependent on the NoSQL platform. Some NoSQL platforms
+may offer support for optimistic version locking.
+
+* Oracle NoSQL – Locking is not supported.
+* MongoDB – Version locking is supported.
+
+NOTE: MongoDB does not support transactions. If a lock error occurs during a
+transaction, any objects that have been previously written will not be
+rolled back.
+
+If the NoSQL platform does not support locking, you can use the
+`@Version` annotation (as shown in link:#BABFACAI[Example 21-3]) to
+validate objects on `merge()` operations.
+
+[[BABFACAI]]
+
+*_Example 21-3 Using @Version_*
+
+[source,oac_no_warn]
+----
+@Version
+private long version;
+...
+----
+
+[[BABIIDED]]
+
+==== Task 6: Defining Queries
+
+Querying in NoSQL is dependent on the NoSQL platform. Some NoSQL
+data-sources may support dynamic querying through their own query
+language, others may not support querying at all.
+
+===== JPQL Queries
+
+The Java Persistence Query Language (JPQL) is the query language defined
+by JPA. JPQL can be used for reading (`SELECT`), as well as bulk updates
+(`UPDATE`) and deletes (`DELETE`). You can use JPQL in a `NamedQuery`
+(through annotations or XML) or in dynamic queries using the
+EntityManager `createQuery()` API.
+
+* Oracle NoSQL – Supports `find()` and JPQL and Criteria by Id or with
+no WHERE clause.
+* MongoDB – Supports JPQL and Criteria queries, with some restrictions:
+joins, sub-selects, group by and certain database functions are not
+supported.
+
+[[sthref231]]
+
+*_Example 21-4 Oracle NoSQL JPQL Examples_*
+
+[source,oac_no_warn]
+----
+----
+
+[[sthref232]]
+
+*_Example 21-5 MongoDB JPQL Examples_*
+
+[source,oac_no_warn]
+----
+Query query = em.createQuery("Select o from Order o where o.totalCost > 1000");
+List<Order> orders = query.getResultList();
+ 
+----
+
+[source,oac_no_warn]
+----
+Query query = em.createQuery("Select o from Order o where o.description like 'Pinball%'");
+List<Order> orders = query.getResultList();
+ 
+----
+
+[source,oac_no_warn]
+----
+Query query = em.createQuery("Select o from Order o join o.orderLines l where l.description = :desc");
+query.setParameter("desc", "shipping");
+List<Order> orders = query.getResultList();
+ 
+----
+
+[source,oac_no_warn]
+----
+Query query = em.createQuery("Select o.totalCost from Order o");
+List<BigDecimal> orders = query.getResultList();
+----
+
+===== Native Queries
+
+Native SQL queries are not translated, and passed directly to the
+database. SQL queries can be used for advanced queries that require
+database specific syntax.
+
+Although native SQL queries are not supported with NoSQL, some NoSQL
+platforms have their own, native query language. EclipseLink supports
+JPA native queries using that language.
+
+* MongoDB – Supports JPA native queries by using the MongoDB native
+command language.
+
+[[sthref234]]
+
+*_Example 21-6 Oracle NoSQL Native Query_*
+
+[source,oac_no_warn]
+----
+----
+
+[[sthref235]]
+
+*_Example 21-7 MongoDB Native Query_*
+
+[source,oac_no_warn]
+----
+Query query = em.createNativeQuery("db.ORDER.findOne({\"_id\":\"" + oid + "\"})", Order.class);
+Order order = (Order)query.getSingleResult();
+----
+
+[[BABFJIJE]]
+
+==== Task 7: Connecting to the Database
+
+EclipseLink connects to NoSQL databases through the persistence.xml
+file. Use the `<eclipselink.target-database>` property to define the
+specific NoSQL platform. You must also define a connection with the
+`<eclipselink.nosql.connection-spec>` property. Additional connection
+values (such as the `db`, `port`, and `host` can also be defined.
+
+NOTE: To connect to a cluster of Mongo databases, enter a comma, separated
+list of values for the `host` and `port`.
+
+[[sthref236]]
+
+*_Example 21-8 Oracle NoSQL persistence.xml Example_*
+
+[source,oac_no_warn]
+----
+----
+
+[[sthref237]]
+
+*_Example 21-9 MongoDB persistence.xml Example_*
+
+[source,oac_no_warn]
+----
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd" version="2.0">
+    <persistence-unit name="acme" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
+            <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec"/>
+            <property name="eclipselink.nosql.property.mongo.port" value="27017, 27017"/>
+            <property name="eclipselink.nosql.property.mongo.host" value="host1, host2"/>
+            <property name="eclipselink.nosql.property.mongo.db" value="acme"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+----

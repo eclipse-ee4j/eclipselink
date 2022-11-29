@@ -1,0 +1,284 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DESCRIPTORS001]]
+=== Common Descriptor Concepts
+
+The following sections describe the concepts that are common to
+Object-Relational and MOXy descriptors.
+
+* link:#CHEJJGIE[Descriptor Architecture]
+* link:#CHEEDJEH[Descriptors and Inheritance]
+* link:#CHEIIIBJ[Descriptors and Aggregation]
+* link:#CACGEBJF[Descriptor Customization]
+* link:#CHEIGIHG[Amendment Methods]
+* link:#CHEDDDJF[Descriptor Event Manager]
+
+[[CHEJJGIE]][[OTLCG92056]]
+
+==== Descriptor Architecture
+
+A *descriptor* stores all the information describing how an instance of
+a particular object class can be represented in a data source. The
+Descriptor API can be used to define, or amend EclipseLink descriptors
+through Java code. The Descriptor API classes are mainly in the
+`org.eclipse.persistence.descriptors` package.
+
+EclipseLink descriptors may contain the following information:
+
+* The persistent Java class it describes and the corresponding data
+source (database tables or XML complex type interaction)
+* A collection of mappings, which describe how the attributes and
+relationships for that class are represented in the data source
+* The primary key information (or equivalent) of the data source
+* A list of query keys (or aliases) for field names
+* Information for sequence numbers
+* A set of optional properties for tailoring the behavior of the
+descriptor, including support for caching refresh options, identity
+maps, optimistic locking, the event manager, and the query manager
+
+There is a descriptor type for each data source type that EclipseLink
+supports. In some cases, multiple descriptor types are valid for the
+same data source type. The type of descriptor you use determines the
+type of mappings that you can define.
+
+[[CHEEDJEH]][[OTLCG92058]]
+
+==== Descriptors and Inheritance
+
+*Inheritance* describes how a derived (child) class inherits the
+characteristics of its superclass (parent). You can use descriptors to
+describe the inheritance relationships between classes in relational and
+XML projects.
+
+In the descriptor for a child class, you can override mappings that have
+been specified in the descriptor for a parent class, or map attributes
+that have not been mapped at all in the parent class descriptor.
+
+link:#CHEIDEAE[Figure 5-1] illustrates the `Vehicle` object model–a
+typical Java inheritance hierarchy. The root class `Vehicle` contains
+two branch classes: `FueledVehicle` and `NonFueledVehicle`. Each branch
+class contains a leaf class: `Car` and `Bicycle`, respectively.
+
+[[CHEIDEAE]][[OTLCG92070]]
+
+*_Figure 5-1 Example Inheritance Hierarchy_*
+
+image:{imagesrelativedir}/javainhr.png[Description of Figure 5-1 follows,title="Description of Figure 5-1 follows"] +
+xref:{imagestextrelativedir}/javainhr.adoc[Description of "Figure 5-1 Example Inheritance Hierarchy "] +
+
+EclipseLink recognizes the following three types of classes in an
+inheritance hierarchy:
+
+* The root class stores information about _all_ instantiable classes in
+its subclass hierarchy. By default, queries performed on the root class
+return instances of the root class and its instantiable subclasses.
+However, the root class can be configured so queries on it return only
+instances of itself, without instances of its subclasses.
++
+For example, the `Vehicle` class in link:#CHEIDEAE[Figure 5-1] is a root
+class.
+* Branch classes have a persistent superclass and also have subclasses.
+By default, queries performed on the branch class return instances of
+the branch class and any of its subclasses. However, as with the root
+class, the branch class can be configured so queries on it return only
+instances of itself without instances of its subclasses.
++
+For example, the `FueledVehicle` class in link:#CHEIDEAE[Figure 5-1] is
+a branch class.
+* Leaf classes have a persistent superclass in the hierarchy but do not
+have subclasses. Queries performed on the leaf class can only return
+instances of the leaf class.
++
+For example, the `Car` class in link:#CHEIDEAE[Figure 5-1] is a leaf
+class.
+
+In the descriptor for a child class, you can override mappings that have
+been specified in the descriptor for a parent class, or map attributes
+that have not been mapped at all in the parent class descriptor.
+
+This section includes information on the following topics:
+
+* link:#CHEEIAEA[Specifying a Class Indicator]
+* link:#CHECJEGE[Inheritance and Primary Keys]
+* link:#CHEJGFGH[Single and Multi-Table Inheritance]
+* link:#CHEEDCIJ[Aggregate and Composite Descriptors and Inheritance]
+
+[[CHEEIAEA]][[OTLCG92071]]
+
+===== Specifying a Class Indicator
+
+When configuring inheritance, you configure the root class descriptor
+with the means of determining which subclasses it should instantiate.
+
+You can do this in one of the following ways:
+
+* link:#CHEFDEDA[Using Class Indicator Fields]
+* link:#CHEJDAID[Using Class Extraction Methods]
+
+NOTE: All leaf classes in the hierarchy must have a class indicator and they
+must have the same type of class indicator (field or class extraction
+method).
+
+[[CHEFDEDA]][[OTLCG92072]]
+
+====== Using Class Indicator Fields
+
+You can use a persistent attribute of a class to indicate which subclass
+should be instantiated. For example, in a relational descriptor, you can
+use a class indicator field in the root class table. The indicator field
+should not have an associated direct mapping unless it is set to
+read-only.
+
+NOTE: If the indicator field is part of the primary key, define a write-only
+transformation mapping for the indicator field.
+
+You can use strings or numbers as values in the class indicator field.
+
+The root class descriptor must specify how the value in the class
+indicator field translates into the class to be instantiated.
+
+[[CHEJDAID]][[OTLCG92074]]
+
+====== Using Class Extraction Methods
+
+You can define a Java method to compute the class indicator based on any
+available information in the object's data source record. Such a method
+is called a class extraction method.
+
+Using a class extraction method, you do not need to include an explicit
+class indicator field in your data model and you can handle
+relationships that are too complex to describe using class indicator
+fields.
+
+A class extraction method must have the following characteristics:
+
+* it must be defined on the root descriptor's class;
+* it must be static;
+* it must take a `Record` as an argument;
+* it must return the `java.lang.Class` object to use for the `Record`
+passed in.
+
+You may also need to define only-instances and with-all-subclasses
+expressions. If you use a class extraction method, then you must provide
+EclipseLink with expressions to correctly filter sibling instances for
+all classes that share a common table.
+
+When configuring inheritance using a class extraction method,
+EclipseLink does not generate SQL for queries on the root class.
+
+[[CHECJEGE]][[OTLCG92078]]
+
+==== Inheritance and Primary Keys
+
+For relational projects, EclipseLink assumes that all of the classes in
+an inheritance hierarchy have the same primary key, as set in the root
+descriptor.
+
+[[CHEJGFGH]][[OTLCG92079]]
+
+==== Single and Multi-Table Inheritance
+
+In a relational project, you can map your inheritance hierarchy to a
+single table or to multiple tables.
+
+[[CHEEDCIJ]][[OTLCG92080]]
+
+==== Aggregate and Composite Descriptors and Inheritance
+
+You can designate relational descriptors as aggregates. XML descriptors
+are always composites (see link:#CHEIIIBJ[Descriptors and Aggregation]).
+
+When configuring inheritance for a relational aggregate descriptor, all
+the descriptors in the inheritance tree must be aggregates. The
+descriptors for aggregate and non-aggregate classes cannot exist in the
+same inheritance tree.
+
+When configuring inheritance for an XML descriptor, because all XML
+descriptors are composites, descriptor type does not restrict
+inheritance.
+
+[[CHEIIIBJ]][[OTLCG92063]]
+
+==== Descriptors and Aggregation
+
+Two objects—a source (parent or owning) object and a target (child or
+owned) object—are related by aggregation if there is a strict one-to-one
+relationship between them, and all the attributes of the target object
+can be retrieved from the same data source representation as the source
+object. This means that if the source object exists, then the target
+object must also exist, and if the source object is destroyed, then the
+target object is also destroyed.
+
+In this case, the descriptors for the source and target objects must be
+designated to reflect this relationship.
+
+The EJB 3.0 specification does not support nested aggregates).
+
+[[CACGEBJF]][[OTLCG00184]]
+
+==== Descriptor Customization
+
+You can customize a descriptor at run time by specifying a descriptor
+customizer—a Java class that implements the
+`org.eclipse.persistence.config.DescriptorCustomizer` interface and
+provides a default (zero-argument) constructor.
+
+You use a descriptor customizer to customize a descriptor at run time
+through code API similar to how you use an amendment method to customize
+a descriptor. See link:#CHEIGIHG[Amendment Methods].
+
+[[CHEIGIHG]][[OTLCG00186]]
+
+==== Amendment Methods
+
+You can associate a static Java method that is called when a descriptor
+is loaded at run time. This method can amend the run-time descriptor
+instance through the descriptor Java code API. The method must be
+`public` `static` and take a single parameter of type
+`org.persistence.descriptors.structures.ClassDescriptor`. In the
+implementation of this method, you can configure advanced features of
+the descriptor using any of the public descriptor and mapping API.
+
+You can only modify descriptors before the session has been connected;
+you should not modify descriptors after the session has been connected.
+
+Amendment methods can be used with rational descriptors,
+object-relational data type descriptors, and XML descriptors.
+
+[[CHEDDDJF]][[OTLCG00050]]
+
+==== Descriptor Event Manager
+
+In relational projects, EclipseLink raises various instances of
+`DescriptorEvent` during the persistence life cycle. Each descriptor
+owns an instance of `DescriptorEventManager` that is responsible for
+receiving these events and dispatching them to the descriptor event
+handlers registered with it.
+
+Using a descriptor event handler, you can execute your own application
+specific logic whenever descriptor events occur, allowing you to take
+customized action at various points in the persistence life-cycle. For
+example, using a descriptor event handler, you can do the following:
+
+* Synchronize persistent objects with other systems, services, and
+frameworks
+* Maintain nonpersistent attributes of which EclipseLink is not aware
+* Notify other objects in the application when the persistent state of
+an object changes
+* Implement complex mappings or optimizations not directly supported by
+EclipseLink mappings

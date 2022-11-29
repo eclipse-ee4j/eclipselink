@@ -1,0 +1,633 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SCALING002]]
+=== Implementing the Solution
+
+These tasks provide general instructions for ensuring that a EclipseLink
+application scales in an application server cluster. Complete the tasks
+prior to deploying an application.
+
+This section contains the following tasks:
+
+* link:#CEGBHAEA[Task 1: Configure Cache Consistency]
+* link:#CEGEHGCF[Task 2: Ensure EclipseLink Is Enabled]
+* link:#CEGJHBBG[Task 3: Ensure All Application Servers Are Part of the Cluster]
+* link:#BABHHAEJ[Using Data Partitioning to Scale Data]
+
+[[CEGBHAEA]]
+
+==== Task 1: Configure Cache Consistency
+
+This task includes different configuration options that mitigate the
+possibility that an application might use stale data when deployed to an
+application server cluster. The cache coordination option is
+specifically designed for applications that are clustered; however,
+evaluate all the options and use them together (if applicable) to create
+a solution that results in the best application performance. Properly
+configuring a cache can, in some cases, eliminate the need to use cache
+coordination. For additional details on these options, see:
+
+`http://wiki.eclipse.org/Introduction_to_Cache_%28ELUG%29#Handling_Stale_Data`
+
+The following are the configuration options:
+
+* link:#CEGEDHAB[Disabling Entity Caching]
+* link:#CEGBGIFB[Refreshing the Cache]
+* link:#CEGCABII[Setting Entity Caching Expiration]
+* link:#CEGCHFCD[Setting Optimistic Locking]
+* link:#CEGBAIIH[Using Cache Coordination]
+
+NOTE: Oracle provides a EclipseLink and Coherence integration that allows
+EclipseLink to use Coherence as the L2 cache. For details on EclipseLink
+Grid, see
+
+[[CEGEDHAB]]
+
+===== Disabling Entity Caching
+
+Disable the shared cache for highly volatile entities or for all
+entities as required. To disable the shared cache for all objects, use
+the `<shared-cache-mode>` element in the `persistence.xml` file. For
+example:
+
+[source,oac_no_warn]
+----
+<shared-cache-mode>NONE</shared-cache-mode>
+----
+
+The default configuration is `DISABLE_SELECTIVE` and allows caching to
+be disabled per entity. To selectively enable or disable the shared
+cache, use the `shared` attribute of the `@Cache` annotation when
+defining an entity. For example:
+
+[source,oac_no_warn]
+----
+@Entity
+@Cache(shared=false)
+public class Employee {
+}
+----
+
+[[CEGBGIFB]]
+
+===== Refreshing the Cache
+
+Refreshing a cache reloads the cache from the database to ensure that an
+application is using current data. There are different ways to refresh a
+cache.
+
+The `@Cache` annotation provides the `alwaysRefresh` and
+`refreshOnlyIfNewer` attributes which force all queries that go to the
+database to refresh the cache. The cache is only actually refreshed if
+the optimistic lock value in the database is newer than in the cache.
+
+[source,oac_no_warn]
+----
+@Entity
+@Cache(
+   alwaysRefresh=true, 
+   refreshOnlyIfNewer=true)
+public class Employee {
+}
+----
+
+The `jakarta.persistence.Cache` interface includes methods that remove
+stale objects if the cache is out of date:
+
+* The `evictAll` method invalidates all of the objects in the cache.
++
+[source,oac_no_warn]
+----
+em.getEntityManagerFactory().getCache().evictAll();
+----
+* The `evict` method invalidates specific classes.
++
+[source,oac_no_warn]
+----
+em.getEntityManagerFactory().getCache().evict(MyClass);
+----
+
+The preceding methods are passive and refresh objects only the next time
+the cache is accessed. To actively refresh an object, use the
+`EntityManager.``refresh` method. The method refreshes a single object
+at a time.
+
+Another possibility is to use the `setHint` method to set a query hint
+that triggers the query to refresh the cache. For example:
+
+[source,oac_no_warn]
+----
+Query query = em.createQuery("Select e from Employee e");
+query.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
+----
+
+Lastly, native API methods are also available. For details, see the
+`ClassDescriptor` documentation in _Java API Reference for EclipseLink_.
+
+[[CEGCABII]]
+
+===== Setting Entity Caching Expiration
+
+Cache expiration makes a cached object instance invalid after a
+specified amount of time. Any attempt to use the object causes the most
+up-to-date version of the object to be reloaded from the data source.
+Expiration can help ensure that an application is always using the most
+recent data. There are different ways to set expiration.
+
+The `@Cache` annotation provides the `expiry` and `expiryTimeOfDay`
+attributes, which remove cache instances after a specific amount of
+time. The `expiry` attribute is entered in milliseconds. The default
+value if no value is specified is `-1`, which indicates that expiry is
+disabled. The `expiryTimeOfDay` attribute is an instance of the
+`org.eclipse.persistence.annotations.TimeOfDay` interface. The following
+example sets the object to expire after 5 minutes:
+
+[source,oac_no_warn]
+----
+@Entity
+@Cache(expiry=300000)
+public class Employee {
+}
+----
+
+[[CEGCHFCD]]
+
+===== Setting Optimistic Locking
+
+Optimistic locking prevents one user from writing over another user's
+work. Locking is important when multiple servers or multiple
+applications access the same data and is relevant in both single-server
+and multiple-server environments. In a multiple-server environment,
+locking is still required if an application uses cache refreshing or
+cache coordination. There are different ways to set optimistic locking.
+
+The standard JPA `@Version` annotation is used for single valued value
+and timestamp based locking. However, for advanced locking features use
+the `@OptimisticLocking` annotation. The `@OptimisticLocking` annotation
+specifies the type of optimistic locking to use when updating or
+deleting entities. Optimistic locking is supported on an `@Entity` or
+`@MappedSuperclass` annotation. The following policies are available and
+are set within the `type` attribute:
+
+* `ALL_COLUMNS`: This policy compares every field in the table in the
+`WHERE` clause when performing an update or delete operation.
+* `CHANGED_COLUMNS`: This policy compares only the changed fields in the
+`WHERE` clause when performing an update operation. A delete operation
+compares only the primary key.
+* `SELECTED_COLUMNS`: This policy compares selected fields in the
+`WHERE` clause when performing an update or delete operation. The fields
+that are specified must be mapped and not be primary keys.
+* `VERSION_COLUMN`: (Default) This policy allows a single version number
+to be used for optimistic locking. The version field must be mapped and
+not be the primary key. To automatically force a version field update on
+a parent object when its privately owned child object's version field
+changes, use the `cascaded` method set to `true`. The method is set to
+`false` by default.
+
+[[CEGBAIIH]]
+
+===== Using Cache Coordination
+
+Cache coordination synchronizes changes among distributed sessions.
+Cache coordination is most useful in application server clusters where
+maintaining consistent data for all applications is challenging.
+Moreover, cache consistency becomes increasingly more difficult as the
+number of servers within an environment increases.
+
+Cache coordination works by broadcasting notifications of transactional
+object changes among sessions (`EntityManagerFactory` or persistence
+unit) in the cluster. Cache coordination is most useful for applications
+that are primarily read-based and when changes are performed by the same
+application operating with multiple, distributed sessions.
+
+Cache coordination significantly minimizes stale data, but does not
+completely eliminate the possibility that stale data might occur because
+of latency. In addition, cache coordination reduces the number of
+optimistic lock exceptions encountered in distributed architectures, and
+reduces the number of failed or repeated transactions in an application.
+However, cache coordination in no way eliminates the need for an
+effective locking policy. To ensure the most current data, use cache
+coordination with optimistic or pessimistic locking; optimistic locking
+is preferred.
+
+Cache coordination is supported over the Remote Method Invocation (RMI)
+and Java Message Service (JMS) protocols and is configured either
+declaratively by using persistence properties in a `persistence.xml`
+file or by using the cache coordination API. System properties that
+match the persistence properties are available as well.
+
+For additional details on cache coordination see:
+
+_Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_
+
+====== Setting Cache Synchronization
+
+Cache synchronization determines how notifications of object changes are
+broadcast among session members. The following synchronization options
+are available:
+
+* `SEND_OBJECT_CHANGES`: (Default) This option broadcasts a list of
+changed objects including data about the changes. This data is merged
+into the receiving cache.
+* `INVALIDATE_CHANGED_OBJECTS`: This option broadcasts a list of the
+identities of the objects that have changed. The receiving cache
+invalidates the objects rather than changing any of the data. This
+option is the lightest in terms of data sent and processing done in
+other cluster members.
+* `SEND_NEW_OBJECTS_WITH_CHANGES`: This option is the same as the
+`SEND_OBJECT_CHANGES` option except it also includes any newly created
+objects from the transaction.
+* `NONE`: This option does no cache coordination.
+
+The `@Cache` annotation `coordinationType` attribute is used to specify
+synchronization. For example:
+
+[source,oac_no_warn]
+----
+@Entity
+@Cache(CacheCoordinationType.SEND_NEW_OBJECTS_CHANGES)
+public class Employee {
+}
+----
+
+The `ClassDescriptor.setCacheSynchronizationType` native API method can
+also be used to specify synchronization. For details, see the
+`ClassDescriptor` documentation in _Java API Reference for EclipseLink_.
+
+====== Configuring JMS Cache Coordination Using Persistence Properties
+
+The following example demonstrates how to configure cache coordination
+in the `persistence.xml` file and uses JMS for broadcast notification.
+For JMS, provide a JMS topic JNDI name and topic connection factory JNDI
+name. The JMS topic should not be JTA-enabled and should not have
+persistent messages.
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.coordination.protocol" value="jms" />
+<property name="eclipselink.cache.coordination.jms.topic" 
+   value="jms/EmployeeTopic" />
+<property name="eclipselink.cache.coordination.jms.factory"
+   value="jms/EmployeeTopicConnectionFactory" />
+----
+
+Applications that run in a cluster generally do not require a URL
+because the topic provides enough to locate and use the resource. For
+applications that run outside the cluster, a URL is required. The
+following example is a URL for a WebLogic Server cluster:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.coordination.jms.host"
+   value="t3://myserver:7001/" />
+----
+
+A user name and password for accessing the servers can also be set if
+required. For example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.coordination.jndi.user" value="user" />
+<property name="eclipselink.cache.coordination.jndi.password" value="password" />
+----
+
+====== Configuring RMI Cache Coordination Using Persistence Properties
+
+The following example demonstrates how to configure cache coordination
+in the `persistence.xml` file and uses RMI for broadcast notification:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.coordination.protocol" value="rmi" />
+----
+
+Applications that run in a cluster generally do not require a URL
+because JNDI is replicated and servers can look up each other. If an
+application runs outside of a cluster, or if JNDI is not replicated,
+then each server must provide its URL. This could be done through the
+`persistence.xml` file; however, different `persistence.xml` files (thus
+JAR or EAR) for each server is required, which is usually not desirable.
+A second option is to set the URL programmatically using the cache
+coordination API. For more details, see link:#CEGBJIFB["Configuring
+Cache Coordination Using the Cache Coordination API"]. The final option
+is to set the URL as a system property on each application server. The
+following example sets the URL for a WebLogic Server cluster using a
+system property:
+
+[source,oac_no_warn]
+----
+-Declipselink.cache.coordination.jms.host=t3://myserver:7001/
+----
+
+A user name and password for accessing the servers can also be set if
+required; for example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.coordination.jndi.user" value="user" /><property name="eclipselink.cache.coordination.jndi.password" value="password" />
+----
+
+RMI cache coordination can use either asynchronous or synchronous
+broadcasting notification; asynchronous is the default. Synchronous
+broadcasting ensures that all of the servers are updated before a
+request returns. The following example configures synchronous
+broadcasting.
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.coordination.propagate-asynchronously"
+   value="false" />
+----
+
+If multiple applications on the same server or network use cache
+coordination, then a separate channel can be used for each application.
+For example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.coordination.channel" value="EmployeeChannel" />
+----
+
+Last, if required, change the default RMI multicast socket address that
+allows servers to find each other. The following example explicitly
+configures the multicast settings:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.coordination.rmi.announcement-delay"
+   value="1000" />
+<property name="eclipselink.cache.coordination.rmi.multicast-group"
+   value="239.192.0.0" />
+<property name="eclipselink.cache.coordination.rmi.multicast-group.port"
+   value="3121" />
+<property name="eclipselink.cache.coordination.packet-time-to-live" value="2" />
+----
+
+====== Cache Coordination and Oracle WebLogic
+
+Both RMI and JMS cache coordination work with Oracle WebLogic Server.
+When a WebLogic cluster is used JNDI is replicated among the cluster
+servers, so a `cache.coordination.rmi.url` or a
+`cache.coordination.jms.host` option is not required. For JMS cache
+coordination, the JMS topic should only be deployed to only one of the
+servers (as of Oracle WebLogic 10.3.6). It may be desirable to have a
+dedicated JMS server if the JMS messaging traffic is heavy.
+
+Use of other JMS services in WebLogic may have other requirements.
+
+====== Cache Coordination and Glassfish
+
+JMS cache coordination works with Glassfish Server. When a Glassfish
+cluster is used, JNDI is replicated among the cluster servers, so a
+`cache.coordination.jms.host` option is not required.
+
+Use of other JMS services in Glassfish may have other requirements.
+
+RMI cache coordination does not work when the JNDI naming service option
+is used in a Glassfish cluster. RMI will work if the
+`eclipselink.cache.coordination.naming-service` option is set to `rmi`.
+Each server must provide its own
+`eclipselink.cache.coordination.rmi.url` option, either by having a
+different `persistence.xml` file for each server, or by setting the URL
+as a System property in the server, or through a customizer.
+
+====== Cache Coordination and IBM WebSphere
+
+JMS cache coordination may have issues on IBM WebSphere. Use of a
+Message Driven Bean (MDB) may be required to allow access to JMS. To use
+an MDB with cache coordination, set the
+`eclipselink.cache.coordination.protocol` option to the value
+`jms-publishing`. The application will also have to deploy an MDB that
+processes cache coordination messages in its EAR file.
+
+[[CEGBJIFB]]
+
+====== Configuring Cache Coordination Using the Cache Coordination API
+
+The `CommandManager` interface allows you to programmatically configure
+cache coordination for a session. The interface is accessed using the
+`getCommandManager` method from the `DatabaseSession` interface.
+
+[[CEGEHGCF]]
+
+==== Task 2: Ensure EclipseLink Is Enabled
+
+Ensure that the EclipseLink JAR files are included on the classpath of
+each application server in the cluster to which the EclipseLink
+application is deployed and configure EclipseLink as the persistence
+provider. For detailed instructions about setting up EclipseLink with
+WebLogic Server and GlassFish Server, see
+xref:{relativedir}/tlandwls.adoc#ELWLS[Chapter 3, "Using EclipseLink with WebLogic
+Server,"] and xref:{relativedir}/tlandgs.adoc#ELGS[Chapter 4, "Using EclipseLink
+with GlassFish Server,"] respectively.
+
+[[CEGJHBBG]]
+
+==== Task 3: Ensure All Application Servers Are Part of the Cluster
+
+Configure an application server cluster that includes each application
+server that hosts the EclipseLink application:
+
+NOTE: TopLink relies on JMS and RMI and does not use the application server's
+cluster communication.
+
+* For WebLogic Server clustering see _Oracle Fusion Middleware Using
+Clusters for Oracle WebLogic Server_.
+* For GlassFish Server clustering, see:
++
+`http://download.oracle.com/docs/cd/E18930_01/html/821-2426/index.html`
+
+[[BABHHAEJ]]
+
+=== Using Data Partitioning to Scale Data
+
+Data partitioning allows an application to scale its data across more
+than one database machine. Data partitioning is supported at the entity
+level to allow a different set of entity instances for the same class to
+be stored in a different physical database or different node within a
+database cluster. Both regular databases and clustered databases are
+supported. Data can be partitioned both horizontally and vertically.
+
+Partitioning can be enabled on an entity, a relationship, a query, or a
+persistence unit. To configure data partitioning, use the `@Partitioned`
+annotation and one or more partitioning policy annotations.
+link:#BABBIJCD[Table 10-1] describes the partitioning policies
+
+[[BABBIJCD]]
+
+*_Table 10-1 Partitioning Policies_*
+
+|===
+|*Annotation* |*Description*
+|`@HashPartitioning` |Partitions access to a database cluster by the
+hash of a field value from the object, such as the object's ID,
+location, or tenant. The hash indexes into the list of connection
+pools/nodes. All write or read request for objects with that hash value
+are sent to the same server. If a query does not include the hash field
+as a parameter, it can be sent to all servers and unioned, or it can be
+left to the session's default behavior.
+
+|`@PinnedPartitioning` |Pins requests to a single connection pool/node.
+This allows for vertical partitioning.
+
+|`@RangePartitioning` |Partitions access to a database cluster by a
+field value from the object, such as the object's ID, location, or
+tenant. Each server is assigned a range of values. All write or read
+requests for objects with that value are sent to the same server. If a
+query does not include the field as a parameter, then it can either be
+sent to all servers and unioned, or left to the session's default
+behavior.
+
+|`@ReplicationPartitioning` |Sends requests to a set of connection
+pools/nodes. This policy is for replicating data across a cluster of
+database machines. Only modification queries are replicated.
+
+|`@RoundRobinPartitioning` |Sends requests in a round-robin fashion to
+the set of connection pools/nodes. This policy is used for load
+balancing read queries across a cluster of database machines. It
+requires that the full database be replicated on each machine, so it
+does not support partitioning. The data should either be read-only, or
+writes should be replicated.
+
+|`@UnionPartitioning` |Sends queries to all connection pools and unions
+the results. This is for queries or relationships that span partitions
+when partitioning is used, such as on a ManyToMany cross partition
+relationship.
+
+|`@ValuePartitioning` |Partitions access to a database cluster by a
+field value from the object, such as the object's location or tenant.
+Each value is assigned a specific server. All write or read requests for
+objects with that value are sent to the same server. If a query does not
+include the field as a parameter, then it can be sent to all servers and
+unioned, or it can be left to the session's default behavior.
+
+|`@Partitioning` |Partitions access to a database cluster by a custom
+partitioning policy. A class that extends the `PartitioningPolicy` class
+must be provided.
+|===
+
+Partitioning policies are globally-named objects in a persistence unit
+and are reusable across multiple descriptors or queries. This improves
+the usability of the configuration, specifically with JPA annotations
+and XML.
+
+The persistence unit properties support adding named connection pools in
+addition to the existing configuration for read/write/sequence.
+Connection pools are defined in the `persistence.xml` file for each
+participating database. Partition policies select the appropriate
+connection based on their particular algorithm.
+
+If a transaction modifies data from multiple partitions, JTA should be
+used to ensure 2-phase commit of the data. An exclusive connection can
+also be configured in an `EntityManager` implementation to ensure only a
+single node is used for a single transaction.
+
+The following example partitions the `Employee` data by location. The
+two primary sites, Ottawa and Toronto, are each stored on a separate
+database. All other locations are stored on the default database.
+Project is range partitioned by its ID. Each range of ID values are
+stored on a different database.
+
+[source,oac_no_warn]
+----
+@Entity
+@IdClass(EmployeePK.class)
+@UnionPartitioning(
+        name="UnionPartitioningAllNodes",
+        replicateWrites=true)
+@ValuePartitioning(
+        name="ValuePartitioningByLOCATION",
+        partitionColumn=@Column(name="LOCATION"),
+        unionUnpartitionableQueries=true,
+        defaultConnectionPool="default",
+        partitions={
+            @ValuePartition(connectionPool="node2", value="Ottawa"),
+            @ValuePartition(connectionPool="node3", value="Toronto")
+        })
+@Partitioned("ValuePartitioningByLOCATION")
+public class Employee {
+    @Id
+    @Column(name = "EMP_ID")
+    private Integer id;
+     @Id
+    private String location;
+    ...
+ 
+    @ManyToMany(cascade = { PERSIST, MERGE })
+    @Partitioned("UnionPartitioningAllNodes")
+    private Collection<Project> projects;
+    ...
+}
+----
+
+The employee/project relationship is an example of a cross partition
+relationship. To allow the employees and projects to be stored on
+different databases a union policy is used and the join table is
+replicated to each database.
+
+[source,oac_no_warn]
+----
+@Entity
+@RangePartitioning(
+        name="RangePartitioningByPROJ_ID",
+        partitionColumn=@Column(name="PROJ_ID"),
+        partitionValueType=Integer.class,
+        unionUnpartitionableQueries=true,
+        partitions={
+            @RangePartition(connectionPool="default", startValue="0",
+               endValue="1000"),
+            @RangePartition(connectionPool="node2", startValue="1000",
+               endValue="2000"),
+            @RangePartition(connectionPool="node3", startValue="2000")
+        })
+@Partitioned("RangePartitioningByPROJ_ID")
+public class Project {
+    @Id
+    @Column(name="PROJ_ID")
+    private Integer id;
+    ...
+}
+----
+
+==== Clustered Databases and Oracle RAC
+
+Some databases support clustering the database across multiple servers.
+Oracle Real Application Clusters (RAC) allows for a single database to
+span multiple different server nodes. Oracle RAC also supports table and
+node partitioning of data. A database cluster allows for any of the data
+to be accessed from any node in the cluster. However, it is generally
+more efficient to partition the data access to specific nodes, to reduce
+cross node communication. Partitioning can be used in conjunction with a
+clustered database to reduce cross node communication, and improve
+scalability. For details on using EclipseLink with Oracle RAC, see
+xref:{relativedir}/oracledb002.adoc#CHDIEBBB[Using EclipseLink with Oracle RAC.]
+
+Adhere to the following requirements when using data partitioning with a
+database cluster:
+
+* Partition policy should not enable replication, as database cluster
+makes data available to all nodes.
+* Partition policy should not use unions, as database cluster returns
+the complete query result from any node.
+* A `DataSource` and connection pool should be defined for each node in
+the cluster.
+* The application's data access and data partitioning should be designed
+to have each transaction only require access to a single node.
+* Usage of an exclusive connection for an `EntityManager` is recommended
+to avoid having multiple nodes in a single transaction and avoid 2-phase
+commit.

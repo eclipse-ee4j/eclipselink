@@ -1,0 +1,129 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, introduction
+
+== Introduction
+
+This chapter introduces EclipseLink. EclipseLink is an advanced,
+object-persistence and object-transformation framework that provides
+development tools and run-time capabilities that reduce development and
+maintenance efforts, and increase enterprise application functionality.
+
+This chapter includes the following sections:
+
+* <<About EclipseLink, About EclipseLink>>
+* <<About This Documentation, About This Documentation>>
+* <<Other Resources, Other Resources>>
+
+=== About EclipseLink
+
+EclipseLink is suitable for use with a wide range of Java Enterprise
+Edition (Jakarta EE) and Java application architectures. Use EclipseLink
+to design, implement, deploy, and optimize an advanced
+object-persistence and object-transformation layer that supports a
+variety of data sources and formats, including the following:
+
+* JPA – For object-relational persistence, supporting the JPA (Jakarta
+Persistence API) specification and a native API
+* NoSQL – For object persistence of non-relational NoSQL and EIS
+databases through JPA and a native API
+* JAXB – For object-XML transformation, supporting the JAXB (Java
+Architecture for XML Binding) specification and a native API
+* JSON – For object-JSON (JavaScript Object Notation) transformation
+* DBWS – For generation of web services from database tables and stored
+procedures
+
+The EclipseLink native API includes:
+
+* Relational – For transactional persistence of Java objects to a
+relational database accessed using Java Database Connectivity (JDBC)
+drivers.
+* Object-Relational Data Type – For transactional persistence of Java
+objects to special-purpose structured data source representations
+optimized for storage in object-relational data type databases such as
+Oracle Database.
+* Enterprise information system (EIS) – For transactional persistence of
+Java objects to a non-relational data source accessed using a Jakarta EE
+Connector architecture (JCA) adapter and any supported EIS record type,
+including indexed, mapped, or XML.
+* XML – For non-transactional, non-prescription (in-memory) conversion
+between Java objects and XML Schema Document (XSD)-based XML documents
+using Java Architecture for XML Binding (JAXB).
+
+EclipseLink includes support for EJB 3.0 and the Jakarta Persistence API
+(JPA) in Jakarta EE and Java SE environments including integration with
+a variety of application servers including:
+
+* Oracle WebLogic Server
+* Oracle Glassfish Server
+* JBoss Web Server
+* IBM WebSphere application server
+* SAP NetWeaver
+* Oracle Containers for Jakarta EE (OC4J)
+* Various other web containers, such as Apache Tomcat, Eclipse Gemini,
+IBM WebSphere CE, and SpringSource tcServer
+
+EclipseLink lets you quickly capture and define object-to-data source
+and object-to-data representation mappings in a flexible, efficient
+metadata format.
+
+The EclipseLink runtime lets your application exploit this mapping
+metadata with a simple session facade that provides in-depth support for
+standard APIs such as JPA, and JAXB as well as EclipseLink-specific
+extensions to those standards.
+
+=== About This Documentation
+
+EclipseLink is the reference implementation of the Java Persistence
+Architecture (JPA) 2.0 specification It also includes many enhancements
+and extensions.
+
+This document explains the EclipseLink enhancements and extensions to
+JPA. Please refer to the JPA specification for full documentation of
+core JPA. Where appropriate, this documentation provides links to the
+pertinent section of the specification.
+
+==== Other Resources
+
+For more information, see:
+
+* Java Persistence specification for complete information about
+JPA`http://jcp.org/en/jsr/detail?id=317`
+* EclipseLink Documentation Center for more information about
+EclipseLink support of JPA.
+`http://www.eclipse.org/eclipselink/documentation/`
+* The EclipseLink API reference documentation (Javadoc) for complete
+information on core JPA plus the EclipseLink
+enhancements`http://www.eclipse.org/eclipselink/api/`
+** The schema for the JPA persistence configuration
+file`http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd`
+** The schema for the persistence object/relational mapping
+file`http://java.sun.com/xml/ns/persistence/orm_2_0.xsd`
+** The schema for the native EclipseLink mapping
+file`http://www.eclipse.org/eclipselink/xsds/eclipselink_orm_2_0.xsd`
+* Examples that display the use of a number of EclipseLink JPA
+features`http://wiki.eclipse.org/EclipseLink/Examples/`
+* JavaEE and JPA tutorial. Although this tutorial does not include
+EclipseLink-specific information, it does contain useful information to
+help you implement JPA 2.0 applications.
+`http://download.oracle.com/javaee/5/tutorial/doc/bnbpy.html`
+* Java Persistence, a wiki-based "open book" about JPA
+2.0`http://en.wikibooks.org/wiki/Java_Persistence`
+

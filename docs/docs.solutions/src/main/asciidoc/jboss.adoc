@@ -1,0 +1,56 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ELJBOSS]]
+== Using EclipseLink with JBoss 7 Application Server
+
+This chapter introduces and describes how to use EclipseLink as the
+persistence provider for applications deployed to JBoss Application
+Server 7.1.
+
+This chapter includess the following sections:
+
+* xref:{relativedir}/jboss001.adoc#ELJBOSS001[Introduction to the Solution]
+* xref:{relativedir}/jboss002.adoc#ELJBOSS002[Implementing the Solution]
+* xref:{relativedir}/jboss003.adoc#ELJBOSS003[Additional Resources]
+
+*Use Case*
+
+EclipseLink can be used with a number of popular Jakarta EE application
+servers, including JBoss Application Server.
+
+*Solution*
+
+Configure JBoss to use EclipseLink runtime, and deploy applications
+developed using EclipseLink APIs.
+
+*Components*
+
+* EclipseLink 2.4 or later.
+* JBoss Application Server 7.x.
+* A compliant Java Database Connectivity (JDBC) database, such as Oracle
+Database, Oracle Express, MySQL, the HSQL database embedded in JBoss
+Application Server, etc.
+
+//Introduction to the Solution
+include::{rootdir}/jboss001.adoc[]
+
+//Implementing the Solution
+include::{rootdir}/jboss002.adoc[]
+
+//Additional Resources
+include::{rootdir}/jboss003.adoc[]

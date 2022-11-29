@@ -1,0 +1,3 @@
+:nofooter:
+This illustration depicts subsequent requests. This illustration is
+fully described in the following paragraph.

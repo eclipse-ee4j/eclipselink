@@ -1,0 +1,68 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[QUERY007]]
+=== About Query Casting
+
+Use query casting to query across attributes in subclasses when using
+JPA or ORM. This feature is available in JPQL, EclipseLink Expressions,
+and Criteria API.
+
+Starting with JPA 2.0, it is possible to limit the results or a query to
+those of a specific subclass. For example, the expression framework
+provides `Expression.type(Class)`.
+
+In JPQL, downcasting is accomplished in the `FROM` clause, using
+`TREAT`...`AS` in the `JOIN` clause.
+
+The JPA `Criteria` API includes the casting operator
+`Expression.as(type)`. This expression does a simple cast that allows
+matching of types within the generics.
+
+Calling a cast on a `JOIN` node permanently alters that node. For
+example, in the example above, after calling
+`join.as(LargeProject.class)`, the join refers to a `LargeProject`.
+
+[[OTLCG94406]]
+
+[[sthref65]]
+
+==== EclipseLink Expression Support for Downcasting
+
+EclipseLink extends the `Criteria` API to allow a cast using
+`Expression.as(type)`. The as method checks the hierarchy; and if type
+is a subclass of the type for the expression that is being called on, a
+cast is implemented.
+
+The `Expression.as(Class)` can also be used for downcasting. The
+behavior of using `Expression.as(Class)` is as follows:
+
+* An exception is thrown at query execution time if the class that is
+cast to is not a subclass of the class of the query key being cast.
+* Casts are only allowed on `ObjectExpressions` (`QueryKeyExpression`
+and `ExpressionBuilder`). The parent expression of a cast must be an
+`ObjectExpression`.
+* Casts use the same outer join settings as the `ObjectExpression` they
+modify.
+* Casts modify their parent expression. As a result, when using a cast
+with a parallel expression, you must use a new instance of the parent
+expression.
+* Casting is not supported for `TablePerClass` inheritance.
+* It is prudent to do a check for type in a query that does a cast.
+* EclipseLink automatically appends type information for cases where the
+cast results in a single type; but for classes in the middle of a
+hierarchy, no type information is appended to the SQL.

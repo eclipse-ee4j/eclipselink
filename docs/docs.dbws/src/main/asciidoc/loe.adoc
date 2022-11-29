@@ -1,0 +1,49 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+== List of Examples
+
+* xref:{relativedir}/overview001.adoc#CJADJDDA[1-1 Example DBWS Service descriptor file]
+* xref:{relativedir}/overview001.adoc#sthref14[1-2 Example Simple XML Format (SXF) document]
+* xref:{relativedir}/overview001.adoc#sthref15[1-3 Simple XML Format Schema]
+* xref:{relativedir}/overview002.adoc#CJAHEECA[1-4 Sample DBWS Builder XML file]
+* xref:{relativedir}/overview003.adoc#CJAIABED[1-5 Sample DBWSBuilder XML File]
+* xref:{relativedir}/overview003.adoc#CJAGDJAI[1-6 Sample DBWS Builder XML File]
+* xref:{relativedir}/overview003.adoc#BABBBABC[1-7 Using a <procedure> Query]
+* xref:{relativedir}/overview003.adoc#CJADJAED[1-8 DBWSBuilder-generated eclipselink-dbws-schema.xsd File]
+* xref:{relativedir}/overview003.adoc#CJAHDIFC[1-9 Converting to an Attribute]
+* xref:{relativedir}/overview003.adoc#BABBAHFB[1-10 Sample Builder XML File]
+* xref:{relativedir}/overview003.adoc#sthref29[1-11 Sample DBWSPackager]
+* xref:{relativedir}/overview004.adoc#sthref30[1-12 DBWSBuilder usage]
+* xref:{relativedir}/creating_dbws_services001.adoc#CJAFCCCA[2-1 Example]
+* xref:{relativedir}/creating_dbws_services001.adoc#sthref35[2-2 Sample CRUD Operations]
+* xref:{relativedir}/creating_dbws_services002.adoc#sthref38[2-3 ORM Project]
+* xref:{relativedir}/creating_dbws_services002.adoc#sthref39[2-4 ORX Project]
+* xref:{relativedir}/creating_dbws_services002.adoc#CJADIDDI[2-5 Sample DBWS Service]
+* xref:{relativedir}/creating_dbws_services003.adoc#sthref41[2-6 Using an ORM Map]
+* xref:{relativedir}/creating_dbws_services003.adoc#sthref42[2-7 Using an OXM Map]
+* xref:{relativedir}/creating_dbws_services004.adoc#sthref43[2-8 Sample DBWSBuilder XML File]
+* xref:{relativedir}/creating_dbws_services004.adoc#sthref45[2-9 Sample XML File]
+* xref:{relativedir}/creating_dbws_services004.adoc#sthref47[2-10 Sample eclipselink-dbws.xml File]
+* xref:{relativedir}/creating_dbws_services004.adoc#sthref48[2-11 Sample Schema]
+* xref:{relativedir}/creating_dbws_services004.adoc#sthref49[2-12 Instance document:]
+* xref:{relativedir}/creating_dbws_services004.adoc#sthref51[2-13 Sample Schema]
+* xref:{relativedir}/creating_dbws_services004.adoc#CJADIADC[2-14 Executing Additional SQL Statements]
+* xref:{relativedir}/advanced_methods001.adoc#BEIEIHFG[3-1 Sample DBWS Builder File (dbws-builder.xml)]
+* xref:{relativedir}/advanced_methods001.adoc#BEIFBFFC[3-2 Sample Build XML File (build.xml)]
+* xref:{relativedir}/advanced_methods001.adoc#BEIGCDJG[3-3 Sample Build Properties File (build.properties)]

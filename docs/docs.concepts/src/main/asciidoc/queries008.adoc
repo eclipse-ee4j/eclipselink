@@ -1,0 +1,80 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[QUERY008]]
+=== About Oracle Extensions for Queries
+
+When you use EclipseLink with Oracle Database, you can make use of the
+following Oracle-specific query features from within your EclipseLink
+applications:
+
+* link:#CACJAJFH[Query Hints]
+* link:#CACDIJHF[Hierarchical Queries]
+* link:#CACCJIGE[Flashback Queries]
+* link:#CACDDIDI[Stored Functions]
+
+[[CACJAJFH]][[OTLCG94064]]
+
+==== Query Hints
+
+Oracle lets you specify SQL query additions called hints that can
+influence how the database server SQL optimizer works. This lets you
+influence decisions usually reserved for the optimizer. You use hints to
+specify things such as join order for a join statement, or the
+optimization approach for a SQL call.
+
+You specify hints using the EclipseLink `DatabaseQuery` method
+`setHintString`.
+
+For more information, see the performance tuning guide for your
+database.
+
+[[CACDIJHF]][[OTLCG94065]]
+
+==== Hierarchical Queries
+
+Oracle Database Hierarchical Queries mechanism lets you select database
+rows based on hierarchical order. For example, you can design a query
+that reads the row of a given employee, followed by the rows of people
+the employee manages, followed by their managed employees, and so on.
+
+You specify a hierarchical query clause using the
+`setHierarchicalQueryClause` method which appears in the EclipseLink
+`DatabaseQuery` subclass `ReadAllQuery`.
+
+[[CACCJIGE]][[OTLCG94066]]
+
+==== Flashback Queries
+
+When using EclipseLink with Oracle9__i__ Database (or later), you can
+acquire a special historical session where all objects are read as of a
+past time, and then you can express read queries depending on how your
+objects are changing over time. For more information, see "Using Oracle
+Flashback Technology" in _Oracle Database Advanced Application
+Developer's Guide_.
+
+[[CACDDIDI]][[OTLCG94067]]
+
+==== Stored Functions
+
+A stored function is an Oracle Database mechanism that provides all the
+capabilities of a stored procedure in addition to returning a value.
+provides a number of annotations for working with stored functions as
+well as stored procedures. For a list of the EclipseLink annotation
+extensions for stored functions and procedures and links to their
+descriptions, see "Stored Procedure and Function Annotations" in
+_Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.

@@ -1,0 +1,206 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[TYPELEVEL003]]
+=== Specifying Inheritance
+
+EclipseLink MOXy provides several ways to represent your inheritance
+hierarchy in XML:
+
+* link:#BABGHADJ[Using xsi:type]
+* link:#BABIICIB[Using Substitution Groups]
+* link:#BABHIBJJ[Using @XmlDiscriminatorNode/@XmlDiscriminatorValue]
+
+[[BABGHADJ]]
+
+==== Using xsi:type
+
+By default, EclipseLink will use the `xsi:type` attribute to represent
+inheritance in XML.
+
+In this example an abstract super class (*ContactInfo*) contains all
+types of contact information. *Address* and *PhoneNumber* are the
+concrete implementations of *ContactInfo*.
+
+[[CIHCJDHH]]
+
+*_Example 3-12 Sample Java Classes_*
+
+[source,oac_no_warn]
+----
+public abstract class ContactInfo {
+}
+ 
+public class Address extends ContactInfo {
+ 
+   private String street;
+   ... 
+ 
+}
+ 
+public class PhoneNumber extends ContactInfo {
+ 
+   private String number;
+   ...
+ 
+}
+ 
+----
+
+Because the *Customer* object can have different types of contact
+information, its property refers to the superclass.
+
+[source,oac_no_warn]
+----
+@XmlRootElement
+public class Customer {
+ 
+   private ContactInfo contactInfo;
+   ... 
+ 
+}
+----
+
+Marshalling an example *Customer* would produce the following XML:
+
+[source,oac_no_warn]
+----
+<customer>
+   <contactInfo 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:type="address">
+      <street>323 Main Street</street>
+   </contactInfo>
+</customer>
+ 
+----
+
+Note the `xsi:type` attribute on the `contactInfo` element.
+
+[[BABIICIB]]
+
+==== Using Substitution Groups
+
+Another way to model inheritance in XML is through XML Schema's
+substitution groups functionality. Using this approach, the element name
+_itself_ determines which subclass to use.
+
+Taking the same link:#CIHCJDHH[Example 3-12], we will add
+`@XmlRootElement` annotations to each of the subclasses, which will act
+as the inheritance indicator.
+
+[[CIHJCCEE]]
+
+*_Example 3-13 Using @XmlRootElement Annotation_*
+
+[source,oac_no_warn]
+----
+public abstract class ContactInfo {
+}
+ 
+@XmlRootElement
+public class Address extends ContactInfo {
+ 
+   private String street;
+   ... 
+ 
+}
+ 
+@XmlRootElement
+public class PhoneNumber extends ContactInfo {
+ 
+   private String number;
+   ...
+ 
+}
+ 
+----
+
+Using this approach, marshalling an example *Customer* would produce the
+following XML:
+
+[source,oac_no_warn]
+----
+<customer>
+   <address>
+      <street>323 Main Street</street>
+   </address>
+</customer>
+ 
+----
+
+Note that the *Address* object is marshalled to the `address` element.
+
+[[BABHIBJJ]]
+
+==== Using @XmlDiscriminatorNode/@XmlDiscriminatorValue
+
+You can also use the MOXY-specific `@XmlDiscriminatorNode` and
+`@XmlDiscriminatorValue` annotations (introduced in EclipseLink 2.2) to
+represent inheritance. With this approach, you can select the attribute
+to represent the subtype.
+
+Using link:#CIHJCCEE[Example 3-13], the *ContactInfo* class uses the
+`@XmlDiscriminatorNod`e annotation to specify the XML attribute
+(classifier) that will hold the subclass indicator. *Address* and
+*PhoneNumber* are annotated with *@XmlDiscriminatorValue*, indicating
+that class' indicator name (`address-classifier` and
+`phone-number-classifier`).
+
+[[CIHGABAC]]
+
+*_Example 3-14 Using the @XmlDiscriminatorNode and
+@XmlDiscriminatorValue Annotations_*
+
+[source,oac_no_warn]
+----
+@XmlDiscriminatorNode("@classifier")
+public abstract class ContactInfo {
+}
+ 
+@XmlDiscriminatorValue("address-classifier")
+public class Address extends ContactInfo {
+ 
+   private String street;
+   ... 
+ 
+}
+ 
+@XmlDiscriminatorValue("phone-number-classifier")
+public class PhoneNumber extends ContactInfo {
+ 
+   private String number;
+   ...
+ 
+}
+ 
+----
+
+link:#CIHGABAC[Example 3-14] produces the following XML:
+
+[source,oac_no_warn]
+----
+<customer>
+   <contactInfo classifier="address-classifier">
+      <street>323 Main Street</street>
+   </contactInfo>
+</customer>
+----
+
+Notice that *Address* is marshalled to the `contactInfo` element. Its
+classifier attribute contains the discriminator node value
+`address-classifier`.
