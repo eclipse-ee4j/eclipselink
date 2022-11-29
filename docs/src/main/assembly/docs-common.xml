@@ -23,7 +23,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/src/docs/asciidoc</directory>
+            <directory>${project.basedir}/src/main/docs/asciidoc</directory>
             <outputDirectory>.</outputDirectory>
         </fileSet>
     </fileSets>

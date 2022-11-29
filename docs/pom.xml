@@ -37,7 +37,7 @@
     <properties>
         <!--Expected main/entry ASCII Doc file-->
         <source.document.name>main.adoc</source.document.name>
-        <source.document.directory>${project.basedir}/src/docs/asciidoc</source.document.directory>
+        <source.document.directory>${project.basedir}/src/main/docs/asciidoc</source.document.directory>
         <project.build.documentWorkingDirectory>${project.build.directory}/docs/asciidoc/</project.build.documentWorkingDirectory>
     </properties>
 
@@ -169,7 +169,7 @@
                             <sourceDirectory>${project.build.documentWorkingDirectory}</sourceDirectory>
                             <sourceDocumentName>${source.document.name}</sourceDocumentName>
                             <attributes>
-                                <pdf-stylesdir>${project.basedir}/src/theme</pdf-stylesdir>
+                                <pdf-stylesdir>${project.basedir}/src/main/theme</pdf-stylesdir>
                                 <pdf-style>jakartaee</pdf-style>
                                 <pagenums/>
                                 <toc/>
