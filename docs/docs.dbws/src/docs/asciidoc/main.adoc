@@ -20,8 +20,9 @@
 :nofooter:
 :description: EclipseLink
 :keywords: eclipselink, java, jpa, persistence, dbws, web service
-:commondir: ../../../../common
-include::{commondir}/attributes.adoc[]
+include::attributes.adoc[]
+
+link:dbws.pdf[PDF]|link:dbws.epub[ePub]
 
 //Title and Copyright Information
 include::{rootdir}/title_eclipselink.adoc[]
@@ -45,4 +46,4 @@ include::{rootdir}/creating_dbws_services.adoc[]
 //Advanced Methods of Accessing DBWS Designtime API
 include::{rootdir}/advanced_methods.adoc[]
 
-include::{commondir}/copyright.adoc[]
+include::copyright.adoc[]

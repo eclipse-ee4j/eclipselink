@@ -20,8 +20,9 @@
 :nofooter:
 :description: EclipseLink
 :keywords: eclipselink, java, jpa, persistence, moxy
-:commondir: ../../../../common
-include::{commondir}/attributes.adoc[]
+include::attributes.adoc[]
+
+link:moxy.pdf[PDF]|link:moxy.epub[ePub]
 
 //Title and Copyright Information
 include::{rootdir}/title_eclipselink.adoc[]
@@ -70,4 +71,4 @@ include::{rootdir}/dynamic_jaxb.adoc[]
 //Using JSON Documents
 include::{rootdir}/json.adoc[]
 
-include::{commondir}/copyright.adoc[]
+include::copyright.adoc[]

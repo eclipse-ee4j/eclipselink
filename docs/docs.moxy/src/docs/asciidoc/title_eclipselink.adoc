@@ -23,7 +23,7 @@ Developing JAXB Applications Using EclipseLink MOXy {release-version}
 {release-date}
 *Developing JAXB Applications Using EclipseLink MOXy {release-version}
 
-Copyright © 2013 by The Eclipse Foundation under the Eclipse Public
+Copyright © 2022 by The Eclipse Foundation under the Eclipse Public
 License (EPL).
 
 `http://www.eclipse.org/org/documents/epl-v10.php`

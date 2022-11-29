@@ -20,8 +20,9 @@
 :nofooter:
 :description: EclipseLink
 :keywords: eclipselink, java, jpa, persistence, solutions
-:commondir: ../../../../common
-include::{commondir}/attributes.adoc[]
+include::attributes.adoc[]
+
+link:solutions.pdf[PDF]|link:solutions.epub[ePub]
 
 //Title and Copyright Information
 include::{rootdir}/title_eclipselink.adoc[]
@@ -105,4 +106,4 @@ include::{rootdir}/nonrelational_db.adoc[]
 //Using EclipseLink with the Oracle Database
 include::{rootdir}/oracledb.adoc[]
 
-include::{commondir}/copyright.adoc[]
+include::copyright.adoc[]

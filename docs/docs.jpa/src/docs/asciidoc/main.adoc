@@ -20,8 +20,9 @@
 :nofooter:
 :description: EclipseLink
 :keywords: eclipselink, java, jpa, persistence, introduction
-:commondir: ../../../../common
-include::{commondir}/attributes.adoc[]
+include::attributes.adoc[]
+
+link:jpa-extensions.pdf[PDF]|link:jpa-extensions.epub[ePub]
 
 //Title and Copyright Information
 include::{rootdir}/title_eclipselink.adoc[]
@@ -54,4 +55,4 @@ include::{rootdir}/persistenceproperties_ref.adoc[]
 //eclipselink-orm.xml Schema Reference
 include::{rootdir}/schema.adoc[]
 
-include::{commondir}/copyright.adoc[]
+include::copyright.adoc[]

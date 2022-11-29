@@ -37,6 +37,8 @@
     <properties>
         <!--Expected main/entry ASCII Doc file-->
         <source.document.name>main.adoc</source.document.name>
+        <source.document.directory>${project.basedir}/src/docs/asciidoc</source.document.directory>
+        <project.build.documentWorkingDirectory>${project.build.directory}/docs/asciidoc/</project.build.documentWorkingDirectory>
     </properties>
 
     <modules>
@@ -49,6 +51,70 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>pack-shared-documents</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/docs-common.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-source-documents</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.documentWorkingDirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${source.document.directory}</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-shared-docs</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>org.eclipse.persistence.documentation</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>shared-docs</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.documentWorkingDirectory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
@@ -73,6 +139,7 @@
                         </goals>
                         <configuration>
                             <backend>html5</backend>
+                            <sourceDirectory>${project.build.documentWorkingDirectory}</sourceDirectory>
                             <sourceDocumentName>${source.document.name}</sourceDocumentName>
                             <attributes>
                                 <toc>left</toc>
@@ -87,7 +154,7 @@
                         </goals>
                         <configuration>
                             <backend>html5</backend>
-                            <sourceDirectory>src/docs/asciidoc/img_text</sourceDirectory>
+                            <sourceDirectory>${project.build.documentWorkingDirectory}/img_text</sourceDirectory>
                             <outputDirectory>target/generated-docs/img_text</outputDirectory>
                         </configuration>
                     </execution>
@@ -99,6 +166,7 @@
                         </goals>
                         <configuration>
                             <backend>pdf</backend>
+                            <sourceDirectory>${project.build.documentWorkingDirectory}</sourceDirectory>
                             <sourceDocumentName>${source.document.name}</sourceDocumentName>
                             <attributes>
                                 <pdf-stylesdir>${project.basedir}/src/theme</pdf-stylesdir>
@@ -118,6 +186,7 @@
                         </goals>
                         <configuration>
                             <backend>epub3</backend>
+                            <sourceDirectory>${project.build.documentWorkingDirectory}</sourceDirectory>
                             <sourceDocumentName>${source.document.name}</sourceDocumentName>
                             <attributes>
                                 <source-highlighter>rouge</source-highlighter>

@@ -20,8 +20,9 @@
 :nofooter:
 :description: EclipseLink
 :keywords: eclipselink, java, jpa, persistence, concepts, understanding
-:commondir: ../../../../common
-include::{commondir}/attributes.adoc[]
+include::attributes.adoc[]
+
+link:concepts.pdf[PDF]|link:concepts.epub[ePub]
 
 //Title and Copyright Information
 include::{rootdir}/title_eclipselink.adoc[]
@@ -73,4 +74,4 @@ include::{rootdir}/nosql.adoc[]
 [appendix]
 include::{rootdir}/app_tl_ext.adoc[]
 
-include::{commondir}/copyright.adoc[]
+include::copyright.adoc[]
