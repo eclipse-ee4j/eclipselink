@@ -1,0 +1,4 @@
+:nofooter:
+This illustration shows an object type conversion between the Employee
+attribute gender and the XML element gender. If the value of the Java
+object attribute is Female, it is stored in the XML element as F.

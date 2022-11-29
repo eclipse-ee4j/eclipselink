@@ -1,0 +1,64 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DATA_ACCESS003]]
+=== About Data Source Platform Types
+
+EclipseLink abstracts the details of your underlying data source using
+data source platform classes. A data source platform is owned by your
+project's `Login`. Specify your database platform at the project level
+for all sessions, or override this project-level configuration at the
+session level.
+
+To configure most platform options, you must use an amendment method, or
+a `preLogin` event listener.
+
+EclipseLink interacts with databases using structured query language
+(SQL). Because each database platform uses its own variation on the
+basic SQL language, EclipseLink must adjust the SQL it uses to
+communicate with the database to ensure that the application runs
+smoothly.
+
+The type of database platform you choose determines the specific means
+by which the EclipseLink runtime accesses the database, including the
+type of Java Database Connectivity (JDBC) driver to use. JDBC is an
+application programming interface (API) that gives Java applications
+access to a database. EclipseLink relational projects rely on JDBC
+connections to read objects from, and write objects to, the database.
+EclipseLink applications use either individual JDBC connections or a
+JDBC connection pool, depending on the application architecture.
+
+The `DatabasePlatform` class encapsulates behavior specific to a
+database platform (such as, Oracle, Sybase, DBase), and provides the
+protocol for EclipseLink to access this behavior
+
+EclipseLink provides a variety of database-specific platforms that let
+you customize your project for your target database. For a list of
+supported database platforms, see
+`org.eclipse.persistence.config.TargetDatabase` class and
+xref:app_tl_ext001.adoc#A1095976[Database Support.]
+
+A list of supported application servers can be found in
+`org.eclipse.persistence.config.TargetServer` and
+xref:app_tl_ext002.adoc#A1115041[Application Server Support.] The name of
+the application server you wish to use can be specified with the
+`eclipselink.target-server.persistence` unit property.
+
+The `datasource-login` persistence unit option contains other data
+source properties you can configure, such as user name, password,
+connection pooling, and so on. You can implement the `Login` class, and
+then set properties specific to database.

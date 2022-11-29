@@ -1,0 +1,139 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[JPA2XML001]]
+=== Introduction to the Solution
+
+This chapter demonstrates some typical techniques for mapping JPA
+entities to XML. Working with the examples that follow requires some
+understanding of such high-level JPA-to-XML mapping concepts, such as
+JAXB, MOXy, XML binding, and how to override JAXB annotations. The
+following sections will give you a basic understanding of these
+concepts:
+
+* link:#BEIEHDIH[Understanding XML Binding]
+* link:#BEIJHDEG[Understanding JAXB]
+* link:#BEIGAIEH[Understanding MOXy]
+* link:#BEIHEGED[Understanding an XML Data Representation]
+
+[[BEIEHDIH]]
+
+==== Understanding XML Binding
+
+XML binding is how you represent information in an XML document as an
+object in computer memory. This allows applications to access the data
+in the XML from the object rather than using the Domain Object Model
+(DOM), the Simple API for XML (SAX) or the Streaming API for XML (StAX)
+to retrieve the data from a direct representation of the XML itself.
+When binding, JAXB applies a tree structure to the graph of JPA
+entities. Multiple tree representations of a graph are possible and will
+depend on the root object chosen and the direction the relationships are
+traversed.
+
+You can find examples of XML binding with JAXB in
+xref:{relativedir}/jpatoxml002.adoc#JPA2XML[Binding JPA Entities to XML].
+
+[[BEIJHDEG]]
+
+==== Understanding JAXB
+
+JAXB is a Java API that allows a Java program to access an XML document
+by presenting that document to the program in a Java format. This
+process, called binding, represents information in an XML document as an
+object in computer memory. In this way, applications can access the data
+in the XML from the object rather than using the Domain Object Model
+(DOM) or the Streaming API for XML (SAX) to retrieve the data from a
+direct representation of the XML itself. Usually, an XML binding is used
+with JPA entities to create a data access service by leveraging a JAX-WS
+or JAX-RS implementation. Both of these Web Service standards use JAXB
+as the default binding layer. This service provides a means to access
+data exposed by JPA across computers, where the client computer might or
+might not be using Java.
+
+JAXB uses an extended set of annotations to define the binding rules for
+Java-to-XML mapping. These annotations are subclasses of the
+`jakarta.xml.bind.`__`*`__ packages in the EclipseLink API. For more
+information about these annotations, see _Java API Reference for
+EclipseLink_.
+
+For more information about JAXB, see "Java Architecture for XML Binding
+(JAXB)" at:
+
+`http://www.eclipse.org/eclipselink/moxy.php`
+
+[[BEIGAIEH]]
+
+==== Understanding MOXy
+
+MOXy is EclipseLink's JAXB implementation. It allows you to map a POJO
+model to an XML schema, greatly enhancing your ability to create
+JPA-to-XML mappings. MOXy supports all the standard JAXB annotations in
+the `jakarta.xml.bind.annotation` package plus has its own extensions in
+the `org.eclipse.persistence.oxm.annotations` package. You can use these
+latter annotations in conjunction with the standard annotations to
+extend the utility of JAXB. Because MOXy represents the optimal JAXB
+implementation, you still implement it whether or not you explicitly use
+any of its extensions. MOXy offers these benefits:
+
+* It allows you to map your own classes to your own XML schema, a
+process called "Meet in the Middle Mapping". This avoids static coupling
+of your mapped classes with a single XML schema,
+* It offers specific features, such as Xpath-based mapping, JSON
+binding, and compound key mapping and mapping relationships with
+back-pointers to address critical JPA-to-XML mapping issues.
+* It allows you to map your existing JPA models to industry standard
+schema.
+* It allows you to combine MOXy mappings and EclipseLink's persistence
+framework to interact with your data through JCA.
+* It offers superior performance in several scenarios.
+
+For more information about MOXy, see the MOXy FAQ at:
+
+`http://wiki.eclipse.org/EclipseLink/FAQ/WhatIsMOXy`
+
+[[BEIHEGED]]
+
+==== Understanding an XML Data Representation
+
+Annotations are not always the most effective way to map JPA to XML. For
+example, you would not use JAXB if:
+
+* You want to specify metadata for a third-party class but do not have
+access to the source.
+* You want to map an object model to multiple XML schemas, because JAXB
+rules preclude applying more than one mapping by using annotations.
+* Your object model already contains too many annotations—for example,
+from such services as JPA, Spring, JSR-303, and so on—and you want to
+specify the metadata elsewhere.
+
+Under these and similar circumstances, you can use an XML data
+representation by exposing the `eclipselink_oxm.xml` file.
+
+XML metadata works in two modes:
+
+* It adds to the metadata supplied by annotations. This is useful when:
+** Annotations define version one of the XML representation, and you use
+XML metadata to tweak the metadata for future versions.
+** You use the standard JAXB annotations, and use the XML metadata for
+the MOXy extensions. In this way you don't introduce new compile time
+dependencies in the object model.
+* It completely replaces the annotation metadata, which is useful when
+you want to map to different XML representations.
+
+To see how to use XML data representation, see
+xref:{relativedir}/jpatoxml004.adoc#JPA2XML[Using XML Metadata Representation to
+Override JAXB Annotations]

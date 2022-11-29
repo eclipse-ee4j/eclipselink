@@ -1,0 +1,128 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[CACHE010]]
+=== Clustering and Cache Coordination
+
+An application cluster is a set of middle tier server machines or VMs
+servicing requests for a single application, or set of applications.
+Multiple servers are used to increase the scalability of the application
+and/or to provide fault tolerance and high availability. Typically the
+same application will be deployed to all of the servers in the cluster
+and application requests will be load balanced across the set of
+servers. The application cluster will access a single database, or a
+database cluster. An application cluster may allow new servers to be
+added to increase scalability, and for servers to be removed such as for
+updates and servicing.
+
+Application clusters can consist of Jakarta EE servers, Web containers,
+or Java server applications.
+
+EclipseLink can function in any clustered environment. The main issue in
+a clustered environment is utilizing a shared persistence unit (L2)
+cache. If you are using a shared cache (enabled by default in
+EclipseLink projects), then each server will maintain its own cache, and
+each caches data can get out of synchronization with the other servers
+and the database.
+
+EclipseLink provides cache coordination in a clustered environment to
+ensure the servers caches are synchronized.
+
+There are also many other solutions to caching in a clustered
+environment, including:
+
+* Disable the shared cache (through setting `@Cacheable(false)`, or
+`@Cache(isolation=ISOLATED`)).
+* Use only cache read-only objects.
+* Set a cache invalidation timeout to reduce stale data.
+* Use refreshing on objects/queries when fresh data is required.
+* Use optimistic locking to ensure write consistency (writes on stale
+data will fail, and will automatically invalidate the cache).
+* Use database events to invalidate changed data in the cache (such as
+EclipseLink's support for Oracle Query Change Notification).
+
+Cache coordination enables a set of persistence units deployed to
+different servers in the cluster (or on the same server) to synchronize
+their changes. Cache coordination works by each persistence unit on each
+server in the cluster being able to broadcast notification of
+transactional object changes to the other persistence units in the
+cluster. EclipseLink supports cache coordination over RMI and JMS. The
+cache coordination framework is also extensible so other options could
+be developed.
+
+By default, EclipseLink optimizes concurrency to minimize cache locking
+during read or write operations. Use the default EclipseLink transaction
+isolation configuration unless you have a very specific reason to change
+it.
+
+Cache coordination works by broadcasting changes for each transaction to
+the other servers in the cluster. Each other server will receive the
+change notification, and either invalidate the changed objects in their
+cache, or update the cached objects state with the changes. Cache
+coordination occurs after the database commit, so only committed changes
+are broadcast.
+
+Cache coordination greatly reduces to chance of an application getting
+stale data, but does not eliminate the possibility. Optimistic locking
+should still be used to ensure data integrity. Even in a single server
+application stale data is still possible within a persistence context
+unless pessimistic locking is used. Optimistic (or pessimistic) locking
+is always required to ensure data integrity in any multi-user system.
+
+For more information about cache coordination, including cache
+synchronization, see "Using Cache Coordination" in _Solutions Guide for
+EclipseLink_.
+
+[[CHDCJEFJ]]
+
+==== Coordinating JMS and RMI Caches
+
+For a JMS coordinated caches, when a particular session's coordinated
+cache starts, it uses its JNDI naming service information to locate and
+create a connection to the JMS server. The coordinated cache is ready
+when all participating sessions are connected to the same topic on the
+same JMS server. At this point, sessions can start sending and receiving
+object change messages. You can then configure all sessions that are
+participating in the same coordinated cache with the same JMS and JNDI
+naming service information.
+
+For an RMI coordinated cache, when a particular session's coordinated
+cache starts, the session binds its connection in its naming service
+(either an RMI registry or JNDI), creates an announcement message (that
+includes its own naming service information), and broadcasts the
+announcement to its multicast group. When a session that belongs to the
+same multicast group receives this announcement, it uses the naming
+service information in the announcement message to establish
+bidirectional connections with the newly announced session's coordinated
+cache. The coordinated cache is ready when all participating sessions
+are interconnected in this way, at which point sessions can start
+sending and receiving object change messages. You can then configure
+each session with naming information that identifies the host on which
+the session is deployed.
+
+For more information on configuring JMS and RMI cache coordination, see
+"Configuring JMS Cache Coordination Using Persistence Properties" and
+"Configuring RMI Cache Coordination Using Persistence Properties" in
+_Solutions Guide for EclipseLink_.
+
+[[CDEECFJG]][[OTLCG94350]]
+
+==== Coordinating Custom Caches
+
+You can define your own custom solutions for coordinated caches by using
+the classes in the EclipseLink
+`org.eclipse.persistence.sessions.coordination` package.

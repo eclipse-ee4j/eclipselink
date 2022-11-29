@@ -1,0 +1,148 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DYNAMICJAXB001]]
+=== Understanding Static and Dynamic Entities
+
+There are two high-level ways to use EclipseLink JAXB: using
+pre-existing Java classes (link:#BABEGGEF[Using Static MOXy]), or using
+EclipseLink-generated in-memory Java classes (link:#BABJEIAF[Using
+Dynamic MOXy]).
+
+[[BABEGGEF]]
+
+==== Using Static MOXy
+
+The most common way to use EclipseLink JAXB is with existing Java
+classes, mapped to XML using Java annotations and/or EclipseLink OXM
+metadata. These classes might be ones that you have written yourself, or
+they could be generated from an XML Schema using the XJC compiler tool.
+
+Using this approach, you will be dealing with your actual domain objects
+when converting to and from XML. link:#BGBHHJEC[Example 9-1] shows a
+simple Java class that can be used with JAXB.
+
+[[BGBHHJEC]]
+
+*_Example 9-1 Sample Java Class_*
+
+[source,oac_no_warn]
+----
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+ 
+@XmlRootElement
+public class Customer {
+   @XmlAttribute
+   private long id;
+ 
+   private String name;
+ 
+   // ...
+   // get() and set() methods
+   // ...
+}
+ 
+----
+
+NOTE: When using static classes with JAXB, you can take advantage of JAXB's
+defaulting behavior and only annotate things which differ from the
+default. For example, all fields on a Java class will default to being
+mapped to an XML element, so no annotation is needed on the `name`
+field. We want the `id` field, however, to map to an XML attribute, so
+have annotated it as such.
+
+link:#BABDJDHH[Example 9-2] demonstrates how to unmarshal, modify, and
+marshal an object using static JAXB:
+
+[[BABDJDHH]]
+
+*_Example 9-2 Marshalling and Unmarshalling Example_*
+
+[source,oac_no_warn]
+----
+JAXBContext jaxbContext = JAXBContext.newInstance(Customer.class, Address.class);
+Customer customer = (Customer) jaxbContext.createUnmarshaller().unmarshal(instanceDoc);
+ 
+Address address = new Address();
+address.setStreet("1001 Fleet St.");
+ 
+customer.setAddress(address);
+ 
+jaxbContext.createMarshaller().marshal(customer, System.out);
+ 
+----
+
+[[BABJEIAF]]
+
+==== Using Dynamic MOXy
+
+With EclipseLink Dynamic MOXy, you can bootstrap a `JAXBContext` from a
+variety of metadata sources and use existing JAXB APIs to marshal and
+unmarshal data…_without having compiled Java class files on the
+classpath_. This allows you to alter the metadata as needed, without
+having to update and recompile the previously-generated Java source
+code.
+
+You should consider using Dynamic MOXy when:
+
+* You want EclipseLink to generate mappings from an XML schema (XSD).
+* You do not want to deal with concrete Java domain classes.
+
+==== Using Dynamic Entities
+
+Instead of using actual Java classes (such as `Customer.class` or
+`Address.class`), Dynamic MOXy uses a simple
+`get(propertyName)`/`set(propertyName, propertyValue)` API to manipulate
+data. EclipseLink generates (in memory) a `DynamicType` associated with
+each `DynamicEntity`.
+
+NOTE: `DynamicTypes` are similar to Java classes; whereas `DynamicEntities`
+can be thought of as instances of a `DynamicType`.
+
+link:#BABDIAJG[Example 9-3] demonstrates how to unmarshal, modify, and
+marshal an object using dynamic JAXB:
+
+[[BABDIAJG]]
+
+*_Example 9-3 Marshalling and Unmarshalling Example_*
+
+[source,oac_no_warn]
+----
+DynamicJAXBContext dynamicJAXBContext = DynamicJAXBContextFactory.createContextFromXSD(xsdInputStream, null, myClassLoader, null);
+DynamicEntity customer = (DynamicEntity) dynamicJAXBContext.createUnmarshaller().unmarshal(instanceDoc);
+ 
+String lastName = customer.get("lastName");
+List orders = customer.get("orders");
+...
+DynamicEntity address = dynamicJAXBContext.newDynamicEntity("mynamespace.Address");
+address.set("street", "1001 Fleet St.");
+ 
+customer.set("lastName", lastName + "Jr.");
+customer.set("address", address);
+ 
+dynamicJAXBContext.createMarshaller().marshal(customer, System.out);
+ 
+----
+
+NOTE: XML names found in the metadata (complex type names, element names,
+attribute names) will be translated to Java identifiers according to the
+algorithms described in "Appendix D: Binding XML Names to Java
+Identifiers" of the Java Architecture for XML Binding (JAXB) 2.2
+Specification (`http://jcp.org/en/jsr/detail?id=222`). +
+In link:#BABDIAJG[Example 9-3], `last-name` in XML was translated to
+`lastName` for the Java object.

@@ -1,0 +1,6 @@
+:nofooter:
+This graphic shows a simple composite persistence unit relationship. The
+`EntityManager` (passing them to
+`Persistence.createEntityManagerFactory` method) instantiates the
+composite persistence unit, which contains two composite member
+persistence units.

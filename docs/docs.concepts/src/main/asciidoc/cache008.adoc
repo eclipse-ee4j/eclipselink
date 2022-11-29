@@ -1,0 +1,49 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[CACHE008]]
+=== About Query Results Cache
+
+The EclipseLink query results cache allows the results of named queries
+to be cached, similar to how objects are cached.
+
+By default in EclipseLink all queries access the database, unless they
+are by Id, or by cache-indexed fields. The resulting rows will still be
+resolved with the cache, and further queries for relationships will be
+avoided if the object is cached, but the original query will always
+access the database. EclipseLink does have options for querying the
+cache, but these options are not used by default, as EclipseLink cannot
+assume that all of the objects in the database are in the cache. The
+query results cache allows for non-indexed and result list queries to
+still benefit from caching.
+
+The query results cache is indexed by the name of the query, and the
+parameters of the query. Only named queries can have their results
+cached, dynamic queries cannot use the query results cache. As well, if
+you modify a named query before execution, such as setting hints or
+properties, then it cannot use the cached results.
+
+The query results cache does not pick up committed changes from the
+application as the object cache does. It should only be used to cache
+read-only objects, or should use an invalidation policy to avoid caching
+stale results. Committed changes to the objects in the result set will
+still be picked up, but changes that affect the results set (such as new
+or changed objects that should be added/removed from the result set)
+will not be picked up.
+
+The query results cache supports a fixed size, cache type, and
+invalidation options.

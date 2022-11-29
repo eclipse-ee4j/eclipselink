@@ -1,0 +1,822 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[JPA2XML002]]
+=== Binding JPA Entities to XML
+
+The following examples demonstrate how to bind JPA entities to XML by
+using JAXB annotations. For more information about binding, see
+xref:{relativedir}/jpatoxml001.adoc#BEIEHDIH[Understanding XML Binding] for more
+information about JAXB, see xref:{relativedir}/jpatoxml001.adoc#BEIJHDEG[Understanding
+JAXB]
+
+* link:#BEICADBF[Binding JPA Relationships to XML]
+* link:#BEIIHFJG[Binding Compound Primary Keys to XML]
+* link:#BEIECBGA[Binding Embedded ID Classes to XML]
+
+[[BEICADBF]]
+
+==== Binding JPA Relationships to XML
+
+The following exercise demonstrate show to use JAXB to derive an XML
+representation from a set of JPA entities, a process called "binding"
+(read about XML binding in link:#BEIGDBHI[Binding JPA Entities to XML]).
+These examples will show how to bind two common JPA relationships:
+
+* Privately-owned relationships
+* Shared reference relationships
+
+to map an Employee entity to that employee's phone number, address, and
+department.
+
+[[BEIBJCIJ]]
+
+===== Task 1: Define the Accessor Type and Import Classes
+
+Since all of the following examples use the same accessor type, `FIELD`,
+define it at the package level by using the JAXB annotation
+`@XmlAccessorType`. At this point, you would also import the necessary
+classes:
+
+[source,oac_no_warn]
+----
+@XmlAccessorType(XmlAccessType.FIELD)
+package com.example.model;
+ 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+----
+
+===== Task 2: Map Privately-Owned Relationships
+
+A "privately-owned" relationship occurs when the target object is only
+referenced by a single source object. This type of relationship can be
+either one-to-one and embedded or one-to-many.
+
+This Task shows how to create bi-directional mappings for both of these
+types of relationships between the `Employee` entity and the `Address`
+and `PhoneNumber` entities.
+
+[[BEIJCIBI]]
+
+====== Mapping a One-to-One and Embedded Relationship
+
+The JPA `@OneToOne` and `@Embedded` annotations indicate that only one
+instance of the source entity is able to refer to the same target entity
+instance. This example shows how to map the `Employee` entity to the
+`Address` entity and back. This is considered a one-to-one mapping
+because the employee can be associated with only one address. Since this
+relationship is bi-directional—that is, `Employee` points to `Address`,
+which must point back to `Employee`—it uses the EclipseLink extension
+`@XmlInverseReference` to represent the back-pointer.
+
+To create the one-to-one and embedded mapping:
+
+. Ensure that the accessor type `FIELD` has been defined at the package
+level, as described in link:#BEIBJCIJ[Task 1: Define the Accessor Type
+and Import Classes].
+. Map one direction of the relationship, in this case, the `employee`
+property on `Address`, by inserting the `@OneToOne` annotation in the
+`Employee` entity:
++
+[source,oac_no_warn]
+----
+    @OneToOne(mappedBy="resident")
+    private Address residence;
+----
++
+The `mappedBy` argument indicates that the relationship is owned by the
+`resident` field.
+. Map the return direction—that is, the `address` property on
+`Employee`—by inserting the `@OneToOne` and `@XmlInverseMapping`
+annotations into the Address entity:
++
+[source,oac_no_warn]
+----
+    @OneToOne
+    @JoinColumn(name="E_ID")
+    @XmlInverseReference(mappedBy="residence")
+    private Employee resident;
+----
++
+The `mappedBy` field indicates that this relationship is owned by the
+`residence` field. `@JoinColumn` identifies the column that will contain
+the foreign key.
+
+The entities should look like those shown in link:#BEIJFCEG[Example
+15-1] and link:#BEIEGBBE[Example 15-2].
+
+====== Mapping a One-to-Many Relationship
+
+The JPA `@OneToMany` annotation indicates that a single instance of the
+source entity can refer to multiple instances of the same target entity.
+For example, one employee can have multiple phone numbers, such as a
+land line, a mobile number, a desired contact number, and an alternative
+workplace number. Each different number would be an instance of the
+`PhoneNumber` entity and a single `Employee` entity could point to each
+instance.
+
+This Task maps the employee to one of that employee's phone numbers and
+back. Since the relationship between `Employee` and `PhoneNumber` is
+bi-directional, the example again uses the EclipseLink extension
+`@XmlInverseReference` to map the back-pointer.
+
+To create a one-to-many mapping:
+
+. Ensure that the accessor type `FIELD` has been defined at the package
+level, as described in link:#BEIBJCIJ[Task 1: Define the Accessor Type
+and Import Classes].
+. Map one direction of the relationship, in this case, the employee
+property on `PhoneNumber`, by inserting the `@OneToMany` annotation in
+the `Employee` entity:
++
+[source,oac_no_warn]
+----
+    @OneToMany(mappedBy="contact")
+    private List<PhoneNumber> contactNumber;
+----
++
+The `mappedBy` field indicates that this relationship is owned by the
+`contact` field.
+. Map the return direction—that is, the phone number property on
+`Employee`—by inserting the `@ManyToOne` and `@XmlInverseMapping`
+annotations into the `PhoneNumber` entity:
++
+[source,oac_no_warn]
+----
+    @ManyToOne
+    @JoinColumn(name="E_ID", referencedColumnName = "E_ID")
+    @XmlInverseReference(mappedBy="contactNumber")
+    private Employee contact;
+----
++
+The `mappedBy` field indicates that this relationship is owned by the
+`contactNumber` field. The `@JoinColumn` annotation identifies the
+column that will contain the foreign key (`name="E_ID"`) and the column
+referenced by the foreign key (`referencedColumnName = "E_ID"`).
+
+The entities should look like those shown in link:#BEIJFCEG[Example
+15-1] and link:#BEIEEFBA[Example 15-3].
+
+[[BEIEEFII]]
+
+===== Task 3: Map the Shared Reference Relationship
+
+A shared reference relationship occurs when target objects are
+referenced by multiple source objects. For example, a business might be
+segregated into multiple departments, such as IT, human resources,
+finance, and so on. Each of these departments has multiple employees of
+differing job descriptions, pay grades, locations, and so on. Managing
+departments and employees requires shared reference relationships.
+
+Since a shared reference relationship cannot be safely represented as
+nesting in XML, we use key relationships. In order to leverage the ID
+fields on JPA entities, you need to use the EclipseLink JAXB `@XmlID`
+annotation on non-String fields and properties and `@XmlIDREF` on string
+fields and properties.
+
+This section contains examples that show how to map a many-to-one shared
+reference relationship and a many-to-many shared reference relationship.
+
+====== Mapping a Many-to-One Shared Reference Relationship
+
+In a many-to-one mapping, one or more instances of the source entity are
+able to refer to the same target entity instance. This example
+demonstrates how to map an employee to one of that employee's multiple
+phone numbers.
+
+To map a many-to-one shared reference relationship:
+
+. Ensure that the accessor type `FIELD` has been defined at the package
+level, as described in link:#BEIBJCIJ[Task 1: Define the Accessor Type
+and Import Classes].
+. Map one direction of the relationship, in this case the phone number
+property on `Employee`, by inserting the `@ManyToOne` annotation in the
+`PhoneNumber` entity:
++
+[source,oac_no_warn]
+----
+    @ManyToOne
+    @JoinColumn(name="E_ID", referencedColumnName = "E_ID")
+    @XmlIDREF
+    private Employee contact;
+----
++
+The `@JoinColumn` annotation identifies the column that will contain the
+foreign key (`name="E_ID"`) and the column referenced by the foreign key
+(`referencedColumnName = "E_ID"`). The `@XmlIDREF` annotation indicates
+that this will be the primary key for the corresponding table.
+. Map the return direction—that is, the employee property on PhoneNumber
+—by inserting the `@OneToMany` and `@XmlInverseMapping` annotations into
+the Address entity:
++
+[source,oac_no_warn]
+----
+    @OneToMany(mappedBy="contact")
+    @XmlInverseReference(mappedBy="contact")
+    private List<PhoneNumber> contactNumber;
+----
++
+The `mappedBy` field for both annotations indicates that this
+relationship is owned by the `contact` field.
+
+The entities should look like those shown in link:#BEIJFCEG[Example
+15-1] and link:#BEIEEFBA[Example 15-3].
+
+====== Mapping a Many-to-Many Shared Reference Relationship
+
+The `@ManyToMany` annotation indicates that one or more instances of the
+source entity are able to refer to one or more target entity instances.
+Since the relationship between `Department` and `Employee` is
+bi-directional, this example again uses the EclipseLink's
+`@XmlInverseReference` annotation to represent the back-pointer.
+
+To map a many-to-many shared reference relationship, do the following:
+
+. Ensure that the accessor type `FIELD` has been defined at the package
+level, as described in link:#BEIBJCIJ[Task 1: Define the Accessor Type
+and Import Classes].
+. Create a `Department` entity by inserting the following code:
++
+[source,oac_no_warn]
+----
+@Entity
+public class Department {
+----
+. Under this entity define the many-to-many relationship and the
+entity's join table by inserting the following code:
++
+[source,oac_no_warn]
+----
+    @ManyToMany
+    @JoinTable(name="DEPT_EMP", joinColumns = 
+        @JoinColumn(name="D_ID", referencedColumnName = "D_ID"), 
+            inverseJoinColumns = @JoinColumn(name="E_ID", 
+                referencedColumnName = "E_ID"))
+----
++
+This code creates a join table called `DEPT_EMP` and identifies the
+column that will contain the foreign key (`name="E_ID"`) and the column
+referenced by the foreign key (`referencedColumnName = "E_ID"`).
+Additionally, it identifies the primary table on the inverse side of the
+association.
+. Complete the initial mapping—in this case, the `Department` property
+`employee`—and make it a foreign key for this entity by inserting the
+following code:
++
+[source,oac_no_warn]
+----
+    @XmlIDREF
+    private List<Employee> member;
+----
+. In the `Employee` entity created in link:#BEIJCIBI[Mapping a
+One-to-One and Embedded Relationship], specifying that `eId` is the
+primary key for JPA (`@Id` annotation), and for JAXB (`@XmlID`
+annotation) by inserting the following code:
++
+[source,oac_no_warn]
+----
+    @Id
+    @Column(name="E_ID")
+    @XmlID
+    private BigDecimal eId;
+ 
+----
+. Still within the `Employee` entity, complete the return mapping by
+inserting the following code:
++
+[source,oac_no_warn]
+----
+    @ManyToMany(mappedBy="member")
+    @XmlInverseReference(mappedBy="member")
+    private List<Department> team;
+----
+
+The entities should look like those shown in link:#BEIJFCEG[Example
+15-1] and link:#BEIHHJEA[Example 15-4].
+
+===== JPA Entities
+
+Once the mappings are created, the entities should look like those in
+the following examples:
+
+* link:#BEIJFCEG[Example 15-1, "Employee Entity"]
+* link:#BEIEGBBE[Example 15-2, "Address Entity"]
+* link:#BEIEEFBA[Example 15-3, "PhoneNumber Entity"]
+* link:#BEIHHJEA[Example 15-4, "Department Entity"]
+
+NOTE: In order to save space, package names, import statements, and the
+get/set methods have been omitted from the code examples. All examples
+use standard JPA annotations.
+
+[[BEIJFCEG]]
+
+*_Example 15-1 Employee Entity_*
+
+[source,oac_no_warn]
+----
+@Entity
+public class Employee {
+ 
+    @Id
+    @Column(name="E_ID")
+    private BigDecimal eId;
+ 
+    private String name;
+ 
+    @OneToOne(mappedBy="resident")
+    private Address residence;
+ 
+    @OneToMany(mappedBy="contact")
+    private List<PhoneNumber> contactNumber;
+ 
+    @ManyToMany(mappedBy="member")
+    private List<Department> team;
+ 
+}
+----
+
+[[BEIEGBBE]]
+
+*_Example 15-2 Address Entity_*
+
+[source,oac_no_warn]
+----
+@Entity
+public class Address {
+ 
+    @Id
+    @Column(name="E_ID", insertable=false, updatable=false)
+    private BigDecimal eId;
+ 
+    private String city;
+ 
+    private String street;
+ 
+    @OneToOne
+    @JoinColumn(name="E_ID")
+    private Employee resident;
+ 
+}
+----
+
+[[BEIEEFBA]]
+
+*_Example 15-3 PhoneNumber Entity_*
+
+[source,oac_no_warn]
+----
+@Entity
+@Table(name="PHONE_NUMBER")
+public class PhoneNumber {
+ 
+    @Id
+    @Column(name="P_ID")
+    private BigDecimal pId;
+ 
+    @ManyToOne
+    @JoinColumn(name="E_ID", referencedColumnName = "E_ID")
+    private Employee contact;
+ 
+    private String num;
+ 
+}
+----
+
+[[BEIHHJEA]]
+
+*_Example 15-4 Department Entity_*
+
+[source,oac_no_warn]
+----
+@Entity
+public class Department {
+ 
+    @Id
+    @Column(name="D_ID")
+    private BigDecimal dId;
+ 
+    private String name;
+ 
+    @ManyToMany
+    @JoinTable(name="DEPT_EMP", joinColumns = 
+        @JoinColumn(name="D_ID", referencedColumnName = "D_ID"), 
+            inverseJoinColumns = @JoinColumn(name="E_ID", 
+                referencedColumnName = "E_ID"))
+    private List<Employee> member;
+ 
+}
+----
+
+[[BEIIHFJG]]
+
+=== Binding Compound Primary Keys to XML
+
+When a JPA entity has compound primary keys, you can bind it by using
+JAXB annotations and certain EclipseLink extensions, as shown in the
+following example.
+
+==== Task1: Define the XML Accessor Type
+
+Define the accessor type as `FIELD`, as described in link:#BEIBJCIJ[Task
+1: Define the Accessor Type and Import Classes]
+
+==== Task 2: Create the Target Object
+
+To create the target object, do the following:
+
+. Create an `Employee` entity with a composite primary key class called
+`EmployeeID` to map to multiple fields or properties of the entity:
++
+[source,oac_no_warn]
+----
+@Entity
+@IdClass(EmployeeId.class)
+public class Employee {
+----
+. Specify the first primary key, eId, of the entity and map it to a
+column:
++
+[source,oac_no_warn]
+----
+    @Id
+    @Column(name="E_ID")
+    @XmlID
+    private BigDecimal eId;
+----
+. Specify the second primary key, country. In this instance, you need to
+use `@XmlKey` to identify the primary key because only one property—
+`eId`—can be annotated with the `@XmlID`.
++
+[source,oac_no_warn]
+----
+    @Id
+    @XmlKey
+    private String country;
+----
++
+The `@XmlKey` annotation marks a property as a key that will be
+referenced by using a key-based mapping via the `@XmlJoinNode`
+annotation in the source object. This is similar to the `@XmlKey`
+annotation except it doesn't require the property be bound to the schema
+type ID. This is a typical application of the `@XmlKey` annotation.
+. Create a many-to-one mapping of the `Employee` property on
+`PhoneNumber` by inserting the following code:
++
+[source,oac_no_warn]
+----
+    @OneToMany(mappedBy="contact")
+    @XmlInverseReference(mappedBy="contact")
+    private List<PhoneNumber> contactNumber;
+----
+
+The Employee entity should look like link:#BEIDFDDJ[Example 15-5]
+
+[[BEIDFDDJ]]
+
+*_Example 15-5 Employee Entity with Compound Primary Keys_*
+
+[source,oac_no_warn]
+----
+@Entity
+@IdClass(EmployeeId.class)
+public class Employee {
+ 
+    @Id
+    @Column(name="E_ID")
+    @XmlID
+    private BigDecimal eId;
+ 
+    @Id
+    @XmlKey
+    private String country;
+ 
+    @OneToMany(mappedBy="contact")
+    @XmlInverseReference(mappedBy="contact")
+    private List<PhoneNumber> contactNumber;
+ 
+}
+
+public class EmployeeId {
+    public BigDecimal eId;
+    public String country;
+ 
+    public EmployeeId(BigDecimal eId, String country) {
+        this.id = id;
+        this.country = country;;
+    }
+ 
+    public boolean equals(Object other) {
+        if (other instanceof EmployeeId) {
+            final EmployeeId otherEmployeeId = (EmployeeId) other;
+            return (otherEmployeeId.eId.equals(eId) && otherEmployeeId.country.equals(country));
+        }
+ 
+    return false;
+    }
+}
+----
+
+==== Task 3: Create the Source Object
+
+This Task creates the source object, the `PhoneNumber` entity. Because
+the target object has a compound key, we need to use the EclipseLink's
+`@XmlJoinNodes` annotation to set up the mapping.
+
+To create the source object:
+
+. Create the `PhoneNumber` entity:
++
+[source,oac_no_warn]
+----
+@Entity
+public class PhoneNumber {
+----
+. Create a many-to-one relationship and define the join columns:
++
+[source,oac_no_warn]
+----
+ @ManyToOne
+    @JoinColumns({
+        @JoinColumn(name="E_ID", referencedColumnName = "E_ID"),
+        @JoinColumn(name="E_COUNTRY", referencedColumnName = "COUNTRY")
+   })
+----
+. Set up the mapping by using the EclipseLink's `@XmlJoinNodes`
+annotation
++
+[source,oac_no_warn]
+----
+@XmlJoinNodes( {
+        @XmlJoinNode(xmlPath="contact/id/text()", referencedXmlPath="id/text()"),
+        @XmlJoinNode(xmlPath="contact/country/text()", referencedXmlPath="country/text()")
+    })
+----
+. Define the `contact` property:
++
+[source,oac_no_warn]
+----
+private Employee contact;
+ 
+}
+----
+
+The target object should look like link:#BEIFBGAG[Example 15-6].
+
+[[BEIFBGAG]]
+
+*_Example 15-6 PhoneNumber Entity_*
+
+[source,oac_no_warn]
+----
+@Entity
+public class PhoneNumber {
+ 
+    @ManyToOne
+    @JoinColumns({
+        @JoinColumn(name="E_ID", referencedColumnName = "E_ID"),
+        @JoinColumn(name="E_COUNTRY", referencedColumnName = "COUNTRY")
+    })
+    @XmlJoinNodes( {
+        @XmlJoinNode(xmlPath="contact/id/text()", referencedXmlPath="id/text()"),
+        @XmlJoinNode(xmlPath="contact/country/text()", referencedXmlPath="country/text()")
+    })
+    private Employee contact;
+ 
+}
+----
+
+[[BEIECBGA]]
+
+==== Binding Embedded ID Classes to XML
+
+An embedded ID defines a separate `Embeddable` Java class to contain the
+entity's primary key. It is defined through the `@EmbeddedId`
+annotation.The embedded ID's `Embeddable` class must define each id
+attribute for the entity using basic mappings. All attributes in the
+embedded Id's `Embeddable` are assumed to be part of the primary key.
+This exercise shows how to derive an XML representation from a set of
+JPA entities using JAXB when a JPA entity has an embedded ID class.
+
+===== Task1: Define the XML Accessor Type
+
+Define the XML accessor type as `FIELD`, as described in
+link:#BEIBJCIJ[Task 1: Define the Accessor Type and Import Classes]
+
+[[BEIDGBIA]]
+
+===== Task 2: Create the Target Object
+
+The target object is an entity called `Employee` and contains the
+mapping for an employee's contact phone number. Creating this target
+object requires implementing a `DescriptorCustomizer` interface, so you
+must include EclipseLink's `@XmlCustomizer` annotation Also, since the
+relationship is bidirectional, you must also implement the
+`@XmlInverseReference`. annotation.
+
+To create the target object:
+
+. Create the `Employee` entity. Use the `@IdClass` annotation to specify
+that the `EmployeeID` class will be mapped to multiple properties of the
+entity.
++
+[source,oac_no_warn]
+----
+@Entity
+@IdClass(EmployeeId.class)
+public class Employee {
+}
+----
+. Define the `id` property and make it embeddable.
++
+[source,oac_no_warn]
+----
+    @EmbeddedId
+    @XmlPath(".");
+    private EmployeeId id;
+----
+. Define a one-to-many mapping—in this case, the `employee` property on
+`PhoneNumber`. Because the relationship is bi-directional, use
+`@XmlInverseReference` to define the return mapping. Both of these
+relationships will be owned by the contact field, as indicated by the
+`mappedBy` argument.
++
+[source,oac_no_warn]
+----
+    @OneToMany(mappedBy="contact")
+    @XmlInverseReference(mappedBy="contact")
+    private List<PhoneNumber> contactNumber;
+----
+
+The completed target object should look like link:#BEIDAGDJ[Example
+15-7].
+
+[[BEIDAGDJ]]
+
+*_Example 15-7 Employee Entity as Target Object_*
+
+[source,oac_no_warn]
+----
+@Entity
+@IdClass(EmployeeId.class)
+@XmlCustomizer(EmployeeCustomizer.class)
+public class Employee {
+ 
+    @EmbeddedId
+    private EmployeeId id;
+ 
+    @OneToMany(mappedBy="contact")
+    @XmlInverseReference(mappedBy="contact")
+    private List<PhoneNumber> contactNumber;
+ 
+}
+----
+
+===== Task 3: Create the Source Object
+
+The source object in this example has a compound key, so you must mark
+the field `@XmlTransient` to prevent a key from being mapped by itself.
+Use EclipseLink's `@XmlCustomizer` annotation to set up the mapping.
+
+To create the source object, do the following:
+
+. Create the `PhoneNumber` entity.
++
+[source,oac_no_warn]
+----
+@Entity
+public class PhoneNumber {
+}
+----
+. Create a many-to-one mapping and define the join columns.
++
+[source,oac_no_warn]
+----
+@ManyToOne
+    @JoinColumns({
+        @JoinColumn(name="E_ID", referencedColumnName = "E_ID"),
+        @JoinColumn(name="E_COUNTRY", referencedColumnName = "COUNTRY")
+    })
+----
+. Define the XML nodes for the mapping, using the EclipseLink
+`@XmlJoinNodes` annotation extension. If the target object had a
+_single_ ID, you would use the `@XmlIDREF` annotation.
+
+[source,oac_no_warn]
+----
+    @XmlJoinNodes( {        @XmlJoinNode(xmlPath="contact/id/text()", referencedXmlPath="id/text()"),        @XmlJoinNode(xmlPath="contact/country/text()", referencedXmlPath="country/text()")    })
+    private Employee contact;
+----
+
+The completed `PhoneNumber` class should look like
+link:#BEIGJACE[Example 15-8].
+
+[[BEIGJACE]]
+
+*_Example 15-8 PhoneNumber Class as Source Object_*
+
+[source,oac_no_warn]
+----
+@Entity
+public class PhoneNumber {
+ 
+    @ManyToOne
+    @JoinColumns({
+        @JoinColumn(name="E_ID", referencedColumnName = "E_ID"),
+        @JoinColumn(name="E_COUNTRY", referencedColumnName = "COUNTRY")
+    })
+    @XmlJoinNodes( {
+        @XmlJoinNode(xmlPath="contact/id/text()", referencedXmlPath="id/text()"),
+        @XmlJoinNode(xmlPath="contact/country/text()", referencedXmlPath="country/text()")
+    })
+    private Employee contact;
+ 
+}
+----
+
+===== Task 5: Implement the DescriptorCustomizer as PhoneNumberCustomizer Class
+
+Code added in Task 4 indicated the need to create the
+XMLObjectReferenceMappings to the new values. This requires to
+implementing the `DescriptorCustomizer` as the `PhoneNumberCustomizer`
+and adding the multiple key mappings. To do this:
+
+. Implement `DescriptorCustomizer` as `PhoneNumberCustomizer`. Be sure
+to import
+`org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping`:
++
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+ 
+public class PhoneNumberCustomizer implements DescriptorCustomizer {
+----
+. In the `customize` method, update the following mappings:
+* `contactMapping.setAttributeName` to `"contact"`.
+* `contactMapping.addSourceToTargetKeyFieldAssociation` to
+`"contact/@eID", "eId/text()"`.
+* `contactMapping.addSourceToTargetKeyFieldAssociation` to
+`"contact/@country", "country/text()"`.
+
+`PhoneNumberCustomizer` should look like link:#BEIFCHBH[Example 15-9].
+
+[[BEIFCHBH]]
+
+*_Example 15-9 PhoneNumber Customizer with Updated Key Mappings_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+ 
+public class PhoneNumberCustomizer implements DescriptorCustomizer {
+ 
+    public void customize(ClassDescriptor descriptor) throws Exception {
+        XMLObjectReferenceMapping contactMapping = new XMLObjectReferenceMapping();
+        contactMapping.setAttributeName("contact");
+        contactMapping.setReferenceClass(Employee.class);
+        contactMapping.addSourceToTargetKeyFieldAssociation("contact/@eID", "eId/text()");
+        contactMapping.addSourceToTargetKeyFieldAssociation("contact/@country", "country/text()");
+        descriptor.addMapping(contactMapping);
+    }
+ 
+}
+----
+
+[[BEIBJBFA]]
+
+===== Using the EclipseLink XML Binding Document
+
+As demonstrated in the preceding examples, EclipseLink implements the
+standard JAXB annotations to map JPA entities to an XML representation.
+You can also express metadata by using the EclipseLink XML Bindings
+document. Not only can you use XML bindings to separate your mapping
+information from your actual Java class but you can also use it for more
+advanced metadata tasks such as:
+
+* Augmenting or overriding existing annotations with additional mapping
+information.
+* Specifying all mapping information externally, without using any Java
+annotations.
+* Defining your mappings across multiple Bindings documents.
+* Specifying "virtual" mappings that do not correspond to concrete Java
+fields
+
+For more information about using the XML Bindings document, see XML
+Bindings in the JAXB/MOXy documentation at
+`http://wiki.eclipse.org/EclipseLink/UserGuide/MOXy/Runtime/XML_Bindings`.

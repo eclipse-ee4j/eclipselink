@@ -1,0 +1,365 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ADVANCEDCONCEPTS005]]
+=== Mapping Using XPath Predicates
+
+By default, JAXB will use the Java field name as the XML element name:
+
+[[sthref167]]
+
+*_Example 8-24 Sample Java Code and XML Schema_*
+
+[source,oac_no_warn]
+----
+public class Customer {
+   @XmlElement
+   private String firstName;
+   @XmlElement
+   private String lastName;
+}
+ 
+ 
+
+ 
+<?xml version="1.0" encoding="UTF-8"?>
+<customer>
+   <firstName>Bob</firstName>
+   <lastName>Roberts</lastName>
+</customer>
+ 
+----
+
+Or, the XML name can be customized using the name attribute of the
+`@XmlElement` annotation:
+
+[[sthref168]]
+
+*_Example 8-25 Sample Java Code and XML Schema_*
+
+[source,oac_no_warn]
+----
+public class Customer {
+   @XmlElement(name="f-name")
+   private String firstName;
+   @XmlElement(name="l-name")
+   private String lastName;
+}
+ 
+
+
+ 
+<?xml version="1.0" encoding="UTF-8"?>
+<customer>
+   <f-name>Bob</f-name>
+   <l-name>Roberts</l-name>
+</customer>
+ 
+----
+
+However, sometimes elements need to be mapped based on their position in
+the document, or based on an attribute value of an element:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+   <name>Jane</name>
+   <name>Doe</name>
+   <node name="address">
+      <node name="street">123 A Street</node>
+   </node>
+   <node name="phone-number" type="work">555-1111</node>
+   <node name="phone-number" type="cell">555-2222</node>
+</node>
+ 
+----
+
+For cases like this, EclipseLink MOXy allows you to use XPath predicates
+to define an expression that will specify the XML element's name.
+
+==== Mapping with XPath Predicates
+
+An XPath predicate represents an expression that will be evaluated
+against the element specified. For example, the XPath statement:
+
+[source,oac_no_warn]
+----
+node[2]
+----
+
+Would match the second occurrence of the node element ("DEF"):
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+   <node>ABC</node>
+   <node>DEF</node>
+</data>
+ 
+----
+
+Predicates can also match based on an attribute value:
+
+[source,oac_no_warn]
+----
+node[@name='foo']
+----
+
+Would match the *node* element with the attribute *name="foo"* (that is,
+*ABC*). It would not match the node that contains *DEF*.
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+   <node name="foo">ABC</node>
+   <node name="bar">DEF</node>
+</data>
+ 
+----
+
+NOTE: For more information on XPath Predicates, see "2.4 Predicates" of the
+XML Path Language (XPath) specification (`http://www.w3.org/TR/xpath`).
+
+==== Mapping Based on Position
+
+In the following example, our XML contains two *name* elements; the
+first occurrence of *name* should represent the *Customer's* first name,
+and the second *name* will be their last name. To map this, we will
+specify XPath expressions for each property that will match the
+appropriate XML element. Note that we also use `@XmlType(propOrder)` to
+ensure that our elements will always be in the proper positions.
+
+[[sthref171]]
+
+*_Example 8-26 Using the @XmlType(propOrder) Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+ 
+@XmlRootElement
+@XmlType(propOrder={"firstName", "lastName"})
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+    @XmlPath("name[1]/text()")
+    private String firstName;
+ 
+    @XmlPath("name[2]/text()")
+    private String lastName;
+ 
+    ...
+}
+ 
+----
+
+This same configuration can be expressed in an EclipseLink XML Bindings
+document as follows:
+
+[[sthref172]]
+
+*_Example 8-27 Using the prop-order Attribute_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Customer">
+   <xml-root-element/>
+   <xml-type prop-order="firstName lastName"/>
+   <java-attributes>
+      <xml-element java-attribute="firstName" xml-path="name[1]/text()"/>
+      <xml-element java-attribute="lastName" xml-path="name[2]/text()"/>
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+This will give us the desired XML representation:
+
+[[sthref173]]
+
+*_Example 8-28 Resulting XML_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<customer>
+   <name>Bob</name>
+   <name>Smith</name>
+</customer>
+ 
+----
+
+==== Mapping Based on an Attribute Value
+
+Since EclipseLink MOXy 2.3, you can also map to an XML element based on
+an Attribute value. In this example, all of our XML elements are named
+*node*, differentiated by the value of their *name* attribute:
+
+[[sthref175]]
+
+*_Example 8-29 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+   <node name="first-name">Bob</node>
+   <node name="last-name">Smith</node>
+   <node name="address">
+      <node name="street">123 A Street</node>
+   </node>
+   <node name="phone-number" type="work">555-1111</node>
+   <node name="phone-number" type="cell">555-2222</node>
+</node>
+ 
+----
+
+We can use an XPath in the form of
+`element-name[@attribute-name='value']` to map each Java field:
+
+[[sthref176]]
+
+*_Example 8-30 Sample Mappings_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+ 
+@XmlRootElement(name="node")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+ 
+    @XmlPath("node[@name='first-name']/text()")
+    private String firstName;
+ 
+    @XmlPath("node[@name='last-name']/text()")
+    private String lastName;
+ 
+    @XmlPath("node[@name='address']")
+    private Address address;
+ 
+    @XmlPath("node[@name='phone-number']")
+    private List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+ 
+    ...
+}
+ 
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Address {
+ 
+    @XmlPath("node[@name='street']/text()")
+    private String street;
+ 
+    ...
+}
+ 
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class PhoneNumber {
+ 
+    @XmlAttribute
+    private String type;
+ 
+    @XmlValue
+    private String number;
+ 
+    ...
+}
+ 
+----
+
+==== Creating "Self" Mappings
+
+EclipseLink allows you to configure your one-to-one mappings so the data
+from the target object will appear inside the source object's XML
+element. Expanding on the previous example, we could map the *Address*
+information so that it would appear directly under the *customer*
+element, and _not_ wrapped in its own element. This is referred to as a
+"self" mapping, and is achieved by setting the target object's XPath
+to *.* (dot).
+
+link:#CHDGBEAC[Example 8-31] demonstrates a self mapping declared in
+annotations.
+
+[[CHDGBEAC]]
+
+*_Example 8-31 Self Mapping Example_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+ 
+@XmlRootElement(name="node")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+ 
+    @XmlPath("node[@name='first-name']/text()")
+    private String firstName;
+ 
+    @XmlPath("node[@name='last-name']/text()")
+    private String lastName;
+ 
+    @XmlPath(".")
+    private Address address;
+ 
+    @XmlPath("node[@name='phone-number']")
+    private List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+ 
+    ...
+}
+ 
+----
+
+Using a self mapping, EclipseLink produces the desired XML. The *street*
+data is stored in the root *node*.
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+   <node name="first-name">Bob</node>
+   <node name="last-name">Smith</node>
+   <node name="street">123 A Street</node>
+   <node name="phone-number" type="work">555-1111</node>
+   <node name="phone-number" type="cell">555-2222</node>
+</node>
+----

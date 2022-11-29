@@ -1,0 +1,431 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSCREATE004]]
+=== Creating a DBWS Service from SQL Statements
+
+This section includes information on:
+
+* link:#CJAHDABI[Creating from Results Sets from Custom SQL SELECT
+Statements]
+* link:#CJAGABED[Creating based on Schema-formatted Results from Custom
+SQL SELECT Statements]
+
+[[CJAHDABI]]
+
+==== Creating from Results Sets from Custom SQL SELECT Statements
+
+EclipseLink DBWS can create a Web service that exposes the results of
+executing custom SQL `SELECT` statements, without exposing the actual
+SQL. There is no metadata to determine the structure of the returned
+data -- the Simple XML Format schema is used.
+
+The SQL `SELECT` statements targeted for this service are in the
+`DBWSBuilder` builder XML file, as shown here:
+
+[[sthref43]]
+
+*_Example 2-8 Sample DBWSBuilder XML File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <properties>
+    <property name="projectName">testSql</property>
+    ... database properties
+  </properties>
+  <sql
+    name="count"
+    simpleXMLFormatTag="aggregate-info"
+    xmlTag="count"
+    >
+    <text><![CDATA[select count(*) from EMP]]></text>
+  </sql>
+  <sql
+    name="countAndMaxSalary"
+    simpleXMLFormatTag="aggregate-info"
+    xmlTag="count-and-max-salary"
+    >
+    <text><![CDATA[select count(*) as "COUNT", max(SAL) as "MAX-Salary" from EMP]]></text>
+  </sql>
+</dbws-builder>
+ 
+----
+
+Use this command to create the web service:
+
+[source,oac_no_warn]
+----
+prompt > dbwsbuilder.cmd -builderFile dbws-builder.xml -stageDir output_directory -packageAs wls testSql.war
+ 
+----
+
+where
+
+* `dbws-builder.xml` is the DBWS builder XML configuration file, as
+shown previously
+* `output_directory` is the output directory for the generated files
+* `-packageA`s the platform on which the web service will be deployed
+
+The generated `eclipselink-dbws-schema.xsd` file is the schema for the
+Simple XML format:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  >
+  <xsd:complexType name="simple-xml-format">
+    <xsd:sequence>
+      <xsd:any minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
+ 
+----
+
+The element tags `simple-xml-format` and `simple-xml` are customized in
+the SQL operations. For example, `<simple-xml-format>` =
+`<aggregate-info>`, `<simple-xml>` = `<count-and-max-salary>`.
+
+===== Generated EclipseLink DBWS Service Descriptor
+
+The SQL operations are included in the DBWS service descriptor file
+(`eclipselink-dbws.xml`) created by EclipseLink, as well as the settings
+to alter the default Simple XML Format `<element-tag>` name.
+
+[[sthref45]]
+
+*_Example 2-9 Sample XML File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="urn:testSql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>testSql</name>
+   <sessions-file>eclipselink-dbws-sessions.xml</sessions-file>
+   <query>
+      <name>count</name>
+      <result>
+         <type>simple-xml-format</type>
+         <simple-xml-format>
+            <simple-xml-format-tag>aggregate-info</simple-xml-format-tag>
+            <simple-xml-tag>count</simple-xml-tag>
+         </simple-xml-format>
+      </result>
+      <sql>
+         <![CDATA[select count(*) from EMP]]>
+      </sql>
+   </query>
+   <query>
+      <name>countAndMaxSalary</name>
+      <result>
+         <type>simple-xml-format</type>
+         <simple-xml-format>
+            <simple-xml-format-tag>aggregate-info</simple-xml-format-tag>
+            <simple-xml-tag>count-and-max-salary</simple-xml-tag>
+         </simple-xml-format>
+      </result>
+      <sql>
+         <![CDATA[select count(*) as "COUNT", max(SAL) as "MAX-Salary" from EMP]]>
+      </sql>
+   </query>
+</dbws>
+ 
+----
+
+[[CJABGDEG]]
+
+====== SOAP Messaging
+
+The following SOAP Message invokes the `<count>` operation for the
+`testSql` DBWS service:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+  <env:Body>
+    <count xmlns="urn:testSqlService" xmlns:urn="urn:testSql"/>
+  </env:Body>
+</env:Envelope>
+ 
+----
+
+returning:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="utf-16"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Header />
+  <SOAP-ENV:Body>
+    <srvc:countResponse xmlns:srvc="urn:testSqlService">
+      <srvc:result>
+        <aggregate-info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="simple-xml-format">
+          <count>
+            <COUNT_x0028__x002A__x0029_>14</COUNT_x0028__x002A__x0029_>
+          </count>
+        </aggregate-info>
+      </srvc:result>
+    </srvc:countResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+ 
+----
+
+NOTE: You should be aware of the `resultSet` for `select count(*);` the
+characters '(', '*' and ')' are not valid for XML element tags and are
+replaced by the well-known transformation, which documented as part of
+the SQL/X specification (SQL/XML:2003).
+
+====== Custom SQL as Sub-operation of Table-based Web Service
+
+The link:#CJABGDEG["SOAP Messaging"] operation returns unstructured
+data. However, it is possible to nest such operations within the context
+of a Table-based operation; then, the nested operations can be
+configured to re-use the schema element type of the parent table and
+return structured data:
+
+[source,oac_no_warn]
+----
+<dbws-builder>
+  <properties>
+    <property name="projectName">empSql</property>
+    ... database properties
+  </properties>
+  <table
+    catalogPattern="%"
+    tableNamePattern="EMP"
+    >
+    <sql
+      name="findEmpByName"
+      isCollection="true"
+      returnType="empType"
+      >
+      <text><![CDATA[select * from EMP where ENAME like ?]]></text>
+      <binding name="ENAME" type="xsd:string"/>
+    </sql>
+  </table>
+ </dbws-builder>
+ 
+----
+
+The generated EclipseLink DBWS service descriptor `eclipselink-dbws.xml`
+file:
+
+[[sthref47]]
+
+*_Example 2-10 Sample eclipselink-dbws.xml File_*
+
+[source,oac_no_warn]
+----
+<dbws xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="urn:testSql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>empSql</name>
+   <sessions-file>eclipselink-dbws-sessions.xml</sessions-file>
+   <update>
+      <name>update_empType</name>
+      <parameter>
+         <name>theInstance</name>
+         <type>ns1:empType</type>
+      </parameter>
+   </update>
+   ...
+   <query>
+      <name>findEmpByName</name>
+      <parameter>
+         <name>ENAME</name>
+         <type>xsd:string</type>
+      </parameter>
+      <result isCollection="true">
+         <type>ns1:empType</type>
+      </result>
+      <sql>
+         <![CDATA[select * from EMP where ENAME like #ENAME]]>
+      </sql>
+   </query>
+</dbws>
+----
+
+[[CJAGABED]]
+
+==== Creating based on Schema-formatted Results from Custom SQL SELECT Statements
+
+EclipseLink can also create a web service in which the "shape" of the
+returned result is determined at design-time, not runtime. Normally, the
+custom SQL `SELECT` statement returns `java.sql.ResultSets` and the
+`java.sql.ResultSetMetaData` APIs (`getColumnCount`, `getColumnLabel`,
+`getColumnType`, etc.) can be used to determine the name and datatype of
+the returned information.
+
+EclipseLink DBWS uses the Simplified XML Format (SXF) to create an XML
+document to describe the ResultSet's information. However, because this
+document can change arbitrarily, the SXF schema is extremely "loose" –
+the use of `xsd:any` places virtually no restriction on the document.
+
+[[sthref48]]
+
+*_Example 2-11 Sample Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  >
+  <xsd:complexType name="simple-xml-format">
+    <xsd:sequence>
+      <xsd:any minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
+ 
+----
+
+[[sthref49]]
+
+*_Example 2-12 Instance document:_*
+
+[source,oac_no_warn]
+----
+<source lang="xml">
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<simple-xml-format>
+  <simple-xml>
+    <EMPNO>7788</EMPNO>
+    <ENAME>SCOTT</ENAME>
+    <JOB>ANALYST</JOB>
+    <MGR>7566</MGR>
+    <HIREDATE>1987-04-19</HIREDATE>
+    <SAL>3000</SAL>
+    <DEPTNO>20</DEPTNO>
+  </simple-xml>
+  <simple-xml>
+    <EMPNO>7369</EMPNO>
+    <ENAME>SMITH</ENAME>
+    <JOB>CLERK</JOB>
+    <MGR>7902</MGR>
+    <HIREDATE>1980-12-17</HIREDATE>
+    <SAL>800</SAL>
+    <DEPTNO>20</DEPTNO>
+  </simple-xml>
+</simple-xml-format>
+ 
+----
+
+===== Additional information at Design Time
+
+As indicated previously, the `java.sql.ResultSetMetaData` APIs provide
+enough information, if available at design-time, from which you could
+generate a schema, as shown here:
+
+[[sthref51]]
+
+*_Example 2-13 Sample Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:emp" xmlns="urn:emp" elementFormDefault="qualified">
+   <xsd:complexType name="empType">
+      <xsd:sequence>
+         <xsd:element name="empno" type="xsd:decimal"/>
+         <xsd:element name="ename" type="xsd:string" minOccurs="0" nillable="true"/>
+         <xsd:element name="job" type="xsd:string" minOccurs="0" nillable="true"/>
+         <xsd:element name="mgr" type="xsd:decimal" minOccurs="0" nillable="true"/>
+         <xsd:element name="hiredate" type="xsd:date" minOccurs="0" nillable="true"/>
+         <xsd:element name="sal" type="xsd:decimal" minOccurs="0" nillable="true"/>
+         <xsd:element name="comm" type="xsd:decimal" minOccurs="0" nillable="true"/>
+         <xsd:element name="deptno" type="xsd:decimal" minOccurs="0" nillable="true"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="empType" type="empType"/>
+</xsd:schema>
+ 
+----
+
+The DBWS sql operation is enhanced with an additional SQL statement that
+is executed at design-time -- the statement will not return any rows
+(such as when the `WHERE` clause evaluates to *false* in
+link:#CJADIADC[Example 2-14]):
+
+[[CJADIADC]]
+
+*_Example 2-14 Executing Additional SQL Statements_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    <properties>
+        <property name="projectName">emp</property>
+        ...
+    </properties>
+    <sql
+        name="Semployees"
+        isCollection="false"
+        returnType="empType"
+        >
+        <statement><![CDATA[select * from EMP where ENAME like 'S%']]></statement>
+        <build-statement><![CDATA[select * from EMP where 0=1]]></build-statement>
+    </sql>
+</dbws-builder>
+ 
+----
+
+===== Understanding Issues and Limitations
+
+Be aware of the following limitation:
+
+* link:#CJAHCIHI[Repeated labels]
+* link:#CJAFBJEE[Compatible column label sets]
+
+[[CJAHCIHI]]
+
+====== Repeated labels
+
+Valid SQL allows multiple identical columns. For example, consider the
+following SQL:
+
+[source,oac_no_warn]
+----
+SELECT ENAME, ENAME FROM EMP WHERE LIKE 'S%'
+----
+
+|===
+|*ENAME* |*ENAME*
+|SMITH |SMITH
+|... |...
+|SCOTT |SCOTT
+|===
+
+In this example, a `SELECT` statement that uses `UNION` could return a
+set of column labels where a label is repeated.
+
+`DBWSBuilder` maintains a list of "already processed columns" and will
+throw an exception when it detects a duplicate.
+
+[[CJAFBJEE]]
+
+====== Compatible column label sets
+
+The runtime and design-time SQL statements *must* return compatible
+column label sets. EclipseLink performs no pre-processing to ensure that
+the column sets are the same; the error will be detected at runtime when
+the service is invoked.

@@ -1,0 +1,363 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SIMPLEVALUES002]]
+=== Mapping Collections of Simple Values
+
+This section demonstrates several ways to map a collection of simple
+Java values directly to XML text nodes.
+
+* link:#CHDEBEAH[Mapping to Text Nodes]
+* link:#CHDHHIBD[Mapping to Text Nodes with a Grouping Element]
+* link:#CHDIHAGJ[Mapping to a List Element]
+* link:#CHDDGGJC[Mapping a Collection of XmlAttributes or XmlValues]
+
+[[CHDEBEAH]]
+
+==== Mapping to Text Nodes
+
+Given the XML schema in link:#CHDJIJBH[Example 4-25],
+link:#CHDBIDCE[Figure 4-10] illustrates the mapping of a Java collection
+to elements in a corresponding XML document.
+
+[[CHDJIJBH]]
+
+*_Example 4-25 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+   <xsd:element name="customer" type="customer-type"/>
+ 
+   <xsd:complexType name="customer-type">
+      <xsd:sequence>
+         <xsd:element name="email-address" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+ 
+</xsd:schema>
+ 
+----
+
+[[CHDBIDCE]]
+
+*_Figure 4-10 XML Direct Collection Mapping to Text Nodes_*
+
+image:{imagesrelativedir}/dc.png[XML Direct Collection Mapping,title="XML Direct Collection Mapping"] +
+xref:{imagestextrelativedir}/dc.adoc[Description of "Figure 4-10 XML Direct Collection Mapping to Text Nodes"] +
+
+link:#CHDBHGHJ[Example 4-26] shows how to annotate your Java class to
+obtain this mapping with EclipseLink. All that is needed is the standard
+JAXB `@XmlElement` annotation.
+
+[[CHDBHGHJ]]
+
+*_Example 4-26 Using the @XmlElement Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlElement(name="email-address")
+   private List<String> emailAddress;
+ 
+   ...
+}
+ 
+----
+
+link:#CHDGCGDF[Example 4-27] shows how to define your mapping
+information in EclipseLink's OXM metadata format.
+
+[[CHDGCGDF]]
+
+*_Example 4-27 Sample XML Mapping_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Customer">
+   <xml-root-element name="customer"/>
+   <java-attributes>
+      <xml-element java-attribute="emailAddresses" name="email-address"/>
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+[[CHDHHIBD]]
+
+==== Mapping to Text Nodes with a Grouping Element
+
+Given the XML schema in link:#CHDBDBEH[Example 4-28],
+link:#CHDDEJFD[Figure 4-11] illustrates the mapping of a Java collection
+to elements in a corresponding XML document, using a grouping element to
+organize the elements of the collection.
+
+[[CHDBDBEH]]
+
+*_Example 4-28 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+   <xsd:element name="customer" type="customer-type"/>
+ 
+   <xsd:complexType name="customer-type">
+      <xsd:sequence>
+         <xsd:element name="email-address" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+ 
+</xsd:schema>
+ 
+----
+
+[[CHDDEJFD]]
+
+*_Figure 4-11 XML Direct Collection Mapping to Text Nodes with a
+Grouping Element_*
+
+image:{imagesrelativedir}/dcge.png[XML Direct Collection Mapping,title="XML Direct Collection Mapping"] +
+xref:{imagestextrelativedir}/dcge.adoc[Description of "Figure 4-11 XML Direct Collection Mapping to Text Nodes with a Grouping Element"] +
+
+link:#CHDBHBIF[Example 4-29] shows how to annotate your Java class to
+obtain this mapping with EclipseLink. We specify the grouping element
+with the `@XmlElementWrapper` annotation.
+
+[[CHDBHBIF]]
+
+*_Example 4-29 Using the @XmlElementWrapper Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlElement(name="email-address")
+   @XmlElementWrapper(name="email-addresses")
+   private List<String> emailAddresses;
+ 
+   ...
+}
+ 
+----
+
+link:#CHDFCAGG[Example 4-30] shows how to define your mapping
+information in EclipseLink's OXM metadata format.
+
+[[CHDFCAGG]]
+
+*_Example 4-30 Sample XML Mapping_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Customer">
+   <xml-root-element name="customer"/>
+   <java-attributes>
+      <xml-element java-attribute="emailAddresses" name="email-address">
+         <xml-element-wrapper name="email-addresses"/>
+      </xml-element>
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+[[CHDIHAGJ]]
+
+==== Mapping to a List Element
+
+Given the XML schema in link:#CHDGBCBI[Example 4-31],
+link:#CHDGBHHE[Figure 4-12] illustrates a mapping to an `xsd:list` type
+in a corresponding XML document. Using this mapping, you can represent
+the collection of simple Java objects as a `String` of white space
+delimited tokens in XML. Here, the tasks list contains three entries:
+*Design*, *Code* and *Test*.
+
+[[CHDGBCBI]]
+
+*_Example 4-31 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+   <xsd:element name="employee" type="employee-type"/>
+ 
+   <xsd:complexType name="employee-type">
+      <xsd:sequence>
+         <xsd:element name="tasks" type="tasks-type"/>
+      </xsd:sequence>
+   </xsd:complexType>
+ 
+   <xsd:simpleType name="tasks-type">
+      <xsd:list itemType="xsd:string"/>
+   </xsd:simpleType>
+ 
+</xsd:schema>
+ 
+----
+
+[[CHDGBHHE]]
+
+*_Figure 4-12 XML Direct Mapping to a List Field_*
+
+image:{imagesrelativedir}/dcxmstn.png[XMLDirect Mapping to a List Field,title="XMLDirect Mapping to a List Field"] +
+xref:{imagestextrelativedir}/dcxmstn.adoc[Description of "Figure 4-12 XML Direct Mapping to a List Field"] +
+
+link:#CHDHDGFF[Example 4-32] shows how to annotate your Java class to
+obtain this mapping with EclipseLink.
+
+[[CHDHDGFF]]
+
+*_Example 4-32 Using the @XmlList Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Employee {
+   @XmlList
+   private List<String> tasks;
+ 
+   ...
+}
+ 
+----
+
+link:#CHDEIEDI[Example 4-33] shows how to define your mapping
+information in EclipseLink's OXM metadata format.
+
+[[CHDEIEDI]]
+
+*_Example 4-33 Sample XML Mapping_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Employee">
+   <xml-root-element name="employee"/>
+   <java-attributes>
+      <xml-element java-attribute="tasks" xml-list="true"/>
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+[[CHDDGGJC]]
+
+==== Mapping a Collection of XmlAttributes or XmlValues
+
+`@XmlList` can also be used in conjunction with `@XmlAttribute` or
+`@XmlValue`, as shown in link:#CHDGGBBB[Example 4-34]. The collection
+will be represented as a space-separated string in the attribute.
+
+[[CHDGGBBB]]
+
+*_Example 4-34 Java Annotations_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlAttribute
+   @XmlList
+   private List<Integer> ids;
+ 
+   ...
+}
+ 
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement(name="phone-numbers")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class PhoneNumbers {
+   @XmlValue
+   @XmlList
+   private List<String> numbers;
+ 
+   ...
+}
+ 
+----
+
+[[sthref78]]
+
+*_Example 4-35 EclipseLink OXM Metadata_*
+
+[source,oac_no_warn]
+----
+ 
+...
+<java-type name="Customer">
+   <xml-root-element name="customer"/>
+   <java-attributes>
+      <xml-attribute java-attribute="ids" xml-list="true"/>
+   </java-attributes>
+</java-type>
+...
+ 
+...
+<java-type name="PhoneNumbers">
+   <xml-root-element name="phone-numbers"/>
+   <java-attributes>
+      <xml-value java-attribute="numbers" xml-list="true"/>
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+[[sthref79]]
+
+*_Example 4-36 Example XML Documents_*
+
+[source,oac_no_warn]
+----
+<customer ids="726 1982 1989 2991"/>
+ 
+<phone-numbers>6132883982 6139828817 18882982298</phone-numbers>
+----

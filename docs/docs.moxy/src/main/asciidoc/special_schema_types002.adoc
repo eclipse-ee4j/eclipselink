@@ -1,0 +1,188 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SPECIALSCHEMATYPES002]]
+=== Mapping to a Union Field
+
+The following XML schema and class diagram show a typical use of an XML
+Schema Union:
+
+[[sthref94]]
+
+*_Example 5-4 XML Schema Union_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="customer" type="customer-type" />
+    <xsd:complexType name="customer-type">
+        <xsd:sequence>
+            <xsd:element name="shoe-size" type="size-type" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="size-type">
+        <xsd:union memberTypes="xsd:decimal xsd:string" />
+    </xsd:simpleType>
+</xsd:schema>
+ 
+----
+
+[[sthref95]]
+
+*_Figure 5-1 Mapping to a Union Field_*
+
+image:{imagesrelativedir}/dxmuc.png[Mapping to a Union Field,title="Mapping to a Union Field"] +
+xref:{imagestextrelativedir}/dxmuc.adoc[Description of "Figure 5-1 Mapping to a Union Field"] +
+
+link:#BABDEIDD[Figure 5-2] illustrates a mapping to a union field in an
+XML document that conforms to the example schema. When EclipseLink
+unmarshalls the XML document, it tries each of the union types until it
+can make a successful conversion. The first schema type in the union is
+`xsd:decimal`. Because *10.5* is a valid decimal, EclipseLink converts
+the value to the appropriate type.
+
+[[BABDEIDD]]
+
+*_Figure 5-2 Mapping to a Union Field in an XML Document_*
+
+image:{imagesrelativedir}/dxmuv.png[Mapping to a Union Field in an XML Document,title="Mapping to a Union Field in an XML Document"] +
+xref:{imagestextrelativedir}/dxmuv.adoc[Description of "Figure 5-2 Mapping to a Union Field in an XML Document"] +
+
+In link:#BABFGEDJ[Figure 5-3], the value *M* is _not_ a valid
+`xsd:decimal` type, so the next union type is tried, `xsd:string`.
+
+[[BABFGEDJ]]
+
+*_Figure 5-3 Mapping to a Union Field_*
+
+image:{imagesrelativedir}/dxmuvs.png[Mapping to a Union Field,title="Mapping to a Union Field"] +
+xref:{imagestextrelativedir}/dxmuvs.adoc[Description of "Figure 5-3 Mapping to a Union Field"] +
+
+Currently, EclipseLink does not support the mapping of Unions using
+Annotations or OXM Metadata. However, an EclipseLink XML Customizer can
+be used to create the mapping.
+
+First, we annotate the `shoeSize` attribute with `@XmlTransient`, to
+avoid automatically generating a mapping for it. We also include an
+`@XmlCustomizer` annotation; the `CustomerCustomizer` class will create
+the Union mapping in code.
+
+[[sthref99]]
+
+*_Example 5-5 Using an EclipseLink Customizer_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+import org.eclipse.persistence.oxm.annotations.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlCustomizer(CustomerCustomizer.class)
+public class Customer {
+   @XmlTransient
+   private Object shoeSize;
+ 
+   ...
+}
+ 
+----
+
+The `CustomerCustomizer` class can be used to manually add a mapping to
+the `shoeSize` attribute. In link:#CHDEDAIJ[Example 5-6], an
+`XMLUnionField` is configured on the mapping, and the possible Union
+member types are added by calling `addSchemaType()`:
+
+[[CHDEDAIJ]]
+
+*_Example 5-6 Mapping a Union Field_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.oxm.*;
+ 
+public class CustomerCustomizer implements DescriptorCustomizer {
+ 
+   @Override
+   public void customize(ClassDescriptor descriptor) throws Exception {
+      XMLDirectMapping shoeSizeMapping = new XMLDirectMapping();
+      shoeSizeMapping.setAttributeName("shoeSize");
+ 
+      XMLUnionField shoeSizeField = new XMLUnionField();
+      shoeSizeField.setXPath("shoe-size/text()");
+      shoeSizeField.addSchemaType(XMLConstants.DECIMAL_QNAME);
+      shoeSizeField.addSchemaType(XMLConstants.STRING_QNAME);
+ 
+      shoeSizeMapping.setField(shoeSizeField);
+ 
+      descriptor.addMapping(shoeSizeMapping);
+   }
+ 
+}
+ 
+----
+
+==== Understanding Conversion Order
+
+The order of the calls to `addSchemaType()` is important; when
+converting an XML value into Java, EclipseLink will attempt the
+conversions in the order that they were added to the field, and return
+as soon as a successful conversion is made. For example, when
+unmarshalling a `shoeSize` of *10.5*:
+
+[source,oac_no_warn]
+----
+...
+shoeSizeField.addSchemaType(XMLConstants.DECIMAL_QNAME);
+shoeSizeField.addSchemaType(XMLConstants.STRING_QNAME);
+...
+ 
+----
+
+A `BigDecimal` will be created to store the value. If, however, your
+XMLUnionField was set up like this:
+
+[source,oac_no_warn]
+----
+...
+shoeSizeField.addSchemaType(XMLConstants.STRING_QNAME);
+shoeSizeField.addSchemaType(XMLConstants.DECIMAL_QNAME);
+...
+ 
+----
+
+The shoeSize value will be a `String` *("10.5")*.
+
+==== Customizing Conversion Classes
+
+EclipseLink uses a set of default conversions to create a value for the
+Java attribute (in this case, `xsd:decimal` will be converted into a
+`BigDecimal`). You can override this behavior in Java code using the
+XMLUnionField method addConversion. For example, if you want your Java
+object to store `shoeSize` as a `Float`:
+
+[source,oac_no_warn]
+----
+shoeSizeField.addConversion(XMLConstants.DECIMAL_QNAME, Float.class);
+----

@@ -1,0 +1,40 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, concepts, orm, moxy
+
+== Understanding Object-Relational and MOXy Internals
+
+This chapter describes the features of the Object-Relational and MOXy
+architecture.
+
+This chapter includes the following sections:
+
+* link:#BLOCKS001[About Metadata]
+* link:#BLOCKS002[About the Object-Relational Solution]
+* link:#BLOCKS003[About the MOXy Solution]
+
+//About Metadata
+include::{rootdir}/blocks001.adoc[]
+
+//About the Object-Relational Solution
+include::{rootdir}/blocks002.adoc[]
+
+//About the MOXy Solution
+include::{rootdir}/blocks003.adoc[]

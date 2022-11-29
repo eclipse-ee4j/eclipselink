@@ -1,0 +1,68 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+=== What You Need to Know First
+
+To make good use of this guide, you should already be familiar with the
+following:
+
+* The concepts and programming practices of the Java SE platform and the
+Jakarta EE platform. In the current release, EclipseLink supports
+Jakarta EE 6. For more information, see the following.
++
+*Java*
+** Java home page:
+`http://www.oracle.com/us/technologies/java/index.html`
+** Jakarta EE 5 Tutorial:
+`http://download.oracle.com/javaee/5/tutorial/doc/bnbpy.html`
+** Jakarta EE 6 Tutorial:
+`http://download.oracle.com/javaee/6/tutorial/doc/bnbpy.html`
+** Any of the thousands of books and websites devoted to Java.
++
+*Eclipse Integrated Development Environment*
+** Eclipse IDE: `http://www.eclipse.org/`
+* EclipseLink from the Eclipse Foundation
+** EclipseLink project home: `http://wiki.eclipse.org/EclipseLink`
+** EclipseLink Documentation Center:
+`https://www.eclipse.org/eclipselink/documentation/`
+* If you are working with EclipseLink JPA, you should be familiar with
+the concepts and programming practices of JPA 2.2, as specified in the
+_Jakarta Persistence API, Version 2.2_ specification at
+`http://jcp.org/en/jsr/detail?id=338`.
+* If you are working with EclipseLink JAXB, you should be familiar with
+the concepts and programming practices of JAXB 2.0, as specified in the
+_The Java Architecture for XML Binding (JAXB) 2.0_ specification at
+`http://jcp.org/en/jsr/detail?id=222`.
+* If you are using JSON data-interchange format, you should be familiar
+with the concepts and programming practices of JSON, as described at
+`http://www.json.org/`. For XML, see `http://www.w3.org/XML/`
+* If you are working with EclipseLink MOXy, you should be familiar with
+the concepts and programming practices of JAXB 2.0, as specified in the
+_The Java Architecture for XML Binding (JAXB) 2.0_ specification at
+`http://jcp.org/en/jsr/detail?id=222`. If you are using the JavaScript
+Object Notation (JSON) data-interchange format, you should be familiar
+with the concepts and programming practices of JSON, as described at
+`http://www.json.org/`. For XML, see `http://www.w3.org/XML/`
+* If you are working with EclipseLink DBWS, you should be familiar with
+the concepts and programming practices of JAX-WS 2.0, as specified in
+the Java _API for XML-Based Web Services (JAX-WS) 2.0_ specification at
+`http://jcp.org/en/jsr/detail?id=224`.
+* If you are working with REpresentational State Transfer (REST)
+service, you should be familiar with concepts and programming practices
+of REST, as specified in "JSR 311: JAX-RS: The Java API for RESTful Web
+Services" at `http://jcp.org/en/jsr/detail?id=311`.

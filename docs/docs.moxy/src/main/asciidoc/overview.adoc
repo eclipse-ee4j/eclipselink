@@ -1,0 +1,46 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[INTRODUCTION]]
+== Introduction
+
+JAXB (Java Architecture for XML Binding – JSR 222) is the standard for
+XML Binding in Java. JAXB covers 100% of XML Schema concepts and
+EclipseLink provides a JAXB implementation with many extensions. See
+`http://jcp.org/en/jsr/detail?id=222` for complete information on the
+JAXB specification.
+
+The EclipseLink MOXy component enables developers to efficiently bind
+Java classes to XML schemas and JSON documents. MOXy implements JAXB,
+allowing developers to provide their mapping information through
+annotations __as well as providing support for storing the mappings in
+XML and JSON format__s.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/overview001.adoc#INTRODUCTION001[About EclipseLink MOXy]
+* xref:{relativedir}/overview002.adoc#INTRODUCTION002[Solving Object-XML Impedance Mismatch]
+* xref:{relativedir}/overview002.adoc#INTRODUCTION003[About This Documentation]
+
+//About EclipseLink MOXy
+include::{rootdir}/overview001.adoc[]
+
+//Solving Object-XML Impedance Mismatch
+include::{rootdir}/overview002.adoc[]
+
+//About This Documentation
+include::{rootdir}/overview003.adoc[]

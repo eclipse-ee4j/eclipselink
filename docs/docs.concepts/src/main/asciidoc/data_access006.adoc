@@ -1,0 +1,181 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DATA_ACCESS006]]
+=== About Connection Pools
+
+A *connection pool* is a service that creates and maintains a shared
+collection (pool) of data source connections on behalf of one or more
+clients. The connection pool provides a connection to a process on
+request, and returns the connection to the pool when the process is
+finished using it. When it is returned to the pool, the connection is
+available for other processes. Because establishing a connection to a
+data source can be time-consuming, reusing such connections in a
+connection pool can improve performance.
+
+EclipseLink uses connection pools to manage and share the connections
+used by server and client sessions. This feature reduces the number of
+connections required and allows your application to support many
+clients.
+
+You can configure your session to use internal connection pools provided
+by EclipseLink or external connection pools provided by a JDBC driver or
+Jakarta EE container.
+
+You can use connection pools in your EclipseLink application for a
+variety of purposes, such as reading, writing, sequencing, and other
+application-specific functions.
+
+This section describes the following types of connection pools:
+
+* link:#CHDHEIJE[Internal Connection Pools]
+* link:#CHDCAIEJ[External Connection Pools]
+* link:#CHDJGAJE[Default (Write) and Read Connection Pools]
+* link:#CHDEFJHH[Sequence Connection Pools]
+* link:#CHDDGHGA[Application-Specific Connection Pools]
+
+[[CHDHEIJE]][[OTLCG93611]]
+
+==== Internal Connection Pools
+
+For non-Jakarta EE applications, you typically use _internal_ connection
+pools. By default, EclipseLink sessions use internal connection pools.
+
+Using internal connection pools, you can configure the default (write)
+and read connection pools. You can also create additional connection
+pools for object identity, or any other purpose.
+
+Internal connection pools allow you to optimize the creation of read
+connections for applications that read data only to display it and only
+infrequently modify data. This also allow you to use Workbench to
+configure the default (write) and read connection pools and to create
+additional connection pools for object identity or any other purpose.
+
+[[CHDCAIEJ]][[OTLCG93612]]
+
+==== External Connection Pools
+
+For Jakarta EE applications, you typically use _external_ connection
+pools. An external connection pool is a collection of reusable
+connections to a single data source provided by a JDBC driver or Jakarta
+EE container.
+
+If you are using an external transaction controller (JTA), you must use
+external connection pools to integrate with the JTA.
+
+Using external connection pools, you can use Java to configure the
+default (write) and read connection pools and create additional
+connection pools for object identity, or any other purpose.
+
+External connection pools enable your EclipseLink application to do the
+following:
+
+* Integrate into a Jakarta EE-enabled system.
+* Integrate with JTA transactions (JTA transactions require a
+JTA-enabled data source).
+* Leverage a shared connection pool in which multiple applications use
+the same data source.
+* Use a data source configured and managed directly on the server.
+
+[[CHDJGAJE]][[OTLCG93613]]
+
+==== Default (Write) and Read Connection Pools
+
+A server session provides a read connection pool and a write connection
+pool. These could be different pools, or if you use external connection
+pooling, the same connection pool.
+
+All read queries use connections from the read connection pool and all
+queries that write changes to the data source use connections from the
+write connection pool. You can configure attributes of the default
+(write) and read connection pools.
+
+Whenever a new connection is established, EclipseLink uses the
+connection configuration you specify in your session's
+`DatasourceLogin`. Alternatively, when you use an external transaction
+controller, you can define a separate connection configuration for a
+read connection pool to avoid the additional overhead, if appropriate.
+
+Use the `connection-pool.read` property to configure a read connection
+pool for non-transaction read queries. By default, EclipseLink does not
+use a separate read connection pool; the default pool is used for read
+queries. For more information, see `connection-pool.read` in _Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+[[CHDEFJHH]][[OTLCG93614]]
+
+==== Sequence Connection Pools
+
+An essential part of maintaining object identity is sequencing–managing
+the assignment of unique values to distinguish one instance from
+another. For more information, see xref:cache002.adoc#CACHE002[About
+Cache Type and Size].
+
+Sequencing involves reading and writing a special sequence resource
+maintained by your data source.
+
+By default, EclipseLink includes sequence operations in a separate
+transaction. This avoids complications during the write transaction,
+which may lead to deadlocks over the sequence resource. However, when
+using an external transaction controller (such as a JTA data source or
+connection pool), EclipseLink cannot use a different transaction for
+sequencing. Use a sequence connection pool to configure a non-JTA
+transaction pool for sequencing. This is required only for table
+sequencing–not native sequencing.
+
+In each server session, you can create one connection pool, called a
+sequence connection pool, that EclipseLink uses exclusively for
+sequencing. With a sequence connection pool, EclipseLink satisfies a
+request for a new object identifier outside of the transaction from
+which the request originates. This allows EclipseLink to immediately
+commit an update to the sequence resource, which avoids deadlocks.
+
+NOTE: If you use a sequence connection pool and the original transaction
+fails, the sequence operation does not roll back.
+
+You should use a sequence connection pool, if the following applies:
+
+* You use table sequencing (that is, non-native sequencing).
+* You use external transaction controller (JTA).
+
+You should not use a sequence connection pool, if the following applies:
+
+* You do not use sequencing, or use the data source's native sequencing.
+* You have configured the sequence table to avoid deadlocks.
+* You use non-JTA data sources.
+
+You can configure a sequence connection pool with the
+`eclipselink.connection-pool.sequence` persistence unit property. This
+property allows the connection pool to allocate generated IDs, and is
+required only for `TABLE` sequencing. By default, EclipseLink does not
+use a separate sequence connection pool; the default pool is used for
+sequencing. For more information, see `connection-pool.sequence` in
+_Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+[[CHDDGHGA]][[OTLCG93615]]
+
+==== Application-Specific Connection Pools
+
+When you use internal EclipseLink connection pools in a session, you can
+create one or more connection pools that you can use for any application
+purpose. These are called named connection pools, as you can give them
+any name you want and use them for any purpose.
+
+Typically, use these named connection pools to provide pools of
+different security levels. For example, the "default" connection pool
+may only allow access to specific tables but the "admin" connection pool
+may allow access to all tables.

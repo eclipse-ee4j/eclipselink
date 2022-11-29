@@ -1,0 +1,360 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MIGRATEHIBERNATE002]]
+=== Main Tasks
+
+Complete these tasks to migrate an application that uses Hibernate as
+its persistence provider to EclipseLink.
+
+* link:#BGBFIGDF[Task 1: Convert the Hibernate Entity Annotation]
+* link:#BGBCJCBF[Task 2: Convert the Hibernate Custom Sequence Generator Annotation]
+* link:#BGBDFADJ[Task 3: Convert Hibernate Mapping Annotations]
+* link:#BGBGAGJD[Task 4: Modify the persistence.xml File]
+* link:#BGBGDHBH[Task 5: Convert Hibernate API to EclipseLink API]
+
+==== Task 1: Prerequisites
+
+EclipseLink 2.4 or later.
+
+Download EclipseLink from
+`http://www.eclipse.org/eclipselink/downloads/`.
+
+[[BGBFIGDF]]
+
+==== Task 2: Convert the Hibernate Entity Annotation
+
+The Hibernate entity annotation, defined by the
+`org.hibernate.annotations.Entity` class, adds additional metadata
+beyond what is defined by the JPA standard `@Entity` annotation.
+
+link:#BGBJIHJB[Example 8-1] illustrates a sample Hibernate entity
+annotation. The example uses the `selectBeforeUpdate`, `dynamicInsert`,
+`dynamicUpdate`, `optimisticLock`, and `polymophism` attributes. Note
+that the Hibernate entity annotation also defines `mutable` and
+`persister` attributes, which are not used in this example.
+
+[[BGBJIHJB]]
+
+*_Example 8-1 Sample Hibernate Entity Annotation_*
+
+[source,oac_no_warn]
+----
+@org.hibernate.annotations.Entity(
+     selectBeforeUpdate = true,
+     dynamicInsert = true, 
+     dynamicUpdate = true,
+     optimisticLock = OptimisticLockType.ALL,
+     polymorphism = PolymorphismType.EXPLICIT)
+----
+
+The following sections describe how EclipseLink handles selects, locks,
+polymorphism, and dynamic updates and inserts. For more information, see
+"EclipseLink/Examples/JPA/Migration/Hibernate/V3Annotations" in the
+Eclipselink documentation, at:
+
+`http://wiki.eclipse.org/EclipseLink/Examples/JPA/Migration/Hibernate/V3Annotations`
+
+===== Convert the SelectBeforeUpdate, dynamicInsert and dynamicUpdate Attributes
+
+In Hibernate, the `selectBeforeUpdate` attribute specifies that
+Hibernate should never perform a SQL update unless it is certain that an
+object is actually modified. The `dynamicInsert` attribute specifies
+that the `INSERT` `SQL` statement should be generated at runtime and
+contain only the columns whose values are not null. The `dynamicUpdate`
+attribute specifies that the `UPDATE` `SQL` statement should be
+generated at runtime and can contain only those columns whose values
+have changed.
+
+By default, EclipseLink will always insert all mapped columns and will
+update only the columns that have changed. If alternative operations are
+required, then the queries used for these operations can be customized
+by using Java code, SQL, or stored procedures.
+
+===== Convert the OptimisticLock Attribute
+
+In Hibernate, the `optimisticLock` attribute determines the optimistic
+locking strategy.
+
+EclipseLink's optimistic locking functionality supports all of the
+Hibernate locking types and more. link:#BGBFBBCE[Table 8-1] translates
+locking types from Hibernate's `@Entity(optimisticLock)` attributes into
+EclipseLink locking policies. These policies can be configured either
+with the EclipseLink `@OptimisticLocking` annotation or in the
+EclipseLink `orm.xml` file. For more information, see
+@OptimisticLocking.
+
+[[BGBFBBCE]]
+
+*_Table 8-1 Translating Hibernate's OptimisticLock to EclipseLink's
+OptimisticLocking_*
+
+|===
+|*Hibernate's OptimisticLock Type* |*Description* |*EclipseLink
+OptimisticLocking*
+|`NONE` |No optimistic locking |EclipseLink defaults to no optimistic
+locking.
+
+|`VERSION` |Use a column version a|
+Use the JPA `@Version` annotation or the EclipseLink annotation:
+
+`@OptimisticLocking(type = OptimisticLockingType.VERSION_COLUMN)`
+
+|`DIRTY` |Changed columns are compared a|
+Use the JPA `@Version` annotation or the EclipseLink annotation:
+
+`@OptimisticLocking(type = OptimisticLockingType.CHANGED_COLUMNS)`
+
+|`ALL` |All columns are compared a|
+Use the EclipseLink annotation:
+
+`@OptimisticLocking(type = OptimisticLockingType.ALL_COLUMNS)`
+
+|===
+
+Additionally, EclipseLink allows you to compare a specific set of
+selected columns using the `OptimisticLockingType.SELECTED_COLUMNS`
+annotation. This allows you to select the critical columns that should
+be compared if the `CHANGED` or `ALL` strategies do not meet your needs.
+
+[[BGBCJCBF]]
+
+==== Task 3: Convert the Hibernate Custom Sequence Generator Annotation
+
+In Hibernate, the `@GeneratedValue` annotation defines the identifier
+generation strategy. The `@GenericGenerator` allows you to define a
+Hibernate-specific ID generator. link:#BGBHCBDG[Example 8-2] illustrates
+a custom generator for sequence values.
+
+[[BGBHCBDG]]
+
+*_Example 8-2 Custom Generator for Sequence Values_*
+
+[source,oac_no_warn]
+----
+.
+.
+.
+@Id
+   @GeneratedValue(generator = "system-uuid")
+   @GenericGenerator(name = "system-uuid", strategy = "mypackage.UUIDGenerator")
+   public String getTransactionGuid()
+.
+.
+.
+ 
+----
+
+In EclipseLink, a custom sequence generator can be implemented and
+registered by using the `@GeneratedValue` annotation. For more
+information, see
+http://wiki.eclipse.org/EclipseLink/Examples/JPA/CustomSequencing["How
+to use Custom Sequencing"] in the EclipseLink documentation, at:
+
+`http://wiki.eclipse.org/EclipseLink/Examples/JPA/CustomSequencing`
+
+[[BGBDFADJ]]
+
+==== Task 4: Convert Hibernate Mapping Annotations
+
+The following sections describe how to convert various Hibernate
+annotations to EclipseLink annotations.
+
+===== Convert the @ForeignKey Annotation
+
+In Hibernate, the `@ForeignKey` annotation allows you to define the name
+of the foreign key to be used during schema generation.
+
+EclipseLink does generate reasonable names for foreign keys, but does
+not provide an annotation or `eclipselink-orm.xml` support for
+specifying the name to use. When migrating, the recommended solution is
+to have EclipseLink generate the schema (DDL) commands to a script file
+instead of directly on the database. The script can then be customized
+to use different names prior to being executed.
+
+NOTE: The foreign key name is not used by EclipseLink at runtime, but is
+required if EclipseLink attempts to drop the schema. In this case, the
+drop script should be generated to a file and customized to match the
+foreign key names used during creation.
+
+===== Convert the @Cache Annotation
+
+In Hibernate, the `@Cache` annotation configures the caching of entities
+and relationships. Because EclipseLink uses an entity cache instead of a
+data cache, the relationships are automatically cached. In these cases,
+the `@Cache` annotation should be removed during migration.When the
+`@Cache` annotation is used on an entity, its behavior is similar to the
+EclipseLink `@Cache` annotation. For more information about the `@Cache`
+annotation and equivalent `eclipselink-orm.xml` configuration values,
+see Jakarta Persistence API (JPA) Extensions Reference for EclipseLink.
+
+[[BGBGAGJD]]
+
+==== Task 5: Modify the persistence.xml File
+
+The `persistence.xml` file is the deployment descriptor file for JPA
+persistence. It specifies the persistence units, and declares the
+managed persistence classes, the object-relational mapping, and the
+database connection details. link:#BGBBIHAD[Example 8-3] illustrates a
+`persistence.xml` file for an application that uses Hibernate.
+Hibernate-specific values appear in bold font.
+
+[[BGBBIHAD]]
+
+*_Example 8-3 Persistence File for an Application that Uses Hibernate_*
+
+[source,oac_no_warn]
+----
+<persistence>
+   <persistence-unit name="helloworld">
+      <provider>org.hibernate.ejb.HibernatePersistence</provider>
+      <jta-data-source>java:/DefaultDS</jta-data-source>
+      <properties>
+         <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+         <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      </properties>
+   </persistence-unit>
+</persistence>
+----
+
+===== Modified persistence.xml File
+
+link:#BGBHEIEJ[Example 8-4] illustrates a `persistence.xml` file
+modified for an application that uses EclipseLink. Key differences
+include the value for the persistence provider. For EclipseLink, this
+value is `org.eclipse.persistence.jpa.PersistenceProvider`. The names of
+EclipseLink-specific properties are typically be prefixed by
+`eclipselink`, for example, `eclipselink.target-database`.
+EclipseLink-specific values appear in bold font.
+
+[[BGBHEIEJ]]
+
+*_Example 8-4 Persistence File Modified for EclipseLink_*
+
+[source,oac_no_warn]
+----
+<xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+  <persistence-unit name="helloworld">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>java:/DefaultDS</jta-data-source>
+    <!-- For Java SE applications, entity classes must be specified for EclipseLink weaving. For Jakarta EE applications, the classes are found automatically. -->
+    <class>Todo</class>
+    <properties>
+      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+      <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+    </properties>
+  </persistence-unit>
+</persistence> 
+----
+
+===== Drop and Create the Database Tables
+
+For production environments, you would usually have the schema set up on
+the database. The following properties defined in the persistence unit
+are more suitable for examples and demonstrations. These properties will
+instruct EclipseLink to automatically drop and create database tables.
+Any previously existing tables will be removed.
+
+To use the Drop and Create Database Tables feature, add the following
+properties to the `persistence.xml` file.
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+ <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+----
+
+For more information on this feature, see the `drop-and-create-tables`
+entry in "ddl-generation" in _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.
+
+
+===== Create or Extend Database Tables
+
+The Create or Extend Database Tables feature allows you match the
+database schema to the object model by creating new database tables or
+by modifying existing tables. You can modify existing tables by
+specifying field name changes and by add and removing fields.
+
+NOTE: In the current release, the Create or Extend Database Tables feature
+will not rename or delete existing columns. It will only add missing
+table columns.
+
+The Create or Extend Database Tables feature reduces the need to
+repopulate test data. You avoid the need to use the Drop and Create
+Database Tables feature when the schema changes, due to changes in the
+object model. The Create or Extend Database Tables feature can also be
+used with extensibility to add table columns.
+
+To use the Create or Extend Database Tables feature, add the following
+properties to the `persistence.xml` file. When the context is loaded,
+EclipseLink will query the database for each table required in the
+persistence unit and use the results to determine if the table needs to
+be created or extended.
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
+ <property name="eclipselink.ddl-generation.output-mode" value="database" />
+----
+
+For more information on this feature, see the `create-or-extend-tables`
+entry in "ddl-generation" in _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.
+
+[[BGBGDHBH]]
+
+==== Task 6: Convert Hibernate API to EclipseLink API
+
+link:#BGBDAHCF[Table 8-2] describes the Hibernate classes that are
+commonly used in a JPA project and their equivalent EclipseLink (JPA)
+interfaces. All of the Hibernate classes are in the `org.hibernate`
+package. All of the JPA interfaces (and the `Persistence` class) are in
+the `jakarta.persistence` package.
+
+For information about the EclipseLink API, see _Java API Reference for
+EclipseLink_.
+
+[[BGBDAHCF]]
+
+*_Table 8-2 Hibernate Classes and Equivalent JPA Interfaces_*
+
+|===
+|*org.hibernate* |*jakarta.persistence* |*Description*
+|`cfg.Configuration` |`Persistence` |Provides a bootstrap class that
+configures the session factory (in Hibernate) or the entity manager
+factory (in JPA). It is generally used to create a single session (or
+entity manager) factory for the JVM.
+
+|`SessionFactory` |`EntityManagerFactory` |Provides APIs to open
+Hibernate sessions (or JPA entity managers) to process a user request.
+Generally, a session (or entity manager) is opened per thread processing
+client requests.
+
+|`Session` |`EntityManager` |Provides APIs to store and load entities to
+and from the database. It also provides APIs to get a transaction and
+create a query.
+
+|`Transaction` |`EntityTransaction` |Provides APIs to manage
+transactions.
+
+|`Query` |`Query` |Provides APIs to execute queries.
+|===

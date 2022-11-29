@@ -1,0 +1,384 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[JPA2XML006]]
+=== Using Dynamic JAXB/MOXy
+
+Dynamic JAXB/MOXy allows you to bootstrap a `JAXBContext` from a variety
+of metadata sources and use familiar JAXB APIs to marshal and unmarshal
+data, without requiring compiled domain classes. This is an enhancement
+over static JAXB, because now you can update the metadata without having
+to update and recompile the previously-generated Java source code.
+
+The benefits of using dynamic JAXB/MOXy entities are:
+
+* Instead of using actual Java classes (for example, `Customer.class`,
+`Address.class`, and so on), the domain objects are subclasses of the
+`DynamicEntity`.
+* Dynamic entities offer a simple
+`get(propertyName)`/`set(propertyName propertyValue)` API to manipulate
+their data.
+* Dynamic entities have an associated `DynamicType`, which is generated
+in-memory, when the metadata is parsed.
+
+The following Tasks demonstrate how to use dynamic JAXB:
+
+* link:#BEIFDBCA[Task 1: Bootstrap a Dynamic JAXBContext from an XML Schema]
+* link:#BEIDHGHI[Task 2: Create Dynamic Entities and Marshal Them to XML]
+* link:#BEIGCBBH[Task 3: Unmarshal the Dynamic Entities from XML]
+
+[[BEIFDBCA]]
+
+==== Task 1: Bootstrap a Dynamic JAXBContext from an XML Schema
+
+This example demonstrates how to bootstrap a dynamic `JAXBContext` from
+an XML Schema.
+
+===== Bootstrapping from an XML Schema
+
+Use the `DynamicJAXBContextFactory` to create a dynamic `JAXBContext`.
+link:#BEIJDEFA[Example 15-26] to bootstrap a `DynamicJAXBContext` from
+the `customer.xsd` schema (link:#BEIBCJFF[Example 15-27]) by using
+`createContextFromXSD()`.
+
+[[BEIJDEFA]]
+
+*_Example 15-26 Specifying the Input Stream and Creating the
+DynamicJAXBContext_*
+
+[source,oac_no_warn]
+----
+import java.io.FileInputStream;
+ 
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+ 
+public class Demo {
+ 
+    public static void main(String[] args) throws Exception {
+        FileInputStream xsdInputStream = new FileInputStream("src/example/customer.xsd");
+        DynamicJAXBContext jaxbContext = 
+            DynamicJAXBContextFactory.createContextFromXSD(xsdInputStream, null, null, null);
+----
+
+The first parameter represents the XML schema itself and must be in one
+of the following forms: `java.io.InputStream`, `org.w3c.dom.Node`, or
+`javax.xml.transform.Source`.
+
+===== The XML Schema
+
+link:#BEIBCJFF[Example 15-27] shows the `customer.xsd` schema that
+represents the metadata for the dynamic JAXBContext you are
+bootstrapping.
+
+[[BEIBCJFF]]
+
+*_Example 15-27 Sample XML Schema Document_*
+
+[source,oac_no_warn]
+----
+<xsd:schema 
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+   xmlns="http://www.example.org" 
+   targetNamespace="http://www.example.org"
+   elementFormDefault="qualified">
+ 
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element name="street" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+ 
+   <xsd:element name="customer">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="address" type="address" minOccurs="0"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+ 
+</xsd:schema>
+----
+
+===== Handling Schema Import/Includes
+
+To bootstrap `DynamicJAXBContext` from an XML schema that contains
+imports of other schemas, you need to configure an
+`org.xml.sax.EntityResolver` to resolve the locations of the imported
+schemas and pass the `EntityResolver` to `DynamicJAXBContextFactory`.
+
+The following example shows two schema documents, `customer.xsd`
+(link:#BEIJBFAG[Example 15-28]) and `address.xsd` link:#BEIDIAJB[Example
+15-29]). You can see that `customer.xsd` imports `address.xsd` by using
+the statement:
+
+[source,oac_no_warn]
+----
+<xsd:import namespace="http://www.example.org/address" schemaLocation="address.xsd"/>
+----
+
+[[BEIJBFAG]]
+
+*_Example 15-28 customer.xsd_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+   xmlns:add="http://www.example.org/address"
+   xmlns="http://www.example.org/customer" 
+   targetNamespace="http://www.example.org/customer"
+   elementFormDefault="qualified">
+ 
+   <xsd:import namespace="http://www.example.org/address" schemaLocation="address.xsd"/>
+ 
+   <xsd:element name="customer">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="address" type="add:address" minOccurs="0"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+ 
+</xsd:schema>
+----
+
+[[BEIDIAJB]]
+
+*_Example 15-29 address.xsd_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns="http://www.example.org/address" 
+    targetNamespace="http://www.example.org/address"
+    elementFormDefault="qualified">
+ 
+    <xsd:complexType name="address">
+        <xs:sequence>
+            <xs:element name="street" type="xs:string"/>
+            <xs:element name="city" type="xs:string"/>
+        </xs:sequence>
+    </xsd:complexType>
+ 
+</xsd:schema>
+----
+
+===== Implementing and Passing an EntityResolver
+
+If you want to bootstrap `DynamicJAXBContext` from the `customer.xsd`
+schema, you need to pass an entity resolver. Do the following:
+
+. To resolve the locations of the imported schemas, you need to
+implement an `entityResolver` by supplying the code shown in
+link:#BEIBCJAB[Example 15-30].
++
+[[BEIBCJAB]]
+
+*_Example 15-30 Implementing an EntityResolver_*
+
+[source,oac_no_warn]
+----
+class MyEntityResolver implements EntityResolver {
+
+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+      // Imported schemas are located in ext\appdata\xsd\
+
+       // Grab only the filename part from the full path
+      String filename = new File(systemId).getName();
+
+      // Now prepend the correct path
+      String correctedId = "ext/appdata/xsd/" + filename;
+
+      InputSource is = new InputSource(ClassLoader.getSystemResourceAsStream(correctedId));
+      is.setSystemId(correctedId);
+
+      return is;
+   }
+
+}
+----
+. After you implement your `DynamicJAXBContext`, pass the
+`EntityResolver`, as shown in link:#BEIHGJAA[Example 15-31].
++
+[[BEIHGJAA]]
+
+*_Example 15-31 Passing in the Entityresolver_*
+
+[source,oac_no_warn]
+----
+FileInputStream xsdInputStream = new FileInputStream("src/example/customer.xsd");
+DynamicJAXBContext jaxbContext = 
+    DynamicJAXBContextFactory.createContextFromXSD(xsdInputStream, new MyEntityResolver(), null, null);
+----
+
+===== Error Handling
+
+You might see the following exception when importing another schema:
+
+[source,oac_no_warn]
+----
+Internal Exception: org.xml.sax.SAXParseException: schema_reference.4: Failed to read schemadocument '<imported-schema-name>', because 1) could not find the document; 2) the document couldnot be read; 3) the root element of the document is not <xsd:schema>.
+----
+
+To work around this exception, disable XJC's schema correctness check by
+setting the `noCorrectnessCheck` Java property. You can set this
+property one of two ways:
+
+* From within the code, by adding this line:
++
+[source,oac_no_warn]
+----
+System.setProperty("com.sun.tools.xjc.api.impl.s2j.SchemaCompilerImpl.noCorrectnessCheck", "true")
+----
+* From the command line, by using this command:
++
+[source,oac_no_warn]
+----
+-Dcom.sun.tools.xjc.api.impl.s2j.SchemaCompilerImpl.noCorrectnessCheck=true
+----
+
+===== Specifying a ClassLoader
+
+Use your application's current class loader as the `classLoader`
+parameter. This parameter verifies that specified classes exist before
+new `DynamicTypes` are generated. In most cases you can pass `null` for
+this parameter and use `Thread.currentThread().getContextClassLoader()`
+instead.
+
+[[BEIDHGHI]]
+
+==== Task 2: Create Dynamic Entities and Marshal Them to XML
+
+This example shows how to create dynamic entities and marshal then to
+XML.
+
+===== Creating the Dynamic Entities
+
+Use the `DynamicJAXBContext` to create instances of `DynamicEntity`. The
+entity and property names correspond to the class and property names—in
+this case, the `customer` and `address`—that would have been generated
+if you had used static JAXB.
+
+[[SOLEX1532]]
+
+*_Example 15-32 Creating the Dynamic Entity_*
+
+[source,oac_no_warn]
+----
+DynamicEntity customer = jaxbContext.newDynamicEntity("org.example.Customer");
+customer.set("name", "Jane Doe");
+ 
+DynamicEntity address = jaxbContext.newDynamicEntity("org.example.Address");
+address.set("street", "1 Any Street").set("city", "Any Town");
+customer.set("address", address);
+----
+
+===== Marshalling the Dynamic Entities to XML
+
+The marshaller obtained from the `DynamicJAXBContext` is a standard
+marshaller and can be used normally to marshal instances of
+DynamicEntity.
+
+[[SOLEX1533]]
+
+*_Example 15-33 Standard Dynamic JAXB Marshaller_*
+
+[source,oac_no_warn]
+----
+Marshaller marshaller = jaxbContext.createMarshaller();
+marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);marshaller.marshal(customer, System.out);
+----
+
+[[BEIDBCBF]]
+
+*_Example 15-34 Updated XML Document Showing <address> Element and Its
+Attributes_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<customer xmlns="www.example.org">
+   <name>Jane Doe</name>
+   <address>
+      <street>1 Any Street</street>
+      <city>Any Town</city>
+   </address>
+</customer>
+----
+
+[[BEIGCBBH]]
+
+==== Task 3: Unmarshal the Dynamic Entities from XML
+
+In this example shows how to unmarshal from XML the dynamic entities you
+created in link:#BEIDHGHI[Task 2: Create Dynamic Entities and Marshal
+Them to XML]. The XML in reference is shown in link:#BEIDBCBF[Example
+15-34].
+
+===== Unmarshal DynamicEntities from XML
+
+The Unmarshaller obtained from the `DynamicJAXBContext` is a standard
+unmarshaller, and can be used normally to unmarshal instances of
+`DynamicEntity`.
+
+[[SOLEX1535]]
+
+*_Example 15-35 Standard Dynamic JAXB Unmarshaller_*
+
+[source,oac_no_warn]
+----
+FileInputStream xmlInputStream = new FileInputStream("src/example/dynamic/customer.xml");
+Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+DynamicEntity customer = (DynamicEntity) unmarshaller.unmarshal(xmlInputStream);
+----
+
+===== Get Data from the Dynamic Entity
+
+Next, specify which data in the dynamic entity to obtain. Specify this
+value by using `System.out.println()` and passing in the entity name.
+`DynamicEntity` offers property-based data access; for example,
+`get("name")` instead of `getName()`:
+
+[source,oac_no_warn]
+----
+System.out.println(customer.<String>get("name"));
+----
+
+===== Use DynamicType to Introspect Dynamic Entity
+
+Instances of `DynamicEntity` have a corresponding `DynamicType`, which
+you can use to introspect the `DynamicEntity`, as shown in
+link:#BEIDDBCC[Example 15-36].
+
+[[BEIDDBCC]]
+
+*_Example 15-36_*
+
+[source,oac_no_warn]
+----
+DynamicType addressType = jaxbContext.getDynamicType("org.example.Address");
+ 
+DynamicEntity address = customer.<DynamicEntity>get("address");
+for(String propertyName: addressType.getPropertiesNames()) {
+    System.out.println(address.get(propertyName));
+}
+----

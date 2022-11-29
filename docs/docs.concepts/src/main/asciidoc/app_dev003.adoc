@@ -1,0 +1,285 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[APPDEV003]]
+=== About Persisting Objects
+
+This section includes a brief description of relational mapping and
+provides information and restrictions to guide object and relational
+modeling. This information is useful when building applications.
+
+This section includes information on the following:
+
+* link:#BABEIFFG[Application Object Model]
+* link:#BABBIABD[Data Storage Schema]
+* link:#BABDCJDH[Primary Keys and Object Identity]
+* link:#BABFEIHF[Mappings]
+* link:#BABEEJHA[Foreign Keys and Object Relationships]
+* link:#BABBAIFB[Inheritance]
+* link:#BABEDGBH[Concurrency]
+* link:#BABBBCAC[Caching]
+* link:#BABGFFJF[Nonintrusive Persistence]
+* link:#BABCCDGC[Indirection]
+* link:#CCHBBHDH[Mutability]
+
+[[BABEIFFG]][[OTLCG91196]]
+
+==== Application Object Model
+
+Object modeling refers to the design of the Java classes that represent
+your application objects. You can use your favorite integrated
+development environment (IDE) or Unified Modeling Language (UML)
+modeling tool to define and create your application object model.
+
+Any class that registers a descriptor with EclipseLink database sessions
+is called a persistent class. EclipseLink does not require that
+persistent classes provide public accessor methods for any private or
+protected attributes stored in the database. Refer to
+xref:concepts/app_dev002.adoc#BABDHDIA[Persistent Class Requirements] for more
+information.
+
+[[BABBIABD]][[OTLCG91197]]
+
+==== Data Storage Schema
+
+Your data storage schema refers to the design that you implement to
+organize the persistent data in your application. This schema refers to
+the data itself—not the actual data source (such as a relational
+database or nonrelational legacy system).
+
+During the design phase of the application development process, you
+should decide how to implement the classes in the data source. When
+integrating existing data source information, you must determine how the
+classes relate to the existing data. If no legacy information exists to
+integrate, decide how you will store each class, then create the
+necessary schema.
+
+[[BABDCJDH]][[OTLCG91198]]
+
+==== Primary Keys and Object Identity
+
+When making objects persistent, each object requires an _identity_ to
+uniquely identify it for storage and retrieval. Object identity is
+typically implemented using a unique primary key. This key is used
+internally by EclipseLink to identify each object, and to create and
+manage references. Violating object identity can corrupt the object
+model.
+
+In a Java application, object identity is preserved if each object in
+memory is represented by one, and only one, object instance. Multiple
+retrievals of the same object return references to the same object
+instance—not multiple copies of the same object.
+
+EclipseLink supports multiple identity maps to maintain object identity
+(including composite primary keys). See xref:concepts/cache002.adoc#CACHE002[About
+Cache Type and Size] for additional information.
+
+[[BABFEIHF]][[OTLCG91199]]
+
+==== Mappings
+
+EclipseLink uses metadata to describe how objects and beans map to the
+data source. This approach isolates persistence information from the
+object model—you are free to design their ideal object model, and DBAs
+are free to design their ideal schema. For more information, see
+xref:{relativedir}/blocks001.adoc#BLOCKS001[About Metadata].
+
+At run time, EclipseLink uses the metadata to seamlessly and dynamically
+interact with the data source, as required by the application.
+
+EclipseLink provides an extensive mapping hierarchy that supports the
+wide variety of data types and references that an object model might
+contain. For more information, see
+xref:{relativedir}/mappingintro.adoc#MAPPINGINTRO[Chapter 6, "Understanding Mappings."]
+
+[[BABEEJHA]][[OTLCG91200]]
+
+==== Foreign Keys and Object Relationships
+
+A *foreign key* can be one or more columns that reference a unique key,
+usually the primary key, in another table. Foreign keys can be any
+number of fields (similar to primary key), all of which are treated as a
+unit. A foreign key and the primary parent key it references must have
+the same number and type of fields.
+
+Foreign keys represents relationships from a column or columns in one
+table to a column or columns in another table. For example, if every
+`Employee` has an attribute `address` that contains an instance of
+`Address` (which has its own descriptor and table), the one-to-one
+mapping for the `address` attribute would specify foreign key
+information to find an address for a particular `Employee`.
+
+[[BABBAIFB]][[OTLCG91201]]
+
+==== Inheritance
+
+Object-oriented systems allow classes to be defined in terms of other
+classes. For example: motorcycles, sedans, and vans are all _kinds of
+vehicles_. Each of the vehicle types is a _subclass_ of the `Vehicle`
+class. Similarly, the `Vehicle` class is the _superclass_ of each
+specific vehicle type. Each subclass inherits attributes and methods
+from its superclass (in addition to having its own attributes and
+methods).
+
+Inheritance provides several application benefits, including the
+following:
+
+* Using subclasses to provide specialized behaviors from the basis of
+common elements provided by the superclass. By using inheritance, you
+can reuse the code in the superclass many times.
+* Implementing _abstract_ superclasses that define generic behaviors.
+This abstract superclass may define and partially implement behavior,
+while allowing you to complete the details with specialized subclasses.
+
+[[BABEDGBH]][[OTLCG91202]]
+
+==== Concurrency
+
+To have concurrent clients logged in at the same time, the server must
+spawn a dedicated thread of execution for each client. Jakarta EE
+application servers do this automatically. Dedicated threads enable each
+client to work without having to wait for the completion of other
+clients. EclipseLink ensures that these threads do not interfere with
+each other when they make changes to the identity map or perform
+database transactions. Your client can make transactional changes in an
+isolated and thread safe manner. EclipseLink manages clones for the
+objects you modify to isolate each client's work from other concurrent
+clients and threads. This is essentially an object-level transaction
+mechanism that maintains all of the ACID (Atomicity, Consistency,
+Isolation, Durability) transaction principles as a database transaction.
+
+EclipseLink supports configurable optimistic and pessimistic locking
+strategies to let you customize the type of locking that the EclipseLink
+concurrency manager uses. For more information, see
+xref:concepts/descriptors002.adoc#CHEEEIEA[Descriptors and Locking.]
+
+[[BABBBCAC]][[OTLCG91203]]
+
+==== Caching
+
+EclipseLink caching improves application performance by automatically
+storing data returned as objects from the database for future use. This
+caching provides several advantages:
+
+* Reusing Java objects that have been previously read from the database
+minimizes database access
+* Minimizing SQL calls to the database when objects already exist in the
+cache
+* Minimizing network access to the database
+* Setting caching policies a class-by-class and bean-by-bean basis
+* Basing caching options and behavior on Java garbage collection
+
+EclipseLink supports several caching polices to provide extensive
+flexibility. You can fine-tune the cache for maximum performance, based
+on individual application performance. Refer to
+xref:{relativedir}/cache.adoc#CACHE[Chapter 8, "Understanding Caching"] for more
+information.
+
+[[BABGFFJF]][[OTLCG91204]]
+
+==== Nonintrusive Persistence
+
+The EclipseLink nonintrusive approach of achieving persistence through a
+metadata architecture means that there are almost no object model
+intrusions.
+
+To persist Java objects, EclipseLink does not require any of the
+following:
+
+* Persistent superclass or implementation of persistent interfaces
+* Store, delete, or load methods required in the object model
+* Special persistence methods
+* Generating source code into or wrapping the object model
+
+See xref:{relativedir}/app_dev002.adoc#APPDEV002[Building and Using the Persistence
+Layer] for additional information on this nonintrusive approach. See
+also xref:{relativedir}/blocks001.adoc#BLOCKS001[About Metadata.]
+
+[[BABCCDGC]][[OTLCG91205]]
+
+==== Indirection
+
+An indirection object takes the place of an application object so the
+application object is not read from the database until it is needed.
+Using indirection, or lazy loading in JPA, allows EclipseLink to create
+_stand-ins_ for related objects. This results in significant performance
+improvements, especially when the application requires the contents of
+only the retrieved object rather than all related objects.
+
+Without indirection, each time the application retrieves a persistent
+object, it also retrieves _all_ the objects referenced by that object.
+This may result in lower performance for some applications.
+
+NOTE: Oracle strongly recommends that you always use indirection.
+
+EclipseLink provides several indirection models, such as proxy
+indirection, transparent indirection, and value holder indirection.
+
+See xref:concepts/mappingintro002.adoc#CEGBCJAG[Using Indirection with
+Collections] and xref:concepts/mappingintro002.adoc#CHDJAHDC[Indirection (Lazy
+Loading)] for more information.
+
+[[CCHBBHDH]][[OTLCG91206]]
+
+==== Mutability
+
+Mutability is a property of a complex field that specifies whether the
+field value may be changed or not changed as opposed to replaced.
+
+An immutable mapping is one in which the mapped object value cannot
+change unless the object ID of the object changes: that is, unless the
+object value is replaced by another object value altogether.
+
+A mutable mapping is one in which the mapped object value can change
+without changing the object ID of the object.
+
+By default, EclipseLink assumes the following:
+
+* all `TransformationMapping` instances are mutable
+* all JPA `@Basic` mapping types, except `Serializable` types, are
+immutable (including `Date` and `Calendar` types)
+* all JPA `@Basic` mapping `Serializable` types are mutable
+
+Whether a value is immutable or mutable largely depends on how your
+application uses your persistent classes. For example, by default,
+EclipseLink assumes that a persistent field of type `Date` is immutable:
+this means that as long as the value of the field has the same object
+ID, EclipseLink assumes that the value has not changed. If your
+application uses the set methods of the `Date` class, you can change the
+state of the `Date` object value without changing its object ID. This
+prevents EclipseLink from detecting the change. To avoid this, you can
+configure a mapping as mutable: this tells EclipseLink to examine the
+state of the persistent value, not just its object ID.
+
+You can configure the mutability of the following:
+
+* `TransformationMapping` instances;
+* any JPA `@Basic` mapping type (including `Date` and `Calendar` types)
+individually;
+* all `Date` and `Calendar` types.
+
+Mutability can affect change tracking performance. For example, if a
+transformation mapping maps a mutable value, EclipseLink must clone and
+compare the value. If the mapping maps a simple immutable value, you can
+improve performance by configuring the mapping as immutable.
+
+Mutability also affects weaving. EclipseLink can only weave an attribute
+change tracking policy for immutable mappings.
+
+For more information, see xref:{relativedir}/app_dev005.adoc#APPDEV005[About Weaving].
+See also the description of the `@Mutable` annotation in _Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink_.

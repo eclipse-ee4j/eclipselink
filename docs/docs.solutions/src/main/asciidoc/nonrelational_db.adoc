@@ -1,0 +1,59 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[NOSQL]]
+== Using EclipseLink with NoSQL Databases
+
+This chapter describes how Oracle TopLink supports the ability to map
+objects to NoSQL database systems such as internet databases, object
+databases, XML databases, and even legacy databases.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/nonrelational_db001.adoc#NOSQL001[Introduction to the Solution]
+* xref:{relativedir}/nonrelational_db002.adoc#NOSQL002[Implementing the Solution]
+* xref:{relativedir}/nonrelational_db003.adoc#NOSQL003[Additional Resources]
+
+*Use Case*
+
+Users need to use EclipseLink with NoSQL data sources.
+
+*Solution*
+
+EclipseLink provides support for multiple NoSQL data sources. This
+solution illustrates using Oracle NoSQL and MongoDB.
+
+*Components*
+
+* EclipseLink 2.4 or later
+* NoSQL datasource.
+* JCA Adapter.
+
+*Sample*
+
+See the following EclipseLink samples for related information:
+
+* `http://wiki.eclipse.org/EclipseLink/Examples/JPA/NoSQL`
+
+//Introduction to the Solution
+include::{rootdir}/nonrelational_db001.adoc[]
+
+//Implementing the Solution
+include::{rootdir}/nonrelational_db002.adoc[]
+
+//Additional Resources
+include::{rootdir}/nonrelational_db003.adoc[]

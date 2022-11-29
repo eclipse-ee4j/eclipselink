@@ -1,0 +1,4 @@
+:nofooter:
+This illustration shows ObjectA privately owns one ObjectB, and ObjectB
+privately owns one ObjectC, and ObjectC privately owns one ObjectD.
+ObjectA and ObjectC each own a TimeStampLockingPolicy.

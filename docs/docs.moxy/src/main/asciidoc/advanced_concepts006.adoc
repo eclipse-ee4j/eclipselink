@@ -1,0 +1,298 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ADVANCEDCONCEPTS006]]
+=== Using an XmlAdapter
+
+Some Java classes may not be well suited for use with JAXB and at first
+glance may seem "unmappable" – for example, classes that do not have a
+default `no-arg` constructor, or classes for which an XML representation
+cannot be automatically determined. Using JAXB's `XmlAdapter`, you can
+define custom code to convert the unmappable class into something that
+JAXB can handle. Then, you can use the `@XmlJavaTypeAdapter` annotation
+to indicate that your adapter should be used when working with the
+unmappable class.
+
+`XmlAdapter` uses the following terminology:
+
+* `ValueType` – The type that JAXB knows how to handle out of the box.
+* `BoundType` – The type that JAXB doesn't know how to handle. An
+adapter is written to allow this type to be used as an in-memory
+representation through the ValueType.
+
+The outline of an XmlAdapter class is as follows:
+
+[[sthref178]]
+
+*_Example 8-32 XmlAdapter Class Outline_*
+
+[source,oac_no_warn]
+----
+public class AdapterName extends XmlAdapter<ValueType, BoundType> {
+ 
+   public BoundType unmarshal(ValueType value) throws Exception {
+      ...
+   }
+ 
+   public ValueType marshal(BoundType value) throws Exception {
+      ...
+   }
+ 
+}
+ 
+----
+
+==== Using java.util.Currency
+
+Our first example will use the following domain class:
+
+[[sthref180]]
+
+*_Example 8-33 Sample Domain Class_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.util.Currency;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class PurchaseOrder {
+ 
+   private Double amount;
+ 
+   private Currency currency;
+ 
+   ...
+}
+ 
+----
+
+Here, the *Currency* cannot be automatically mapped with JAXB because it
+does not contain a no-argument constructor. However, we can write an
+adapter that will convert the *Currency* into something that JAXB does
+know how to handle – a simple `String`. Luckily, in this case the
+*Currency's* `toString()` method returns the currency code, which can
+also be used to create a new *Currency*:
+
+[[sthref181]]
+
+*_Example 8-34 Using an Adapter_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.util.Currency;
+ 
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+ 
+public class CurrencyAdapter extends XmlAdapter<String, Currency> {
+ 
+   /*
+    * Java => XML
+    * Given the unmappable Java object, return the desired XML representation.
+    */
+   public String marshal(Currency val) throws Exception {
+      return val.toString();
+   }
+ 
+   /*
+    * XML => Java
+    * Given an XML string, use it to build an instance of the unmappable class.
+    */
+   public Currency unmarshal(String val) throws Exception {
+      return Currency.getInstance(val);
+   }
+ 
+}
+ 
+----
+
+To indicate that our adapter should be used for the *Currency* property,
+we annotate it with `@XmlJavaTypeAdapter` and provide the class name of
+our adapter:
+
+[[sthref182]]
+
+*_Example 8-35 Using the @XmlJavaTypeAdapter Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.util.Currency;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class PurchaseOrder {
+ 
+   private Double amount;
+ 
+   @XmlJavaTypeAdapter(CurrencyAdapter.class)
+   private Currency currency;
+ 
+   ...
+}
+ 
+----
+
+==== Using java.awt.Point
+
+Sometimes the best way to handle an unmappable class is to write a
+"stand-in" class which _can_ be mapped with JAXB, and convert between
+the two classes in the `XmlAdapter`. In this example, we want to use the
+*Point* class. Because of that class' `getLocation()` method (which JAXB
+will pickup automatically and map), an infinite loop will occur during
+marshalling. Because we cannot change the *Point* class, we will write a
+new class, *MyPoint*, and use it in the adapter.
+
+[[sthref184]]
+
+*_Example 8-36 Using java.awt.Point_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+public class MyPoint {
+ 
+   private int x, y;
+ 
+   public MyPoint() {
+      this(0, 0);
+   }
+ 
+   public MyPoint(int x, int y) {
+      this.x = x;
+      this.y = y;
+   }
+ 
+   public int getX() {
+      return x;
+   }
+ 
+   ...
+}
+ 
+package example;
+ 
+import java.awt.Point;
+ 
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+ 
+public class MyPointAdapter extends XmlAdapter<MyPoint, Point> {
+ 
+   /*
+    * Java => XML
+    */
+   public MyPoint marshal(Point val) throws Exception {
+      return new MyPoint((int) val.getX(), (int) val.getY());
+   }
+ 
+   /*
+    * XML => Java
+    */
+   public Point unmarshal(MyPoint val) throws Exception {
+      return new Point(val.getX(), val.getY());
+   }
+ 
+}
+ 
+----
+
+Finally, our *Point* properties are marked with `@XmlJavaTypeAdapter`:
+
+[[CHDBBDAC]]
+
+*_Example 8-37 Using the @XmlJavaTypeAdapter Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.awt.Point;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Zone {
+ 
+   private String name;
+ 
+   @XmlJavaTypeAdapter(MyPointAdapter.class)
+   private Point startCoord;
+ 
+   @XmlJavaTypeAdapter(MyPointAdapter.class)
+   private Point endCoord;
+ 
+   ...
+}
+----
+
+==== Specifying Package-Level Adapters
+
+In link:#CHDBBDAC[Example 8-37], we annotated both *Point* properties
+with the `@XmlJavaTypeAdapter` annotation. If you have many of these
+types of properties – for example, in other domain classes – it can be
+more convenient to specify the *@XmlJavaTypeAdapters* at the package
+level.
+
+We could define both of the adapter classes in *package-info.java*, and
+would no longer have to annotate any further *Currency* or *Point*
+properties:
+
+[source,oac_no_warn]
+----
+@XmlJavaTypeAdapters({
+   @XmlJavaTypeAdapter(value=CurrencyAdapter.class,type=Currency.class),
+   @XmlJavaTypeAdapter(value=MyPointAdapter.class,type=Point.class)
+})
+package example;
+ 
+----
+
+==== Specifying Class-Level @XmlJavaTypeAdapters
+
+If you have a Java class and you would like to always use an
+`XmlAdapter` during marshalling and unmarshalling, then you can specify
+the `@XmlJavaTypeAdapter` directly at the class level:
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+ 
+@XmlJavaTypeAdapter(DataStructureAdapter.class)
+public class DataStructure {
+ 
+   ...
+ 
+}
+ 
+----
+
+Now, any object that has a *DataStructure* property will automatically
+use the `DataStructureAdapter`, without the need for an annotation on
+the property itself.

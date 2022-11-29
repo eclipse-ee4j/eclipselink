@@ -1,0 +1,184 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSCREATE009]]
+=== Creating from an Overloaded PL/SQL Stored Procedure
+
+Starting in release 2.3, EclipseLInk DBWS can create a web service that
+exposes multiple PL/SQL stored procedures. Instead of specifying all the
+stored procedures within the DBWS builder file, you can specify a single
+procedure name and "overload" it with different parameters.
+
+NOTE: This feature requires a database, such as Oracle, that supports
+overloading.
+
+==== Example
+
+In this example, the stored procedure contains different parameters:
+
+[source,oac_no_warn]
+----
+CREATE PROCEDURE P(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS
+BEGIN
+  -- 2 arguments SIMPLARRAY and FOO
+END P;
+CREATE PROCEDURE P(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2) AS
+BEGIN
+  -- (same name 'P') 3 arguments SIMPLARRAY, FOO and BAR
+END P;
+ 
+----
+
+EclipseLink DBWS supports any combination of the `IN`, `OUT` and
+`IN OUT` arguments.
+
+Type *TBL1* is defined in PL/SQL Package `SOMEPACKAGE` as follows:
+
+[source,oac_no_warn]
+----
+CREATE OR REPLACE PACKAGE SOMEPACKAGE AS
+  TYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;
+  PROCEDURE P(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);
+  PROCEDURE P(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);
+END SOMEPACKAGE;
+ 
+----
+
+The `DBWSBuilder` utility requires a DBWS configuration file as input,
+as shown here:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <properties>
+    <property name="projectName">testOverloadedProcedure</property>
+    ... database properties
+  </properties>
+  <plsql-procedure
+    name="overloadedProcedure"
+    catalogPattern="SOMEPACKAGE"
+    procedurePattern="P"
+  />
+</dbws-builder>
+ 
+----
+
+Use this command to execute the `DBWSBuilder`:
+
+[source,oac_no_warn]
+----
+prompt > dbwsbuilder.cmd -builderFile dbws-builder.xml -stageDir output_directory -packageAs wls testEcho.war
+ 
+----
+
+where
+
+* `dbws-builder.xml` – The DBWS configuration file (as shown previously)
+* `output_directory` – The output directory for the generated files
+* `-packageAs` – Specifies the platform on which the web service will be
+deployed
+
+When generating queries and the WSDL in which overloaded procedures are
+used, a unique index identifies each procedure. The index starts at *1*
+and increments by one, for each overloaded procedure.
+
+In this example, EclipseLink generates the following
+`eclipselink-dbws.wsdl` (Web Services Description Language):
+
+[source,oac_no_warn]
+----
+<wsdl:definitions
+     name="plsqloverloadService"
+     targetNamespace="urn:plsqloverloadService"
+     xmlns:ns1="urn:plsqloverload"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="urn:plsqloverloadService"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    >
+    <wsdl:types>
+        <xsd:schema elementFormDefault="qualified" targetNamespace="urn:plsqloverloadService" xmlns:tns="urn:plsqloverloadService"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <xsd:import namespace="urn:plsqloverload" schemaLocation="eclipselink-dbws-schema.xsd"/>
+            <xsd:complexType name="p1ResponseType">
+                <xsd:sequence>
+                    <xsd:element name="result">
+                        <xsd:complexType><xsd:sequence><xsd:any/></xsd:sequence></xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="p1RequestType">
+                <xsd:sequence>
+                    <xsd:element name="SIMPLARRAY" type="ns1:SOMEPACKAGE_TBL1"/>
+                    <xsd:element name="FOO" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="p2ResponseType">
+                <xsd:sequence>
+                    <xsd:element name="result">
+                        <xsd:complexType><xsd:sequence><xsd:any/></xsd:sequence></xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="p2RequestType">
+                <xsd:sequence>
+                    <xsd:element name="SIMPLARRAY" type="ns1:SOMEPACKAGE_TBL1"/>
+                    <xsd:element name="FOO" type="xsd:string"/>
+                    <xsd:element name="BAR" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="p2" type="tns:p2RequestType"/>
+            <xsd:element name="p1" type="tns:p1RequestType"/>
+            <xsd:element name="p1Response" type="tns:p1ResponseType"/>
+            <xsd:element name="p2Response" type="tns:p2ResponseType"/>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="p2Request"><wsdl:part name="p2Request" element="tns:p2"/></wsdl:message>
+    <wsdl:message name="p2Response"><wsdl:part name="p2Response" element="tns:p2Response"/></wsdl:message>
+    <wsdl:message name="p1Request"><wsdl:part name="p1Request" element="tns:p1"/></wsdl:message>
+    <wsdl:message name="p1Response"><wsdl:part name="p1Response" element="tns:p1Response"/></wsdl:message>
+    <wsdl:portType name="plsqloverloadService_Interface">
+        <wsdl:operation name="p2">
+            <wsdl:input message="tns:p2Request"/>
+            <wsdl:output message="tns:p2Response"/>
+        </wsdl:operation>
+        <wsdl:operation name="p1">
+            <wsdl:input message="tns:p1Request"/>
+            <wsdl:output message="tns:p1Response"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="plsqloverloadService_SOAP_HTTP" type="tns:plsqloverloadService_Interface">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="p2">
+            <soap:operation soapAction="urn:plsqloverloadService:p2"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="p1">
+            <soap:operation soapAction="urn:plsqloverloadService:p1"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="plsqloverloadService">
+        <wsdl:port name="plsqloverloadServicePort" binding="tns:plsqloverloadService_SOAP_HTTP">
+            <soap:address location="REPLACE_WITH_ENDPOINT_ADDRESS"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
+----

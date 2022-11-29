@@ -1,0 +1,5 @@
+:nofooter:
+This figure illustrates a many-to-many relationship. In the top half of
+the figure is a Java class diagram. There are two Employee objects, each
+having a projects attribute. Each project attribute in the Employee
+class refers to more than one Project class.

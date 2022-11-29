@@ -1,0 +1,39 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[METADATASOURCE004]]
+=== Additional Resources
+
+See the following resources for more information about the technologies
+and tools used to implement the solutions in this chapter.
+
+* For additional information about JPA deployment, see the following
+sections of the JPA Specification
+(`http://jcp.org/en/jsr/detail?id=317`):
+** Section 7.2, "Bootstrapping in Java SE Environments"
+** Chapter 7, "Container and Provider Contracts for Deployment and
+Bootstrapping"
+* For more information about persistence unit properties, see
+`PersistenceUnitProperties` class in _Oracle Fusion Middleware Java API
+Reference for EclipseLink_.
+* For more information about the APIs, see the following in _Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink_:
+** "`metadata-source`"
+** "`metadata-source.properties.file`"
+** "`metadata-source.send-refresh-command`"
+** "`metadata-source.xml.file`"
+** "`metadata-source.xml.url`"

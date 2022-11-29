@@ -1,0 +1,109 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[QUERY006]]
+=== About Query Hints
+
+You can use a query hint to customize or optimize a JPA query. The
+`NamedQuery` annotation is used to specify a named query in the Java
+Persistence query language. This annotation contains a `hints` element
+that can be used to specify query properties and hints. For more
+information on this annotation, see "NamedQuery Annotation" in the JPA
+Specification.
+
+`http://jcp.org/en/jsr/detail?id=338`
+
+The definitions of query hints are vendor-specific. The following
+sections describe JPA query hints and EclipseLink query hints:
+
+* link:#CIHFICDB[JPA Cache Query Hints]
+* link:#CIHJEHDG[EclipseLink Extensions to Cache Query Hints]
+
+[[CIHFICDB]]
+
+==== JPA Cache Query Hints
+
+The JPA query hints allow for queries or the `find()` operation to
+bypass, or refresh the shared cache. JPA cache query hints can be set on
+named or dynamic queries, or set in the properties map passed to the
+`find()` operation.
+
+JPA 2.0 defines the following query hint properties to configure a
+queries interaction with the shared cache:
+
+* `jakarta.persistence.cache.retrieveMode`
+* `jakarta.persistence.cache.storeMode`
+
+[[CIHJEHDG]]
+
+==== EclipseLink Extensions to Cache Query Hints
+
+The EclipseLink cache query hints allow for queries or the `find()`
+operation to interact with the cache is the following ways:
+
+* Bypass the cache check and force accessing the database, but still
+resolve with the cache.
+* Refresh the cache from the database results.
+* Bypass the cache and persistence unit and return detached objects.
+* Bypass the persistence context and return read-only objects.
+* Allow queries that use Id fields, and other fields to obtain cache
+hits.
+* Query the cache first, and only access the database if the object is
+not found.
+* Only query the cache, and avoid accessing the database.
+* Conform a query with non-flushed changes in a persistence context.
+
+Queries that access the cache have the following restrictions:
+
+* Sub-selects are not supported.
+* Certain database functions are not supported.
+* Queries must return a single set of objects.
+* Grouping is not supported.
+* Uninstantiated lazy relationships may not be able to be queried.
+
+All EclipseLink query hints are defined in the `QueryHints` class in the
+`org.eclipse.persistence.config` package. When you set a hint, you can
+set the value using the `public` `static` `final` field in the
+appropriate configuration class in `org.eclipse.persistence.config`
+package, including the following:
+
+* `HintValues`
+* `CacheUsage`
+* `PessimisticLock`
+* `QueryType`
+
+You can specify EclipseLink query hints (JPA query extensions) either by
+using the `@QueryHint` annotation, by including the hints in the
+`orm.xml` or `eclipselink-orm.xml` files. or by using the `setHint()`
+method when executing a named or dynamic query (JPQL or Criteria).
+
+Query settings and query hints that affect the generated SQL are not
+supported with SQL queries. Unsupported query hints include:
+
+* `batch`
+* `history.as-of`
+* `inheritance.outer-join`
+* `sql.hint`
+* `join-fetch`—`join-fetch` is supported, but requires that the SQL
+selects all of the joined columns.
+* `fetch-group`—`fetch-group` is supported, but requires that the SQL
+selects all of the fetched columns.
+* `pessimistic-lock`—`pessimistic-lock` is supported, but requires that
+the SQL locks the result rows.
+
+For descriptions of these extensions, see "EclipseLink Query Language"
+in _Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.

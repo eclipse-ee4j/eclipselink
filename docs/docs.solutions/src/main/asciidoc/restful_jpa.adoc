@@ -1,0 +1,62 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RESTJPA]]
+== Exposing JPA Entities Through RESTful Data Services
+
+This chapter describes how to expose JPA persistence units using RESTful
+Data services.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/restful_jpa001.adoc#RESTJPA001[Introduction to the Solution]
+* xref:{relativedir}/restful_jpa002.adoc#RESTJPA002[Implementing the Solution]
+* xref:{relativedir}/restful_jpa003.adoc#RESTJPA003[Additional Resources]
+* xref:{relativedir}/restful_jpa004.adoc#RESTJPA004[RESTful Data Services API Reference]
+
+*Use Case*
+
+Expose persistent data model and application logic over REST for the
+development of Thin Server Architecture (TSA) clients including
+HTML5/JavaScript and mobile technologies.
+
+*Solution*
+
+Use RESTful Data Services to expose entities using a RESTful service,
+without writing JAX-RS code.
+
+*Components*
+
+* A Jakarta EE application server with the following:
+** EclipseLink 2.4 or later.
+** Support for Java API for RESTful Web Services (JAX-RS) 1.0, for
+example the JAX-RS reference implementation, Jersey (see
+`http://jersey.java.net/`).
+* A compliant Java Database Connectivity (JDBC) database, such as Oracle
+Database, Oracle Express, or MySQL
+
+//Introduction to the Solution
+include::{rootdir}/restful_jpa001.adoc[]
+
+//Implementing the Solution
+include::{rootdir}/restful_jpa002.adoc[]
+
+//Additional Resources
+include::{rootdir}/restful_jpa003.adoc[]
+
+//RESTful Data Services API Reference
+include::{rootdir}/restful_jpa004.adoc[]

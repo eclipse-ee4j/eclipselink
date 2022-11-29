@@ -1,0 +1,5 @@
+:nofooter:
+This illustration shows how EclipseLink uses metadata (in XML format) to
+manage the data model, classes, and database table information.
+
+The base graphic for this meta.png is meta.psp

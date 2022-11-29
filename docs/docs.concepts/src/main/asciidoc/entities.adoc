@@ -1,0 +1,71 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, entity
+
+== Understanding Entities
+
+This chapter introduces and describes entities. An entity is a
+lightweight persistence domain object. Typically, an entity represents a
+table in a relational database, and each entity instance corresponds to
+a row in the table. The primary programming artifact of an entity is the
+entity class, although entities can use helper classes.
+
+The persistent state of an entity is represented either through
+persistent fields or persistent properties. These fields or properties
+use object/relational mapping annotations to map the entities and entity
+relationships to the relational data in the underlying data store.
+
+You can configure your entity's identity, as well as the locking
+technique and sequence generation options for your entity.
+
+This chapter includes the following sections:
+
+* link:#ENTITIES001[Identifying Entities]
+* link:#ENTITIES002[Entities and Persistent Identity]
+* link:#ENTITIES003[Entities and Database Tables]
+* link:#ENTITIES004[Entities and Inheritance]
+* link:#ENTITIES005[Entities and Embedded Objects]
+* link:#ENTITIES006[Entities and Sequence Generation]
+* link:#ENTITIES007[Entities and Locking]
+* link:#ENTITIES008[Extensible Entities]
+
+//Identifying Entities
+include::{rootdir}/entities001.adoc[]
+
+//Entities and Persistent Identity
+include::{rootdir}/entities002.adoc[]
+
+//Entities and Database Tables
+include::{rootdir}/entities003.adoc[]
+
+//Entities and Inheritance
+include::{rootdir}/entities004.adoc[]
+
+//Entities and Embedded Objects
+include::{rootdir}/entities005.adoc[]
+
+//Entities and Sequence Generation
+include::{rootdir}/entities006.adoc[]
+
+//Entities and Locking
+include::{rootdir}/entities007.adoc[]
+
+//Extensible Entities
+include::{rootdir}/entities008.adoc[]

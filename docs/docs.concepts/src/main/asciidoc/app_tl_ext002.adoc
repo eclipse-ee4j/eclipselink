@@ -1,0 +1,81 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[APP_TL_EXT002]]
+=== Application Server Support
+
+EclipseLink can be used with any Jakarta EE application server that
+meets the software requirements through the EclipseLink API.
+
+link:#BABFGEEC[Table A-2] lists the application servers for which
+EclipseLink provides integration support. The classes listed in the
+table are concrete subclasses of the EclipseLink
+`org.eclipse.persistence.platform.server.ServerPlatformBase` class,
+which is responsible for representing server-specific behavior. These
+classes determine the following behavior for the server:
+
+* Which external transaction controller to use
+* Whether to enable JTA (external transaction control)
+* How to register or unregister for runtime services (JMX or MBean)
+* Whether to enable runtime services
+* How to launch container Threads
+
+For more information on the Java classes listed in the table, see _Java
+API Reference for EclipseLink._
+
+[[OTLCG94457]][[sthref71]][[BABFGEEC]]
+
+*_Table A-2 Supported Application Servers_*
+
+|=======================================================================
+|*Server Name* |*Java Classes*
+|IBM WebSphere Application Server a|
+* `org.eclipse.persistence.platform.server.was.WebSphere_6_1_Platform`
+* `org.eclipse.persistence.platform.server.was.WebSphere_7_Platform`
+* `org.eclipse.persistence.platform.server.was.WebSpherePlatform`
+
+|JBoss Application Server a|
+* `org.eclipse.persistence.platform.server.jboss.JBossPlatform`
+
+|Oracle Containers for J2EE (OC4J) a|
+* `org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform`
+
+|Oracle Sun Application Server a|
+* `org.eclipse.persistence.platform.server.sunas`
+
+|Oracle WebLogic Server a|
+* `org.eclipse.persistence.platform.server.wls.WebLogic_10_Platform`
+* `org.eclipse.persistence.platform.server.wls.WebLogic_9_Platform`
+* `org.eclipse.persistence.platform.server.wls.WebLogicPlatform`
+
+|SAP NetWeaver Application Server a|
+* `org.eclipse.persistence.platform.server.sap.SAPNetWeaver_7_1_Platform`
+
+|=======================================================================
+
+[[sthref72]]
+
+==== EclipseLink MOXy as the JAXB Provider for Application Servers
+
+EclipseLink MOXy is integrated into the GlassFish and WebLogic
+application servers as the JAXB provider. For more information, see the
+following links:
+
+* GlassFish Server:
+`http://blog.bdoughan.com/2012/02/glassfish-312-is-full-of-moxy.html`
+* WebLogic Server:
+`http://blog.bdoughan.com/2011/12/eclipselink-moxy-is-jaxb-provider-in.html`

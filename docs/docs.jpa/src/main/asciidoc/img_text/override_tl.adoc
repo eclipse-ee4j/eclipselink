@@ -1,0 +1,7 @@
+:nofooter:
+This illustration shows how the EclipseLink JPA overriding mechanism
+works in the case of usage of `eclipselink.sessions-xml` persistence
+unit property: This defines a `sessions.xml` file, which references a
+`project.xml` file. In this case, the EclipseLink persistence provider
+builds an in-memory EclipseLink session and project based on this
+metadata.

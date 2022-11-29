@@ -1,0 +1,109 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[QUERY001]]
+=== Query Concepts
+
+In general, querying a data source means performing an action on or
+interacting with the contents of the data source. To do this, you must
+be able to perform the following:
+
+* Define an action in a syntax native to the data source being queried.
+* Apply the action in a controlled fashion.
+* Manage the results returned by the action (if any).
+
+You must also consider how the query affects the EclipseLink cache.
+
+This section introduces query concepts unique to EclipseLink, including
+the following:
+
+* link:#CACJBFHJ[Call Objects]
+* link:#CACFBJBF[DatabaseQuery Objects]
+* link:#CACIAFDF[Data-Level and Object-Level Queries]
+* link:#CACJGHBC[Summary Queries]
+* link:#CACDCDFD[Descriptor Query Manager]
+* link:#CACJAEDA[Query Keys]
+
+[[CACJBFHJ]][[OTLCG93990]]
+
+==== Call Objects
+
+The `Call` object encapsulates an operation or action on a data source.
+The EclipseLink API provides a variety of `Call` types such as
+structured query language (SQL), Java Persistence Query Language (JPQL),
+and Extensible Markup Language (XML).
+
+You can execute a `Call` directly or in the context of the EclipseLink
+`DatabaseQuery` object.
+
+[[CACFBJBF]][[OTLCG93991]]
+
+==== DatabaseQuery Objects
+
+A `DatabaseQuery` object is an abstraction that associates additional
+customization and optimization options with the action encapsulated by a
+`Call`. By separating these options from the `Call`, EclipseLink can
+provide sophisticated query capabilities across all `Call` types.
+
+[[CACIAFDF]][[OTLCG93992]]
+
+==== Data-Level and Object-Level Queries
+
+Queries can be defined for objects or data, as follows:
+
+* *Object-level* queries are object-specific and return data as objects
+in your domain model. They are the preferred type of query for mapped
+data. By far, object-level `DatabaseQuery` queries are the most common
+query used in EclipseLink.
+* *Data-level* queries are used to query database tables directly, and
+are an appropriate way to work with unmapped data.
+
+[[CACJGHBC]][[OTLCG93993]]
+
+==== Summary Queries
+
+While data-level queries return raw data and object-level queries return
+objects in your domain model, summary queries return data about objects.
+EclipseLink provides partial object queries to return a set of objects
+with only specific attributes populated, and report queries to return
+summarized (or rolled-up) data for specific attributes of a set of
+objects.
+
+[[CACDCDFD]][[OTLCG93994]]
+
+==== Descriptor Query Manager
+
+In addition to storing named queries applicable to a particular class,
+you can also use the `DescriptorQueryManager` to override the default
+action that EclipseLink defines for common data source operations.
+
+[[CACJAEDA]][[OTLCG93996]]
+
+==== Query Keys
+
+A query key is a schema-independent alias for a database field name.
+Using a query key, you can refer to a field using a schema-independent
+alias. In relational projects only, EclipseLink automatically creates
+query keys for all mapped attributes. The name of the query key is the
+name of the class attribute specified in your object model.
+
+You can configure query keys in a class descriptor or interface
+descriptor. You can use query keys in expressions and to query variable
+one-to-one mappings.
+
+By default, EclipseLink creates query keys for all mapped attributes,
+but in some scenarios you may find it beneficial to add your own.

@@ -1,0 +1,56 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ENTITIES007]]
+=== Entities and Locking
+
+You have the choice between optimistic and pessimistic locking. Oracle
+recommends using optimistic locking. For more information, see
+xref:concepts/descriptors002.adoc#CHEEEIEA[Descriptors and Locking.]
+
+By default, the EclipseLink persistence provider assumes that the
+application is responsible for data consistency.
+
+Oracle recommends that you use the `@Version` annotation to enable
+JPA-managed optimistic locking by specifying the version field or
+property of an entity class that serves as its optimistic lock value.
+When choosing a version field or property, ensure that the following is
+true:
+
+* there is only one version field or property per entity
+* you choose a property or field persisted to the primary table (see
+http://jcp.org/en/jsr/detail?id=338["Table Annotation" in the JPA
+Specification])
+* your application does not modify the version property or field
+
+NOTE: The field or property type must either be a numeric type (such as
+`Number`, `long`, `int`, `BigDecimal`, and so on), or a
+`java.sql.Timestamp`. Oracle recommends using a numeric type.
+
+The `@Version` annotation does not have attributes.
+
+For more information, see the following:
+
+* "Optimistic Locking and Concurrency" in the JPA Specification
+`http://jcp.org/en/jsr/detail?id=338`
+* "Version Annotation" in the JPA Specification
+`http://jcp.org/en/jsr/detail?id=338`
+* EclipseLink JPA extensions for optimistic locking described in
+_Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_
+
+For more information on the EclipseLink artifacts configured by JPA
+metadata, see xref:concepts/descriptors002.adoc#CHEEEIEA[Descriptors and Locking].

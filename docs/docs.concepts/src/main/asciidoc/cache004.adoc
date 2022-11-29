@@ -1,0 +1,148 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[CACHE004]]
+=== About Handling Stale Data
+
+*Stale data* is an artifact of caching, in which an object in the cache
+is not the most recent version committed to the data source. To avoid
+stale data, implement an appropriate cache locking strategy.
+
+By default, EclipseLink optimizes concurrency to minimize cache locking
+during read or write operations. Use the default EclipseLink isolation
+level, unless you have a very specific reason to change it. For more
+information on isolation levels in EclipseLink, see
+xref:#CDEEGICF[Shared, Isolated, Protected, Weak, and
+Read-only Caches].
+
+Cache locking regulates when processes read or write an object.
+Depending on how you configure it, cache locking determines whether a
+process can read or write an object that is in use within another
+process.
+
+A well-managed cache makes your application more efficient. There are
+very few cases in which you turn the cache off entirely, because the
+cache reduces database access, and is an important part of managing
+object identity.
+
+To make the most of your cache strategy and to minimize your
+application's exposure to stale data, Oracle recommends the following:
+
+* link:#CHEIDFII[Configuring a Locking Policy]
+* link:#CHEJJGCE[Configuring the Cache on a Per-Class Basis]
+* link:#CHEHAIIB[Forcing a Cache Refresh when Required on a Per-Query Basis]
+* link:#CHEFBGEH[Configuring Cache Invalidation]
+* link:#CHEHIABF[Configuring Cache Coordination]
+
+[[CHEIDFII]][[OTLCG93805]]
+
+==== Configuring a Locking Policy
+
+Make sure you configure a locking policy so that you can prevent or at
+least identify when values have already changed on an object you are
+modifying. Typically, this is done using optimistic locking. EclipseLink
+offers several locking policies such as numeric version field,
+time-stamp version field, and some or all fields. Optimistic and
+pessimistic locking are described in the following sections.
+
+[[BABDIIJF]][[OTLCG91173]]
+
+===== Optimistic Locking
+
+Oracle recommends using EclipseLink optimistic locking. With optimistic
+locking, all users have read access to the data. When a user attempts to
+write a change, the application checks to ensure the data has not
+changed since the user read the data. Use `@OptimisticLocking` to
+specify the type of optimistic locking EclipseLink should use when
+updating or deleting entities.
+
+You can use version or field locking policies. Oracle recommends using
+version locking policies. The standard JPA `@Version` annotation is used
+for single valued value and timestamp based locking. However, for
+advanced locking features use the `@OptimisticLocking` annotation. The
+`@OptimisticLocking` annotation specifies the type of optimistic locking
+to use when updating or deleting entities. Optimistic locking is
+supported on an `@Entity` or `@MappedSuperclass` annotation.
+
+For more information on the `OptimisticLocking` annotation and the types
+of locking you can use, see "@OptimisticLocking" in _Jakarta Persistence
+API (JPA) Extensions Reference for EclipseLink_.
+
+For more information, see xref:#CIHJCGBA[Optimistic
+Version Locking Policies] and
+xref:#CIHCFEIB[Optimistic Field Locking Policies].
+
+[[BABICDEB]][[OTLCG91174]]
+
+===== Pessimistic Locking
+
+With pessimistic locking, the first user who accesses the data with the
+purpose of updating it locks the data until completing the update. The
+disadvantage of this approach is that it may lead to reduced concurrency
+and deadlocks. Use the `eclipselink.pessimistic-lock` property to
+specify if EclipseLink uses pessimistic locking. For more information,
+see "eclipselink.pessimistic-lock" in _Jakarta Persistence API (JPA)
+Extensions Reference for EclipseLink_.
+
+Consider using pessimistic locking support at the query level. See
+xref:#CIHCFBJG[Pessimistic Locking Policies.]
+
+[[CHEJJGCE]][[OTLCG93806]]
+
+==== Configuring the Cache on a Per-Class Basis
+
+If other applications can modify the data used by a particular class,
+use a weaker style of cache for the class. For example, the `@Cache`
+`type` attribute values `WEAK` and `SOFT_WEAK` minimizes the length of
+time the cache maintains an object whose reference has been removed. For
+more information about cache types, see xref:#CACHE002[About
+Cache Type and Size.]
+
+[[CHEHAIIB]][[OTLCG93807]]
+
+==== Forcing a Cache Refresh when Required on a Per-Query Basis
+
+Any query can include a flag that forces EclipseLink to go to the data
+source for the most recent version of selected objects and update the
+cache with this information. For more information, see
+xref:#CACHE005[About Explicit Query Refreshes.] See also
+"Refreshing the Cache" in _Solutions Guide for EclipseLink_.
+
+[[CHEFBGEH]][[OTLCG93808]]
+
+==== Configuring Cache Invalidation
+
+You can configure any entity with an `expiry` that lets you specify
+either the number of milliseconds after which an entity instance should
+expire from the cache, or a time of day that all instances of the entity
+class should expire from the cache. Expiry is set on the `@Cache`
+annotation or `<cache>` XML element, and can be configured either with
+the `expiry` or with the `expiryTimOfDay` attribute. For more
+information, see "Setting Entity Caching Expiration" in _Solutions Guide
+for EclipseLink_.
+
+[[CHEHIABF]][[OTLCG93809]]
+
+==== Configuring Cache Coordination
+
+If your application is primarily read-based and the changes are all
+being performed by the same Java application operating with multiple,
+distributed sessions, you may consider using the EclipseLink cache
+coordination feature. Although this will not prevent stale data, it
+should greatly minimize it. For more information, see
+xref:#CACHE009[About Cache Coordination] and
+xref:#CACHE010[Clustering and Cache Coordination].
