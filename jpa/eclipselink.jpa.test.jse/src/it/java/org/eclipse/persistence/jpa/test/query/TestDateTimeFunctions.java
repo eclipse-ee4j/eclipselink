@@ -488,8 +488,6 @@ public class TestDateTimeFunctions {
     // Test JPQL EXTRACT(WEEK FROM date) to check whether ISO_WEEK is used in MS SQL - issue 1550
     @Test
     public void testIssue1550ExtractIsoWeek() {
-        // Derby does not support WEEK
-        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

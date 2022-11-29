@@ -514,6 +514,12 @@ public class DerbyPlatform extends DB2Platform {
 
         // QUARTER emulation: ((MONTH(:first)+2)/3)
         private static final String[] QUARTER_STRINGS = new String[] {"((MONTH(", ")+2)/3)"};
+        // WEEK emulation: based on https://www.sqlservercentral.com/articles/a-simple-formula-to-calculate-the-iso-week-number
+        private static final String[] WEEK_STRINGS = new String[] {
+                "(({FN TIMESTAMPDIFF(sql_tsi_day,DATE(CHAR(YEAR(",
+                "),4)||'-01-01'),{FN TIMESTAMPADD(sql_tsi_day,{FN TIMESTAMPDIFF(sql_tsi_day,{d '1753-01-01'},",
+                ")}/7*7,{d '1753-01-04'})})}+7)/7)"
+        };
         // SECOND emulation: CAST(SECOND(:first) AS FLOAT)
         private static final String[] SECOND_STRINGS = new String[] {"CAST(SECOND(", ") AS FLOAT)"};
 
@@ -559,6 +565,24 @@ public class DerbyPlatform extends DB2Platform {
             printer.printString(SECOND_STRINGS[0]);
             first.printJava(printer);
             printer.printString(SECOND_STRINGS[1]);
+        }
+
+        @Override
+        protected void printWeekSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(WEEK_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(WEEK_STRINGS[1]);
+            first.printSQL(printer);
+            printer.printString(WEEK_STRINGS[2]);
+        }
+
+        @Override
+        protected void printWeekJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(WEEK_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(WEEK_STRINGS[1]);
+            first.printJava(printer);
+            printer.printString(WEEK_STRINGS[2]);
         }
 
     }
