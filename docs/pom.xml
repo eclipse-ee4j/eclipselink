@@ -37,8 +37,8 @@
     <properties>
         <!--Expected main/entry ASCII Doc file-->
         <source.document.name>main.adoc</source.document.name>
-        <source.document.directory>${project.basedir}/src/main/docs/asciidoc</source.document.directory>
-        <project.build.documentWorkingDirectory>${project.build.directory}/docs/asciidoc/</project.build.documentWorkingDirectory>
+        <source.document.directory>${project.basedir}/src/main/asciidoc</source.document.directory>
+        <project.build.documentWorkingDirectory>${project.build.directory}/asciidoc/</project.build.documentWorkingDirectory>
     </properties>
 
     <modules>
