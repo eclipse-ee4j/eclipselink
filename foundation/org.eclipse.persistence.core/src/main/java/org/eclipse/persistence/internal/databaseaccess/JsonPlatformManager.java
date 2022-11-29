@@ -80,7 +80,7 @@ public class JsonPlatformManager {
                         SessionLog.FINE,
                         String.format("JsonPlatformProvider candidate class %s does not implement JsonPlatformProvider", className));
             }
-        } catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException | NoClassDefFoundError ex) {
             AbstractSessionLog.getLog().log(
                     SessionLog.FINE,
                     String.format("JsonPlatformProvider class %s was not found", className));
