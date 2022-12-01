@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -194,6 +195,17 @@ public final class ExpressionTools {
     }
 
     /**
+     * Determines whether the given character is whitespace. Supports non-breaking space characters
+     *
+     * @param character The character to check if it's whitespace
+     * @return <code>true</code> if the given character is either whitespace or non-breaking space; <code>false</code> otherwise
+     */
+    public static boolean isWhiteSpace(char character) {
+        return Character.isWhitespace(character) ||
+        	   Character.isSpaceChar(character);
+    }
+
+    /**
      * Returns the given string literal by wrapping it with single quotes. Any single quote within
      * the string will be escaped with another single quote.
      *
@@ -246,8 +258,8 @@ public final class ExpressionTools {
             char character1 = Character.toUpperCase(query1.charAt(index1));
             char character2 = Character.toUpperCase(query2.charAt(index2));
 
-            boolean whitespace1 = Character.isWhitespace(character1);
-            boolean whitespace2 = Character.isWhitespace(character2);
+            boolean whitespace1 = ExpressionTools.isWhiteSpace(character1);
+            boolean whitespace2 = ExpressionTools.isWhiteSpace(character2);
 
             if (character1 != character2) {
 
@@ -413,7 +425,7 @@ public final class ExpressionTools {
         }
 
         for (int i = text.length(); i-- > 0;) {
-            if (!Character.isWhitespace(text.charAt(i))) {
+            if (!ExpressionTools.isWhiteSpace(text.charAt(i))) {
                 return false;
             }
         }
