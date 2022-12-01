@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -3043,7 +3043,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				int endPosition = startPosition;
 
 				for (int index = 1; index < length; index++) {
-					if (Character.isWhitespace(dateTime.charAt(index))) {
+					if (ExpressionTools.isWhiteSpace(dateTime.charAt(index))) {
 						break;
 					}
 					endPosition++;
@@ -3061,7 +3061,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				for (int index = 1; index < length; index++) {
 					startPosition++;
 
-					if (Character.isWhitespace(dateTime.charAt(index))) {
+					if (ExpressionTools.isWhiteSpace(dateTime.charAt(index))) {
 						break;
 					}
 				}
