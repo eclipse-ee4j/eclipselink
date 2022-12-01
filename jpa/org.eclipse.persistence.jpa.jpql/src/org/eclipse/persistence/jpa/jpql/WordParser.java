@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -229,12 +230,12 @@ public final class WordParser {
      * @return <code>true</code> if the character can be part of a word; <code>false</code> if it is
      * not an alphanumeric character, which usually means is a whitespace, a delimiter or an
      * arithmetic symbol
-     * @see Character#isWhitespace(char)
+     * @see ExpressionTools#isWhiteSpace(character)
      * @see #isArithmeticSymbol(char)
      * @see #isDelimiter(char)
      */
     public boolean isWordSeparator(char character) {
-        return Character.isWhitespace(character) ||
+        return ExpressionTools.isWhiteSpace(character) ||
                isDelimiter(character)            ||
                isArithmeticSymbol(character);
     }
@@ -311,9 +312,9 @@ public final class WordParser {
             // Handle testing
             // 1. "... GROUP    BY" and "GROUP BY"
             // 2. "... GROUP\nBY" and "GROUP BY"
-            if (Character.isWhitespace(c1)) {
+            if (ExpressionTools.isWhiteSpace(c1)) {
 
-                if (Character.isWhitespace(c2)) {
+                if (ExpressionTools.isWhiteSpace(c2)) {
                     sb.append(' ');
                     continue;
                 }
@@ -397,10 +398,7 @@ public final class WordParser {
         for (int index = position; --index >= 0; ) {
             char character = text.charAt(index);
 
-            if (Character.isWhitespace(character) ||
-                isDelimiter(character) ||
-                isArithmeticSymbol(character)) {
-
+            if (isWordSeparator(character)) {
                 break;
             }
 
@@ -613,7 +611,7 @@ public final class WordParser {
         while (cursor < length) {
 
             char character = text.charAt(cursor);
-            if (!Character.isWhitespace(character)) {
+            if (!(ExpressionTools.isWhiteSpace(character))) {
                 break;
             }
 
@@ -788,9 +786,9 @@ public final class WordParser {
             // Handle testing
             // 1. "... GROUP    BY" and "GROUP BY"
             // 2. "... GROUP\nBY" and "GROUP BY"
-            if (Character.isWhitespace(c1)) {
+            if (ExpressionTools.isWhiteSpace(c1)) {
 
-                if (Character.isWhitespace(c2)) {
+                if (ExpressionTools.isWhiteSpace(c2)) {
                     continue;
                 }
 
@@ -967,7 +965,7 @@ public final class WordParser {
         for (int index = position; index < length; index++) {
             char character = text.charAt(index);
 
-            if (!Character.isWhitespace(character)) {
+            if (!ExpressionTools.isWhiteSpace(character)) {
                 return index - position;
             }
         }
@@ -1150,7 +1148,7 @@ public final class WordParser {
                 continue;
             }
 
-            if (Character.isWhitespace(character) ||
+            if (ExpressionTools.isWhiteSpace(character) ||
                 isDelimiter(character) ||
                 character == '>' ||
                character == '<' ||
