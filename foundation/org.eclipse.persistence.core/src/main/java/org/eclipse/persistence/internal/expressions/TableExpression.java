@@ -45,7 +45,7 @@ public class TableExpression extends DataExpression {
     protected void assignAlias(DatabaseTable alias, DatabaseTable table) {
         if (this.baseExpression.isQueryKeyExpression()){
             QueryKeyExpression qkExpression = ((QueryKeyExpression)this.baseExpression);
-            if (qkExpression.getTableAliases() != null && qkExpression.getTableAliases().keyAtValue(table) != null ) {
+            if (!qkExpression.hasQueryKey && qkExpression.getTableAliases() != null && qkExpression.getTableAliases().keyAtValue(table) != null ) {
                 return;
             }
         }

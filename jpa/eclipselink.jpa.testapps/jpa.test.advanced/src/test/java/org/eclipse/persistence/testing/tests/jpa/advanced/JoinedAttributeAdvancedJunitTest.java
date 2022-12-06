@@ -169,6 +169,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testManagedProjects"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testManagedLargeProjects"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectsQK"));
+        suite.addTest(new JoinedAttributeAdvancedJunitTest("testProjectLeaderManagerQK"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testLargeProjects"));
 //        suite.addTest(new JoinedAttributeAdvancedJunitTest("testResponsibilitiesQK"));
         suite.addTest(new JoinedAttributeAdvancedJunitTest("testOwner"));
@@ -1048,6 +1049,24 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         // choose example that actually selects something
         if(emps.isEmpty()) {
             fail();
+        }
+    }
+
+    public void testProjectLeaderManagerQK() {
+        final String projectLeaderManagerFirstName = "Jim-bob";
+        ReadAllQuery query = new ReadAllQuery(Project.class);
+        ExpressionBuilder eb = query.getExpressionBuilder();
+        query.setSelectionCriteria(eb.anyOf("projectLeaderManager").get("firstName").equal(projectLeaderManagerFirstName));
+        @SuppressWarnings({"unchecked"})
+        List<Project> projects = (List<Project>)getDbSession().executeQuery(query);
+
+        // choose example that actually selects something
+        if(projects.isEmpty()) {
+            fail();
+        }
+
+        for(final Project project : projects) {
+            assertEquals(projectLeaderManagerFirstName, project.getTeamLeader().getManager().getFirstName());
         }
     }
 
