@@ -1168,6 +1168,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     /**
      * Returns the registered helper that was cached with the given id.
      *
+     * @param <T> This is the type parameter
      * @param id The key used to retrieve the cached helper, if one was cached
      * @return Either the cached helper or <code>null</code> if no helper was previously cached for
      * the given id
@@ -1682,6 +1683,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
      * Validates the content of an {@link AbstractDoubleEncapsulatedExpression}, which encapsulates
      * two expressions separated by a comma.
      *
+     * @param <T> This is the type parameter
      * @param expression The {@link AbstractDoubleEncapsulatedExpression} to validate
      * @param helper This helper is used to retrieve specific information related to the {@link
      * AbstractDoubleEncapsulatedExpression expression} being validated
