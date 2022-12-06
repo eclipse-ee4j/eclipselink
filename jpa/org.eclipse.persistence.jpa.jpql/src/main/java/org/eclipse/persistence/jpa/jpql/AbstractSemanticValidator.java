@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -518,6 +518,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * identification variable declarations.
      *
      * @param expression The {@link AbstractFromClause} to validate
+     * @param visitor The {@link FirstDeclarationVisitor} to validate
      */
     protected void validateAbstractFromClause(AbstractFromClause expression,
                                               FirstDeclarationVisitor visitor) {
@@ -765,6 +766,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * </ul>
      *
      * @param expression The {@link BetweenExpression} to validate
+     * @return A number indicating the validation result. {@link #isValid(int, int)} can be used to
+     * determine the validation status of an expression based on its position
      */
     protected int validateBetweenExpression(BetweenExpression expression) {
 
@@ -874,6 +877,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * @param expression The {@link Expression} to validate
      * @param collectionTypeOnly <code>true</code> to make sure the path expression resolves to a
      * collection mapping only; <code>false</code> if it can simply resolves to a relationship mapping
+     * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+     * <code>true</code> otherwise
      */
     protected boolean validateCollectionValuedPathExpression(Expression expression,
                                                              boolean collectionTypeOnly) {
@@ -940,6 +945,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * @param expression The {@link Expression} to validate
      * @param collectionTypeOnly <code>true</code> to make sure the path expression resolves to a
      * collection mapping only; <code>false</code> if it can simply resolves to a relationship mapping
+     * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+     * <code>true</code> otherwise
      */
     protected boolean validateJoinCollectionValuedPathExpression(Expression expression,
                                                              boolean collectionTypeOnly) {
@@ -1604,6 +1611,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * makes sure is it defined in <code><b>IN</b></code> or <code><b>IN</b></code> expression.
      *
      * @param expression The {@link IndexExpression} to validate
+     * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+     * <code>true</code> otherwise
      */
     protected boolean validateIndexExpression(IndexExpression expression) {
 
