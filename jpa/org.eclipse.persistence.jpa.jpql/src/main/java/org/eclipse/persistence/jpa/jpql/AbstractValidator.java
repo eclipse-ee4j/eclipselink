@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseParentVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
@@ -508,6 +507,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      * nested array, the given {@link Expression} is a {@link SubExpression} and its child is a
      * {@link CollectionExpression}.
      *
+     * @param expression The {@link Expression} to check its size
      * @return <code>true</code> if the given {@link Expression} is a nested array; <code>false</code> otherwise
      * @since 2.5
      */
@@ -594,6 +594,8 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      * will be bypassed.
      *
      * @param expression The {@link Expression} to validate based on the query BNF
+     * @param queryBNF The unique identifier of the {@link JPQLQueryBNF} that looks up 
+     * the {@link JPQLQueryBNFValidator}
      * @return <code>true</code> if the {@link Expression} part is a child of the given query BNF;
      * <code>false</code> otherwise
      */
@@ -690,6 +692,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      * To be a nested array, the given {@link Expression} is a {@link SubExpression} and its child is
      * a {@link CollectionExpression}.
      *
+     * @param expression The {@link Expression} to visit
      * @return The number of items in the array or -1 if the {@link Expression} is not a nested array
      * @since 2.5
      */
@@ -903,8 +906,10 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         }
 
         /**
-         * Sets
-         *
+         * Sets bypassCompound
+         * 
+         * @param bypassCompound Indicates whether a {@link JPQLQueryBNF} representing a compound
+         * expression should be considered when doing the validation
          */
         public void setBypassCompound(boolean bypassCompound) {
             this.bypassCompound = bypassCompound;
