@@ -59,6 +59,7 @@ public class OracleNoSQLConnectionFactory implements ConnectionFactory {
             //TODO handle all available properties in NoSQLHandleConfig
             NoSQLHandleConfig config = new NoSQLHandleConfig(connectionSpec.getEndPoint());
             config.setAuthorizationProvider(getAuthorizationProvider(config, connectionSpec));
+            config.setDefaultCompartment(connectionSpec.getCompartment());
 
             noSQLHandle = NoSQLHandleFactory.createNoSQLHandle(config);
         } catch (Exception exception) {
