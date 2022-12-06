@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,14 +26,14 @@ import org.eclipse.persistence.jpa.jpql.parser.ConditionalTermBNF;
  * of an <code><b>AND</b></code> operator must be one of: <code><b>TRUE</b></code>,
  * <code><b>FALSE</b></code>, and <code><b>NULL</b></code>. The <code><b>AND</b></code> operator has
  * a higher precedence than the <code><b>OR</b></code> operator.
- * <p>
+ * <br>
  * <code><b>NULL</b></code> represents unknown. Therefore, if one operand is <code><b>NULL</b></code>
  * and the other operand is <code><b>FALSE</b></code> the result is <code><b>FALSE</b></code>,
  * because one <code><b>FALSE</b></code> operand is sufficient for a <code><b>FALSE</b></code>
  * result. If one operand is <code><b>NULL</b></code> and the other operand is either
  * <code><b>TRUE</b></code> or <code><b>NULL</b></code>, the result is <code><b>NULL</b></code>
  * (unknown).
- * <p>
+ * <br>
  *
  * <table border="1" style="border:1px outset darkgrey;">
  * <caption>The following table shows how the <code><b>AND</b></code> operator is evaluated based on its two operands:</caption>
@@ -43,7 +43,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ConditionalTermBNF;
  * <tr><td><b>NULL</b> </td><td>   NULL    </td><td>   FALSE    </td><td>   NULL    </td></tr>
  * </table>
  *
- * <div><b>BNF:</b> <code>conditional_term ::= conditional_term AND conditional_factor</code><p></div>
+ * <div><p><b>BNF:</b> <code>conditional_term ::= conditional_term AND conditional_factor</code></p></div>
  *
  * @see AndExpression
  *
@@ -95,26 +95,41 @@ public class AndExpressionStateObject extends LogicalExpressionStateObject {
         super(parent, leftJpqlFragment, rightJpqlFragment);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(StateObjectVisitor visitor) {
         visitor.visit(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AndExpression getExpression() {
         return (AndExpression) super.getExpression();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getIdentifier() {
         return AND;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String getLeftQueryBNFId() {
         return ConditionalTermBNF.ID;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String getRightQueryBNFId() {
         return ConditionalFactorBNF.ID;
