@@ -64,6 +64,9 @@ public abstract class ReadQuery extends DatabaseQuery {
     /** Stores the JPA maxResult settings for a NamedQuery */
     protected int maxResults = -1;
 
+    /** Flag that allows query result cache validation or not.*/
+    protected boolean allowQueryResultsCacheValidation = false;
+
     /**
      * PUBLIC:
      * Initialize the state of the query
@@ -479,5 +482,13 @@ public abstract class ReadQuery extends DatabaseQuery {
      */
     public void setTemporaryCachedQueryResults(Object queryResults){
         temporaryCachedQueryResults = queryResults;
+    }
+
+    public boolean shouldAllowQueryResultsCacheValidation() {
+        return allowQueryResultsCacheValidation;
+    }
+
+    public void setAllowQueryResultsCacheValidation(boolean allowQueryResultsCacheValidation) {
+        this.allowQueryResultsCacheValidation = allowQueryResultsCacheValidation;
     }
 }

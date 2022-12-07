@@ -2890,6 +2890,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateAllowExtendedCacheLogging(m);
             updateAllowExtendedThreadLogging(m);
             updateAllowExtendedThreadLoggingThreadDump(m);
+            updateAllowQueryResultsCacheValidation(m);
             updateTemporalMutableSetting(m);
             updateTableCreationSettings(m);
             updateIndexForeignKeys(m);
@@ -3964,6 +3965,24 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 session.getProject().setAllowExtendedThreadLoggingThreadDump(false);
             } else {
                 session.handleException(ValidationException.invalidBooleanValueForProperty(allowExtendedThreadLoggingThreadDump, PersistenceUnitProperties.THREAD_EXTENDED_LOGGING_THREADDUMP));
+            }
+        }
+    }
+
+    /**
+     * Enable or disable query result cache validation.
+     * The method needs to be called in deploy stage.
+     */
+    protected void updateAllowQueryResultsCacheValidation(Map m){
+        String allowQueryResultsCacheValidation = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.QUERY_RESULTS_CACHE_VALIDATION, m, session);
+
+        if (allowQueryResultsCacheValidation != null) {
+            if (allowQueryResultsCacheValidation.equalsIgnoreCase("true")) {
+                session.getProject().setAllowQueryResultsCacheValidation(true);
+            } else if (allowQueryResultsCacheValidation.equalsIgnoreCase("false")) {
+                session.getProject().setAllowQueryResultsCacheValidation(false);
+            } else {
+                session.handleException(ValidationException.invalidBooleanValueForProperty(allowQueryResultsCacheValidation, PersistenceUnitProperties.QUERY_RESULTS_CACHE_VALIDATION));
             }
         }
     }

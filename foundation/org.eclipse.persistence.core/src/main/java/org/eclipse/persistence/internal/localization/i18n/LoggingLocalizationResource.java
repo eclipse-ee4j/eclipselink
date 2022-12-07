@@ -472,7 +472,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "dbws_xml_schema_read_error", "The [{0}] XML schema could not be read."},
         { "dbws_orm_metadata_read_error", "The [{0}] ORM metadata could not be read."},
         { "dbws_oxm_metadata_read_error", "The [{0}] OXM metadata could not be read."},
-        { "dbws_no_wsdl_inline_schema", "The [{0}] WSDL inline schema could not be read."}
+        { "dbws_no_wsdl_inline_schema", "The [{0}] WSDL inline schema could not be read."},
+        { "validate_object_space", "validate object space." },
+        { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
+        { "corrupt_object_referenced_through_mapping", "corrupt object referenced through mapping: {0}" },
+        { "corrupt_object", "corrupt object: {0}" }
     };
 
     /**
