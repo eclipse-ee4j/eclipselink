@@ -57,6 +57,24 @@
             <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
+    <persistence-unit name="nosql-datatypes-sdk" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.nosql.DataTypesEntity</class>
+        <properties>
+            <property name="eclipselink.nosql.property.nosql.service" value="@nosql.sdk.service@"/>
+            <property name="eclipselink.nosql.property.nosql.endpoint" value="@nosql.sdk.endpoint@"/>
+
+            <!--
+                        Needed for Oracle NoSQL database deployed in the cloud (additionally to ...nosql.service and ...nosql.endpoint properties)
+                        <property name="eclipselink.nosql.property.nosql.compartment" value="@nosql.sdk.compartment@"/>
+                        <property name="eclipselink.nosql.property.nosql.authprincipal" value="@nosql.sdk.authprincipal@"/>
+            -->
+
+            <property name="eclipselink.target-database" value="@nosql.sdk.target-database@"/>
+            <property name="eclipselink.nosql.connection-spec" value="@nosql.sdk.connection-spec@"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+        </properties>
+    </persistence-unit>
     <persistence-unit name="nosql-mapped-sdk" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.nosql.mapped.Order</class>

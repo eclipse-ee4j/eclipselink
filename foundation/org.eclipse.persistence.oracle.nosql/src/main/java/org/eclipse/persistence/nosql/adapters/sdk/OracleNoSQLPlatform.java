@@ -25,6 +25,7 @@ import jakarta.resource.cci.InteractionSpec;
 import jakarta.resource.cci.MappedRecord;
 import oracle.nosql.driver.values.MapValue;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
+import org.eclipse.persistence.eis.mappings.EISDirectMapping;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
@@ -374,6 +375,9 @@ public class OracleNoSQLPlatform extends EISPlatform {
                         for (Map.Entry<String, String> subEntry : subRecord.entrySet()) {
                             domSubRecord.put(subMappings.get(subEntry.getKey().toLowerCase()).getField(), subEntry.getValue());
                         }
+                    //Lob, Blob
+                    } else if (mapping instanceof EISDirectMapping && isLob(((EISDirectMapping) mapping).getFieldClassificationClassName())) {
+                        domRecord.put(mapping.getField(), entry.getValue());
                     //Nested array of records
                     } else if (entry.getValue() != null && (entry.getValue().getClass().isArray() || (entry.getValue() instanceof List))) {
                         Map<String, DatabaseMapping> subMappings = new HashMap<>();
