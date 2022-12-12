@@ -19,6 +19,7 @@ import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SerializedObjectPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -218,6 +219,19 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                     builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID").equal(
                     builder.getField("CMP3_EMPLOYEE.EMP_ID")))));
             descriptor.addQueryKey(employesQueryKey);
+
+            // Project leader's manager
+            ManyToManyQueryKey projectLeaderManager = new ManyToManyQueryKey();
+            projectLeaderManager.setName("projectLeaderManager");
+            projectLeaderManager.setReferenceClass(Employee.class);
+            builder = new ExpressionBuilder();
+
+            projectLeaderManager.setJoinCriteria(
+                    (builder.getParameter("CMP3_PROJECT.LEADER_ID").equal(
+                            builder.getTable("CMP3_EMPLOYEE").getField("EMP_ID")).and(
+                            builder.getTable("CMP3_EMPLOYEE").getField("MANAGER_EMP_ID").equal(
+                                    builder.getField("CMP3_EMPLOYEE.EMP_ID")))));
+            descriptor.addQueryKey(projectLeaderManager);
         }
     }
     //**temp
