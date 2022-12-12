@@ -1,0 +1,8 @@
+:nofooter:
+This figure illustrates process in an MOXy project. The starting point
+is an XML schema. A binding compiler binds the source schema to a set of
+schema-derived program classes and interfaces. JAXB-annotated classes
+within the application are generated either by a schema compiler or the
+result of a developer adding JAXB annotations to existing Java classes.
+The application can either marshal data to an XML document or unmarshal
+the data to a tree of content objects.

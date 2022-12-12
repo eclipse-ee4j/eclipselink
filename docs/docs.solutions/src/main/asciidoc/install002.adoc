@@ -1,0 +1,43 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[INSTALL002]]
+=== Installing EclipseLink for Java SE and Jakarta EE Development
+
+Use the following procedures to install EclipseLink for Java SE and EE
+development. Before you proceed with the install, it is recommended that
+you back up any existing project data.
+
+. Set the following system environment variables before installing
+EclipseLink:
+* `JAVA_HOME` - `Set JAVA_HOME` to where you installed your Java SDK
+home directory. For example:
+** Windows example: `JAVA_HOME = C:\JDK`
+** UNIX example: `JAVA_HOME = ...:/usr/java/jdk`
+* `PATH` - Set `PATH` to include `JDK/bin` directory. For example:
+** Windows example: `PATH = C:\JDK\bin`
+** UNIX example: `PATH = ...:/usr/java/jdk/bin`
+. Download the EclipseLink install archive zip file,
+`eclipse-`__`ver_no`__`.zip`, from the EclipseLink downloads page at
+`http://www.eclipse.org/eclipselink/downloads/`
+. Unzip the downloaded file in the desired installation directory. When
+you unzip the file, you will find an `eclipselink` subdirectory,
+containing multiple subdirectories. This directory is your new
+_`ECLIPSELINK_HOME`_ directory. For example:
+* Windows example: _`ECLIPSELINK_HOME`_ `= <INSTALL_DIR>/eclipselink`
+* UNIX example: _`ECLIPSELINK_HOME`_
+`= ...:/usr/el/`__`INSTALL_DIR`__`/eclipselink`

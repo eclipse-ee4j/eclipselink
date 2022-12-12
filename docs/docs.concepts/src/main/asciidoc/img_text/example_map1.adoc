@@ -1,0 +1,4 @@
+:nofooter:
+This illustration shows a simplified view of mapping, and illustrates
+how objects map to database tables. This illustration is fully described
+in the previous paragraph.

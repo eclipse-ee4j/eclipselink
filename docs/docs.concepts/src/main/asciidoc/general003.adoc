@@ -1,0 +1,204 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[GENERAL003]]
+=== Key Concepts
+
+This section provides a brief introduction to several of the key
+concepts described in this documentation. The key concepts highlighted
+in this section are as follows:
+
+* link:#CHDBJIJE[EclipseLink Metadata]
+* link:#CHDGEFJG[Entities]
+* link:#CHDBABAD[Descriptors]
+* link:#CHDFGCJF[Mappings]
+* link:#CHDFFJIA[Data Access]
+* link:#CHDEEBFG[Caching]
+* link:#CHDBJIEA[Queries]
+* link:#CHDJJFCE[Expression Framework]
+* link:#CHDGCGDD[NoSQL Databases]
+* link:#CHDBIEJD[Performance Monitoring and Profiling]
+
+[[CHDBJIJE]][[OTLCG113]]
+
+==== EclipseLink Metadata
+
+EclipseLink metadata is the bridge between the development of an
+application and its deployed runtime environment. You can capture the
+metadata using:
+
+* JPA annotations in Java files and the JPA-defined properties in the
+`persistence.xml` and `eclipselink-orm.xml` files.
++
+Metadata is also captured by EclipseLink JPA annotations and property
+extensions in the `persistence.xml` file. The `eclipselink-orm.xml` file
+can also be used to specify property extensions beyond the JPA
+specification.
+* JAXB annotations in Java files and JAXB-defined properties in the
+`eclipselink-oxm.xml` file.
++
+The `eclipselink-oxm.xml` file can be used to define property extensions
+beyond the JAXB specification.
+* Java and the EclipseLink API.
+
+The metadata lets you pass configuration information into the runtime
+environment. The runtime environment uses the information in conjunction
+with the persistent classes, such as Java objects, JPA entities, and the
+code written with the EclipseLink API, to complete the application. See
+link:blocks002.htm#CHDIADII["Adding Metadata Using Annotations"] for
+more information. See also _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.
+
+Mappings can be stored external to the application. This can be as
+simple as making the `eclipselink-orm.xml` or `eclipselink-oxm.xml` file
+with the additional mapping information available on a web server as a
+file. It can also be more complex involving a server process that stores
+the mapping information and allows the information to be updated
+dynamically. For more information, see
+"EclipseLink/Examples/JPA/MetadataSource" in the EclipseLink
+documentation.
+
+`http://wiki.eclipse.org/EclipseLink/Examples/JPA/MetadataSource`
+
+[[CHDGEFJG]][[OTLCG94461]]
+
+==== Entities
+
+An entity is a persistence domain object. Typically, an entity
+represents a table in a relational database, and each entity instance
+corresponds to a row in the table. The primary programming artifact of
+an entity is the entity class, although entities can use helper classes.
+
+The persistent state of an entity is represented either through
+persistent fields or persistent properties. These fields or properties
+use object/relational mapping annotations to map the entities and entity
+relationships to the relational data in the underlying data store.
+
+See link:entities.htm#CIHGAJCF[Chapter 4, "Understanding Entities."]
+
+[[CHDBABAD]][[OTLCG94462]]
+
+==== Descriptors
+
+Descriptors describe how a Java class relates to a data source
+representation. They relate object classes to the data source at the
+data model level. For example, persistent class attributes may map to
+database columns.
+
+EclipseLink uses descriptors to store the information that describes how
+an instance of a particular class can be represented in a data source.
+Descriptors are used internally by EclipseLink, and are defined through
+annotations, XML, or in IDEs such as JDeveloper or Eclipse, then read at
+run time.
+
+See link:descriptors.htm#CHECEAAE[Chapter 5, "Understanding
+Descriptors."]
+
+[[CHDFGCJF]][[OTLCG94463]]
+
+==== Mappings
+
+Mappings describe how individual object attributes relate to a data
+source representation. Mappings can involve a complex transformation or
+a direct entry.
+
+EclipseLink uses mappings to determine how to transform data between
+object and data source representations. Mappings are used internally by
+EclipseLink, and are defined through annotations, XML, or in IDEs such
+as Eclipse, then read from XML files at run time.
+
+See xref:{relativedir}/mappingintro.adoc#MAPPINGINTRO[Chapter 6, "Understanding Mappings."]
+
+[[CHDFFJIA]][[OTLCG94464]]
+
+==== Data Access
+
+A data source platform includes options specific to a particular data
+source including binding, use of native SQL, use of batch writing, and
+sequencing.
+
+See link:data_access.htm#CHDJBDEA[Chapter 7, "Understanding Data
+Access."]
+
+[[CHDEEBFG]][[OTLCG94465]]
+
+==== Caching
+
+The EclipseLink cache is an in-memory repository that stores recently
+read or written objects based on class and primary key values. The cache
+is used to improve performance by avoiding unnecessary trips to the
+database, manage locking and cache isolation level, and manage object
+identity.
+
+See xref:{relativedir}/cache.adoc#CACHE[Chapter 8, "Understanding Caching."]
+
+[[CHDBJIEA]][[OTLCG94466]]
+
+==== Queries
+
+You can to create, read, update, and delete persistent objects or data
+using queries in both Jakarta EE and non-Jakarta EE applications for
+both relational and nonrelational data sources. Queries can be made at
+the object level or data level.
+
+A number of query languages are supported, such as Java Persistence
+Query Language (JPQL), SQL, and the Expression Framework. The Java
+Persistence Criteria API can also be used to define dynamic queries
+through the construction of object-based query definition objects,
+rather than use of the string-based approach of JPQL.
+
+See link:queries.htm#CHDGGCJB[Chapter 9, "Understanding Queries."]
+
+[[CHDJJFCE]][[OTLCG94467]]
+
+==== Expression Framework
+
+By using the EclipseLink Expressions framework, you can specify query
+search criteria based on your domain object model. Expressions offer a
+number of advantages over SQL. For example, expressions are easier to
+maintain, changes to descriptors or database tables do not affect the
+querying structures in the application, they enhance readability by
+standardizing the `Query` interface, and they simplify complex
+operations.
+
+See link:expressions.htm#CHDCAIGD[Chapter 10, "Understanding EclipseLink
+Expressions."]
+
+[[CHDGCGDD]][[OTLCG94468]]
+
+==== NoSQL Databases
+
+NoSQL is a classification of database systems that do not support the
+SQL standard. These include document databases, key-value stores, and
+various other non-standard databases. Persistence of Java objects to
+NoSQL databases is supported through the Jakarta Persistence API (JPA).
+EclipseLink's native API is also supported with NoSQL databases.
+
+See link:nosql.htm#BJEIGBFD[Chapter 11, "Understanding Non-relational
+Data Sources."]
+
+[[CHDBIEJD]][[OTLCG94469]]
+
+==== Performance Monitoring and Profiling
+
+A diverse set of features is provided to measure and optimize
+application performance. You can enable or disable most features in the
+descriptors or session, making any resulting performance gains global.
+Tools are provided for performance profiling and performance, fetch
+group, and query monitoring.
+
+See "Enhancing Performance" in _Solutions Guide for EclipseLink_.

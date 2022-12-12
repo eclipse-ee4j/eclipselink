@@ -1,0 +1,3 @@
+:nofooter:
+This illustration shows a type conversion mapping (nonrelational).
+java.util.Date object is mapped to a String in a XML schema.

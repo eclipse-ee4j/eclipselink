@@ -1,0 +1,511 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSOVERVIEW003]]
+=== Creating EclipseLink DBWS Services
+
+You can generate a WAR file containing the EclipseLink DBWS service
+descriptor along with all required deployment artifacts for a JAX-WS 2.0
+Web service (WSDL, XML schema, `web.xml`, EclipseLink object-relational
+mapping (ORM) and object-XML mapping (OXM) native project XML files, and
+so on).
+
+[[sthref17]]
+
+*_Figure 1-3 Contents of WAR File_*
+
+image:{imagesrelativedir}/dbwswarfile.png[Contents of WAR File,title="Contents of WAR File"] +
+xref:{imagestextrelativedir}/dbwswarfile.adoc[Description of "Figure 1-3 Contents of WAR File"] +
+
+[[sthref20]]
+
+*_Table 1-3 EclipseLink DBWS Service .war File Contents_*
+
+|===
+|*File* |*Description*
+|`web.xml` a|
+The Web application deployment file, required for deployment as a JAX-WS
+Web service.
+
+See JSR-109 for details.
+
+|`eclipselink-dbws.xml` |The EclipseLink DBWS service descriptor file,
+described in link:overview001.htm#CJAHDJAB[Table 1-1].
+
+|`eclipselink-dbws-or.xml` a|
+The EclipseLink ORM project XML file.
+
+For more information, see "Introduction to Relational Projects
+`http://wiki.eclipse.org/Introduction_to_Relational_Projects_%28ELUG%29`.
+
+|`eclipselink-dbws-ox.xml` a|
+The EclipseLink OXM project XML file.
+
+For more information, see "Introduction to XML Projects"
+`http://wiki.eclipse.org/Introduction_to_XML_Projects_%28ELUG%29`
+
+|`eclipselink-dbws-sessions.xml` a|
+The EclipseLink `sessions.xml` file for the EclipseLink DBWS service.
+
+This file contains references to the EclipseLink ORM and OXM project XML
+files. For more information, see "Introduction to EclipseLink Sessions"
+`http://wiki.eclipse.org/Introduction_to_EclipseLink_Sessions_%28ELUG%29`.
+
+|`eclipselink-dbws-schema.xsd` a|
+Contains XML type definitions for operation arguments and return types.
+
+The `DBWSBuilder` utility automatically generates this file from
+database metadata to derive `element-tag` names and types.
+
+|`eclipselink-dbws.wsdl` a|
+Contains entries for all operations in the EclipseLink DBWS service,
+required for deployment as a JAX-WS Web service.
+
+See JSR-109 for details (`http://jcp.org/en/jsr/detail?id=109`).
+
+|`swaref.xsd` |Contains XML type definitions for SOAP attachments,
+optional
+|===
+
+Note that the files `swaref.xsd` and `web.xml` have names and content
+determined by their roles in Web deployment and cannot be changed.
+
+The deployable `.war` file has been verified to work with the Oracle
+WebLogic Server 10.3 JavaEE container. See
+`http://www.oracle.com/technology/software/products/ias/htdocs/wls_main.html?rssid=rss_otn_soft`
+for more information.
+
+An alternate deployable JAR file has been verified to work as a JavaSE 6
+"containerless" EndPoint. See
+`http://java.sun.com/javase/6/docs/api/javax/xml/ws/Endpoint.html` and
+`http://wiki.eclipse.org/EclipseLink/Examples/DBWS/AdvancedJavase6Containerless`
+for more information.
+
+==== Creating EclipseLink DBWS Services Using the DBWSBuilder Utility
+
+This section describes how to create EclipseLink DBWS services using the
+`DBWSBuilder` utility.
+
+You can use the EclipseLink DBWS design-time utility `DBWSBuilder` to
+create deployment files. `DBWSBuilder` is a Java application that
+processes the operations described in an EclipseLink DBWS builder XML
+file to produce all the required deployment artifacts.
+
+Be sure to set the following environment variables in the
+`<ECLIPSELINK_HOME>\bin\setenv.cmd` (or `setenv.sh` file) before
+invoking `DBWSBuilder`:
+
+* `JAVA_HOME`
+* `DRIVER_CLASSPATH`
+
+There are script files provided for invoking `DBWSBuilder`. They are
+located in the `<ECLIPSELINK_HOME>\utils\dbws` directory. The scripts
+are `dbwsbuilder.cmd` for Windows usage, and `dbwsbuilder.sh` for other
+operating systems. Run the `dbwsbuilder.cmd` (or `dbwsbuilder.sh`)
+script without any arguments to display the help information
+
+Using `DBWSBuilder`, you can generate an EclipseLink DBWS service from
+the following sources:
+
+* an existing relational database table;
+* one or more SQL `SELECT` statements;
+* a stored procedure.
+
+[[BABCIEID]]
+
+===== Creating an EclipseLink DBWS Service from a Database Table
+
+You can create an EclipseLink `DBWSBuilder` XML file with a `<table>`
+query operation, as follows:
+
+[[CJAIABED]]
+
+*_Example 1-5 Sample DBWSBuilder XML File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <properties>
+    <property name="projectName">table_test</property>
+    ... database properties ...
+  </properties>
+  <table
+    schemaPattern="%"
+    tableNamePattern="dbws_crud"
+  />
+</dbws-builder>
+----
+
+For more information, see
+xref:{relativedir}/creating_dbws_services001.adoc#DBWSCREATE001["Creating EclipseLink DBWS Service from a Database Table"].
+
+[[BABEFADD]]
+
+===== Creating an EclipseLink DBWS Service from a SQL Statement
+
+You can create an EclipseLink DBWS builder XML file with a `<sql>` query
+operation, as follows:
+
+[[CJAGDJAI]]
+
+*_Example 1-6 Sample DBWS Builder XML File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  <properties>
+    <property name="projectName">sql_test</property>
+    ... database properties ...
+  </properties>
+  <sql name="employeeInfo" simpleXMLFormatTag="employee-info" xmlTag="aggregate-counts">
+    <text>
+      <![CDATA[select count(*) as "COUNT", max(SAL) as "MAX-Salary" from EMP]]>
+    </text>
+  </sql>
+</dbws-builder>
+----
+
+====== Using Parameter Binding
+
+The SQL `SELECT` statement for a `<sql>` operation may have parameters
+that must be bound to a datatype from the `eclipselink-dbws-schema.xsd`,
+or to any of the basic XSD datatypes. The SQL `SELECT` string uses
+JDBC-style `?` markers to indicate the position of the argument. The
+`<sql>` operation uses nested `<binding>` elements to match the datatype
+to the parameters. The order in which `<binding>` elements are defined
+must match the order of `?` markers in the SQL string:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  <properties>
+    <property name="projectName">sql_binding_test</property>
+    ... database properties ...
+  </properties>
+  <sql name="findEmpByName" isCollection="true" isSimpleXMLFormat="true">  
+    <text>
+      <![CDATA[select * from EMP where EMPNO = ? and LAST_NAME = ?]]>
+    </text>
+    <binding name="EMPNO" type="xsd:int"/>
+    <binding name="LAST_NAME" type="xsd:string"/>
+  </sql>
+</dbws-builder>
+----
+
+The argument named *EMPNO* is bound to an `integer` type, while the
+argument named *LAST_NAME* is bound to a `string` type.
+
+For more information, see
+xref:{relativedir}/creating_dbws_services004.adoc#DBWSCREATE004["Creating a DBWS Service from SQL Statements"].
+
+[[BABJIGIC]]
+
+===== Creating an EclipseLink DBWS Service from a Stored Procedure
+
+You can create an EclipseLink DBWS builder XML File with a `<procedure>`
+query operation, as shown in link:#BABBBABC[Example 1-7].
+
+[[BABBBABC]]
+
+*_Example 1-7 Using a <procedure> Query_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  <properties>
+    <property name="projectName">procedure_test</property>
+    ... database properties ...
+    </properties>
+  <procedure
+    returnType="empType"
+    catalogPattern="SOME_PKG"
+    schemaPattern="SCOTT"
+    procedurePattern="GetEmployeeByEMPNO_DEPTNO"/>
+  </procedure>
+</dbws-builder>
+----
+
+For more information, see
+xref:{relativedir}/creating_dbws_services005.adoc#DBWSCREATE005["Creating from a Stored Procedure"].
+
+==== Customizing an EclipseLink DBWS Service
+
+There are a number use-cases that require an EclipseLink DBWS Service to
+be customized. The use-cases can be subdivided into the following
+categories:
+
+* Simple – changing an `<element-tag>` to an "attribute";
+* Intermediate – customizing the EclipseLink ORM or OXM projects;
+* Advanced – manually generating all required deployment artifacts.
+
+===== Performing Simple Customization
+
+By default, `DBWSBuilder`-generated `eclipselink-dbws-schema.xsd` file
+derives `<element-tag>` names from the database table metadata, as shown
+in link:#CJADJAED[Example 1-8].
+
+[[CJADJAED]]
+
+*_Example 1-8 DBWSBuilder-generated eclipselink-dbws-schema.xsd File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  >
+  <xsd:complexType name="empType">
+    <xsd:sequence>
+      <xsd:element name="empno" type="xsd:int" xsi:nil="false"/>
+      <xsd:element name="ename" type="xsd:string" xsi:nil="true"/>
+      <xsd:element name="job" type="xsd:string" xsi:nil="true"/>
+      <xsd:element name="mgr" type="xsd:int" minOccurs="0" xsi:nil="true"/>
+      <xsd:element name="hiredate" type="xsd:dateTime" xsi:nil="true"/>
+      <xsd:element name="sal" type="xsd:decimal" xsi:nil="true"/>
+      <xsd:element name="comm" type="xsd:int" minOccurs="0" xsi:nil="true"/>
+      <xsd:element name="deptno" type="xsd:int" xsi:nil="true"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
+----
+
+Use the `NamingConventionTransformer` to change an <element> tag to an
+attribute, as shown in link:#CJAHDIFC[Example 1-9].
+
+[[CJAHDIFC]]
+
+*_Example 1-9 Converting to an Attribute_*
+
+[source,oac_no_warn]
+----
+public interface NamingConventionTransformer {
+ 
+    public enum ElementStyle {
+        ELEMENT, ATTRIBUTE, NONE
+    };
+ 
+    public String generateSchemaName(String tableName);
+ 
+    public String generateElementAlias(String originalElementName);
+ 
+    public ElementStyle styleForElement(String originalElementName);
+}
+----
+
+For more information, see "Naming Convention for schema elements" in the
+EclipseLink documentation:
+`http://wiki.eclipse.org/EclipseLink/Examples/DBWS/DBWSIntermediateAttribute`.
+
+===== Performing Intermediate Customization
+
+The primary reason to use an EclipseLink SessionCustomizer is to enable
+programmatic access to the EclipseLink API. Using this API, you can
+retrieve the object-relational or object-XML mapping descriptors from
+the session, and then use these descriptors to add, change, or delete
+mappings. You could also consider turning off the session cache, or
+changing the transaction isolation level of the database connection.
+
+The following example shows how to implement a
+`org.eclipse.persistence.config.SessionCustomizer`:
+
+[source,oac_no_warn]
+----
+package some.java.package;
+ 
+import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+ 
+public class MySessionCustomizer implements SessionCustomizer {
+ 
+  public MySessionCustomizer() {
+  }
+ 
+  public void customize(Sesssion session) {
+    DatabaseLogin login = (DatabaseLogin)session.getDatasourceLogin();
+    login.setTransactionIsolation(DatabaseLogin.TRANSACTION_READ_UNCOMMITTED);
+  }
+}
+ 
+----
+
+In the `DBWSBuilder` builder XML file, specify if the customization
+applies to the ORM project or the OXM project, as the following example
+shows:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  <properties>
+    <property name="projectName">customize_test</property>
+     ...
+    <property name="orSessionCustomizerClassName">some.java.package.MyORSessionCustomizer</property>
+----
+
+or
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  <properties>
+    <property name="projectName">customize_test</property>
+     ...
+    <property name="oxSessionCustomizerClassName">some.java.package.MyOXSessionCustomizer</property>
+----
+
+For more information, see "Session Customization" in the EclipseLink
+documentation:
+`http://wiki.eclipse.org/Introduction_to_EclipseLink_Sessions_%28ELUG%29#Session_Customization`.
+
+===== Performing Advanced Customization
+
+You can customize an EclipseLink DBWS service by creating your own
+`project.xml` and `sessions.xml` files. Using your preferred utility,
+you can do the following:
+
+* map your objects to your relational database in an EclipseLink
+relational project;
+* map your objects to your XML schema in an EclipseLink XML project:
+* create an EclipseLink `sessions.xml` file that references both
+projects.
+
+In this way, you can control all aspects of the relational and XML
+mapping. This approach is best when you want to customize most or all
+details. See xref:{relativedir}/creating_dbws_services003.adoc#DBWSCREATE003["Using Existing
+EclipseLink ORM and OXM Mappings"] for more information.
+
+==== Using DBWSBuilder API
+
+The EclipseLink DBWS design-time utility, `DBWSBuilder`, is a Java
+application that generates EclipseLink DBWS files and assembles them
+into deployable archives.
+
+It is normally invoked from the command-line via its main method:
+
+[source,oac_no_warn]
+----
+prompt > dbwsbuilder.cmd -builderFile {path_to_builder.xml} -stageDir {path_to_stageDir} -packageAs {packager}
+ 
+----
+
+The given builder XML file (link:#BABBAHFB[Example 1-10]) is parsed by
+the OXM Project
+`org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject` producing
+model objects that represent properties and `<table>` operations. Thus
+the public class `org.eclipse.persistence.tools.dbws.DBWSBuilder` can be
+populated programmatically through property setters (i.e. `setDriver()`,
+`setUrl()`) - table; SQL operations via `addSqlOperation()`.
+
+[[BABBAHFB]]
+
+*_Example 1-10 Sample Builder XML File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    <properties>
+        <property name="projectName">test</property>
+        <property name="driver">oracle.jdbc.OracleDriver</property>
+        <property name="password">tiger</property>
+        <property name="url">jdbc:oracle:thin:@localhost:1521:ORCL</property>
+        <property name="username">scott</property>
+    </properties>
+    <table
+      catalogPattern="%"
+      schemaPattern="SCOTT"
+      tableNamePattern="EMP"
+    />
+</dbws-builder>
+ 
+----
+
+The packager specified on the command-line is represented by a class
+that implements the `org.eclipse.persistence.tools.dbws.DBWSPackager`
+interface. There is a hierarchy of concrete implementations of this
+interface, shown in link:#BABHDFBF[Figure 1-4]:
+
+[[BABHDFBF]]
+
+*_Figure 1-4 Hierarchy of Concrete Implementation_*
+
+image:{imagesrelativedir}/dbwspackagehierarchy.png[Description of Figure 1-4 follows,title="Description of Figure 1-4 follows"] +
+xref:{imagestextrelativedir}/dbwspackagehierarchy.adoc[Description of "Figure 1-4 Hierarchy of Concrete Implementation"] +
+
+The primary responsibility of a `DBWSPackager` is to provide
+`java.io.OutputStream`'s for the output generated by `DBWSBuilder`:
+
+[[sthref29]]
+
+*_Example 1-11 Sample DBWSPackager_*
+
+[source,oac_no_warn]
+----
+// call-backs for stream management
+public OutputStream getSchemaStream() throws FileNotFoundException;
+public void closeSchemaStream(OutputStream schemaStream);
+ 
+public OutputStream getSessionsStream(String sessionsFileName) throws FileNotFoundException;
+public void closeSessionsStream(OutputStream sessionsStream);
+ 
+public OutputStream getServiceStream() throws FileNotFoundException;
+public void closeServiceStream(OutputStream serviceStream);
+ 
+public OutputStream getOrStream() throws FileNotFoundException;
+public void closeOrStream(OutputStream orStream);
+ 
+public OutputStream getOxStream() throws FileNotFoundException;
+public void closeOxStream(OutputStream oxStream);
+ 
+public OutputStream getWSDLStream() throws FileNotFoundException;
+public void closeWSDLStream(OutputStream wsdlStream);
+ 
+public OutputStream getSWARefStream() throws FileNotFoundException;
+public void closeSWARefStream(OutputStream swarefStream);
+ 
+public OutputStream getWebXmlStream() throws FileNotFoundException;
+public void closeWebXmlStream(OutputStream webXmlStream);
+ 
+public OutputStream getProviderClassStream() throws FileNotFoundException;
+public void closeProviderClassStream(OutputStream codeGenProviderStream);
+ 
+public OutputStream getProviderSourceStream() throws FileNotFoundException;
+public void closeProviderSourceStream(OutputStream sourceProviderStream);
+----
+
+Once all the model objects have been built, the builder is invoked
+either through the `start()` method, or alternatively via the
+`build(...)` method, which overrides the streams from the
+`DBWSPackager`, allowing the streams to be managed externally to the
+packager:
+
+[source,oac_no_warn]
+----
+public void start() ...
+ 
+public void build(OutputStream dbwsSchemaStream, OutputStream dbwsSessionsStream,
+        OutputStream dbwsServiceStream, OutputStream dbwsOrStream, OutputStream dbwsOxStream,
+        OutputStream swarefStream, OutputStream webXmlStream, OutputStream wsdlStream,
+        OutputStream codeGenProviderStream, OutputStream sourceProviderStream, Logger logger) ...
+----

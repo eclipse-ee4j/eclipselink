@@ -1,0 +1,159 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SHAREDREFERENCERELATIONS002]]
+=== Mapping Single Key Relationships
+
+To model non-privately-owned relationships, your "target" objects must
+have IDs (keys) defined, and your "source" object must use these IDs to
+map the relationship.
+
+Relationships represented with keys use the `@XmlID` and `@XmlIDREF`
+annotations. Although the JAXB specification requires that the property
+marked with `@XmlID` be a String, MOXy JAXB does not enforce this
+restriction.
+
+In link:#BABEJJIE[Example 7-1], each *Employee* has one *manager* but
+multiple *reports*.
+
+[[BABEJJIE]]
+
+*_Example 7-1 Using the @XmlID and @XmlIDREF Annotations_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Employee {
+    @XmlAttribute
+    @XmlID
+    private Integer id;
+ 
+    @XmlAttribute
+    private String name;
+ 
+    @XmlIDREF
+    private Employee manager;
+ 
+    @XmlElement(name="report")
+    @XmlIDREF
+    private List<Employee> reports;
+ 
+    ...
+}
+ 
+----
+
+The following example shows how to define this mapping information in
+EclipseLink's OXM metadata format.
+
+[[sthref129]]
+
+*_Example 7-2 Sample XML Mapping_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Employee">
+   <java-attributes>
+      <xml-attribute java-attribute="id" type="java.lang.Integer" xml-id="true"/>
+      <xml-attribute java-attribute="name" type="java.lang.String"/>
+      <xml-element java-attribute="manager" type="mypackage.Employee" xml-idref="true"/>
+      <xml-element java-attribute="reports" type="mypackage.Employee" container-type="java.util.ArrayList" xml-idref="true"/>
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+This would produce the following XML:
+
+[source,oac_no_warn]
+----
+<company>
+    <employee id="1" name="Jane Doe">
+        <report>2</report>
+        <report>3</report>
+    </employee>
+    <employee id="2" name="John Smith">
+        <manager>1</manager>
+    </employee>
+    <employee id="3" name="Anne Jones">
+        <manager>1</manager>
+    </employee>
+</company>
+ 
+----
+
+The *manager* and *reports* elements contain the IDs of the *Employee*
+instances they are referencing.
+
+==== Using @XmlList
+
+Because the `@XmlIDREF` annotation is also compatible with the
+`@XmlList` annotation, the *Employee* object could be modeled as:
+
+[[sthref131]]
+
+*_Example 7-3 Using the @XmlList Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Employee {
+    @XmlID
+    @XmlAttribute
+    private Integer id;
+ 
+    @XmlAttribute
+    private String name;
+ 
+    @XmlIDREF
+    private Employee manager;
+ 
+    @XmlIDREF
+    @XmlList
+    private List<Employee> reports;
+ 
+    ... 
+}
+ 
+----
+
+This would produce the following XML:
+
+[source,oac_no_warn]
+----
+<company>
+   <employee id="1" name="Jane Doe">
+      <reports>2 3</reports>
+   </employee>
+   <employee id="2" name="John Smith">
+      <manager>1</manager>
+   </employee>
+   <employee id="3" name="Anne Jones">
+      <manager>1</manager>
+   </employee>
+</company>
+----

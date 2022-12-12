@@ -1,0 +1,77 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[JPA2XML]]
+== Mapping JPA to XML
+
+This chapter describes how to use JPA with the Java Architecture for XML
+Binding (JAXB)—the Jakarta EE standard for mapping POJOs (Plain Old Java
+Objects) to XML—and its Mapping Objects to XML (MOXy) extensions to map
+JPA entities to XML. Mapping JPA entities to XML is useful when you want
+to create a data access service with Java API for Restful Web Services
+(JAX-RS), Java API for XML Web Services (JAX-WS), or Spring.
+
+This chapter includes the following topics:
+
+* xref:{relativedir}/jpatoxml001.adoc#JPA2XML001[Introduction to the Solution]
+* xref:{relativedir}/jpatoxml002.adoc#JPA2XML002[Binding JPA Entities to XML]
+* xref:{relativedir}/jpatoxml003.adoc#JPA2XML003[Mapping Simple Java Values to XML Text Nodes]
+* xref:{relativedir}/jpatoxml004.adoc#JPA2XML004[Using XML Metadata Representation to Override JAXB Annotations]
+* xref:{relativedir}/jpatoxml005.adoc#JPA2XML005[Using XPath Predicates for Mapping]
+* xref:{relativedir}/jpatoxml006.adoc#JPA2XML006[Using Dynamic JAXB/MOXy]
+
+*Use Case*
+
+Users need to map JPA entities to XML.
+
+*Solution*
+
+EclipseLink provides support for the JAXB standard through EclipseLink
+MOXy extensions.
+
+*Components*
+
+* EclipseLink 2.4 or later.
+* XML document
+
+*Sample*
+
+See the following EclipseLink and JAXB examples for related information:
+
+* `http://wiki.eclipse.org/EclipseLink/Examples/MOXy`
+* `http://java.sun.com/developer/technicalArticles/WebServices/jaxb/index.html`
+
+//Introduction to the Solution
+include::{rootdir}/jpatoxml001.adoc[]
+
+//Binding JPA Entities to XML
+include::{rootdir}/jpatoxml002.adoc[]
+
+//Mapping Simple Java Values to XML Text Nodes
+include::{rootdir}/jpatoxml003.adoc[]
+
+//Using XML Metadata Representation to Override JAXB Annotations
+include::{rootdir}/jpatoxml004.adoc[]
+
+//Using XPath Predicates for Mapping
+include::{rootdir}/jpatoxml005.adoc[]
+
+//Using Dynamic JAXB/MOXy
+include::{rootdir}/jpatoxml006.adoc[]
+
+//Additional Resources
+include::{rootdir}/jpatoxml007.adoc[]

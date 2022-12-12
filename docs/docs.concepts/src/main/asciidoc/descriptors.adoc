@@ -1,0 +1,45 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, descriptor
+
+== Understanding Descriptors
+
+This chapter introduces and describes descriptors. EclipseLink uses
+descriptors to store the information that describes how an instance of a
+particular class can be represented by a data source. Descriptors own
+mappings that associate class instance variables with a data source and
+transformation routines that are used to store and retrieve values. As
+such, the descriptor acts as the connection between a Java object and
+its data source representation.
+
+This chapter includes the following sections:
+
+* link:#DESCRIPTORS001[Common Descriptor Concepts]
+* link:#DESCRIPTORS002[Object-Relational Descriptor Concepts]
+* link:#DESCRIPTORS003[Descriptor Files]
+
+//Common Descriptor Concepts
+include::{rootdir}/descriptors001.adoc[]
+
+//Object-Relational Descriptor Concepts
+include::{rootdir}/descriptors002.adoc[]
+
+//Descriptor Files
+include::{rootdir}/descriptors003.adoc[]

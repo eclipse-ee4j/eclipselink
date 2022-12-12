@@ -1,0 +1,570 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MAPPINGINTRO002]]
+=== Object-Relational Mapping Concepts
+
+This section describes concepts for relational mappings that are unique
+to EclipseLink:
+
+* link:#CHDJAHDC[Indirection (Lazy Loading)]
+* link:#CHDEEIBD[Indirection, Serialization, and Detachment]
+* link:#CEGHBHEA[Value Holder Indirection]
+* link:#CEGGCCGA[Transparent Indirection]
+* link:#CEGDCAIG[Proxy Indirection]
+* link:#CHDBJGII[Weaved Indirection]
+* link:#A7964325[About JPA Mapping Types]
+
+[[CHDJAHDC]][[OTLCG00083]]
+
+==== Indirection (Lazy Loading)
+
+By default, when EclipseLink retrieves a persistent object, it retrieves
+all of the dependent objects to which it refers. When you configure
+indirection (also known as lazy reading, lazy loading, and just-in-time
+reading) for an attribute mapped with a relationship mapping,
+EclipseLink uses an indirection object as a place holder for the
+referenced object: EclipseLink defers reading the dependent object until
+you access that specific attribute. This can result in a significant
+performance improvement, especially if the application is interested
+only in the contents of the retrieved object, rather than the objects to
+which it is related.
+
+Oracle strongly recommends using indirection for all relationship
+mappings. Not only does this lets you optimize data source access, but
+it also allows EclipseLink to optimize the persistence unit processing,
+cache access, and concurrency.
+
+[NOTE]
+====
+* The use of indirection is especially important for providing a proper
+maintenance of bidirectional relationships. In this case, you must use
+indirection. If you are operating with collections, you must use
+transparent indirection (see link:#CEGGCCGA[Transparent Indirection]).
+* The implementation of indirection (lazy loading) is vendor-specific.
+Serializing entities and merging those entities back into a persistence
+context may not be interoperable across vendors when lazy properties or
+fields and/or relationships are used.
+====
+
+link:#i1102721[Figure 6-8] shows an indirection example. Without
+indirection, reading the `Order` object also reads the dependent
+collection of `LineItem` objects. With indirection, reading the `Order`
+object does not read the dependent collection of `LineItem` objects: the
+`lineItems` attribute refers to an indirection object. You can access
+other attributes (such as `customerId`), but EclipseLink reads the
+dependent `LineItem` objects only if and when you access the `lineItems`
+attribute.
+
+[[i1102721]][[OTLCG92106]]
+
+*_Figure 6-8 EclipseLink Indirection_*
+
+image:{imagesrelativedir}/indirctn.png[Description of Figure 6-8 follows,title="Description of Figure 6-8 follows"] +
+xref:{imagestextrelativedir}/indirctn.adoc[Description of "Figure 6-8 EclipseLink Indirection"] +
+
+EclipseLink supports the following types of indirection:
+
+* link:#CEGHBHEA[Value Holder Indirection]
+* link:#CEGGCCGA[Transparent Indirection]
+* link:#CEGDCAIG[Proxy Indirection]
+
+When using indirection with an object that your application serializes,
+you must consider the effect of any untriggered indirection objects at
+deserialization time. See link:#CHDEEIBD[Indirection, Serialization, and
+Detachment].
+
+[[CHDEEIBD]][[OTLCG92119]]
+
+==== Indirection, Serialization, and Detachment
+
+When using indirection (lazy loading), it is likely that a graph of
+persistent objects will contain untriggered indirection objects. Because
+indirection objects are transient and do not survive serialization
+between one JVM and another, untriggered indirection objects will
+trigger an error if the relationship is accessed after deserialization.
+
+The application must ensure that any indirect relationships that will be
+required after deserialization have been instantiated before
+serialization. This can be done through accessing the get method for any
+relationship using `ValueHolder` or weaved indirection, and by calling
+the `size` method to any relationship using transparent indirection. If
+the application desired the relationships to be always instantiated on
+serialization, you could overwrite the serialization `writeObject`
+method in the persistent class to first instantiate the desired
+relationships. Use caution for objects with many or deep relationships
+to avoid serializing large object graphs: ideally, only the
+relationships required by the client should be instantiated.
+
+When serializing JPA entities, any lazy relationships that have not been
+instantiated prior to serialization will trigger errors if they are
+accessed. If weaving is used on the server, and the entities are
+serialized to a client, the same weaved classes must exist on the
+client, either through static weaving of the jar, or through launching
+the client JVM using the EclipseLink agent.
+
+For more information, see link:app_dev002.htm#CCHGGAGE[Using Java
+Byte-code Weaving].
+
+[[CEGHBHEA]][[OTLCG92107]]
+
+==== Value Holder Indirection
+
+Persistent classes that use indirection must replace relationship
+attributes with value holder attributes. A value holder is an instance
+of a class that implements the `ValueHolderInterface` interface, such as
+`ValueHolder`. This object stores the information necessary to retrieve
+the object it is replacing from the database. If the application does
+not access the value holder, the replaced object is never read from the
+database.
+
+To obtain the object that the value holder replaces, use the `getValue`
+and `setValue` methods of the `ValueHolderInterface`. A convenient way
+of using these methods is to hide the `getValue` and `setValue` methods
+of the `ValueHolderInterface` inside `get` and `set` methods, as shown
+in the following illustrations.
+
+link:#i1102743[Figure 6-9] shows the `Employee` object being read from
+the database. The `Address` object is not read and will not be created
+unless it is accessed.
+
+[[i1102743]][[OTLCG92108]]
+
+*_Figure 6-9 Address Object Not Read_*
+
+image:{imagesrelativedir}/vhstep1.png[Description of Figure 6-9 follows,title="Description of Figure 6-9 follows"] +
+xref:{imagestextrelativedir}/vhstep1.adoc[Description of "Figure 6-9 Address Object Not Read"] +
+
+The first time the address is accessed, as in link:#i1102751[Figure
+6-10], the `ValueHolder` reads and returns the `Address` object.
+
+[[i1102751]][[OTLCG92109]]
+
+*_Figure 6-10 Initial Request_*
+
+image:{imagesrelativedir}/vhstep2.png[Description of Figure 6-10 follows,title="Description of Figure 6-10 follows"] +
+xref:{imagestextrelativedir}/vhstep2.adoc[Description of "Figure 6-10 Initial Request"] +
+
+Subsequent requests for the address do not access the database, as shown
+in link:#i1102759[Figure 6-11].
+
+[[i1102759]][[OTLCG92110]]
+
+*_Figure 6-11 Subsequent Requests_*
+
+image:{imagesrelativedir}/vhstep3.png[Description of Figure 6-11 follows,title="Description of Figure 6-11 follows"] +
+xref:{imagestextrelativedir}/vhstep3.adoc[Description of "Figure 6-11 Subsequent Requests"] +
+
+If you are using method access, the get and set methods specified in the
+mapping must access the instance of `ValueHolderInterface`, rather than
+the object referenced by the value holder. The application should not
+use these getter and setter, but use the getter and setter that hide the
+usage of value holders.
+
+[[CEGGCCGA]][[OTLCG92112]]
+
+==== Transparent Indirection
+
+Transparent indirection lets you declare any relationship attribute of a
+persistent class that holds a collection of related objects as any of
+the following Java objects:
+
+* `java.util.Collection`
+* `java.util.Hastable`
+* `java.util.List`
+* `java.util.Map`
+* `java.util.Set`
+* `java.util.Vector`
+
+EclipseLink will use an indirection object that implements the
+appropriate interface and also performs just-in-time reading of the
+related objects. When using transparent indirection, you do not have to
+declare the attributes as `ValueHolderInterface`.
+
+Newly created collection mappings use transparent indirection by default
+if their attribute _is not_ a `ValueHolderInterface`.
+
+You can configure EclipseLink to automatically weave transparent
+indirect container indirection for JPA entities and Plain Old Java
+Object (POJO) classes. For more information, see
+xref:{relativedir}/app_dev002.adoc#CCHGGAGE[Using Java Byte-code Weaving] and
+xref:{relativedir}/app_dev005.adoc#APPDEV005[About Weaving.]
+
+[[CEGDCAIG]][[OTLCG92114]]
+
+==== Proxy Indirection
+
+The Java class `Proxy` lets you use dynamic proxy objects as
+place-holders for a defined interface. Certain EclipseLink mappings can
+be configured to use proxy indirection, which gives you the benefits of
+indirection without the need to include EclipseLink classes in your
+domain model. Proxy indirection is to one-to-one relationship mappings
+as indirect containers are to collection mappings.
+
+To use proxy indirection, your domain model must satisfy all of the
+following criteria:
+
+* The target class of the one-to-one relationship must implement a
+public interface.
+* The one-to-one attribute on the source class must be of the
+`interface` type.
+* If you employ method accessing, then the getter and setter methods
+must use the interface.
+
+Before using proxy indirection, be aware of the restrictions it places
+on how you use the persistence unit (see link:#CEGGDDJB[Proxy
+Indirection Restrictions]).
+
+To configure proxy indirection, you can use JDeveloper or Java in an
+amendment method.
+
+[[CEGGDDJB]][[OTLCG92115]]
+
+===== Proxy Indirection Restrictions
+
+Proxy objects in Java are only able to intercept messages sent. If a
+primitive operation such as `==`, `instanceof`, or `getClass` is used on
+a proxy, it will not be intercepted. This limitation can require the
+application to be somewhat aware of the usage of proxy objects.
+
+You cannot register the target of a proxy indirection implementation
+with a persistence unit. Instead, first register the source object with
+the persistence unit. This lets you retrieve a target object clone with
+a call to a getter on the source object clone.
+
+[[CHDBJGII]][[OTLCG92116]]
+
+==== Weaved Indirection
+
+For JPA entities or POJO classes that you configure for weaving,
+EclipseLink weaves value holder indirection for one-to-one mappings. If
+you want EclipseLink to weave change tracking and your application
+includes collection mappings (one-to-many or many-to-many), then you
+must configure all collection mappings to use transparent indirect
+container indirection only (you may not configure your collection
+mappings to use eager loading nor value holder indirection).
+
+For more information, see xref:concepts/app_dev002.adoc#CCHGGAGE[Using Java Byte-code Weaving].
+
+[[A7964325]][[OTLCG94305]]
+
+==== About JPA Mapping Types
+
+To map entity classes to relational tables you must configure a mapping
+per persistent field. The following sections describe EclipeLink's JPA
+mapping types:
+
+* link:#CEGGDAJJ[Basic Mappings]
+* link:#CEGJFEAH[Default Conversions and Converters]
+* link:#CEGGABIA[Collection Mappings]
+* link:#CEGDIIIB[Using Optimistic Locking]
+
+[[CEGGDAJJ]][[OTLCG94306]]
+
+===== Basic Mappings
+
+Simple Java types are mapped as part of the immediate state of an entity
+in its fields or properties. Mappings of simple Java types are called
+basic mappings.
+
+By default, the EclipseLink persistence provider automatically
+configures a basic mapping for simple types.
+
+Use the following annotations to fine-tune how your application
+implements these mappings:
+
+* `@Basic`
+* `@Enumerated`
+* `@Temporal`
+* `@Lob`
+* `@Transient`
+* `@Column`
+* Lazy Basics (See link:#CEGBCJAG[Using Indirection with Collections])
+
+For all mapping types there are a common set of options:
+
+* Read-Only: Specifies that the mapping should populate the value on
+read and copy. Required when multiple mappings share the same database
+column.
+* Converters: Allows custom data types and data conversions to be used
+with most mapping types
+** Annotations: `@Converter`, `@TypeConverter`, `@ObjectTypeConverter`,
+`@StructConverter`, `@Convert`
+** External Metadata: `<converter>`, `<type-converter>`,
+`<object-type-converter>`, `<struct-converter>`, `<convert>`
+
+For more information on these annotations, see _Jakarta Persistence API
+(JPA) Extensions Reference for EclipseLink_.
+
+[[CEGJFEAH]][[OTLCG94307]]
+
+===== Default Conversions and Converters
+
+The section "Converter Annotations" in _Jakarta Persistence API (JPA)
+Extensions Reference for EclipseLink_ provides a list of the converter
+annotation extensions defined by EclipseLink and links to their
+descriptions.
+
+See the individual converter annotations in _Jakarta Persistence API
+(JPA) Extensions Reference for EclipseLink_ for descriptions of the
+following:
+
+* the order in which the EclipseLink persistence provider searches the
+converter annotations
+* the types of classes for which you can specify converters (you can
+define converters at the class, field and property level)
+* the mappings with which you can use converters
+
+[[CEGGABIA]][[OTLCG94308]]
+
+===== Collection Mappings
+
+You can access additional advanced mappings and mapping options through
+the EclipseLink descriptor and mapping API using a
+`DescriptorCustomizer` class.
+
+* link:#CEGIGCIJ[One-to-Many Mapping]
+* link:#CEGJCHEB[Many-to-Many Mapping]
+* link:#CEGBCJAG[Using Indirection with Collections]
+
+[[CEGIGCIJ]][[OTLCG94309]]
+
+====== One-to-Many Mapping
+
+One-to-many mappings are used to represent the relationship between a
+single source object and a collection of target objects. They are a good
+example of something that is simple to implement in Java using a
+Collection (or other collection types) of target objects, but difficult
+to implement using relational databases.
+
+In a Java Collection, the owner references its parts. In a relational
+database, the parts reference their owner. Relational databases use this
+implementation to make querying more efficient.
+
+[[OTLCG94310]][[sthref45]]
+
+*_Figure 6-12 One-to-Many Relationships_*
+
+image:{imagesrelativedir}/onetomany_map_fig.png[This figure illustrates the one-to-many relationship.,title="This figure illustrates the one-to-many relationship."] +
+xref:{imagestextrelativedir}/onetomany_map_fig.adoc[Description of "Figure 6-12 One-to-Many Relationships"] +
+
+NOTE: The phone attribute shown in the One-to-Many Relationships is of type
+Vector. You can use a Collection interface (or any class that implements
+the Collection interface) for declaring the collection attribute.
+
+[[OTLCG94311]]
+
+[[sthref47]]
+
+====== JPA Mapping
+
+By default, JPA automatically defines a OneToMany mapping for a
+many-valued association with one-to-many multiplicity.
+
+Use the `@OneToMany` annotation to do the following:
+
+* configure the fetch type to `EAGER`
+* configure the associated target entity, because the Collection used is
+not defined using generics
+* configure the operations that must be cascaded to the target of the
+association: for example, if the owning entity is removed, ensure that
+the target of the association is also removed
+* configure the details of the join table used by the persistence
+provider for unidirectional one-to-many relationships. For a one-to-many
+using a `mappedBy` or `JoinColumn`, the deletion of the related objects
+is cascaded on the database. For a one-to-many using a `JoinTable`, the
+deletion of the join table is cascaded on the database (target objects
+cannot be cascaded even if private because of constraint direction).
+
+For more information, see Section 11.1.23 "JoinTable Annotation" in the
+JPA Specification.
+
+`http://jcp.org/en/jsr/detail?id=338`
+
+[[CEGJCHEB]][[OTLCG94312]]
+
+====== Many-to-Many Mapping
+
+Many-to-many mappings represent the relationships between a collection
+of source objects and a collection of target objects. They require the
+creation of an intermediate table for managing the associations between
+the source and target records.
+
+link:#CEGIHDED[Figure 6-13] illustrates a many-to-many mapping in Java
+and in relational database tables.
+
+[[CEGIHDED]][[OTLCG94313]]
+
+*_Figure 6-13 Many-to-Many Relationships_*
+
+image:{imagesrelativedir}/mmmapfig.png[Many-to-many Relationships,title="Many-to-many Relationships"] +
+xref:{imagestextrelativedir}/mmmapfig.adoc[Description of "Figure 6-13 Many-to-Many Relationships"] +
+
+NOTE: For the projects attribute shown in the Many-to-many Relationships you
+can use a `Collection` interface (or any class that implements the
+`Collection` interface) for declaring the collection attribute.
+
+[[CEGFEIFF]][[OTLCG94314]]
+
+====== JPA Mapping
+
+By default, JPA automatically defines a many-to-many mapping for a
+many-valued association with many-to-many multiplicity.
+
+Use the `@ManyToMany` annotation to do the following:
+
+* configure the `FetchType` to `EAGER`
+* configure the mapping to forbid null values (for nonprimitive types)
+in case null values are inappropriate for your application
+* configure the associated target entity because the Collection used is
+not defined using generics
+* configure the operations that must be cascaded to the target of the
+association (for example, if the owning entity is removed, ensure that
+the target of the association is also removed)
+
+For a list of supported attributes for the `@ManyToMany` annotation, see
+the Java Persistence specification:
+
+`http://jcp.org/en/jsr/detail?id=338`
+
+[[CEGBCJAG]][[OTLCG94303]]
+
+====== Using Indirection with Collections
+
+JPA specifies that lazy loading is a hint to the persistence provider
+that data should be fetched lazily when it is first accessed, if
+possible. If you are developing your application in a Jakarta EE
+environment, set fetch to `jakarta.persistence.FetchType.LAZY`, and the
+persistence provider supplies all the necessary functionality.
+
+When using a one-to-one or many-to-one mapping in a Java SE environment,
+use either dynamic or static weaving to perform lazy loading when the
+`fetch` attribute is set to `FetchType.LAZY`. Also in the Java SE
+environment, one-to-many and many-to-many relationships are lazy by
+default and use transparent indirection, while one-to-one and
+many-to-one relationships are not lazy.
+
+When using a one-to-one or many-to-one mapping in a Java SE environment
+and the environment does not permit the use of `-javaagent` on the JVM
+command line, use static weaving to perform lazy loading when the
+`fetch` attribute is set to `FetchType.LAZY`.
+
+If you set one-to-one or many-to-one relationships to lazy, and you
+enable weaving, the EclipseLink JPA persistence provider will use
+weaving to enable value holder indirection for these relationships.
+
+The collection annotations `@OneToOne`, `@OneToMany`, `@ManyToMany`, and
+`@ManyToOne` provide a `fetch` mapping attribute which can be set to
+`lazy` or `eager`. When you set the attribute to `lazy`, the EclipseLink
+JPA persistence provider uses indirection.
+
+link:#CEGCJEHD[Table 6-1] lists support for lazy loading by mapping
+type.
+
+[[OTLCG94304]][[sthref49]][[CEGCJEHD]]
+
+*_Table 6-1 Support for Lazy Loading by Mapping Type_*
+
+|=======================================================================
+|*Mapping* |*Jakarta EE* |*Java SE*
+|Many-to-many |Lazy loading is performed when the `fetch` attribute is
+set to `jakarta.persistence.FetchType.LAZY` (default). |Lazy loading is
+performed when the `fetch` attribute is set to
+`jakarta.persistence.FetchType.LAZY` (default).
+
+|One-to-many |Lazy loading is performed when the `fetch` attribute is
+set to `jakarta.persistence.FetchType.LAZY` (default). |Lazy loading is
+performed when the `fetch` attribute is set to
+`jakarta.persistence.FetchType.LAZY` (default).
+
+|One-to-one |Lazy loading is performed when the `fetch` attribute is set
+to `jakarta.persistence.FetchType.LAZY`. |The `fetch` attribute is
+ignored and default `jakarta.persistence.FetchType.EAGER` applies.
+
+|Many-to-one |Lazy loading is performed when the `fetch` attribute is
+set to `jakarta.persistence.FetchType.LAZY`. |The `fetch` attribute is
+ignored and default `jakarta.persistence.FetchType.EAGER` applies
+
+|Basic |Lazy loading is performed when the `fetch` attribute is set to
+`jakarta.persistence.FetchType.LAZY`. |The `fetch` attribute is ignored
+and default `jakarta.persistence.FetchType.EAGER` applies
+|=======================================================================
+
+[[CEGDIIIB]][[OTLCG94315]]
+
+===== Using Optimistic Locking
+
+Oracle recommends using optimistic locking. With optimistic locking, all
+users have read access to the data. When a user attempts to write a
+change, the application checks to ensure the data has not changed since
+the user read the data.
+
+[[OTLCG94317]]
+
+[[sthref50]]
+
+====== Optimistic Locking in a Stateless Environment
+
+In a stateless environment, take care to avoid processing out-of-date
+(stale) data. A common strategy for avoiding stale data is to implement
+optimistic locking, and store the optimistic lock values in the object.
+This solution requires careful implementation if the stateless
+application serializes the objects, or sends the contents of the object
+to the client in an alternative format. In this case, transport the
+optimistic lock values to the client in the HTTP contents of an edit
+page. You must then use the returned values in any write transaction to
+ensure that the data did not change while the client was performing its
+work.
+
+You can use optimistic version locking or optimistic field locking
+policies. Oracle recommends using version locking policies.
+
+[[OTLCG94318]]
+
+[[sthref51]]
+
+====== Optimistic Version Locking
+
+Use the `@Version` annotation to enable the JPA-managed optimistic
+locking by specifying the version field or property of an entity class
+that serves as its optimistic lock value (recommended).
+
+When choosing a version field or property, ensure that the following is
+true:
+
+* there is only one version field or property per entity
+* you choose a property or field persisted to the primary table
+* your application does not modify the version property or field
+
+For more information, see Section 11.1.45 "Table Annotation" in the JPA
+Specification.
+
+`http://jcp.org/en/jsr/detail?id=338`
+
+ NOTE: The field or property type must either be a numeric type (such as
+`Number`, `long`, `int`, `BigDecimal`, and so on), or a
+`java.sql.Timestamp`. EclipseLink recommends using a numeric type.
+
+
+The `@Version` annotation does not have attributes. The `@Version`
+annotation allows you to use EclipseLink converters. See
+link:#CEGJFEAH[Default Conversions and Converters.]
+
+For more information, see Section 11.1.9 "Column Annotation" in the JPA
+Specification.
+
+`http://jcp.org/en/jsr/detail?id=338`

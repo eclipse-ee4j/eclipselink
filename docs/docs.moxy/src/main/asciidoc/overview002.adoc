@@ -1,0 +1,39 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[INTRODUCTION002]]
+=== Solving Object-XML Impedance Mismatch
+
+Although XML is a common format for the exchange of data, for many
+applications _objects_ are the preferred programmatic representation –
+not XML. In order to work at the object-level, the XML data needs to be
+converted to object form. The mismatch between XML and objects is known
+as _object-xml impedance mismatch_.
+
+JAXB allows you to interact with XML data by using domain-like objects.
+Unlike DOM objects, the JAXB content model provides insight into the XML
+document based on the XML schema. For example, if the XML schema defines
+XML documents that contain customer information, your content model will
+contain objects such as *Customer*, *Address*, and *PhoneNumber*. Each
+_type_ in the XML schema will have a corresponding Java class.
+
+With EclipseLink MOXy, you can efficiently bind Java classes to XML
+schemas or JSON documents. MOXy implements JAXB by allowing you to
+provide mapping information through annotations _as well as storing the
+mappings in XML_ or JSON. By using the EclipseLink's advanced mappings,
+you can manage complex XML structures _without_ having to mirror the
+schema in your Java class model.

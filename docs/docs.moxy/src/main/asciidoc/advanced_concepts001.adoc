@@ -1,0 +1,112 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ADVANCEDCONCEPTS001]]
+=== Refreshing Metadata
+
+Introduced in EclipseLink MOXy 2.3, you can refresh the `JAXBContext`
+metadata at runtime. This allows you to make changes to existing
+mappings in a live application environment and see those changes
+immediately without having to create a new `JAXBContext`.
+
+In order to use the *Metadata Refresh* feature, your metadata
+information must be provided in one of the following formats:
+
+* `javax.xml.transform.Source`
+* `org.w3c.dom.Node`
+* `org.eclipse.persistence.jaxb.metadata.MetadataSource`
+
+[[sthref138]]
+
+*_Example 8-1 Refreshing Metadata_*
+
+This example will be bootstrapped from the following EclipseLink OXM
+file:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0"?>
+<xml-bindings
+      xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="example">
+    <java-types>
+        <java-type name="Root">
+            <java-attributes>
+                <xml-element java-attribute="name" name="orig-name"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>
+ 
+----
+
+The `JAXBContext` is created in the standard way:
+
+[source,oac_no_warn]
+----
+ 
+...
+ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+ 
+DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+dbf.setNamespaceAware(true);
+DocumentBuilder db = dbf.newDocumentBuilder();
+InputStream metadataStream = classLoader.getResourceAsStream("example/eclipselink-oxm.xml";
+Document metadataDocument = db.parse(metadataStream);
+metadataStream.close();
+ 
+Map<String, Object> props = new HashMap<String, Object>(1);
+props.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataDocument);
+JAXBContext context = JAXBContextFactory.createContext(new Class[] { Root.class }, props);
+...
+ 
+----
+
+At this point, if we were to marshal a `Root` object to XML, it would
+look like this:
+
+[source,oac_no_warn]
+----
+<root>
+    <orig-name>RootName</orig-name>
+</root>
+ 
+----
+
+For this example, we will modify the metadata Document directly to
+change the XML name for the name field. We can then refresh the metadata
+using the `refreshMetadata()` API:
+
+[source,oac_no_warn]
+----
+...
+Element xmlElementElement = (Element) metadataDocument.getElementsByTagNameNS("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element").item(0);
+xmlElementElement.setAttribute("name", "new-name");
+JAXBHelper.getJAXBContext(jc).refreshMetadata();
+...
+ 
+----
+
+After refreshing metadata, the same `Root` object will be marshalled as
+follows:
+
+[source,oac_no_warn]
+----
+<root>
+      <new-name>RootName</new-name>
+</root>
+----

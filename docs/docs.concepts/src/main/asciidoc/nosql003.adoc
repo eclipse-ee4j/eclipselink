@@ -1,0 +1,110 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[NOSQL003]]
+=== About JPA Applications on the NoSQL Platform
+
+Mapping to NoSQL data is configured through the EclipseLink `@NoSql`
+annotation, and `<no-sql>` XML element. `@NoSql` defines the class as
+mapping to non-relational data. `@NoSql` can be specified with `@Entity`
+or `@Embeddable` classes.
+
+The `@NoSql` annotation defines a `dataType` and a `dataFormat`
+attribute. The `dataType` attribute is the name for the entity's
+structure; the meaning of the `dataType` is dependent on the NoSQL
+platform. For MongoDB, it is the collection name that the JSON documents
+are stored to. For Oracle NoSQL the `dataType` is the first part of the
+major key value. For the XML file adapter it is the file name.
+
+The `dataFormat` attribute specifies the type of structure the data is
+stored as. The `dataFormat` attribute is defined by the `DataFormatType`
+`enum`.
+
+For examples of configuring an application with the `@NoSql` annotation,
+see "@NoSql" in _Jakarta Persistence API (JPA) Extensions Reference for
+EclipseLinkk_
+
+[[OTLCG94429]]
+
+[[sthref68]]
+
+==== Mapping Restrictions on JPA Annotations
+
+NoSQL supports most JPA annotations and others have different
+restrictions than mapping relational data.
+
+[[OTLCG94430]]
+
+*Supported mapping annotations:*
+
+* `@Entity`—defines a root level object in the NoSQL data-store.
+* `@Embeddable`—defines an object embedded in another object's data
+structure.
+* `@Basic`, `@Temporal`, `@Enumerated`, `@Lob`
+* `@Convert`, `@Converter`, `@TypeConverter`, `@ObjectTypeConverter`
+* `@Access`, `@Transient`, `@Mutable`
+* `@Id`, `@EmbeddedId`
+* `@GeneratedValue`, `@UuidGenerator`
+* `@Version`—is supported, but dependent on the NoSQL data-source to
+validate version write conflicts.
+* `@Embedded`—defines a reference that will be embedded in the parent's
+data structure as a nested structure.
+* `@ElementCollection`—defines a collection of values or embeddables
+that will be embedded in the parent's data structure as a list of nested
+structures.
+* `@OneToOne`, `@ManyToOne`—define a relationship to another root level
+object stored as a foreign key in the source object's data structure.
+* `@OneToMany`, `@ManyToMany`—define a relationship to a collection of
+other root level object stored as a list of foreign keys in the source
+object's data structure.
+* `@Inheritance`, `@MappedSuperclass`, `@ClassExtractor`
+* `@Cacheable`, `@Cache`, `@ReadOnly`, `@Noncacheable`
+* `@NamedQuery`—is supported on NoSQL data-sources that support
+querying.
+* `@NamedNativeQuery`—is supported on NoSQL data-sources that support
+native querying. The query language is not SQL, but specific to the
+NoSQL data-store.
+* `@EntityListeners`, `@PrePersist`, `@PreUpdate`, `@PreRemove`,
+`@PreLoad`, `@PostPersist,` `@PostUpdate`, `@PostRemove`, `@PostLoad`
+* `@Customizer`
+
+[[OTLCG94431]]
+
+*Unsupported mapping annotations:*
+
+* `@Table`, `@SecondaryTable`—are not supported, as objects are not
+mapped to tables, it is replaced by the dataType on the `@NoSql`
+annotation.
+* `@Column`—`@Field` should be used, as data is not stored in table
+columns, however `@Column` is still allowed, but just the name will be
+used.
+* `@JoinColumn`—is not supported; it is replaced by `@JoinField`.
+* `@JoinTable`—is not required or supported; OneToManys and ManyToManys
+are stored as collections of Ids embedded in the source object's data
+structure.
+* `@CollectionTable`—is not required or supported; ElementCollections
+are embedded in the parent object's data structure.
+* `@MapKeyColumn`, `@MapKeyClass`, `@MapKeyJoinColumn`—are not currently
+supported.
+* `@OrderBy`, `@OrderColumn`—are not normally required or supported, as
+order is normally maintained by the object's data structure.
+* `@SequenceGenerator`, `@TableGenerator`—are not directly supported.
+* `@AttributeOverride`, `@AssociationOverride`—are supported with
+inheritance, but are not supported or required with embedded
+relationships as embedded objects are nested in their parent object's
+data structure, not flattened as in the case of relational data.
+* `@JoinFetch`, `@BatchFetch`—are not supported.

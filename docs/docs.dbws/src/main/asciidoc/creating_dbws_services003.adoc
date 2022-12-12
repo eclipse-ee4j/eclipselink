@@ -1,0 +1,61 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSCREATE003]]
+=== Using Existing EclipseLink ORM and OXM Mappings
+
+A DBWS service may be constructed using pre-existing EclipseLink ORM and
+OXM maps (both Project classes and Project deployment XML are supported)
+with identical case-sensitive aliases for Descriptors that are common
+between the projects.
+
+[[sthref41]]
+
+*_Example 2-6 Using an ORM Map_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="Eclipse Persistence Services - some version (some build date)" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">
+   <name>SomeORProject</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>some.package.SomeClass</class>
+         <alias>SomeAlias</alias>
+...
+ 
+----
+
+[[sthref42]]
+
+*_Example 2-7 Using an OXM Map_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="Eclipse Persistence Services - some version (some build date)" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">
+   <name>SomeOXProject</name>
+   <class-mapping-descriptor xsi:type="xml-class-mapping-descriptor">
+      <class>some.package.SomeClass</class>
+      <alias>SomeAlias</alias>
+...
+ 
+----
+
+When building a DBWS web service in this way (that is, without the
+`DBWSBuilder` Utility) be sure to create all the necessary deployment
+artifacts

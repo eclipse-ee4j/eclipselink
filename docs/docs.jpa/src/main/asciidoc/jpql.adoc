@@ -1,0 +1,719 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, jpql
+
+== Java Persistence Query Language Extensions
+
+[[TLJPA54065]]
+
+This chapter describes the extensions EclipseLink providesto the
+standard JPA Java Persistence Query Language (JPQL). These extensions,
+referred to as the EclipseLink Query Language (EQL), provide access to
+additional database features many of which are part of standard SQL,
+provide access to native database features and functions, and provide
+access to EclipseLink specific features.
+
+This chapter includes the following sections:
+
+* link:#BABEJJHG[Special Operators]
+* link:#BABEAIIA[EclipseLink Query Language]
+
+For more information on JQPL, see:
+
+* "Query Language" in the JPA Specification
+(`http://jcp.org/en/jsr/detail?id=317`)
+* "The Java Persistence Query Language" in _The Java EE 6 Tutorial_
+(`http://docs.oracle.com/javaee/6/tutorial/doc/bnbtg.html`)
+* "EclipseLink User Guide"
++
+(`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Querying/JPQL`)
+
+[[BABEJJHG]][[TLJPA604]]
+
+=== Special Operators
+
+EclipseLink defines the following operators to perform database
+operations that would not be possible in standard JPQL:
+
+* link:#column[COLUMN]
+* link:#func[FUNCTION]
+* link:#operator[OPERATOR]
+* link:#sql[SQL]
+
+[[BABEAIIA]][[TLJPA605]]
+
+=== EclipseLink Query Language
+
+* link:#cast[CAST]
+* link:#except[EXCEPT]
+* link:#extract[EXTRACT]
+* link:#intersect[INTERSECT]
+* link:#on[ON]
+* link:#CIHGBAEC[REGEXP]
+* link:#table[TABLE]
+* link:#treat[TREAT]
+* link:#union[UNION]
+
+[[cast]][[TLJPA606]]
+
+'''''
+
+=== CAST
+
+Use `CAST` to convert a value to a specific database type.
+
+[[sthref499]]
+
+*Usage*
+
+The `CAST` function is database independent, but requires database
+support.
+
+[[sthref500]]
+
+*Examples*
+
+link:#CIHGHBIC[Example 3-1] shows how to use this JPQL extension.
+
+[[CIHGHBIC]][[TLJPA607]]
+
+*_Example 3-1 Using CAST EQL_*
+
+[source,oac_no_warn]
+----
+CAST(e.salary NUMERIC(10,2))
+----
+
+[[column]][[TLJPA608]]
+
+'''''
+
+=== COLUMN
+
+Use `COLUMN` to access to unmapped columns in an object's table.
+
+[[sthref501]]
+
+*Usage*
+
+You can use `COLUMN` to access foreign key columns, inheritance
+discriminators, or primitive columns (such as `ROWID`). You can also use
+`COLUMN` in JPQL fragments inside the `@AdditionalCriteria` annotation.
+
+[[sthref502]]
+
+*Examples*
+
+link:#CDCCFCBE[Example 3-2] shows how to use the `COLUMN` EQL.
+
+[[CDCCFCBE]][[TLJPA609]]
+
+*_Example 3-2 Using COLUMN EQL_*
+
+[source,oac_no_warn]
+----
+SELECT e FROM Employee e WHERE COLUMN('MANAGER_ID', e) = :id
+----
+
+In link:#CDCFDDGF[Example 3-3], uses `COLUMN` EQL access a primitive
+column (`ROWID`).
+
+[[CDCFDDGF]][[TLJPA610]]
+
+*_Example 3-3 Using COLUMN with a Primitive Column_*
+
+[source,oac_no_warn]
+----
+SELECT e FROM Employee e WHERE COLUMN('ROWID', e) = :id
+----
+
+[[sthref503]]
+
+*See Also*
+
+For more information, see:
+
+* xref:{relativedir}/annotations_ref.adoc#additionalcriteria["@AdditionalCriteria"]
+
+[[except]][[TLJPA611]]
+
+'''''
+
+=== EXCEPT
+
+When performing multiple queries, use `EXCEPT` to remove the results of
+a second query from the results of a first query.
+
+[[sthref504]]
+
+*Usage*
+
+The `EXCEPT` function is database independent, but requires database
+support.
+
+[[sthref505]]
+
+*Examples*
+
+link:#BABJIEDC[Example 3-4] shows how to use this JPQL extension.
+
+[[BABJIEDC]][[TLJPA612]]
+
+*_Example 3-4 Using EXCEPT EQL_*
+
+[source,oac_no_warn]
+----
+SELECT e FROM Employee e
+EXCEPT SELECT e FROM Employee e WHERE e.salary > e.manager.salary
+----
+
+[[sthref506]]
+
+*See Also*
+
+For more information, see:
+
+* link:#union["UNION"]
+* link:#intersect["INTERSECT"]
+
+[[extract]][[TLJPA613]]
+
+'''''
+
+=== EXTRACT
+
+Use `EXTRACT` to retrieve the date portion of a date/time value.
+
+[[sthref507]]
+
+*Usage*
+
+The `EXTRACT` function is database independent, but requires database
+support
+
+[[sthref508]]
+
+*Examples*
+
+link:#CHDJGBFJ[Example 3-5] shows how to use this JPQL extension.
+
+[[CHDJGBFJ]][[TLJPA614]]
+
+*_Example 3-5 Using EXTRACT EQL_*
+
+[source,oac_no_warn]
+----
+EXTRACT(YEAR, e.startDate)
+----
+
+[[func]][[TLJPA615]]
+
+'''''
+
+=== FUNCTION
+
+Use `FUNCTION` (formerly `FUNC`) to call database specific functions
+from JPQL
+
+[[sthref509]]
+
+*Usage*
+
+You can use `FUNCTION` to call database functions that are not supported
+directly in JPQL and to call user or library specific functions.
+
+NOTE: `FUNCTION` is database specific – it does not translate the function
+call in any way to support different databases as other JPQL functions
+do.
+
+Use `FUNCTION` to call functions with normal syntax. Functions that
+require special syntax cannot be called with `FUNCTION`. Instead, use
+`OPERATOR`
+
+[[sthref510]]
+
+*Examples*
+
+link:#CIHCCHIC[Example 3-6] shows how to use this JPQL extension.
+
+[[CIHCCHIC]][[TLJPA616]]
+
+*_Example 3-6 Using FUNCTION EQL_*
+
+[source,oac_no_warn]
+----
+SELECT p FROM Phone p WHERE FUNCTION('TO_NUMBER', e.areaCode) > 613
+ 
+SELECT FUNCTION('YEAR', e.startDate) AS year, COUNT(e) FROM Employee e GROUP BY year
+----
+
+link:#CIHFDEIJ[Example 3-7] shows how to use `FUNCTION` with Oracle
+Spatial queries
+
+[[CIHFDEIJ]][[TLJPA617]]
+
+*_Example 3-7 Using FUNCTION EQL Oracle Spatial examples_*
+
+[source,oac_no_warn]
+----
+SELECT a FROM Asset a, Geography geo WHERE geo.id = :id AND a.id IN :id_list AND FUNCTION('ST_INTERSECTS', a.geometry, geo.geometry) = 'TRUE'
+----
+
+[source,oac_no_warn]
+----
+SELECT s FROM SimpleSpatial s WHERE FUNCTION('MDSYS.SDO_RELATE', s.jGeometry, :otherGeometry, :params) = 'TRUE' ORDER BY s.id ASC
+----
+
+[[sthref511]]
+
+*See Also*
+
+For more information, see:
+
+* link:#operator["OPERATOR"]
+
+[[intersect]][[TLJPA618]]
+
+'''''
+
+=== INTERSECT
+
+When performing multiple queries, use `INTERSECT` to return only results
+that are found in both queries.
+
+[[sthref512]]
+
+*Examples*
+
+link:#BABGGIFA[Example 3-8] shows how to use this JPQL extension.
+
+[[BABGGIFA]][[TLJPA54133]]
+
+*_Example 3-8 Using INTERSECT EQL_*
+
+[source,oac_no_warn]
+----
+SELECT MAX(e.salary) FROM Employee e WHERE e.address.city = :city1
+UNION SELECT MAX(e.salary) FROM Employee e WHERE e.address.city = :city2
+SELECT e FROM Employee e JOIN e.phones p WHERE p.areaCode = :areaCode1
+INTERSECT SELECT e FROM Employee e JOIN e.phones p WHERE p.areaCode = :areaCode2
+SELECT e FROM Employee e
+EXCEPT SELECT e FROM Employee e WHERE e.salary > e.manager.salary
+----
+
+[[sthref513]]
+
+*See Also*
+
+For more information, see:
+
+* link:#union["UNION"]
+* link:#except["EXCEPT"]
+
+[[on]][[TLJPA620]]
+
+'''''
+
+=== ON
+
+Use the `ON` clause to append additional conditions to a `JOIN`
+condition, such as for outer joins.
+
+[[sthref514]]
+
+*Usage*
+
+EclipseLink supports using the `ON` clause between two root level
+objects.
+
+[[sthref515]]
+
+*Examples*
+
+link:#BABFGBAD[Example 3-9] shows how to use this JPQL extension.
+
+[[BABFGBAD]][[TLJPA621]]
+
+*_Example 3-9 Using ON Clause EQ_*
+
+[source,oac_no_warn]
+----
+SELECT e FROM Employee e LEFT JOIN e.address ON a.city = :city
+----
+
+[source,oac_no_warn]
+----
+SELECT e FROM Employee e LEFT JOIN MailingAddress a ON e.address = a.address
+----
+
+[[sthref516]]
+
+*See Also*
+
+For more information, see:
+
+* "JPQL"
+`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Querying/JPQL`
+
+[[operator]][[TLJPA622]]
+
+'''''
+
+=== OPERATOR
+
+Use `OPERATION` to call any EclipseLink operator.
+
+[[sthref517]]
+
+*Usage*
+
+EclipseLink supports many database functions using standard operator
+names that are translated to different databases. EclipseLink operators
+are supported on any database that has an equivalent function (or set of
+functions). Use the EclipseLink `ExpressionOperator` class to define a
+custom operator or allow `DatabasePlatform` to override an operator..
+
+`OPERATOR` is similar to `FUNCTION`, but allows the function to be
+database independent, and you can call functions that require special
+syntax.
+
+The supported EclipseLink operators include:
+
+* Abs
+* ToUpperCase
+* ToLowerCase
+* Chr
+* Concat
+* Coalesce
+* Case
+* HexToRaw
+* Initcap
+* Instring
+* Soundex
+* LeftPad
+* LeftTrim
+* RightPad
+* RightTrim
+* Substring
+* Translate
+* Ascii
+* Length
+* CharIndex
+* Cast
+* Extract
+* CharLength
+* Difference
+* Reverse
+* Replicate
+* Right
+* Locate
+* ToNumber
+* ToChar
+* AddMonths
+* DateToString
+* MonthsBetween
+* NextDay
+* RoundDate
+* AddDate
+* DateName
+* DatePart
+* DateDifference
+* TruncateDate
+* NewTime
+* Nvl
+* NewTime
+* Ceil
+* Cos
+* Cosh
+* Acos
+* Asin
+* Atan
+* Exp
+* Sqrt
+* Floor
+* Ln
+* Log
+* Mod
+* Power
+* Round
+* Sign
+* Sin
+* Sinh
+* Tan
+* Tanh
+* Trunc
+* Greatest
+* Least
+* Add
+* Subtract
+* Divide
+* Multiply
+* Atan2
+* Cot
+* Deref
+* Ref
+* RefToHex
+* Value
+* ExtractXml
+* ExtractValue
+* ExistsNode
+* GetStringVal
+* GetNumberVal
+* IsFragment
+* SDO_WITHIN_DISTANCE
+* SDO_RELATE
+* SDO_FILTER
+* SDO_NN
+* NullIf
+
+[[sthref518]]
+
+*Examples*
+
+link:#BGBGIAEE[Example 3-10] shows how to use this JPQL extension.
+
+[[BGBGIAEE]][[TLJPA623]]
+
+*_Example 3-10 Using OPERATOR EQL_*
+
+[source,oac_no_warn]
+----
+SELECT e FROM Employee e WHERE OPERATOR('ExtractXml', e.resume, '@years-experience') > 10
+----
+
+[[sthref519]]
+
+*See Also*
+
+For more information, see:
+
+* link:#func["FUNCTION"]
+* "JPQL"
+`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Querying/JPQL`
+
+[[CIHGBAEC]][[TLJPA54066]]
+
+'''''
+
+=== REGEXP
+
+Use `REGEXP` to determine if a string matches a regular expression.
+
+[[sthref520]]
+
+*Usage*
+
+To use the `REGEXP` function, your database must support regular
+expressions.
+
+[[sthref521]]
+
+*Examples*
+
+link:#BABHHDCH[Example 3-11] shows how to use this JPQL extension.
+
+[[BABHHDCH]][[TLJPA54067]]
+
+*_Example 3-11 Using REGEXP EQL_*
+
+[source,oac_no_warn]
+----
+e.lastName REGEXP 'îDr\.*'
+----
+
+[[sthref522]]
+
+*See Also*
+
+For more information, see:
+
+* "JPQL"
+`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Querying/JPQL`
+
+[[sql]][[TLJPA626]]
+
+'''''
+
+=== SQL
+
+Use `SQL` to integrate SQL within a JPQL statement. This provides an
+alternative to using native SQL queries simply because the query may
+require a function not supported in JPQL.
+
+[[sthref523]]
+
+*Usage*
+
+The `SQL` function includes both the SQL string (to inline into the JPQL
+statement) and the arguments to translate into the SQL string. Use a
+question mark character ( *?* ) to define parameters within the SQL that
+are translated from the SQL function arguments.
+
+You can use `SQL` to call database functions with non standard syntax,
+embed SQL literals, and perform any other SQL operations within JPQL.
+With SQL, you can still use JPQL for the query.
+
+[[sthref524]]
+
+*Examples*
+
+link:#CHDCEHAI[Example 3-12] shows how to use this JPQL extension.
+
+[[CHDCEHAI]][[TLJPA627]]
+
+*_Example 3-12 Using SQL EQ_*
+
+[source,oac_no_warn]
+----
+SELECT p FROM Phone p WHERE SQL('CAST(? AS CHAR(3))', e.areaCode) = '613'
+----
+
+[source,oac_no_warn]
+----
+SELECT SQL('EXTRACT(YEAR FROM ?)', e.startDate) AS year, COUNT(e) FROM Employee e GROUP BY year
+----
+
+[source,oac_no_warn]
+----
+SELECT e FROM Employee e ORDER BY SQL('? NULLS FIRST', e.startDate)
+ 
+----
+
+[source,oac_no_warn]
+----
+SELECT e FROM Employee e WHERE e.startDate = SQL('(SELECT SYSDATE FROM DUAL)')
+----
+
+[[sthref525]]
+
+*See Also*
+
+For more information, see:
+
+* "JPQL"
+`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Querying/JPQL`
+
+[[table]][[TLJPA628]]
+
+'''''
+
+=== TABLE
+
+Use `TABLE` to access unmapped tables.
+
+[[sthref526]]
+
+*Usage*
+
+With the `TABLE` function, you use join, collection, history, auditing,
+or system tables in a JPQL query.
+
+[[sthref527]]
+
+*Examples*
+
+link:#CIAFABDE[Example 3-13] shows how to use an *audit* table
+(unmapped) within a `SELECT` statement.
+
+[[CIAFABDE]][[TLJPA629]]
+
+*_Example 3-13 Using TABLE EQL_*
+
+[source,oac_no_warn]
+----
+SELECT e, a.LAST_UPDATE_USER FROM Employee e, TABLE('AUDIT') a WHERE a.TABLE = 'EMPLOYEE' AND a.ROWID = COLUMN('ROWID', e)
+----
+
+[[sthref528]]
+
+*See Also*
+
+For more information, see:
+
+* "JPQL"
+`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Querying/JPQL`
+
+[[treat]][[TLJPA630]]
+
+'''''
+
+=== TREAT
+
+Use `TREAT` to cast an object as its subclass value (that is, downcast
+related entities with inheritance).
+
+[[sthref529]]
+
+*Examples*
+
+link:#BEHECHCD[Example 3-14] shows how to use this JPQL extension.
+
+[[BEHECHCD]][[TLJPA631]]
+
+*_Example 3-14 Using TREAT EQL_*
+
+[source,oac_no_warn]
+----
+SELECT e FROM Employee JOIN TREAT(e.projects AS LargeProject) 
+p WHERE p.budget > 1000000
+----
+
+[[union]][[TLJPA632]]
+
+'''''
+
+=== UNION
+
+Use `UNION` to combine the results of two queries into a single query.
+
+[[sthref530]]
+
+*Usage*
+
+With `UNION`, the unique results from both queries will be returned. If
+you include the `ALL` option, the results found in both queries will be
+duplicated.
+
+[[sthref531]]
+
+*Examples*
+
+link:#CJHHJIDB[Example 3-15] shows how to use this JPQL extension.
+
+[[CJHHJIDB]][[TLJPA633]]
+
+*_Example 3-15 Using UNION EQL_*
+
+[source,oac_no_warn]
+----
+SELECT MAX(e.salary) FROM Employee e WHERE e.address.city = :city1
+UNION SELECT MAX(e.salary) FROM Employee e WHERE e.address.city = :city2
+----
+
+[[sthref532]]
+
+*See Also*
+
+For more information, see:
+
+* link:#except["EXCEPT"]
+* link:#intersect["INTERSECT"]
+* "JPQL"
+`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Querying/JPQL`

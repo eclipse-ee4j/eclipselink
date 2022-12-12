@@ -1,0 +1,4 @@
+:nofooter:
+This graphic displays a sample JAXB architecture. It includes the
+following components: XML schema, binding compiler, schema-derived
+classes & interfaces, content objects, application, and XML document.

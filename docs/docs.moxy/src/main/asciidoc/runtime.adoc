@@ -1,0 +1,69 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RUNTIME]]
+== EclipseLink MOXy Runtime
+
+This chapter introduces and describes EclipseLink MOXy. EclipseLink MOXy
+is one implementation of the standard runtime defined by the JAXB
+specification.
+
+To specify EclipseLink MOXy as your JAXB provider:
+
+* Add the JAXB APIs (included in Java SE 6) and `eclipselink.jar` on
+your classpath.
+* Use a `jaxb.properties` file (in the same package as your domain
+classes).
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/runtime001.adoc#RUNTIME001[Specifying the EclipseLink Runtime]
+* xref:{relativedir}/runtime002.adoc#RUNTIME002[Bootstrapping]
+* xref:{relativedir}/runtime003.adoc#RUNTIME003[Using XML Bindings]
+* xref:{relativedir}/runtime004.adoc#RUNTIME004[Using MetadataSource]
+* xref:{relativedir}/runtime005.adoc#RUNTIME005[Generating an XML Schema]
+* xref:{relativedir}/runtime006.adoc#RUNTIME006[Validating Against an XML Schema]
+* xref:{relativedir}/runtime007.adoc#RUNTIME007[Understanding Events]
+* xref:{relativedir}/runtime008.adoc#RUNTIME008[Querying Objects by XPath]
+* xref:{relativedir}/runtime009.adoc#RUNTIME009[Binding to an Existing Document]
+
+//Specifying the EclipseLink Runtime
+include::{rootdir}/runtime001.adoc[]
+
+//Bootstrapping
+include::{rootdir}/runtime002.adoc[]
+
+//Using XML Bindings
+include::{rootdir}/runtime003.adoc[]
+
+//Using MetadataSource
+include::{rootdir}/runtime004.adoc[]
+
+//Generating an XML Schema
+include::{rootdir}/runtime005.adoc[]
+
+//Validating Against an XML Schema
+include::{rootdir}/runtime006.adoc[]
+
+//Understanding Events
+include::{rootdir}/runtime007.adoc[]
+
+//Querying Objects by XPath
+include::{rootdir}/runtime008.adoc[]
+
+//Binding to an Existing Document
+include::{rootdir}/runtime009.adoc[]

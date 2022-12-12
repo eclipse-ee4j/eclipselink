@@ -1,0 +1,10 @@
+:nofooter:
+This figure illustrates the relationship between entity architecture
+elements. A `Persistence` class can create one or more
+`EntityManagerFactory` objects. An `EntityManagerFactory` object can
+create one or more `EntityManagers`. An `EntityManagerFactory` is
+configured by one Persistence Unit. The properties defined by the
+Persistence Unit are inherited by the `EntityManager`. The Persistence
+Unit defines the Persistence Context. The Persistence Context is the set
+of managed `Entity` instances within the `EntityManager`. One or more
+`EntityManagers` can manage a Persistence Context.

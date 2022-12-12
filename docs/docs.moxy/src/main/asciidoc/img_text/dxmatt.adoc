@@ -1,0 +1,5 @@
+:nofooter:
+This figure illustrates an XML direct mapping to an attribute in a
+corresponding XML document. The Customer class contains the attribute
+`id`. The `id` attribute is mapped to the `<customerid>` element in the
+XML document. The XPath for the mapping is `@id`.

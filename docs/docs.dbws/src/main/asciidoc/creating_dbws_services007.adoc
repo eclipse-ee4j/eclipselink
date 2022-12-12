@@ -1,0 +1,158 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSCREATE007]]
+=== Creating from a Stored Procedure with complex PL/SQL arguments
+
+With EclipseLink, you can create a DBWS web service from a stored
+procedure that uses complex PL/SQL types as either an `IN`, `OUT`, or
+`IN` `OUT` argument.
+
+==== Example
+
+In this example, the following stored procedure is used:
+
+[source,oac_no_warn]
+----
+PROCEDURE P1(OLDREC IN ARECORD, FOO IN VARCHAR2, AREC OUT ARECORD) IS  BEGIN    AREC.T1 := ... some processing based upon OLDREC    AREC.T2 := ... AND FOO    AREC.T3 := ...  END P1;
+ 
+----
+
+Type `ARECORD` is defined in the PL/SQL package `SOMEPACKAGE` as
+follows:
+
+[source,oac_no_warn]
+----
+CREATE OR REPLACE PACKAGE SOMEPACKAGE AS
+  TYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;
+  TYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
+  TYPE ARECORD IS RECORD (
+    T1 TBL1,
+    T2 TBL2,
+    T3 BOOLEAN
+  );
+  PROCEDURE P1(OLDREC IN ARECORD, FOO IN VARCHAR2, AREC OUT ARECORD);
+END SOMEPACKAGE;
+----
+
+Because PL/SQL record and collection types cannot be transported via
+JDBC, EclipseLink will generate an anonymous block of PL/SQL code that
+contains the functions to convert to and from JDBC and PL/SQl types. To
+be successful, each PL/SQL type or collection type that will appear in
+an `IN`, `IN OUT`, or `OUT OF RETURN` argument (or any PL/SQL record or
+collection type that is nested within these arguments) _must_ have an
+equivalent JDBC type. The name of this type must be in the form
+`<package name>_<type name>`.
+
+For this example, the following JDBC types are required:
+
+[source,oac_no_warn]
+----
+CREATE OR REPLACE TYPE SOMEPACKAGE_TBL1 AS TABLE OF VARCHAR2(111)
+ 
+CREATE OR REPLACE TYPE SOMEPACKAGE_TBL2 AS TABLE OF NUMBER
+ 
+CREATE OR REPLACE TYPE SOMEPACKAGE_ARECORD AS OBJECT (
+  T1 SOMEPACKAGE_TBL1,
+  T2 SOMEPACKAGE_TBL2,
+  T3 BOOLEAN
+)
+----
+
+The DBWSBuilder utility requires a DBWS configuration file as input.
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <properties>
+    <property name="projectName">testPLSQLProcedure</property>
+    ... database properties
+  </properties>
+  <plsql-procedure
+    name="plsqlprocedure"
+    catalogPattern="SOMEPACKAGE"
+    procedurePattern="P1"
+  />
+</dbws-builder>
+----
+
+Notice that `returnType` is set to `SOMEPACKAGE_ARECORD`. This value
+indicates a complex type in the generated EclipseLink DBWS schema (as
+shown below). In this case, it is constructed based on the contents of
+the `SOMEPACKAGE` package.
+
+Execute the `DBWSBuilder`, as shown here:
+
+[source,oac_no_warn]
+----
+prompt > dbwsbuilder.cmd -builderFile dbws-builder.xml -stageDir output_directory -packageAs wls testPLSQLProcedure.war
+----
+
+where
+
+* `dbws-builder.xml` is the DBWS builder configuration file (as shown
+previously).
+* `output_directory` is the output directory for the generated files.
+* `-packageAs` is the platform on which the web service will be
+deployed.
+
+The generated `eclipselink-dbws-schema.xsd` file follows:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:plsqlprocedure" xmlns="urn:plsqlprocedure" elementFormDefault="qualified">
+   <xsd:complexType name="SOMEPACKAGE_TBL1">
+      <xsd:sequence>
+         <xsd:element name="item" type="xsd:string" maxOccurs="unbounded" nillable="true"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="SOMEPACKAGE_TBL2">
+      <xsd:sequence>
+         <xsd:element name="item" type="xsd:decimal" maxOccurs="unbounded" nillable="true"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="SOMEPACKAGE_ARECORD">
+      <xsd:sequence>
+         <xsd:element name="t1">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="item" type="xsd:string" maxOccurs="unbounded" nillable="true"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="t2">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="item" type="xsd:decimal" maxOccurs="unbounded" nillable="true"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="t3" type="xsd:boolean" nillable="true"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="simple-xml-format">
+      <xsd:sequence>
+         <xsd:any minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="SOMEPACKAGE_TBL1" type="SOMEPACKAGE_TBL1"/>
+   <xsd:element name="SOMEPACKAGE_TBL2" type="SOMEPACKAGE_TBL2"/>
+   <xsd:element name="SOMEPACKAGE_ARECORD" type="SOMEPACKAGE_ARECORD"/>
+</xsd:schema>
+----

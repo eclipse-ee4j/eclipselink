@@ -1,0 +1,40 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[INTRODUCTION003]]
+=== About This Documentation
+
+EclipseLink is the reference implementation of the Java Persistence
+Architecture (JPA) specification It also includes many enhancements and
+extensions.
+
+==== Other Resources
+
+For more information, see:
+
+* EclipseLink documentation center +
+`http://www.eclipse.org/eclipselink/documentation/`
+* The EclipseLink API reference documentation (Javadoc) for complete
+information on core JAXB plus the EclipseLink enhancements +
+`http://www.eclipse.org/eclipselink/api/`
+* Java Architecture for XML Binding (JAXB) specification +
+`http://www.jcp.org/en/jsr/detail?id=222`
+* Examples that display the use of a number of JAXB and EclipseLink MOXy
+features +
+`http://wiki.eclipse.org/EclipseLink/Examples/MOXy`
+* JAXB Tutorial +
+`http://www.oracle.com/technetwork/articles/javase/index-140168.html`

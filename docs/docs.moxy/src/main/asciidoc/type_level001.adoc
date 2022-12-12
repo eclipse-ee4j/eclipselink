@@ -1,0 +1,219 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[TYPELEVEL001]]
+=== Defining the Default Root Element
+
+At least one of your mapped classes must have a default root element
+defined. This tells EclipseLink what the top-level root of your XML
+document will be. Consider the *Customer* and *Address* classes shown in
+link:#CIHDBEDH[Figure 3-1]:
+
+[[CIHDBEDH]]
+
+*_Figure 3-1 Sample Mapped Classes_*
+
+image:{imagesrelativedir}/defaultrootelement.png[Sample Mapped Classes,title="Sample Mapped Classes"] +
+xref:{imagestextrelativedir}/defaultrootelement.adoc[Description of "Figure 3-1 Sample
+Mapped Classes"] +
+ +
+
+These classes correspond to the XML schema shown in
+link:#CIHFBEII[Example 3-1]. The schema contains a top-level element of
+type `customer-type`, therefore our *Customer* class will need to have a
+default root element specified.
+
+[[CIHFBEII]]
+
+*_Example 3-1 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+<xsd:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="address-type">
+      <xsd:sequence>
+         <element name="street" type="xsd:string"/>
+         <element name="city" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+ 
+   <xsd:element name="customer" type="customer-type"/>
+ 
+   <xsd:complexType name="customer-type">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string"/>
+         <xsd:element name="billing-address" type="address-type"/>
+         <xsd:element name="shipping-address" type="address-type"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>
+ 
+----
+
+link:#CIHGHJDA[Example 3-2] shows how to annotate your Java class to
+specify a default root element. All that is needed is the standard JAXB
+`@XmlRootElement` annotation.
+
+[[CIHGHJDA]]
+
+*_Example 3-2 Using the @XmlRootElement Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+public class Customer {
+   private String name;
+ 
+   @XmlElement(name="billing-address")
+   private Address billingAddress;
+ 
+   @XmlElement(name="shipping-address")
+   private Address shippingAddress;
+ 
+   ...
+}
+ 
+----
+
+link:#CIHFDJCE[Example 3-3] shows how specify a default root element in
+EclipseLink's OXM metadata format.
+
+[[CIHFDJCE]]
+
+*_Example 3-3 Specifying a Default Root Element_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Customer">
+   <xml-root-element/>
+   <java-attributes>
+      <xml-element java-attribute="name"/>
+      <xml-element java-attribute="billingAddress" name="billing-address"/>
+      <xml-element java-attribute="shippingAddress" name="shipping-address"/>
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+==== Customizing the Default Root Element
+
+In link:#CIHGHJDA[Example 3-2], our class is called *Customer*, and our
+root element name in XML is `customer`. By default, when
+`@XmlRootElement` is specified, the name of the class has its first
+letter lower-cased, and this is set as the root element name. If,
+however, the element name in XML is different from the Java class name,
+a name attribute can be included in the annotation (as in
+link:#CIHCGICI[Example 3-4]) or OXM metadata (as in
+link:#CIHHJIHH[Example 3-5]):
+
+[[CIHCGICI]]
+
+*_Example 3-4 Using Annotations_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement(name="my-customer")
+public class Customer {
+   private String name;
+ 
+   @XmlElement(name="billing-address")
+   private Address billingAddress;
+ 
+   @XmlElement(name="shipping-address")
+   private Address shippingAddress;
+ 
+   ...
+}
+ 
+----
+
+[[CIHHJIHH]]
+
+*_Example 3-5 Using OXM Metadata_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Customer">
+   <xml-root-element name="my-customer"/>
+   <java-attributes>
+      <xml-element java-attribute="name"/>
+      <xml-element java-attribute="billingAddress" name="billing-address"/>
+      <xml-element java-attribute="shippingAddress" name="shipping-address"/>
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+For more information on JAXB name-binding algorithms, see "Appendix D:
+Binding XML Names to Java Identifiers" of the Java Architecture for XML
+Binding (JAXB) Specification (`http://jcp.org/en/jsr/detail?id=222`).
+
+==== Understanding How EclipseLink Uses the Default Root Element
+
+When an instance of the *Customer* class is persisted to XML, the
+EclipseLink runtime performs the following:
+
+* Gets the default root element. The *Customer* class instance
+corresponds to the root of the XML document. The EclipseLink runtime
+uses the default root element (`customer`) specified in either
+annotations or OXM to start the XML document. EclipseLink then uses the
+mappings on the class to marshal the object's attributes.
++
+[source,oac_no_warn]
+----
+<customer>
+   <name>...</name>
+</customer>
+ 
+----
+* When the EclipseLink runtime encounters an object attribute such as
+`billingAddress`, it checks the mapping associated with it to determine
+with what element (billing-`address`) to continue.
++
+[source,oac_no_warn]
+----
+<customer>
+   <name>...</name>
+   <billing-address/>
+</customer>
+ 
+----
+* The EclipseLink runtime checks the mapping's reference descriptor
+(*Address*) to determine what attributes to persist.
++
+[source,oac_no_warn]
+----
+<customer>
+   <name>...</name>
+   <billing-address>
+      <street>...</street>
+      <city>...</city>
+   </billing-address>
+</customer>
+----

@@ -1,0 +1,88 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[CACHE009]]
+=== About Cache Coordination
+
+The need to maintain up-to-date data for all applications is a key
+design challenge for building a distributed application. The difficulty
+of this increases as the number of servers within an environment
+increases. EclipseLink provides a distributed cache coordination feature
+that ensures data in distributed applications remains current.
+
+Cache coordination reduces the number of optimistic lock exceptions
+encountered in a distributed architecture, and decreases the number of
+failed or repeated transactions in an application. However, cache
+coordination in no way eliminates the need for an effective locking
+policy. To effectively ensure working with up-to-date data, cache
+coordination must be used with optimistic or pessimistic locking. Oracle
+recommends that you use cache coordination with an optimistic locking
+policy.
+
+Tune the EclipseLink cache for each class to help eliminate the need for
+distributed cache coordination. Always tune these settings before
+implementing cache coordination. For more information, see "Monitoring
+and Optimizing EclipseLink-Enabled Applications" in _Solutions Guide for
+EclipseLink_.
+
+You can use cache invalidation to improve cache coordination efficiency.
+For more information, see "Setting Entity Caching Expiration" in
+_Solutions Guide for EclipseLink_.
+
+As link:#CDEIJFHB[Figure 8-2] shows, cache coordination is a session
+feature that allows multiple, possibly distributed, instances of a
+session to broadcast object changes among each other so that each
+session's cache is either kept up-to-date or notified that the cache
+must update an object from the data source the next time it is read.
+
+NOTE: You cannot use isolated client sessions with cache coordination. For
+more information, see xref:#CDEEGICF[Shared, Isolated,
+Protected, Weak, and Read-only Caches.]
+
+[[CDEIJFHB]][[OTLCG94340]]
+
+*_Figure 8-2 Coordinated Persistence Unit (Session) Caches_*
+
+image:{imagesrelativedir}/cachcord.png[Description of Figure 8-2 follows,title="Description of Figure 8-2 follows"] +
+xref:{imagestextrelativedir}/cachcord.adoc[Description of "Figure 8-2 Coordinated Persistence Unit (Session) Caches"] +
+
+When sessions are distributed, that is, when an application contains
+multiple sessions (in the same JVM, in multiple JVMs, possibly on
+different servers), as long as the servers hosting the sessions are
+interconnected on the network, sessions can participate in cache
+coordination. Coordinated cache types that require discovery services
+also require the servers to support User Datagram Protocol (UDP)
+communication and multicast configuration. For more information, see
+xref:#CHDCJEFJ[Coordinating JMS and RMI Caches.]
+
+[[CDEDBJCJ]][[OTLCG94341]]
+
+==== When to Use Cache Coordination
+
+Cache coordination can enhance performance and reduce the likelihood of
+stale data for applications that have the following characteristics:
+
+* Changes are all being performed by the same Java application operating
+with multiple, distributed sessions
+* Primarily read-based
+* Regularly requests and updates the same objects
+
+To maximize performance, avoid cache coordination for applications that
+do not have these characteristics.
+
+For other options to reduce the likelihood of stale data, see
+xref:#CACHE004[About Handling Stale Data.]
