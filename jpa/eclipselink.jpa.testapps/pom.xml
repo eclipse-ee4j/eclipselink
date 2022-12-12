@@ -282,6 +282,7 @@
         <module>jpa.test.datetime</module>
         <module>jpa.test.ddlgeneration</module>
         <module>jpa.test.delimited</module>
+        <module>jpa.test.diagnostic</module>
         <module>jpa.test.extensibility</module>
         <module>jpa.test.fetchgroups</module>
         <module>jpa.test.fieldaccess.advanced</module>

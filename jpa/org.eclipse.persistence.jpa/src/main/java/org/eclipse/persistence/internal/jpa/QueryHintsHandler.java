@@ -319,6 +319,7 @@ public class QueryHintsHandler {
             addHint(new SerializedObject());
             addHint(new ReturnNameValuePairsHint());
             addHint(new PrintInnerJoinInWhereClauseHint());
+            addHint(new QueryResultsCacheValidation());
         }
 
         Hint(String name, String defaultValue) {
@@ -2219,6 +2220,26 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setPrintInnerJoinInWhereClause((Boolean)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    protected static class QueryResultsCacheValidation extends Hint {
+        QueryResultsCacheValidation() {
+            super(QueryHints.QUERY_RESULTS_CACHE_VALIDATION, HintValues.FALSE);
+            valueArray = new Object[][] {
+                    {HintValues.TRUE, Boolean.TRUE},
+                    {HintValues.FALSE, Boolean.FALSE}
+            };
+        }
+
+        @Override
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query instanceof ReadQuery) {
+                ((ReadQuery)query).setAllowQueryResultsCacheValidation((Boolean)valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
