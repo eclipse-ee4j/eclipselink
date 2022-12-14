@@ -52,6 +52,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSph
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_5_0_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_5_1_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_6_0_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.WildFlyPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.pool.ConnectionPolicyConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.pool.ConnectionPoolConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.pool.PoolsConfig;
@@ -226,6 +227,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_6_0_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(JBossPlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(NetWeaver_7_1_PlatformConfig.class));
+        addDescriptor(buildServerPlatformConfigDescriptorFor(WildFlyPlatformConfig.class));
 
         // Set the namespaces on all descriptors.
         NamespaceResolver namespaceResolver = new NamespaceResolver();
@@ -1200,6 +1202,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         descriptor.getInheritancePolicy().addClassIndicator(WebSphere_5_1_PlatformConfig.class, "websphere-51-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebSphere_6_0_PlatformConfig.class, "websphere-60-platform");
         descriptor.getInheritancePolicy().addClassIndicator(JBossPlatformConfig.class, "jboss-platform");
+        descriptor.getInheritancePolicy().addClassIndicator(WildFlyPlatformConfig.class, "wildfly-platform");
         descriptor.getInheritancePolicy().addClassIndicator(NetWeaver_7_1_PlatformConfig.class, "netweaver-71-platform");
 
 
