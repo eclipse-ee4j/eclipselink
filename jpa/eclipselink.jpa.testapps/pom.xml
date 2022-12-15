@@ -625,7 +625,7 @@
                     <dependency>
                         <groupId>org.wildfly</groupId>
                         <artifactId>wildfly-client-all</artifactId>
-                        <version>27.0.0.Alpha4</version>
+                        <version>${wildfly.version}</version>
                     </dependency>
                 </dependencies>
             </dependencyManagement>
@@ -641,7 +641,6 @@
                     <plugin>
                         <groupId>org.wildfly.plugins</groupId>
                         <artifactId>wildfly-maven-plugin</artifactId>
-                        <version>2.1.0.Beta1</version>
                         <configuration>
                             <skip>${wildfly.deploy.skip}</skip>
                             <username>${wildfly.username}</username>

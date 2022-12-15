@@ -43,6 +43,7 @@ public class TargetServer {
     public static final String  WebLogic_12 = "WebLogic_12";
     public static final String  JBoss = "JBoss";
     public static final String  SAPNetWeaver_7_1 = "NetWeaver_7_1";
+    public static final String  WildFly = "WildFly";
 
     public static final String DEFAULT = None;
 }

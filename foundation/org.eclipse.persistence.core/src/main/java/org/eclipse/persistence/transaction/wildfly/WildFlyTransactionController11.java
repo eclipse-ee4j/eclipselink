@@ -31,7 +31,7 @@ import org.eclipse.persistence.transaction.JTA11TransactionController;
 public class WildFlyTransactionController11 extends JTA11TransactionController {
 
     /** WildFly specific JNDI name of {@code TransactionSynchronizationRegistry} instance. */
-    public static final String JNDI_TRANSACTION_SYNCHRONIZATION_REGISTRY = "java:wildfly/TransactionSynchronizationRegistry";
+    public static final String JNDI_TRANSACTION_SYNCHRONIZATION_REGISTRY = "java:jboss/TransactionSynchronizationRegistry";
 
     /**
      * Default constructor
