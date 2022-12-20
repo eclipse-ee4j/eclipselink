@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,19 +16,27 @@
 //       - 535250: Test meta-annotations with dependency cycle
 package org.eclipse.persistence.testing.tests.jpa22.metadata;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.samples.annotations.CycleA;
 import org.eclipse.samples.annotations.CycleB;
 import org.eclipse.samples.annotations.CycleSelf;
 import org.junit.Assert;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MetadataASMFactoryTest extends JUnitTestCase {
     
@@ -45,6 +53,7 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
         suite.addTest(new MetadataASMFactoryTest("testMetadataAnnotations"));
         suite.addTest(new MetadataASMFactoryTest("testAnnotationsWithCycle"));
         suite.addTest(new MetadataASMFactoryTest("testAnnotationsWithPrimitiveCycle"));
+        suite.addTest(new MetadataASMFactoryTest("testReadFallback"));
         return suite;
     }
 
@@ -61,7 +70,7 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
     }
 
     /**
-     * Check meta-annotations graph with cycle A -> B -> C -> A
+     * Check meta-annotations graph with cycle A -{@literal >} B -{@literal >} C -{@literal >} A
      */
     public void testAnnotationsWithCycle() {
         try {
@@ -76,7 +85,7 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
     }
 
     /**
-     * Check meta-annotations graph with primitive cycle Self -> Self
+     * Check meta-annotations graph with primitive cycle Self -{@literal >} Self
      */
     public void testAnnotationsWithPrimitiveCycle() {
         try {
@@ -88,4 +97,59 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
         }
     }
 
+    public void testReadFallback() {
+        SessionLog log = AbstractSessionLog.getLog();
+        try {
+            LW tracker = new LW();
+            AbstractSessionLog.setLog(tracker);
+            ClassLoader cl = new EmployeeLoader(MetadataASMFactoryTest.class.getClassLoader());
+            MetadataAsmFactory maf = new MetadataAsmFactory(new MetadataLogger(null), cl);
+            MetadataClass employee = maf.getMetadataClass("org.eclipse.persistence.testing.tests.jpa22.metadata.Employee");
+            Assert.assertNull(tracker.msg);
+            Assert.assertNotNull(employee.getAnnotation("javax.persistence.Entity"));
+        } finally {
+            AbstractSessionLog.setLog(log);
+        }
+    }
+
+    private static class EmployeeLoader extends ClassLoader {
+        private final ClassLoader parent;
+
+        public EmployeeLoader(ClassLoader parent) {
+            super(parent);
+            this.parent = parent;
+        }
+
+        @Override
+        public InputStream getResourceAsStream(String name) {
+            if ("org/eclipse/persistence/testing/tests/jpa22/metadata/Employee.class".equals(name)) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                byte[] cls = new byte[4096];
+                try (InputStream is = MetadataASMFactoryTest.class.getResourceAsStream("Employee.class");) {
+                    is.read(cls);
+                    baos.write(cls, 0, 5);
+                    // change class version to some random high enough
+                    // value to trigger the fallback
+                    baos.write(99);
+                    baos.write(99);
+                    baos.write(cls, 7, cls.length - 8);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                return new ByteArrayInputStream(baos.toByteArray());
+            }
+            return super.getResourceAsStream(name);
+        }
+    }
+
+    private static class LW extends DefaultSessionLog {
+        private String msg = null;
+        @Override
+        public synchronized void log(SessionLogEntry entry) {
+            if (SEVERE == entry.getLevel()) {
+                msg = entry.getMessage();
+            }
+            super.log(entry);
+        }
+    }
 }
