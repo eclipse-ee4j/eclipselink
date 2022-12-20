@@ -90,20 +90,13 @@ public class MetadataAsmFactory extends MetadataFactory {
     protected void buildClassMetadata(MetadataClass metadataClass, String className, boolean isLazy) {
         ClassMetadataVisitor visitor = new ClassMetadataVisitor(metadataClass, isLazy);
         InputStream stream = null;
+        String resourceString = className.replace('.', '/') + ".class";
+        boolean markSupported = false;
         try {
-            String resourceString = className.replace('.', '/') + ".class";
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                final String f_resourceString = resourceString;
-                stream = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-                    @Override
-                    public InputStream run() {
-                        return m_loader.getResourceAsStream(f_resourceString);
-                    }
-                });
-            } else {
-                stream = m_loader.getResourceAsStream(resourceString);
+            stream = readResource(resourceString);
+            if (markSupported = stream.markSupported()) {
+                stream.mark(Integer.MAX_VALUE);
             }
-
             ClassReader reader = new ClassReader(stream);
             Attribute[] attributes = new Attribute[0];
             reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
@@ -113,6 +106,25 @@ public class MetadataAsmFactory extends MetadataFactory {
             // in such case log a warning and try to re-read the class
             // without class version check
             if (stream != null) {
+                if (markSupported) {
+                    try {
+                        stream.reset();
+                    } catch (IOException e) {
+                        try {
+                            stream.close();
+                        } catch (IOException ex) {
+                            //ignore
+                        }
+                        stream = readResource(resourceString);
+                    }
+                } else {
+                    try {
+                        stream.close();
+                    } catch (IOException ex) {
+                        //ignore
+                    }
+                    stream = readResource(resourceString);
+                }
                 try {
                     ClassReader reader = new EclipseLinkClassReader(stream);
                     Attribute[] attributes = new Attribute[0];
@@ -225,6 +237,19 @@ public class MetadataAsmFactory extends MetadataFactory {
                     }
                 }
             }
+        }
+    }
+
+    private InputStream readResource(String name) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
+                @Override
+                public InputStream run() {
+                    return m_loader.getResourceAsStream(name);
+                }
+            });
+        } else {
+            return m_loader.getResourceAsStream(name);
         }
     }
 
