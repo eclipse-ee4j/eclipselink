@@ -27,7 +27,7 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.samples.annotations.CycleA;
 import org.eclipse.samples.annotations.CycleB;
 import org.eclipse.samples.annotations.CycleSelf;
