@@ -95,7 +95,15 @@ public class MongoDatabaseConnectionFactory implements ConnectionFactory {
                 isExternal = false;
                 List<MongoCredential> credentialsList =  new ArrayList<>();
                 if ((connectionSpec.getUser() != null) && (connectionSpec.getUser().length() > 0)) {
-                    MongoCredential credential = MongoCredential.createCredential(connectionSpec.getUser(), connectionSpec.getDB(), connectionSpec.getPassword());
+                    MongoCredential credential = null;
+
+                    if ( connectionSpec.getAuthSource() != null ) {
+                        credential = MongoCredential.createCredential(connectionSpec.getUser(), connectionSpec.getAuthSource(), connectionSpec.getPassword());
+                    }
+                    else {
+                        credential = MongoCredential.createCredential(connectionSpec.getUser(), connectionSpec.getDB(), connectionSpec.getPassword());
+                    }
+
                     credentialsList.add(credential);
                 }
                 Builder optionsBuilder = new MongoClientOptions.Builder();

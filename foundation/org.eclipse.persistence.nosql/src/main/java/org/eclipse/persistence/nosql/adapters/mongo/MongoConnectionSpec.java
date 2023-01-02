@@ -47,6 +47,7 @@ public class MongoConnectionSpec extends EISConnectionSpec {
     public static final String READ_PREFERENCE = "mongo.read-preference";
     public static final String WRITE_CONCERN = "mongo.write-concern";
     public static final String SERVER_SELECTION_TIMEOUT = "mongo.server-selection-timeout";
+    public static final String AUTH_SOURCE = "mongo.auth-source";
 
     /**
      * PUBLIC:
@@ -72,6 +73,8 @@ public class MongoConnectionSpec extends EISConnectionSpec {
             String host = (String)properties.get(HOST);
             String port = (String)properties.get(PORT);
             String db = (String)properties.get(DB);
+            String authSource = (String)properties.get(AUTH_SOURCE); //https://www.mongodb.com/docs/manual/reference/connection-string/#mongodb-urioption-urioption.authSource
+
             if (host != null) {
                 if (host.indexOf(',') == -1) {
                     spec.getHosts().add(host);
@@ -102,6 +105,10 @@ public class MongoConnectionSpec extends EISConnectionSpec {
             }
             if (db != null) {
                 spec.setDB(db);
+            }
+
+            if ( authSource != null ) {
+                spec.setAuthSource(authSource);
             }
 
             String user = (String)properties.get("user");

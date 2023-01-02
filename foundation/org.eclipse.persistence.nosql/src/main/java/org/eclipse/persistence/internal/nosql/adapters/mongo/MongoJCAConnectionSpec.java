@@ -33,6 +33,9 @@ public class MongoJCAConnectionSpec implements ConnectionSpec {
     /** Mongo database name. */
     protected String db = "mydb";
 
+    /** Optional authSource https://www.mongodb.com/docs/manual/reference/connection-string/#mongodb-urioption-urioption.authSource */
+    protected String authSource;
+
     /** Optional user name. */
     protected String user;
     /** Optional password. */
@@ -157,5 +160,13 @@ public class MongoJCAConnectionSpec implements ConnectionSpec {
 
     public void setServerSelectionTimeout(int serverSelectionTimeout) {
         this.serverSelectionTimeout = serverSelectionTimeout;
+    }
+
+    public String getAuthSource() {
+        return authSource;
+    }
+
+    public void setAuthSource(String authSource) {
+        this.authSource = authSource;
     }
 }
