@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -370,11 +370,13 @@ public class EISDescriptor extends ClassDescriptor {
         if (isXMLFormat()) {
             if(!(field instanceof XMLField)) {
                 String xPath = field.getName();
+                String columnDefinition = field.getColumnDefinition();
                 // Moxy requires /text on elements.
                 if ((xPath.indexOf('@') == -1) && (xPath.indexOf("/text()") == -1)) {
                     xPath = xPath + "/text()";
                 }
                 field = new XMLField(xPath);
+                field.setColumnDefinition(columnDefinition);
             }
             ((XMLField)field).setNamespaceResolver(getNamespaceResolver());
             ((XMLField)field).initialize();
