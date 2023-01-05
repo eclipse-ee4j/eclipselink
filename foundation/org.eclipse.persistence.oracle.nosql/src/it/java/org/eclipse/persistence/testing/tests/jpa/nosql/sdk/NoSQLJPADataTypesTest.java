@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,23 @@
 //     Oracle - initial API and implementation.
 package org.eclipse.persistence.testing.tests.jpa.nosql.sdk;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
 import jakarta.resource.cci.Connection;
 import oracle.nosql.driver.NoSQLHandle;
+import oracle.nosql.driver.ops.GetRequest;
+import oracle.nosql.driver.ops.GetResult;
+import oracle.nosql.driver.ops.PutRequest;
+import oracle.nosql.driver.ops.PutResult;
 import oracle.nosql.driver.ops.TableLimits;
 import oracle.nosql.driver.ops.TableRequest;
+import oracle.nosql.driver.values.ArrayValue;
+import oracle.nosql.driver.values.JsonNullValue;
+import oracle.nosql.driver.values.MapValue;
 import org.eclipse.persistence.internal.nosql.adapters.sdk.OracleNoSQLConnection;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -30,6 +39,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.StringReader;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -53,9 +63,20 @@ public class NoSQLJPADataTypesTest {
     private static final long ID = 1L;
     private static final byte[] FIELD_BINARY = {1, 2, 3, 4};
     private static final boolean FIELD_BOOLEAN = true;
-    private static final String FIELD_JSON = "{\"a\": 1.006, \"b\": null," +
+    private static final String FIELD_JSON_STRING = "{\"a\": 1.006, \"b\": null," +
             "\"bool\" : true, \"map\": {\"m1\": 5}," +
             "\"ar\" : [1,2.7,3]}";
+    private static final MapValue FIELD_JSON_OBJECT = new MapValue()
+            .put("a", 1.006)
+            .put("b", JsonNullValue.getInstance())
+            .put("bool", true)
+            .put("map", new MapValue()
+                    .put("m1", 5))
+            .put("ar", new ArrayValue()
+                    .add(1)
+                    .add(2)
+                    .add(7)
+                    .add(3));
     private static final String FIELD_STRING = "abcd";
     private static final Timestamp FIELD_TIMESTAMP = new Timestamp(123456L);
 
@@ -73,6 +94,12 @@ public class NoSQLJPADataTypesTest {
             assertEquals(ID, dataTypesEntity.getId());
             assertArrayEquals(FIELD_BINARY, dataTypesEntity.getFieldBinary());
             assertEquals(FIELD_BOOLEAN, dataTypesEntity.isFieldBoolean());
+            assertEquals(FIELD_JSON_STRING, dataTypesEntity.getFieldJsonString());
+            JsonObject jsonObjectFromStringField = Json.createReader(new StringReader(dataTypesEntity.getFieldJsonString())).readObject();
+            assertNotNull(jsonObjectFromStringField);
+            assertEquals(FIELD_JSON_OBJECT.toJson(), dataTypesEntity.getFieldJsonObject());
+            JsonObject jsonObjectFromObjectField = Json.createReader(new StringReader(dataTypesEntity.getFieldJsonObject())).readObject();
+            assertNotNull(jsonObjectFromObjectField);
             assertNull(dataTypesEntity.getFieldNull());
             assertEquals(FIELD_STRING, dataTypesEntity.getFieldString());
             assertEquals(FIELD_TIMESTAMP, dataTypesEntity.getFieldTimestamp());
@@ -199,7 +226,7 @@ public class NoSQLJPADataTypesTest {
         DataTypesEntity dataTypesEntity = new DataTypesEntity(id);
         dataTypesEntity.setFieldBinary(FIELD_BINARY);
         dataTypesEntity.setFieldBoolean(FIELD_BOOLEAN);
-        dataTypesEntity.setFieldJson(FIELD_JSON);
+        dataTypesEntity.setFieldJsonString(FIELD_JSON_STRING);
         dataTypesEntity.setFieldNull(null);
         dataTypesEntity.setFieldString(FIELD_STRING);
         dataTypesEntity.setFieldTimestamp(FIELD_TIMESTAMP);
@@ -217,6 +244,8 @@ public class NoSQLJPADataTypesTest {
         createTable(noSQLHandle);
         testJPAPersist();
         testJPAMerge();
+        //Update col_json_object with MapValue
+        updateRow(noSQLHandle);
         em.getTransaction().commit();
         em.close();
     }
@@ -230,7 +259,8 @@ public class NoSQLJPADataTypesTest {
                 "(id INTEGER, " +
                 "col_binary BINARY, " +
                 "col_boolean BOOLEAN, " +
-                "col_json JSON, " +
+                "col_json_string JSON, " +
+                "col_json_object JSON, " +
                 "col_null STRING, " +
                 "col_string STRING, " +
                 "col_timestamp TIMESTAMP(3), " +
@@ -248,5 +278,22 @@ public class NoSQLJPADataTypesTest {
         TableRequest tableRequest = new TableRequest().setStatement("DROP TABLE IF EXISTS " + TABLE_NAME);
         handle.doTableRequest(tableRequest, 60000, 1000);
         LOG.log(SessionLog.INFO, String.format("Table \t%s has been dropped", TABLE_NAME));
+    }
+
+    private static void updateRow(NoSQLHandle handle) {
+        // Fetch a row modify and update it back to DB
+        MapValue key = new MapValue().put("id", ID);
+        GetRequest getRequest = new GetRequest().setKey(key).setTableName(TABLE_NAME);
+        GetResult getResult = handle.get(getRequest);
+        MapValue value = getResult.getValue();
+        value.put("col_json_object", FIELD_JSON_OBJECT);
+        PutRequest putRequest = new PutRequest().setValue(value).setTableName(TABLE_NAME);
+        putRequest.setOption(PutRequest.Option.IfPresent);
+        PutResult putResult = handle.put(putRequest);
+        if (putResult.getVersion() != null) {
+            LOG.log(SessionLog.INFO, String.format("Updated row with ID: \t%s", value));
+        } else {
+            LOG.log(SessionLog.INFO,"Update failed");
+        }
     }
 }

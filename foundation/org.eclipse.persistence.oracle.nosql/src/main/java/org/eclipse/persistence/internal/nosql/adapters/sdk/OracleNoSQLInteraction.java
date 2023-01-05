@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,6 +79,8 @@ import org.w3c.dom.Node;
  */
 public class OracleNoSQLInteraction implements Interaction {
 
+    private static final String JSON_DEFAULT_TYPE = "JSON";
+
     /**
      * Store the connection the interaction was created from.
      */
@@ -124,6 +126,7 @@ public class OracleNoSQLInteraction implements Interaction {
         OracleNoSQLRecord input = (OracleNoSQLRecord) record;
         try {
             OracleNoSQLOperation operation = noSqlSpec.getOperation();
+            Map<String, DatabaseMapping> fieldNameMapping = createFieldNameMappingMap(noSqlSpec.getDescriptor(), true);
             if (operation == OracleNoSQLOperation.GET) {
                 OracleNoSQLRecord output = new OracleNoSQLRecord();
                 for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>) input.entrySet()) {
@@ -144,7 +147,7 @@ public class OracleNoSQLInteraction implements Interaction {
                     MapValue values = getResult.getValue();
                     if (values != null) {
                         for (Map.Entry<String, FieldValue> outputEntry : values.entrySet()) {
-                            output.put(outputEntry.getKey(), unboxFieldValue(outputEntry.getValue(), spec));
+                            output.put(outputEntry.getKey(), unboxFieldValue(outputEntry.getValue(), spec, isDBFieldJSONType(noSqlSpec.getTableName(), outputEntry.getKey(), fieldNameMapping)));
                         }
                     }
                 }
@@ -208,7 +211,7 @@ public class OracleNoSQLInteraction implements Interaction {
                     for (MapValue values : results) {
                         outputRow = new OracleNoSQLRecord();
                         for (Map.Entry<String, FieldValue> outputEntry : values.entrySet()) {
-                            outputRow.put(outputEntry.getKey(), unboxFieldValue(outputEntry.getValue(), spec));
+                            outputRow.put(outputEntry.getKey(), unboxFieldValue(outputEntry.getValue(), spec, isDBFieldJSONType(noSqlSpec.getTableName(), outputEntry.getKey(), fieldNameMapping)));
                         }
                         output.put(rowId++, outputRow);
                     }
@@ -249,7 +252,7 @@ public class OracleNoSQLInteraction implements Interaction {
                     for (MapValue values : results) {
                         outputRow = new OracleNoSQLRecord();
                         for (Map.Entry<String, FieldValue> outputEntry : values.entrySet()) {
-                            outputRow.put(outputEntry.getKey(), unboxFieldValue(outputEntry.getValue(), spec));
+                            outputRow.put(outputEntry.getKey(), unboxFieldValue(outputEntry.getValue(), spec, isDBFieldJSONType(noSqlSpec.getTableName(), outputEntry.getKey(), fieldNameMapping)));
                         }
                         output.put(rowId++, outputRow);
                     }
@@ -284,7 +287,7 @@ public class OracleNoSQLInteraction implements Interaction {
     }
 
     private MapValue createMapValue(DOMRecord domRecord, ClassDescriptor descriptor) {
-        Map<String, DatabaseMapping> fieldNameMapping = createFieldNameMappingMap(descriptor);
+        Map<String, DatabaseMapping> fieldNameMapping = createFieldNameMappingMap(descriptor, false);
         MapValue mapValue = new MapValue();
         for (Map.Entry<DatabaseField, Element> entry : (Set<Map.Entry<DatabaseField, Element>>) domRecord.entrySet()) {
             String key = entry.getKey().getName();
@@ -318,7 +321,7 @@ public class OracleNoSQLInteraction implements Interaction {
                 mapValue.put(key, arrayValue);
             } else if (mapping instanceof EISCompositeObjectMapping) {
                 MapValue recordValue = new MapValue();
-                Map<String, DatabaseMapping> fieldNameMappingCollection = createFieldNameMappingMap(mapping.getReferenceDescriptor());
+                Map<String, DatabaseMapping> fieldNameMappingCollection = createFieldNameMappingMap(mapping.getReferenceDescriptor(), false);
                 //Check DOM Element attributes first
                 NamedNodeMap namedNodeMap = entry.getValue().getAttributes();
                 for (int i = 0; i < namedNodeMap.getLength(); i++) {
@@ -361,7 +364,7 @@ public class OracleNoSQLInteraction implements Interaction {
                 }
             } else if (mapping instanceof EISCompositeCollectionMapping) {
                 ArrayValue arrayValue = new ArrayValue();
-                Map<String, DatabaseMapping> fieldNameMappingCollection = createFieldNameMappingMap(mapping.getReferenceDescriptor());
+                Map<String, DatabaseMapping> fieldNameMappingCollection = createFieldNameMappingMap(mapping.getReferenceDescriptor(), false);
                 List<DOMRecord> domRecordList = (List) domRecord.getValues(key);
                 for (DOMRecord domRecordListItem : domRecordList) {
                     MapValue recordValue = new MapValue();
@@ -410,7 +413,7 @@ public class OracleNoSQLInteraction implements Interaction {
     }
 
     private MapValue createMapValue(Map recordEntry, ClassDescriptor descriptor) {
-        Map<String, DatabaseMapping> fieldNameMapping = createFieldNameMappingMap(descriptor);
+        Map<String, DatabaseMapping> fieldNameMapping = createFieldNameMappingMap(descriptor, false);
         MapValue mapValue = new MapValue();
         for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>) recordEntry.entrySet()) {
             if (entry.getValue() != null) {
@@ -452,7 +455,7 @@ public class OracleNoSQLInteraction implements Interaction {
                     mapValue.put(key, arrayValue);
                 } else if (mapping instanceof EISCompositeObjectMapping) {
                     MapValue recordValue = new MapValue();
-                    Map<String, DatabaseMapping> fieldNameMappingCollection = createFieldNameMappingMap(mapping.getReferenceDescriptor());
+                    Map<String, DatabaseMapping> fieldNameMappingCollection = createFieldNameMappingMap(mapping.getReferenceDescriptor(), false);
                     for (Map<String, String> compositeObject : (List<Map>) entry.getValue()) {
                         for (Map.Entry<String, String> compositeObjectEntry : compositeObject.entrySet()) {
                             DatabaseMapping mappingCollection = fieldNameMappingCollection.get(compositeObjectEntry.getKey());
@@ -476,7 +479,7 @@ public class OracleNoSQLInteraction implements Interaction {
                     }
                 } else if (mapping instanceof EISCompositeCollectionMapping) {
                     ArrayValue arrayValue = new ArrayValue();
-                    Map<String, DatabaseMapping> fieldNameMappingCollection = createFieldNameMappingMap(mapping.getReferenceDescriptor());
+                    Map<String, DatabaseMapping> fieldNameMappingCollection = createFieldNameMappingMap(mapping.getReferenceDescriptor(), false);
                     for (Map<String, Object> compositeObjectList : (List<Map<String, Object>>) entry.getValue()) {
                         MapValue recordValue = new MapValue();
                         for (Map.Entry<String, Object> compositeObjectEntry : compositeObjectList.entrySet()) {
@@ -514,24 +517,24 @@ public class OracleNoSQLInteraction implements Interaction {
         return map;
     }
 
-    private Object unboxFieldValue(FieldValue value, InteractionSpec spec) {
+    private Object unboxFieldValue(FieldValue value, InteractionSpec spec, boolean isJson) {
         Object result = null;
         if (value instanceof ArrayValue) {
             if (((OracleNoSQLInteractionSpec)spec).getInteractionType() == OracleNoSQLInteractionSpec.InteractionType.XML) {
                 //Output as an array works for XMLInteraction
                 result = new int[((ArrayValue) value).size()];
                 if (((ArrayValue) value).size() > 0) {
-                    result = Array.newInstance((unboxFieldValue(((ArrayValue) value).get(0), spec).getClass()), ((ArrayValue) value).size());
+                    result = Array.newInstance((unboxFieldValue(((ArrayValue) value).get(0), spec, isJson).getClass()), ((ArrayValue) value).size());
                 }
                 for (int i = 0; i < ((ArrayValue) value).size(); i++) {
-                    ((Object[]) result)[i] = unboxFieldValue(((ArrayValue) value).get(i), spec);
+                    ((Object[]) result)[i] = unboxFieldValue(((ArrayValue) value).get(i), spec, isJson);
                 }
             } else if (((OracleNoSQLInteractionSpec)spec).getInteractionType() == OracleNoSQLInteractionSpec.InteractionType.MAPPED) {
                 //Output as a collection (List) works for MappedInteraction
                 if (((ArrayValue) value).size() > 0) {
                     result = new ArrayList(((ArrayValue) value).size());
                     for (int i = 0; i < ((ArrayValue) value).size(); i++) {
-                        ((List) result).add(unboxFieldValue(((ArrayValue) value).get(i), spec));
+                        ((List) result).add(unboxFieldValue(((ArrayValue) value).get(i), spec, isJson));
                     }
                 }
             }
@@ -546,12 +549,16 @@ public class OracleNoSQLInteraction implements Interaction {
         } else if (value instanceof LongValue) {
             result = value.getLong();
         } else if (value instanceof MapValue) {
-            Map<String, FieldValue> mapValue = ((MapValue) value).getMap();
-            Map<String, Object> resultMap = new HashMap<>();
-            for (Map.Entry<String, FieldValue> entry : mapValue.entrySet()) {
-                resultMap.put(entry.getKey(), unboxFieldValue(entry.getValue(), spec));
+            if (isJson) {
+                result = value.toJson();
+            } else {
+                Map<String, FieldValue> mapValue = ((MapValue) value).getMap();
+                Map<String, Object> resultMap = new HashMap<>();
+                for (Map.Entry<String, FieldValue> entry : mapValue.entrySet()) {
+                    resultMap.put(entry.getKey(), unboxFieldValue(entry.getValue(), spec, isJson));
+                }
+                result = resultMap;
             }
-            result = resultMap;
         } else if (value instanceof NullValue) {
             result = null;
         } else if (value instanceof NumberValue) {
@@ -574,13 +581,21 @@ public class OracleNoSQLInteraction implements Interaction {
         return new PutRequest().setValue(mapValue).setTableName(tableName);
     }
 
-    private Map<String, DatabaseMapping> createFieldNameMappingMap(ClassDescriptor descriptor) {
+    private Map<String, DatabaseMapping> createFieldNameMappingMap(ClassDescriptor descriptor, boolean withoutTextXPath) {
         Map<String, DatabaseMapping> result = new HashMap<>();
         for (DatabaseMapping mapping : descriptor.getMappings()) {
             for (DatabaseField field : mapping.getFields()) {
-                result.put(field.getQualifiedName(), mapping);
+                result.put((withoutTextXPath) ? field.getQualifiedName().replace("/text()", "") : field.getQualifiedName(), mapping);
             }
         }
         return result;
+    }
+
+    private boolean isDBFieldJSONType(String tableName, String fieldName, Map<String, DatabaseMapping> fieldNameMapping) {
+        DatabaseMapping mapping = fieldNameMapping.get(tableName + "." + fieldName);
+        if (mapping == null) {
+            mapping = fieldNameMapping.get(tableName + "." + fieldName.toUpperCase());
+        }
+        return JSON_DEFAULT_TYPE.equalsIgnoreCase(mapping.getField().getColumnDefinition());
     }
 }

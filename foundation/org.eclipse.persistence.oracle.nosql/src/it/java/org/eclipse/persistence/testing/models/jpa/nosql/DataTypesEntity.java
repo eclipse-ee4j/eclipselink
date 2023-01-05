@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.nosql;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -35,6 +36,7 @@ import java.util.Arrays;
         @NamedQuery(name = "DataTypesEntity.findByIdAndName", query = "SELECT t FROM DataTypesEntity t WHERE t.id = :id AND t.fieldString = :name")
 })
 @NoSql
+@Cacheable(false)
 public class DataTypesEntity {
     @Id
     private long id;
@@ -43,8 +45,10 @@ public class DataTypesEntity {
     private byte[] fieldBinary;
     @Column(name = "col_boolean")
     private boolean fieldBoolean;
-    @Column(name = "col_json", columnDefinition = "JSON")
-    private String fieldJson;
+    @Column(name = "col_json_string", columnDefinition = "JSON")
+    private String fieldJsonString;
+    @Column(name = "col_json_object", columnDefinition = "JSON")
+    private String fieldJsonObject;
     @Column(name = "col_null")
     private String fieldNull;
     @Column(name = "col_string")
@@ -83,12 +87,20 @@ public class DataTypesEntity {
         this.fieldBoolean = fieldBoolean;
     }
 
-    public String getFieldJson() {
-        return fieldJson;
+    public String getFieldJsonString() {
+        return fieldJsonString;
     }
 
-    public void setFieldJson(String fieldJson) {
-        this.fieldJson = fieldJson;
+    public void setFieldJsonString(String fieldJsonString) {
+        this.fieldJsonString = fieldJsonString;
+    }
+
+    public String getFieldJsonObject() {
+        return fieldJsonObject;
+    }
+
+    public void setFieldJsonObject(String fieldJsonObject) {
+        this.fieldJsonObject = fieldJsonObject;
     }
 
     public String getFieldNull() {
@@ -121,7 +133,8 @@ public class DataTypesEntity {
                 "id=" + id +
                 ", fieldBinary=" + Arrays.toString(fieldBinary) +
                 ", fieldBoolean=" + fieldBoolean +
-                ", fieldJson='" + fieldJson + '\'' +
+                ", fieldJsonString='" + fieldJsonString + '\'' +
+                ", fieldJsonObject='" + fieldJsonObject + '\'' +
                 ", fieldNull='" + fieldNull + '\'' +
                 ", fieldString='" + fieldString + '\'' +
                 ", fieldTimestamp=" + fieldTimestamp +
