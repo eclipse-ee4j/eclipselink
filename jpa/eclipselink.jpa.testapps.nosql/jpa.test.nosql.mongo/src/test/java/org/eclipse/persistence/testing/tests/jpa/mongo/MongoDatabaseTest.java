@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,6 +68,8 @@ public class MongoDatabaseTest extends JUnitTestCase {
     private static final String PROPERTY_PORT_KEY = PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.port";
     /** The persistence unit property key for the MongoDB database name. */
     private static final String PROPERTY_DB_KEY = PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.db";
+    /** The persistence unit property key for the MongoDB auth source database. */
+    private static final String PROPERTY_AUTH_SOURCE_KEY = PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.auth-source";
     /** The database (MongoDB) connection URL. */
     private static final String DB_URL_KEY = JUnitTestCaseHelper.insertIndex(JUnitTestCaseHelper.DB_URL_KEY, null);
     /** The database (MongoDB) connection user name test configuration property key. */
@@ -145,6 +147,7 @@ public class MongoDatabaseTest extends JUnitTestCase {
             suite.addTest(new MongoDatabaseTest("testNativeQuery"));
             suite.addTest(new MongoDatabaseTest("testExternalFactory"));
             suite.addTest(new MongoDatabaseTest("testUserPassword"));
+            suite.addTest(new MongoDatabaseTest("testUserPasswordAuthSource"));
             suite.addTest(new MongoDatabaseTest("testDynamicEntities"));
         }
         return suite;
@@ -168,6 +171,7 @@ public class MongoDatabaseTest extends JUnitTestCase {
         final String dbUrl = JUnitTestCaseHelper.getProperty(DB_URL_KEY);
         final String dbUser = JUnitTestCaseHelper.getProperty(DB_USER_KEY);
         final String dbPwd = JUnitTestCaseHelper.getProperty(DB_PWD_KEY);
+        final String authSource = JUnitTestCaseHelper.getProperty(PROPERTY_AUTH_SOURCE_KEY);
         final String platform = JUnitTestCaseHelper.getProperty(DB_PLATFORM_KEY);
         final String dbSpec = JUnitTestCaseHelper.getProperty(DB_SPEC_KEY);
         final String logLevel = JUnitTestCaseHelper.getProperty(JUnitTestCaseHelper.LOGGING_LEVEL_KEY);
@@ -195,6 +199,9 @@ public class MongoDatabaseTest extends JUnitTestCase {
             }
             if (name != null && name.length() > 0) {
                 properties.put(PROPERTY_DB_KEY, name);
+            }
+            if (authSource != null && authSource.length() > 0) {
+                properties.put(PROPERTY_AUTH_SOURCE_KEY, authSource);
             }
         }
         // Database connection user name from db.user has higher priority than from URL.
@@ -256,6 +263,22 @@ public class MongoDatabaseTest extends JUnitTestCase {
             properties.put(key, value);
         } else {
             throw new IllegalArgumentException("Invalid user persistence property key");
+        }
+    }
+
+     /**
+     * Update the connection auth source persistence unit property value.
+     * @param properties The properties {@link Map} to be modified.
+     * @param key The connection user name persistence unit property key ({@code PROPERTY_AUTH_SOURCE_KEY}).
+     * @param value The connection user name persistence unit property value.
+     */
+    private static void updateAuthSourceProperty(
+            final Map<String, String> properties, final String key, final String value) {
+        if (key.equals(MongoDatabaseTest.PROPERTY_AUTH_SOURCE_KEY)) {
+            properties.remove(MongoDatabaseTest.PROPERTY_AUTH_SOURCE_KEY);
+            properties.put(key, value);
+        } else {
+            throw new IllegalArgumentException("Invalid auth-source persistence property key");
         }
     }
 
@@ -436,6 +459,68 @@ public class MongoDatabaseTest extends JUnitTestCase {
         properties = new HashMap<>(this.properties);
         updateUserProperty(properties, PersistenceUnitProperties.NOSQL_USER, "unknownuser");
         updatePasswordProperty(properties, PersistenceUnitProperties.NOSQL_PASSWORD, "password");
+        properties.put(SERVER_SELECTION_TIMEOUT_PROPERTY, SERVER_SELECTION_TIMEOUT);
+        errorCaught = false;
+        factory = null;
+        em = null;
+        try {
+            factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            em = factory.createEntityManager();
+        } catch (Exception expected) {
+            //Different MONGO DB drivers (versions) prints different error messages
+            if (!expected.getMessage().contains("Authentication failed") && !expected.getMessage().contains("auth failed") && !expected.getMessage().contains("Exception authenticating")) {
+                throw expected;
+            }
+            errorCaught = true;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            if (factory != null) {
+                factory.close();
+            }
+        }
+        if (!errorCaught) {
+            fail("authentication should have failed");
+        }
+    }
+
+    /**
+     * Test user/password/auth-source connecting.
+     */
+    public void testUserPasswordAuthSource() {
+        Map<String, String> properties = new HashMap<>(this.properties);
+        updateUserProperty(properties, PersistenceUnitProperties.JDBC_USER, "unknownuser");
+        updatePasswordProperty(properties, PersistenceUnitProperties.JDBC_PASSWORD, "password");
+        updateAuthSourceProperty(properties, MongoDatabaseTest.PROPERTY_AUTH_SOURCE_KEY, "noexists_db");
+        properties.put(SERVER_SELECTION_TIMEOUT_PROPERTY, SERVER_SELECTION_TIMEOUT);
+        boolean errorCaught = false;
+        EntityManagerFactory factory = null;
+        EntityManager em = null;
+        try {
+            factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            em = factory.createEntityManager();
+        } catch (Exception expected) {
+            //Different MONGO DB drivers (versions) prints different error messages
+            if (!expected.getMessage().contains("Authentication failed") && !expected.getMessage().contains("auth failed") && !expected.getMessage().contains("Exception authenticating")) {
+                throw expected;
+            }
+            errorCaught = true;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            if (factory != null) {
+                factory.close();
+            }
+        }
+        if (!errorCaught) {
+            fail("authentication should have failed");
+        }
+        properties = new HashMap<>(this.properties);
+        updateUserProperty(properties, PersistenceUnitProperties.NOSQL_USER, "unknownuser");
+        updatePasswordProperty(properties, PersistenceUnitProperties.NOSQL_PASSWORD, "password");
+        updateAuthSourceProperty(properties, MongoDatabaseTest.PROPERTY_AUTH_SOURCE_KEY, "noexists_db");
         properties.put(SERVER_SELECTION_TIMEOUT_PROPERTY, SERVER_SELECTION_TIMEOUT);
         errorCaught = false;
         factory = null;
