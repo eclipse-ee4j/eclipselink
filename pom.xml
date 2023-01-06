@@ -233,7 +233,7 @@
         <junit.version>4.13.2</junit.version>
         <!-- CQ #24079 -->
         <mongodb.version>3.12.11</mongodb.version>
-        <mysql.version>8.0.29</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <mariadb.version>3.1.0</mariadb.version>
         <mssql.version>11.2.2.jre11</mssql.version>
         <pgsql.version>42.5.1</pgsql.version>
