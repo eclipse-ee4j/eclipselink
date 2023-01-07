@@ -531,7 +531,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return "; END ; $$ LANGUAGE plpgsql;";
     }
 
-     /**
+    /**
      * INTERNAL: Used for sp calls.  PostGreSQL uses a different method for executing StoredProcedures than other platforms.
      */
     @Override
@@ -655,11 +655,11 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * for updating the original table from the temporary table. Precondition:
      * supportsTempTables() == true. Precondition: pkFields and assignFields
      * don't intersect.
-     *  @param writer for writing the sql
+     * @param writer for writing the sql
      * @param table is original table for which temp table is
      *            created.
      * @param pkFields - primary key fields for the original
- *            table.
+     *            table.
      * @param assignedFields - fields to be assigned a new value.
      */
     @Override
