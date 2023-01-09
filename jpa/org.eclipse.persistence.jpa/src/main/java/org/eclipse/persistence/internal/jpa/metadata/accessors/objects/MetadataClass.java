@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,8 +38,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * INTERNAL:
@@ -478,7 +478,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return if this is an interface (super is null).
      */
     public boolean isInterface() {
-        return (Opcodes.ACC_INTERFACE & m_modifiers) != 0;
+        return (Opcodes.valueInt("ACC_INTERFACE") & m_modifiers) != 0;
     }
 
     /**

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,29 @@
         <dependency>
             <groupId>org.jboss.weld.se</groupId>
             <artifactId>weld-se-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--ASM Implementations-->
+        <!--EclipseLink ASM Implementation-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--Origin OW2-->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -139,6 +162,26 @@
                         <groupId>junit</groupId>
                         <artifactId>junit</artifactId>
                         <version>${junit.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.persistence</groupId>
+                        <artifactId>org.eclipse.persistence.asm</artifactId>
+                        <version>${eclipselink.asm.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm</artifactId>
+                        <version>${asm.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm-commons</artifactId>
+                        <version>${asm.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm-tree</artifactId>
+                        <version>${asm.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

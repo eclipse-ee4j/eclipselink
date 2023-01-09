@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,11 +25,11 @@ import jakarta.persistence.spi.TransformerException;
 
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.libraries.asm.ClassReader;
-import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassReader;
-import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
+import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.ClassReader;
+import org.eclipse.persistence.asm.ClassVisitor;
+import org.eclipse.persistence.asm.ClassWriter;
+import org.eclipse.persistence.asm.EclipseLinkClassReader;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -115,7 +115,8 @@ public class PersistenceWeaver implements ClassTransformer {
                 }
                 ClassReader classReader = null;
                 try {
-                    classReader = new ClassReader(classfileBuffer);
+                    classReader = ASMFactory.createClassReader(classfileBuffer);
+
                 } catch (IllegalArgumentException iae) {
                     // class was probably compiled with some newer than officially supported and tested JDK
                     // in such case log a warning and try to re-read the class without class version check
@@ -128,11 +129,15 @@ public class PersistenceWeaver implements ClassTransformer {
                 }
                 final String reflectiveIntrospectionProperty =
                         PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION);
-                final ClassWriter classWriter = reflectiveIntrospectionProperty != null
-                        ? new ClassWriter(ClassWriter.COMPUTE_FRAMES)
-                        : new ComputeClassWriter(loader, ClassWriter.COMPUTE_FRAMES);
+                ClassWriter classWriter = null;
+                if (reflectiveIntrospectionProperty != null) {
+                    classWriter = ASMFactory.createClassWriter(ClassWriter.valueInt("COMPUTE_FRAMES"));
+                } else {
+                    classWriter = new ComputeClassWriter(loader, ClassWriter.valueInt("COMPUTE_FRAMES"));
+                    classWriter.setCustomClassWriterInImpl(classWriter);
+                }
                 final ClassWeaver classWeaver = new ClassWeaver(classWriter, classDetails);
-                final ClassVisitor sv = new SerialVersionUIDAdder(classWeaver);
+                final ClassVisitor sv = ASMFactory.createSerialVersionUIDAdder(classWeaver);
                 classReader.accept(sv, 0);
                 if (classWeaver.alreadyWeaved) {
                     if (shouldLogFinest) {

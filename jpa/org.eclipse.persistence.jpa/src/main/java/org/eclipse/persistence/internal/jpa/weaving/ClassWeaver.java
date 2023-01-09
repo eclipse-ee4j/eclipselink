@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,14 +23,15 @@ package org.eclipse.persistence.internal.jpa.weaving;
 
 import java.util.Iterator;
 
+import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.AnnotationVisitor;
+import org.eclipse.persistence.asm.ClassVisitor;
+import org.eclipse.persistence.asm.FieldVisitor;
+import org.eclipse.persistence.asm.Label;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
+import org.eclipse.persistence.asm.Type;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Label;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * INTERNAL: Weaves classes to allow them to support EclipseLink indirection.
@@ -42,7 +43,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  * @see org.eclipse.persistence.internal.jpa.weaving.MethodWeaver
  */
 
-public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
+public class ClassWeaver extends ClassVisitor {
 
     // PersistenceWeaved
     public static final String PERSISTENCE_WEAVED_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeaved";
@@ -125,28 +126,29 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
     public boolean weavedFetchGroups = false;
     public boolean weavedRest = false;
 
+    private ClassVisitor cw;
+
     /**
      * Used for primitive conversion. Returns the name of the class that wraps a
      * given type.
      */
     public static String wrapperFor(int sort) {
-        switch (sort) {
-            case Type.BOOLEAN:
-                return "java/lang/Boolean";
-            case Type.BYTE:
-                return "java/lang/Byte";
-            case Type.CHAR:
-                return "java/lang/Character";
-            case Type.SHORT:
-                return "java/lang/Short";
-            case Type.INT:
-                return "java/lang/Integer";
-            case Type.FLOAT:
-                return "java/lang/Float";
-            case Type.LONG:
-                return "java/lang/Long";
-            case Type.DOUBLE:
-                return "java/lang/Double";
+        if (sort == Type.BOOLEAN) {
+            return "java/lang/Boolean";
+        } else if (sort == Type.BYTE) {
+            return "java/lang/Byte";
+        } else if (sort == Type.CHAR) {
+            return "java/lang/Character";
+        } else if (sort == Type.SHORT) {
+            return "java/lang/Short";
+        } else if (sort == Type.INT) {
+            return "java/lang/Integer";
+        } else if (sort == Type.FLOAT) {
+            return "java/lang/Float";
+        } else if (sort == Type.LONG) {
+            return "java/lang/Long";
+        } else if (sort == Type.DOUBLE) {
+            return "java/lang/Double";
         }
         return null;
     }
@@ -157,31 +159,31 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      */
     public static void unwrapPrimitive(AttributeDetails attribute, MethodVisitor visitor) {
         String wrapper = wrapperFor(attribute.getReferenceClassType().getSort());
-        switch (attribute.getReferenceClassType().getSort()) {
-            case Type.BOOLEAN:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "booleanValue", "()Z", false);
-                return;
-            case Type.BYTE:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "byteValue", "()B", false);
-                return;
-            case Type.CHAR:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "charValue", "()C", false);
-                return;
-            case Type.SHORT:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "shortValue", "()S", false);
-                return;
-            case Type.INT:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "intValue", "()I", false);
-                return;
-            case Type.FLOAT:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "floatValue", "()F", false);
-                return;
-            case Type.LONG:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "longValue", "()J", false);
-                return;
-            case Type.DOUBLE:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "doubleValue", "()D", false);
-                return;
+        int sort = attribute.getReferenceClassType().getSort();
+        if (sort == Type.BOOLEAN) {
+            visitor.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), wrapper, "booleanValue", "()Z", false);
+            return;
+        } else if (sort == Type.BYTE) {
+            visitor.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), wrapper, "byteValue", "()B", false);
+            return;
+        } else if (sort == Type.CHAR) {
+            visitor.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), wrapper, "charValue", "()C", false);
+            return;
+        } else if (sort == Type.SHORT) {
+            visitor.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), wrapper, "shortValue", "()S", false);
+            return;
+        } else if (sort == Type.INT) {
+            visitor.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), wrapper, "intValue", "()I", false);
+            return;
+        } else if (sort == Type.FLOAT) {
+            visitor.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), wrapper, "floatValue", "()F", false);
+            return;
+        } else if (sort == Type.LONG) {
+            visitor.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), wrapper, "longValue", "()J", false);
+            return;
+        } else if (sort == Type.DOUBLE) {
+            visitor.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), wrapper, "doubleValue", "()D", false);
+            return;
         }
     }
 
@@ -216,7 +218,9 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
     }
 
     public ClassWeaver(ClassVisitor classWriter, ClassDetails classDetails) {
-        super(classWriter);
+        super(ASMFactory.ASM_API_SELECTED, classWriter);
+        super.setCustomClassVisitor(this);
+        this.cw = classWriter;
         this.classDetails = classDetails;
     }
 
@@ -229,7 +233,7 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      */
     public void addValueHolder(AttributeDetails attributeDetails) {
         String attribute = attributeDetails.getAttributeName();
-        FieldVisitor fv = cv.visitField(ACC_PROTECTED, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE, null, null);
+        FieldVisitor fv = cv.visitField(Opcodes.valueInt("ACC_PROTECTED"), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE, null, null);
 
         // only mark @Transient if this is property access. Otherwise, the
         // @Transient annotation could mistakenly
@@ -251,7 +255,7 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      * private transient _persistence_listener;
      */
     public void addPropertyChangeListener(boolean attributeAccess) {
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_listener", PCL_SIGNATURE, null, null);
+        cv.visitField(Opcodes.valueInt("ACC_PROTECTED") + Opcodes.valueInt("ACC_TRANSIENT"), "_persistence_listener", PCL_SIGNATURE, null, null);
     }
 
     /**
@@ -262,10 +266,10 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      * return _persistence_listener; }
      */
     public void addGetPropertyChangeListener(ClassDetails classDetails) {
-        MethodVisitor cv_getPCL = cv.visitMethod(ACC_PUBLIC, "_persistence_getPropertyChangeListener", "()" + PCL_SIGNATURE, null, null);
-        cv_getPCL.visitVarInsn(ALOAD, 0);
-        cv_getPCL.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
-        cv_getPCL.visitInsn(ARETURN);
+        MethodVisitor cv_getPCL = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_getPropertyChangeListener", "()" + PCL_SIGNATURE, null, null);
+        cv_getPCL.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_getPCL.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
+        cv_getPCL.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_getPCL.visitMaxs(0, 0);
     }
 
@@ -278,11 +282,11 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      * }
      */
     public void addSetPropertyChangeListener(ClassDetails classDetails) {
-        MethodVisitor cv_setPCL = cv.visitMethod(ACC_PUBLIC, "_persistence_setPropertyChangeListener", "(" + PCL_SIGNATURE + ")V", null, null);
-        cv_setPCL.visitVarInsn(ALOAD, 0);
-        cv_setPCL.visitVarInsn(ALOAD, 1);
-        cv_setPCL.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
-        cv_setPCL.visitInsn(RETURN);
+        MethodVisitor cv_setPCL = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_setPropertyChangeListener", "(" + PCL_SIGNATURE + ")V", null, null);
+        cv_setPCL.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_setPCL.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_setPCL.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
+        cv_setPCL.visitInsn(Opcodes.valueInt("RETURN"));
         cv_setPCL.visitMaxs(0, 0);
     }
 
@@ -296,37 +300,37 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      */
     public void addPropertyChange(ClassDetails classDetails) {
         // create the _toplink_propertyChange() method
-        MethodVisitor cv_addPC = cv.visitMethod(ACC_PUBLIC, "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", null, null);
+        MethodVisitor cv_addPC = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", null, null);
 
         // if (_toplink_Listener != null)
-        cv_addPC.visitVarInsn(ALOAD, 0);
-        cv_addPC.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
-        Label l0 = new Label();
-        cv_addPC.visitJumpInsn(IFNULL, l0);
+        cv_addPC.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_addPC.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
+        Label l0 = ASMFactory.createLabel();
+        cv_addPC.visitJumpInsn(Opcodes.valueInt("IFNULL"), l0);
 
         // if (obj != obj1)
-        cv_addPC.visitVarInsn(ALOAD, 2);
-        cv_addPC.visitVarInsn(ALOAD, 3);
-        cv_addPC.visitJumpInsn(IF_ACMPEQ, l0);
+        cv_addPC.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
+        cv_addPC.visitVarInsn(Opcodes.valueInt("ALOAD"), 3);
+        cv_addPC.visitJumpInsn(Opcodes.valueInt("IF_ACMPEQ"), l0);
 
         // _toplink_listener.propertyChange(...);
-        cv_addPC.visitVarInsn(ALOAD, 0);
-        cv_addPC.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
-        cv_addPC.visitTypeInsn(NEW, PCE_SHORT_SIGNATURE);
-        cv_addPC.visitInsn(DUP);
+        cv_addPC.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_addPC.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
+        cv_addPC.visitTypeInsn(Opcodes.valueInt("NEW"), PCE_SHORT_SIGNATURE);
+        cv_addPC.visitInsn(Opcodes.valueInt("DUP"));
 
         // new PropertyChangeEvent(this, s, obj, obj1)
-        cv_addPC.visitVarInsn(ALOAD, 0);
-        cv_addPC.visitVarInsn(ALOAD, 1);
-        cv_addPC.visitVarInsn(ALOAD, 2);
-        cv_addPC.visitVarInsn(ALOAD, 3);
-        cv_addPC.visitMethodInsn(INVOKESPECIAL, PCE_SHORT_SIGNATURE, "<init>", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", false);
-        cv_addPC.visitMethodInsn(INVOKEINTERFACE, PCL_SHORT_SIGNATURE, "propertyChange", "(" + PCE_SIGNATURE + ")V", true);
+        cv_addPC.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_addPC.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_addPC.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
+        cv_addPC.visitVarInsn(Opcodes.valueInt("ALOAD"), 3);
+        cv_addPC.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), PCE_SHORT_SIGNATURE, "<init>", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", false);
+        cv_addPC.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), PCL_SHORT_SIGNATURE, "propertyChange", "(" + PCE_SIGNATURE + ")V", true);
 
         // }
         cv_addPC.visitLabel(l0);
 
-        cv_addPC.visitInsn(RETURN);
+        cv_addPC.visitInsn(Opcodes.valueInt("RETURN"));
         cv_addPC.visitMaxs(0, 0);
     }
 
@@ -346,37 +350,37 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
 
         // Create a getter method for the new valueholder
         // protected void _persistence_initialize_attribute_vh(){
-        MethodVisitor cv_init_VH = cv.visitMethod(ACC_PROTECTED, "_persistence_initialize_" + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()V", null, null);
+        MethodVisitor cv_init_VH = cv.visitMethod(Opcodes.valueInt("ACC_PROTECTED"), "_persistence_initialize_" + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()V", null, null);
 
         // if(_persistence_attribute_vh == null){
-        cv_init_VH.visitVarInsn(ALOAD, 0);
-        cv_init_VH.visitFieldInsn(GETFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        Label l0 = new Label();
-        cv_init_VH.visitJumpInsn(IFNONNULL, l0);
+        cv_init_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_init_VH.visitFieldInsn(Opcodes.valueInt("GETFIELD"), className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
+        Label l0 = ASMFactory.createLabel();
+        cv_init_VH.visitJumpInsn(Opcodes.valueInt("IFNONNULL"), l0);
 
         // _persistence_attribute_vh = new ValueHolder(this.attribute);
-        cv_init_VH.visitVarInsn(ALOAD, 0);
-        cv_init_VH.visitTypeInsn(NEW, VH_SHORT_SIGNATURE);
-        cv_init_VH.visitInsn(DUP);
+        cv_init_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_init_VH.visitTypeInsn(Opcodes.valueInt("NEW"), VH_SHORT_SIGNATURE);
+        cv_init_VH.visitInsn(Opcodes.valueInt("DUP"));
         if (attributeDetails.hasField()) {
-            cv_init_VH.visitVarInsn(ALOAD, 0);
-            cv_init_VH.visitFieldInsn(GETFIELD, className, attribute, attributeDetails.getReferenceClassType().getDescriptor());
-            cv_init_VH.visitMethodInsn(INVOKESPECIAL, VH_SHORT_SIGNATURE, "<init>", "(Ljava/lang/Object;)V", false);
+            cv_init_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_init_VH.visitFieldInsn(Opcodes.valueInt("GETFIELD"), className, attribute, attributeDetails.getReferenceClassType().getDescriptor());
+            cv_init_VH.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), VH_SHORT_SIGNATURE, "<init>", "(Ljava/lang/Object;)V", false);
         } else {
-            cv_init_VH.visitMethodInsn(INVOKESPECIAL, VH_SHORT_SIGNATURE, "<init>", "()V", false);
+            cv_init_VH.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), VH_SHORT_SIGNATURE, "<init>", "()V", false);
         }
-        cv_init_VH.visitFieldInsn(PUTFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
+        cv_init_VH.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
 
         // _persistence_attribute_vh.setIsNewlyWeavedValueHolder(true);
-        cv_init_VH.visitVarInsn(ALOAD, 0);
-        cv_init_VH.visitFieldInsn(GETFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        cv_init_VH.visitInsn(ICONST_1);
-        cv_init_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "setIsNewlyWeavedValueHolder", "(Z)V", true);
+        cv_init_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_init_VH.visitFieldInsn(Opcodes.valueInt("GETFIELD"), className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
+        cv_init_VH.visitInsn(Opcodes.valueInt("ICONST_1"));
+        cv_init_VH.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), VHI_SHORT_SIGNATURE, "setIsNewlyWeavedValueHolder", "(Z)V", true);
 
         // }
         cv_init_VH.visitLabel(l0);
 
-        cv_init_VH.visitInsn(RETURN);
+        cv_init_VH.visitInsn(Opcodes.valueInt("RETURN"));
         cv_init_VH.visitMaxs(0, 0);
     }
 
@@ -395,59 +399,59 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
         // Create a getter method for the new valueholder
-        MethodVisitor cv_get_VH = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()" + VHI_SIGNATURE, null, null);
+        MethodVisitor cv_get_VH = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_GET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "()" + VHI_SIGNATURE, null, null);
 
         // _persistence_initialize_attributeName_vh();
-        cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
+        cv_get_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_get_VH.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
 
         // if (_toplink_foo_vh.isCoordinatedWithProperty() ||
         // _toplink_foo_vh.isNewlyWeavedValueHolder()){
-        cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isCoordinatedWithProperty", "()Z", true);
-        Label l0 = new Label();
-        cv_get_VH.visitJumpInsn(IFNE, l0);
-        cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isNewlyWeavedValueHolder", "()Z", true);
-        Label l1 = new Label();
-        cv_get_VH.visitJumpInsn(IFEQ, l1);
+        cv_get_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_get_VH.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
+        cv_get_VH.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), VHI_SHORT_SIGNATURE, "isCoordinatedWithProperty", "()Z", true);
+        Label l0 = ASMFactory.createLabel();
+        cv_get_VH.visitJumpInsn(Opcodes.valueInt("IFNE"), l0);
+        cv_get_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_get_VH.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
+        cv_get_VH.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), VHI_SHORT_SIGNATURE, "isNewlyWeavedValueHolder", "()Z", true);
+        Label l1 = ASMFactory.createLabel();
+        cv_get_VH.visitJumpInsn(Opcodes.valueInt("IFEQ"), l1);
         cv_get_VH.visitLabel(l0);
-        cv_get_VH.visitVarInsn(ALOAD, 0);
+        cv_get_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
 
         // EntityC object = (EntityC)getFoo();
         if (attributeDetails.getGetterMethodName() != null) {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
-            cv_get_VH.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
+            cv_get_VH.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
+            cv_get_VH.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), attributeDetails.getReferenceClassName().replace('.', '/'));
         } else {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
+            cv_get_VH.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
         }
-        cv_get_VH.visitVarInsn(ASTORE, 1);
+        cv_get_VH.visitVarInsn(Opcodes.valueInt("ASTORE"), 1);
 
         // if (object != _toplink_foo_vh.getValue()){
-        cv_get_VH.visitVarInsn(ALOAD, 1);
-        cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
-        cv_get_VH.visitJumpInsn(IF_ACMPEQ, l1);
+        cv_get_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_get_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_get_VH.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
+        cv_get_VH.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
+        cv_get_VH.visitJumpInsn(Opcodes.valueInt("IF_ACMPEQ"), l1);
 
         // setFoo(object);
-        cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitVarInsn(ALOAD, 1);
+        cv_get_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_get_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
         if (attributeDetails.getSetterMethodName() != null) {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
+            cv_get_VH.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
         } else {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
+            cv_get_VH.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
         }
 
         // }
         cv_get_VH.visitLabel(l1);
 
         // return _toplink_foo_vh;
-        cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitFieldInsn(GETFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        cv_get_VH.visitInsn(ARETURN);
+        cv_get_VH.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_get_VH.visitFieldInsn(Opcodes.valueInt("GETFIELD"), className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
+        cv_get_VH.visitInsn(Opcodes.valueInt("ARETURN"));
 
         cv_get_VH.visitMaxs(0, 0);
     }
@@ -466,72 +470,72 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
         String attribute = attributeDetails.getAttributeName();
         String className = classDetails.getClassName();
         // create a setter method for the new valueholder
-        MethodVisitor cv_set_value = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "(" + VHI_SIGNATURE + ")V", null, null);
+        MethodVisitor cv_set_value = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_SET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "(" + VHI_SIGNATURE + ")V", null, null);
 
         // _toplink_foo_vh = valueholderinterface;
-        cv_set_value.visitVarInsn(ALOAD, 0);
-        cv_set_value.visitVarInsn(ALOAD, 1);
-        cv_set_value.visitFieldInsn(PUTFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
+        cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_set_value.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
 
         // if (valueholderinterface.isInstantiated()){
-        cv_set_value.visitVarInsn(ALOAD, 1);
-        cv_set_value.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isInstantiated", "()Z", true);
-        Label l0 = new Label();
-        cv_set_value.visitJumpInsn(IFEQ, l0);
+        cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_set_value.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), VHI_SHORT_SIGNATURE, "isInstantiated", "()Z", true);
+        Label l0 = ASMFactory.createLabel();
+        cv_set_value.visitJumpInsn(Opcodes.valueInt("IFEQ"), l0);
 
         // Object object = getFoo();
-        cv_set_value.visitVarInsn(ALOAD, 0);
+        cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
         if (attributeDetails.getGetterMethodName() != null) {
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
+            cv_set_value.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), className, attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
         } else {
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
+            cv_set_value.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), className, PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
         }
-        cv_set_value.visitVarInsn(ASTORE, 2);
+        cv_set_value.visitVarInsn(Opcodes.valueInt("ASTORE"), 2);
 
         // Object value = valueholderinterface.getValue();
-        cv_set_value.visitVarInsn(ALOAD, 1);
-        cv_set_value.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
-        cv_set_value.visitVarInsn(ASTORE, 3);
+        cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_set_value.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
+        cv_set_value.visitVarInsn(Opcodes.valueInt("ASTORE"), 3);
 
         // if (object != value){
-        cv_set_value.visitVarInsn(ALOAD, 2);
-        cv_set_value.visitVarInsn(ALOAD, 3);
+        cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
+        cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 3);
         if (attributeDetails.getSetterMethodName() != null) {
-            cv_set_value.visitJumpInsn(IF_ACMPEQ, l0);
+            cv_set_value.visitJumpInsn(Opcodes.valueInt("IF_ACMPEQ"), l0);
             // setFoo((EntityC)value);
-            cv_set_value.visitVarInsn(ALOAD, 0);
-            cv_set_value.visitVarInsn(ALOAD, 3);
-            cv_set_value.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
+            cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 3);
+            cv_set_value.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), attributeDetails.getReferenceClassName().replace('.', '/'));
+            cv_set_value.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), className, attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
             //}
             cv_set_value.visitLabel(l0);
         } else {
-            Label l1 = new Label();
-            cv_set_value.visitJumpInsn(IF_ACMPEQ, l1);
+            Label l1 = ASMFactory.createLabel();
+            cv_set_value.visitJumpInsn(Opcodes.valueInt("IF_ACMPEQ"), l1);
             // _persistence_setFoo((EntityC)value);
-            cv_set_value.visitVarInsn(ALOAD, 0);
-            cv_set_value.visitVarInsn(ALOAD, 3);
-            cv_set_value.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
+            cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 3);
+            cv_set_value.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), attributeDetails.getReferenceClassName().replace('.', '/'));
+            cv_set_value.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), className, PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
             // }
             cv_set_value.visitLabel(l1);
-            cv_set_value.visitFrame(F_SAME, 0, null, 0, null);
-            Label l2 = new Label();
-            cv_set_value.visitJumpInsn(GOTO, l2);
+            cv_set_value.visitFrame(Opcodes.valueInt("F_SAME"), 0, null, 0, null);
+            Label l2 = ASMFactory.createLabel();
+            cv_set_value.visitJumpInsn(Opcodes.valueInt("GOTO"), l2);
             // }
             cv_set_value.visitLabel(l0);
             // else {
-            cv_set_value.visitFrame(F_SAME, 0, null, 0, null);
+            cv_set_value.visitFrame(Opcodes.valueInt("F_SAME"), 0, null, 0, null);
             // foo = null;
-            cv_set_value.visitVarInsn(ALOAD, 0);
-            cv_set_value.visitInsn(ACONST_NULL);
-            cv_set_value.visitFieldInsn(PUTFIELD, className, attributeDetails.attributeName, attributeDetails.getReferenceClassType().getDescriptor());
+            cv_set_value.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_set_value.visitInsn(Opcodes.valueInt("ACONST_NULL"));
+            cv_set_value.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), className, attributeDetails.attributeName, attributeDetails.getReferenceClassType().getDescriptor());
             //}
             cv_set_value.visitLabel(l2);
-            cv_set_value.visitFrame(F_SAME, 0, null, 0, null);
+            cv_set_value.visitFrame(Opcodes.valueInt("F_SAME"), 0, null, 0, null);
         }
 
-        cv_set_value.visitInsn(RETURN);
+        cv_set_value.visitInsn(Opcodes.valueInt("RETURN"));
         cv_set_value.visitMaxs(0, 0);
     }
 
@@ -551,43 +555,43 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
         String attribute = attributeDetails.getAttributeName();
 
         // create _persistence_set_variableName
-        MethodVisitor cv_set = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", null, null);
+        MethodVisitor cv_set = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_SET + attribute, "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", null, null);
 
         // Get the opcode for the load instruction. This may be different
         // depending on the type
-        int opcode = attributeDetails.getReferenceClassType().getOpcode(ILOAD);
+        int opcode = attributeDetails.getReferenceClassType().getOpcode(Opcodes.valueInt("ILOAD"));
 
         if (classDetails.shouldWeaveFetchGroups()) {
-            cv_set.visitVarInsn(ALOAD, 0);
+            cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             cv_set.visitLdcInsn(attribute);
             // _persistence_checkFetchedForSet("variableName");
-            cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", false);
+            cv_set.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", false);
         }
 
         if (classDetails.shouldWeaveChangeTracking()) {
             if (attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_variableName_vh();
-                cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
+                cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                cv_set.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
 
                 // _persistenc_variableName_vh.getValue();
-                cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
+                cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                cv_set.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                cv_set.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
 
                 // Add the cast:
                 // (<VariableClass>)_persistenc_variableName_vh.getValue()
-                cv_set.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
+                cv_set.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), attributeDetails.getReferenceClassName().replace('.', '/'));
 
                 // add the assignment: this.variableName =
                 // (<VariableClass>)_persistenc_variableName_vh.getValue();
-                cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
+                cv_set.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
             }
 
             // load the string attribute name as the first argument of the
             // property change call
-            cv_set.visitVarInsn(ALOAD, 0);
+            cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             cv_set.visitLdcInsn(attribute);
 
             // if the attribute is a primitive, wrap it
@@ -595,70 +599,70 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
             // This is the first part of the wrapping
             String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
             if (wrapper != null) {
-                cv_set.visitTypeInsn(NEW, wrapper);
-                cv_set.visitInsn(DUP);
+                cv_set.visitTypeInsn(Opcodes.valueInt("NEW"), wrapper);
+                cv_set.visitInsn(Opcodes.valueInt("DUP"));
             }
 
             // load the method argument
-            cv_set.visitVarInsn(ALOAD, 0);
-            cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
+            cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_set.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
 
             if (wrapper != null) {
                 // invoke the constructor for wrapping
                 // e.g. Integer.valueOf(variableName)
-                cv_set.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", false);
+                cv_set.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", false);
 
                 // wrap the method argument
                 // e.g. Integer.valueOf(argument)
-                cv_set.visitTypeInsn(NEW, wrapper);
-                cv_set.visitInsn(DUP);
+                cv_set.visitTypeInsn(Opcodes.valueInt("NEW"), wrapper);
+                cv_set.visitInsn(Opcodes.valueInt("DUP"));
                 cv_set.visitVarInsn(opcode, 1);
-                cv_set.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", false);
+                cv_set.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", false);
             } else {
                 // if we are not wrapping the argument, just load it
-                cv_set.visitVarInsn(ALOAD, 1);
+                cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
             }
             // _persistence_propertyChange("variableName", variableName,
             // argument);
-            cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", false);
+            cv_set.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", false);
         } else {
             if (attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_variableName_vh();
-                cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
+                cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                cv_set.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
 
                 // _persistenc_variableName_vh.getValue();
-                cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
+                cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                cv_set.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                cv_set.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
 
                 // Add the cast:
                 // (<VariableClass>)_persistenc_variableName_vh.getValue()
-                cv_set.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
+                cv_set.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), attributeDetails.getReferenceClassName().replace('.', '/'));
 
                 // add the assignment: this.variableName =
                 // (<VariableClass>)_persistenc_variableName_vh.getValue();
-                cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
+                cv_set.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
             }
         }
 
         // Must set variable after raising change event, so event has old and
         // new value.
         // variableName = argument
-        cv_set.visitVarInsn(ALOAD, 0);
+        cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
         cv_set.visitVarInsn(opcode, 1);
-        cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
+        cv_set.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
 
         if (attributeDetails.weaveValueHolders()) {
             // _persistence_variableName_vh.setValue(argument);
-            cv_set.visitVarInsn(ALOAD, 0);
-            cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-            cv_set.visitVarInsn(ALOAD, 1);
-            cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "setValue", "(Ljava/lang/Object;)V", true);
+            cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_set.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+            cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+            cv_set.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), ClassWeaver.VHI_SHORT_SIGNATURE, "setValue", "(Ljava/lang/Object;)V", true);
         }
 
-        cv_set.visitInsn(RETURN);
+        cv_set.visitInsn(Opcodes.valueInt("RETURN"));
         cv_set.visitMaxs(0, 0);
     }
 
@@ -676,41 +680,41 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
         String attribute = attributeDetails.getAttributeName();
 
         // create the _persistenc_getvariableName method
-        MethodVisitor cv_get = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_GET + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor(), null, null);
+        MethodVisitor cv_get = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_GET + attribute, "()" + attributeDetails.getReferenceClassType().getDescriptor(), null, null);
 
         if (classDetails.shouldWeaveFetchGroups()) {
-            cv_get.visitVarInsn(ALOAD, 0);
+            cv_get.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             cv_get.visitLdcInsn(attribute);
             // _persistence_checkFetched("variableName");
-            cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetched", "(Ljava/lang/String;)V", false);
+            cv_get.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_checkFetched", "(Ljava/lang/String;)V", false);
         }
 
         if (attributeDetails.weaveValueHolders()) {
             // _persistence_initialize_variableName_vh();
-            cv_get.visitVarInsn(ALOAD, 0);
-            cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
+            cv_get.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_get.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
 
             // _persistenc_variableName_vh.getValue();
-            cv_get.visitVarInsn(ALOAD, 0);
-            cv_get.visitVarInsn(ALOAD, 0);
-            cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-            cv_get.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
+            cv_get.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_get.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_get.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+            cv_get.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
 
             // Add the cast:
             // (<VariableClass>)_persistenc_variableName_vh.getValue()
-            cv_get.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
+            cv_get.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), attributeDetails.getReferenceClassName().replace('.', '/'));
 
             // add the assignment: this.variableName =
             // (<VariableClass>)_persistenc_variableName_vh.getValue();
-            cv_get.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
+            cv_get.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
         }
 
         // return this.variableName;
-        cv_get.visitVarInsn(ALOAD, 0);
-        cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
+        cv_get.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_get.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
         // Get the opcode for the return insturction. This may be different
         // depending on the type.
-        int opcode = attributeDetails.getReferenceClassType().getOpcode(IRETURN);
+        int opcode = attributeDetails.getReferenceClassType().getOpcode(Opcodes.valueInt("IRETURN"));
         cv_get.visitInsn(opcode);
         cv_get.visitMaxs(0, 0);
     }
@@ -723,8 +727,8 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      * private Object _persistence_primaryKey;
      */
     public void addPersistenceEntityVariables() {
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_primaryKey", OBJECT_SIGNATURE, null, null);
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_cacheKey", CACHEKEY_SIGNATURE, null, null);
+        cv.visitField(Opcodes.valueInt("ACC_PROTECTED") + Opcodes.valueInt("ACC_TRANSIENT"), "_persistence_primaryKey", OBJECT_SIGNATURE, null, null);
+        cv.visitField(Opcodes.valueInt("ACC_PROTECTED") + Opcodes.valueInt("ACC_TRANSIENT"), "_persistence_cacheKey", CACHEKEY_SIGNATURE, null, null);
     }
 
     /**
@@ -737,14 +741,14 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      */
     public void addPersistencePostClone(ClassDetails classDetails) {
         // create the _persistence_post_clone() method
-        MethodVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_post_clone", "()Ljava/lang/Object;", null, null);
+        MethodVisitor cv_clone = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_post_clone", "()Ljava/lang/Object;", null, null);
 
         // if there is a weaved superclass, it will implement
         // _persistence_post_clone. Call that method
         // super._persistence_post_clone()
         if (classDetails.getSuperClassDetails() != null && classDetails.getSuperClassDetails().shouldWeaveInternal()) {
-            cv_clone.visitVarInsn(ALOAD, 0);
-            cv_clone.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_post_clone", "()Ljava/lang/Object;", false);
+            cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_clone.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), classDetails.getSuperClassName(), "_persistence_post_clone", "()Ljava/lang/Object;", false);
         }
 
         if (classDetails.shouldWeaveValueHolders()) {
@@ -754,47 +758,47 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
                                                             // !attributeDetails.isAttributeOnSuperClass())
                                                             // {
                     // clone._attribute_vh = this._attribute_vh.clone();
-                    cv_clone.visitVarInsn(ALOAD, 0);
-                    cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                    Label label = new Label();
-                    cv_clone.visitJumpInsn(IFNULL, label);
-                    cv_clone.visitVarInsn(ALOAD, 0);
-                    cv_clone.visitVarInsn(ALOAD, 0);
-                    cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                    cv_clone.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "clone", "()Ljava/lang/Object;", true);
-                    cv_clone.visitTypeInsn(CHECKCAST, ClassWeaver.VHI_SHORT_SIGNATURE);
-                    cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                    cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                    cv_clone.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                    Label label = ASMFactory.createLabel();
+                    cv_clone.visitJumpInsn(Opcodes.valueInt("IFNULL"), label);
+                    cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                    cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                    cv_clone.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
+                    cv_clone.visitMethodInsn(Opcodes.valueInt("INVOKEINTERFACE"), ClassWeaver.VHI_SHORT_SIGNATURE, "clone", "()Ljava/lang/Object;", true);
+                    cv_clone.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), ClassWeaver.VHI_SHORT_SIGNATURE);
+                    cv_clone.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                     cv_clone.visitLabel(label);
                 }
             }
         }
         if (classDetails.shouldWeaveChangeTracking()) {
             // clone._persistence_listener = null;
-            cv_clone.visitVarInsn(ALOAD, 0);
-            cv_clone.visitInsn(ACONST_NULL);
-            cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
+            cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_clone.visitInsn(Opcodes.valueInt("ACONST_NULL"));
+            cv_clone.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
         }
         if (classDetails.shouldWeaveFetchGroups()) {
             // clone._persistence_fetchGroup = null;
             // clone._persistence_session = null;
-            cv_clone.visitVarInsn(ALOAD, 0);
-            cv_clone.visitInsn(ACONST_NULL);
-            cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
-            cv_clone.visitVarInsn(ALOAD, 0);
-            cv_clone.visitInsn(ACONST_NULL);
-            cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
+            cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_clone.visitInsn(Opcodes.valueInt("ACONST_NULL"));
+            cv_clone.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
+            cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_clone.visitInsn(Opcodes.valueInt("ACONST_NULL"));
+            cv_clone.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
         }
 
         if (!classDetails.isEmbedable()) {
             // clone._persistence_primaryKey = null;
-            cv_clone.visitVarInsn(ALOAD, 0);
-            cv_clone.visitInsn(ACONST_NULL);
-            cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
+            cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_clone.visitInsn(Opcodes.valueInt("ACONST_NULL"));
+            cv_clone.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
         }
 
         // return clone;
-        cv_clone.visitVarInsn(ALOAD, 0);
-        cv_clone.visitInsn(ARETURN);
+        cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_clone.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_clone.visitMaxs(0, 0);
     }
 
@@ -802,69 +806,69 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
         // public List<RelationshipInfo> _persistence_getRelationships() {
         //   return this._persistence_relationshipInfo;
         // }
-        MethodVisitor cv_getPKVector = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "getRelationships", "()" + LIST_RELATIONSHIP_INFO_SIGNATURE, "()" + LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE, null);
-        cv_getPKVector.visitVarInsn(ALOAD, 0);
-        cv_getPKVector.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
-        cv_getPKVector.visitInsn(ARETURN);
+        MethodVisitor cv_getPKVector = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "getRelationships", "()" + LIST_RELATIONSHIP_INFO_SIGNATURE, "()" + LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE, null);
+        cv_getPKVector.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_getPKVector.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
+        cv_getPKVector.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_getPKVector.visitMaxs(0, 0);
 
         // public void _persistence_setRelationships(List<RelationshipInfo> paramList) {
         //   this._persistence_relationshipInfo = paramList;
         // }
-        MethodVisitor cv_setPKVector = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "setRelationships", "(" + LIST_RELATIONSHIP_INFO_SIGNATURE + ")V", "(" + LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE + ")V", null);
-        cv_setPKVector.visitVarInsn(ALOAD, 0);
-        cv_setPKVector.visitVarInsn(ALOAD, 1);
-        cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
-        cv_setPKVector.visitInsn(RETURN);
+        MethodVisitor cv_setPKVector = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "setRelationships", "(" + LIST_RELATIONSHIP_INFO_SIGNATURE + ")V", "(" + LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE + ")V", null);
+        cv_setPKVector.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_setPKVector.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_setPKVector.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
+        cv_setPKVector.visitInsn(Opcodes.valueInt("RETURN"));
         cv_setPKVector.visitMaxs(0, 0);
 
         // public Link _persistence_getHref() {
         //   return this._persistence_href;
         // }
-        MethodVisitor cv_getHref = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "getHref", "()" + LINK_SIGNATURE, null, null);
-        cv_getHref.visitVarInsn(ALOAD, 0);
-        cv_getHref.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE);
-        cv_getHref.visitInsn(ARETURN);
+        MethodVisitor cv_getHref = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "getHref", "()" + LINK_SIGNATURE, null, null);
+        cv_getHref.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_getHref.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE);
+        cv_getHref.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_getHref.visitMaxs(0, 0);
 
         // public void _persistence_setHref(Link paramLink)
         //   this._persistence_href = paramLink;
         // }
-        MethodVisitor cv_setHref = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "setHref", "(" + LINK_SIGNATURE + ")V", null, null);
-        cv_setHref.visitVarInsn(ALOAD, 0);
-        cv_setHref.visitVarInsn(ALOAD, 1);
-        cv_setHref.visitFieldInsn(PUTFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE);
-        cv_setHref.visitInsn(RETURN);
+        MethodVisitor cv_setHref = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "setHref", "(" + LINK_SIGNATURE + ")V", null, null);
+        cv_setHref.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_setHref.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_setHref.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE);
+        cv_setHref.visitInsn(Opcodes.valueInt("RETURN"));
         cv_setHref.visitMaxs(0, 0);
 
         // public ItemLinks _persistence_getLinks() {
         //   return this._persistence_links;
         // }
-        MethodVisitor cv_getLinks = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "getLinks", "()" + ITEM_LINKS_SIGNATURE, null, null);
-        cv_getLinks.visitVarInsn(ALOAD, 0);
-        cv_getLinks.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE);
-        cv_getLinks.visitInsn(ARETURN);
+        MethodVisitor cv_getLinks = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "getLinks", "()" + ITEM_LINKS_SIGNATURE, null, null);
+        cv_getLinks.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_getLinks.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE);
+        cv_getLinks.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_getLinks.visitMaxs(0, 0);
 
         // public void _persistence_setLinks(ItemLinks paramItemLinks) {
         //   this._persistence_links = paramItemLinks;
         // }
-        MethodVisitor cv_setLinks = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "setLinks", "(" + ITEM_LINKS_SIGNATURE + ")V", null, null);
-        cv_setLinks.visitVarInsn(ALOAD, 0);
-        cv_setLinks.visitVarInsn(ALOAD, 1);
-        cv_setLinks.visitFieldInsn(PUTFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE);
-        cv_setLinks.visitInsn(RETURN);
+        MethodVisitor cv_setLinks = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), PERSISTENCE_FIELDNAME_PREFIX + "setLinks", "(" + ITEM_LINKS_SIGNATURE + ")V", null, null);
+        cv_setLinks.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_setLinks.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_setLinks.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE);
+        cv_setLinks.visitInsn(Opcodes.valueInt("RETURN"));
         cv_setLinks.visitMaxs(0, 0);
 
     }
 
     public void addPersistenceRestVariables() {
         // protected transient List<RelationshipInfo> _persistence_relationshipInfo;
-        cv.visitField(ACC_PROTECTED | ACC_TRANSIENT, PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE, null);
+        cv.visitField(Opcodes.valueInt("ACC_PROTECTED") | Opcodes.valueInt("ACC_TRANSIENT"), PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE, null);
         // protected transient Link _persistence_href;
-        cv.visitField(ACC_PROTECTED | ACC_TRANSIENT, PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE, null, null);
+        cv.visitField(Opcodes.valueInt("ACC_PROTECTED") | Opcodes.valueInt("ACC_TRANSIENT"), PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE, null, null);
         // protected transient ItemLinks _persistence_links;
-        cv.visitField(ACC_PROTECTED | ACC_TRANSIENT, PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE, null, null);
+        cv.visitField(Opcodes.valueInt("ACC_PROTECTED") | Opcodes.valueInt("ACC_TRANSIENT"), PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE, null, null);
     }
 
     /**
@@ -875,13 +879,13 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      */
     public void addShallowClone(ClassDetails classDetails) {
         // create the _persistence_shallow_clone() method
-        MethodVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_shallow_clone", "()Ljava/lang/Object;", null, null);
+        MethodVisitor cv_clone = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_shallow_clone", "()Ljava/lang/Object;", null, null);
 
         // return super.clone();
-        cv_clone.visitVarInsn(ALOAD, 0);
-        cv_clone.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "clone", "()Ljava/lang/Object;", false);
+        cv_clone.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_clone.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), "java/lang/Object", "clone", "()Ljava/lang/Object;", false);
 
-        cv_clone.visitInsn(ARETURN);
+        cv_clone.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_clone.visitMaxs(0, 0);
     }
 
@@ -896,36 +900,36 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      */
     public void addPersistenceNew(ClassDetails classDetails) {
         // create the _persistence_new() method
-        MethodVisitor cv_new = cv.visitMethod(ACC_PUBLIC, "_persistence_new", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")Ljava/lang/Object;", null, null);
+        MethodVisitor cv_new = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_new", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")Ljava/lang/Object;", null, null);
 
         // return new ClassType(factory);
-        cv_new.visitTypeInsn(NEW, classDetails.getClassName());
-        cv_new.visitInsn(DUP);
+        cv_new.visitTypeInsn(Opcodes.valueInt("NEW"), classDetails.getClassName());
+        cv_new.visitInsn(Opcodes.valueInt("DUP"));
         if (!classDetails.canWeaveConstructorOptimization()) {
-            cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "()V", false);
-            cv_new.visitInsn(ARETURN);
+            cv_new.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), classDetails.getClassName(), "<init>", "()V", false);
+            cv_new.visitInsn(Opcodes.valueInt("ARETURN"));
             cv_new.visitMaxs(0, 0);
             return;
         } else {
-            cv_new.visitVarInsn(ALOAD, 1);
-            cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", false);
+            cv_new.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+            cv_new.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), classDetails.getClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", false);
         }
-        cv_new.visitInsn(ARETURN);
+        cv_new.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_new.visitMaxs(0, 0);
 
         // create the ClassType() method
-        MethodVisitor cv_constructor = cv.visitMethod(ACC_PUBLIC, "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", null, null);
+        MethodVisitor cv_constructor = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", null, null);
 
-        cv_constructor.visitVarInsn(ALOAD, 0);
+        cv_constructor.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
         if (classDetails.getSuperClassDetails() == null) {
             // super();
-            cv_constructor.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "<init>", "()V", false);
+            cv_constructor.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), classDetails.getSuperClassName(), "<init>", "()V", false);
         } else {
             // super(factory);
-            cv_constructor.visitVarInsn(ALOAD, 1);
-            cv_constructor.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", false);
+            cv_constructor.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+            cv_constructor.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), classDetails.getSuperClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", false);
         }
-        cv_constructor.visitInsn(RETURN);
+        cv_constructor.visitInsn(Opcodes.valueInt("RETURN"));
         cv_constructor.visitMaxs(0, 0);
     }
 
@@ -943,7 +947,7 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      */
     public void addPersistenceGetSet(ClassDetails classDetails) {
         // create the _persistence_get() method
-        MethodVisitor cv_get = cv.visitMethod(ACC_PUBLIC, "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;", null, null);
+        MethodVisitor cv_get = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;", null, null);
 
         Label label = null;
         for (AttributeDetails attributeDetails : classDetails.getAttributesMap().values()) {
@@ -952,22 +956,22 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
                     cv_get.visitLabel(label);
                 }
                 // else if (attribute == "address")
-                cv_get.visitVarInsn(ALOAD, 1);
+                cv_get.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
                 cv_get.visitLdcInsn(attributeDetails.getAttributeName().intern());
-                label = new Label();
-                cv_get.visitJumpInsn(IF_ACMPNE, label);
+                label = ASMFactory.createLabel();
+                cv_get.visitJumpInsn(Opcodes.valueInt("IF_ACMPNE"), label);
                 // return this.address
-                cv_get.visitVarInsn(ALOAD, 0);
-                cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), attributeDetails.getAttributeName(), attributeDetails.getReferenceClassType().getDescriptor());
+                cv_get.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                cv_get.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), attributeDetails.getAttributeName(), attributeDetails.getReferenceClassType().getDescriptor());
                 // if this is a primitive, get the wrapper class
                 String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
                 if (wrapper != null) {
                     // Call valueOf on the wrapper (more optimal than
                     // constructor).
-                    cv_get.visitMethodInsn(INVOKESTATIC, wrapper, "valueOf", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")L" + wrapper + ";", false);
+                    cv_get.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), wrapper, "valueOf", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")L" + wrapper + ";", false);
                 }
 
-                cv_get.visitInsn(ARETURN);
+                cv_get.visitInsn(Opcodes.valueInt("ARETURN"));
             }
         }
         if (label != null) {
@@ -976,18 +980,18 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
         // call super, or return null
         if (classDetails.getSuperClassDetails() == null) {
             // return null;
-            cv_get.visitInsn(ACONST_NULL);
+            cv_get.visitInsn(Opcodes.valueInt("ACONST_NULL"));
         } else {
-            cv_get.visitVarInsn(ALOAD, 0);
-            cv_get.visitVarInsn(ALOAD, 1);
-            cv_get.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;", false);
+            cv_get.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_get.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+            cv_get.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), classDetails.getSuperClassName(), "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;", false);
         }
 
-        cv_get.visitInsn(ARETURN);
+        cv_get.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_get.visitMaxs(0, 0);
 
         // create the _persistence_set() method
-        MethodVisitor cv_set = cv.visitMethod(ACC_PUBLIC, "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", null, null);
+        MethodVisitor cv_set = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", null, null);
 
         label = null;
         for (AttributeDetails attribute : classDetails.getAttributesMap().values()) {
@@ -996,23 +1000,23 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
                     cv_set.visitLabel(label);
                 }
                 // else if (attribute == "address")
-                cv_set.visitVarInsn(ALOAD, 1);
+                cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
                 cv_set.visitLdcInsn(attribute.getAttributeName().intern());
-                label = new Label();
-                cv_set.visitJumpInsn(IF_ACMPNE, label);
+                label = ASMFactory.createLabel();
+                cv_set.visitJumpInsn(Opcodes.valueInt("IF_ACMPNE"), label);
                 // this.address = (String)value;
-                cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitVarInsn(ALOAD, 2);
+                cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+                cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
                 String wrapper = wrapperFor(attribute.getReferenceClassType().getSort());
                 if (wrapper == null) {
                     wrapper = attribute.getReferenceClassName().replace('.', '/');
                 }
-                cv_set.visitTypeInsn(CHECKCAST, wrapper);
+                cv_set.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), wrapper);
                 // Unwrap any primitive wrapper to its value.
                 unwrapPrimitive(attribute, cv_set);
-                cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute.getAttributeName(), attribute.getReferenceClassType().getDescriptor());
+                cv_set.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), attribute.getAttributeName(), attribute.getReferenceClassType().getDescriptor());
                 // return;
-                cv_set.visitInsn(RETURN);
+                cv_set.visitInsn(Opcodes.valueInt("RETURN"));
             }
         }
         if (label != null) {
@@ -1020,13 +1024,13 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
         }
         // call super, or return null
         if (classDetails.getSuperClassDetails() != null) {
-            cv_set.visitVarInsn(ALOAD, 0);
-            cv_set.visitVarInsn(ALOAD, 1);
-            cv_set.visitVarInsn(ALOAD, 2);
-            cv_set.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
+            cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+            cv_set.visitVarInsn(Opcodes.valueInt("ALOAD"), 2);
+            cv_set.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), classDetails.getSuperClassName(), "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
         }
 
-        cv_set.visitInsn(RETURN);
+        cv_set.visitInsn(Opcodes.valueInt("RETURN"));
         cv_set.visitMaxs(0, 0);
     }
 
@@ -1039,30 +1043,30 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      * this._persistence_primaryKey = primaryKey; }
      */
     public void addPersistenceEntityMethods(ClassDetails classDetails) {
-        MethodVisitor cv_getPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_getId", "()" + OBJECT_SIGNATURE, null, null);
-        cv_getPKVector.visitVarInsn(ALOAD, 0);
-        cv_getPKVector.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
-        cv_getPKVector.visitInsn(ARETURN);
+        MethodVisitor cv_getPKVector = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_getId", "()" + OBJECT_SIGNATURE, null, null);
+        cv_getPKVector.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_getPKVector.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
+        cv_getPKVector.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_getPKVector.visitMaxs(0, 0);
 
-        MethodVisitor cv_setPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_setId", "(" + OBJECT_SIGNATURE + ")V", null, null);
-        cv_setPKVector.visitVarInsn(ALOAD, 0);
-        cv_setPKVector.visitVarInsn(ALOAD, 1);
-        cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
-        cv_setPKVector.visitInsn(RETURN);
+        MethodVisitor cv_setPKVector = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_setId", "(" + OBJECT_SIGNATURE + ")V", null, null);
+        cv_setPKVector.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_setPKVector.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_setPKVector.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), "_persistence_primaryKey", OBJECT_SIGNATURE);
+        cv_setPKVector.visitInsn(Opcodes.valueInt("RETURN"));
         cv_setPKVector.visitMaxs(0, 0);
 
-        MethodVisitor cv_getCacheKey = cv.visitMethod(ACC_PUBLIC, "_persistence_getCacheKey", "()" + CACHEKEY_SIGNATURE, null, null);
-        cv_getCacheKey.visitVarInsn(ALOAD, 0);
-        cv_getCacheKey.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
-        cv_getCacheKey.visitInsn(ARETURN);
+        MethodVisitor cv_getCacheKey = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_getCacheKey", "()" + CACHEKEY_SIGNATURE, null, null);
+        cv_getCacheKey.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_getCacheKey.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
+        cv_getCacheKey.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_getCacheKey.visitMaxs(0, 0);
 
-        MethodVisitor cv_setCacheKey = cv.visitMethod(ACC_PUBLIC, "_persistence_setCacheKey", "(" + CACHEKEY_SIGNATURE + ")V", null, null);
-        cv_setCacheKey.visitVarInsn(ALOAD, 0);
-        cv_setCacheKey.visitVarInsn(ALOAD, 1);
-        cv_setCacheKey.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
-        cv_setCacheKey.visitInsn(RETURN);
+        MethodVisitor cv_setCacheKey = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_setCacheKey", "(" + CACHEKEY_SIGNATURE + ")V", null, null);
+        cv_setCacheKey.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_setCacheKey.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_setCacheKey.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), "_persistence_cacheKey", CACHEKEY_SIGNATURE);
+        cv_setCacheKey.visitInsn(Opcodes.valueInt("RETURN"));
         cv_setCacheKey.visitMaxs(0, 0);
     }
 
@@ -1076,7 +1080,7 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      * _persistence_session;
      */
     public void addFetchGroupVariables() {
-        FieldVisitor fv = cv.visitField(ACC_PROTECTED, "_persistence_fetchGroup", FETCHGROUP_SIGNATURE, null, null);
+        FieldVisitor fv = cv.visitField(Opcodes.valueInt("ACC_PROTECTED"), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE, null, null);
         // Only add jakarta.persistence.Transient annotation if attribute access
         // is being used
         if (classDetails.usesAttributeAccess()) {
@@ -1087,8 +1091,8 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
         }
         fv.visitEnd();
 
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE, null, null).visitEnd();
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_session", SESSION_SIGNATURE, null, null).visitEnd();
+        cv.visitField(Opcodes.valueInt("ACC_PROTECTED") + Opcodes.valueInt("ACC_TRANSIENT"), "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE, null, null).visitEnd();
+        cv.visitField(Opcodes.valueInt("ACC_PROTECTED") + Opcodes.valueInt("ACC_TRANSIENT"), "_persistence_session", SESSION_SIGNATURE, null, null).visitEnd();
     }
 
     /**
@@ -1125,96 +1129,96 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      * EntityManagerImpl.processUnfetchedAttributeForSet(this, attribute); } }
      */
     public void addFetchGroupMethods(ClassDetails classDetails) {
-        MethodVisitor cv_getSession = cv.visitMethod(ACC_PUBLIC, "_persistence_getSession", "()" + SESSION_SIGNATURE, null, null);
-        cv_getSession.visitVarInsn(ALOAD, 0);
-        cv_getSession.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
-        cv_getSession.visitInsn(ARETURN);
+        MethodVisitor cv_getSession = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_getSession", "()" + SESSION_SIGNATURE, null, null);
+        cv_getSession.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_getSession.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
+        cv_getSession.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_getSession.visitMaxs(0, 0);
 
-        MethodVisitor cv_setSession = cv.visitMethod(ACC_PUBLIC, "_persistence_setSession", "(" + SESSION_SIGNATURE + ")V", null, null);
-        cv_setSession.visitVarInsn(ALOAD, 0);
-        cv_setSession.visitVarInsn(ALOAD, 1);
-        cv_setSession.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
-        cv_setSession.visitInsn(RETURN);
+        MethodVisitor cv_setSession = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_setSession", "(" + SESSION_SIGNATURE + ")V", null, null);
+        cv_setSession.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_setSession.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_setSession.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), "_persistence_session", SESSION_SIGNATURE);
+        cv_setSession.visitInsn(Opcodes.valueInt("RETURN"));
         cv_setSession.visitMaxs(0, 0);
 
-        MethodVisitor cv_getFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_getFetchGroup", "()" + FETCHGROUP_SIGNATURE, null, null);
-        cv_getFetchGroup.visitVarInsn(ALOAD, 0);
-        cv_getFetchGroup.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
-        cv_getFetchGroup.visitInsn(ARETURN);
+        MethodVisitor cv_getFetchGroup = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_getFetchGroup", "()" + FETCHGROUP_SIGNATURE, null, null);
+        cv_getFetchGroup.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_getFetchGroup.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
+        cv_getFetchGroup.visitInsn(Opcodes.valueInt("ARETURN"));
         cv_getFetchGroup.visitMaxs(0, 0);
 
-        MethodVisitor cv_setFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_setFetchGroup", "(" + FETCHGROUP_SIGNATURE + ")V", null, null);
-        cv_setFetchGroup.visitVarInsn(ALOAD, 0);
-        cv_setFetchGroup.visitVarInsn(ALOAD, 1);
-        cv_setFetchGroup.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
-        cv_setFetchGroup.visitInsn(RETURN);
+        MethodVisitor cv_setFetchGroup = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_setFetchGroup", "(" + FETCHGROUP_SIGNATURE + ")V", null, null);
+        cv_setFetchGroup.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_setFetchGroup.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_setFetchGroup.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
+        cv_setFetchGroup.visitInsn(Opcodes.valueInt("RETURN"));
         cv_setFetchGroup.visitMaxs(0, 0);
 
-        MethodVisitor cv_shouldRefreshFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_shouldRefreshFetchGroup", "()" + PBOOLEAN_SIGNATURE, null, null);
-        cv_shouldRefreshFetchGroup.visitVarInsn(ALOAD, 0);
-        cv_shouldRefreshFetchGroup.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE);
-        cv_shouldRefreshFetchGroup.visitInsn(IRETURN);
+        MethodVisitor cv_shouldRefreshFetchGroup = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_shouldRefreshFetchGroup", "()" + PBOOLEAN_SIGNATURE, null, null);
+        cv_shouldRefreshFetchGroup.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_shouldRefreshFetchGroup.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE);
+        cv_shouldRefreshFetchGroup.visitInsn(Opcodes.valueInt("IRETURN"));
         cv_shouldRefreshFetchGroup.visitMaxs(0, 0);
 
-        MethodVisitor cv_setShouldRefreshFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_setShouldRefreshFetchGroup", "(" + PBOOLEAN_SIGNATURE + ")V", null, null);
-        cv_setShouldRefreshFetchGroup.visitVarInsn(ALOAD, 0);
-        cv_setShouldRefreshFetchGroup.visitVarInsn(ILOAD, 1);
-        cv_setShouldRefreshFetchGroup.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE);
-        cv_setShouldRefreshFetchGroup.visitInsn(RETURN);
+        MethodVisitor cv_setShouldRefreshFetchGroup = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_setShouldRefreshFetchGroup", "(" + PBOOLEAN_SIGNATURE + ")V", null, null);
+        cv_setShouldRefreshFetchGroup.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_setShouldRefreshFetchGroup.visitVarInsn(Opcodes.valueInt("ILOAD"), 1);
+        cv_setShouldRefreshFetchGroup.visitFieldInsn(Opcodes.valueInt("PUTFIELD"), classDetails.getClassName(), "_persistence_shouldRefreshFetchGroup", PBOOLEAN_SIGNATURE);
+        cv_setShouldRefreshFetchGroup.visitInsn(Opcodes.valueInt("RETURN"));
         cv_setShouldRefreshFetchGroup.visitMaxs(0, 0);
 
-        MethodVisitor cv_resetFetchGroup = cv.visitMethod(ACC_PUBLIC, "_persistence_resetFetchGroup", "()V", null, null);
-        cv_resetFetchGroup.visitInsn(RETURN);
+        MethodVisitor cv_resetFetchGroup = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_resetFetchGroup", "()V", null, null);
+        cv_resetFetchGroup.visitInsn(Opcodes.valueInt("RETURN"));
         cv_resetFetchGroup.visitMaxs(0, 0);
 
-        MethodVisitor cv_isAttributeFetched = cv.visitMethod(ACC_PUBLIC, "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", null, null);
-        cv_isAttributeFetched.visitVarInsn(ALOAD, 0);
-        cv_isAttributeFetched.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
-        Label gotoTrue = new Label();
-        cv_isAttributeFetched.visitJumpInsn(IFNULL, gotoTrue);
-        cv_isAttributeFetched.visitVarInsn(ALOAD, 0);
-        cv_isAttributeFetched.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
-        cv_isAttributeFetched.visitVarInsn(ALOAD, 1);
-        cv_isAttributeFetched.visitMethodInsn(INVOKEVIRTUAL, FETCHGROUP_SHORT_SIGNATURE, "containsAttributeInternal", "(Ljava/lang/String;)Z", false);
-        Label gotoFalse = new Label();
-        cv_isAttributeFetched.visitJumpInsn(IFEQ, gotoFalse);
+        MethodVisitor cv_isAttributeFetched = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", null, null);
+        cv_isAttributeFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_isAttributeFetched.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
+        Label gotoTrue = ASMFactory.createLabel();
+        cv_isAttributeFetched.visitJumpInsn(Opcodes.valueInt("IFNULL"), gotoTrue);
+        cv_isAttributeFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_isAttributeFetched.visitFieldInsn(Opcodes.valueInt("GETFIELD"), classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
+        cv_isAttributeFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_isAttributeFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), FETCHGROUP_SHORT_SIGNATURE, "containsAttributeInternal", "(Ljava/lang/String;)Z", false);
+        Label gotoFalse = ASMFactory.createLabel();
+        cv_isAttributeFetched.visitJumpInsn(Opcodes.valueInt("IFEQ"), gotoFalse);
         cv_isAttributeFetched.visitLabel(gotoTrue);
-        cv_isAttributeFetched.visitInsn(ICONST_1);
-        Label gotoReturn = new Label();
-        cv_isAttributeFetched.visitJumpInsn(GOTO, gotoReturn);
+        cv_isAttributeFetched.visitInsn(Opcodes.valueInt("ICONST_1"));
+        Label gotoReturn = ASMFactory.createLabel();
+        cv_isAttributeFetched.visitJumpInsn(Opcodes.valueInt("GOTO"), gotoReturn);
         cv_isAttributeFetched.visitLabel(gotoFalse);
-        cv_isAttributeFetched.visitInsn(ICONST_0);
+        cv_isAttributeFetched.visitInsn(Opcodes.valueInt("ICONST_0"));
         cv_isAttributeFetched.visitLabel(gotoReturn);
-        cv_isAttributeFetched.visitInsn(IRETURN);
+        cv_isAttributeFetched.visitInsn(Opcodes.valueInt("IRETURN"));
         cv_isAttributeFetched.visitMaxs(0, 0);
 
-        MethodVisitor cv_checkFetched = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetched", "(Ljava/lang/String;)V", null, null);
-        cv_checkFetched.visitVarInsn(ALOAD, 0);
-        cv_checkFetched.visitVarInsn(ALOAD, 1);
-        cv_checkFetched.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
-        gotoReturn = new Label();
-        cv_checkFetched.visitJumpInsn(IFNE, gotoReturn);
-        cv_checkFetched.visitVarInsn(ALOAD, 0);
-        cv_checkFetched.visitTypeInsn(CHECKCAST, FETCHGROUP_TRACKER_SHORT_SIGNATURE);
-        cv_checkFetched.visitVarInsn(ALOAD, 1);
-        cv_checkFetched.visitMethodInsn(INVOKESTATIC, ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttribute", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V", false);
+        MethodVisitor cv_checkFetched = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_checkFetched", "(Ljava/lang/String;)V", null, null);
+        cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
+        gotoReturn = ASMFactory.createLabel();
+        cv_checkFetched.visitJumpInsn(Opcodes.valueInt("IFNE"), gotoReturn);
+        cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_checkFetched.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), FETCHGROUP_TRACKER_SHORT_SIGNATURE);
+        cv_checkFetched.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_checkFetched.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttribute", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V", false);
         cv_checkFetched.visitLabel(gotoReturn);
-        cv_checkFetched.visitInsn(RETURN);
+        cv_checkFetched.visitInsn(Opcodes.valueInt("RETURN"));
         cv_checkFetched.visitMaxs(0, 0);
 
-        MethodVisitor cv_checkFetchedForSet = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", null, null);
-        cv_checkFetchedForSet.visitVarInsn(ALOAD, 0);
-        cv_checkFetchedForSet.visitVarInsn(ALOAD, 1);
-        cv_checkFetchedForSet.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
-        gotoReturn = new Label();
-        cv_checkFetchedForSet.visitJumpInsn(IFNE, gotoReturn);
-        cv_checkFetchedForSet.visitVarInsn(ALOAD, 0);
-        cv_checkFetchedForSet.visitTypeInsn(CHECKCAST, FETCHGROUP_TRACKER_SHORT_SIGNATURE);
-        cv_checkFetchedForSet.visitVarInsn(ALOAD, 1);
-        cv_checkFetchedForSet.visitMethodInsn(INVOKESTATIC, ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttributeForSet", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V", false);
+        MethodVisitor cv_checkFetchedForSet = cv.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", null, null);
+        cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKEVIRTUAL"), classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
+        gotoReturn = ASMFactory.createLabel();
+        cv_checkFetchedForSet.visitJumpInsn(Opcodes.valueInt("IFNE"), gotoReturn);
+        cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        cv_checkFetchedForSet.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), FETCHGROUP_TRACKER_SHORT_SIGNATURE);
+        cv_checkFetchedForSet.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        cv_checkFetchedForSet.visitMethodInsn(Opcodes.valueInt("INVOKESTATIC"), ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttributeForSet", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V", false);
         cv_checkFetchedForSet.visitLabel(gotoReturn);
-        cv_checkFetchedForSet.visitInsn(RETURN);
+        cv_checkFetchedForSet.visitInsn(Opcodes.valueInt("RETURN"));
         cv_checkFetchedForSet.visitMaxs(0, 0);
     }
 
@@ -1232,7 +1236,7 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
             String existingInterface = interfaces[index];
             if (PERSISTENCE_WEAVED_SHORT_SIGNATURE.equals(existingInterface)) {
                 this.alreadyWeaved = true;
-                super.visit(version, access, name, signature, superName, interfaces);
+                super.visitSuper(version, access, name, signature, superName, interfaces);
                 return;
             } else if (CT_SHORT_SIGNATURE.equals(existingInterface)) {
                 // Disable weaving of change tracking if already implemented
@@ -1362,6 +1366,9 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
             newSignature = newSignatureBuf.toString();
         }
 
+        if (cw != null) {
+            cv = cw;
+        }
         cv.visit(version, access, name, newSignature, superName, newInterfaces);
     }
 
@@ -1370,7 +1377,7 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      */
     @Override
     public MethodVisitor visitMethod(int access, String methodName, String desc, String signature, String[] exceptions) {
-        MethodVisitor mv = super.visitMethod(access, methodName, desc, signature, exceptions);
+        MethodVisitor mv = super.visitMethodSuper(access, methodName, desc, signature, exceptions);
         if (!alreadyWeaved) {
             // skip constructors, they will not changed
             if (!"<init>".equals(methodName) && !"<cinit>".equals(methodName)) {
@@ -1472,6 +1479,21 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
             addPersistenceRestVariables();
             addPersistenceRestMethods(classDetails);
         }
-        cv.visitEnd();
+        if (cw != null) {
+            cw.visitEnd();
+        } else {
+            cv.visitEnd();
+        }
     }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        return super.visitAnnotationSuper(desc, visible);
+    }
+
+    @Override
+    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+        return super.visitFieldSuper(access, name, desc, signature, value);
+    }
+
 }

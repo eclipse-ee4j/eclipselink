@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,22 +17,14 @@ package org.eclipse.persistence.internal.xr;
 //javase imports
 
 //EclipseLink imports
+import org.eclipse.persistence.asm.ClassWriter;
+import org.eclipse.persistence.asm.EclipseLinkASMClassWriter;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+
 import static org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_PUBLIC;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_STATIC;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_SUPER;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ARETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.DUP;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.GETSTATIC;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECIAL;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.NEW;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.PUTSTATIC;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 /**
@@ -70,49 +62,49 @@ public class XRClassWriter extends DynamicClassWriter {
     public byte[] writeClass(DynamicClassLoader loader, String className) throws ClassNotFoundException {
 
         String classNameAsSlashes = className.replace('.', '/');
-        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
+        ClassWriter cw = new EclipseLinkASMClassWriter();
         MethodVisitor mv;
 
         // special-case: build sub-class of XRDynamicEntityCollection
         if (className.endsWith(COLLECTION_WRAPPER_SUFFIX)) {
-            cw.visit(ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null);
-            mv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKESPECIAL, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, INIT, "()V", false);
-            mv.visitInsn(RETURN);
+            cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), classNameAsSlashes, null, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null);
+            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), INIT, "()V", null, null);
+            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, INIT, "()V", false);
+            mv.visitInsn(Opcodes.valueInt("RETURN"));
             mv.visitMaxs(0, 0);
             mv.visitEnd();
         } else {
             // public class Foo extends XRDynamicEntity {
-            cw.visit(ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null);
+            cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), classNameAsSlashes, null, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null);
 
             // public static XRDynamicPropertiesManager DPM = new
             // XRDynamicPropertiesManager();
-            cw.visitField(ACC_PUBLIC + ACC_STATIC, PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
+            cw.visitField(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_STATIC"), PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
 
-            mv = cw.visitMethod(ACC_STATIC, CLINIT, "()V", null, null);
-            mv.visitTypeInsn(NEW, XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES);
-            mv.visitInsn(DUP);
-            mv.visitMethodInsn(INVOKESPECIAL, XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES, INIT, "()V", false);
-            mv.visitFieldInsn(PUTSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
-            mv.visitInsn(RETURN);
+            mv = cw.visitMethod(Opcodes.valueInt("ACC_STATIC"), CLINIT, "()V", null, null);
+            mv.visitTypeInsn(Opcodes.valueInt("NEW"), XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES);
+            mv.visitInsn(Opcodes.valueInt("DUP"));
+            mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES, INIT, "()V", false);
+            mv.visitFieldInsn(Opcodes.valueInt("PUTSTATIC"), classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
+            mv.visitInsn(Opcodes.valueInt("RETURN"));
             mv.visitMaxs(0, 0);
             mv.visitEnd();
 
             // public Foo() {
             // super();
             // }
-            mv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKESPECIAL, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, INIT, "()V", false);
-            mv.visitInsn(RETURN);
+            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), INIT, "()V", null, null);
+            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+            mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, INIT, "()V", false);
+            mv.visitInsn(Opcodes.valueInt("RETURN"));
             mv.visitMaxs(0, 0);
             mv.visitEnd();
 
             // public XRDynamicPropertiesManager fetchPropertiesManager() {
-            mv = cw.visitMethod(ACC_PUBLIC, "fetchPropertiesManager", "()L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
-            mv.visitFieldInsn(GETSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
-            mv.visitInsn(ARETURN);
+            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "fetchPropertiesManager", "()L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";", null, null);
+            mv.visitFieldInsn(Opcodes.valueInt("GETSTATIC"), classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + XR_DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
+            mv.visitInsn(Opcodes.valueInt("ARETURN"));
             mv.visitMaxs(0, 0);
             mv.visitEnd();
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -257,4 +257,18 @@ public class SystemProperties {
      * </p>
      */
     public static final String CONCURRENCY_SEMAPHORE_LOG_TIMEOUT = "eclipselink.concurrency.semaphore.log.timeout";
+
+    /**
+     * <p>
+     * This property control which ASM implementation is used for classes bytecode modification.
+     * </p>
+     * <p>
+     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <ul>
+     * <li>"<code>eclipselink</code>" (DEFAULT) - use ASM implementation from  <i>org.eclipse.persistence.asm</i> project.</li>
+     * <li>"<code>ow2</code>" - use ASM implementation from  <i>org.ow2.asm</i> project.</li>
+     * </ul>
+     */
+    public static final String ASM_SERVICE = "eclipselink.asm.service";
+
 }

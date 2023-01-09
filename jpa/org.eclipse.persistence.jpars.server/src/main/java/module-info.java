@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ module org.eclipse.persistence.jpars.server {
     requires transitive jakarta.ws.rs;
     requires jakarta.xml.bind;
 
-    requires org.eclipse.persistence.asm;
     requires org.eclipse.persistence.jpa;
     requires org.eclipse.persistence.jpa.jpql;
     requires transitive org.eclipse.persistence.moxy;

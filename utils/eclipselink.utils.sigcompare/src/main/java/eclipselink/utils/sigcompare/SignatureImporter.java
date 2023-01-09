@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,13 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.eclipse.persistence.internal.libraries.asm.ClassReader;
-import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.ClassReader;
+import org.eclipse.persistence.asm.ClassVisitor;
+import org.eclipse.persistence.asm.FieldVisitor;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
+
 
 public class SignatureImporter {
 
@@ -39,8 +41,8 @@ public class SignatureImporter {
 
             if (entry.getName().endsWith(".class")) {
                 InputStream in = zipFile.getInputStream(entry);
-                ClassReader reader = new ClassReader(in);
-                reader.accept(visitor, ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG);
+                ClassReader reader = ASMFactory.createClassReader(in);
+                reader.accept(visitor, ClassReader.valueInt("SKIP_CODE") + ClassReader.valueInt("SKIP_DEBUG"));
                 in.close();
             }
         }
@@ -61,19 +63,19 @@ public class SignatureImporter {
         protected ClassSignature sig = null;
 
         SignatureClassVisitor() {
-            super(Opcodes.ASM5);
+            super(Opcodes.valueInt("ASM5"));
         }
 
         @Override
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-            if ((access & Opcodes.ACC_PUBLIC) > 0) {
+            if ((access & Opcodes.valueInt("ACC_PUBLIC")) > 0) {
                 this.sig = new ClassSignature(name, superName, interfaces);
             } // TODO: Handle inheritance
         }
 
         @Override
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-            if (this.sig != null && (access & Opcodes.ACC_PUBLIC) > 0) {
+            if (this.sig != null && (access & Opcodes.valueInt("ACC_PUBLIC")) > 0) {
                 this.sig.addField(name, desc);
             }
             return null;
@@ -81,7 +83,7 @@ public class SignatureImporter {
 
         @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-            if (this.sig != null && (access & Opcodes.ACC_PUBLIC) > 0) {
+            if (this.sig != null && (access & Opcodes.valueInt("ACC_PUBLIC")) > 0) {
                 this.sig.addMethod(name, desc);
             }
             return null;

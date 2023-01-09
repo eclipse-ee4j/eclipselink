@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -466,6 +466,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int MULTIPLE_OUT_PARAMS_NOT_SUPPORTED = 7356;
 
     public static final int INVALID_PERSISTENCE_ROOT_URL = 7357;
+    public static final int INCORRECT_ASM_SERVICE_PROVIDED = 7358;
+    public static final int NOT_AVAILABLE_ASM_SERVICE = 7359;
 
     /* Code values in range <7500;7599> reserved for {@link org.eclipse.persistence.exceptions.BeanValidationException}. */
 
@@ -3021,6 +3023,22 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_PERSISTENCE_ROOT_URL, args));
         validationException.setErrorCode(INVALID_PERSISTENCE_ROOT_URL);
+        return validationException;
+    }
+
+    public static ValidationException incorrectASMServiceProvided() {
+        Object[] args = {  };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INCORRECT_ASM_SERVICE_PROVIDED, args));
+        validationException.setErrorCode(INCORRECT_ASM_SERVICE_PROVIDED);
+        return validationException;
+    }
+
+    public static ValidationException notAvailableASMService() {
+        Object[] args = {  };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NOT_AVAILABLE_ASM_SERVICE, args));
+        validationException.setErrorCode(NOT_AVAILABLE_ASM_SERVICE);
         return validationException;
     }
 }

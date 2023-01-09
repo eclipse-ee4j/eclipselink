@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,20 +15,14 @@
 //
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_PUBLIC;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ARETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.CHECKCAST;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECIAL;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.POP;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
-
+import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.ClassWriter;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
+import org.eclipse.persistence.asm.Type;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * Custom {@link DynamicClassWriter} adding getter methods for virtual
@@ -70,25 +64,25 @@ public class MetadataDynamicClassWriter extends DynamicClassWriter {
             Type returnType = getAsmType(accessor);
 
             // Add getter
-            MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, GET + propertyName, "()" + returnType.getDescriptor(), null, new String[] { DYNAMIC_EXCEPTION });
+            MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), GET + propertyName, "()" + returnType.getDescriptor(), null, new String[] { DYNAMIC_EXCEPTION });
             mv.visitCode();
-            mv.visitVarInsn(ALOAD, 0);
+            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             mv.visitLdcInsn(accessor.getAttributeName());
-            mv.visitMethodInsn(INVOKESPECIAL, parentClassType, "get", "(" + LJAVA_LANG_STRING + ")" + LJAVA_LANG_OBJECT, false);
-            mv.visitTypeInsn(CHECKCAST, returnType.getInternalName());
-            mv.visitInsn(ARETURN);
+            mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), parentClassType, "get", "(" + LJAVA_LANG_STRING + ")" + LJAVA_LANG_OBJECT, false);
+            mv.visitTypeInsn(Opcodes.valueInt("CHECKCAST"), returnType.getInternalName());
+            mv.visitInsn(Opcodes.valueInt("ARETURN"));
             mv.visitMaxs(2, 1);
             mv.visitEnd();
 
             // Add setter
-            mv = cw.visitMethod(ACC_PUBLIC, SET + propertyName, "(" + returnType.getDescriptor() + ")V", null, new String[] { DYNAMIC_EXCEPTION });
+            mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), SET + propertyName, "(" + returnType.getDescriptor() + ")V", null, new String[] { DYNAMIC_EXCEPTION });
             mv.visitCode();
-            mv.visitVarInsn(ALOAD, 0);
+            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
             mv.visitLdcInsn("id");
-            mv.visitVarInsn(ALOAD, 1);
-            mv.visitMethodInsn(INVOKESPECIAL, parentClassType, SET, "(" + LJAVA_LANG_STRING + LJAVA_LANG_OBJECT + ")" + LDYNAMIC_ENTITY, false);
-            mv.visitInsn(POP);
-            mv.visitInsn(RETURN);
+            mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+            mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), parentClassType, SET, "(" + LJAVA_LANG_STRING + LJAVA_LANG_OBJECT + ")" + LDYNAMIC_ENTITY, false);
+            mv.visitInsn(Opcodes.valueInt("POP"));
+            mv.visitInsn(Opcodes.valueInt("RETURN"));
             mv.visitMaxs(3, 2);
             mv.visitEnd();
         }
@@ -104,24 +98,24 @@ public class MetadataDynamicClassWriter extends DynamicClassWriter {
         Class<?> primClass = accessor.getPrimitiveClassForName(attributeType);
 
         if (primClass != null) {
-            Type asmType = Type.getType(primClass);
+            Type asmType = ASMFactory.createType(primClass);
 
-            switch (asmType.getSort()) {
-            case Type.BOOLEAN:
+            int asmTypeSort = asmType.getSort();
+            if (asmTypeSort == Type.BOOLEAN) {
                 return Type.getType(ClassConstants.BOOLEAN);
-            case Type.BYTE:
+            } else if (asmTypeSort == Type.BYTE) {
                 return Type.getType(ClassConstants.BYTE);
-            case Type.CHAR:
+            } else if (asmTypeSort == Type.CHAR) {
                 return Type.getType(ClassConstants.CHAR);
-            case Type.DOUBLE:
+            } else if (asmTypeSort == Type.DOUBLE) {
                 return Type.getType(ClassConstants.DOUBLE);
-            case Type.FLOAT:
+            } else if (asmTypeSort == Type.FLOAT) {
                 return Type.getType(ClassConstants.FLOAT);
-            case Type.INT:
+            } else if (asmTypeSort == Type.INT) {
                 return Type.getType(ClassConstants.INTEGER);
-            case Type.LONG:
+            } else if (asmTypeSort == Type.LONG) {
                 return Type.getType(ClassConstants.LONG);
-            case Type.SHORT:
+            } else if (asmTypeSort == Type.SHORT) {
                 return Type.getType(ClassConstants.SHORT);
             }
         }
