@@ -265,8 +265,8 @@ public class SystemProperties {
      * <p>
      * <b>Allowed Values</b> (case sensitive String)<b>:</b>
      * <ul>
-     * <li>"<code>eclipselink</code>" - use ASM implementation from  <i>org.eclipse.persistence.asm</i> project.</li>
-     * <li>"<code>ow2</code>" (DEFAULT) - use ASM implementation from  <i>org.ow2.asm</i> project.</li>
+     * <li>"<code>eclipselink</code>" (DEFAULT) - use ASM implementation from  <i>org.eclipse.persistence.asm</i> project.</li>
+     * <li>"<code>ow2</code>" - use ASM implementation from  <i>org.ow2.asm</i> project.</li>
      * </ul>
      */
     public static final String ASM_SERVICE = "eclipselink.asm.service";
