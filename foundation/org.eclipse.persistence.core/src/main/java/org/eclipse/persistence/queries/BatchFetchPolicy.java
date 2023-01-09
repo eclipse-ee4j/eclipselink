@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -77,6 +77,9 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
             dataResults.put(clone, list);
         }
         clone.setDataResults(dataResults);
+        if(this.attributeExpressions != null) {
+            clone.attributeExpressions = new ArrayList<>(this.attributeExpressions);
+        }
         return clone;
     }
 
