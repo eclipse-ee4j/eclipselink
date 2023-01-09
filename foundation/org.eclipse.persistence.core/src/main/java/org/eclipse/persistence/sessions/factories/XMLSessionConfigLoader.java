@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,7 +82,7 @@ public class XMLSessionConfigLoader {
     /** Used to store the entity resolver to validate the XML schema when parsing. */
     protected PersistenceEntityResolver entityResolver;
 
-    public static final String ECLIPSELINK_SESSIONS_SCHEMA = "org/eclipse/persistence/eclipselink_sessions_2.1.xsd";
+    public static final String ECLIPSELINK_SESSIONS_SCHEMA = "org/eclipse/persistence/eclipselink_sessions_2.2.xsd";
     protected static final String DEFAULT_RESOURCE_NAME = "sessions.xml";
     protected static final String DEFAULT_RESOURCE_NAME_IN_META_INF = "META-INF/sessions.xml";
 

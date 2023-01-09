@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -613,7 +613,8 @@ public class PropertiesHandler {
                 {TargetServer.WebLogic_10, pcg + "wls.WebLogic_10_Platform"},
                 {TargetServer.WebLogic_12, pcg + "wls.WebLogic_12_Platform"},
                 {TargetServer.JBoss, pcg + "jboss.JBossPlatform"},
-                {TargetServer.SAPNetWeaver_7_1, pcg + "sap.SAPNetWeaver_7_1_Platform"}
+                {TargetServer.SAPNetWeaver_7_1, pcg + "sap.SAPNetWeaver_7_1_Platform"},
+                {TargetServer.WildFly, pcg + "wildfly.WildFlyPlatform"}
                 };
         }
     }

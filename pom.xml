@@ -134,8 +134,8 @@
 
         <!--Default location for JEE servers binaries-->
         <test.directory>${user.home}/.eclipselinktests</test.directory>
-        <installation.url>https://download.jboss.org/wildfly/18.0.0.Final/wildfly-18.0.0.Final.zip</installation.url>
-        <installation.checksum.md5>8e4d435bb5d6fe466b478dc49d34bf27</installation.checksum.md5>
+        <installation.url>https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.zip</installation.url>
+        <installation.checksum.md5>56e2dd6f54e65603ada5659a06ad782b</installation.checksum.md5>
 
         <!--Test DB property file names-->
         <test.mysql.properties.file>el-test.mysql.properties</test.mysql.properties.file>
@@ -256,7 +256,7 @@
         <!-- CQ #23233 -->
         <weld-se.version>5.0.1.Final</weld-se.version>
         <weblogic.version>12.2.1-3</weblogic.version>
-        <wildfly.version>18.0.0.Final</wildfly.version>
+        <wildfly.version>27.0.0.Final</wildfly.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
 
         <!--Documentation Dependencies version-->
@@ -1319,6 +1319,11 @@
                         </dependency>
                     </dependencies>
                 </plugin>
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-maven-plugin</artifactId>
+                    <version>4.0.0.Final</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -1842,8 +1847,8 @@
                 <jee.client.version>${wildfly.version}</jee.client.version>
                 <jee.client.type>pom</jee.client.type>
                 <!--Download properties-->
-                <installation.url>https://download.jboss.org/wildfly/18.0.0.Final/wildfly-18.0.0.Final.zip</installation.url>
-                <installation.checksum.md5>8e4d435bb5d6fe466b478dc49d34bf27</installation.checksum.md5>
+                <installation.url>https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.zip</installation.url>
+                <installation.checksum.md5>56e2dd6f54e65603ada5659a06ad782b</installation.checksum.md5>
             </properties>
         </profile>
         <profile>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2022 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -43,6 +43,7 @@ public class TargetServer {
     public static final String  WebLogic_12 = "WebLogic_12";
     public static final String  JBoss = "JBoss";
     public static final String  SAPNetWeaver_7_1 = "NetWeaver_7_1";
+    public static final String  WildFly = "WildFly";
 
     public static final String DEFAULT = None;
 }
