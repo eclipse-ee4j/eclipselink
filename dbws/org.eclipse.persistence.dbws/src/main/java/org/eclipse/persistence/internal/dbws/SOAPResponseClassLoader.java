@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,13 +20,10 @@ package org.eclipse.persistence.internal.dbws;
 // Java extension imports
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_PUBLIC;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_SUPER;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECIAL;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
+import org.eclipse.persistence.asm.ClassWriter;
+import org.eclipse.persistence.asm.EclipseLinkASMClassWriter;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
 
 /**
  * <p><b>INTERNAL</b>: A subclass of {@link ClassLoader} that exposes a build method to the hidden
@@ -60,13 +57,13 @@ public class SOAPResponseClassLoader extends ClassLoader {
        *     }
        *   }
        */
-      EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
-      cw.visit(ACC_PUBLIC + ACC_SUPER, className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
+      ClassWriter cw = new EclipseLinkASMClassWriter();
+      cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
 
-      MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-      mv.visitVarInsn(ALOAD, 0);
-      mv.visitMethodInsn(INVOKESPECIAL, SOAP_RESPONSE_CLASSNAME_SLASHES, "<init>", "()V", false);
-      mv.visitInsn(RETURN);
+      MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "()V", null, null);
+      mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+      mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), SOAP_RESPONSE_CLASSNAME_SLASHES, "<init>", "()V", false);
+      mv.visitInsn(Opcodes.valueInt("RETURN"));
       mv.visitMaxs(0, 0);
       mv.visitEnd();
 

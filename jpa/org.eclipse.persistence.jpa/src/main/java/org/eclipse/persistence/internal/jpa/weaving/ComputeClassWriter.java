@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2000, 2015 -2011 INRIA, France Telecom
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,9 +36,11 @@ package org.eclipse.persistence.internal.jpa.weaving;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.eclipse.persistence.internal.libraries.asm.ClassReader;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.AnnotationVisitor;
+import org.eclipse.persistence.asm.ClassReader;
+import org.eclipse.persistence.asm.ClassWriter;
+import org.eclipse.persistence.asm.Opcodes;
 
 /**
  * A ClassWriter that computes the common super class of two classes without
@@ -52,23 +54,24 @@ class ComputeClassWriter extends ClassWriter {
 
     public ComputeClassWriter(ClassLoader loader, final int flags) {
         super(flags);
+        setCustomClassWriter(this);
         l = loader;
     }
 
     @Override
-    protected String getCommonSuperClass(final String type1, final String type2)
+    public String getCommonSuperClass(final String type1, final String type2)
     {
         try {
             ClassReader info1 = typeInfo(type1);
             ClassReader info2 = typeInfo(type2);
-            if ((info1.getAccess() & Opcodes.ACC_INTERFACE) != 0) {
+            if ((info1.getAccess() & Opcodes.valueInt("ACC_INTERFACE")) != 0) {
                 if (typeImplements(type2, info2, type1)) {
                     return type1;
                 } else {
                     return "java/lang/Object";
                 }
             }
-            if ((info2.getAccess() & Opcodes.ACC_INTERFACE) != 0) {
+            if ((info2.getAccess() & Opcodes.valueInt("ACC_INTERFACE")) != 0) {
                 if (typeImplements(type1, info1, type2)) {
                     return type2;
                 } else {
@@ -102,6 +105,25 @@ class ComputeClassWriter extends ClassWriter {
         } catch (IOException e) {
             throw new RuntimeException(e.toString());
         }
+    }
+
+    @Override
+    public void visit(int access, String name, String signature, String superName, String[] interfaces) {
+    }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+        return super.visitAnnotationSuper(descriptor, visible);
+    }
+
+    @Override
+    public byte[] toByteArray() {
+        return super.toByteArraySuper();
+    }
+
+        @Override
+    public <T> T unwrap() {
+        return super.getInternal().unwrap();
     }
 
     /**
@@ -170,7 +192,7 @@ class ComputeClassWriter extends ClassWriter {
     private ClassReader typeInfo(final String type) throws IOException {
         InputStream is = l.getResourceAsStream(type + ".class");
         try {
-            return new ClassReader(is);
+            return ASMFactory.createClassReader(is);
         } finally {
             is.close();
         }

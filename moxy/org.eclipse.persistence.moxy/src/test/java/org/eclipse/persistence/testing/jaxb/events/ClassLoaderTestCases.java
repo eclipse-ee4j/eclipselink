@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,10 +24,11 @@ import jakarta.xml.bind.Unmarshaller;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
-import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.asm.AnnotationVisitor;
+import org.eclipse.persistence.asm.ClassWriter;
+import org.eclipse.persistence.asm.EclipseLinkASMClassWriter;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
@@ -43,17 +44,17 @@ public class ClassLoaderTestCases extends TestCase {
     @Override
     protected void setUp() throws Exception {
 
-        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
-        cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, CLASS_NAME, null, ClassLoaderRoot.class.getName().replace('.', '/'), null);
+        ClassWriter cw = new EclipseLinkASMClassWriter();
+        cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), CLASS_NAME, null, ClassLoaderRoot.class.getName().replace('.', '/'), null);
         AnnotationVisitor xmlTypeAV = cw.visitAnnotation("Ljakarta/xml/bind/annotation/XmlRootElement;", true);
         xmlTypeAV.visit("name", "root");
         xmlTypeAV.visitEnd();
 
         // Write Constructor:
-        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, ClassLoaderRoot.class.getName().replace('.', '/'), "<init>", "()V", false);
-        mv.visitInsn(Opcodes.RETURN);
+        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "()V", null, null);
+        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), ClassLoaderRoot.class.getName().replace('.', '/'), "<init>", "()V", false);
+        mv.visitInsn(Opcodes.valueInt("RETURN"));
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 

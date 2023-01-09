@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.internal.jpa.rs.weaving;
 
+import org.eclipse.persistence.asm.EclipseLinkASMClassWriter;
+import org.eclipse.persistence.asm.ClassWriter;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.EclipseLinkClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * This class is used to generate XML type adapters for single entity references in JPARS 2.0.
@@ -27,7 +28,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class RestReferenceAdapterV2ClassWriter implements EclipseLinkClassWriter, Opcodes {
+public class RestReferenceAdapterV2ClassWriter implements EclipseLinkClassWriter {
     public static final String CLASS_NAME_SUFFIX = "RestReferenceV2Adapter";
     public static final String REFERENCE_ADAPTER_SHORT_SIGNATURE = "org/eclipse/persistence/jpa/rs/util/xmladapters/ReferenceAdapterV2";
 
@@ -80,25 +81,25 @@ public class RestReferenceAdapterV2ClassWriter implements EclipseLinkClassWriter
     public byte[] writeClass(DynamicClassLoader loader, String className)
             throws ClassNotFoundException {
 
-        final EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter(0);
-        cw.visit(ACC_PUBLIC + ACC_SUPER, getASMClassName(), "L" + REFERENCE_ADAPTER_SHORT_SIGNATURE + "<L" + getASMParentClassName() + ";>;", REFERENCE_ADAPTER_SHORT_SIGNATURE, null);
+        final ClassWriter cw = new EclipseLinkASMClassWriter(0);
+        cw.visit(Opcodes.valueInt("ACC_PUBLIC") + Opcodes.valueInt("ACC_SUPER"), getASMClassName(), "L" + REFERENCE_ADAPTER_SHORT_SIGNATURE + "<L" + getASMParentClassName() + ";>;", REFERENCE_ADAPTER_SHORT_SIGNATURE, null);
 
         // Default constructor
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        MethodVisitor mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "()V", null, null);
         mv.visitCode();
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "()V", false);
-        mv.visitInsn(RETURN);
+        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "()V", false);
+        mv.visitInsn(Opcodes.valueInt("RETURN"));
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
         // Another constructor
-        mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", null, null);
+        mv = cw.visitMethod(Opcodes.valueInt("ACC_PUBLIC"), "<init>", "(Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", null, null);
         mv.visitCode();
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKESPECIAL, REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "(Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", false);
-        mv.visitInsn(RETURN);
+        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 0);
+        mv.visitVarInsn(Opcodes.valueInt("ALOAD"), 1);
+        mv.visitMethodInsn(Opcodes.valueInt("INVOKESPECIAL"), REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "(Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", false);
+        mv.visitInsn(Opcodes.valueInt("RETURN"));
         mv.visitMaxs(2, 2);
         mv.visitEnd();
 
