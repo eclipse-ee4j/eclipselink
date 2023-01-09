@@ -1,4 +1,4 @@
-// Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
 //
 // This program and the accompanying materials are made available under the
 // terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -98,6 +98,9 @@ spec:
     - cat
 """
         }
+    }
+    tools {
+        jdk 'adoptopenjdk-hotspot-jdk11-latest'
     }
     stages {
         // Prepare and promote EclipseLink artifacts to oss.sonatype.org (staging) and to the Eclipse.org Milestone Builds area
