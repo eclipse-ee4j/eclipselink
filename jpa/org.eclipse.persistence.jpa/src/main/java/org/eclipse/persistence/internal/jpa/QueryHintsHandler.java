@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -319,6 +319,7 @@ public class QueryHintsHandler {
             addHint(new SerializedObject());
             addHint(new ReturnNameValuePairsHint());
             addHint(new PrintInnerJoinInWhereClauseHint());
+            addHint(new QueryResultsCacheValidation());
         }
 
         Hint(String name, String defaultValue) {
@@ -2226,4 +2227,23 @@ public class QueryHintsHandler {
         }
     }
 
+    protected static class QueryResultsCacheValidation extends Hint {
+        QueryResultsCacheValidation() {
+            super(QueryHints.QUERY_RESULTS_CACHE_VALIDATION, HintValues.FALSE);
+            valueArray = new Object[][] {
+                    {HintValues.TRUE, Boolean.TRUE},
+                    {HintValues.FALSE, Boolean.FALSE}
+            };
+        }
+
+        @Override
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query instanceof ReadQuery) {
+                ((ReadQuery)query).setAllowQueryResultsCacheValidation((Boolean)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
 }
