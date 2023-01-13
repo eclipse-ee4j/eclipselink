@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -24,6 +24,7 @@ wget -nc https://repo1.maven.org/maven2/org/jboss/logging/jboss-logging/3.4.1.Fi
 wget -nc https://repo1.maven.org/maven2/org/glassfish/javax.el/3.0.1-b08/javax.el-3.0.1-b08.jar -O $HOME/extension.lib.external/javax.el-3.0.1-b08.jar
 wget -nc https://repo1.maven.org/maven2/com/fasterxml/classmate/1.5.1/classmate-1.5.1.jar -O $HOME/extension.lib.external/classmate-1.5.1.jar
 wget -nc https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar -O $HOME/extension.lib.external/mysql-connector-java-8.0.28.jar
+wget -nc https://repo1.maven.org/maven2/org/jgroups/jgroups/4.1.8.Final/jgroups-4.1.8.Final.jar -O $HOME/extension.lib.external/jgroups.jar
 wget -nc https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.7-bin.tar.gz -O $HOME/extension.lib.external/apache-ant-1.10.7-bin.tar.gz
 wget -nc https://archive.apache.org/dist/maven/ant-tasks/2.1.3/binaries/maven-ant-tasks-2.1.3.jar -O $HOME/extension.lib.external/mavenant/maven-ant-tasks-2.1.3.jar
 wget -nc https://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.tar.gz -O $HOME/extension.lib.external/wildfly-15.0.1.Final.tar.gz
