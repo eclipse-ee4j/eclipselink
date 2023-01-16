@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2022, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ import org.eclipse.persistence.jpa.test.query.model.QuerySyntaxEntity;
 import org.eclipse.persistence.jpa.test.query.model.QuerySyntaxEntity_;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -1728,13 +1729,23 @@ public class TestQuerySyntaxComparisonTests {
         EntityManager em = emf.createEntityManager();
         DatabasePlatform platform = getPlatform(emf);
 
+        /* Disabling the test for DB2 zOS because support for the ESCAPE clause is dependent on the database configuration.
+         * Since we can't determine the configured support, disabling the test for now.
+         * 
+         * https://www.ibm.com/docs/en/db2-for-zos/11?topic=predicates-like-predicate
+         * An escape clause is allowed for Unicode mixed (UTF-8) data, but is restricted for ASCII and EBCDIC mixed data.
+         */
+        if(platform.isDB2Z()) {
+            Assume.assumeTrue("Test disabled for Platform " + platform, false);
+        }
+
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE ?1 ESCAPE ?2");
             query.setParameter(1, "HELLO");
             query.setParameter(2, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE 'HELLO' ESCAPE 'R'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1743,7 +1754,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE 'HELLO' ESCAPE 'R'");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE 'HELLO' ESCAPE 'R'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1765,7 +1776,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE 'HELLO' ESCAPE 'R'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1780,7 +1791,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE 'HELLO' ESCAPE 'R'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1803,13 +1814,23 @@ public class TestQuerySyntaxComparisonTests {
         EntityManager em = emf2.createEntityManager();
         DatabasePlatform platform = getPlatform(emf2);
 
+        /* Disabling the test for DB2 zOS because support for the ESCAPE clause is dependent on the database configuration.
+         * Since we can't determine the configured support, disabling the test for now.
+         * 
+         * https://www.ibm.com/docs/en/db2-for-zos/11?topic=predicates-like-predicate
+         * An escape clause is allowed for Unicode mixed (UTF-8) data, but is restricted for ASCII and EBCDIC mixed data.
+         */
+        if(platform.isDB2Z()) {
+            Assume.assumeTrue("Test disabled for Platform " + platform, false);
+        }
+
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE ?1 ESCAPE ?2");
             query.setParameter(1, "HELLO");
             query.setParameter(2, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
@@ -1818,7 +1839,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE 'HELLO' ESCAPE 'R'");
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE 'HELLO' ESCAPE 'R'", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
@@ -1840,7 +1861,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
@@ -1855,7 +1876,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE 'HELLO' ESCAPE 'R'", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
@@ -1878,13 +1899,23 @@ public class TestQuerySyntaxComparisonTests {
         EntityManager em = emf3.createEntityManager();
         DatabasePlatform platform = getPlatform(emf3);
 
+        /* Disabling the test for DB2 zOS because support for the ESCAPE clause is dependent on the database configuration.
+         * Since we can't determine the configured support, disabling the test for now.
+         * 
+         * https://www.ibm.com/docs/en/db2-for-zos/11?topic=predicates-like-predicate
+         * An escape clause is allowed for Unicode mixed (UTF-8) data, but is restricted for ASCII and EBCDIC mixed data.
+         */
+        if(platform.isDB2Z()) {
+            Assume.assumeTrue("Test disabled for Platform " + platform, false);
+        }
+
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE ?1 ESCAPE ?2");
             query.setParameter(1, "HELLO");
             query.setParameter(2, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
@@ -1893,7 +1924,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE 'HELLO' ESCAPE 'R'");
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
@@ -1915,7 +1946,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
@@ -1930,7 +1961,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
@@ -2069,7 +2100,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            }
 
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'");
             query.getResultList();
@@ -2085,7 +2120,9 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'HELLO' LIKE ? ESCAPE 'A'", _sql2.remove(0));
+            } else if(platform.isDB2() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'HELLO' LIKE ? ESCAPE ?", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
@@ -2109,7 +2146,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            }
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
@@ -2140,7 +2181,9 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam2, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'HELLO' LIKE ? ESCAPE 'A'", _sql2.remove(0));
+            } else if(platform.isDB2() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'HELLO' LIKE ? ESCAPE ?", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
@@ -2161,6 +2204,7 @@ public class TestQuerySyntaxComparisonTests {
             return;
 
         EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
 
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE ?1 LIKE ?2 ESCAPE ?3");
@@ -2169,19 +2213,31 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
 
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'");
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
 
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'HELLO' LIKE ?1 ESCAPE ?2");
             query.setParameter(1, "WORLD");
             query.setParameter(2, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
 
             // -----------------------
 
@@ -2201,7 +2257,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
@@ -2212,7 +2272,11 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
@@ -2228,7 +2292,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam2, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
