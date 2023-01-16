@@ -27,6 +27,7 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.sequence.model.Coffee;
+import org.eclipse.persistence.jpa.test.sequence.model.StepExecutionEntity;
 import org.eclipse.persistence.jpa.test.sequence.model.Tea;
 import org.eclipse.persistence.jpa.test.sequence.model.TeaShop;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
