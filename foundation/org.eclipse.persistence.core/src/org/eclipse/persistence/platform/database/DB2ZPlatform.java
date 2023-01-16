@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2022 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -47,6 +47,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  * <b>Purpose</b>: Provides DB2 z/OS specific behavior.
@@ -103,6 +104,25 @@ public class DB2ZPlatform extends DB2Platform {
     @Override
     public String getProcedureOptionList() {
         return " DISABLE DEBUG MODE ";
+    }
+
+    /**
+     * INTERNAL:
+     * This method returns the query to select the timestamp from the server for
+     * DB2.
+     */
+    @Override
+    public ValueReadQuery getTimestampQuery() {
+        if (timestampQuery == null) {
+            if (getUseNationalCharacterVaryingTypeForString()) {
+                timestampQuery = new ValueReadQuery();
+                timestampQuery.setSQLString("SELECT CAST (CURRENT TIMESTAMP AS TIMESTAMP CCSID UNICODE) FROM SYSIBM.SYSDUMMY1");
+                timestampQuery.setAllowNativeSQLQuery(true);
+            } else {
+                timestampQuery = super.getTimestampQuery();
+            }
+        }
+        return timestampQuery;
     }
 
     /**
@@ -198,7 +218,7 @@ public class DB2ZPlatform extends DB2Platform {
      * With binding enabled, DB2 z/OS will throw an error:
      * <pre>The statement string specified as the object of a PREPARE contains a 
      * predicate or expression where parameter markers have been used as operands of 
-     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * the same operator for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
      */
     protected ExpressionOperator equalOperator() {
         ExpressionOperator operator = disableAtLeast1BindingExpression();
@@ -212,7 +232,7 @@ public class DB2ZPlatform extends DB2Platform {
      * With binding enabled, DB2 z/OS will throw an error:
      * <pre>The statement string specified as the object of a PREPARE contains a 
      * predicate or expression where parameter markers have been used as operands of 
-     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * the same operator for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
      */
     protected ExpressionOperator notEqualOperator() {
         ExpressionOperator operator = disableAtLeast1BindingExpression();
@@ -226,7 +246,7 @@ public class DB2ZPlatform extends DB2Platform {
      * With binding enabled, DB2 z/OS will throw an error:
      * <pre>The statement string specified as the object of a PREPARE contains a 
      * predicate or expression where parameter markers have been used as operands of 
-     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * the same operator for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
      */
     protected ExpressionOperator greaterThanOperator() {
         ExpressionOperator operator = disableAtLeast1BindingExpression();
@@ -240,7 +260,7 @@ public class DB2ZPlatform extends DB2Platform {
      * With binding enabled, DB2 z/OS will throw an error:
      * <pre>The statement string specified as the object of a PREPARE contains a 
      * predicate or expression where parameter markers have been used as operands of 
-     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * the same operator for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
      */
     protected ExpressionOperator greaterThanEqualOperator() {
         ExpressionOperator operator = disableAtLeast1BindingExpression();
@@ -254,7 +274,7 @@ public class DB2ZPlatform extends DB2Platform {
      * For ALL, DB2 z/OS will throw an error:
      * <pre>The statement string specified as the object of a PREPARE contains a 
      * predicate or expression where parameter markers have been used as operands of 
-     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * the same operator for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
      */
     protected ExpressionOperator lessThanOperator() {
         ExpressionOperator operator = disableAtLeast1BindingExpression();
@@ -268,7 +288,7 @@ public class DB2ZPlatform extends DB2Platform {
      * With binding enabled, DB2 z/OS will throw an error:
      * <pre>The statement string specified as the object of a PREPARE contains a 
      * predicate or expression where parameter markers have been used as operands of 
-     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * the same operator for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
      */
     protected ExpressionOperator lessThanEqualOperator() {
         ExpressionOperator operator = disableAtLeast1BindingExpression();
@@ -282,7 +302,7 @@ public class DB2ZPlatform extends DB2Platform {
      * With binding enabled, DB2 z/OS will throw an error:
      * <pre>The statement string specified as the object of a PREPARE contains a 
      * predicate or expression where parameter markers have been used as operands of 
-     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * the same operator for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
      */
     protected ExpressionOperator isNullOperator() {
         ExpressionOperator operator = disableAllBindingExpression();
@@ -296,7 +316,7 @@ public class DB2ZPlatform extends DB2Platform {
      * With binding enabled, DB2 z/OS will throw an error:
      * <pre>The statement string specified as the object of a PREPARE contains a 
      * predicate or expression where parameter markers have been used as operands of 
-     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * the same operator for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
      */
     protected ExpressionOperator isNotNullOperator() {
         ExpressionOperator operator = disableAllBindingExpression();
@@ -310,7 +330,7 @@ public class DB2ZPlatform extends DB2Platform {
      * With binding enabled, DB2 z/OS will throw an error:
      * <pre>The statement string specified as the object of a PREPARE contains a 
      * predicate or expression where parameter markers have been used as operands of 
-     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * the same operator for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
      */
     protected ExpressionOperator betweenOperator() {
         ExpressionOperator operator = disableAtLeast1BindingExpression();
@@ -324,7 +344,7 @@ public class DB2ZPlatform extends DB2Platform {
      * With binding enabled, DB2 z/OS will throw an error:
      * <pre>The statement string specified as the object of a PREPARE contains a 
      * predicate or expression where parameter markers have been used as operands of 
-     * the same operator—for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     * the same operator for example: ? > ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
      */
     protected ExpressionOperator notBetweenOperator() {
         ExpressionOperator operator = disableAtLeast1BindingExpression();
