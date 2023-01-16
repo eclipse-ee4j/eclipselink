@@ -38,7 +38,9 @@ public class TestVersioning {
 	@Emf(createTables = DDLGen.DROP_CREATE, classes = { TemporalVersionedEntity.class, TemporalVersionedEntity2.class,
 			IntegerVersionedEntity.class},
 			properties = { @Property(name="eclipselink.logging.level", value="FINE"),
-					       @Property(name="eclipselink.logging.parameters", value="true")})
+					       @Property(name="eclipselink.logging.parameters", value="true"),
+                           @Property(name = "eclipselink.target-database-properties",
+                           value = "UseNationalCharacterVaryingTypeForString=true")})
     private EntityManagerFactory emf;
 	
 	private final static String qStr1 = "UPDATE TemporalVersionedEntity " + 
