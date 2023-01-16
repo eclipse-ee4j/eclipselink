@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,6 +57,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  * <b>Purpose</b>: Provides DB2 z/OS specific behavior.
@@ -111,6 +112,25 @@ public class DB2ZPlatform extends DB2Platform {
     @Override
     public String getProcedureOptionList() {
         return " DISABLE DEBUG MODE ";
+    }
+
+    /**
+     * INTERNAL:
+     * This method returns the query to select the timestamp from the server for
+     * DB2.
+     */
+    @Override
+    public ValueReadQuery getTimestampQuery() {
+        if (timestampQuery == null) {
+            if (getUseNationalCharacterVaryingTypeForString()) {
+                timestampQuery = new ValueReadQuery();
+                timestampQuery.setSQLString("SELECT CAST (CURRENT TIMESTAMP AS TIMESTAMP CCSID UNICODE) FROM SYSIBM.SYSDUMMY1");
+                timestampQuery.setAllowNativeSQLQuery(true);
+            } else {
+                timestampQuery = super.getTimestampQuery();
+            }
+        }
+        return timestampQuery;
     }
 
     @Override
