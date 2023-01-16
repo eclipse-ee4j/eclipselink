@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -166,6 +166,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /** Flag that allows add to extended thread logging output thread stack trace or not.*/
     protected boolean allowExtendedThreadLoggingThreadDump = false;
+
+    /** Flag that allows query result cache validation or not.*/
+    protected boolean allowQueryResultsCacheValidation = false;
 
     /**
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
@@ -1352,6 +1355,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     }
 
     /**
+     * INTERNAL:
+     * Flag that allows query result cache validation or not. If true result is presented via log messages.
+     */
+    public boolean isAllowQueryResultsCacheValidation() {
+        return allowQueryResultsCacheValidation;
+    }
+
+    /**
      * PUBLIC:
      * Return the descriptor for  the alias
      */
@@ -1428,6 +1439,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setAllowExtendedThreadLoggingThreadDump(boolean allowExtendedThreadLoggingThreadDump) {
         this.allowExtendedThreadLoggingThreadDump = allowExtendedThreadLoggingThreadDump;
+    }
+
+    /**
+     * INTERNAL:
+     * Set to true to enable query result cache validation or not. Result is presented via log messages.
+     */
+    public void setAllowQueryResultsCacheValidation(boolean allowQueryResultsCacheValidation) {
+        this.allowQueryResultsCacheValidation = allowQueryResultsCacheValidation;
     }
 
     /**
