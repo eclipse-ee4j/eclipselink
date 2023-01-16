@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -202,11 +202,18 @@
         <pathelement path="${eclipselink.plugins}/${ejb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jms-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${transaction-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${servlet-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${soap-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${cdi-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${mail.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${ws-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${wsdl.jar}"/>
         <pathelement path="${eclipselink.plugins}/${wsrs-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${slf4j-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.nosql_${version.string}.jar"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.extension_${version.string}.jar"/>
+        <pathelement path="${eclipselink.util.plugins}/org.eclipse.persistence.oracleddlparser_1.0.0.v201807030954.jar"/>
+        <pathelement path="${eclipselink.util.plugins}/javax.wsdl_1.6.2.v201012040545.jar"/>
         <pathelement path="${extensions.depend.dir}/${jgroups.jar}"/>
         <pathelement path="${java.class.path}"/>
     </path>

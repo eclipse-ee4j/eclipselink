@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -833,7 +833,7 @@
         <echo message="        build.date      ='${build.date}'"/>
         <echo message="        build.type      ='${build.type}'"/>
         <echo message="        bundle.dir      ='${tmp.maven.dir}'"/>
-        <ant antfile="uploadToNexus.xml" dir="${tmp.maven.dir}" target="upload-maven-all">
+        <ant antfile="uploadToNexus.xml" dir="${basedir}" target="upload-maven-all">
             <property name="build.deps.dir"   value="${build.deps.dir}"/>
             <property name="custom.tasks.lib" value="${releng.repo.dir}/ant_customizations.jar"/>
             <property name="release.version"  value="${release.version}"/>
@@ -841,6 +841,7 @@
             <property name="build.date"       value="${build.date}"/>
             <property name="build.type"       value="${build.type}"/>
             <property name="bundle.dir"       value="${tmp.maven.dir}"/>
+            <property name="antbuild.dir"    value="${basedir}"/>
         </ant>
     </target>
 

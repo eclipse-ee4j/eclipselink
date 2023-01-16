@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@
 *         build.date      - in format YYYYMMDD
 *         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
 *         git.hash        - for stamping pom, to link build with source repo
+*         antbuild.dir    - Ant build directory
 *    Optional variables:
 *         bundle.dir      - if location of bundles to publish isn't a git "view"
 *
@@ -62,6 +63,7 @@
 *   - Ant properties are lower case.
 -->
 <project name="Upload2Maven"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload-maven-all">
+    <include file="${antbuild.dir}/antbuild.xml"/>
     <property file="${user.home}/build.properties"/>
     <property file="build.properties"/>
     <!-- The following properties defined so they can be overridden for testing -->
@@ -82,6 +84,20 @@
     <property name="stagingURL"  value="https://jakarta.oss.sonatype.org/service/local/staging/deploy/maven2"/>
     <property name="snapshotId"  value="ossrh"/>
     <property name="snapshotURL" value="https://jakarta.oss.sonatype.org/content/repositories/snapshots/"/>
+
+    <target name="javadoc-path-init">
+        <path id="unified.javadoc.path">
+            <path refid="javadoc.path"/>
+            <path refid="nosql.javadoc.path"/>
+            <path refid="jpars.javadoc.path"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${ojdbc.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${sdoapi.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${xdb.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${xmlparser.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${ucp.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${dms.jar}"/>
+        </path>
+    </target>
 
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
@@ -573,14 +589,16 @@
     </target>
 
     <!-- Generates missing Javadoc. jakarta.oss.sonatype.org requires it (repository closing rules)-->
-    <target name="prepare-javadoc">
+    <target name="prepare-javadoc" depends="javadoc-path-init">
         <property name="src.tmp" value="prepare-javadoc.src.tmp"/>
         <property name="doc.tmp" value="prepare-javadoc.doc.tmp"/>
-
         <delete dir="${src.tmp}" failonerror="false"/>
         <delete dir="${doc.tmp}" failonerror="false"/>
         <unjar src="${artifactSrc}" dest="${src.tmp}"/>
         <javadoc sourcepath="${src.tmp}" destdir="${doc.tmp}" version="true" additionalparam="-Xdoclint:none" packagenames="org.eclipse.persistence.*" noindex="true">
+            <classpath>
+                <path refid="unified.javadoc.path"/>
+            </classpath>
         </javadoc>
         <zip destfile="${artifactJavadoc}">
             <!-- miscellaneous files -->

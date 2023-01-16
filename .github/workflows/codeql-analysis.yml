@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021, 2022 Contributors to the Eclipse Foundation
+# Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ on:
   schedule:
     - cron: '0 19 * * 1'
 env:
-  maven_version: 3.8.6
+  maven_version: 3.8.7
 
 jobs:
   analyze:
@@ -44,11 +44,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
+        uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/codeql-config.yml
