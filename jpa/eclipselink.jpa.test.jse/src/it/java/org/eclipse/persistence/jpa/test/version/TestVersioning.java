@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018 IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2023 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,9 @@ public class TestVersioning {
 	@Emf(createTables = DDLGen.DROP_CREATE, classes = { TemporalVersionedEntity.class, TemporalVersionedEntity2.class,
 			IntegerVersionedEntity.class},
 			properties = { @Property(name="eclipselink.logging.level", value="FINE"),
-					       @Property(name="eclipselink.logging.parameters", value="true")})
+					       @Property(name="eclipselink.logging.parameters", value="true"),
+                           @Property(name = "eclipselink.target-database-properties",
+                           value = "UseNationalCharacterVaryingTypeForString=true")})
     private EntityManagerFactory emf;
 	
 	private final static String qStr1 = "UPDATE TemporalVersionedEntity " + 

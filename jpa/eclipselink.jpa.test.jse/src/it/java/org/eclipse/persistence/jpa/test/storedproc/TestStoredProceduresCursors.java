@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -156,7 +156,7 @@ public class TestStoredProceduresCursors {
             if(platform.isOracle()) {
                 proc.addOutputArgument("out_cursor_one", "SYS_REFCURSOR");
                 proc.addStatement("OPEN out_cursor_one FOR SELECT ITEM_STRING1 FROM STORED_PROCEDURE_ENTITY WHERE ITEM_INTEGER1 = in_param_one");
-            } else if (platform.isDB2()) {
+            } else if (platform.isDB2() && !platform.isDB2Z()) {
                 proc.addOutputArgument("out_cursor_one", "CURSOR");
                 proc.addStatement("SET out_cursor_one = CURSOR FOR SELECT ITEM_STRING1 FROM STORED_PROCEDURE_ENTITY WHERE ITEM_INTEGER1 = in_param_one; OPEN out_cursor_one");
             } else {
