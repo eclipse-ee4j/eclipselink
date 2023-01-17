@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2849,6 +2849,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateAllowExtendedThreadLogging(m);
             updateAllowExtendedThreadLoggingThreadDump(m);
             updateTemporalMutableSetting(m);
+            updateAllowQueryResultsCacheValidation(m);
             updateTableCreationSettings(m);
             updateIndexForeignKeys(m);
             if (!session.hasBroker()) {
@@ -3956,6 +3957,24 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 session.getProject().setAllowExtendedThreadLoggingThreadDump(false);
             } else {
                 session.handleException(ValidationException.invalidBooleanValueForProperty(allowExtendedThreadLoggingThreadDump, PersistenceUnitProperties.THREAD_EXTENDED_LOGGING_THREADDUMP));
+            }
+        }
+    }
+
+    /**
+     * Enable or disable query result cache validation.
+     * The method needs to be called in deploy stage.
+     */
+    protected void updateAllowQueryResultsCacheValidation(Map m){
+        String allowQueryResultsCacheValidation = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.QUERY_RESULTS_CACHE_VALIDATION, m, session);
+
+        if (allowQueryResultsCacheValidation != null) {
+            if (allowQueryResultsCacheValidation.equalsIgnoreCase("true")) {
+                session.getProject().setAllowQueryResultsCacheValidation(true);
+            } else if (allowQueryResultsCacheValidation.equalsIgnoreCase("false")) {
+                session.getProject().setAllowQueryResultsCacheValidation(false);
+            } else {
+                session.handleException(ValidationException.invalidBooleanValueForProperty(allowQueryResultsCacheValidation, PersistenceUnitProperties.QUERY_RESULTS_CACHE_VALIDATION));
             }
         }
     }

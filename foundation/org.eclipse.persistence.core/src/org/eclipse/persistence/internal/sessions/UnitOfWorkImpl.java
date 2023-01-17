@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -3003,7 +3003,27 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         Object result = query.executeInUnitOfWork(this, databaseRow);
         executeDeferredEvents();
+        if (query instanceof ReadQuery && (project.isAllowQueryResultsCacheValidation() || ((ReadQuery)query).shouldAllowQueryResultsCacheValidation())) {
+            validateObjectTree(result);
+        }
         return result;
+    }
+
+    private void validateObjectTree(Object startNode) {
+        log(SessionLog.INFO, SessionLog.TRANSACTION, "validate_object_space");
+        // This defines an inner class for process the iteration operation, don't be scared, it's just an inner class.
+        DescriptorIterator iterator = new DescriptorIterator() {
+            @Override
+            public void iterate(Object object) {
+                if (object != null && !isObjectRegistered(object) && getVisitedStack() != null && getVisitedStack().size() > 0) {
+                    log(SessionLog.WARNING, SessionLog.CACHE, "stack_of_visited_objects_that_refer_to_the_corrupt_object", getVisitedStack());
+                    log(SessionLog.WARNING, SessionLog.CACHE, "corrupt_object_referenced_through_mapping", getCurrentMapping());
+                    log(SessionLog.WARNING, SessionLog.CACHE, "corrupt_object", object);
+                }
+            }
+        };
+        iterator.setSession(this);
+        iterator.startIterationOn(startNode);
     }
 
     /**
