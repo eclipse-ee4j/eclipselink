@@ -171,7 +171,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     @Override
     public Object connectToDatasource(Accessor accessor, Session session) throws DatabaseException {
 
-        return getConnector().connect(prepareProperties(properties, session), session);
+        return getConnector().connect(prepareProperties(session), session);
     }
 
     /**
@@ -309,11 +309,11 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * SECURE:
      * The password in the login properties is encrypted. Return a clone
      * of the properties with the password decrypted.
-     * @param properties connection properties
+     * Also adds platform-specific properties needed for proper functioning.
      * @param session current session used for logging
      */
-    private Properties prepareProperties(Properties properties, Session session) {
-        Properties result = properties;
+    private Properties prepareProperties(Session session) {
+        Properties result = (Properties) properties.clone();
         Object passwordObject = result.get("password");
         if (passwordObject != null) {
             // Fix for bug # 2700529
@@ -329,7 +329,6 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             // a securable object or the setEncryptedPassword flag is not true,
             // don't bother trying to decrypt.
             if (getSecurableObjectHolder().hasSecurableObject() || isEncryptedPasswordSet) {
-                result = (Properties)properties.clone();
                 // Bug 4117441 - Secure programming practices, store password in char[]
                 // If isEncryptedPasswordSet is true, or we have a SecurableObject then we stored
                 // the password as a char[], and we need to convert it into a String for the
