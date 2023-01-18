@@ -100,7 +100,12 @@ spec:
             steps {
                 container('el-build') {
                     sh """
+                        env
+                        echo "character_set_server = " ${character_set_server}
                         /opt/bin/mysql-start.sh
+                        mysql -e 'status;' -uroot -proot                        
+                        mysql -e 'SET GLOBAL character_set_server = utf8mb4;' -uroot -proot                        
+                        mysql -e 'status;' -uroot -proot                        
                         mkdir ~/.eclipselinktests
                     """
                     withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
