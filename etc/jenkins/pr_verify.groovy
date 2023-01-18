@@ -101,6 +101,10 @@ spec:
                 container('el-build') {
                     sh """
                         env
+                        mysql -e 'status;' -uroot -proot                        
+                        mysql -e 'SET GLOBAL character_set_server = utf8mb4;' -uroot -proot                        
+                        mysql -e 'SET GLOBAL character_set_client = utf8mb4;' -uroot -proot                        
+                        mysql -e 'SET GLOBAL character_set_connection = utf8mb4;' -uroot -proot                        
                         /opt/bin/mysql-start.sh
                         mysql -e 'status;' -uroot -proot                        
                         mysql -e 'SET GLOBAL character_set_server = utf8mb4;' -uroot -proot                        
