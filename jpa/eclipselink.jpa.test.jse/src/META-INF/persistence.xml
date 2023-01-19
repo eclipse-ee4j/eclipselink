@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,4 +100,17 @@
           </properties>
      </persistence-unit>
 
+     <persistence-unit name="diagnostic-test-pu">
+          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+          <class>org.eclipse.persistence.jpa.test.diagnostic.model.BranchADiagnostic</class>
+          <class>org.eclipse.persistence.jpa.test.diagnostic.model.BranchBDiagnostic</class>
+     </persistence-unit>
+     <persistence-unit name="diagnostic-with-property-test-pu">
+          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+          <class>org.eclipse.persistence.jpa.test.diagnostic.model.BranchADiagnostic</class>
+          <class>org.eclipse.persistence.jpa.test.diagnostic.model.BranchBDiagnostic</class>
+          <properties>
+               <property name="eclipselink.query-results-cache.validation" value="true"/>
+          </properties>
+     </persistence-unit>
 </persistence>

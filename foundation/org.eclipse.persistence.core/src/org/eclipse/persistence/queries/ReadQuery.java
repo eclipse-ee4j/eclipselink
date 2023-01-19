@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,9 @@ public abstract class ReadQuery extends DatabaseQuery {
 
     /** Stores the JPA maxResult settings for a NamedQuery */
     protected int maxResults = -1;
+
+    /** Flag that allows query result cache validation or not.*/
+    protected boolean allowQueryResultsCacheValidation = false;
 
     /**
      * PUBLIC:
@@ -472,5 +475,13 @@ public abstract class ReadQuery extends DatabaseQuery {
      */
     public void setTemporaryCachedQueryResults(Object queryResults){
         temporaryCachedQueryResults = queryResults;
+    }
+
+    public boolean shouldAllowQueryResultsCacheValidation() {
+        return allowQueryResultsCacheValidation;
+    }
+
+    public void setAllowQueryResultsCacheValidation(boolean allowQueryResultsCacheValidation) {
+        this.allowQueryResultsCacheValidation = allowQueryResultsCacheValidation;
     }
 }
