@@ -247,7 +247,7 @@
         <!-- CQ #21141 -->
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
         <!-- CQ #24195 -->
-        <oracle.nosql.sdk.version>5.4.7</oracle.nosql.sdk.version>
+        <oracle.nosql.sdk.version>5.4.8</oracle.nosql.sdk.version>
         <!-- CQ #21142 -->
         <osgi.version>6.0.0</osgi.version>
         <!-- CQ #21143 -->

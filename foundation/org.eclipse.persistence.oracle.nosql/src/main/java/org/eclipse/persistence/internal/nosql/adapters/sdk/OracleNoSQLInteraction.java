@@ -50,8 +50,8 @@ import oracle.nosql.driver.values.MapValue;
 import oracle.nosql.driver.values.NullValue;
 import oracle.nosql.driver.values.NumberValue;
 import oracle.nosql.driver.values.StringValue;
-
 import oracle.nosql.driver.values.TimestampValue;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.EISException;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
@@ -64,9 +64,9 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.nosql.adapters.sdk.OracleNoSQLPlatform;
 import org.eclipse.persistence.oxm.record.DOMRecord;
-
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -222,14 +222,16 @@ public class OracleNoSQLInteraction implements Interaction {
                 return output;
             } else if (operation == OracleNoSQLOperation.ITERATOR_QUERY) {
                 OracleNoSQLRecord output = new OracleNoSQLRecord();
-                Map<String, String> inputRecord = null;
+                OracleNoSQLRecord inputRecord = null;
                 for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>) input.entrySet()) {
-                    DOMRecord domRecord = createDOMRecord((byte[]) entry.getValue());
-                    inputRecord = createMapFromDOMRecord(createDOMRecord((byte[]) entry.getValue()));
-                    System.out.println(inputRecord);
+                    if (entry.getValue() instanceof byte[]) {
+                        inputRecord = createMapFromDOMRecord(createDOMRecord((byte[]) entry.getValue()));
+                    } else {
+                        inputRecord = (OracleNoSQLRecord)entry.getValue();
+                    }
                 }
-                //Handle Find queries like SELECT * FROM TEST_TABLE WHERE NAME = :name
-                String sqlString = inputRecord.get(OracleNoSQLPlatform.QUERY);
+                //Handle JPQL queries like SELECT * FROM TEST_TABLE WHERE NAME = :name
+                String sqlString = (String)inputRecord.get(OracleNoSQLPlatform.QUERY);
                 PrepareRequest prepareRequest = new PrepareRequest().setStatement(sqlString);
                 if (noSqlSpec.getTimeout() > 0) {
                     prepareRequest.setTimeout(noSqlSpec.getTimeout());
@@ -237,10 +239,44 @@ public class OracleNoSQLInteraction implements Interaction {
                 PrepareResult prepareResult = this.connection.getNoSQLHandle().prepare(prepareRequest);
                 PreparedStatement preparedStatement = prepareResult.getPreparedStatement();
                 if (inputRecord.get(OracleNoSQLPlatform.QUERY_ARGUMENTS) != null) {
-                    StringTokenizer st = new StringTokenizer(inputRecord.get(OracleNoSQLPlatform.QUERY_ARGUMENTS), ";");
+                    StringTokenizer st = new StringTokenizer((String)inputRecord.get(OracleNoSQLPlatform.QUERY_ARGUMENTS), ";");
                     while (st.hasMoreTokens()) {
                         String argumentName = st.nextToken();
                         preparedStatement.setVariable("$" + argumentName, OracleNoSQLPlatform.getFieldValue(argumentName + (String) inputRecord.get(OracleNoSQLPlatform.QUERY_ARGUMENT_TYPE_SUFFIX), (String) inputRecord.get(argumentName + OracleNoSQLPlatform.QUERY_ARGUMENT_VALUE_SUFFIX), false));
+                    }
+                }
+                QueryRequest queryRequest = new QueryRequest().setPreparedStatement(preparedStatement);
+                do {
+                    QueryResult queryResult = this.connection.getNoSQLHandle().query(queryRequest);
+                    List<MapValue> results = queryResult.getResults();
+                    int rowId = 1;
+                    OracleNoSQLRecord outputRow;
+                    for (MapValue values : results) {
+                        outputRow = new OracleNoSQLRecord();
+                        for (Map.Entry<String, FieldValue> outputEntry : values.entrySet()) {
+                            outputRow.put(outputEntry.getKey(), unboxFieldValue(outputEntry.getValue(), spec, isDBFieldJSONType(noSqlSpec.getTableName(), outputEntry.getKey(), fieldNameMapping)));
+                        }
+                        output.put(rowId++, outputRow);
+                    }
+                } while (!queryRequest.isDone());
+                if (output.isEmpty()) {
+                    return null;
+                }
+                return output;
+            } else if (operation == OracleNoSQLOperation.NATIVE_QUERY) {
+                OracleNoSQLRecord output = new OracleNoSQLRecord();
+                //Handle Native queries like "DECLARE $id INTEGER; SELECT $tab.id, $tab.col_json_object.map[$element.m1 = 5] as component FROM $tab WHERE id = $id"
+                String sqlString = (String)input.get(OracleNoSQLPlatform.QUERY);
+                PrepareRequest prepareRequest = new PrepareRequest().setStatement(sqlString);
+                if (noSqlSpec.getTimeout() > 0) {
+                    prepareRequest.setTimeout(noSqlSpec.getTimeout());
+                }
+                PrepareResult prepareResult = this.connection.getNoSQLHandle().prepare(prepareRequest);
+                PreparedStatement preparedStatement = prepareResult.getPreparedStatement();
+                if (input.get(OracleNoSQLPlatform.QUERY_ARGUMENTS) != null) {
+                    OracleNoSQLRecord arguments = (OracleNoSQLRecord)input.get(OracleNoSQLPlatform.QUERY_ARGUMENTS);
+                    for (Map.Entry<DatabaseField, Object> entry : (Set<Map.Entry<DatabaseField, Object>>) arguments.entrySet()) {
+                        preparedStatement.setVariable("$" + entry.getKey(), OracleNoSQLPlatform.getFieldValue(entry.getValue().getClass().getName(), entry.getValue(), false));
                     }
                 }
                 QueryRequest queryRequest = new QueryRequest().setPreparedStatement(preparedStatement);
@@ -507,8 +543,8 @@ public class OracleNoSQLInteraction implements Interaction {
         return mapValue;
     }
 
-    private Map<String, String> createMapFromDOMRecord(DOMRecord domRecord) {
-        Map<String, String> map = new HashMap<>();
+    private OracleNoSQLRecord createMapFromDOMRecord(DOMRecord domRecord) {
+        OracleNoSQLRecord map = new OracleNoSQLRecord();
         for (Map.Entry<DatabaseField, Element> entry : (Set<Map.Entry<DatabaseField, Element>>) domRecord.entrySet()) {
             String key = entry.getKey().getName();
             String value = entry.getValue().getFirstChild().getNodeValue();
