@@ -40,6 +40,7 @@ jobs:
           mysql -e 'SET GLOBAL log_bin_trust_function_creators = 1;' -uroot -proot
           mysql -e 'CREATE DATABASE ecltests;' -uroot -proot
           mysql -e 'SHOW DATABASES;' -uroot -proot
+          mysql -e 'status;' -uroot -proot
       - name: Cache local Maven repository
         uses: actions/cache@v3
         with:

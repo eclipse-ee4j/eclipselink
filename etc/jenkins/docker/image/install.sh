@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
 
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,6 +108,11 @@ echo '--------------------------------------------------------------------------
 #Addtional permanent settings in configuration file
 #To disable check for some stored functions
 echo 'log_bin_trust_function_creators = 1
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+[mysql]
+default-character-set = utf8mb4
 ' >> /etc/my.cnf
 /opt/bin/mysql-start.sh
 ROOT_PWD=`cat /var/log/mysqld.log | grep 'A temporary password is generated for root' | sed -e 's/^.*localhost: *//'`
