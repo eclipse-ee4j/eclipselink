@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+//  Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
 //
 //  This program and the accompanying materials are made available under the
 //  terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,7 +75,7 @@ spec:
       requests:
         memory: "12Gi"
         cpu: "5.5"
-    image: tkraus/el-build:2.0.2
+    image: rfelcman/el-build:2.0.3
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
@@ -98,6 +98,9 @@ spec:
     - cat
 """
         }
+    }
+    environment {
+        LANG = 'en_US.UTF-8'
     }
     tools {
         maven 'apache-maven-latest'

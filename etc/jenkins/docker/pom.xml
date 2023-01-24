@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,21 +24,21 @@
     <artifactId>org.eclipse.persistence.build.docker</artifactId>
     <packaging>pom</packaging>
     <!-- Version is used as target docker image tag -->
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 
     <properties>
         <!-- Source docker image -->
         <docker.source>oraclelinux:8</docker.source>
         <!-- Target docker image name-->
-        <docker.image>tkraus/el-build</docker.image>
+        <docker.image>rfelcman/el-build</docker.image>
         <!-- Packages to be installed -->
-        <java.pkg>jdk-17.0.2_linux-x64_bin.tar.gz</java.pkg>
+        <java.pkg>jdk-17.0.6_linux-x64_bin.tar.gz</java.pkg>
         <java.url>https://download.oracle.com/java/17/archive/${java.pkg}</java.url>
-        <ant.pkg>apache-ant-1.10.12-bin.tar.gz</ant.pkg>
+        <ant.pkg>apache-ant-1.10.13-bin.tar.gz</ant.pkg>
         <ant.url>https://dlcdn.apache.org//ant/binaries/${ant.pkg}</ant.url>
-        <maven.pkg>apache-maven-3.8.5-bin.tar.gz</maven.pkg>
-        <maven.url>https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/${maven.pkg}</maven.url>
-        <mysql.pkg>mysql80-community-release-el8-3.noarch.rpm</mysql.pkg>
+        <maven.pkg>apache-maven-3.8.7-bin.tar.gz</maven.pkg>
+        <maven.url>https://dlcdn.apache.org/maven/maven-3/3.8.7/binaries/${maven.pkg}</maven.url>
+        <mysql.pkg>mysql80-community-release-el8-4.noarch.rpm</mysql.pkg>
         <mysql.url>https://dev.mysql.com/get/${mysql.pkg}</mysql.url>
         <mongo.pkg>mysql80-community-release-el8-3.noarch.rpm</mongo.pkg>
         <mongo.url>https://dev.mysql.com/get/${mysql.pkg}</mongo.url>
@@ -90,17 +90,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
-                    <version>1.6.1</version>
+                    <version>1.6.8</version>
                 </plugin>
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.39.1</version>
+                    <version>0.40.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
