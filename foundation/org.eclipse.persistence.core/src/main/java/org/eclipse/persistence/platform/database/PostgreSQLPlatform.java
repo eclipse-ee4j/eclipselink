@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,12 +18,15 @@
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
 //     02/01/2022: Tomas Kraus
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
+//     01/07/2023: Maarten Mulders
+//       - Issue 1771: Fix UUID handling for PostgreSQL
 package org.eclipse.persistence.platform.database;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -32,6 +35,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -527,7 +531,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return "; END ; $$ LANGUAGE plpgsql;";
     }
 
-     /**
+    /**
      * INTERNAL: Used for sp calls.  PostGreSQL uses a different method for executing StoredProcedures than other platforms.
      */
     @Override
@@ -651,11 +655,11 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * for updating the original table from the temporary table. Precondition:
      * supportsTempTables() == true. Precondition: pkFields and assignFields
      * don't intersect.
-     *  @param writer for writing the sql
+     * @param writer for writing the sql
      * @param table is original table for which temp table is
      *            created.
      * @param pkFields - primary key fields for the original
- *            table.
+     *            table.
      * @param assignedFields - fields to be assigned a new value.
      */
     @Override
@@ -747,6 +751,42 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         } else {
             int jdbcType = getJDBCTypeForSetNull(databaseField);
             statement.setNull(index, jdbcType);
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Set the parameter in the JDBC statement at the given index in case it is a UUID value.
+     *
+     * @param parameter the parameter to set
+     * @param statement target {@code PreparedStatement} instance
+     * @param index index of the parameter in the statement
+     * @param session current database session
+     */
+    @Override
+    public void setParameterValueInDatabaseCall(
+            final Object parameter, final PreparedStatement statement,
+            final int index, final AbstractSession session
+    ) throws SQLException {
+        if (parameter instanceof UUID) {
+            statement.setObject(index, parameter, Types.OTHER);
+        } else {
+            super.setParameterValueInDatabaseCall(parameter, statement, index, session);
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Set the parameter in the JDBC statement at the given index in case it is a UUID value.
+     */
+     @Override
+    public void setParameterValueInDatabaseCall(Object parameter,
+                CallableStatement statement, String name, AbstractSession session)
+                throws SQLException {
+        if (parameter instanceof UUID) {
+            statement.setObject(name, parameter, Types.OTHER);
+        } else {
+            super.setParameterValueInDatabaseCall(parameter, statement, name, session);
         }
     }
 }
