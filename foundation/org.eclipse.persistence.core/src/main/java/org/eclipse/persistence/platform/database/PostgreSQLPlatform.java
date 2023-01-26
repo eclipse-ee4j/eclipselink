@@ -778,6 +778,11 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     /**
      * INTERNAL
      * Set the parameter in the JDBC statement at the given index in case it is a UUID value.
+     *
+     * @param parameter the parameter to set
+     * @param statement target {@code CallableStatement} instance
+     * @param name name of the parameter in the statement
+     * @param session current database session
      */
      @Override
     public void setParameterValueInDatabaseCall(Object parameter,
