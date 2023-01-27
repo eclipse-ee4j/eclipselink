@@ -21,6 +21,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
 import jakarta.resource.cci.Connection;
+
 import oracle.nosql.driver.NoSQLHandle;
 import oracle.nosql.driver.ops.GetRequest;
 import oracle.nosql.driver.ops.GetResult;
@@ -31,10 +32,14 @@ import oracle.nosql.driver.ops.TableRequest;
 import oracle.nosql.driver.values.ArrayValue;
 import oracle.nosql.driver.values.JsonNullValue;
 import oracle.nosql.driver.values.MapValue;
+
 import org.eclipse.persistence.internal.nosql.adapters.sdk.OracleNoSQLConnection;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+
 import org.eclipse.persistence.testing.models.jpa.nosql.DataTypesEntity;
+import org.eclipse.persistence.testing.models.jpa.nosql.NativeQueryEntity;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -90,19 +95,8 @@ public class NoSQLJPADataTypesTest {
         try {
             DataTypesEntity dataTypesEntity = em.find(DataTypesEntity.class, ID);
             LOG.log(SessionLog.INFO, String.format("Entity by em.find(...):\t%s", dataTypesEntity));
-
-            assertEquals(ID, dataTypesEntity.getId());
-            assertArrayEquals(FIELD_BINARY, dataTypesEntity.getFieldBinary());
-            assertEquals(FIELD_BOOLEAN, dataTypesEntity.isFieldBoolean());
-            assertEquals(FIELD_JSON_STRING, dataTypesEntity.getFieldJsonString());
-            JsonObject jsonObjectFromStringField = Json.createReader(new StringReader(dataTypesEntity.getFieldJsonString())).readObject();
-            assertNotNull(jsonObjectFromStringField);
-            assertEquals(FIELD_JSON_OBJECT.toJson(), dataTypesEntity.getFieldJsonObject());
-            JsonObject jsonObjectFromObjectField = Json.createReader(new StringReader(dataTypesEntity.getFieldJsonObject())).readObject();
-            assertNotNull(jsonObjectFromObjectField);
-            assertNull(dataTypesEntity.getFieldNull());
-            assertEquals(FIELD_STRING, dataTypesEntity.getFieldString());
-            assertEquals(FIELD_TIMESTAMP, dataTypesEntity.getFieldTimestamp());
+            assertNotNull(dataTypesEntity);
+            assertDataTypesEntity(dataTypesEntity, ID);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
@@ -141,11 +135,52 @@ public class NoSQLJPADataTypesTest {
         try {
             Query query = em.createNamedQuery("DataTypesEntity.findById", DataTypesEntity.class);
             query.setParameter("id", ID);
-            List<DataTypesEntity> testEntities = query.getResultList();
-            assertTrue(testEntities.size() > 0);
-            for (DataTypesEntity dataTypesEntity : testEntities) {
-                LOG.log(SessionLog.INFO, String.format("Entity by DataTypesEntity.findById query:\t%s", dataTypesEntity));
+            DataTypesEntity dataTypesEntity = (DataTypesEntity)query.getSingleResult();
+            assertNotNull(dataTypesEntity);
+            assertDataTypesEntity(dataTypesEntity, ID);
+            LOG.log(SessionLog.INFO, String.format("Entity by DataTypesEntity.findById query:\t%s", dataTypesEntity));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        } finally {
+            if (em != null) {
+                em.close();
             }
+        }
+    }
+
+    @Test
+    public void testJPAQueryFindByIdAndName() {
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(PU_UNIT_NAME);
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            Query query = em.createNamedQuery("DataTypesEntity.findByIdAndName", DataTypesEntity.class);
+            query.setParameter("id", ID);
+            query.setParameter("name", FIELD_STRING);
+            DataTypesEntity dataTypesEntity = (DataTypesEntity)query.getSingleResult();
+            assertNotNull(dataTypesEntity);
+            assertDataTypesEntity(dataTypesEntity, ID);
+            LOG.log(SessionLog.INFO, String.format("Entity by DataTypesEntity.findByIdAndName query:\t%s", dataTypesEntity));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testJPANativeQueryFindById() {
+            EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(PU_UNIT_NAME);
+            EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            Query query = em.createNamedQuery("NativeQueryEntity.findByIdSQLNativeQueryEntity", NativeQueryEntity.class);
+            query.setParameter("id", ID);
+            NativeQueryEntity nativeQueryEntity = (NativeQueryEntity)query.getSingleResult();
+            assertNativeQueryEntity(nativeQueryEntity, ID);
+            LOG.log(SessionLog.INFO, String.format("Entity by NativeQueryEntity.findByIdSQLNativeQueryEntity query:\t%s", nativeQueryEntity));
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
@@ -294,6 +329,30 @@ public class NoSQLJPADataTypesTest {
             LOG.log(SessionLog.INFO, String.format("Updated row with ID: \t%s", value));
         } else {
             LOG.log(SessionLog.INFO,"Update failed");
+        }
+    }
+
+    private void assertDataTypesEntity(DataTypesEntity dataTypesEntity, long id) {
+        if (dataTypesEntity.getId() == id) {
+            assertEquals(ID, dataTypesEntity.getId());
+            assertArrayEquals(FIELD_BINARY, dataTypesEntity.getFieldBinary());
+            assertEquals(FIELD_BOOLEAN, dataTypesEntity.isFieldBoolean());
+            assertEquals(FIELD_JSON_STRING, dataTypesEntity.getFieldJsonString());
+            JsonObject jsonObjectFromStringField = Json.createReader(new StringReader(dataTypesEntity.getFieldJsonString())).readObject();
+            assertNotNull(jsonObjectFromStringField);
+            assertEquals(FIELD_JSON_OBJECT.toJson(), dataTypesEntity.getFieldJsonObject());
+            JsonObject jsonObjectFromObjectField = Json.createReader(new StringReader(dataTypesEntity.getFieldJsonObject())).readObject();
+            assertNotNull(jsonObjectFromObjectField);
+            assertNull(dataTypesEntity.getFieldNull());
+            assertEquals(FIELD_STRING, dataTypesEntity.getFieldString());
+            assertEquals(FIELD_TIMESTAMP, dataTypesEntity.getFieldTimestamp());
+        }
+    }
+
+    private void assertNativeQueryEntity(NativeQueryEntity nativeQueryEntity, long id) {
+        if (nativeQueryEntity.getId() == id) {
+            assertEquals(ID, nativeQueryEntity.getId());
+            assertEquals("{\"m1\":5}", nativeQueryEntity.getComponent());
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.nosql.adapters.sdk;
 
+import java.io.CharArrayWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,21 +25,38 @@ import java.util.Vector;
 
 import jakarta.resource.cci.InteractionSpec;
 import jakarta.resource.cci.MappedRecord;
+
+import oracle.nosql.driver.Consistency;
+import oracle.nosql.driver.Durability;
+import oracle.nosql.driver.Version;
+import oracle.nosql.driver.values.ArrayValue;
+import oracle.nosql.driver.values.BinaryValue;
+import oracle.nosql.driver.values.BooleanValue;
+import oracle.nosql.driver.values.DoubleValue;
+import oracle.nosql.driver.values.FieldValue;
+import oracle.nosql.driver.values.IntegerValue;
+import oracle.nosql.driver.values.LongValue;
 import oracle.nosql.driver.values.MapValue;
+import oracle.nosql.driver.values.NumberValue;
+import oracle.nosql.driver.values.StringValue;
+import oracle.nosql.driver.values.TimestampValue;
+
+import org.eclipse.persistence.eis.interactions.QueryStringInteraction;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.eis.mappings.EISDirectMapping;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.record.DOMRecord;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.w3c.dom.Element;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
@@ -64,19 +83,7 @@ import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.UUIDSequence;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
-import oracle.nosql.driver.Consistency;
-import oracle.nosql.driver.Durability;
-import oracle.nosql.driver.Version;
-import oracle.nosql.driver.values.ArrayValue;
-import oracle.nosql.driver.values.BinaryValue;
-import oracle.nosql.driver.values.BooleanValue;
-import oracle.nosql.driver.values.DoubleValue;
-import oracle.nosql.driver.values.FieldValue;
-import oracle.nosql.driver.values.IntegerValue;
-import oracle.nosql.driver.values.LongValue;
-import oracle.nosql.driver.values.NumberValue;
-import oracle.nosql.driver.values.StringValue;
-import oracle.nosql.driver.values.TimestampValue;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
@@ -261,6 +268,18 @@ public class OracleNoSQLPlatform extends EISPlatform {
     public jakarta.resource.cci.Record createInputRecord(EISInteraction interaction, EISAccessor accessor) {
         if (interaction instanceof XMLInteraction) {
             return super.createInputRecord(interaction, accessor);
+        } if (interaction instanceof QueryStringInteraction) {
+            MappedRecord input = (MappedRecord)interaction.createInputRecord(accessor);
+
+            AbstractRecord translationRow = interaction.getQuery().getTranslationRow();
+            OracleNoSQLRecord arguments = new OracleNoSQLRecord();
+            for (Map.Entry<DatabaseField, Object> entry : (Set<Map.Entry<DatabaseField, Object>>) translationRow.entrySet()) {
+                arguments.put(entry.getKey(), entry.getValue());
+            }
+            if (arguments.size() > 0) {
+                input.put(QUERY_ARGUMENTS, arguments);
+            }
+            return input;
         } if (interaction instanceof MappedInteraction) {
             MappedRecord input = (MappedRecord)interaction.createInputRecord(accessor);
             // Create the key from the objects id.
@@ -484,7 +503,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             DatabaseRecord row = new DatabaseRecord();
 
             //Prepare SQL query for NoSQL
-            DatabaseCall sqlCall = ((SQLSelectStatement)statement).buildCall(session, query);
+            DatabaseCall sqlCall = buildCall((SQLSelectStatement)statement, query);
             String sqlString = sqlCall.getSQLString();
             StringBuilder sqlVariables = null;
             StringBuilder parameterNames = null;
@@ -583,5 +602,35 @@ public class OracleNoSQLPlatform extends EISPlatform {
             sourceObject = ((Node)((DOMRecord)sourceObject).getValues().get(0)).getNodeValue();
         }
         return super.convertObject(sourceObject, javaClass);
+    }
+
+    /**
+     * INTERNAL:
+     * Return the correct call type for the native query string.
+     * This allows EIS platforms to use different types of native calls.
+     */
+    @Override
+    public DatasourceCall buildNativeCall(String queryString) {
+        QueryStringInteraction call = new QueryStringInteraction(queryString);
+        call.setProperty(OracleNoSQLPlatform.OPERATION, OracleNoSQLOperation.NATIVE_QUERY);
+        DatabaseRecord row = new DatabaseRecord();
+        row.put(QUERY, queryString);
+        call.setInputRow(row);
+        return call;
+    }
+
+    private DatabaseCall buildCall(SQLSelectStatement statement, DatabaseQuery query) {
+        SQLCall call = new SQLCall();
+        call.setQuery(query);
+        call.returnManyRows();
+        Writer writer = new CharArrayWriter(200);
+        //Create temporary Database session to print query
+        //OracleNoSQLPlatform extends EISPlatform which is not compatible with DatabasePlatform needed by ExpressionSQLPrinter
+        AbstractSession session = new DatabaseSessionImpl(new org.eclipse.persistence.sessions.DatabaseLogin());
+        ExpressionSQLPrinter printer = new ExpressionSQLPrinter(session, statement.getTranslationRow(), call, statement.requiresAliases(), statement.getBuilder());
+        printer.setWriter(writer);
+        session.getPlatform().printSQLSelectStatement(call, printer, statement);
+        call.setSQLString(writer.toString());
+        return call;
     }
 }
