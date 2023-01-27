@@ -68,6 +68,7 @@ jobs:
     #    uses a compiled language
 
     - run: |
+        mvn -B clean install -pl :org.eclipse.persistence.parent,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.core,:org.eclipse.persistence.json,:org.eclipse.persistence.oracle,:org.eclipse.persistence.core.test.framework,:org.eclipse.persistence.core.test -DskipTests
         mvn -B clean compile -Ddeploy=true -Dnotests=true -Pstaging
 
     - name: Perform CodeQL Analysis
