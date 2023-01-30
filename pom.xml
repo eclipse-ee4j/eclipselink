@@ -186,24 +186,24 @@
         <!--Eclipse Dependencies version-->
         <eclipselink.asm.version>9.4.0</eclipselink.asm.version>
         <asm.version>9.4</asm.version>
-        <activation-api.version>2.1.0</activation-api.version>
-        <angus-activation.version>1.0.0</angus-activation.version>
+        <activation-api.version>2.1.1</activation-api.version>
+        <angus-activation.version>2.0.0</angus-activation.version>
         <annotation.version>2.1.1</annotation.version>
         <cdi.version>4.0.1</cdi.version>
         <ejb.version>4.0.1</ejb.version>
         <el-api.version>5.0.1</el-api.version>
         <el.version>5.0.0-M1</el.version>
-        <glassfish.version>7.0.0-M7</glassfish.version>
-        <jaxwsrt.version>4.0.0</jaxwsrt.version>
-        <jaxb.version>4.0.0</jaxb.version>
+        <glassfish.version>7.0.1</glassfish.version>
+        <jaxwsrt.version>4.0.1</jaxwsrt.version>
+        <jaxb.version>4.0.2</jaxb.version>
         <jaxb.api.version>4.0.0</jaxb.api.version>
         <soap.api.version>3.0.0</soap.api.version>
-        <jersey.version>3.1.0-M7</jersey.version>
+        <jersey.version>3.1.0</jersey.version>
         <jms.version>3.1.0</jms.version>
         <json.version>2.1.1</json.version>
         <jpa.api.version>3.1.0</jpa.api.version>
-        <mail-api.version>2.1.0</mail-api.version>
-        <angus-mail.version>1.0.0</angus-mail.version>
+        <mail-api.version>2.1.1</mail-api.version>
+        <angus-mail.version>2.0.1</angus-mail.version>
         <oracle.ddlparser.version>3.0.0</oracle.ddlparser.version>
         <org.glassfish.corba.version>4.2.4</org.glassfish.corba.version>
         <parsson.version>1.1.1</parsson.version>
@@ -226,7 +226,7 @@
         <exam.version>4.13.2</exam.version>
         <hamcrest.version>1.3</hamcrest.version>
         <!-- CQ #23048 -->
-        <hibernate.version>8.0.0.CR1</hibernate.version>
+        <hibernate.version>8.0.0.Final</hibernate.version>
         <checkstyle.version>10.3.1</checkstyle.version>
         <!-- CQ #23049 -->
         <jgroups.version>4.2.11.Final</jgroups.version>
@@ -255,7 +255,7 @@
         <!-- CQ #23051, 23052, 23053, 53054, 53055 -->
         <springframework.version>5.3.22</springframework.version>
         <!-- CQ #23233 -->
-        <weld-se.version>5.0.1.Final</weld-se.version>
+        <weld-se.version>5.1.0.Final</weld-se.version>
         <weblogic.version>12.2.1-3</weblogic.version>
         <wildfly.version>27.0.0.Final</wildfly.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
@@ -1278,7 +1278,7 @@
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.7.1.0</version>
+                    <version>4.7.3.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>com.github.spotbugs</groupId>
