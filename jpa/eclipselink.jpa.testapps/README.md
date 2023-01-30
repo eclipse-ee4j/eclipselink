@@ -1,4 +1,4 @@
-[//]: # " Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved. "
+[//]: # " Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved. "
 [//]: # "  "
 [//]: # " This program and the accompanying materials are made available under the "
 [//]: # " terms of the Eclipse Public License v. 2.0 which is available at "
@@ -301,7 +301,7 @@ echo '<module name="org.eclipse.persistence" xmlns="urn:jboss:module:1.9">
 
 ```
 connect
-module add --name=com.mysql.driver8 --resources=$HOME/.m2/repository/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar --dependencies=javax.api,javax.transaction.api
+module add --name=com.mysql.driver8 --resources=$HOME/.m2/repository/com/mysql/mysql-connector-j/8.0.32/mysql-connector-j-8.0.32.jar --dependencies=javax.api,javax.transaction.api
 /subsystem=datasources/jdbc-driver=mysql8/:add(driver-module-name=com.mysql.driver8,driver-name=mysql8,driver-class-name=com.mysql.cj.jdbc.Driver,driver-major-version=8,driver-minor-version=0)
 :shutdown(restart=true)
 ```

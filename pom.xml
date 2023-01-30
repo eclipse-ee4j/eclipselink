@@ -967,8 +967,8 @@
             </dependency>
             <!--JDBC drivers-->
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
             <dependency>
@@ -1799,8 +1799,8 @@
                 <test.properties.file>${user.home}/${test.mysql.properties.file}</test.properties.file>
                 <test.properties.fileName>${test.mysql.properties.file}</test.properties.fileName>
                 <!--Used by sql-maven-plugin-->
-                <db.driver.groupId>mysql</db.driver.groupId>
-                <db.driver.artifactId>mysql-connector-java</db.driver.artifactId>
+                <db.driver.groupId>com.mysql</db.driver.groupId>
+                <db.driver.artifactId>mysql-connector-j</db.driver.artifactId>
                 <db.driver.version>${mysql.version}</db.driver.version>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
