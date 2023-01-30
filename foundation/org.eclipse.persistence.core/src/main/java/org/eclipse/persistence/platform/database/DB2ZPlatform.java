@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -144,6 +145,9 @@ public class DB2ZPlatform extends DB2Platform {
         addOperator(betweenOperator());
         addOperator(notBetweenOperator());
         addOperator(inOperator());
+
+        addOperator(likeEscapeOperator());
+        addOperator(notLikeEscapeOperator());
     }
 
     /**
@@ -337,6 +341,142 @@ public class DB2ZPlatform extends DB2Platform {
     protected ExpressionOperator notBetweenOperator() {
         ExpressionOperator operator = disableAtLeast1BindingExpression();
         ExpressionOperator.notBetween().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS support for binding the LIKE ESCAPE character depends on database configuration (mixed vs DBCS).
+     * Since we cannot know how the database in configured, we will disable parameter binding for the ESCAPE
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator for example: ? &gt; ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator likeEscapeOperator() {
+        ExpressionOperator operator = new ExpressionOperator(){
+            @Override
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int i = 0; i < this.argumentIndices.length; i++){
+                        this.argumentIndices[i] = i;
+                    }
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    // Disable the first item, which should be <operand2> for this operator
+                    if(i == (items.size() - 1)) {
+                        final int index = this.argumentIndices[i];
+                        Expression item = items.get(index);
+
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    // Disable the last item, which should be <escape> for this operator
+                    if(i == (items.size() - 1)) {
+                        Expression item = items.get(i);
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
+        ExpressionOperator.likeEscape().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS support for binding the LIKE ESCAPE character depends on database configuration (mixed vs DBCS).
+     * Since we cannot know how the database in configured, we will disable parameter binding for the ESCAPE
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator for example: ? &gt; ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator notLikeEscapeOperator() {
+        ExpressionOperator operator = new ExpressionOperator(){
+            @Override
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int i = 0; i < this.argumentIndices.length; i++){
+                        this.argumentIndices[i] = i;
+                    }
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    // Disable the first item, which should be <operand2> for this operator
+                    if(i == (items.size() - 1)) {
+                        final int index = this.argumentIndices[i];
+                        Expression item = items.get(index);
+
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    // Disable the last item, which should be <escape> for this operator
+                    if(i == (items.size() - 1)) {
+                        Expression item = items.get(i);
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
+        ExpressionOperator.notLikeEscape().copyTo(operator);
         return operator;
     }
 
