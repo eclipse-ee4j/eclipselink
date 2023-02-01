@@ -47,7 +47,7 @@ EclipseLink is dual licensed under an [EPL 2.0](LICENSE.md) and [EDL 1.0](LICENS
 ## Contributing
 
 We use [contribution policy](CONTRIBUTING.md), which means we can only accept contributions under
-the terms of [Eclipse Contributor Agreement](http://www.eclipse.org/legal/ECA.php).
+the terms of [Eclipse Contributor Agreement](https://www.eclipse.org/legal/ECA.php).
 
 
 ## Links
