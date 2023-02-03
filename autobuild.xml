@@ -448,6 +448,9 @@
             <param name="host"        value="${host}"/>
             <param name="extract.loc" value="${test.extract.dir}"/>
         </antcall>
+        <antcall target="generate-test-results">
+            <param name="extract.loc" value="${test.extract.dir}"/>
+        </antcall>
     </target>
 
     <target name="cannot-generate-handoff" unless="procedure" depends="init">
@@ -466,6 +469,66 @@
         <!-- could use ${line.separator} to generate on separate lines, but don't as yet -->
     </target>
 
+    <target name="generate-test-results" description="generate the ResultSummary.dat file">
+        <property name="handoff.file" value="${extract.loc}/ResultSummary.dat"/>
+        <echo message="Generating ResultSummary.dat file with the following values:"/>
+        <echo message="    extract.loc  ='${extract.loc}'"/>
+        <echo message="    handoff.file ='${handoff.file}'"/>
+
+        <fileset id="test.results.ref" dir="${extract.loc}" includes="*.html"/>
+        <property name="test.results" refid="test.results.ref"/>
+
+        <script language="javascript"><![CDATA[
+            var File = java.io.File;
+            var FileWriter = java.io.FileWriter;
+            var Files = java.nio.file.Files;
+            var Path = java.nio.file.Path;
+            var StringTokenizer = java.util.StringTokenizer;
+            var Arrays = java.util.Arrays;
+            var Matcher = java.util.regex.Matcher;
+            var Pattern = java.util.regex.Pattern;
+
+            OUTPUT_FILE = "ResultSummary.dat";
+
+            handoffFile = self.getProject().getProperty("handoff.file");
+            extractLoc  = self.getProject().getProperty("extract.loc");
+            testResults  = self.getProject().getProperty("test.results");
+
+            resultSummaryFile = new File(handoffFile);
+            reportDir = new File(extractLoc)
+
+            if (resultSummaryFile.exists()) {
+                resultSummaryFile.delete()
+            }
+            files = reportDir.listFiles();
+            Arrays.sort(files);
+            resultSummaryFileWriter = new FileWriter(resultSummaryFile);
+            for(i=0; i < files.length; i++) {
+                var file = files[i];
+                testSummary = processReport(file);
+                testSummaryString = file.getName() + ":" + testSummary.noOfTests + ":" + testSummary.noOfTests + ":" + testSummary.noOfErrors + "\n";
+                resultSummaryFileWriter.write(testSummaryString);
+                self.log(testSummaryString);
+            }
+            resultSummaryFileWriter.close();
+
+            //Evaluate JUnit result HTML page. It's not possible to do it by XML way (XPath) as page is not XML valid
+            function processReport(reportFile) {
+                report = Files.readString(reportFile.toPath());
+                pattern = Pattern.compile("(?m)\\s*<td>\\d*</td>.*");
+                matcher = pattern.matcher(report);
+                if (matcher.find()) {
+                    selectedLine = matcher.group().trim().replaceAll("<td>", "").replaceAll("</td>", ";");
+                    tokenizer = new StringTokenizer(selectedLine, ";");
+                    noOfTests = tokenizer.nextToken();
+                    noOfFailures = tokenizer.nextToken();
+                    noOfErrors = tokenizer.nextToken();
+                }
+                testSummary = {noOfTests:noOfTests, noOfFailures:noOfFailures, noOfErrors:noOfErrors};
+                return testSummary;
+            }
+        ]]></script>
+    </target>
 
     <!--  =====  #####           Public Publishing Targets               #####  =====  -->
 
