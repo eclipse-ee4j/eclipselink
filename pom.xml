@@ -112,7 +112,7 @@
         <spotbugs.exclude/>
         <spotbugs.skip>false</spotbugs.skip>
         <spotbugs.threshold>Normal</spotbugs.threshold>
-        <spotbugs.version>4.7.1</spotbugs.version>
+        <spotbugs.version>4.7.3</spotbugs.version>
         <findsecbugs.version>1.11.0</findsecbugs.version>
         <dependency-check.failonerror>false</dependency-check.failonerror>
 
@@ -198,7 +198,7 @@
         <jaxb.version>4.0.2</jaxb.version>
         <jaxb.api.version>4.0.0</jaxb.api.version>
         <soap.api.version>3.0.0</soap.api.version>
-        <jersey.version>3.1.0</jersey.version>
+        <jersey.version>3.1.1</jersey.version>
         <jms.version>3.1.0</jms.version>
         <json.version>2.1.1</json.version>
         <jpa.api.version>3.1.0</jpa.api.version>
@@ -218,7 +218,7 @@
         <!-- CQ #23046 -->
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
         <!-- CQ #21133 -->
-        <ant.version>1.10.12</ant.version>
+        <ant.version>1.10.13</ant.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.15.2.0</derby.version>
         <db2.version>11.5.8.0</db2.version>
@@ -227,19 +227,19 @@
         <hamcrest.version>1.3</hamcrest.version>
         <!-- CQ #23048 -->
         <hibernate.version>8.0.0.Final</hibernate.version>
-        <checkstyle.version>10.3.1</checkstyle.version>
+        <checkstyle.version>10.7.0</checkstyle.version>
         <!-- CQ #23049 -->
         <jgroups.version>4.2.11.Final</jgroups.version>
-        <jmh.version>1.35</jmh.version>
+        <jmh.version>1.36</jmh.version>
         <junit.version>4.13.2</junit.version>
         <!-- CQ #24079 -->
         <mongodb.version>3.12.11</mongodb.version>
         <mysql.version>8.0.32</mysql.version>
-        <mariadb.version>3.1.0</mariadb.version>
-        <mssql.version>11.2.2.jre11</mssql.version>
-        <pgsql.version>42.5.1</pgsql.version>
+        <mariadb.version>3.1.2</mariadb.version>
+        <mssql.version>12.2.0.jre11</mssql.version>
+        <pgsql.version>42.5.3</pgsql.version>
         <!-- CQ #21139, 21140 -->
-        <logback.version>1.3.0-alpha16</logback.version>
+        <logback.version>1.4.5</logback.version>
         <oracle.jdbc.version>21.8.0.0</oracle.jdbc.version>
         <!-- CQ #2437 -->
         <oracle.aqapi.version>21.3.0.0</oracle.aqapi.version>
@@ -251,9 +251,9 @@
         <!-- CQ #21142 -->
         <osgi.version>6.0.0</osgi.version>
         <!-- CQ #21143 -->
-        <slf4j.version>2.0.0-alpha7</slf4j.version>
+        <slf4j.version>2.0.6</slf4j.version>
         <!-- CQ #23051, 23052, 23053, 53054, 53055 -->
-        <springframework.version>5.3.22</springframework.version>
+        <springframework.version>5.3.25</springframework.version>
         <!-- CQ #23233 -->
         <weld-se.version>5.1.0.Final</weld-se.version>
         <weblogic.version>12.2.1-3</weblogic.version>
@@ -261,11 +261,12 @@
         <wsdl4j.version>1.6.3</wsdl4j.version>
 
         <!--Documentation Dependencies version-->
-        <asciidoctorj.version>2.5.6</asciidoctorj.version>
-        <asciidoctorj.pdf.version>2.3.0</asciidoctorj.pdf.version>
+        <asciidoctorj.version>2.5.7</asciidoctorj.version>
+        <asciidoctorj.pdf.version>2.3.4</asciidoctorj.pdf.version>
         <asciidoctorj.epub.version>1.5.1</asciidoctorj.epub.version>
         <!--JRuby this version works with asciidoctorj-pdf-->
-        <jruby.version>9.2.21.0</jruby.version>
+<!--        <jruby.version>9.2.21.0</jruby.version>-->
+        <jruby.version>9.4.0.0</jruby.version>
 
     </properties>
 
@@ -1070,7 +1071,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.7</version>
+                    <version>5.1.8</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1080,7 +1081,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>3.4.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1095,17 +1096,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.5.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.0.0-M8</version>
                     <configuration>
                         <useModulePath>false</useModulePath>
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
@@ -1114,22 +1120,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.2</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.4.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                     <configuration>
                         <nonFilteredFileExtensions>
                             <nonFilteredFileExtension>gar</nonFilteredFileExtension>
@@ -1139,7 +1145,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.12.0</version>
+                    <version>4.0.0-M4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1149,7 +1155,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.0.0-M8</version>
                     <configuration>
                         <useModulePath>false</useModulePath>
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
@@ -1158,7 +1164,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-report-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.0.0-M8</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1168,7 +1174,7 @@
                 <plugin>
                     <groupId>org.codehaus.cargo</groupId>
                     <artifactId>cargo-maven3-plugin</artifactId>
-                    <version>1.9.0</version>
+                    <version>1.10.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.gmaven</groupId>
@@ -1219,7 +1225,7 @@
                 <plugin>
                     <groupId>org.reficio</groupId>
                     <artifactId>p2-maven-plugin</artifactId>
-                    <version>2.0.0</version>
+                    <version>2.1.0</version>
                 </plugin>
                 <plugin>
                     <!-- see https://github.com/eclipse-ee4j/eclipselink-build-support -->
@@ -1257,7 +1263,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.1</version>
                     <dependencies>
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
@@ -1302,7 +1308,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>7.1.1</version>
+                    <version>8.0.2</version>
                     <configuration>
 <!--                        <failBuildOnCVSS>7</failBuildOnCVSS>-->
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
@@ -2122,6 +2128,38 @@
                 <!--Parent documentation module-->
                 <module>docs</module>
             </modules>
+        </profile>
+        <profile>
+            <id>license_check</id>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>dash-licenses-snapshots</id>
+                    <url>https://repo.eclipse.org/content/repositories/dash-licenses-snapshots/</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.eclipse.dash</groupId>
+                        <artifactId>license-tool-plugin</artifactId>
+                        <version>0.0.1-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <id>license-check</id>
+                                <goals>
+                                    <goal>license-check</goal>
+                                </goals>
+                                <configuration>
+                                    <failWhenReviewNeeded>true</failWhenReviewNeeded>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
