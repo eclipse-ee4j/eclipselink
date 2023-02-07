@@ -156,7 +156,7 @@ public class TestStoredProceduresCursors {
             if(platform.isOracle()) {
                 proc.addOutputArgument("out_cursor_one", "SYS_REFCURSOR");
                 proc.addStatement("OPEN out_cursor_one FOR SELECT ITEM_STRING1 FROM STORED_PROCEDURE_ENTITY WHERE ITEM_INTEGER1 = in_param_one");
-            } else if (platform.isDB2()) {
+            } else if (platform.isDB2() && !platform.isDB2Z()) {
                 proc.addOutputArgument("out_cursor_one", "CURSOR");
                 proc.addStatement("SET out_cursor_one = CURSOR FOR SELECT ITEM_STRING1 FROM STORED_PROCEDURE_ENTITY WHERE ITEM_INTEGER1 = in_param_one; OPEN out_cursor_one");
             } else {
