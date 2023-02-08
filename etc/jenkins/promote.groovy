@@ -65,6 +65,9 @@ spec:
       requests:
         memory: "1Gi"
         cpu: "500m"
+    volumeMounts:
+    - name: volume-known-hosts
+      mountPath: /home/jenkins/.ssh          
   - name: el-build
     resources:
       limits:
@@ -73,7 +76,7 @@ spec:
       requests:
         memory: "2Gi"
         cpu: "1"
-    image: tkraus/el-build:2.0.2
+    image: rfelcman/el-build:2.0.3
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
@@ -104,28 +107,47 @@ spec:
     }
     stages {
         // Prepare and promote EclipseLink artifacts to oss.sonatype.org (staging) and to the Eclipse.org Milestone Builds area
-        stage('Promote') {
+        stage('General Init') {
             steps {
                 container('el-build') {
                     git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
-                    sshagent(['projects-storage.eclipse.org-bot-ssh']) {
-                        withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
-                            sh label: '', script: '''
+                    withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
+                        sh label: '', script: '''
                                 gpg --batch --import "${KEYRING}"
                                 for fpr in $(gpg --list-keys --with-colons  | awk -F: \'/fpr:/ {print $10}\' | sort -u);
                                 do
                                     echo -e "5\\ny\\n" |  gpg --batch --command-fd 0 --expert --edit-key $fpr trust;
                                 done'''
-                        }
-                        // Download selected nightly build from Eclipse.org Nightly Builds
-                        sh """
+                    }
+                    sh """
                             mkdir -p ${HOME}/etc/jenkins
                             cp -r ${WORKSPACE}/etc/jenkins/* ${HOME}/etc/jenkins
                             cp ${WORKSPACE}/buildsystem/ant_customizations.jar ${HOME}/etc/jenkins
-                            ${HOME}/etc/jenkins/promote_init.sh
                             """
-                        // Prepare and promote EclipseLink artifacts to oss.sonatype.org (staging)
-                        sh """
+                }
+            }
+        }
+        stage('Promote Init') {
+            steps {
+                sshagent(['projects-storage.eclipse.org-bot-ssh']) {
+                    // Download selected nightly build from Eclipse.org Nightly Builds
+                    sh """
+                            etc/jenkins/promote_init.sh
+                            """
+                }
+                container('el-build') {
+                    // Prepare EclipseLink environment
+                    sh """
+                            etc/jenkins/promote_el_init.sh
+                            """
+                }
+            }
+        }
+        stage('Promote') {
+            steps {
+                container('el-build') {
+                    // Prepare and promote EclipseLink artifacts to oss.sonatype.org (staging)
+                    sh """
                             curl --version
                             $JAVA_HOME/bin/java -version
                             echo JAVA_HOME = ${JAVA_HOME}
@@ -147,8 +169,14 @@ spec:
                                 ${HOME}/etc/jenkins/promote.sh release ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}
                             fi
                         """
-                        // Promote EclipseLink bundles to the Eclipse.org Milestone Builds area
-                        sh """
+                }
+            }
+        }
+        stage('Publish') {
+            steps {
+                sshagent(['projects-storage.eclipse.org-bot-ssh']) {
+                    // Promote EclipseLink bundles to the Eclipse.org Milestone Builds area
+                    sh """
                             echo ${RELEASE}
                             if [ ${RELEASE} == 'false' ]
                             then
@@ -157,7 +185,6 @@ spec:
                                 ${HOME}/etc/jenkins/publish_release.sh                            
                             fi
                             """
-                    }
                 }
             }
         }
