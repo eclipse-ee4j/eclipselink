@@ -138,7 +138,7 @@ spec:
                 container('el-build') {
                     // Prepare EclipseLink environment
                     sh """
-                            etc/jenkins/promote_el_init.sh
+                            etc/jenkins/init.sh
                             """
                 }
             }
@@ -180,9 +180,9 @@ spec:
                             echo ${RELEASE}
                             if [ ${RELEASE} == 'false' ]
                             then
-                                ${HOME}/etc/jenkins/publish_milestone.sh
+                                etc/jenkins/publish_milestone.sh
                             else
-                                ${HOME}/etc/jenkins/publish_release.sh                            
+                                etc/jenkins/publish_release.sh                            
                             fi
                             """
                 }
