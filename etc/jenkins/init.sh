@@ -13,7 +13,7 @@
 #  N/A
 
 echo '-[ EclipseLink Init ]-----------------------------------------------------------'
-
+. ${WORKSPACE}/etc/jenkins/setEnvironment.sh
 mkdir -p $HOME/extension.lib.external/mavenant
 
 #DOWNLOAD SOME DEPENDENCIES

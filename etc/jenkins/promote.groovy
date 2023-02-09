@@ -138,7 +138,7 @@ spec:
                 container('el-build') {
                     // Prepare EclipseLink environment
                     sh """
-                            etc/jenkins/promote_el_init.sh
+                            etc/jenkins/init.sh
                             """
                 }
             }
@@ -180,16 +180,16 @@ spec:
                             echo ${RELEASE}
                             if [ ${RELEASE} == 'false' ]
                             then
-                                ${HOME}/etc/jenkins/publish_milestone.sh
+                                etc/jenkins/publish_milestone.sh
                             else
-                                ${HOME}/etc/jenkins/publish_release.sh                            
+                                etc/jenkins/publish_release.sh                            
                             fi
                             """
                 }
             }
         }
     }
-    post {
+ /*   post {
         // Send a mail on unsuccessful and fixed builds
         unsuccessful { // means unstable || failure || aborted
             emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER failed!',
@@ -204,4 +204,4 @@ spec:
                     to: '${NOTIFICATION_ADDRESS}'
         }
     }
-}
+*/}

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #****************************************************************************************
-# Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 # which accompanies this distribution.
@@ -369,7 +369,7 @@ callAnt() {
         fi
 
         #Invoke Antscript for Branch specific promotion
-        arguments="-Dbuild.deps.dir=${BldDepsDir} -Dreleng.repo.dir=${RELENG_REPO} -Dgit.exec=${GIT_EXEC} -Declipselink.root.download.dir=${DNLD_DIR} -Dsigning.dir=${SIGN_DIR} -DM2_HOME=${M2_HOME}"
+        arguments="-Dbuild.deps.dir=${BldDepsDir} -Dreleng.repo.dir=${RELENG_REPO} -Dgit.exec=${GIT_EXEC} -Declipselink.root.download.dir=${DNLD_DIR} -Dsigning.dir=${SIGN_DIR} -DM2_HOME=${M2_HOME} -Dhudson.workspace=${WORKSPACE}"
         arguments="${arguments} -Dbranch.name=${branch_nm} -Drelease.version=${version} -Dbuild.type=${milestone} -Dbranch=${branch}"
         arguments="${arguments} -Dversion.qualifier=${qualifier} -Dbuild.date=${blddate} -Dgit.hash=${githash}"
         echo "   sign   = '${SIGN}'"

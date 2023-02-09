@@ -72,7 +72,8 @@
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
-    <target name="build-milestone" depends="promote-init, sign-and-wait, regen-archives, publish-milestone, create-tag" description="Promote a build: nightly to milestone or milestone to release ('release' is a special milestone in this case)"
+    <target name="build-milestone" description="Promote a build: nightly to milestone or milestone to release ('release' is a special milestone in this case)"
+            depends="clean, build, promote-init, sign-and-wait, regen-archives, publish-milestone, create-tag"
     />
     <target name="build-snapshot" depends="snapshot-init, promote-init, extract-signed-artifacts, regen-installer-archive, regen-plugin-archive, regen-nosql-archive, gen-build-for-maven, publish-milestone-artifacts, publish-milestone-nexus" description="Promote build to snapshot repository"
     />
@@ -228,6 +229,8 @@
     </target>
 
     <target name="common-init">
+        <echo message="Loading user properties from: '${user.home}/build.properties'"/>
+        <property file="${user.home}/build.properties"/>
         <property file="${basedir}/autobuild.properties"/>
 
         <!-- Set version.string appropriately. variable should only be used for   -->
