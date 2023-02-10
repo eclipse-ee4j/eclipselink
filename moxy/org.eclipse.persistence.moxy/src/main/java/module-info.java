@@ -43,6 +43,7 @@ module org.eclipse.persistence.moxy {
     exports org.eclipse.persistence.jaxb.rs;
     exports org.eclipse.persistence.jaxb.xmlmodel;
     opens org.eclipse.persistence.jaxb.xmlmodel to jakarta.xml.bind;
+    opens org.eclipse.persistence.jaxb.rs; //required for MOXyJSON provider injection
 
     //exported through MOXy PUBLIC API
     exports org.eclipse.persistence.internal.jaxb;
