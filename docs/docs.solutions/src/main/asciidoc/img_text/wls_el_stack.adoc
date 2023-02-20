@@ -1,0 +1,8 @@
+:nofooter:
+This graphic shows how WebLogic Server, EclipseLink, Coherence and
+TopLink Grid are related to each other and to the data source(s). A box
+representing WebLogic Suite contains Coherence and a box containing
+WebLogic Server, which contains EclipseLink, which contains TopLink Grid
+and EclipseLink. Above this box is a box containing JDeveloper, which
+points to EclipseLink and EclipseLink. Below the box is the Oracle
+Database, which points to EclipseLink and WebLogic Server.

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
-    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -43,12 +43,24 @@ EclipseLink supplies the following query hints:
 * link:#hint.compositeunitmember[`composite-unit.member`]
 * link:#cursorinitialsize[`cursor.initial-size`]
 * link:#cursorpagesize[`cursor.page-size`]
+* link:#cursor-size-sql[`cursor.size-sql`]
+* link:#cursor-scrollable[`cursor.scrollable`]
+* link:#cursor-scrollable-result-set-type[`cursor.scrollable.result-set-type`]
+* link:#cursor-scrollable-result-set-concurrency[`cursor.scrollable.result-set-concurrency`]
 * link:#exclusiveconnection[`exclusive-connection`]
+* link:#fetch-group[`fetch-group`]
+* link:#fetch-group-attribute[`fetch-group.attribute`]
+* link:#fetch-group-default[`fetch-group.default`]
+* link:#fetch-group-load[`fetch-group.load`]
+* link:#fetch-group-name[`fetch-group.name`]
 * link:#flush[`flush`]
 * link:#historyasof[`history.as-of`]
 * link:#historyasofscn[`history.as-of.scn`]
 * link:#inheritanceouterjoin[`inheritance.outer-join`]
+* link:#inner-join-in-where-clause[`inner-join-in-where-clause`]
+* link:#jdbc-batch-writing[`jdbc.batch-writing`]
 * link:#jdbcbindparameters[`jdbc.bind-parameters`]
+* link:#jdbc-allow-native-sql-query[`jdbc.allow-native-sql-query`]
 * link:#jdbcallowpartialbindparameters[`jdbc.allow-partial-bind-parameters`]
 * link:#jdbccachestatement[`jdbc.cache-statement`]
 * link:#jdbcfetchsize[`jdbc.fetch-size`]
@@ -62,21 +74,31 @@ EclipseLink supplies the following query hints:
 * link:#loadgroup[`load-group`]
 * link:#loadgroupattribute[`load-group.attribute`]
 * link:#maintaincache[`maintain-cache`]
+* link:#partitioning-2[`partitioning`]
 * link:#pessimisticlock[`pessimistic-lock`]
+* link:#pessimistic-lock-timeout-unit[`pessimistic.lock.timeout.unit`]
 * link:#prepare[`prepare`]
+* link:#query-redirector[`query.redirector`]
 * link:#queryresultscache[`query-results-cache`]
 * link:#queryresultscacheexpiry[`query-results-cache.expiry`]
 * link:#queryresultscacheexpirytimeofday[`query-results-cache.expiry-time-of-day`]
 * link:#queryresultscacheignorenull[`query-results-cache.ignore-null`]
+* link:#query-results-cache-invalidate-on-change[`query-results-cache.invalidate-on-change`]
 * link:#queryresultscacherandomizeexpiry[`query-results-cache.randomize-expiry`]
 * link:#queryresultscachesize[`query-results-cache.size`]
 * link:#queryresultscachetype[`query-results-cache.type`]
+* link:#query-results-cache-validation[`query-results-cache.validation`]
+* link:#query-return-name-value-pairs[`query-return-name-value-pairs`]
 * link:#querytype[`query-type`]
 * link:#readonly1[`read-only`]
 * link:#refresh[`refresh`]
 * link:#refreshcascade[`refresh.cascade`]
 * link:#resultcollectiontype[`result-collection-type`]
-* link:#sqlhint[`sql.hint`]
+* link:#result-set-access[`result-set-access`]
+* link:#result-type[`result-type`]
+* link:#result-set-access[`result-set-access`]
+* link:#serialized-object[`serialized-object`]
+* link:#sql-hint[`sql.hint`]
 
 All EclipseLink query hints are defined in the `QueryHints` class in the
 `org.eclipse.persistence.config package`. When you set a hint, you can
@@ -770,6 +792,240 @@ For more information, see:
 
 * link:#cursor["cursor"]
 
+'''''
+
+=== cursor.size-sql
+
+Configures the SQL string for the size query of a Cursor query.
+This is only required for cursor queries that use native SQL or procedures.
+The size query is only used if the size() is called on the Cursor.
+The SQL should perform a COUNT of the rows returned by the original query.
+
+*Values*
+
+link:#BABEBBJJA[Table 4-8] describes this query hint's values.
+
+[[BABEBBJJA]]
+
+*_Table 4-8 Valid Values for cursor.size-sql_*
+
+|=======================================================================
+|*Value* |*Description*
+|`String` |SQL which counts size of the cursor.
+|=======================================================================
+
+*Examples*
+
+link:#CHDIAFBGA[Example 4-17] shows how to use this hint in a JPA query.
+
+[[CHDIAFBGA]]
+
+*_Example 4-17 Using cursor.size-sql in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+query.setHint("eclipselink.CURSOR_SIZE", "select count(*) from EMPLOYEE");
+----
+
+link:#CHDIACBGA[Example 4-18] shows how to use this hint with the `@QueryHint` annotation.
+
+[[CHDIACBGA]]
+
+*_Example 4-18 Using cursor.size-sql in a @QueryHint Annotation_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+@QueryHint(name=QueryHints.CURSOR_SIZE, value="select count(*) from EMPLOYEE");
+----
+
+*See Also*
+
+For more information, see:
+
+* link:#cursor[`cursor`]
+
+'''''
+
+=== cursor.scrollable
+
+Configures the query to return a ScrollableCursor.
+A cursor is a stream of the JDBC ResultSet.
+ScrollableCursor implements ListIterator, when the each next() will fetch the next from the JDBC ResultSet,
+and build the resulting Object or value.
+ScrollableCursor can scroll forwards and backwards and position into the ResultSet.
+A Cursor requires and will keep a live JDBC connection, close() must be called
+to free the Cursor's resources.
+A Cursor can be accessed from a JPA Query through getSingleResult(), or from JpaQuery using getResultCursor().
+Cursors are useful for large results sets, and if only some of the results are desired.
+MAX_ROWS and FIRST_RESULT can also be used instead of cursors to obtain a page of results.
+
+*Values*
+
+link:#BABEBBJJB[Table 4-8] describes this query hint's values.
+
+[[BABEBBJJB]]
+
+*_Table 4-8 Valid Values for cursor.scrollable_*
+
+|=======================================================================
+|*Value* |*Description*
+|true |Return a ScrollableCursor.
+|false |(Default) Do not return a ScrollableCursor.
+|=======================================================================
+
+*Examples*
+
+link:#CHDIAFBGB[Example 4-17] shows how to use this hint in a JPA query.
+
+[[CHDIAFBGB]]
+
+*_Example 4-17 Using cursor.scrollable in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+query.setHint(QueryHints.SCROLLABLE_CURSOR, true);
+----
+
+link:#CHDIACBGB[Example 4-18] shows how to use this hint with the `@QueryHint` annotation.
+
+[[CHDIACBGB]]
+
+*_Example 4-18 Using cursor.scrollable in a @QueryHint Annotation_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+@QueryHint(name=QueryHints.SCROLLABLE_CURSOR, true);
+----
+
+*See Also*
+
+For more information, see:
+
+* link:#cursor[`cursor`]
+
+'''''
+
+=== cursor.scrollable.result-set-type
+
+This can be used on ScrollableCursor queries to set the JDBC ResultSet `org.eclipse.persistence.config.ResultSetType` scroll type.
+
+*Values*
+
+link:#BABEBBJJC[Table 4-8] describes this query hint's values.
+
+[[BABEBBJJC]]
+
+*_Table 4-8 Valid Values for cursor.scrollable.result-set-type_*
+
+|=======================================================================
+|*Value* |*Description*
+|"Forward" |The rows in a result set will be processed in a forward direction; first-to-last.
+|"ForwardOnly"|The type for a ResultSet object whose cursor may move only forward.
+|"Unknown"|The order in which rows in a result set will be processed is unknown.
+|"Reverse"|The rows in a result set will be processed in a reverse direction; last-to-first.
+|"ScrollInsensitive"|The type for a ResultSet object that is scrollable but generally not sensitive to changes made by others.
+|"ScrollSensitive"|(Default) The type for a ResultSet object that is scrollable and generally sensitive to changes made by others.
+|=======================================================================
+
+*Examples*
+
+link:#CHDIAFBGC[Example 4-17] shows how to use this hint in a JPA query.
+
+[[CHDIAFBGC]]
+
+*_Example 4-17 Using cursor.scrollable.result-set-type in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+query.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.Reverse);
+----
+
+link:#CHDIACBGC[Example 4-18] shows how to use this hint with the `@QueryHint` annotation.
+
+[[CHDIACBGC]]
+
+*_Example 4-18 Using cursor.scrollable.result-set-type in a @QueryHint Annotation_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+@QueryHint(name=QueryHints.RESULT_SET_TYPE, value=ResultSetType.Reverse);
+----
+
+*See Also*
+
+For more information, see:
+
+* link:#cursor[`cursor`]
+* link:#cursor-scrollable[`cursor.scrollable`]
+
+'''''
+
+=== cursor.scrollable.result-set-concurrency
+
+This can be used on ScrollableCursor queries to set the JDBC ResultSet concurrency `org.eclipse.persistence.config.ResultSetConcurrency`.
+
+*Values*
+
+link:#BABEBBJJD[Table 4-8] describes this query hint's values.
+
+[[BABEBBJJD]]
+
+*_Table 4-8 Valid Values for cursor.scrollable.result-set-concurrency_*
+
+|=======================================================================
+|*Value* |*Description*
+|"Updatable" |(Default) The concurrency mode for a ResultSet object that may be updated.
+|"ReadOnly"|The concurrency mode for a ResultSet object that may NOT be updated.
+|=======================================================================
+
+*Examples*
+
+link:#CHDIAFBGD[Example 4-17] shows how to use this hint in a JPA query.
+
+[[CHDIAFBGD]]
+
+*_Example 4-17 Using cursor.scrollable.result-set-concurrency in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+query.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ReadOnly);
+----
+
+link:#CHDIACBGE[Example 4-18] shows how to use this hint with the `@QueryHint` annotation.
+
+[[CHDIACBGE]]
+
+*_Example 4-18 Using cursor.scrollable.result-set-concurrency in a @QueryHint Annotation_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+@QueryHint(name=QueryHints.RESULT_SET_CONCURRENCY, value=ResultSetConcurrency.ReadOnly);
+----
+
+*See Also*
+
+For more information, see:
+
+* link:#cursor[`cursor`]
+* link:#cursor-scrollable[`cursor.scrollable`]
+* link:#cursor-scrollable-result-set-type[`cursor.scrollable.result-set-type`]
+
 [[exclusiveconnection]][[TLJPA747]]
 
 '''''
@@ -847,6 +1103,287 @@ import org.eclipse.persistence.config.QueryHints;
 For more information, see:
 
 * xref:{relativedir}/persistenceproperties_ref.adoc#jdbcexclusiveconnectionmode["jdbc.exclusive-connection.mode"]
+
+'''''
+
+=== fetch-group
+
+Configures the query to use the fetch group object. This is an instance of `org.eclipse.persistence.queries.FetchGroup`.
+The query will only fetch the attributes defined in the fetch group, if any other attribute is accessed
+it will cause the object to be refreshed. To load all FetchGroup's relationship attributes set the FetchGroup's boolean flag "shouldLoad" to true.
+FetchGroups are only supported for queries returning objects (only a single alias can be the select clause).
+Weaving is required to allow usage of fetch groups.
+
+*Values*
+
+link:#BABEBBJJE[Table 4-8] describes this query hint's values.
+
+[[BABEBBJJE]]
+
+*_Table 4-8 Valid Values for fetch-group_*
+
+|=======================================================================
+|*Value* |*Description*
+|Object | Instance of `org.eclipse.persistence.queries.FetchGroup`.
+|=======================================================================
+
+*Examples*
+
+link:#CHDIAFBGE[Example 4-17] shows how to use this hint in a JPA query.
+
+[[CHDIAFBGE]]
+
+*_Example 4-17 Using fetch-group in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.queries.FetchGroup;
+
+FetchGroup fetchGroup = new FetchGroup();
+fetchGroup.addAttribute("id");
+query.setHint(QueryHints.FETCH_GROUP, fetchGroup);
+----
+
+*See Also*
+
+For more information, see:
+
+* link:#loadgroup[`load-group`]
+
+'''''
+
+=== fetch-group.attribute
+
+Configures the query to use a dynamic fetch group that includes a list of attributes.
+Each attribute must be defined using a separate hint.
+The primary key and version are always included.
+The query will only fetch the attributes defined in the fetch group, if any other attribute is accessed
+it will cause the object to be refreshed.
+To load all FetchGroup's relationship attributes set FETCH_GROUP_LOAD to "true".
+FetchGroups are only supported for queries returning objects (only a single alias can be the select clause).
+Weaving is required to allow usage of fetch groups.
+Both local and nested attributes are supported.
+
+*Values*
+
+link:#BABEBBJJG[Table 4-8] describes this query hint's values.
+
+[[BABEBBJJG]]
+
+*_Table 4-8 Valid Values for fetch-group.attribute_*
+
+|=======================================================================
+|*Value* |*Description*
+|String | Name of the fetch group, as defined on the ClassDescriptor.
+|=======================================================================
+
+*Examples*
+
+link:#CHDIAFBGG[Example 4-17] shows how to use this hint in a JPA query.
+
+[[CHDIAFBGG]]
+
+*_Example 4-17 Using fetch-group.attribute in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.queries.FetchGroup;
+...
+Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+query.setParameter("ID", minimumEmployeeId(em));
+query.setHint(QueryHints.FETCH_GROUP_ATTRIBUTE, "firstName");
+query.setHint(QueryHints.FETCH_GROUP_ATTRIBUTE, "lastName");
+...
+----
+
+*See Also*
+
+For more information, see:
+
+* link:#loadgroup[`load-group`]
+* link:#fetch-group[`fetch-group`]
+* link:#fetch-group-load[`fetch-group.load`]
+* link:#fetch-group-name[`fetch-group.name`]
+
+'''''
+
+=== fetch-group.default
+
+Configures the query not to use the default fetch group.
+The default fetch group is defined by all non-lazy Basic mappings.
+If set to FALSE all attributes will be fetched, including lazy Basics,
+this still excludes lazy relationships, they will fetch their foreign keys, but not their values.
+FetchGroups are only supported for queries returning objects (only a single alias can be the select clause).
+Weaving is required to allow usage of fetch groups.
+
+*Values*
+
+link:#BABEBBJJI[Table 4-8] describes this query hint's values.
+
+[[BABEBBJJI]]
+
+*_Table 4-8 Valid Values for fetch-group.default_*
+
+|=======================================================================
+|*Value* |*Description*
+|"true" (String) | (default) Use/fetch attributes defined in the fetch group.
+|"false" (String) | All attributes will be fetched, including lazy Basics.
+|=======================================================================
+
+*Examples*
+
+link:#CHDIAFBGI[Example 4-17] shows how to use this hint in a JPA query.
+
+[[CHDIAFBGI]]
+
+*_Example 4-17 Using fetch-group.default in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+...
+FetchGroup employeeGroup = new FetchGroup();
+employeeGroup.addAttribute("firstName");
+employeeGroup.addAttribute("lastName");
+
+TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER", Employee.class);
+query.setParameter("GENDER", Gender.Female);
+query.setHint(QueryHints.FETCH_GROUP, employeeGroup);
+query.setHint(QueryHints.FETCH_GROUP_DEFAULT, "false");
+List<Employee> emps = query.getResultList();
+...
+----
+
+*See Also*
+
+For more information, see:
+
+* link:#loadgroup[`load-group`]
+* link:#fetch-group[`fetch-group`]
+* link:#fetch-group-attribute[`fetch-group.attribute`]
+* link:#fetch-group-load[`fetch-group.load`]
+* link:#fetch-group-name[`fetch-group.name`]
+
+'''''
+
+=== fetch-group.load
+
+Configures a dynamic fetch group to load (default) or not to load its attributes.
+Could be used with FETCH_ATTRIBUTES hint.
+To load all FetchGroup's relationship attributes set this hint to "true".
+Weaving is required to allow usage of fetch groups.
+
+*Values*
+
+link:#BABEBBJJH[Table 4-8] describes this query hint's values.
+
+[[BABEBBJJH]]
+
+*_Table 4-8 Valid Values for fetch-group.load_*
+
+|=======================================================================
+|*Value* |*Description*
+|"true" (String) | (default) Should load fetch group.
+|"false" (String) | Do not load fetch group.
+|=======================================================================
+
+*Examples*
+
+link:#CHDIAFBGH[Example 4-17] shows how to use this hint in a JPA query.
+
+[[CHDIAFBGH]]
+
+*_Example 4-17 Using fetch-group.load in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+...
+FetchGroup employeeGroup = new FetchGroup();
+employeeGroup.addAttribute("firstName");
+employeeGroup.addAttribute("lastName");
+
+TypedQuery<Employee> query = em.createQuery("SELECT e FROM Employee e WHERE e.gender = :GENDER", Employee.class);
+query.setParameter("GENDER", Gender.Female);
+query.setHint(QueryHints.FETCH_GROUP, employeeGroup);
+query.setHint(QueryHints.FETCH_GROUP_LOAD, "true");
+query.setHint(QueryHints.BATCH, "e.projects");
+List<Employee> employees = query.getResultList();
+...
+----
+
+*See Also*
+
+For more information, see:
+
+* link:#loadgroup[`load-group`]
+* link:#fetch-group[`fetch-group`]
+* link:#fetch-group-attribute[`fetch-group.attribute`]
+* link:#fetch-group-name[`fetch-group.name`]
+
+'''''
+
+=== fetch-group.name
+
+Configures the query to use a named fetch group defined for the result class.
+This is the name of the fetch group, as defined on the ClassDescriptor.
+Currently FetchGroups can only be defined on the ClassDescriptor using a DescriptorCustomizer.
+The query will only fetch the attributes defined in the fetch group, if any other attribute is accessed
+it will cause the object to be refreshed.
+To load all FetchGroup's relationship attributes set the FetchGroup's boolean flag "load" to true.
+FetchGroups are only supported for queries returning objects (only a single alias can be the select clause).
+Weaving is required to allow usage of fetch groups.
+
+*Values*
+
+link:#BABEBBJJF[Table 4-8] describes this query hint's values.
+
+[[BABEBBJJF]]
+
+*_Table 4-8 Valid Values for fetch-group.name_*
+
+|=======================================================================
+|*Value* |*Description*
+|String | Name of the fetch group, as defined on the ClassDescriptor.
+|=======================================================================
+
+*Examples*
+
+link:#CHDIAFBGF[Example 4-17] shows how to use this hint in a JPA query.
+
+[[CHDIAFBGF]]
+
+*_Example 4-17 Using fetch-group.name in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.queries.FetchGroup;
+...
+ClassDescriptor descriptor = getDescriptor("Employee");
+FetchGroup fetchGroup = new FetchGroup("names");
+fetchGroup.addAttribute("firstName");
+fetchGroup.addAttribute("lastName");
+descriptor.getFetchGroupManager().addFetchGroup(fetchGroup);
+Query query = em.createQuery("SELECT e FROM Employee e WHERE e.id = :ID");
+query.setParameter("ID", minimumEmployeeId(em));
+query.setHint(QueryHints.FETCH_GROUP_NAME, "names");
+...
+----
+
+*See Also*
+
+For more information, see:
+
+* link:#loadgroup[`load-group`]
+* link:#fetch-group[`fetch-group`]
 
 [[flush]][[TLJPA751]]
 
@@ -1165,6 +1702,120 @@ For more information, see:
 * "Inheritance" in _Understanding EclipseLink_
 * "Enhancing Performance" in _Solutions Guide for EclispeLink_
 
+'''''
+
+=== inner-join-in-where-clause
+
+Changes the way that inner joins are printed in generated SQL for the database.
+With a value of true, inner joins are printed in the WHERE clause, if false, inner joins are printed in the FROM clause.
+This query hint should override global/session switch `org.eclipse.persistence.internal.databaseaccess.DatabasePlatform#setPrintInnerJoinInWhereClause(boolean)`
+Indicates whether the query printer/normalizer changes the way that inner joins are printed
+in generated SQL for the database. With a value of true, inner joins are printed in the WHERE clause,
+if false, inner joins are printed in the FROM clause.
+If value is set it overrides printInnerJoinInWhereClause persistence unit property.
+Default value null - value from printInnerJoinInWhereClause persistence unit property is used*/
+
+*Values*
+
+link:#BABHJFEJB[Table 4-14] describes this query hint's valid values.
+
+[[BABHJFEJB]]
+
+*_Table 4-14 Valid Values for
+org.eclipse.persistence.config.HintValues_*
+
+|=======================================================================
+|*Value* |*Description*
+|null | (Default false)Take value from Persistence Property.
+|`HintValues.FALSE` or `False` (String) |Inner joins are printed in the FROM clause.
+|`HintValues.TRUE` or `True` (boolean)|Inner joins are not printed in the FROM clause.
+|=======================================================================
+
+*Examples*
+
+link:#BABGDCJAB[Example 4-29] shows how to use this hint in a JPA query.
+
+[[BABGDCJAB]]
+
+*_Example 4-29 Using inner-join-in-where-clause in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+...
+query.setHint(QueryHints.INNER_JOIN_IN_WHERE_CLAUSE, "false");
+----
+
+link:#BABIHAEG[Example 4-30] shows how to use this hint with the
+`@QueryHint` annotation.
+
+[[BABIHAEG]]
+
+*_Example 4-30 Using inner-join-in-where-clause in a @QueryHint Annotation_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+...
+@NamedQuery(
+    name="QueryOrder.findAllOrdersWithEmptyOrderLinesHintTrue",
+    query="SELECT o FROM QueryOrder o WHERE o.queryOrderLines IS EMPTY"
+    ,
+    hints={
+        @QueryHint(name=QueryHints.INNER_JOIN_IN_WHERE_CLAUSE, value="true")
+    }
+)
+...
+----
+
+'''''
+
+=== jdbc.batch-writing
+
+Configures if this modify query can be batched through batch writing.
+Some types of queries cannot be batched, such as DDL on some databases.
+Disabling batch writing will also allow the row count to be returned.
+
+*Values*
+
+link:#BABHJFEJA[Table 4-14] describes this query hint's valid values.
+
+[[BABHJFEJA]]
+
+*_Table 4-14 Valid Values for
+org.eclipse.persistence.config.HintValues_*
+
+|=======================================================================
+|*Value* |*Description*
+|`HintValues.PERSISTENCE_UNIT_DEFAULT` or `HintValues.FALSE` or `false` (boolean) |Don't use query batch writing.
+|`HintValues.TRUE` or `true` (boolean)|(Default) Use query batch writing.
+|=======================================================================
+
+[[sthref599]]
+
+*Examples*
+
+link:#BABGDCJA[Example 4-29] shows how to use this hint in a JPA query.
+
+[[BABGDCJA]][[TLJPA644]]
+
+*_Example 4-29 Using jdbc.batch-writing in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+...
+query.setHint(QueryHints.BATCH_WRITING, false);
+----
+
+*See Also*
+
+For more information, see:
+
+* xref:{relativedir}/persistenceproperties_ref.adoc#jdbc-batch-writing-2["jdbc-batch-writing"] Persistence property
+
 [[jdbcbindparameters]][[TLJPA642]]
 
 '''''
@@ -1196,8 +1847,6 @@ made in your EclipseLink session's database login, which is true by
 default.
 |=======================================================================
 
-[[sthref599]]
-
 *Usage*
 
 By default, EclipseLink enables parameter binding and statement caching.
@@ -1212,9 +1861,9 @@ You can also configure parameter binding for the persistence unit in the
 
 *Examples*
 
-link:#BABGDCJA[Example 4-29] shows how to use this hint in a JPA query.
+link:#BABGDCJAA[Example 4-29] shows how to use this hint in a JPA query.
 
-[[BABGDCJA]][[TLJPA644]]
+[[BABGDCJAA]][[TLJPA644]]
 
 *_Example 4-29 Using bind-parameters in a JPA Query_*
 
@@ -1269,6 +1918,71 @@ For more information, see:
 * xref:{relativedir}/persistenceproperties_ref.adoc#jdbcbatchwritingsize["jdbc.batch-writing.size"]
 * "Parameterized SQL and Statement Caching" in _Solutions Guide for
 EclispeLink_
+
+'''''
+
+=== jdbc.allow-native-sql-query
+
+The `eclipselink.jdbc.allow-native-sql-query` property
+specifies whether a single native SQL query should override a persistence
+unit level setting (eclipselink.jdbc.allow-native-sql-queries). The PU
+level flag is of particular importance within a multitenant to minimize
+the potential impact of revealing multitenant. However in some cases the
+application may need to allow certain native SQL queries through.
+
+*Values*
+
+link:#BABHJFEKA[Table 4-83] describes this persistence property's values.
+
+[[BABHJFEKA]]
+
+*_Table 4-83 Valid Values for jdbc.allow-native-sql-query_*
+
+|=======================================================================
+|*Value* |*Description*
+|true |Allow native SQL (and override the persistence unit flag).
+|false |(Default) Do not allow native SQL (and respect the persistence unit flag if set).
+|=======================================================================
+
+*Examples*
+
+link:#BABFBBJKA[Example 4-83] shows how to configure parameter binding in
+the persistence unit `persistence.xml` file.
+
+[[BABFBBJKA]]
+
+*_Example 4-83 Specifying Allow Native SQL Query Persistence Unit Property_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+----
+
+Or by importing a `property` map:
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.ALLOW_NATIVE_SQL_QUERIES, "true");
+----
+
+link:#CHDIAFBGJ[Example 4-17] shows how to use this hint in a JPA query.
+
+[[CHDIAFBGJ]]
+
+*_Example 4-17 Using jdbc.allow-native-sql-query in a JPA Query_*
+
+[source,oac_no_warn]
+----
+Query deleteQuery = em.createNamedQuery("DeleteAllMafiaFamilies");
+deleteQuery.setHint(QueryHints.ALLOW_NATIVE_SQL_QUERY, true);
+----
+
+*See Also*
+
+For more information, see:
+
+* xref:{relativedir}/persistenceproperties_ref.adoc#jdbcallownativesqlqueries[`jdbc.allow-native-sql-queries` Persistence property]
 
 [[jdbcallowpartialbindparameters]][[TLJPA831]]
 
@@ -2194,6 +2908,73 @@ EclispeLink_
 * "Enhancing Performance" in _Solutions Guide for EclispeLink_
 * "EclipseLink Caches" in _Understanding EclipseLink_
 
+'''''
+
+=== partitioning
+
+Used to provide a PartitioningPolicy instance or name to the query.
+This allows the query to execute on a specific, or on multiple connection pools.
+
+*Values*
+
+link:#BABEGFHED[Table 4-32] describes this query hint's values.
+
+[[BABEGFHED]]
+
+*_Table 4-32 Valid Values for partitioning_*
+
+|========================================================
+|*Value* |*Description*
+|String |`org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy` instance or partitioning policy name.
+|========================================================
+
+
+*Examples*
+
+link:#CHDHEDDCD[Example 4-65] shows how to use this hint in a JPA query.
+
+[[CHDHEDDCD]]
+
+*_Example 4-65 Using partitioning in a JPA
+Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+query.setHint(QueryHints.PARTITIONING, "org.acme.persistence.OrderPartitioningPolicy");
+----
+
+link:#CHDICBIID[Example 4-66] shows how to use this hint with the
+`@QueryHint` annotation.
+
+[[CHDICBIID]][[TLJPA54080]]
+
+*_Example 4-66 Using partitioning in a
+@QueryHint Annotation_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+@QueryHint(name=QueryHints.PARTITIONING, value="org.acme.persistence.OrderPartitioningPolicy");
+----
+
+*_Example Implementation of org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy_*
+[source,oac_no_warn]
+----
+...
+public class OrderPartitioningPolicy extends PartitioningPolicy {
+
+    public List<Accessor> getConnectionsForQuery(AbstractSession session, DatabaseQuery query, AbstractRecord arguments) {
+
+        List<Accessor> accessors = new ArrayList<Accessor>(1);
+        accessors.add(getAccessor(ACMEPool.leastBusy(), session, query, false));
+        return accessors;
+    }
+}
+----
+
 [[pessimisticlock]][[TLJPA668]]
 
 '''''
@@ -2283,6 +3064,70 @@ EclispeLink_
 * "Building Blocks of a EclipseLink Project" in _Understanding
 EclipseLink_
 
+'''''
+
+=== pessimistic.lock.timeout.unit
+
+Configures the pessimistic lock timeout unit value. Allows users more refinement.
+
+*Values*
+
+link:#CIHDEEDG[Table 4-26] describes this query hint's valid values.
+
+[[CIHDEEDG]]
+
+*_Table 4-26 Valid Values for pessimistic.lock.timeout.unit_*
+
+|=======================================================================
+|*Value* |*Description*
+|`MILLISECONDS` |(Default) milliseconds.
+|`SECONDS` |seconds
+|`MINUTES` |minutes
+|=======================================================================
+
+NOTE: Values must match with enum at `java.util.concurrent.TimeUnit`.
+
+*Examples*
+
+link:#CIHGEJFG[Example 4-52] shows how to use this hint in a JPA query.
+
+[[CIHGEJFG]]
+
+*_Example 4-52 Using pessimistic.lock.timeout.unit in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PessimisticLock;
+import org.eclipse.persistence.config.QueryHints;
+query.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, "SECONDS");
+----
+
+link:#CIHIAFGHA[Example 4-53] shows how to use this hint with the
+`@QueryHint` annotation.
+
+[[CIHIAFGHA]][[TLJPA671]]
+
+*_Example 4-53 Using pessimistic.lock.timeout.unit in a @QueryHint Annotation_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PessimisticLock;
+import org.eclipse.persistence.config.QueryHints;
+@QueryHint(name=QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, "SECONDS");
+----
+
+*See Also*
+
+For more information, see:
+
+* EclipseLink Examples
+`http://wiki.eclipse.org/EclipseLink/Examples/JPA/PessimisticLocking`
+* "Scaling EclipseLink Applications in Clusters" in _Solutions Guide for
+EclispeLink_
+* "Understanding Queries" in _Understanding EclipseLink_
+* "Building Blocks of a EclipseLink Project" in _Understanding
+EclipseLink_
+
 [[prepare]][[TLJPA788]]
 
 '''''
@@ -2358,6 +3203,75 @@ import org.eclipse.persistence.config.QueryHints;
 For more information, see:
 
 * "Understanding Queries" in _Understanding EclipseLink_
+
+'''''
+
+=== query.redirector
+
+Used to provide a QueryRedirector to the executing query. The redirector must implement the QueryRedirector interface.
+This can be used to perform advanced query operations in code, or dynamically customize the query in code before execution.
+The value should be the name of the QueryRedirector class. i.e. `org.acme.persistence.MyQueryRedirector`
+The value could also be a Class, or an instance that implements the QueryRedirector interface.
+see `org.eclipse.persistence.queries.QueryRedirector`
+
+*Values*
+
+link:#BABEGFHEC[Table 4-32] describes this query hint's values.
+
+[[BABEGFHEC]]
+
+*_Table 4-32 Valid Values for query.redirector_*
+
+|========================================================
+|*Value* |*Description*
+|String |Qualified class name which implements `org.eclipse.persistence.queries.QueryRedirector`
+|========================================================
+
+
+*Examples*
+
+link:#CHDHEDDCC[Example 4-65] shows how to use this hint in a JPA query.
+
+[[CHDHEDDCC]]
+
+*_Example 4-65 Using query.redirector in a JPA
+Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+query.setHint("eclipselink.query.redirector", "org.acme.persistence.MyQueryRedirector");
+----
+
+link:#CHDICBIIE[Example 4-66] shows how to use this hint with the
+`@QueryHint` annotation.
+
+[[CHDICBIIE]][[TLJPA54080]]
+
+*_Example 4-66 Using query.redirector in a
+@QueryHint Annotation_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+@QueryHint(name=QueryHints.QUERY_REDIRECTOR, value="org.acme.persistence.MyQueryRedirector");
+----
+
+*_Example Implementation of org.eclipse.persistence.queries.QueryRedirector_*
+[source,oac_no_warn]
+----
+...
+public class MyQueryRedirector implements QueryRedirector {
+    @Override
+    public Object invokeQuery(DatabaseQuery query, DataRecord dataRecord, Session session) {
+        List<?> result = (List<?>)session.executeQuery(query);
+        return result.toArray(new Object[result.size()]);
+    }
+}
+...
+----
 
 [[queryresultscache]][[TLJPA792]]
 
@@ -2678,6 +3592,67 @@ For more information, see:
 
 * link:#queryresultscache["query-results-cache"]
 
+'''''
+
+=== query-results-cache.invalidate-on-change
+
+Configures if the query cache results should be invalidated if any object of any class used in the query if modified.
+
+*Values*
+
+link:#BABEGFHEA[Table 4-32] describes this query hint's values.
+
+[[BABEGFHEA]]
+
+*_Table 4-32 Valid Values for query-results-cache.randomize-expiry_*
+
+|========================================================
+|*Value* |*Description*
+|`true` |(Default) Invalidate on change.
+|`false` |Do not invalidate on change.
+|========================================================
+
+
+*Examples*
+
+link:#CHDHEDDCA[Example 4-65] shows how to use this hint in a JPA query.
+
+[[CHDHEDDCA]]
+
+*_Example 4-65 Using query-results-cache.randomize-expiry in a JPA
+Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+query.setHint("eclipselink.QUERY_RESULTS_CACHE_INVALIDATE", "TRUE");
+----
+
+link:#CHDICBII[Example 4-66] shows how to use this hint with the
+`@QueryHint` annotation.
+
+[[CHDICBII]][[TLJPA54080]]
+
+*_Example 4-66 Using query-results-cache.randomize-expiry in a
+@QueryHint Annotation_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+@QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_INVALIDATE, value="TRUE");
+----
+
+[[sthref692]]
+
+*See Also*
+
+For more information, see:
+
+* link:#queryresultscache["query-results-cache"]
+* link:#queryresultscacheexpiry["query-results-cache.expiry"]
+
 [[queryresultscacherandomizeexpiry]][[TLJPA54077]]
 
 '''''
@@ -2729,10 +3704,10 @@ import org.eclipse.persistence.config.QueryHints;
 query.setHint("eclipselink.QUERY_RESULTS_CACHE_RANDOMIZE_EXPIRY", "TRUE");
 ----
 
-link:#CHDICBII[Example 4-66] shows how to use this hint with the
+link:#CHDICBIIA[Example 4-66] shows how to use this hint with the
 `@QueryHint` annotation.
 
-[[CHDICBII]][[TLJPA54080]]
+[[CHDICBIIA]]
 
 *_Example 4-66 Using query-results-cache.randomize-expiry in a
 @QueryHint Annotation_*
@@ -2743,8 +3718,6 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_RANDOMIZE_EXPIRY, value="TRUE");
 ----
-
-[[sthref692]]
 
 *See Also*
 
@@ -2917,6 +3890,105 @@ Overview"`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic JPA Developmen
 * "EclipseLink Caches" in the _Understanding EclipseLink_
 * "Scaling EclipseLink Applications in Clusters" in _Solutions Guide for
 EclispeLink_
+
+'''''
+
+=== query-results-cache.validation
+
+This property control (enable/disable) query result cache validation.
+This can be used to help debugging an object identity problem. An object identity problem is when an managed/active entity in the cache references an entity not in managed state.
+This method will validate that objects in query results are in a correct state. As a result there are new log messages in the log.
+It's related with "read" queries like <code>em.find(...);</code> or JPQL queries like <code>SELECT e FROM Entity e</code>.
+It should be controlled at persistence unit level too by persistence unit property * xref:{relativedir}/persistenceproperties_ref.adoc#query-results-cache-validation["query-results-cache.validation"].
+
+*Values*
+
+link:#BABEGFHEB[Table 4-32] describes this query hint's values.
+
+[[BABEGFHEB]]
+
+*_Table 4-32 Valid Values for query-results-cache.validation_*
+
+|========================================================
+|*Value* |*Description*
+|`true` |Validate query result object tree and if content is not valid print diagnostic messages. In this case there should be negative impact to the performance.
+|`false` |(Default) Don't validate and print any diagnostic messages.
+|========================================================
+
+
+*Examples*
+
+link:#CHDHEDDCB[Example 4-65] shows how to use this hint in a JPA query.
+
+[[CHDHEDDCB]]
+
+*_Example 4-65 Using query-results-cache.validation in a JPA
+Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+query.setHint("eclipselink.query-results-cache.validation", true);
+----
+
+link:#CHDICBIIB[Example 4-66] shows how to use this hint with the
+`@QueryHint` annotation.
+
+[[CHDICBIIB]]
+
+*_Example 4-66 Using query-results-cache.validation in a @QueryHint Annotation_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+@QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_VALIDATION, value="TRUE");
+----
+
+*See Also*
+
+For more information, see:
+
+* link:#queryresultscache["query-results-cache"]
+
+'''''
+
+=== query-return-name-value-pairs
+
+Configures a ResultSetMappingQuery to return populated DatabaseRecord(s) instead of raw data.
+This is particularly useful when the structure of the returned data is not known.
+
+*Values*
+
+link:#CBAHJJFI[Table 4-40] describes this query hint's values.
+
+[[CBAHJJFI]]
+
+*_Table 4-40 Valid Values for query-return-name-value-pairs_*
+
+|===============================================================
+|*Value* |*Description*
+|`HintValues.TRUE` "True" (String)|Return DatabaseRecord(s).
+|`HintValues.FALSE` "False" (String)|(Default) Don't return DatabaseRecord(s).
+|===============================================================
+
+*Examples*
+
+link:#CIHHIBCHAB[Example 4-81] shows how to use this hint in a JPA query.
+
+[[CIHHIBCHAB]]
+
+*_Example 4-81 Using query-return-name-value-pairs in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+...
+query.setHint(QueryHints.RETURN_NAME_VALUE_PAIRS, "True");
+...
+----
 
 [[querytype]][[TLJPA672]]
 
@@ -3295,7 +4367,148 @@ For more information, see:
 
 * "Collection Mappings" in the _Understanding EclipseLink_
 
-[[sqlhint]][[TLJPA822]]
+'''''
+
+=== result-type
+
+By default in JPA for non-single select queries an Array of values is returned.
+If `getSingleResult()` is called the first array is returned, for `getResultList()` a List of arrays is returned.
+i.e. `Select e.firstName, e.lastName from Employee e` returns `List<Object[]>`
+or the native query, `SELECT * FROM EMPLOYEE` returns `List<Object[]>`
+The ResultType can be used to instead return a `Map` of values (`DatabaseRecord`, `ReportQueryResult`).
+It can also be used to return a single column, or single value.
+
+*Values*
+
+link:#CBAHJJFG[Table 4-40] describes this query hint's values.
+
+[[CBAHJJFG]]
+
+*_Table 4-40 Valid Values for result-type_*
+
+|===============================================================
+|*Value* |*Description*
+|`org.eclipse.persistence.config.ResultType.Array` (String)|(Default) An Object array of values is returned (`List<Object[]>` or `Object[])`.
+|`org.eclipse.persistence.config.ResultType.Attribute` (String)|A List of the first selected value is returned.
+|`org.eclipse.persistence.config.ResultType.Map` (String)|A Map of key value pairs is returned.
+|`org.eclipse.persistence.config.ResultType.Value` (String)|The first value of the first rows is returned.
+|===============================================================
+
+*Examples*
+
+link:#CIHHIBCHB[Example 4-81] shows how to use this hint in a JPA query.
+
+[[CIHHIBCHB]]
+
+*_Example 4-81 Using result-type in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+...
+query = em.createQuery("Select employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
+query.setHint(QueryHints.RESULT_TYPE, ResultType.Array);
+query.setParameter("id", employee.getId());
+query.setParameter("firstName", employee.getFirstName());
+Object[] arrayResult = (Object[])query.getSingleResult();
+//or Map
+query = em.createQuery("Select employee.id from Employee employee where employee.id = :id and employee.firstName = :firstName");
+query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+query.setParameter("id", employee.getId());
+query.setParameter("firstName", employee.getFirstName());
+Map mapResult = (Map)query.getSingleResult();
+//or Value
+query = em.createQuery("Select employee.id, employee.firstName from Employee employee where employee.id = :id and employee.firstName = :firstName");
+query.setHint(QueryHints.RESULT_TYPE, ResultType.Value);
+query.setParameter("id", employee.getId());
+query.setParameter("firstName", employee.getFirstName());
+Object valueResult = query.getSingleResult();
+...
+----
+
+'''''
+
+=== result-set-access
+
+Configures if this read object(s) query should keep result set until all result object(s) are built.
+That allows to avoid getting potentially huge objects (LOBs) from ResultSet in case they would not be used
+because the object is found in the cache.
+Allow queries to build while accessing the database result-set. Skips accessing result set non-pk fields in case the cached object is found.
+If ResultSet optimization is used (isResultSetOptimizedQuery is set to true) then ResultSet Access optimization is ignored.
+
+*Values*
+
+link:#CBAHJJFHA[Table 4-40] describes this query hint's values.
+
+[[CBAHJJFHA]]
+
+*_Table 4-40 Valid Values for result-set-access_*
+
+|===============================================================
+|*Value* |*Description*
+|`HintValues.TRUE` "True" (String)|Build query directly from the result set.
+|`HintValues.FALSE` "False" (String)|(Default) Don't build query directly from the result set.
+|`HintValues.PERSISTENCE_UNIT_DEFAULT` or "PersistenceUnitDefault" (String)|Take value from persistence unit properties.
+|===============================================================
+
+*Examples*
+
+link:#CIHHIBCHA[Example 4-81] shows how to use this hint in a JPA query.
+
+[[CIHHIBCHA]]
+
+*_Example 4-81 Using result-type in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+...
+query.setHint(QueryHints.RESULT_SET_ACCESS, "True");
+...
+----
+
+'''''
+
+=== serialized-object
+
+Configures if this read object(s) query use SerializedObjectPolicy if it's set on the descriptor.
+If SerializedObjectPolicy is specified Eclipselink writes out the whole entity object with its
+privately owned (and nested privately owned) entities and element collections into an additional
+(likely BLOB) field in the database.
+
+
+*Values*
+
+link:#CBAHJJFH[Table 4-40] describes this query hint's values.
+
+[[CBAHJJFH]]
+
+*_Table 4-40 Valid Values for serialized-object_*
+
+|===============================================================
+|*Value* |*Description*
+|`HintValues.TRUE` "True" (String)|Use SerializedObjectPolicy.
+|`HintValues.FALSE` "False" (String)|(Default) Don't use SerializedObjectPolicy.
+|===============================================================
+
+*Examples*
+
+link:#CIHHIBCHAA[Example 4-81] shows how to use this hint in a JPA query.
+
+[[CIHHIBCHAA]]
+
+*_Example 4-81 Using result-type in a JPA Query_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
+...
+query.setHint(QueryHints.SERIALIZED_OBJECT, "True");
+...
+----
 
 '''''
 

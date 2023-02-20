@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
-    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -55,12 +55,7 @@ comprehensive, integrated logging infrastructure. See
 xref:{relativedir}/tlandwls002.adoc#BABIIEHD[Task 4: Use or Reconfigure the Logging
 Integration.]
 
->
+image:{imagesrelativedir}/wls_el_stack.png[Description of Figure 3-2 follows,title="Description of Figure 3-2 follows"] +
+xref:{imagestextrelativedir}/wls_el_stack.adoc[Description of "Figure 3-2 WebLogic Server, EclipseLink, Coherence and
+TopLink Grid integration"]
 
-This graphic shows how WebLogic Server, EclipseLink, Coherence and
-TopLink Grid are related to each other and to the data source(s). A box
-representing WebLogic Suite contains Coherence and a box containing
-WebLogic Server, which contains EclipseLink, which contains TopLink Grid
-and EclipseLink. Above this box is a box containing JDeveloper, which
-points to EclipseLink and EclipseLink. Below the box is the Oracle
-Database, which points to EclipseLink and WebLogic Server.
