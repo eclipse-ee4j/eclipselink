@@ -229,7 +229,7 @@
         <hibernate.version>8.0.0.Final</hibernate.version>
         <checkstyle.version>10.7.0</checkstyle.version>
         <!-- CQ #23049 -->
-        <jgroups.version>4.2.11.Final</jgroups.version>
+        <jgroups.version>5.2.12.Final</jgroups.version>
         <jmh.version>1.36</jmh.version>
         <junit.version>4.13.2</junit.version>
         <!-- CQ #24079 -->
