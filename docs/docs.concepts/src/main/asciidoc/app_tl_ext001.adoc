@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
-    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -95,6 +95,10 @@ Provides Informix-specific behavior, including:
 * Types for schema creation.
 * Native sequencing using `@SERIAL`.
 
+|MariaDB
+|`org.eclipse.persistence.platform.database.MariaDBPlatform`
+|Provides MariaDB-specific behavior.
+
 |Microsoft Access
 |`org.eclipse.persistence.platform.database.AccessPlatformPlatform`
 |Provides Microsoft Access-specific behavior.
@@ -122,6 +126,7 @@ Provides Oracle Database-specific behavior, including:
 * `NChar`
 * `XMLType`
 * `TIMESTAMP` (`TZ`, `LTZ`)
+* `JSON`
 * Native batch writing
 * Structured object-relational data-types
 * PLSQL datatypes and stored procedures
@@ -167,6 +172,12 @@ Provides PostgreSQL database-specific behavior, including:
 
 See also PostgreSQL:
 `http://wiki.eclipse.org/EclipseLink/FAQ/JPA/PostgreSQL`
+
+|PostgreSQL 10
+|`org.eclipse.persistence.platform.database.PostgreSQL10Platform`
+|Provides PostgreSQL database-specific behavior, plus:
+
+* `JSON` datatype support
 
 |SAP MaxDB |`org.eclipse.persistence.platform.database.MaxDBPlatform`
 |Provides MaxDB database-specific behavior.

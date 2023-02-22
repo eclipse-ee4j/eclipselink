@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
-    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -77,6 +77,8 @@ EclipseLink includes the following annotation extensions for entities:
 * link:#BABIEJGD[@Multitenant]
 * link:#BCGIACHD[@OptimisticLocking]
 * link:#BGBGEFBD[@ReadOnly]
+* link:#ANNOTATION_SERIALIZEDCONVERTER[@SerializedConverter]
+* link:#ANNOTATION_SERIALIZEDCONVERTERS[@SerializedConverters]
 * link:#CACDCCIA[@SerializedObject]
 * link:#CECBEBEA[@TenantDiscriminatorColumns]
 * link:#CHECIDGH[@TenantDiscriminatorColumn]
@@ -279,6 +281,8 @@ The following lists the EclipseLink annotation extensions:
 * link:#CIHHEGJE[@ReturnInsert]
 * link:#CACHDFCF[@ReturnUpdate]
 * link:#BCGBJGFF[@RoundRobinPartitioning]
+* link:#ANNOTATION_SERIALIZEDCONVERTER[@SerializedConverter]
+* link:#ANNOTATION_SERIALIZEDCONVERTERS[@SerializedConverters]
 * link:#CACDCCIA[@SerializedObject]
 * link:#CHDDEBEC6[@StoredProcedureParameter]
 * link:#CBBDCAHG[@Struct]
@@ -292,10 +296,11 @@ The following lists the EclipseLink annotation extensions:
 * link:#BABCJGIG[@Transformation]
 * link:#CHDHCCJF[@TypeConverter]
 * link:#BCFBEIAE[@TypeConverters]
-* link:#CJHFCGEJ[@ValuePartition]
-* link:#CEGHFJDJ[@ValuePartitioning]
 * link:#CFAFIIFC[@UuidGenerator]
+* link:#ANNOTATION_UUIDGENERATORS[@UuidGenerators]
 * link:#BCGEJFAH[@UnionPartitioning]
+* link:#TLJPA54063[@ValuePartition]
+* link:#CEGHFJDJ[@ValuePartitioning]
 * link:#CHDDFDGF[@VariableOneToOne]
 * link:#CIHFBCFI[@VirtualAccessMethods]
 * link:#BGBGGAEA[@WriteTransformer]
@@ -7548,6 +7553,126 @@ For more information, see:
 Partitioning"`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Advanced_JPA_Development/Data_Partitioning`
 * link:#CHDDAHEB["@Partitioned"]
 
+
+
+[[ANNOTATION_SERIALIZEDCONVERTER]]
+
+'''''
+
+=== @SerializedConverter
+
+A `@SerializedConverter` is used to serialize an object's value into a database binary, character, or XML field.
+ annotation allows a named converter that can be used in mappings.
+
+A converter must be be uniquely identified by name and can be defined at
+the class level and can be specified within an Entity,
+`@MappedSuperclass` and `@Embeddable` class.
+
+The usage of a `@SerializedConverter` is always specified via the `@Converter` annotation and
+is supported on a Basic, or ElementCollection mapping.
+
+*Annotation Elements*
+
+link:#CACBBJAE[Table 2-69] describes this annotation's elements.
+
+[[TLJPA54060]][[sthref386]][[CACBBJAE]]
+
+*_Table 2-69 @SerializedConverter Attribute Elements_*
+
+|=======================================================================
+|*Annotation Element* |*Description* |*Default*
+|`name` |(Required) Name this converter. The name should be unique across the
+whole persistence unit. |
+
+|`serializerClass` |(Required) The serializer class to be used. This class must implement the
+`org.eclipse.persistence.sessions.serializers.Serializer` interface.
+|`JavaSerializer.class`
+
+|`serializerPackage` |(Optional) Allows a package name to be passed to the serializer.
+This is used by some serializers such as XML, JSON to initialize the
+JAXB context from the classes in the package or a jaxb.index file.
+|
+|=======================================================================
+
+*Usage*
+
+The usage of a `@SerializedConverter` is always specified via the `@Converter` annotation and
+is supported on a Basic, or ElementCollection mapping.
+
+*Examples*
+
+link:#CACFCAFFA[Example 2-106.1] demonstrates how to use the
+`@SerializedConverter` and apply it with `@Converter` annotation to the Entity field.
+
+[[CACFCAFFA]]
+
+*_Example 2-106.1 Specifying a Serialized Object Policy_*
+
+[source,oac_no_warn]
+----
+@Entity
+@SerializedConverter(name="json2", serializerClass=JSONSerializer.class, serializerPackage="org.eclipse.persistence.testing.models.jpa.lob")
+public class Image implements Serializable {
+...
+    @org.eclipse.persistence.annotations.Convert("json2")
+    public SerializableNonEntity getJson2() {
+        return json2;
+    }
+...
+}
+----
+
+*See Also*
+
+For more information:
+
+* link:#CHDEHJEB[@Converter]
+
+[[ANNOTATION_SERIALIZEDCONVERTERS]]
+
+'''''
+
+=== @SerializedConverters
+
+A TypeConverters annotation allows the definition of multiple SerializedConverter.
+
+[[sthref385]]
+
+*Annotation Elements*
+
+link:#CACBBJAE[Table 2-69.1] describes this annotation's elements.
+
+*_Table 2-69.1 @SerializedConverters Attribute Elements_*
+
+|=======================================================================
+|*Annotation Element* |*Description* |*Default*
+|`SerializedConverters` `value` |(Optional) One or more
+`SerializedConverters` annotations |none
+|=======================================================================
+
+*Examples*
+
+link:#CACFCAFFB[Example 2-106.2] demonstrates how to use the
+@SerializedConverters annotation with field.
+
+[[CACFCAFFB]]
+
+*_Example 2-106.2 Using @SerializedConverters annotation with field._*
+
+[source,oac_no_warn]
+----
+@SerializedConverters({
+    @SerializedConverter(name="xml2", serializerClass=XMLSerializer.class, serializerPackage="org.eclipse.persistence.testing.models.jpa.lob")
+})
+public SerializableNonEntity getXml2() {
+    return xml2;
+}
+----
+
+*See Also*
+
+* `@SerializedConverter`
+
 [[CACDCCIA]][[TLJPA54059]]
 
 '''''
@@ -7561,15 +7686,11 @@ policy is specified, a whole entity object is written with its
 privately-owned (and nested, privately-owned) entities and element
 collections into an additional field in the database.
 
-[[sthref385]]
-
 *Annotation Elements*
 
-link:#CACBBJAE[Table 2-69] describes this annotation's elements.
+link:#CACBBJAEA[Table 2-69.1] describes this annotation's elements.
 
-[[TLJPA54060]][[sthref386]][[CACBBJAE]]
-
-*_Table 2-69 @SerializedObject Attribute Elements_*
+*_Table 2-69.1 @SerializedObject Attribute Elements_*
 
 |=======================================================================
 |*Annotation Element* |*Description* |*Default*
@@ -9006,82 +9127,51 @@ For more information, see:
 Value`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Entities/Ids/GeneratedValue`
 * link:#CACGCEIJ["Entity Annotations"]
 
-[[TLJPA54063]]
+[[ANNOTATION_UUIDGENERATORS]]
 
 '''''
 
-[[sthref461]]
+=== @UuidGenerators
 
-=== @UnionPartitioning
+Use `@UuidGenerators` to define multiple `@UuidGenerator`.
+It's container annotation for `@UuidGenerator`
 
-Use `@UnionPartitioning` to send queries to all connection pools and
-then union the results. This can be used for queries or relationships
-that span partitions when partitioning is used, such as on a ManyToMany
-cross partition relationship.
-
-[[sthref462]]
 
 *Annotation Elements*
 
-link:#BCGFGGCI[Table 2-81] describes this annotation's elements.
+link:#CFAIAHJGA[Table 2-82.1] describes this annotation's elements.
 
-[[TLJPA54064]][[sthref463]][[sthref464]]
-
-*_Table 2-83 @UnionPartitioning Annotation Elements_*
+*_Table 2-82.1 @UuidGenerators Annotation Elements_*
 
 |=======================================================================
 |*Annotation Element* |*Description* |*Default*
-|`name` |Name of the partition policy. Names must be unique for the
-persistence unit. | +
-
-|`connectionPools` |List of connection pool names to load balance across
-|Defaults to all defined pools in the `ServerSession`
-
-|`replicateWrite` a|
-Defines if write queries should be replicated.
-
-Writes are normally not replicated when unioning, but can be for
-ManyToMany relationships, when the join table needs to be replicated.
-
- |`false`
+|`UuidGenerator` `value` |(Optional) One or more
+`UuidGenerator` annotations |none
 |=======================================================================
-
-[[sthref465]]
-
-*Usage*
-
-Partitioning can be enabled on an Entity, relationship, query, or
-session/persistence unit. Partition policies are globally named to allow
-reuse, the partitioning policy must also be set using the `@Partitioned`
-annotation to be used.
-
-The persistence unit properties support adding named connection pools in
-addition to the existing configuration for read/write/sequence. A named
-connection pool must be defined for each node in the database cluster.
-
-If a transaction modifies data from multiple partitions, you should use
-JTA ensure proper two-phase commit of the data. You can also configure
-an exclusive connection in the EntityManager to ensure that only a
-single node is used for a single transaction.
-
-[[sthref466]]
 
 *Examples*
 
-See link:#CEGHAIDJ["Using Partitioning"] for an example of partitioning
-with EclipseLink.
+link:#CFADJAIFB[Example 2-125.1] shows how to use this annotation.
 
-[[sthref467]]
+[[CFADJAIFB]]
+*_Example 2-125.1 Using @UuidGenerator Annotation_*
 
-*See Also*
+[source,oac_no_warn]
+----
+@Entity
+@UuidGenerator({
+    @UuidGenerator(name="EMP_ID_GEN")
+    @UuidGenerator(name="EMP_CODE_GEN")})
+public class Employee {
+    @Id
+    @GeneratedValue(generator="EMP_ID_GEN")
+    private String id;
+    @GeneratedValue(generator="EMP_CODE_GEN")
+    private String code;
+}
+----
 
-For more information, see:
-
-* "Data
-Partitioning"`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Advanced_JPA_Development/Data_Partitioning`
-* link:#CHDDAHEB["@Partitioned"]
-
-[[CJHFCGEJ]][[TLJPA585]]
+[[TLJPA54063]]
 
 '''''
 

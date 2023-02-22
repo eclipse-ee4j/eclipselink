@@ -15,36 +15,7 @@
     SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
 
 ///////////////////////////////////////////////////////////////////////////////
-include::header.adoc[]
+link:http://wiki.eclipse.org/EclipseLink/FAQ[FAQs]|link:https://www.eclipse.org/eclipselink/documentation/[Documentation]|
+link:http://wiki.eclipse.org/EclipseLink/Examples[Examples]|link:http://wiki.eclipse.org/EclipseLink/Development/[Development]
 
-= Developing Persistence Architectures Using EclipseLink Database Web Services
-:nofooter:
-:description: EclipseLink
-:keywords: eclipselink, java, jpa, persistence, dbws, web service
-include::attributes.adoc[]
-
-link:dbws.pdf[PDF]|link:dbws.epub[ePub]
-
-//Title and Copyright Information
-include::{rootdir}/title_eclipselink.adoc[]
-
-//Preface
-[preface]
-include::{rootdir}/preface.adoc[]
-
-//List of Examples
-:sectnums!:
-include::{rootdir}/loe.adoc[]
-
-//Overview of EclipseLink
-:sectnums:
-:sectnumlevels: 1
-include::{rootdir}/overview.adoc[]
-
-//Creating DBWS Services
-include::{rootdir}/creating_dbws_services.adoc[]
-
-//Advanced Methods of Accessing DBWS Designtime API
-include::{rootdir}/advanced_methods.adoc[]
-
-include::copyright.adoc[]
+'''

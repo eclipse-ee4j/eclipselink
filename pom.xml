@@ -264,10 +264,9 @@
         <asciidoctorj.version>2.5.7</asciidoctorj.version>
         <asciidoctorj.pdf.version>2.3.4</asciidoctorj.pdf.version>
         <asciidoctorj.epub.version>1.5.1</asciidoctorj.epub.version>
-        <!--JRuby this version works with asciidoctorj-pdf-->
-<!--        <jruby.version>9.2.21.0</jruby.version>-->
-        <jruby.version>9.4.0.0</jruby.version>
-
+        <jruby.version>9.2.21.0</jruby.version>
+        <!--JRuby - this version works with asciidoctorj-pdf-->
+<!--        <jruby.version>9.4.0.0</jruby.version>-->
     </properties>
 
     <!-- Default modules set and added to by all profiles -->

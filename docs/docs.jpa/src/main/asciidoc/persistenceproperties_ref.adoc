@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
-    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -50,6 +50,7 @@ The following lists the EclipseLink persistence property
 * link:#CHDFDDBF[Schema generation]
 * link:#CHDICECH2[JDBC configuration]
 * link:#CHDFDDBF1[Concurrency manager]
+* link:#CANONICALMODEL[Canonical model]
 
 [[CACGCEIJ2]][[TLJPA1049]]
 
@@ -63,6 +64,7 @@ weaving:
 * link:#weavingeager[`weaving.eager`]
 * link:#weavingfetchgroups[`weaving.fetchgroups`]
 * link:#weavinginternal[`weaving.internal`]
+* link:#weaving-mappedsuperclass[`weaving.mappedsuperclass`]
 * link:#weavinglazy[`weaving.lazy`]
 
 [[CACDIEID2]][[TLJPA1050]]
@@ -80,6 +82,7 @@ customizing descriptors and sessions:
 * link:#sessionname[`session-name`]
 * link:#sessionsxml[`sessions-xml`]
 * link:#targetdatabase[`target-database`]
+* link:#target-database-properties[`target-database-properties`]
 * link:#targetserver[`target-server`]
 * link:#metadatasource[`metadata-source`]
 * link:#metadatasourcepropertiesfile[`metadata-source.properties.file`]
@@ -93,10 +96,12 @@ customizing descriptors and sessions:
 EclipseLink includes the following persistence property extensions for
 validation.
 
+* link:#beanvalidationnooptimisation[`beanvalidation.no-optimisation`]
 * link:#exceptionhandler[`exception-handler`]
 * link:#prop.partitioning[`partitioning`]
 * link:#partitioningcallback[`partitioning.callback`]
 * link:#profiler[`profiler`]
+* link:#query-results-cache-validation[`query-results-cache.validation`]
 
 [[TLJPA827]]
 
@@ -114,6 +119,8 @@ logging.
 * link:#loggingsession[`logging.session`]
 * link:#loggingthread[`logging.thread`]
 * link:#loggingtimestamp[`logging.timestamp`]
+* link:#thread-extended-logging[`thread.extended.logging`]
+* link:#thread-extended-logging-threaddump[`thread.extended.logging.threaddump`]
 
 [[CACDCCEG2]][[TLJPA1052]]
 
@@ -141,6 +148,7 @@ caching:
 * link:#cachecoordinationrmiurl[`cache.coordination.rmi.url`]
 * link:#cachecoordinationthreadpoolsize[`cache.coordination.thread.pool.size`]
 * link:#cachedatabaseeventlistener[`cache.database-event-listener`]
+* link:#cacheextendedlogging[`cache.extended.logging`]
 * link:#cacheshared[`cache.shared`]
 * link:#cachesize[`cache.size`]
 * link:#cachetype[`cache.type`]
@@ -168,6 +176,7 @@ mappings:
 * link:#ddltablecreationsuffix[`ddl.table-creation-suffix`]
 * link:#ddlgeneration[`ddl-generation`]
 * link:#ddlgenerationoutputmode[`ddl-generation.output-mode`]
+* link:#ddlgen-terminate-statements[`ddlgen-terminate-statements`]
 * link:#dropddljdbcfilename[`drop-ddl-jdbc-file-name`]
 
 [[CHDICECH2]][[TLJPA1054]]
@@ -181,6 +190,7 @@ configuring JDBC connections and connection pooling:
 * link:#connectionpoolread[`connection-pool.read`]
 * link:#connectionpoolsequence[`connection-pool.sequence`]
 * link:#jdbcallownativesqlqueries[`jdbc.allow-native-sql-queries`]
+* link:#jdbc-allow-partial-bind-parameters[`jdbc.allow-partial-bind-parameters`]
 * link:#jdbcbatchwriting[`jdbc.batch-writing`]
 * link:#jdbcbatchwritingsize[`jdbc.batch-writing.size`]
 * link:#jdbccachestatements[`jdbc.cache-statements`]
@@ -188,7 +198,7 @@ configuring JDBC connections and connection pooling:
 * link:#jdbcconnector[`jdbc.connector`]
 * link:#jdbcexclusiveconnectionislazy[`jdbc.exclusive-connection.is-lazy`]
 * link:#jdbcexclusiveconnectionmode[`jdbc.exclusive-connection.mode`]
-* link:#jdbcnamingintoindexed[`jdbc.naming_into_indexed`]
+* link:#jdbc-force-bind-parameters[`jdbc-force-bind-parameters`]
 * link:#jdbcnativesql[`jdbc.native-sql`]
 * link:#jdbcproperty[`jdbc.property`]
 * link:#jdbcsqlcast[`jdbc.sql-cast`]
@@ -201,13 +211,34 @@ configuring JDBC connections and connection pooling:
 EclipseLink includes the following persistence property extensions for
 concurrency management:
 
-* link:#concurrencymanagerwaittime[`concurrency.manager.waittime`]
-* link:#concurrencymanagermaxsleeptime[`concurrency.manager.maxsleeptime`]
-* link:#concurrencymanagermaxfrequencytodumptinymessage[`concurrency.manager.maxfrequencytodumptinymessage`]
-* link:#concurrencymanagermaxfrequencytodumpmassivemessage[`concurrency.manager.maxfrequencytodumpmassivemessage`]
-* link:#concurrencymanagerallowinterruptedexception[`concurrency.manager.allow.interruptedexception`]
-* link:#concurrencymanagerallowconcurrencyexception[`concurrency.manager.allow.concurrencyexception`]
-* link:#concurrencymanagerallowreadlockstacktrace[`concurrency.manager.allow.readlockstacktrace`]
+* link:#concurrency-manager-allow-concurrencyexception[`concurrency.manager.allow.concurrencyexception`]
+* link:#concurrency-manager-allow-interruptedexception[`concurrency.manager.allow.interruptedexception`]
+* link:#concurrency-manager-allow-readlockstacktrace[`concurrency.manager.allow.readlockstacktrace`]
+* link:#concurrency-manager-build-object-complete-waittime[`concurrency.manager.build.object.complete.waittime`]
+* link:#concurrency-semaphore-log-timeout[`concurrency.semaphore.log.timeout`]
+* link:#concurrency-manager-maxfrequencytodumpmassivemessage[`concurrency.manager.maxfrequencytodumpmassivemessage`]
+* link:#concurrency-manager-maxfrequencytodumptinymessage[`concurrency.manager.maxfrequencytodumptinymessage`]
+* link:#concurrency-manager-maxsleeptime[`concurrency.manager.maxsleeptime`]
+* link:#concurrency-manager-object-building-semaphore[`concurrency.manager.object.building.semaphore`]
+* link:#concurrency-manager-write-lock-manager-no-threads[`concurrency.manager.write.lock.manager.no.threads`]
+* link:#concurrency-manager-write-lock-manager-semaphore[`concurrency.manager.write.lock.manager.semaphore`]
+* link:#concurrency-manager-waittime[`concurrency.manager.waittime`]
+* link:#concurrency-semaphore-max-time-permit[`concurrency.semaphore.max.time.permit`]
+
+[[CANONICALMODEL]]
+
+==== Canonical model
+
+EclipseLink includes the following persistence property extensions for canonical model:
+
+* link:#canonicalmodel-generate_comments[`canonicalmodel.generate_comments`]
+* link:#canonicalmodel-generate_timestamp[`canonicalmodel.generate_timestamp`]
+* link:#canonicalmodel-load_xml[`canonicalmodel.load_xml`]
+* link:#canonicalmodel-prefix[`canonicalmodel.prefix`]
+* link:#canonicalmodel-suffix[`canonicalmodel.suffix`]
+* link:#canonicalmodel-subpackage[`canonicalmodel.subpackage`]
+* link:#canonicalmodel-use_generated[`canonicalmodel.use_generated`]
+* link:#canonicalmodel-use_static_factory[`canonicalmodel.use_static_factory`]
 
 [[CACBGBJG2]][[TLJPA1055]]
 
@@ -217,6 +248,7 @@ The following lists the EclipseLink persistence property
 (`persitence.xml` file) extensions, in alphabetical order:
 
 * link:#applicationlocation[`application-location`]
+* link:#beanvalidationnooptimisation[`beanvalidation.no-optimisation`]
 * link:#cachecoordinationchannel[`cache.coordination.channel`]
 * link:#cachecoordinationjmsfactory[`cache.coordination.jms.factory`]
 * link:#cachecoordinationjmshost[`cache.coordination.jms.host`]
@@ -236,20 +268,35 @@ The following lists the EclipseLink persistence property
 * link:#cachecoordinationrmiurl[`cache.coordination.rmi.url`]
 * link:#cachecoordinationthreadpoolsize[`cache.coordination.thread.pool.size`]
 * link:#cachedatabaseeventlistener[`cache.database-event-listener`]
+* link:#cacheextendedlogging[`cache.extended.logging`]
 * link:#cacheshared[`cache.shared`]
 * link:#cachesize[`cache.size`]
 * link:#cachetype[`cache.type`]
+* link:#canonicalmodel-generate_comments[`canonicalmodel.generate_comments`]
+* link:#canonicalmodel-generate_timestamp[`canonicalmodel.generate_timestamp`]
+* link:#canonicalmodel-load_xml[`canonicalmodel.load_xml`]
+* link:#canonicalmodel-prefix[`canonicalmodel.prefix`]
+* link:#canonicalmodel-suffix[`canonicalmodel.suffix`]
+* link:#canonicalmodel-subpackage[`canonicalmodel.subpackage`]
+* link:#canonicalmodel-use_generated[`canonicalmodel.use_generated`]
+* link:#canonicalmodel-use_static_factory[`canonicalmodel.use_static_factory`]
 * link:#classloader[`classloader`]
 * link:#compositeunit[`composite-unit`]
 * link:#compositeunitmember[`composite-unit.member`]
 * link:#compositeunitproperties[`composite-unit.properties`]
-* link:#concurrencymanagerwaittime[`concurrency.manager.waittime`]
-* link:#concurrencymanagermaxsleeptime[`concurrency.manager.maxsleeptime`]
-* link:#concurrencymanagermaxfrequencytodumptinymessage[`concurrency.manager.maxfrequencytodumptinymessage`]
-* link:#concurrencymanagermaxfrequencytodumpmassivemessage[`concurrency.manager.maxfrequencytodumpmassivemessage`]
-* link:#concurrencymanagerallowinterruptedexception[`concurrency.manager.allow.interruptedexception`]
-* link:#concurrencymanagerallowconcurrencyexception[`concurrency.manager.allow.concurrencyexception`]
-* link:#concurrencymanagerallowreadlockstacktrace[`concurrency.manager.allow.readlockstacktrace`]
+* link:#concurrency-manager-allow-concurrencyexception[`concurrency.manager.allow.concurrencyexception`]
+* link:#concurrency-manager-allow-interruptedexception[`concurrency.manager.allow.interruptedexception`]
+* link:#concurrency-manager-allow-readlockstacktrace[`concurrency.manager.allow.readlockstacktrace`]
+* link:#concurrency-manager-build-object-complete-waittime[`concurrency.manager.build.object.complete.waittime`]
+* link:#concurrency-semaphore-log-timeout[`concurrency.semaphore.log.timeout`]
+* link:#concurrency-manager-maxfrequencytodumpmassivemessage[`concurrency.manager.maxfrequencytodumpmassivemessage`]
+* link:#concurrency-manager-maxfrequencytodumptinymessage[`concurrency.manager.maxfrequencytodumptinymessage`]
+* link:#concurrency-manager-maxsleeptime[`concurrency.manager.maxsleeptime`]
+* link:#concurrency-manager-object-building-semaphore[`concurrency.manager.object.building.semaphore`]
+* link:#concurrency-manager-write-lock-manager-no-threads[`concurrency.manager.write.lock.manager.no.threads`]
+* link:#concurrency-manager-write-lock-manager-semaphore[`concurrency.manager.write.lock.manager.semaphore`]
+* link:#concurrency-manager-waittime[`concurrency.manager.waittime`]
+* link:#concurrency-semaphore-max-time-permit[`concurrency.semaphore.max.time.permit`]
 * link:#connectionpool[`connection-pool`]
 * link:#connectionpoolread[`connection-pool.read`]
 * link:#connectionpoolsequence[`connection-pool.sequence`]
@@ -257,6 +304,7 @@ The following lists the EclipseLink persistence property
 * link:#ddltablecreationsuffix[`ddl.table-creation-suffix`]
 * link:#ddlgeneration[`ddl-generation`]
 * link:#ddlgenerationoutputmode[`ddl-generation.output-mode`]
+* link:#ddlgen-terminate-statements[`ddlgen-terminate-statements`]
 * link:#deployonstartup[`deploy-on-startup`]
 * link:#descriptorcustomizer[`descriptor.customizer`]
 * link:#dropddljdbcfilename[`drop-ddl-jdbc-file-name`]
@@ -265,6 +313,7 @@ The following lists the EclipseLink persistence property
 * link:#flushclearcache[`flush-clear.cache`]
 * link:#idvalidation[`id-validation`]
 * link:#jdbcallownativesqlqueries[`jdbc.allow-native-sql-queries`]
+* link:#jdbc-allow-partial-bind-parameters[`jdbc.allow-partial-bind-parameters`]
 * link:#jdbcbatchwriting[`jdbc.batch-writing`]
 * link:#jdbcbatchwritingsize[`jdbc.batch-writing.size`]
 * link:#jdbccachestatements[`jdbc.cache-statements`]
@@ -272,14 +321,17 @@ The following lists the EclipseLink persistence property
 * link:#jdbcconnector[`jdbc.connector`]
 * link:#jdbcexclusiveconnectionislazy[`jdbc.exclusive-connection.is-lazy`]
 * link:#jdbcexclusiveconnectionmode[`jdbc.exclusive-connection.mode`]
-* link:#jdbcnamingintoindexed[`jdbc.naming_into_indexed`]
+* link:#jdbc-force-bind-parameters[`jdbc-force-bind-parameters`]
 * link:#jdbcnativesql[`jdbc.native-sql`]
 * link:#jdbcproperty[`jdbc.property`]
 * link:#jdbcsqlcast[`jdbc.sql-cast`]
 * link:#jdbcuppercasecolumns[`jdbc.uppercase-columns`]
+* link:#jpa-naming_into_indexed[`jpa.naming_into_indexed`]
+* link:#jpa-sql-call-deferral[`jpa.sql-call-deferral`]
 * link:#jpauppercasecolumnnames[`jpa.uppercase-column-names`]
 * link:#jpqlparser[`jpql.parser`]
 * link:#jpqlvalidation[`jpql.validation`]
+* link:#jta-controller[`jta.controller`]
 * link:#loggingconnection[`logging.connection`]
 * link:#loggingexceptions[`logging.exceptions`]
 * link:#loggingfile[`logging.file`]
@@ -287,6 +339,7 @@ The following lists the EclipseLink persistence property
 * link:#loggingsession[`logging.session`]
 * link:#loggingthread[`logging.thread`]
 * link:#loggingtimestamp[`logging.timestamp`]
+* link:#locking-timestamp-local[`locking.timestamp.local`]
 * link:#metadatasource[`metadata-source`]
 * link:#metadatasourcepropertiesfile[`metadata-source.properties.file`]
 * link:#metadatasourcesendrefreshcommand[`metadata-source.send-refresh-command`]
@@ -307,16 +360,26 @@ The following lists the EclipseLink persistence property
 * link:#persistenceunits[`persistenceunits`]
 * link:#persistencexml[`persistencexml`]
 * link:#persisencexmldefault[`persisencexml.default`]
+* link:#pessimistic-lock-timeout-unit[`pessimistic.lock.timeout.unit`]
 * link:#profiler[`profiler`]
+* link:#query-results-cache-validation[`query-results-cache.validation`]
+* link:#query-timeout-unit[`query.timeout.unit`]
+* link:#se-puinfo[`se-puinfo`]
+* link:#sequencing-start-sequence-at-nextval[`sequencing.start-sequence-at-nextval`]
 * link:#sessioncustomizer[`session.customizer`]
 * link:#sessionincludedescriptorqueries[`session.include.descriptor.queries`]
 * link:#sessioneventlistener[`session-event-listener`]
 * link:#sessionname[`session-name`]
 * link:#sessionsxml[`sessions-xml`]
 * link:#targetdatabase[`target-database`]
+* link:#target-database-properties[`target-database-properties`]
 * link:#targetserver[`target-server`]
 * link:#temporalmutable[`temporal.mutable`]
 * link:#tenantid[`tenant-id`]
+* link:#tenant-schema-id[`tenant-schema-id`]
+* link:#thread-extended-logging[`thread.extended.logging`]
+* link:#thread-extended-logging-threaddump[`thread.extended.logging.threaddump`]
+* link:#tolerate-invalid-jpql[`tolerate-invalid-jpql`]
 * link:#transactionjoinexisting[`transaction.join-existing`]
 * link:#tuning[`tuning`]
 * link:#validateexistence[`validate-existence`]
@@ -326,6 +389,7 @@ The following lists the EclipseLink persistence property
 * link:#weavingeager[`weaving.eager`]
 * link:#weavingfetchgroups[`weaving.fetchgroups`]
 * link:#weavinginternal[`weaving.internal`]
+* link:#weaving-mappedsuperclass[`weaving.mappedsuperclass`]
 * link:#weavinglazy[`weaving.lazy`]
 
 [[applicationlocation]][[TLJPA1060]]
@@ -397,6 +461,56 @@ propertiesMap.put(PersistenceUnitProperties.APPLICATION_LOCATION,
 For more information, see:
 
 * link:#ddlgenerationoutputmode["ddl-generation.output-mode"]
+
+[[beanvalidationnooptimisation]]
+
+'''''
+
+=== beanvalidation.no-optimisation
+
+Property for disabling Bean Validation optimisations.
+Bean Validation features optimisations, which are used to skip BV processes on non-constrained objects.
+This is to make maintenance easier and to allow for debugging in case that some object is not validated, but should be.
+
+*Values*
+
+link:#BABDCBBBA[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBA]]
+
+*_Table 5-2 Valid Values for beanvalidation.no-optimisation_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |(Default) To enable optimisations.
+|`false` |To disable optimisations.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDA[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDA]]
+
+*_Example 5-3 Using beanvalidation.no-optimisation in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.beanvalidation.no-optimisation" value="false" />
+----
+
+link:#CHDDBGHIA[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIA]]
+
+*_Example 5-4 Using cache.beanvalidation.no-optimisation in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION, "true");
+----
 
 [[cachecoordinationchannel]][[TLJPA1062]]
 
@@ -1777,6 +1891,108 @@ Configuring and Managing JDBC Data Sources for Oracle WebLogic Server_
 * Cache Coordination Example
 `http://wiki.eclipse.org/EclipseLink/Examples/JPA/CacheCoordination`
 
+[[cacheextendedlogging]]
+
+'''''
+
+=== cache.extended.logging
+
+The `eclipselink.cache.extended.logging` property control (enable/disable)
+usage logging of JPA L2 cache. In case of `true` EclipseLink generates messages into log output
+about cache hit/miss new object population and object removal or invalidation.
+This kind of messages will be displayed only if logging level (property `eclipselink.logging.level`)
+is set to `FINEST`
+It displays Entity class, ID and thread info (ID, Name).
+
+*Values*
+
+link:#BABDCBBBB[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBB]]
+
+*_Table 5-2 Valid Values for cache.extended.logging_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |To enable extended logging.
+|`false` |(Default) To disable extended logging.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDB[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDB]]
+
+*_Example 5-3 Using cache.extended.logging in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.extended.logging" value="true" />
+----
+
+link:#CHDDBGHIB[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIB]]
+
+*_Example 5-4 Using cache.beanvalidation.no-optimisation in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CACHE_EXTENDED_LOGGING, "true");
+----
+
+
+[[cache.query-force-deferred-locks]]
+
+'''''
+
+=== cache.query-force-deferred-locks
+
+This property force all queries and relationships to use deferred lock strategy during object building and L2 cache population.
+
+*Values*
+
+link:#BABDCBBBC[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBC]]
+
+*_Table 5-2 Valid Values for cache.query-force-deferred-locks_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |Use deferred locking strategy all queries and relationships.
+|`false` |(Default) Use mixed object cache locking strategy.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDC[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDC]]
+
+*_Example 5-3 Using cache.query-force-deferred-locks in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.query-force-deferred-locks" value="true" />
+----
+
+link:#CHDDBGHIC[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIC]]
+
+*_Example 5-4 Using cache.beanvalidation.no-optimisation in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CACHE_QUERY_FORCE_DEFERRED_LOCKS, "true");
+----
+
 [[cacheshared]][[TLJPA54116]]
 
 '''''
@@ -1966,6 +2182,395 @@ about how to use this property.
 For more information, see:
 
 * link:#cacheshared[cache.shared]
+
+'''''
+
+=== canonicalmodel.generate_comments
+
+This optional property can be used to disable usage of comments in declaration of {@code Generated} annotation.
+
+*Values*
+
+link:#BABDCBBBD[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBD]]
+
+*_Table 5-2 Valid Values for canonicalmodel.generate_comments_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |(Default) To enable usage of comments.
+|`false` |To disable usage of comments.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDD[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDD]]
+
+*_Example 5-3 Using canonicalmodel.generate_comments in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.canonicalmodel.generate_comments" value="false" />
+----
+
+link:#CHDDBGHID[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHID]]
+
+*_Example 5-4 Using cache.canonicalmodel.generate_comments in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_COMMENTS, "false");
+----
+
+'''''
+
+=== canonicalmodel.generate_timestamp
+
+This optional property can be used to disable usage of date in declaration of {@link jakarta.annotation.Generated} annotation.
+
+*Values*
+
+link:#BABDCBBBE[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBE]]
+
+*_Table 5-2 Valid Values for canonicalmodel.generate_comments_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |(Default) To enable usage of date.
+|`false` |To disable usage of date.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDE[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDE]]
+
+*_Example 5-3 Using canonicalmodel.generate_timestamp in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="canonicalmodel.generate_timestamp" value="false" />
+----
+
+link:#CHDDBGHIE[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIE]]
+
+*_Example 5-4 Using cache.canonicalmodel.generate_timestamp in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP, "false");
+----
+
+'''''
+
+=== canonicalmodel.load_xml
+
+This optional property can be used a performance
+enhancement between compile rounds. It is used to avoid reloading XML metadata on each
+compile which may only contain a single class etc. The default value
+is true and should be left as such for the initial generation to capture
+the XML metadata. Afterwards users may choose to set this flag if no
+changes to XML are expected thereafter.
+
+*Values*
+
+link:#BABDCBBBF[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBF]]
+
+*_Table 5-2 Valid Values for canonicalmodel.load_xml_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |(Default) To enable performance enhancement.
+|`false` |To disable performance enhancement.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDF[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDF]]
+
+*_Example 5-3 Using canonicalmodel.load_xml in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.canonicalmodel.load_xml" value="false" />
+----
+
+link:#CHDDBGHIF[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIF]]
+
+*_Example 5-4 Using canonicalmodel.load_xml in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CANONICAL_MODEL_LOAD_XML, "true");
+----
+
+'''''
+
+=== canonicalmodel.prefix
+
+This optional property specifies the prefix
+that will be added to the start of the class name of any canonical model class generated.
+By default the prefix is not used. If this property is
+specified, the value must be a non-empty string that contains valid
+characters for use in a Java class name.
+
+*Values*
+
+link:#BABDCBBBG[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBG]]
+
+*_Table 5-2 Valid Values for canonicalmodel.prefix_*
+
+|======================================================
+|*Value* |*Description*
+|value |Generated class name prefix (String)
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDG[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDG]]
+
+*_Example 5-3 Using canonicalmodel.prefix in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.canonicalmodel.prefix" value="GEN" />
+----
+
+link:#CHDDBGHIG[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIG]]
+
+*_Example 5-4 Using canonicalmodel.prefix in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CANONICAL_MODEL_PREFIX, "GEN");
+----
+
+'''''
+
+=== canonicalmodel.suffix
+
+This optional property specifies the suffix
+that will be added to the end of the class name of any canonical model class generated.
+The suffix defaults to "_" unless a prefix is specified. If this property is
+specified, the value must be a non-empty string that contains valid
+characters for use in a Java class name.
+
+*Values*
+
+link:#BABDCBBBH[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBH]]
+
+*_Table 5-2 Valid Values for canonicalmodel.suffix_*
+
+|======================================================
+|*Value* |*Description*
+|value |Generated class name suffix (String)
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDH[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDH]]
+
+*_Example 5-3 Using canonicalmodel.suffix in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.canonicalmodel.suffix" value="_GEN" />
+----
+
+link:#CHDDBGHIH[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIH]]
+
+*_Example 5-4 Using canonicalmodel.prefix in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CANONICAL_MODEL_SUFFIX, "_GEN");
+----
+
+'''''
+
+=== canonicalmodel.subpackage
+
+This optional property specifies
+a sub-package name that can be used to have the canonical model generator generate its classes
+in a sub-package of the package where the corresponding entity class is located. By
+default the canonical model classes are generated into the same package as the entity classes.
+
+*Values*
+
+link:#BABDCBBBI[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBI]]
+
+*_Table 5-2 Valid Values for canonicalmodel.subpackage_*
+
+|======================================================
+|*Value* |*Description*
+|value |Sub-package name (String)
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDI[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDI]]
+
+*_Example 5-3 Using canonicalmodel.subpackage in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.canonicalmodel.subpackage" value="genpackage" />
+----
+
+link:#CHDDBGHII[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHII]]
+
+*_Example 5-4 Using canonicalmodel.subpackage in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CANONICAL_MODEL_SUB_PACKAGE, "genpackage");
+----
+
+'''''
+
+=== canonicalmodel.use_generated
+
+This optional property can be used
+to disable generation of `jakarta.annotation.Generated` annotation.
+The default value is `true`.
+If the value is `false`, `canonicalmodel.generate_comments`
+and `canonicalmodel.generate_timestamp` properties are ignored.
+
+*Values*
+
+link:#BABDCBBBJ[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBJ]]
+
+*_Table 5-2 Valid Values for canonicalmodel.use_generated_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |(Default) Generate `jakarta.annotation.Generated` annotation.
+|`false` |Disable generation of `jakarta.annotation.Generated` annotation.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDJ[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDJ]]
+
+*_Example 5-3 Using canonicalmodel.use_generated in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.canonicalmodel.use_generated" value="false" />
+----
+
+link:#CHDDBGHIJ[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIJ]]
+
+*_Example 5-4 Using canonicalmodel.use_generated in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_GENERATED, "false");
+----
+
+'''''
+
+=== canonicalmodel.use_static_factory
+
+This optional property can be used
+a performance enhancement between compile rounds within an IDE. It is used to avoid using
+a static metadata factory between 'cache' metadata from incremental builds. Turning this
+off in some use cases (IDE) could result in a loss of functionality.
+The default value is true and should be left as such for full feature support.
+
+*Values*
+
+link:#BABDCBBBK[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBK]]
+
+*_Table 5-2 Valid Values for canonicalmodel.use_static_factory_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |(Default) Enable performance enhancement.
+|`false` |Disable performance enhancement.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDK[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDK]]
+
+*_Example 5-3 Using canonicalmodel.use_generated in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.canonicalmodel.use_static_factory" value="false" />
+----
+
+link:#CHDDBGHIK[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIK]]
+
+*_Example 5-4 Using canonicalmodel.use_static_factory in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CANONICAL_MODEL_USE_STATIC_FACTORY, "false");
+----
 
 [[classloader]][[TLJPA1069]]
 
@@ -2277,8 +2882,6 @@ For more information, see:
 
 * link:#compositeunit["composite-unit"]
 
-[[concurrencymanagerwaittime]]
-
 '''''
 
 === concurrency.manager.waittime
@@ -2320,8 +2923,6 @@ use this property in the `persistence.xml` file.
             
 ----
 
-[[concurrencymanagermaxsleeptime]]
-
 '''''
 
 === concurrency.manager.maxsleeptime
@@ -2362,8 +2963,6 @@ persistence.xml_*
 <property name="eclipselink.concurrency.manager.maxsleeptime" value="100" />
             
 ----
-
-[[concurrencymanagermaxfrequencytodumptinymessage]]
 
 '''''
 
@@ -2407,8 +3006,6 @@ in persistence.xml_*
             
 ----
 
-[[concurrencymanagermaxfrequencytodumpmassivemessage]]
-
 '''''
 
 === concurrency.manager.maxfrequencytodumpmassivemessage
@@ -2451,8 +3048,6 @@ persistence.xml_*
 <property name="eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage" value="100000" />
             
 ----
-
-[[concurrencymanagerallowinterruptedexception]]
 
 '''''
 
@@ -2504,8 +3099,6 @@ persistence.xml_*
             
 ----
 
-[[concurrencymanagerallowconcurrencyexception]]
-
 '''''
 
 === concurrency.manager.allow.concurrencyexception
@@ -2555,8 +3148,6 @@ persistence.xml_*
             
 ----
 
-[[concurrencymanagerallowreadlockstacktrace]]
-
 '''''
 
 === concurrency.manager.allow.readlockstacktrace
@@ -2598,6 +3189,310 @@ persistence.xml_*
 <property name="eclipselink.concurrency.manager.allow.readlockstacktrace" value="true" />
             
 ----
+
+
+
+
+
+'''''
+
+=== concurrency.manager.build.object.complete.waittime
+
+This property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
+It control how much time ConcurrencyManager will wait before it will identify, that thread which builds new object/entity instance
+should be identified as a potential dead lock source. It leads into some additional log messages.
+Default value is 0 (unit is ms). In this case extended logging is not active. Allowed values are: long
+
+*Values*
+
+link:#BABDCBBBL[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBL]]
+
+*_Table 5-2 Valid Values for concurrency.manager.build.object.complete.waittime_*
+
+|======================================================
+|*Value* |*Description*
+|value |ConcurrencyManager wait time in [ms] (integer).
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDL[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDL]]
+
+*_Example 5-3 Using concurrency.manager.build.object.complete.waittime in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.concurrency.manager.build.object.complete.waittime" value="5" />
+----
+
+link:#CHDDBGHIL[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIL]]
+
+*_Example 5-4 Using concurrency.manager.build.object.complete.waittime in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME, "5");
+----
+
+'''''
+
+=== concurrency.manager.object.building.semaphore
+
+This property control (enable/disable) semaphore in `org.eclipse.persistence.internal.descriptors.ObjectBuilder`
+Object building see `org.eclipse.persistence.internal.descriptors.ObjectBuilder` could be one of the
+primary sources pressure on concurrency manager. Most of the cache key acquisition and releasing is taking place during object building.
+Enable `true` this property to try reduce the likelihood of having dead locks is to allow less threads to start object
+building in parallel. In this case there should be negative impact to the performance.
+Note: Parallel access to the same entity/entity tree from different threads is not recommended technique in EclipseLink.
+
+*Values*
+
+link:#BABDCBBBM[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBM]]
+
+*_Table 5-2 Valid Values for concurrency.manager.object.building.semaphore_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |means we want to override vanilla behavior and use a semaphore to not allow too many threads in parallel to do object building
+|`false` |(Default) means just go ahead and try to build the object without any semaphore (false is vanilla behavior).
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDM[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDM]]
+
+*_Example 5-3 Using concurrency.manager.object.building.semaphore in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.concurrency.manager.object.building.semaphore" value="true" />
+----
+
+link:#CHDDBGHIM[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIM]]
+
+*_Example 5-4 Using concurrency.manager.object.building.semaphore in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING, "true");
+----
+
+'''''
+
+=== concurrency.manager.write.lock.manager.no.threads
+
+This property control number of threads in semaphore in `org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks`
+If `eclipselink.concurrency.manager.write.lock.manager.semaphore` property is `true` default value is 2. Allowed values are: int
+If `eclipselink.concurrency.manager.write.lock.manager.semaphore` property is `false` (DEFAULT) number of threads is unlimited.
+
+*Values*
+
+link:#BABDCBBBN[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBN]]
+
+*_Table 5-2 Valid Values for concurrency.manager.object.building.semaphore_*
+
+|======================================================
+|*Value* |*Description*
+|value |If `eclipselink.concurrency.manager.write.lock.manager.semaphore` property is `true` default value is 2.
+If `eclipselink.concurrency.manager.write.lock.manager.semaphore` property is `false` (DEFAULT) number of threads is unlimited.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDN[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDN]]
+
+*_Example 5-3 Using concurrency.manager.write.lock.manager.no.threads in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.concurrency.manager.write.lock.manager.no.threads" value="10" />
+----
+
+link:#CHDDBGHIN[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIN]]
+
+*_Example 5-4 Using concurrency.manager.write.lock.manager.no.threads in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS, 10);
+----
+
+'''''
+
+=== concurrency.manager.write.lock.manager.semaphore
+
+This property control (enable/disable) semaphore in `org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks`
+This algorithm `org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks`
+is being used when a transaction is committing and it is acquire locks to merge the change set.
+It should happen if algorithm has trouble when multiple threads report change sets on the same entity (e.g.
+one-to-many relations of master detail being enriched with more details on this master).
+Note: Parallel access to the same entity/entity tree from different threads is not recommended technique in EclipseLink.
+
+*Values*
+
+link:#BABDCBBBO[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBO]]
+
+*_Table 5-2 Valid Values for beanvalidation.no-optimisation_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |means we want to override vanilla behavior and use a semaphore to not allow too many
+threads. In this case there should be negative impact to the performance.
+|`false` |(Default) means just go ahead and try to build the object without any semaphore (false is
+vanilla behavior).
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDO[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDO]]
+
+*_Example 5-3 Using concurrency.manager.object.building.semaphore in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.concurrency.manager.object.building.semaphore" value="true" />
+----
+
+link:#CHDDBGHI0[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHI0]]
+
+*_Example 5-4 Using concurrency.manager.object.building.semaphore in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING, "true");
+----
+
+'''''
+
+=== concurrency.semaphore.log.timeout
+
+This property control timeout between log messages in `org.eclipse.persistence.internal.helper.ConcurrencySemaphore#acquireSemaphoreIfAppropriate(boolean)`
+when method/thread tries to get permit for the execution.
+Default value is 10000 (unit is ms). Allowed values are: long
+
+*Values*
+
+link:#BABDCBBBP[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBP]]
+
+*_Table 5-2 Valid Values for concurrency.semaphore.log.timeout_*
+
+|======================================================
+|*Value* |*Description*
+|value |Timeout between log messages. Default value is 10000 (unit is ms). Allowed values are: long
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDP[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDP]]
+
+*_Example 5-3 Using concurrency.semaphore.log.timeout in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.concurrency.semaphore.log.timeout" value="50000" />
+----
+
+link:#CHDDBGHIP[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIP]]
+
+*_Example 5-4 Using concurrency.semaphore.log.timeout in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CONCURRENCY_SEMAPHORE_LOG_TIMEOUT, 50000);
+----
+
+'''''
+
+=== concurrency.semaphore.max.time.permit
+
+This property control semaphore the maximum time to wait for a permit in `org.eclipse.persistence.internal.helper.ConcurrencySemaphore#acquireSemaphoreIfAppropriate(boolean)`
+It's passed to `java.util.concurrent.Semaphore#tryAcquire(long, TimeUnit)`
+Default value is 2000 (unit is ms). Allowed values are: long
+
+*Values*
+
+link:#BABDCBBBQ[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBQ]]
+
+*_Table 5-2 Valid Values for concurrency.semaphore.max.time.permit_*
+
+|======================================================
+|*Value* |*Description*
+|value |Maximum time to wait for a permit. Default value is 2000 (unit is ms). Allowed values are: long
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDQ[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDQ]]
+
+*_Example 5-3 Using concurrency.semaphore.max.time.permit in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.concurrency.semaphore.max.time.permit" value="2000" />
+----
+
+link:#CHDDBGHIQ[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIQ]]
+
+*_Example 5-4 Using concurrency.semaphore.max.time.permit in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT, 50000);
+----
+
+
+
+
+
+
 
 [[connectionpool]][[TLJPA1070]]
 
@@ -3084,6 +3979,54 @@ For more information, see:
 * link:#applicationlocation["application-location"]
 * link:#ddlgeneration["ddl-generation"]
 * link:#createddljdbcfilename["create-ddl-jdbc-file-name"]
+
+'''''
+
+=== ddlgen-terminate-statements
+
+When value of this property
+is set to true and a DDL script is being generated, the value of
+`DatabasePlatform#getStoredProcedureTerminationToken()` is appended to the end of each statement.
+
+*Values*
+
+link:#BABDCBBBR[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBR]]
+
+*_Table 5-2 Valid Values for ddlgen-terminate-statements_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |Print line terminator characters.
+|`false` |(Default) Do not print line terminator characters.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDR[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDR]]
+
+*_Example 5-3 Using ddlgen-terminate-statements in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.ddlgen-terminate-statements" value="true" />
+----
+
+link:#CHDDBGHIR[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIR]]
+
+*_Example 5-4 Using ddlgen-terminate-statements in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_TERMINATE_STATEMENTS, "true");
+----
 
 [[ddltablecreationsuffix]][[TLJPA1072]]
 
@@ -3692,6 +4635,61 @@ For more information, see:
 
 * "Querying" in _Understanding EclipseLink_
 
+'''''
+
+=== jdbc.allow-partial-bind-parameters
+
+This property configures whether partial parameter binding should be allowed in the creation of JDBC prepared statements.
+EclipseLink determines binding behavior based on the database platform's support for binding.
+If the database platform doesn't support binding for a specific expression, EclipseLink disables
+all binding for the whole query. Setting this property to 'true' will allow EclipseLink to bind
+per expression, instead of per query.
+
+*Values*
+
+link:#BABDCBBBS[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBS]]
+
+*_Table 5-2 Valid Values for jdbc.allow-partial-bind-parameters_*
+
+|======================================================
+|*Value* |*Description*
+|`true` | EclipseLink binds parameters per SQL function/expression. Requires Platform support if enabled.
+|`false` |(Default) EclipseLink either binds all parameters or no parameters. Depending on database support.
+|======================================================
+
+*Usage*
+
+Usage of parameter binding is generally a performance optimization;
+allowing for SQL and prepared statement caching, as well as usage of batch writing.
+
+*Examples*
+
+link:#BABBJEBDS[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDS]]
+
+*_Example 5-3 Using jdbc.allow-partial-bind-parameters in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jdbc.allow-partial-bind-parameters" value="true" />
+----
+
+link:#CHDDBGHIS[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIS]]
+
+*_Example 5-4 Using jdbc.allow-partial-bind-parameters in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.JDBC_ALLOW_PARTIAL_PARAMETERS, "true");
+----
+
 [[jdbcbatchwriting]][[TLJPA906]]
 
 '''''
@@ -4208,13 +5206,58 @@ For more information, see:
 
 '''''
 
-[[jdbcnamingintoindexed]][[TLJPA939]]
+=== jdbc.force-bind-parameters
+
+This property enables parameter binding
+in the creation of JDBC prepared statements. Some database platforms disable parameter binding
+on certain functions and relations. This property allows the user to force parameter binding
+to be enabled regardless.
+
+*Values*
+
+link:#BABDCBBBT[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBT]]
+
+*_Table 5-2 Valid Values for jdbc.force-bind-parameters_*
+
+|======================================================
+|*Value* |*Description*
+|`true` | Bindings will use platform default.
+|`false` |(Default) values will default to platform specific logic.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDT[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDT]]
+
+*_Example 5-3 Using jdbc.force-bind-parameters in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jdbc.force-bind-parameters" value="true" />
+----
+
+link:#CHDDBGHIT[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIT]]
+
+*_Example 5-4 Using jdbc.force-bind-parameters in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.JDBC_FORCE_BIND_PARAMETERS, "true");
+----
 
 '''''
 
-=== jdbc.naming_into_indexed
+=== jpa.naming_into_indexed
 
-Use the `eclipselink.jdbc.naming_into_indexed` property defines if
+Use the `eclipselink.jpa.naming_into_indexed` property defines if
 stored procedure parameters passed by name should be transformed into
 positional/index based passing if property value will be `true`.
 
@@ -4252,7 +5295,7 @@ link:#CIHFHHGF[Table 5-51] describes this persistence property's values.
 
 [[CIHFHHGF]]
 
-*_Table 5-51 Valid Values for jdbc.naming_into_indexed_*
+*_Table 5-51 Valid Values for jpa.naming_into_indexed_*
 
 |===============================================================
 |*Value* |*Description*
@@ -4269,11 +5312,59 @@ link:#CHDJHBDG[Example 5-55] shows how to use this property in the
 
 [[CHDJHBDG]][[TLJPA54144]]
 
-*_Example 5-55 Using jdbc.naming_into_indexed in persistence.xml_*
+*_Example 5-55 Using jpa.naming_into_indexed in persistence.xml_*
 
 [source,oac_no_warn]
 ----
 <property name="eclipselink.jpa.naming_into_indexed" value="true"/>
+----
+
+'''''
+
+=== jpa.sql-call-deferral
+
+This property defines if SQL calls should be deferred to end of
+transaction by default or not. When setting this property to <code>false</code>, the application assumes the responsibility
+of ordering the SQL statements and must therefore be aware of any interdependencies between entities.
+
+*Values*
+
+link:#BABDCBBBU[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBU]]
+
+*_Table 5-2 Valid Values for jpa.sql-call-deferral_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |(Default)
+|`false` |
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDU[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDU]]
+
+*_Example 5-3 Using jpa.sql-call-deferral in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jpa.sql-call-deferral" value="false" />
+----
+
+link:#CHDDBGHIU[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIU]]
+
+*_Example 5-4 Using eclipselink.jpa.sql-call-deferral in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.SQL_CALL_DEFERRAL, "true");
 ----
 
 [[jdbcnativesql]]
@@ -4657,6 +5748,54 @@ For more information, see:
 
 * link:#jpqlparser["jpql.parser"]
 * xref:{relativedir}/jpql.adoc#TLJPA54065["Java Persistence Query Language Extensions"]
+
+'''''
+
+=== jta.controller
+
+This property allows to override JTA transaction controller class of `ServerPlatform`.
+If both `eclipselink.target-server` and `eclipselink.jta.controller`
+properties are set and contain classes implementing `ExternalTransactionController`
+interface, `eclipselink.target-server` value is used.
+
+*Values*
+
+link:#BABDCBBBV[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBV]]
+
+*_Table 5-2 Valid Values for jta.controller_*
+
+|======================================================
+|*Value* |*Description*
+|value |Value of this property is a fully qualified name of a class that implements `ExternalTransactionController` interface (String).
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDV[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDV]]
+
+*_Example 5-3 Using jta.controller in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jta.controller" value="mypackage.MyJTAController" />
+----
+
+link:#CHDDBGHIV[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIV]]
+
+*_Example 5-4 Using jta.controller in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.JTA_CONTROLLER, "mypackage.MyJTAController");
+----
 
 [[loggingconnection]][[TLJPA1097]]
 
@@ -5314,6 +6453,52 @@ _Solutions Guide for EclispeLink_
 * Logging Examples
 `http://wiki.eclipse.org/EclipseLink/Examples/JPA/Logging`
 * link:#logginglevel["logging.level"]
+
+'''''
+
+=== locking.timestamp.local
+
+This property defines if locking policies should default to local time(true) or server time(false).
+
+*Values*
+
+link:#BABDCBBBW[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBW]]
+
+*_Table 5-2 Valid Values for locking.timestamp.local_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |use local time
+|`false` |(Default) use server time
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDW[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDW]]
+
+*_Example 5-3 Using locking.timestamp.local in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.locking.timestamp.local.default" value="true" />
+----
+
+link:#CHDDBGHIW[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIW]]
+
+*_Example 5-4 Using locking.timestamp.local in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, "true");
+----
 
 [[metadatasource]][[TLJPA1099]]
 
@@ -6884,6 +8069,52 @@ propertiesMap.put(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT,
 "resources/persistence.xml");
 ----
 
+=== pessimistic.lock.timeout.unit
+
+This property configures the query timeout unit value. Allows users more refinement.
+Used in combination with `PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT`
+
+*Values*
+
+link:#BABDCBBBX[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBX]]
+
+*_Table 5-2 Valid Values for pessimistic.lock.timeout.unit_*
+
+|======================================================
+|*Value* |*Description*
+|`java.util.concurrent.TimeUnit.MILLISECONDS` |(Default) milliseconds
+|`java.util.concurrent.TimeUnit.SECONDS` |seconds
+|`java.util.concurrent.TimeUnit.MINUTES` |minutes
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDX[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDX]]
+
+*_Example 5-3 Using pessimistic.lock.timeout.unit in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.pessimistic.lock.timeout.unit" value="java.util.concurrent.TimeUnit.SECONDS" />
+----
+
+link:#CHDDBGHIX[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIX]]
+
+*_Example 5-4 Using pessimistic.lock.timeout.unit in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, java.util.concurrent.TimeUnit.SECONDS);
+----
+
 [[profiler]][[TLJPA1125]]
 
 '''''
@@ -6966,6 +8197,209 @@ ProfilerType.PerformanceProfiler);
 *See Also*
 
 For more information, see:
+
+'''''
+
+=== query-results-cache.validation
+
+This property control (enable/disable) query result cache validation in `org.eclipse.persistence.internal.sessions.UnitOfWorkImpl#internalExecuteQuery`
+
+This can be used to help debugging an object identity problem. An object identity problem is when an managed/active entity in the cache references an entity not in managed state.
+This method will validate that objects in query results (object tree) are in a correct state. As a result there are new log messages in the log.
+It's related with "read" queries like `em.find(...);` or JPQL queries like `SELECT e FROM Entity e`.
+It should be controlled at query level too by query hint `org.eclipse.persistence.config.QueryHints#QUERY_RESULTS_CACHE_VALIDATION`.
+
+*Values*
+
+link:#BABDCBBBY[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBY]]
+
+*_Table 5-2 Valid Values for query-results-cache.validation_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |Validate query result object tree and if content is not valid print diagnostic messages.
+In this case there should be negative impact to the performance.
+|`false` |(Default) Don't validate and don't print any diagnostic messages.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDY[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDY]]
+
+*_Example 5-3 Using query-results-cache.validation in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.query-results-cache.validation" value="true" />
+----
+
+link:#CHDDBGHIY[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIY]]
+
+*_Example 5-4 Using query-results-cache.validation in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.QUERY_RESULTS_CACHE_VALIDATION, "true");
+----
+
+'''''
+
+=== query.timeout.unit
+
+This property configures the query timeout unit value. Allows users more refinement.
+Used in combination with `PersistenceUnitProperties.QUERY_TIMEOUT`.
+
+*Values*
+
+link:#BABDCBBBZ[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBZ]]
+
+*_Table 5-2 Valid Values for query.timeout.unit_*
+
+|======================================================
+|*Value* |*Description*
+|`java.util.concurrent.TimeUnit.MILLISECONDS` |(Default) milliseconds
+|`java.util.concurrent.TimeUnit.SECONDS` |seconds
+|`java.util.concurrent.TimeUnit.MINUTES` |minutes
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDZ[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDZ]]
+
+*_Example 5-3 Using query.timeout.unit in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.query.timeout.unit" value="java.util.concurrent.TimeUnit.SECONDS" />
+----
+
+link:#CHDDBGHIZ[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIZ]]
+
+*_Example 5-4 Using query.timeout.unit in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, "true");
+----
+
+'''''
+
+=== se-puinfo
+
+This property specifies a `org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo` that is used
+create an EntityManagerFactory. That datastructure is used in liu of a persistence.xml.
+IMPORTANT: This property is only supported for use in testing.
+
+*Values*
+
+link:#BABDCBBBAA[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBAA]]
+
+*_Table 5-2 Valid Values for se-puinfo_*
+
+|======================================================
+|*Value* |*Description*
+|value |org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo
+|======================================================
+
+*Examples*
+
+link:#CHDDBGHIAA[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIAA]]
+
+*_Example 5-4 Using se-puinfo in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
+private SEPersistenceUnitInfo createSEPUInfo(String puName, List<String> classes, List<String> mappingFiles,
+    Properties persistenceProperties) {
+    SEPersistenceUnitInfo pu = new SEPersistenceUnitInfo();
+    pu.setClassLoader(Thread.currentThread().getContextClassLoader());
+    pu.setPersistenceUnitName(puName);
+    pu.setManagedClassNames(classes);
+    pu.setMappingFileNames(mappingFiles);
+    try {
+        pu.setPersistenceUnitRootUrl(new File(".").toURI().toURL());
+    } catch (MalformedURLException e) {
+        e.printStackTrace();
+    }
+    pu.setProperties(persistenceProperties);
+
+    return pu;
+}
+
+...
+SEPersistenceUnitInfo pu = createSEPUInfo("test_pu", classes, mappingFiles, persistenceProperties);
+propertiesMap.put(PersistenceUnitProperties.ECLIPSELINK_SE_PUINFO, pu);
+----
+'''''
+
+=== sequencing.start-sequence-at-nextval
+
+By default, EclipseLink generates sequence values at (NEXTVAL - allocationSize). For instance, if NEXTVAL returns a
+value of 100 and the allocationSize is 50 (default), EclipseLink will begin sequence values at 100 - allocationSize.
+When the `eclipselink.sequencing.start-sequence-at-nextval` property
+is set to true, the ID values generated from sequences starting at NEXTVAL and proceeding forward.
+
+*Values*
+
+link:#BABDCBBBAB[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBAB]]
+
+*_Table 5-2 Valid Values for sequencing.start-sequence-at-nextval_*
+
+|======================================================
+|*Value* |*Description*
+|`true` | ID values generated from sequences starting at NEXTVAL and proceeding forward.
+|`false` |(Default) Uses default behavior of next value - allocationSize.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDAB[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDAB]]
+
+*_Example 5-3 Using sequencing.start-sequence-at-nextval in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.sequencing.start-sequence-at-nextval" value="true" />
+----
+
+link:#CHDDBGHIAB[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIAB]]
+
+*_Example 5-4 Using sequencing.start-sequence-at-nextval in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.SEQUENCING_START_AT_NEXTVAL, "true");
+----
 
 [[sessioncustomizer]][[TLJPA1127]]
 
@@ -7436,6 +8870,62 @@ For more information, see:
 
 * link:#validationonly["validation-only"]
 
+'''''
+
+=== target-database-properties
+
+This property configures additional properties for the configured target-database.
+
+Allowed Values:
+
+A comma delimited key=value pairs (ie: key1=value1,key2=value2). Each
+key is expected to be a set[key_name] method on the configured
+target-database. The value must be the Stringified value to be passed
+into the set[key] method.
+
+NOTE: Keys and values cannot contain '=' or ','
+
+If an invalid property is located a ConversionException will be thrown.
+
+*Values*
+
+link:#BABDCBBBAC[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBAC]]
+
+*_Table 5-2 Valid Values for target-database-properties_*
+
+|======================================================
+|*Value* |*Description*
+|value |Stringified value
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDAC[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDAC]]
+
+*_Example 5-3 Using target-database-properties in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.target-database-properties" value="shouldBindLiterals=true"/>
+----
+
+link:#CHDDBGHIAC[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIAC]]
+
+*_Example 5-4 Using eclipselink.target-database-properties in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, "StoredProcedureTerminationToken=test");
+----
+
 [[targetserver]][[TLJPA1135]]
 
 '''''
@@ -7651,6 +9141,196 @@ property map.
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 propertyMap.put(PersistenceUnitProperties.MULTI_TENANT_PROPERTY_DEFAULT,
 "Oracle");
+----
+
+'''''
+
+=== tenant-schema-id
+
+This property specifies the context property used to distinguish tenants when using global schema per tenant
+multitenant strategy. It is expected to be set by user when creating an `EntityManager`.
+
+*Values*
+
+link:#BABDCBBBAD[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBAD]]
+
+*_Table 5-2 Valid Values for tenant-schema-id_*
+
+|======================================================
+|*Value* |*Description*
+|value |(String) Schema name.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDAD[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDAD]]
+
+*_Example 5-3 Using tenant-schema-id in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.tenant-schema-id" value="Oracle" />
+----
+
+link:#CHDDBGHIAD[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIAD]]
+
+*_Example 5-4 Using eclipselink.tenant-schema-id in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.MULTITENANT_SCHEMA_PROPERTY_DEFAULT, "Oracle");
+----
+
+'''''
+
+=== thread.extended.logging
+
+This property control (enable/disable) some additional logging messages like
+print error message if cached Entity is picked by different thread,
+or if EntityManager/UnitOfWork is reused/passed to different thread.
+
+*Values*
+
+link:#BABDCBBBAE[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBAE]]
+
+*_Table 5-2 Valid Values for thread.extended.logging_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |To enable thread extended logging.
+|`false` |(Default) To disable thread extended logging.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDAE[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDAE]]
+
+*_Example 5-3 Using thread.extended.logging in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.thread.extended.logging" value="true" />
+----
+
+link:#CHDDBGHIAE[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIAE]]
+
+*_Example 5-4 Using thread.extended.logging in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.THREAD_EXTENDED_LOGGING, "true");
+----
+
+'''''
+
+=== thread.extended.logging.threaddump
+
+This property control (enable/disable) store and display thread dump. This is extension to
+`eclipselink.thread.extended.logging` which must be enabled.
+It prints additionally to some log messages presented by `eclipselink.thread.extended.logging`
+creation and current thread stack traces.
+
+*Values*
+
+link:#BABDCBBBAF[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBAF]]
+
+*_Table 5-2 Valid Values for beanvalidation.no-optimisation_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |To display thread dump in the extended log thread message.
+|`false` |(Default) Don't display.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDAF[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDAF]]
+
+*_Example 5-3 Using thread.extended.logging.threaddump in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.thread.extended.logging.threaddump" value="false" />
+----
+
+link:#CHDDBGHIAF[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIAF]]
+
+*_Example 5-4 Using thread.extended.logging.threaddump in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.THREAD_EXTENDED_LOGGING_THREADDUMP, "true");
+----
+
+'''''
+
+=== tolerate-invalid-jpql
+
+This property allows an `EntityManager` to be created even in the event that an application
+has invalid JPQL statements declared in annotations or xml.
+
+*Values*
+
+link:#BABDCBBBAG[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBAG]]
+
+*_Table 5-2 Valid Values for tolerate-invalid-jpql_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |Tolerate invalid JPQL statements.
+|`false` |(Default)Don't tolerate invalid JPQL statements.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDAG[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDAG]]
+
+*_Example 5-3 Using tolerate-invalid-jpql in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.tolerate-invalid-jpql" value="true" />
+----
+
+link:#CHDDBGHIAG[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIAG]]
+
+*_Example 5-4 Using cache.tolerate-invalid-jpql in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.JPQL_TOLERATE, "true");
 ----
 
 [[transactionjoinexisting]][[TLJPA1137]]
@@ -8290,6 +9970,54 @@ propertiesMap.put
 For more information, see:
 
 * link:#prop.weaving["weaving"]
+
+'''''
+
+=== weaving.mappedsuperclass
+
+This property configures whether `MappedSuperclass`es with no direct sub-classes will be woven.
+
+NOTE: This property will only be considered if weaving is enabled.
+
+*Values*
+
+link:#BABDCBBBAH[Table 5-2] describes this persistence property's values.
+
+[[BABDCBBBAH]]
+
+*_Table 5-2 Valid Values for weaving.mappedsuperclass_*
+
+|======================================================
+|*Value* |*Description*
+|`true` |(Default) Weave `MappedSuperclass`es.
+|`false` |Don't weave `MappedSuperclass`es.
+|======================================================
+
+*Examples*
+
+link:#BABBJEBDAH[Example 5-3] shows how to use this property in the
+`persistence.xml` file.
+
+[[BABBJEBDAH]]
+
+*_Example 5-3 Using weaving.mappedsuperclass in persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.weaving.mappedsuperclass" value="false" />
+----
+
+link:#CHDDBGHIAH[Example 5-4] shows how to use this property in a property map.
+
+[[CHDDBGHIAH]]
+
+*_Example 5-4 Using cache.beanvalidation.no-optimisation in a Property Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.WEAVING_MAPPEDSUPERCLASS, "false");
+----
 
 [[weavinglazy]][[TLJPA1043]]
 
