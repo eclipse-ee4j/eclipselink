@@ -46,7 +46,7 @@ if no customized descriptor is provided in `src/main/resources-ejb/META-INF/pers
     <parent>
         <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
         <groupId>org.eclipse.persistence</groupId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>4.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -242,7 +242,7 @@ datasources on the server need to point to different MySQL DB schemas from those
 ```
 WILDFLY_HOME=...
 REPO_HOME=$HOME/.m2/repository/org/eclipse/persistence
-VERSION=4.0.1-SNAPSHOT
+VERSION=4.0.2-SNAPSHOT
 ASM_VERSION=9.4.0
 
 WR=$WILDFLY_HOME/modules/system/layers/base/org/eclipse/persistence/main

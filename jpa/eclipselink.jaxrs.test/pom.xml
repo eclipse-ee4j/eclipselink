@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.test.server.parent</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>4.0.2-SNAPSHOT</version>
         <relativePath>../../testing/server/pom.xml</relativePath>
     </parent>
 

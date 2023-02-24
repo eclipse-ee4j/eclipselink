@@ -24,13 +24,13 @@
     <description>EclipseLink Documentation for the WebSite - JPA Extensions</description>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.documentation.jpaextensions</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.documentation</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>4.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
