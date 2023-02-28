@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -319,6 +320,24 @@ public class ParameterExpression extends BaseExpression {
         if (this.localBase != null) {
             value = this.localBase.getFieldValue(value, session);
         }
+
+//        // Convert the value to the correct type, i.e. object type mappings.
+//        if (this.localBase != null) {
+//            if(value instanceof Collection) {
+//                Collection<?> values = (Collection<?>)value;
+//                Vector<Object> fieldValues = new Vector<>(values.size());
+//                for (Object v : values) {
+//                    Object translated = v;
+//                    if (!(v instanceof Expression)){
+//                        translated = this.localBase.getFieldValue(v, getSession());
+//                    }
+//                    fieldValues.add(translated);
+//                }
+//                value = fieldValues;
+//            } else {
+//                value = this.localBase.getFieldValue(value, session);
+//            }
+//        }
 
         return value;
     }

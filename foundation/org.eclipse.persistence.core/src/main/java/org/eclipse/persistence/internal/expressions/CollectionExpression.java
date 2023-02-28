@@ -38,12 +38,32 @@ public class CollectionExpression extends ConstantExpression {
 
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
-        Object value = this.value;
+        Object objectValue = this.value;
         if(this.localBase != null) {
-            value = this.localBase.getFieldValue(value, getSession());
+            if(objectValue instanceof Collection) {
+                Collection<?> values = (Collection<?>)objectValue;
+                Vector<Object> fieldValues = new Vector<>(values.size());
+                for (Object value : values) {
+                    Object translated = value;
+                    if (!(value instanceof Expression)){
+                        translated = this.localBase.getFieldValue(value, getSession());
+                    }
+                    fieldValues.add(translated);
+                }
+                objectValue = fieldValues;
+            }
         }
-        printer.printList((Collection)value, this.canBind);
+        printer.printList((Collection)objectValue, this.canBind);
     }
+
+//    @Override
+//    public void printSQL(ExpressionSQLPrinter printer) {
+//        Object value = this.value;
+//        if(this.localBase != null) {
+//            value = this.localBase.getFieldValue(value, getSession());
+//        }
+//        printer.printList((Collection)value, this.canBind);
+//    }
 
     /**
      * INTERNAL:
