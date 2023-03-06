@@ -12380,6 +12380,1116 @@ public class TestQuerySyntaxComparisonTests {
     }
 
     @Test
+    public void testCeiling1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT CEILING(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT CEILING(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ceiling(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ceiling(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testCeiling1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT CEILING(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT CEILING(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ceiling(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ceiling(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testCeiling1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT CEILING(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT CEILING(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ceiling(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ceiling(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testFloor1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT FLOOR(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT FLOOR(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.floor(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.floor(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testFloor1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT FLOOR(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT FLOOR(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.floor(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.floor(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testFloor1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT FLOOR(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT FLOOR(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.floor(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.floor(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testExp1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT EXP(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT EXP(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.exp(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.exp(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testExp1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT EXP(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT EXP(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.exp(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.exp(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testExp1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT EXP(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT EXP(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.exp(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.exp(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testLn1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT LN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT LN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ln(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ln(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testLn1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT LN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT LN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ln(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ln(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testLn1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT LN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT LN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ln(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ln(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testSign1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT SIGN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT SIGN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.sign(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.sign(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2() || platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testSign1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT SIGN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT SIGN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.sign(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.sign(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testSign1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT SIGN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT SIGN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.sign(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.sign(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QuerySyntaxEntity WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
     public void testRound2_Default() {
         if (emf == null)
             return;

@@ -168,6 +168,13 @@ public class DB2ZPlatform extends DB2Platform {
 
         addOperator(likeEscapeOperator());
         addOperator(notLikeEscapeOperator());
+
+        addOperator(ceilingOperator());
+        addOperator(floorOperator());
+        addOperator(expOperator());
+        addOperator(lnOperator());
+        addOperator(powerOperator());
+        addOperator(signOperator());
     }
 
     /**
@@ -755,6 +762,32 @@ public class DB2ZPlatform extends DB2Platform {
      * Disable binding support.
      * <p>
      * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator ceilingOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.ceil().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator floorOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.floor().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
      * <pre>The data type, the length, or the value of an argument of a scalar function 
      * is incorrect. DB2 SQL Error: SQLCODE=-171, SQLSTATE=42815</pre>
      */
@@ -763,6 +796,58 @@ public class DB2ZPlatform extends DB2Platform {
         ExpressionOperator operatorS = super.roundOperator();
         ExpressionOperator operator = disableAllBindingExpression();
         operatorS.copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator expOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.exp().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator lnOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.ln().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator powerOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.power().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator signOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.sign().copyTo(operator);
         return operator;
     }
 
