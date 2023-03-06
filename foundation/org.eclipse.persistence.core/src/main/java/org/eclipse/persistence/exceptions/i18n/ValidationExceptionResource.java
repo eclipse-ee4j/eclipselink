@@ -371,7 +371,6 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },
                                            { "7356", "Procedure: [{1}] cannot be executed because {0} does not currently support multiple out parameters"},
                                            { "7357", "The \"[{0}]\" URL for \"[{1}]\" resource does not belong to a valid persistence root (as per Jakarta Persistence Specification)"},
-                                           { "7357", "URL [{0}] for resource [{1}] does not belong to a valid persistence root (as per JPA Specification)"},
                                            { "7358", "Incorrect ASM service name provided."},
                                            { "7359", "No any ASM service available."},
  };
