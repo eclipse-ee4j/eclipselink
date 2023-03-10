@@ -322,6 +322,12 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
 
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
+
         return fieldTypeMapping;
     }
 
