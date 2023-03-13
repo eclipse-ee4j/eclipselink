@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,14 +36,17 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 import java.util.Vector;
 import java.io.Writer;
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalTime;
 import java.util.Hashtable;
 import java.util.Collection;
 import java.util.Iterator;
@@ -317,7 +320,7 @@ public class DerbyPlatform extends DB2Platform {
 
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
         fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
 
@@ -857,5 +860,59 @@ public class DerbyPlatform extends DB2Platform {
         }
 
         isConnectionDataInitialized = true;
+    }
+
+    /**
+     * INTERNAL
+     * Set the parameter in the JDBC statement at the given index.
+     * This support a wide range of different parameter types,
+     * and is heavily optimized for common types.
+     */
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter,
+                                                PreparedStatement statement, int index, AbstractSession session)
+            throws SQLException {
+        if (parameter instanceof LocalTime) {
+            statement.setTime(
+                    index, java.sql.Time.valueOf((LocalTime) parameter));
+            return;
+        }
+        super.setParameterValueInDatabaseCall(parameter, statement, index, session);
+    }
+
+    /**
+     * INTERNAL
+     * Set the parameter in the JDBC statement with the given name.
+     * This support a wide range of different parameter types,
+     * and is heavily optimized for common types.
+     */
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter,
+                                                CallableStatement statement, String name, AbstractSession session)
+            throws SQLException {
+        if (parameter instanceof LocalTime) {
+            statement.setTime(
+                    name, java.sql.Time.valueOf((LocalTime) parameter));
+            return;
+        }
+        super.setParameterValueInDatabaseCall(parameter, statement, name, session);
+    }
+
+    /**
+     * Returns the number of parameters that used binding.
+     * Should only be called in case binding is not used.
+     */
+    @Override
+    public int appendParameterInternal(Call call, Writer writer, Object parameter) {
+        try {
+            int nBoundParameters = 0;
+            if (parameter instanceof LocalTime) {
+                appendTime(java.sql.Time.valueOf((LocalTime) parameter), writer);
+                return nBoundParameters;
+            }
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+        return super.appendParameterInternal(call, writer, parameter);
     }
 }
