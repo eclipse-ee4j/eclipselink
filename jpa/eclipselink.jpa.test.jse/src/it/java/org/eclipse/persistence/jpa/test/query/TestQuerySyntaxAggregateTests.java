@@ -168,7 +168,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT AVG(1) FROM QuerySyntaxEntity s");
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY", _sql2.remove(0));
@@ -200,7 +200,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY", _sql2.remove(0));
@@ -415,7 +415,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT AVG(1) FROM QuerySyntaxEntity s HAVING 0 < AVG(1)");
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (? < AVG(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql2.remove(0));
@@ -2322,7 +2322,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT SUM(1) FROM QuerySyntaxEntity s");
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY", _sql2.remove(0));
@@ -2354,7 +2354,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY", _sql2.remove(0));
@@ -2569,7 +2569,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT SUM(1) FROM QuerySyntaxEntity s HAVING 0 < SUM(1)");
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (? < SUM(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql2.remove(0));
@@ -2618,7 +2618,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (? < SUM(1))", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql2.remove(0));
