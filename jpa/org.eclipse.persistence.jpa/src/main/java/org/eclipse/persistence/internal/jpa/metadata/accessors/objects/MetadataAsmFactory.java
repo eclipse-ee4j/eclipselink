@@ -541,6 +541,11 @@ public class MetadataAsmFactory extends MetadataFactory {
             return null;
         }
 
+        @Override
+        public void visitAttribute(Attribute attr) {
+            super.visitAttributeSuper(attr);
+        }
+
         /**
          * At the end of visiting this method add it to the
          * {@link MetadataClass} and handle duplicate method names by chaining

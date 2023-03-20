@@ -219,6 +219,7 @@
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
         <!-- CQ #21133 -->
         <ant.version>1.10.13</ant.version>
+        <aspectj.version>1.9.19</aspectj.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.15.2.0</derby.version>
         <db2.version>11.5.8.0</db2.version>
@@ -901,6 +902,16 @@
             </dependency>
             <!--APIs and other libs used in test classes-->
             <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>jakarta.el</groupId>
                 <artifactId>jakarta.el-api</artifactId>
                 <version>${el-api.version}</version>
@@ -1179,6 +1190,23 @@
                     <groupId>org.codehaus.gmaven</groupId>
                     <artifactId>groovy-maven-plugin</artifactId>
                     <version>2.1.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>aspectj-maven-plugin</artifactId>
+                    <version>1.14.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjrt</artifactId>
+                            <version>${aspectj.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjweaver</artifactId>
+                            <version>${aspectj.version}</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
