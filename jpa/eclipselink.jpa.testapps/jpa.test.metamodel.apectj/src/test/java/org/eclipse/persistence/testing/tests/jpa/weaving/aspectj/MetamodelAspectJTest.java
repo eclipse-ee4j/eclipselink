@@ -23,9 +23,6 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.weaving.aspectj.ItemAspectJ;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * This test is to verify that managed classes like Entities, Entity Listeners weaved by AspectJ will be functional.
  * There was issue to get some class metadata through ASM org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory.MetadataMethodVisitor*
