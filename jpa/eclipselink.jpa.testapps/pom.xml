@@ -319,6 +319,7 @@
         <module>jpa.test.lob</module>
         <module>jpa.test.memory</module>
         <module>jpa.test.metamodel</module>
+        <module>jpa.test.metamodel.apectj</module>
         <module>jpa.test.orphanremoval</module>
         <module>jpa.test.partitioned</module>
         <module>jpa.test.performance</module>
