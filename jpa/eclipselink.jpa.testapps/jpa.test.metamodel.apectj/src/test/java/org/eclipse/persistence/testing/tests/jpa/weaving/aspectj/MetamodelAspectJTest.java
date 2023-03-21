@@ -25,6 +25,7 @@ import org.eclipse.persistence.testing.models.jpa.weaving.aspectj.ItemAspectJ;
 
 /**
  * This test is to verify that managed classes like Entities, Entity Listeners weaved by AspectJ will be functional.
+ * Test for bugfix: java.lang.StackOverflowError after bumping from 4.0.0 to 4.0.1 #1832 - https://github.com/eclipse-ee4j/eclipselink/issues/1832
  * There was issue to get some class metadata through ASM org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory.MetadataMethodVisitor*
  * Except entityManagerFactory.getMetamodel() there are some JPA basic operations called (merge(), find(), remove()).
  */
