@@ -155,6 +155,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Map<Object, Object> cloneMapping;
     protected Map<Object, Object> newObjectsCloneToOriginal;
     protected Map<Object, Object> newObjectsOriginalToClone;
+
+    /**
+     * Map of primary key to list of new objects. Used to speedup in-memory querying.
+     */
+    protected Map<Object, List<Object>> primaryKeyToNewObjects;
     /**
      * Stores a map from the clone to the original merged object, as a different instance is used as the original for merges.
      */
@@ -544,6 +549,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             ObjectBuilder builder = descriptor.getObjectBuilder();
             try {
                 value = builder.assignSequenceNumber(object, this);
+                getPrimaryKeyToNewObjects().putIfAbsent(value, new ArrayList<>());
+                getPrimaryKeyToNewObjects().get(value).add(object);
             } catch (RuntimeException exception) {
                 handleException(exception);
             } finally {
@@ -580,6 +587,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         if (hasNewObjects()) {
             assignSequenceNumbers(getNewObjectsCloneToOriginal());
+            setupPrimaryKeyToNewObjects();
         }
     }
 
@@ -2396,6 +2404,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
+     * The primaryKeyToNewObjects stores a list of objects for every primary key.
+     * It is used to speed up in-memory-querying.
+     */
+    protected Map<Object, List<Object>> getPrimaryKeyToNewObjects() {
+        if (primaryKeyToNewObjects == null) {
+            primaryKeyToNewObjects = new HashMap<>();
+        }
+        return primaryKeyToNewObjects;
+    }
+
+    /**
+     * INTERNAL:
      * The stores a map from new object clones to the original object used from merge.
      */
     public Map getNewObjectsCloneToMergeOriginal() {
@@ -2544,15 +2564,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         boolean readSubclassesOrNoInheritance = (!descriptor.hasInheritance() || descriptor.getInheritancePolicy().shouldReadSubclasses());
 
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-        for (Iterator newObjectsEnum = getNewObjectsCloneToOriginal().keySet().iterator();
-                 newObjectsEnum.hasNext();) {
+        for (Iterator newObjectsEnum = getPrimaryKeyToNewObjects().getOrDefault(selectionKey, List.of()).iterator();
+             newObjectsEnum.hasNext(); ) {
             Object object = newObjectsEnum.next();
             // bug 327900
             if ((object.getClass() == theClass) || (readSubclassesOrNoInheritance && (theClass.isInstance(object)))) {
-                Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(object, this, true);
-                if ((primaryKey != null) && primaryKey.equals(selectionKey)) {
                     return object;
-                }
             }
         }
         return null;
@@ -4480,6 +4497,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         registerNewObjectInIdentityMap(clone, original, descriptor);
 
         getNewObjectsCloneToOriginal().put(clone, original);
+        addNewObjectToPrimaryKeyToNewObjects(clone,descriptor);
         if (original != null) {
             getNewObjectsOriginalToClone().put(original, clone);
         }
@@ -5000,6 +5018,52 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected void setNewObjectsCloneToOriginal(Map newObjects) {
         this.newObjectsCloneToOriginal = newObjects;
+        setupPrimaryKeyToNewObjects();
+    }
+
+    /**
+     * INTERNAL:
+     * Create the map of primary key to new objects used to speed up in-memory querying.
+     */
+    protected void setupPrimaryKeyToNewObjects() {
+        primaryKeyToNewObjects = null;
+        if (hasNewObjects()) {
+            primaryKeyToNewObjects = new HashMap<>();
+            getNewObjectsCloneToOriginal().forEach((object, o2) -> {
+                addNewObjectToPrimaryKeyToNewObjects(object);
+            });
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Extracts the primary key from a new object and puts it in primaryKeyToNewObjects.
+     */
+    protected void addNewObjectToPrimaryKeyToNewObjects(Object newObject){
+        ClassDescriptor descriptor = getDescriptor(newObject.getClass());
+        addNewObjectToPrimaryKeyToNewObjects(newObject,descriptor);
+    }
+
+    /**
+     * INTERNAL:
+     * Extracts the primary key from a new object and puts it in primaryKeyToNewObjects.
+     * Allows passing of the ClassDescriptor.
+     */
+    protected void addNewObjectToPrimaryKeyToNewObjects(Object newObject, ClassDescriptor descriptor){
+        ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+        Object pk = objectBuilder.extractPrimaryKeyFromObject(newObject, this, true);
+        if(pk!=null) {
+            getPrimaryKeyToNewObjects().putIfAbsent(pk, new ArrayList<>());
+            getPrimaryKeyToNewObjects().get(pk).add(newObject);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Removes an object from primaryKeyToNewObjects.
+     */
+    protected void removeObjectFromPrimaryKeyToNewObjects(Object object, Object primaryKey){
+        getPrimaryKeyToNewObjects().getOrDefault(primaryKey, new ArrayList<>(0)).remove(object);
     }
 
     /**
@@ -5459,6 +5523,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
             this.newObjectsCloneToOriginal = null;
             this.newObjectsOriginalToClone = null;
+            this.primaryKeyToNewObjects = null;
         }
         this.unregisteredExistingObjects = null;
         this.unregisteredNewObjects = null;
@@ -5579,6 +5644,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // PERF: Avoid initialization of new objects if none.
                 if (hasNewObjects()) {
                     Object original = getNewObjectsCloneToOriginal().remove(object);
+                    removeObjectFromPrimaryKeyToNewObjects(object, primaryKey);
                     if (original != null) {
                         getNewObjectsOriginalToClone().remove(original);
                     }
@@ -5942,6 +6008,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.cloneMapping = null;
         this.newObjectsCloneToOriginal = null;
         this.newObjectsOriginalToClone = null;
+        this.primaryKeyToNewObjects = null;
         this.deletedObjects = null;
         this.allClones = null;
         this.objectsDeletedDuringCommit = null;

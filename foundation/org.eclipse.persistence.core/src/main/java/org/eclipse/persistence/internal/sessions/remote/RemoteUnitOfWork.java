@@ -659,6 +659,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
 
         this.newObjectsOriginalToClone = originalToClone;
         this.newObjectsCloneToOriginal = cloneToOriginal;
+        setupPrimaryKeyToNewObjects();
     }
 
     /**
