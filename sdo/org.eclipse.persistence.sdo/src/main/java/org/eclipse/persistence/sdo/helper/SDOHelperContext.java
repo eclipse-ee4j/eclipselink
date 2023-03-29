@@ -23,7 +23,6 @@ import java.security.AccessController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
@@ -95,6 +94,22 @@ public class SDOHelperContext implements HelperContext {
     private Map<String, Object> properties;
     private boolean isStrictTypeCheckingEnabled = PrivilegedAccessHelper.getSystemPropertyBoolean(
             SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, true);
+
+    /**
+     * Property controls strictness of {@link Type#getInstanceClass()} type checking.
+     *
+     * <p>
+     * See {@link #isStrictTypeCheckingEnabled()} for more details.
+     * By this property, the initial value can be changed.
+     * Default value is <code>true</code>.
+     * </p>
+     *
+     * @deprecated
+     * @see SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME
+     * Moved to {@link SDOSystemProperties}.
+     */
+    @Deprecated
+    public static final String STRICT_TYPE_CHECKING_PROPERTY_NAME = SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME;
 
     private static int helperContextsMaxSize = Integer.parseInt(PrivilegedAccessHelper.getSystemProperty(SDOSystemProperties.SDO_HELPER_CONTEXTS_MAX_SIZE, "1000000"));
 
