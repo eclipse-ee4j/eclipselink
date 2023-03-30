@@ -651,7 +651,7 @@ public class SDOHelperContext implements HelperContext {
         // there may be a loader/context pair to remove
         ClassLoader appLoader = appNameToClassLoaderMap.get(appName);
         if (appLoader != null) {
-            result = result | map.remove(appLoader, null) != null;
+            result |= map.remove(appLoader, null) != null;
         } else if (removeDefaultClassloader) {
             // try with Thread ContextClassLoader
             result |= map.remove(Thread.currentThread().getContextClassLoader(), null) != null;
