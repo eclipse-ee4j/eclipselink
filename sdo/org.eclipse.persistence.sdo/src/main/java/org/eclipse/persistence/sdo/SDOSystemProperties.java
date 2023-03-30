@@ -18,7 +18,10 @@ package org.eclipse.persistence.sdo;
  * This class provides the list of System properties that are recognized by EclipseLink SDO component.
  * @author rfelcman
  */
-public class SDOSystemProperties {
+public final class SDOSystemProperties {
+
+    private SDOSystemProperties() {
+    }
 
     /**
      * Property controls strictness of {@link commonj.sdo.Type#getInstanceClass()} type checking.
@@ -26,7 +29,7 @@ public class SDOSystemProperties {
      * <p>
      * See {@link org.eclipse.persistence.sdo.helper.SDOHelperContext#isStrictTypeCheckingEnabled()} for more details.
      * By this property, the initial value can be changed.
-     * Default value is <code>true</code>.
+     * Default value is {@code true}.
      * </p>
      */
     public static final String SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME = "eclipselink.sdo.strict.type.checking";
@@ -35,7 +38,7 @@ public class SDOSystemProperties {
      * Property controls maximum size of helperContexts map.
      * This is way how Least Recently Used (LRU) strategy will be intensive. It should help with used Java heap size issues
      * if there is so many SDOClassLoader instances with so many defined classes.
-     * Default value is <code>1 000 000</code>.
+     * Default value is {@code 1 000 000}.
      */
     public static final String SDO_HELPER_CONTEXTS_MAX_SIZE = "eclipselink.sdo.helper.contexts.max.size";
 }
