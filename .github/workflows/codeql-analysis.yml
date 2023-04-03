@@ -26,7 +26,7 @@ on:
   schedule:
     - cron: '0 19 * * 1'
 env:
-  maven_version: 3.8.7
+  maven_version: 3.8.8
 
 jobs:
   analyze:
