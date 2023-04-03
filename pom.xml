@@ -184,8 +184,8 @@
         <docs.status>DRAFT</docs.status>
 
         <!--Eclipse Dependencies version-->
-        <eclipselink.asm.version>9.4.0</eclipselink.asm.version>
-        <asm.version>9.4</asm.version>
+        <eclipselink.asm.version>9.5.0</eclipselink.asm.version>
+        <asm.version>9.5</asm.version>
         <activation-api.version>2.1.1</activation-api.version>
         <angus-activation.version>2.0.0</angus-activation.version>
         <annotation.version>2.1.1</annotation.version>
