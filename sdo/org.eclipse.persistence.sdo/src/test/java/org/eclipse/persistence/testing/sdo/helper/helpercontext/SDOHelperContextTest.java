@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import junit.textui.TestRunner;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.internal.identitymaps.CacheIdentityMap;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
@@ -197,14 +196,14 @@ public class SDOHelperContextTest extends SDOHelperContextTestCases {
         helperContextsField.setAccessible(true);
         appNameToClassLoaderMapField.setAccessible(true);
         try {
-            CacheIdentityMap helperContexts = (CacheIdentityMap) helperContextsField.get(SDOHelperContext.class);
+            ConcurrentHashMap helperContexts = (ConcurrentHashMap) helperContextsField.get(SDOHelperContext.class);
             ConcurrentHashMap appNameToClassLoaderMap = (ConcurrentHashMap) appNameToClassLoaderMapField.get(SDOHelperContext.class);
-            final Integer originalHelperContextsSize = helperContexts.getSize();
+            final Integer originalHelperContextsSize = helperContexts.size();
             final Integer originalAppNameToClassLoaderMapSize = appNameToClassLoaderMap.size();
 
             ClassLoader classLoader = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
-            helperContexts.put(applicationName, contextMap, false, 0);
-            helperContexts.put(classLoader, contextMap, false, 0);
+            helperContexts.putIfAbsent(applicationName, contextMap);
+            helperContexts.putIfAbsent(classLoader, contextMap);
             appNameToClassLoaderMap.put(applicationName, classLoader);
 
             Assert.assertTrue("App1 entry was not added to helperContexts map", helperContexts.containsKey(applicationName));
@@ -228,7 +227,7 @@ public class SDOHelperContextTest extends SDOHelperContextTestCases {
             Assert.assertFalse("ClassLoader entry was not added to helperContexts map", helperContexts.containsKey(classLoader));
             Assert.assertFalse("App1 entry was not added to appNameToClassLoaderMapContains map", appNameToClassLoaderMap.containsKey(applicationName));
             Assert.assertEquals("helperContexts map size not restored to original",
-                    originalHelperContextsSize.intValue(), helperContexts.getSize());
+                    originalHelperContextsSize.intValue(), helperContexts.size());
             Assert.assertEquals("appNameToClassLoaderMap size not restored to original",
                     originalAppNameToClassLoaderMapSize.intValue(), appNameToClassLoaderMap.size());
         }
