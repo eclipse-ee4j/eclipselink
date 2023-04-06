@@ -20,7 +20,7 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 env:
-  maven_version: 3.8.7
+  maven_version: 3.8.8
 jobs:
   build:
     name: Test on JDK ${{ matrix.java_version }}
