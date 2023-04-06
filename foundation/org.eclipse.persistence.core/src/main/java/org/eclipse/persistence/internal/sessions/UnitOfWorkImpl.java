@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2407,7 +2407,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The primaryKeyToNewObjects stores a list of objects for every primary key.
      * It is used to speed up in-memory-querying.
      */
-    protected Map<Object, List<Object>> getPrimaryKeyToNewObjects() {
+    public Map<Object, List<Object>> getPrimaryKeyToNewObjects() {
         if (primaryKeyToNewObjects == null) {
             primaryKeyToNewObjects = new HashMap<>();
         }
@@ -2564,7 +2564,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         boolean readSubclassesOrNoInheritance = (!descriptor.hasInheritance() || descriptor.getInheritancePolicy().shouldReadSubclasses());
 
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-        for (Iterator newObjectsEnum = getPrimaryKeyToNewObjects().getOrDefault(selectionKey, List.of()).iterator();
+        for (Iterator newObjectsEnum = getPrimaryKeyToNewObjects().getOrDefault(selectionKey, new ArrayList<>(0)).iterator();
              newObjectsEnum.hasNext(); ) {
             Object object = newObjectsEnum.next();
             // bug 327900
@@ -3878,6 +3878,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     Object referenceObjectToRemove = getNewObjectsCloneToOriginal().get(removedObject);
                     if (referenceObjectToRemove != null) {
                         getNewObjectsCloneToOriginal().remove(removedObject);
+                        removeObjectFromPrimaryKeyToNewObjects(removedObject);
                         getNewObjectsOriginalToClone().remove(referenceObjectToRemove);
                     }
                 }
@@ -5056,6 +5057,16 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             getPrimaryKeyToNewObjects().putIfAbsent(pk, new ArrayList<>());
             getPrimaryKeyToNewObjects().get(pk).add(newObject);
         }
+    }
+    /**
+     * INTERNAL:
+     * Extracts the primary key and removes an object from primaryKeyToNewObjects.
+     */
+    protected void removeObjectFromPrimaryKeyToNewObjects(Object object){
+        ClassDescriptor descriptor = getDescriptor(object.getClass());
+        ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+        Object pk = objectBuilder.extractPrimaryKeyFromObject(object, this, true);
+        removeObjectFromPrimaryKeyToNewObjects(object,pk);
     }
 
     /**
