@@ -5074,7 +5074,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Removes an object from primaryKeyToNewObjects.
      */
     protected void removeObjectFromPrimaryKeyToNewObjects(Object object, Object primaryKey){
-        getPrimaryKeyToNewObjects().getOrDefault(primaryKey, new ArrayList<>(0)).remove(object);
+        Map<Object, List<Object>> pkToNewObjects = getPrimaryKeyToNewObjects();
+        if (pkToNewObjects.containsKey(primaryKey)) {
+            List<Object> newObjects = pkToNewObjects.get(primaryKey);
+            newObjects.remove(object);
+            if (newObjects.isEmpty()) {
+               pkToNewObjects.remove(primaryKey);
+            }
+        }
     }
 
     /**

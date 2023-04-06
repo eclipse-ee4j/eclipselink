@@ -66,7 +66,7 @@ public class DoubleNestedUnitOfWorkRegisterNewObjectTest extends AutoVerifyTestC
             throw new TestErrorException("Failed to unregister the Object in the nested unit of work");
         }
 
-        if (!((UnitOfWorkImpl)uow).getPrimaryKeyToNewObjects().values().stream().allMatch(Collection::isEmpty)) {
+        if (!((UnitOfWorkImpl)uow).getPrimaryKeyToNewObjects().isEmpty()) {
             throw new TestErrorException("Failed to unregister the Object in the nested unit of work");
         }
 

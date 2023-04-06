@@ -56,7 +56,7 @@ public class UnregisterUnitOfWorkTest extends AutoVerifyTestCase {
             throw new TestErrorException("Deep unregister object did not work");
         }
 
-        if (!uow.getPrimaryKeyToNewObjects().values().stream().allMatch(Collection::isEmpty)) {
+        if (!uow.getPrimaryKeyToNewObjects().isEmpty()) {
             throw new TestErrorException("Deep unregister object did not work");
         }
 
@@ -81,7 +81,7 @@ public class UnregisterUnitOfWorkTest extends AutoVerifyTestCase {
             throw new TestErrorException("Deep unregister object did not work");
         }
 
-        if (!uow.getPrimaryKeyToNewObjects().values().stream().allMatch(Collection::isEmpty)) {
+        if (!uow.getPrimaryKeyToNewObjects().isEmpty()) {
             throw new TestErrorException("Deep unregister object did not work");
         }
 
