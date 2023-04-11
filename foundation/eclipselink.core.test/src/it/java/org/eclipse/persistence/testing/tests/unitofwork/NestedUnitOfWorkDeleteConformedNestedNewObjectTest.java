@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.math.BigDecimal;
 
+import java.util.Collection;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -64,6 +65,10 @@ public class NestedUnitOfWorkDeleteConformedNestedNewObjectTest extends AutoVeri
         nestedUow1.deleteObject(nestedEmployee);
         nestedUow1.commit();
         if (!((UnitOfWorkImpl)uow).getNewObjectsCloneToOriginal().isEmpty()) {
+            throw new TestErrorException("Failed to unregister the Object in the nested unit of work");
+        }
+
+        if (!((UnitOfWorkImpl)uow).getPrimaryKeyToNewObjects().isEmpty()) {
             throw new TestErrorException("Failed to unregister the Object in the nested unit of work");
         }
 
