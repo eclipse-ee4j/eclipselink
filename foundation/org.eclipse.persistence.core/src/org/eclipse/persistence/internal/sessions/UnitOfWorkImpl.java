@@ -891,8 +891,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 }
 
                 // Has already been cloned.
-                if (!this.isObjectDeleted(objectFromCache))
-                {
+                if (!this.isObjectDeleted(objectFromCache)) {
                   return objectFromCache;
                 }
             }
@@ -2406,10 +2405,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The primaryKeyToNewObjects stores a list of objects for every primary key.
      * It is used to speed up in-memory-querying.
      */
-    public Map<Object, List<Object>> getPrimaryKeyToNewObjects()
-    {
-      if (primaryKeyToNewObjects == null)
-      {
+    public Map<Object, List<Object>> getPrimaryKeyToNewObjects() {
+      if (primaryKeyToNewObjects == null) {
         primaryKeyToNewObjects = new HashMap<>();
       }
       return primaryKeyToNewObjects;
@@ -5028,11 +5025,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
        * INTERNAL:
        * Create the map of primary key to new objects to speed up in-memory querying.
        */
-      protected void setupPrimaryKeyToNewObjects()
-      {
+      protected void setupPrimaryKeyToNewObjects() {
         primaryKeyToNewObjects = null;
-        if (hasNewObjects())
-        {
+        if (hasNewObjects()) {
           primaryKeyToNewObjects = new HashMap<>();
           getNewObjectsCloneToOriginal().forEach((object, o2) -> {
             addNewObjectToPrimaryKeyToNewObjects(object);
@@ -5044,8 +5039,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
        * INTERNAL:
        * Extracts the primary key from a new object and puts it in primaryKeyToNewObjects.
        */
-      protected void addNewObjectToPrimaryKeyToNewObjects(Object newObject)
-      {
+      protected void addNewObjectToPrimaryKeyToNewObjects(Object newObject) {
         ClassDescriptor descriptor = getDescriptor(newObject.getClass());
         addNewObjectToPrimaryKeyToNewObjects(newObject, descriptor);
       }
@@ -5056,13 +5050,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
        * Allows passing of the ClassDescriptor.
        */
       protected void addNewObjectToPrimaryKeyToNewObjects(Object newObject,
-          ClassDescriptor descriptor)
-      {
+          ClassDescriptor descriptor) {
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         Object pk = objectBuilder.extractPrimaryKeyFromObject(newObject, this,
             true);
-        if (pk != null)
-        {
+        if (pk != null) {
           getPrimaryKeyToNewObjects().putIfAbsent(pk, new ArrayList<>());
           getPrimaryKeyToNewObjects().get(pk).add(newObject);
         }
@@ -5072,8 +5064,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
        * INTERNAL:
        * Extracts the primary key and removes an object from primaryKeyToNewObjects.
        */
-      protected void removeObjectFromPrimaryKeyToNewObjects(Object object)
-      {
+      protected void removeObjectFromPrimaryKeyToNewObjects(Object object) {
         ClassDescriptor descriptor = getDescriptor(object.getClass());
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         Object pk = objectBuilder.extractPrimaryKeyFromObject(object, this,
@@ -5086,15 +5077,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
        * Removes an object from primaryKeyToNewObjects.
        */
       protected void removeObjectFromPrimaryKeyToNewObjects(Object object,
-          Object primaryKey)
-      {
+          Object primaryKey) {
         Map<Object, List<Object>> pkToNewObjects = getPrimaryKeyToNewObjects();
-        if (pkToNewObjects.containsKey(primaryKey))
-        {
+        if (pkToNewObjects.containsKey(primaryKey)) {
           List<Object> newObjects = pkToNewObjects.get(primaryKey);
           newObjects.remove(object);
-          if (newObjects.isEmpty())
-          {
+          if (newObjects.isEmpty()) {
             pkToNewObjects.remove(primaryKey);
           }
         }
@@ -5678,7 +5666,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // PERF: Avoid initialization of new objects if none.
                 if (hasNewObjects()) {
                     Object original = getNewObjectsCloneToOriginal().remove(object);
-              removeObjectFromPrimaryKeyToNewObjects(object, primaryKey);
+                    removeObjectFromPrimaryKeyToNewObjects(object, primaryKey);
                     if (original != null) {
                         getNewObjectsOriginalToClone().remove(original);
                     }
@@ -6123,8 +6111,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This method is used internally to create a map to hold the persistenceContexts.  A weak map is returned if ReferenceMode is weak.
      */
     protected Map createMap(){
-        if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD)
-        {
+        if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) {
           return new IdentityWeakHashMap();
         }
         return new IdentityHashMap();
@@ -6135,8 +6122,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *  @param size
      */
     protected Map createMap(int size){
-        if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD)
-        {
+        if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) {
           return new IdentityWeakHashMap(size);
         }
         return new IdentityHashMap(size);
@@ -6148,8 +6134,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     protected Map cloneMap(Map map){
         // bug 270413.  This method is needed to avoid the class cast exception when the reference mode is weak.
-        if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD)
-        {
+        if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) {
           return (IdentityWeakHashMap)((IdentityWeakHashMap)map).clone();
         }
         return (IdentityHashMap)((IdentityHashMap)map).clone();
