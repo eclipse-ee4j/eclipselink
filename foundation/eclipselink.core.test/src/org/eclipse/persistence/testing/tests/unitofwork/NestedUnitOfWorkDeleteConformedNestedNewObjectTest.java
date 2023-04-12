@@ -65,6 +65,10 @@ public class NestedUnitOfWorkDeleteConformedNestedNewObjectTest extends AutoVeri
             throw new TestErrorException("Failed to unregister the Object in the nested unit of work");
         }
 
+        if (!((UnitOfWorkImpl)uow).getPrimaryKeyToNewObjects().isEmpty()) {
+          throw new TestErrorException("Failed to unregister the Object in the nested unit of work");
+       }
+
     }
 
     public void reset() {

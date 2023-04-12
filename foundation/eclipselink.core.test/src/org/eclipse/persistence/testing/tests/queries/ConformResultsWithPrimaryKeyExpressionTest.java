@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,14 @@ package org.eclipse.persistence.testing.tests.queries;
 
 import java.util.Vector;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 /**
  * <b>Purpose</b>: Test for bug 2782991: Find by Primary Key with
@@ -93,6 +96,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
         }
     }
 
+    @Override
     public void buildConformQuery() {
         conformedQuery = new ReadObjectQuery(Employee.class);
         ExpressionBuilder emp = new ExpressionBuilder();
@@ -132,6 +136,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
     /**
      * prepareTest method comment.
      */
+    @Override
     public void prepareTest() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         Vector employees = (Vector)getSession().executeQuery(query);
@@ -156,7 +161,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
         case CASE_NEW: {
             selectionObject = newEmployee;
             if (shouldCheckCacheByExactPrimaryKey()) {
-                expectedGetIdCallCount = 1;
+              expectedGetIdCallCount = 0;
             } else {
                 expectedGetIdCallCount = n + 1;
             }
@@ -190,7 +195,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
                 // S.M. This went from 5 calls to 4, which is good.
                 // When checking the one new object + registration +
                 // building clone + building backup clone.
-                expectedGetIdCallCount = 3;
+                expectedGetIdCallCount = 2;
             } else {
                 expectedGetIdCallCount = n + 4;
             }
@@ -199,6 +204,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
         }
     }
 
+    @Override
     public void setup() {
         // Change how the primary key attribute 'id' in Employee is accessed.
         // Now everytime TopLink extracts the primary key from an Employee object it
@@ -211,6 +217,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
         super.setup();
     }
 
+    @Override
     public void reset() {
         DatabaseMapping mapping = getSession().getDescriptor(Employee.class).getMappingForAttributeName("id");
         mapping.setAttributeAccessor(overwrittenAccessor);
@@ -220,6 +227,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
     /**
      * Override test to count the calls to Employee.getId just for the query.
      */
+    @Override
     public void test() {
         int initialCount = Employee.getGetIdCallCount();
         result = unitOfWork.executeQuery(conformedQuery);
@@ -230,6 +238,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
     /**
      * verify method comment.
      */
+    @Override
     public void verify() {
         if ((result == null) && (testCase != CASE_DELETED)) {
             throw new TestErrorException("object existed in unit of work but not returned in query.");
