@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,21 +16,37 @@
 //       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
 package org.eclipse.persistence.internal.sessions.remote;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.CommitManager;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * Counter part of the unit of work which exists on the client side.
@@ -83,6 +99,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
      * @see #commit()
      * @see #release()
      */
+    @Override
     public void beginEarlyTransaction() throws DatabaseException {
         // Acquire the mutex so session knows it is in a transaction.
         getParent().getTransactionMutex().acquire();
@@ -658,6 +675,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
 
         this.newObjectsOriginalToClone = originalToClone;
         this.newObjectsCloneToOriginal = cloneToOriginal;
+        setupPrimaryKeyToNewObjects();
     }
 
     /**
