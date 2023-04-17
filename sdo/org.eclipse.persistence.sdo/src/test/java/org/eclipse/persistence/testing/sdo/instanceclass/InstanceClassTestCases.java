@@ -18,10 +18,12 @@ import java.io.InputStream;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
+import commonj.sdo.helper.HelperContext;
 
+import org.eclipse.persistence.sdo.SDOSystemProperties;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
+import org.eclipse.persistence.sequencing.StandardSequence;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
-import static org.eclipse.persistence.sdo.SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME;
 
 public class InstanceClassTestCases extends SDOTestCase {
 
@@ -39,17 +41,17 @@ public class InstanceClassTestCases extends SDOTestCase {
     @Override
     public void setUp() {
         super.setUp();
-        strictTypeCheckingPropertyValueBackup = System.getProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
-        System.clearProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
+        strictTypeCheckingPropertyValueBackup = System.getProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
+        System.clearProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
     }
 
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
         if (strictTypeCheckingPropertyValueBackup != null) {
-            System.setProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, strictTypeCheckingPropertyValueBackup);
+            System.setProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, strictTypeCheckingPropertyValueBackup);
         } else {
-            System.clearProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
+            System.clearProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
         }
         strictTypeCheckingPropertyValueBackup = null;
     }
@@ -147,7 +149,7 @@ public class InstanceClassTestCases extends SDOTestCase {
      * This tests works only with {@link SDOHelperContext} and subclasses (otherwise tests nothing).
      */
     public void testInterfaceWithIncorrectGettersAndRelaxedTypeCheckingByProperty() {
-        System.setProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, "false");
+        System.setProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, "false");
         SDOHelperContext helperContext = new SDOHelperContext();
         InputStream xsd = Thread.currentThread().getContextClassLoader().getResourceAsStream(XML_SCHEMA_INTEFACE_INCORRECT_GETTER);
         helperContext.getXSDHelper().define(xsd, null);

@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.sdo.helper;
 
 import commonj.sdo.helper.HelperContext;
 import junit.framework.TestCase;
+import org.eclipse.persistence.sdo.SDOSystemProperties;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
-import static org.eclipse.persistence.sdo.SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -40,17 +40,17 @@ public class SDOHelperContextTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         getMap().clear();
-        strictTypeCheckingPropertyValueBackup = System.getProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
-        System.clearProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
+        strictTypeCheckingPropertyValueBackup = System.getProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
+        System.clearProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         if (strictTypeCheckingPropertyValueBackup != null) {
-            System.setProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, strictTypeCheckingPropertyValueBackup);
+            System.setProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, strictTypeCheckingPropertyValueBackup);
         } else {
-            System.clearProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
+            System.clearProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
         }
         strictTypeCheckingPropertyValueBackup = null;
     }
@@ -133,10 +133,10 @@ public class SDOHelperContextTest extends TestCase {
 
     /**
      * Checks setting {@link SDOHelperContext#isStrictTypeCheckingEnabled()}
-     * using {@link SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME} property.
+     * using {@link SDOSystemProperties#SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME} property.
      */
     public void testTypeCheckingStrictnessFlagSystemPropertyFalse() {
-        System.setProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, "false");
+        System.setProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, "false");
         SDOHelperContext ctx = new SDOHelperContext("testHelperContext");
         assertFalse("Expected value of SDOHelperContext#isStrictTypeCheckingEnabled() is false.",
                 ctx.isStrictTypeCheckingEnabled());
@@ -144,10 +144,10 @@ public class SDOHelperContextTest extends TestCase {
 
     /**
      * Checks setting {@link SDOHelperContext#isStrictTypeCheckingEnabled()}
-     * using {@link SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME} property.
+     * using {@link SDOSystemProperties#SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME} property.
      */
     public void testTypeCheckingStrictnessFlagSystemPropertyTrue() {
-        System.setProperty(SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, "true");
+        System.setProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, "true");
         SDOHelperContext ctx = new SDOHelperContext("testHelperContext");
         assertTrue("Expected value of SDOHelperContext#isStrictTypeCheckingEnabled() is true.",
                 ctx.isStrictTypeCheckingEnabled());
