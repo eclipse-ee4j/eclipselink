@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,6 +55,10 @@ public class UnregisterUnitOfWorkTest extends AutoVerifyTestCase {
             throw new TestErrorException("Deep unregister object did not work");
         }
 
+        if (!uow.getPrimaryKeyToNewObjects().isEmpty()) {
+            throw new TestErrorException("Deep unregister object did not work");
+        }
+
         uow.commit();
 
         uow = (UnitOfWorkImpl)getSession().acquireUnitOfWork();
@@ -73,6 +77,10 @@ public class UnregisterUnitOfWorkTest extends AutoVerifyTestCase {
         }
 
         if (!uow.getNewObjectsCloneToOriginal().isEmpty()) {
+            throw new TestErrorException("Deep unregister object did not work");
+        }
+
+        if (!uow.getPrimaryKeyToNewObjects().isEmpty()) {
             throw new TestErrorException("Deep unregister object did not work");
         }
 

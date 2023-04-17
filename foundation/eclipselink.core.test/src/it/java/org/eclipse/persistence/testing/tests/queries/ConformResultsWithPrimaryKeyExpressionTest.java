@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -158,7 +158,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
         case CASE_NEW: {
             selectionObject = newEmployee;
             if (shouldCheckCacheByExactPrimaryKey()) {
-                expectedGetIdCallCount = 1;
+                expectedGetIdCallCount = 0;
             } else {
                 expectedGetIdCallCount = n + 1;
             }
@@ -192,7 +192,7 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
                 // S.M. This went from 5 calls to 4, which is good.
                 // When checking the one new object + registration +
                 // building clone + building backup clone.
-                expectedGetIdCallCount = 3;
+                expectedGetIdCallCount = 2;
             } else {
                 expectedGetIdCallCount = n + 4;
             }
