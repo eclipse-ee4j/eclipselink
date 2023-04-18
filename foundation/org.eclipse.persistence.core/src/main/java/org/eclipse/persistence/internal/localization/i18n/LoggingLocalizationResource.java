@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2022 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -475,7 +475,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "dbws_no_wsdl_inline_schema", "The [{0}] WSDL inline schema could not be read."},
         { "validate_object_space", "validate object space." },
         { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
-        { "corrupt_object_referenced_through_mapping", "corrupt object referenced through mapping: {0}" },
+        { "corrupt_object_referenced_through_mapping", "The following corrupt object is referenced through mapping: {0}" },
         { "corrupt_object", "corrupt object: {0}" }
     };
 
