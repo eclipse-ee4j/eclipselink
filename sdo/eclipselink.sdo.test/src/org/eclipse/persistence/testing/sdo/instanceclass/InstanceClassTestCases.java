@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 
+import org.eclipse.persistence.sdo.SDOSystemProperties;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sequencing.StandardSequence;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
@@ -40,17 +41,17 @@ public class InstanceClassTestCases extends SDOTestCase {
     @Override
     public void setUp() {
         super.setUp();
-        strictTypeCheckingPropertyValueBackup = System.getProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME);
-        System.clearProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME);
+        strictTypeCheckingPropertyValueBackup = System.getProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
+        System.clearProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
     }
 
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
         if (strictTypeCheckingPropertyValueBackup != null) {
-            System.setProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME, strictTypeCheckingPropertyValueBackup);
+            System.setProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, strictTypeCheckingPropertyValueBackup);
         } else {
-            System.clearProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME);
+            System.clearProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME);
         }
         strictTypeCheckingPropertyValueBackup = null;
     }
@@ -148,7 +149,7 @@ public class InstanceClassTestCases extends SDOTestCase {
      * This tests works only with {@link SDOHelperContext} and subclasses (otherwise tests nothing).
      */
     public void testInterfaceWithIncorrectGettersAndRelaxedTypeCheckingByProperty() {
-        System.setProperty(SDOHelperContext.STRICT_TYPE_CHECKING_PROPERTY_NAME, "false");
+        System.setProperty(SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, "false");
         SDOHelperContext helperContext = new SDOHelperContext();
         InputStream xsd = Thread.currentThread().getContextClassLoader().getResourceAsStream(XML_SCHEMA_INTEFACE_INCORRECT_GETTER);
         helperContext.getXSDHelper().define(xsd, null);
