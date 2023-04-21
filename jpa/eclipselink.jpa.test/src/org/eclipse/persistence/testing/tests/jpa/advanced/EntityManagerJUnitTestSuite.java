@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -240,12 +240,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
+        suite.addTest(suiteSpring());
         suite.addTest(new EntityManagerJUnitTestSuite("testCacheUsage"));
-
         if (!isJPA10()) {
             suite.addTest(new EntityManagerJUnitTestSuite("testIsLoaded"));
         }
-        suite.addTest(suiteSpring());
         return suite;
     }
 
