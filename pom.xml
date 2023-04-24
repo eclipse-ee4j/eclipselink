@@ -204,7 +204,7 @@
         <jpa.api.version>3.1.0</jpa.api.version>
         <mail-api.version>2.1.1</mail-api.version>
         <angus-mail.version>2.0.1</angus-mail.version>
-        <oracle.ddlparser.version>3.0.0</oracle.ddlparser.version>
+        <oracle.ddlparser.version>3.0.1</oracle.ddlparser.version>
         <org.glassfish.corba.version>4.2.4</org.glassfish.corba.version>
         <parsson.version>1.1.1</parsson.version>
         <resource.version>2.1.0</resource.version>
