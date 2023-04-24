@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018,, 2023 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ JVM_ARGS=-Xmx256m
 # Please do not change any of the following lines:
 CLASSPATH=`dirname $0`/jakarta.servlet-api.jar:\
 `dirname $0`/javax.wsdl_1.6.2.v201012040545.jar:\
-`dirname $0`/org.eclipse.persistence.oracleddlparser_1.0.0.v201807030954.jar:\
+`dirname $0`/org.eclipse.persistence.oracleddlparser_3.0.1.v20230424.jar:\
 `dirname $0`/../../jlib/eclipselink.jar:\
 `dirname $0`/eclipselink-dbwsutils.jar:\
 ${DRIVER_CLASSPATH}:\
