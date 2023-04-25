@@ -213,7 +213,7 @@
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.jpa.jpql_${version.string}.jar"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.nosql_${version.string}.jar"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.extension_${version.string}.jar"/>
-        <pathelement path="${eclipselink.util.plugins}/org.eclipse.persistence.oracleddlparser_1.0.0.v201807030954.jar"/>
+        <pathelement path="${eclipselink.util.plugins}/org.eclipse.persistence.oracleddlparser_3.0.1.v20230424.jar"/>
         <pathelement path="${eclipselink.util.plugins}/javax.wsdl_1.6.2.v201012040545.jar"/>
         <pathelement path="${extensions.depend.dir}/${jgroups.jar}"/>
         <pathelement path="${java.class.path}"/>
