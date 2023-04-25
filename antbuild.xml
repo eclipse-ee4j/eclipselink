@@ -503,6 +503,7 @@
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-Declipselink.full=true"/>
+             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${M2_HOME}"/>
              <arg value="clean"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
@@ -570,6 +571,7 @@
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-Declipselink.full=true"/>
+			 <jvmarg value="-Dmaven.multiModuleProjectDirectory=${M2_HOME}"/>
              <arg line="${maven.goals}"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
@@ -638,6 +640,7 @@
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-D${oracle.target}=true"/>
              <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
+			 <jvmarg value="-Dmaven.multiModuleProjectDirectory=${M2_HOME}"/>
              <arg value="clean"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
@@ -674,6 +677,7 @@
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-D${oracle.target}=true"/>
              <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
+			 <jvmarg value="-Dmaven.multiModuleProjectDirectory=${M2_HOME}"/>
              <arg line="${maven.goals}"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
