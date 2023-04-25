@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,10 +42,12 @@ import javax.naming.NamingException;
 
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.identitymaps.CacheIdentityMap;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOResolvable;
+import org.eclipse.persistence.sdo.SDOSystemProperties;
 import org.eclipse.persistence.sdo.helper.delegates.SDODataFactoryDelegate;
 import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegate;
 import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegate.SDOWrapperTypeId;
@@ -93,7 +95,7 @@ public class SDOHelperContext implements HelperContext {
     private String identifier;
     private Map<String, Object> properties;
     private boolean isStrictTypeCheckingEnabled = PrivilegedAccessHelper.getSystemPropertyBoolean(
-            STRICT_TYPE_CHECKING_PROPERTY_NAME, true);
+            SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME, true);
 
     /**
      * Property controls strictness of {@link Type#getInstanceClass()} type checking.
@@ -103,12 +105,19 @@ public class SDOHelperContext implements HelperContext {
      * By this property, the initial value can be changed.
      * Default value is <code>true</code>.
      * </p>
+     *
+     * @deprecated
+     * @see org.eclipse.persistence.sdo.SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME
+     * Moved to {@link org.eclipse.persistence.sdo.SDOSystemProperties}.     *
      */
-    public static final String STRICT_TYPE_CHECKING_PROPERTY_NAME = "eclipselink.sdo.strict.type.checking";
+    @Deprecated
+    public static final String STRICT_TYPE_CHECKING_PROPERTY_NAME = SDOSystemProperties.SDO_STRICT_TYPE_CHECKING_PROPERTY_NAME;
+
+    private static int helperContextsMaxSize = Integer.parseInt(PrivilegedAccessHelper.getSystemProperty(SDOSystemProperties.SDO_HELPER_CONTEXTS_MAX_SIZE, "1000000"));
 
     // Each application will have its own helper context - it is assumed that application
     // names/loaders are unique within each active server instance
-    private static ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>> helperContexts = new ConcurrentHashMap<Object, ConcurrentHashMap<String, HelperContext>>();
+    private static ConcurrentHashMap<Object, CacheIdentityMap> helperContexts = new ConcurrentHashMap<Object, CacheIdentityMap>();
     // Each application will have a Map of alias' to identifiers
     private static ConcurrentHashMap<Object, ConcurrentHashMap<String, String>> aliasMap = new ConcurrentHashMap<Object, ConcurrentHashMap<String, String>>();
     // Each application could have separate HelperContextResolver
@@ -494,15 +503,17 @@ public class SDOHelperContext implements HelperContext {
         if (helperContext != null) {
             return helperContext;
         }
-        ConcurrentMap<String, HelperContext> contextMap = getContextMap();
-        helperContext = contextMap.get(identifier);
+        CacheIdentityMap contextMap = getContextMap();
+        helperContext = (HelperContext)contextMap.get(identifier);
         if (null == helperContext) {
             LOGGER.fine("helperContext not found.");
             helperContext = getHelperContextResolver().getHelperContext(identifier, classLoader);
-            HelperContext existingContext = contextMap.putIfAbsent(identifier, helperContext);
+            HelperContext existingContext = (HelperContext)contextMap.get(identifier);
             if (existingContext != null) {
                 LOGGER.fine(String.format("contextMap already has context for id: %s. Existing one will be used.", identifier));
                 helperContext = existingContext;
+            } else {
+                contextMap.put(identifier, helperContext, false, 0);
             }
         }
         return helperContext;
@@ -512,7 +523,7 @@ public class SDOHelperContext implements HelperContext {
      * Returns the map of helper contexts, keyed on Identifier, for the current application
      * @return
      */
-    static ConcurrentMap<String, HelperContext> getContextMap() {
+    static CacheIdentityMap getContextMap() {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         String classLoaderName = contextClassLoader.getClass().getName();
         // get a MapKeyLookupResult instance based on the context loader
@@ -522,7 +533,7 @@ public class SDOHelperContext implements HelperContext {
         ClassLoader appLoader = hCtxMapKey.getLoader();
         // we will use the application name as the map key if set; otherwise we use the loader
         Object contextMapKey = appName != null ? appName : appLoader;
-        ConcurrentHashMap<String, HelperContext> contextMap = helperContexts.get(contextMapKey);
+        CacheIdentityMap contextMap = helperContexts.get(contextMapKey);
 
         // handle possible redeploy
         // the following block only applies to WAS - hence the loader name check
@@ -541,9 +552,9 @@ public class SDOHelperContext implements HelperContext {
 
         // may need to add a new entry
         if (null == contextMap) {
-            contextMap = new ConcurrentHashMap<String, HelperContext>();
+            contextMap = new CacheIdentityMap(helperContextsMaxSize, null, null, false);
             // use putIfAbsent to avoid concurrent entries in the map
-            ConcurrentHashMap existingMap = helperContexts.putIfAbsent(contextMapKey, contextMap);
+            CacheIdentityMap existingMap = helperContexts.putIfAbsent(contextMapKey, contextMap);
             if (existingMap != null) {
                 // if a new entry was just added, use it instead of the one we just created
                 contextMap = existingMap;
@@ -582,7 +593,7 @@ public class SDOHelperContext implements HelperContext {
             // The global HelperContext cannot be replaced
             return;
         }
-        getContextMap().put(identifier, ctx);
+        getContextMap().put(identifier, ctx, false, 0);
         // identifier may have been an alias at one point
         getAliasMap().remove(identifier);
     }
@@ -1032,10 +1043,10 @@ public class SDOHelperContext implements HelperContext {
         ClassLoader appLoader = hCtxMapKey.getLoader();
         Object contextMapKey = appName != null ? appName : appLoader;
 
-        ConcurrentHashMap<String, HelperContext> contexts = helperContexts.get(contextMapKey);
+        CacheIdentityMap contexts = helperContexts.get(contextMapKey);
         if (contexts == null) {
-            contexts = new ConcurrentHashMap<String, HelperContext>();
-            ConcurrentHashMap<String, HelperContext> existingContexts = helperContexts.putIfAbsent(contextMapKey, contexts);
+            contexts = new CacheIdentityMap(helperContextsMaxSize, null, null, false);
+            CacheIdentityMap existingContexts = helperContexts.putIfAbsent(contextMapKey, contexts);
             if (existingContexts != null) {
                 contexts = existingContexts;
             } else if (appName != null) {
@@ -1043,7 +1054,7 @@ public class SDOHelperContext implements HelperContext {
             }
         }
         this.identifier = GLOBAL_HELPER_IDENTIFIER;
-        contexts.put(GLOBAL_HELPER_IDENTIFIER, this);
+        contexts.put(GLOBAL_HELPER_IDENTIFIER, this, false, 0);
     }
 
     /**
@@ -1290,7 +1301,7 @@ public class SDOHelperContext implements HelperContext {
         }
 
         // lastly, check the Map of identifiers to helperContexts
-        ConcurrentHashMap<String, HelperContext> contextMap = helperContexts.get(appKey);
+        CacheIdentityMap contextMap = helperContexts.get(appKey);
         return (contextMap != null && contextMap.containsKey(id));
     }
 
@@ -1329,7 +1340,7 @@ public class SDOHelperContext implements HelperContext {
         if (null == alias) {
             alias = new ConcurrentHashMap<String, String>();
             // use putIfAbsent to avoid concurrent entries in the map
-            ConcurrentHashMap existingMap = aliasMap.putIfAbsent(mapKey, alias);
+            ConcurrentHashMap<String, String> existingMap = aliasMap.putIfAbsent(mapKey, alias);
             if (existingMap != null) {
                 // if a new entry was just added, use it instead of the one we just created
                 alias = existingMap;
