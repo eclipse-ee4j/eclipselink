@@ -22,7 +22,7 @@
     <description>Comprehensive and universal persistence framework for Java.</description>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.parent</artifactId>
-    <version>4.0.2-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -96,8 +96,8 @@
 
     <properties>
         <!-- Minimum required JDK version -->
-        <maven.compiler.release>11</maven.compiler.release>
-        <maven.compiler.testRelease>11</maven.compiler.testRelease>
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.testRelease>17</maven.compiler.testRelease>
 
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -912,6 +912,11 @@
                 <version>${aspectj.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjtools</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>jakarta.el</groupId>
                 <artifactId>jakarta.el-api</artifactId>
                 <version>${el-api.version}</version>
@@ -1204,6 +1209,11 @@
                         <dependency>
                             <groupId>org.aspectj</groupId>
                             <artifactId>aspectjweaver</artifactId>
+                            <version>${aspectj.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjtools</artifactId>
                             <version>${aspectj.version}</version>
                         </dependency>
                     </dependencies>

@@ -101,7 +101,7 @@ spec:
     }
     tools {
         maven 'apache-maven-latest'
-        jdk 'adoptopenjdk-hotspot-jdk11-latest'
+        jdk 'openjdk-jdk17-latest'
     }
     stages {
 
