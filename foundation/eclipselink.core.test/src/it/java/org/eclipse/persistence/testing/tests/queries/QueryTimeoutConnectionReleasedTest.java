@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,7 +65,7 @@ public class QueryTimeoutConnectionReleasedTest extends TestCase {
         preConnectionsAvailable = serverSession.getReadConnectionPool().getConnectionsAvailable().size();
         try {
             DataReadQuery query = new DataReadQuery();
-            String sqlString = "SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE f, EMPLOYEE g, EMPLOYEE h";
+            String sqlString = "SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE f, EMPLOYEE g, EMPLOYEE h, EMPLOYEE g";
             query.setSQLString(sqlString);
             query.setQueryTimeout(1);
             query.useCursoredStream(1, 1);

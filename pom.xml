@@ -241,7 +241,7 @@
         <pgsql.version>42.5.3</pgsql.version>
         <!-- CQ #21139, 21140 -->
         <logback.version>1.4.5</logback.version>
-        <oracle.jdbc.version>21.8.0.0</oracle.jdbc.version>
+        <oracle.jdbc.version>23.2.0.0</oracle.jdbc.version>
         <!-- CQ #2437 -->
         <oracle.aqapi.version>21.3.0.0</oracle.aqapi.version>
         <oracle.fmw.version>12.2.1-2-0</oracle.fmw.version>
