@@ -56,7 +56,7 @@ jobs:
     name: Common Validations
     runs-on: ubuntu-latest
     needs: build_test_job
-    
+
     steps:
       - name: Checkout for build
         uses: actions/checkout@v3
