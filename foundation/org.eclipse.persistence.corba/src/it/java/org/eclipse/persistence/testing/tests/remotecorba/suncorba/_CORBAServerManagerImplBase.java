@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.tests.remote.suncorba;
+package org.eclipse.persistence.testing.tests.remotecorba.suncorba;
 
 /**
 * org/eclipse/persistence/testing/Remote/SunCORBA/_CORBAServerManagerImplBase.java
@@ -22,7 +22,7 @@ package org.eclipse.persistence.testing.tests.remote.suncorba;
 */
 
 public abstract class _CORBAServerManagerImplBase extends org.omg.CORBA.portable.ObjectImpl
-                implements org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManager, org.omg.CORBA.portable.InvokeHandler
+                implements CORBAServerManager, org.omg.CORBA.portable.InvokeHandler
 {
 
   private static java.util.Hashtable _methods = new java.util.Hashtable ();

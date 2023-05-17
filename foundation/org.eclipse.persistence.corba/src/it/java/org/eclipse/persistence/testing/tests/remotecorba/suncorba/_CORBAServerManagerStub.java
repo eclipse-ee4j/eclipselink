@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.tests.remote.suncorba;
+package org.eclipse.persistence.testing.tests.remotecorba.suncorba;
 
 /**
 * org/eclipse/persistence/testing/Remote/SunCORBA/_CORBAServerManagerStub.java
@@ -21,7 +21,7 @@ package org.eclipse.persistence.testing.tests.remote.suncorba;
 * Wednesday, August 23, 2000 1:20:43 PM EDT
 */
 
-public class _CORBAServerManagerStub extends org.omg.CORBA.portable.ObjectImpl implements org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManager
+public class _CORBAServerManagerStub extends org.omg.CORBA.portable.ObjectImpl implements CORBAServerManager
 {
   // Type-specific CORBA::Object operations
   private static String[] __ids = {

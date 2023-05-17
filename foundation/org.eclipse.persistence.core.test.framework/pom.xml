@@ -67,4 +67,15 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>jdk21-build</id>
+            <activation>
+                <jdk>[21,25)</jdk>
+            </activation>
+            <properties>
+                <comp.xlint>-Xlint:all,-this-escape</comp.xlint>
+            </properties>
+        </profile>
+    </profiles>
 </project>

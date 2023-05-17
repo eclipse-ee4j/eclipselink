@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 //     04/01/2016-2.7 Tomas Kraus
 //       - 490677: Database connection properties made configurable in test.properties
-package org.eclipse.persistence.testing.models.order.eis.aq;
+package org.eclipse.persistence.testing.models.eis.aq;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.adapters.aq.AQPlatform;

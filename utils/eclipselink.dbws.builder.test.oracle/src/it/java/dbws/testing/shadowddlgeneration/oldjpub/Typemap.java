@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -185,6 +185,7 @@ public class Typemap {
     protected int binaryDoubleMap;
     protected SqlReflector m_reflector;
 
+    @SuppressWarnings("this-escape")
     public Typemap(TypeClass s, SqlReflector reflector) {
         if (s != null && (s instanceof JavaType)) {
             m_field_map = null;

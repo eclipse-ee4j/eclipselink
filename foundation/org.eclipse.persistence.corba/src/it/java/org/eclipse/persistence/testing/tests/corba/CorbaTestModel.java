@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,10 @@ import java.util.List;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.framework.TestSuite;
-import org.eclipse.persistence.testing.tests.security.corba.SecurityWhileConvertingToMethodTest;
-import org.eclipse.persistence.testing.tests.security.corba.SecurityWhileConvertingToMethodTest.ConvertMethodAbstractSession;
-import org.eclipse.persistence.testing.tests.security.corba.SecurityWhileConvertingToMethodTest.ConvertMethodNoArg;
-import org.eclipse.persistence.testing.tests.security.corba.SecurityWhileConvertingToMethodTest.ConvertMethodSession;
+import org.eclipse.persistence.testing.tests.securitycorba.SecurityWhileConvertingToMethodTest;
+import org.eclipse.persistence.testing.tests.securitycorba.SecurityWhileConvertingToMethodTest.ConvertMethodAbstractSession;
+import org.eclipse.persistence.testing.tests.securitycorba.SecurityWhileConvertingToMethodTest.ConvertMethodNoArg;
+import org.eclipse.persistence.testing.tests.securitycorba.SecurityWhileConvertingToMethodTest.ConvertMethodSession;
 import org.eclipse.persistence.testing.tests.sessionsxml.corba.SessionsXMLSchemaSunCORBATransportConfigTest;
 
 public class CorbaTestModel extends TestModel {
