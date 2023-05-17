@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -160,12 +160,14 @@ public class SqlType extends TypeClass {
      * This constructor is used for user-defined and REF types. It may not be called more than once
      * for the same non-null sqlName.
      */
+    @SuppressWarnings("this-escape")
     protected SqlType(SqlName sqlName, int typecode, boolean generateMe, SqlType parentType,
         SqlReflector reflector) {
         this(sqlName, typecode, generateMe, false, parentType, reflector);
         m_isReused = false;
     }
 
+    @SuppressWarnings("this-escape")
     SqlType(SqlName sqlName, int typecode, boolean generateMe, boolean isPrimitive,
         SqlType parentType, SqlReflector reflector) {
         super(sqlName, typecode, isPrimitive);

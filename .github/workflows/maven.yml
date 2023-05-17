@@ -19,21 +19,21 @@ on:
     branches: [ main, master ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  build_test_job:
     name: Test on JDK ${{ matrix.java_version }}
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        java_version: [ 17 ]
+        java_version: [ 17, 21-ea ]
 
     steps:
-      - name: Cancel previous runs of this workflow
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
       - name: Start MySQL Database
         run: |
           sudo systemctl start mysql.service
@@ -41,13 +41,6 @@ jobs:
           mysql -e 'CREATE DATABASE ecltests;' -uroot -proot
           mysql -e 'SHOW DATABASES;' -uroot -proot
           mysql -e 'status;' -uroot -proot
-      - name: Cache local Maven repository
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
       - name: Checkout for build
         uses: actions/checkout@v3
       - name: Set up JDK
@@ -55,8 +48,26 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java_version }}
-      - name: Verify
-        run: mvn -B -V -U -C -Pstaging,oss-release,test-lrg,mysql,dependency-check clean verify -Dgpg.skip=true -Dwarn.limit=15 -Dcomp.xlint=-Xlint:none
+          cache: maven
+      - name: Execute Tests on JDK ${{ matrix.java_version }}
+        run: mvn -B -V -U -C -Pstaging,oss-release,test-lrg,mysql clean verify -Dgpg.skip=true -Dwarn.limit=15 -Dcomp.xlint=-Xlint:none
+
+  common_validations_job:
+    name: Common Validations
+    runs-on: ubuntu-latest
+    needs: build_test_job
+    
+    steps:
+      - name: Checkout for build
+        uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
+          cache: maven
+      - name: Execute Validations
+        run: mvn -B -V org.owasp:dependency-check-maven:aggregate
       - name: Upload dependency-check
         uses: actions/upload-artifact@v3
         with:
