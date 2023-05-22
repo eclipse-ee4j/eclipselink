@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,12 +70,12 @@ public class DbChangeNotificationTest extends TestCase {
 
     @Override
     protected void setup() throws Exception {
-        javax.jms.TopicConnectionFactory topicConnectionFactory = null;
-        javax.jms.QueueConnectionFactory queueConnectionFactory = null;
+        jakarta.jms.TopicConnectionFactory topicConnectionFactory = null;
+        jakarta.jms.QueueConnectionFactory queueConnectionFactory = null;
         if (useMultipleConsumers) {
-            topicConnectionFactory = oracle.jms.AQjmsFactory.getTopicConnectionFactory(getSession().getLogin().getConnectionString(), null);
+            topicConnectionFactory = oracle.jakarta.jms.AQjmsFactory.getTopicConnectionFactory(getSession().getLogin().getConnectionString(), null);
         } else {
-            queueConnectionFactory = oracle.jms.AQjmsFactory.getQueueConnectionFactory(getSession().getLogin().getConnectionString(), null);
+            queueConnectionFactory = oracle.jakarta.jms.AQjmsFactory.getQueueConnectionFactory(getSession().getLogin().getConnectionString(), null);
         }
         for (int i = 0; i < n; i++) {
             DatabaseLogin login = (DatabaseLogin)getSession().getLogin().clone();
@@ -93,19 +93,19 @@ public class DbChangeNotificationTest extends TestCase {
             //        String selector = "(JMSXUserID IS NULL) OR (JMSXUserID <> " + "'" + session[i].getName() + "')";
             String selector = "(APP IS NULL) OR (APP <> " + "'" + session[i].getName() + "')";
 
-            javax.jms.Connection jmsConnection;
-            javax.jms.MessageConsumer messageConsumer;
+            jakarta.jms.Connection jmsConnection;
+            jakarta.jms.MessageConsumer messageConsumer;
             if (useMultipleConsumers) {
-                javax.jms.TopicConnection topicConnection = topicConnectionFactory.createTopicConnection(aqUser, aqPassword);
+                jakarta.jms.TopicConnection topicConnection = topicConnectionFactory.createTopicConnection(aqUser, aqPassword);
                 jmsConnection = topicConnection;
-                javax.jms.TopicSession topicSession = topicConnection.createTopicSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
-                javax.jms.Topic topic = ((oracle.jms.AQjmsSession)topicSession).getTopic(aqUser, queueName);
+                jakarta.jms.TopicSession topicSession = topicConnection.createTopicSession(false, jakarta.jms.Session.AUTO_ACKNOWLEDGE);
+                jakarta.jms.Topic topic = ((oracle.jakarta.jms.AQjmsSession)topicSession).getTopic(aqUser, queueName);
                 messageConsumer = topicSession.createSubscriber(topic, selector, false);
             } else {
-                javax.jms.QueueConnection queueConnection = queueConnectionFactory.createQueueConnection(aqUser, aqPassword);
+                jakarta.jms.QueueConnection queueConnection = queueConnectionFactory.createQueueConnection(aqUser, aqPassword);
                 jmsConnection = queueConnection;
-                javax.jms.QueueSession queueSession = queueConnection.createQueueSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
-                javax.jms.Queue queue = ((oracle.jms.AQjmsSession)queueSession).getQueue(aqUser, queueName);
+                jakarta.jms.QueueSession queueSession = queueConnection.createQueueSession(false, jakarta.jms.Session.AUTO_ACKNOWLEDGE);
+                jakarta.jms.Queue queue = ((oracle.jakarta.jms.AQjmsSession)queueSession).getQueue(aqUser, queueName);
                 messageConsumer = queueSession.createReceiver(queue, selector);
             }
             jmsConnection.start();
