@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -145,7 +145,7 @@ CacheInvalidator {
 
     // invalidates in tjhe cache the object corresponding to the massage
 
-    public void invalidateObject(Session session, javax.jms.Message msg) throws javax.jms.JMSException {
+    public void invalidateObject(Session session, jakarta.jms.Message msg) throws jakarta.jms.JMSException {
         String tableName = msg.getStringProperty("TABLE");
         if (tableName == null) {
             return;

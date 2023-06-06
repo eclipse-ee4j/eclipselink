@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,8 @@ import org.eclipse.persistence.eis.*;
 import org.eclipse.persistence.eis.interactions.*;
 import org.eclipse.persistence.internal.eis.adapters.aq.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import oracle.AQ.*;
+import oracle.jakarta.AQ.AQDequeueOption;
+import oracle.jakarta.AQ.AQEnqueueOption;
 
 /**
  * Platform for Oracle AQ JCA adapter.
