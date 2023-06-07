@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.tests.remote.suncorba;
+package org.eclipse.persistence.testing.tests.remotecorba.suncorba;
 
 /**
 * org.eclipse.persistence.testing/Remote/SunCORBA/CORBAServerManagerHolder.java
@@ -23,28 +23,28 @@ package org.eclipse.persistence.testing.tests.remote.suncorba;
 
 public final class CORBAServerManagerHolder implements org.omg.CORBA.portable.Streamable
 {
-  public org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManager value = null;
+  public CORBAServerManager value = null;
 
   public CORBAServerManagerHolder ()
   {
   }
-  public CORBAServerManagerHolder (org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManager initialValue)
+  public CORBAServerManagerHolder (CORBAServerManager initialValue)
   {
     value = initialValue;
   }
   @Override
   public void _read (org.omg.CORBA.portable.InputStream i)
   {
-    value = org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManagerHelper.read (i);
+    value = CORBAServerManagerHelper.read (i);
   }
   @Override
   public org.omg.CORBA.TypeCode _type ()
   {
-    return org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManagerHelper.type ();
+    return CORBAServerManagerHelper.type ();
   }
   @Override
   public void _write (org.omg.CORBA.portable.OutputStream o)
   {
-    org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManagerHelper.write (o, value);
+    CORBAServerManagerHelper.write (o, value);
   }
 }

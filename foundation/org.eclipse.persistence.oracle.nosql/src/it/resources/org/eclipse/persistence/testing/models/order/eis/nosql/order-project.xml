@@ -172,7 +172,7 @@
          </attribute-mappings>
          <descriptor-type>independent</descriptor-type>
          <amendment>
-            <amendment-class>org.eclipse.persistence.testing.models.order.eis.aq.OrderAmendments</amendment-class>
+            <amendment-class>org.eclipse.persistence.testing.models.eis.aq.OrderAmendments</amendment-class>
             <amendment-method>addToOrderDescriptor</amendment-method>
          </amendment>
          <instantiation/>
