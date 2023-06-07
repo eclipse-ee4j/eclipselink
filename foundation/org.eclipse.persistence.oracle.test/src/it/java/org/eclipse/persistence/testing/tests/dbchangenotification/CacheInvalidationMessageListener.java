@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,18 +16,18 @@ package org.eclipse.persistence.testing.tests.dbchangenotification;
 
 import org.eclipse.persistence.sessions.Session;
 
-public class CacheInvalidationMessageListener extends CacheInvalidationHandler implements javax.jms.MessageListener {
+public class CacheInvalidationMessageListener extends CacheInvalidationHandler implements jakarta.jms.MessageListener {
 
-    public CacheInvalidationMessageListener(Session session, javax.jms.Connection connection) {
+    public CacheInvalidationMessageListener(Session session, jakarta.jms.Connection connection) {
         super(session, connection);
     }
 
-    public CacheInvalidationMessageListener(Session session, javax.jms.Connection connection, long timeToWait) {
+    public CacheInvalidationMessageListener(Session session, jakarta.jms.Connection connection, long timeToWait) {
         super(session, connection, timeToWait);
     }
 
     @Override
-    public void onMessage(javax.jms.Message message) {
+    public void onMessage(jakarta.jms.Message message) {
         try {
             invalidator.invalidateObject(session, message);
             messageCount++;
@@ -48,7 +48,7 @@ public class CacheInvalidationMessageListener extends CacheInvalidationHandler i
         } finally {
             try {
                 connection.close();
-            } catch (javax.jms.JMSException jmsException) {
+            } catch (jakarta.jms.JMSException jmsException) {
             }
         }
     }

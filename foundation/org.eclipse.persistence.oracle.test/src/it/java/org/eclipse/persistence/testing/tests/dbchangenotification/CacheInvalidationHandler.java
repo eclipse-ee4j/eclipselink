@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.sessions.Session;
 
 public class CacheInvalidationHandler {
     Session session;
-    javax.jms.Connection connection;
+    jakarta.jms.Connection connection;
     long timeToWait;
     CacheInvalidator invalidator;
 
@@ -31,13 +31,13 @@ public class CacheInvalidationHandler {
     long timeDead = -1;
     long timeLastMessageWasReceived;
 
-    public CacheInvalidationHandler(Session session, javax.jms.Connection connection) {
+    public CacheInvalidationHandler(Session session, jakarta.jms.Connection connection) {
         this(session, connection, 1000);
     }
 
     // each timeToWait the handler checks whether it shouldStop (should be positive)
 
-    public CacheInvalidationHandler(Session session, javax.jms.Connection connection, long timeToWait) {
+    public CacheInvalidationHandler(Session session, jakarta.jms.Connection connection, long timeToWait) {
         this.session = session;
         this.connection = connection;
         this.timeToWait = timeToWait;

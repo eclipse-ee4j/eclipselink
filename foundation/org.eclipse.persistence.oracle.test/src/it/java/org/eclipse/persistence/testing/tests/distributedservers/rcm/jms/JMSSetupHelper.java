@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,18 +16,18 @@ package org.eclipse.persistence.testing.tests.distributedservers.rcm.jms;
 
 import java.util.Properties;
 
-import javax.jms.ObjectMessage;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicConnection;
+import jakarta.jms.TopicConnectionFactory;
+import jakarta.jms.TopicPublisher;
+import jakarta.jms.TopicSession;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
-import oracle.jms.AQjmsFactory;
-import oracle.jms.AQjmsSession;
+import oracle.jakarta.jms.AQjmsFactory;
+import oracle.jakarta.jms.AQjmsSession;
 
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -114,7 +114,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
 
         TopicConnectionFactory topicConnectionFactory = AQjmsFactory.getTopicConnectionFactory(oracleDataSource);
         TopicConnection topicConnection = topicConnectionFactory.createTopicConnection();
-        TopicSession topicSession = topicConnection.createTopicSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+        TopicSession topicSession = topicConnection.createTopicSession(false, jakarta.jms.Session.AUTO_ACKNOWLEDGE);
         Topic topic = ((AQjmsSession)topicSession).getTopic(user, queueName);
         topicSession.close();
         topicConnection.close();
@@ -223,7 +223,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
         TopicConnection topicConnection = topicConnectionFactory.createTopicConnection();
         try {
             Topic topic = (Topic)context.lookup(this.topicJndiName);
-            TopicSession session = topicConnection.createTopicSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+            TopicSession session = topicConnection.createTopicSession(false, jakarta.jms.Session.AUTO_ACKNOWLEDGE);
             TopicPublisher publisher = session.createPublisher(topic);
             ObjectMessage objectMessage = session.createObjectMessage();
             publisher.publish(objectMessage);

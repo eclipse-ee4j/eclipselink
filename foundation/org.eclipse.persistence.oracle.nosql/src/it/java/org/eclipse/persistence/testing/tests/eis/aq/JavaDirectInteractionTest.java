@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,13 +32,13 @@ import org.eclipse.persistence.testing.tests.nosql.SessionHelper;
 import org.junit.Rule;
 import org.junit.Test;
 
-import oracle.AQ.AQDequeueOption;
-import oracle.AQ.AQDriverManager;
-import oracle.AQ.AQEnqueueOption;
-import oracle.AQ.AQMessage;
-import oracle.AQ.AQQueue;
-import oracle.AQ.AQRawPayload;
-import oracle.AQ.AQSession;
+import oracle.jakarta.AQ.AQDequeueOption;
+import oracle.jakarta.AQ.AQDriverManager;
+import oracle.jakarta.AQ.AQEnqueueOption;
+import oracle.jakarta.AQ.AQMessage;
+import oracle.jakarta.AQ.AQQueue;
+import oracle.jakarta.AQ.AQRawPayload;
+import oracle.jakarta.AQ.AQSession;
 
 /**
  * Test direct interactions through the AQ Java driver. Requires AQ installed on this database.
@@ -75,8 +75,8 @@ public class JavaDirectInteractionTest {
         Connection connection = null;
         AQSession session = null;
         try {
-            final Class<?> driver = Class.forName("oracle.AQ.AQOracleDriver");
-            assertNotNull("Driver class oracle.AQ.AQOracleDriver was not found", driver);
+            final Class<?> driver = Class.forName("oracle.jakarta.AQ.AQOracleDriver");
+            assertNotNull("Driver class oracle.jakarta.AQ.AQOracleDriver was not found", driver);
             connection = getConnection();
             connection.setAutoCommit(false);
             session = AQDriverManager.createAQSession(connection);
@@ -104,7 +104,7 @@ public class JavaDirectInteractionTest {
         try {
             connection = getConnection();
             connection.setAutoCommit(false);
-            Class.forName("oracle.AQ.AQOracleDriver");
+            Class.forName("oracle.jakarta.AQ.AQOracleDriver");
             session = AQDriverManager.createAQSession(connection);
             AQQueue queue = session.getQueue(NoSQLProperties.getDBUserName(), "raw_order_queue");
             LOG.log(SessionLog.FINEST, queue.toString());
