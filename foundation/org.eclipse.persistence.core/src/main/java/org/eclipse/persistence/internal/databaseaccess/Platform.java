@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -71,6 +71,11 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
     void setConversionManager(ConversionManager conversionManager);
 
     /**
+     * Return the driver version.
+     */
+    String getDriverVersion();
+
+    /**
      * Return the qualifier for the table. Required by some
      * databases such as Oracle and DB2
      */
@@ -130,6 +135,8 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
     boolean isOracle9();
 
     boolean isOracle12();
+
+    boolean isOracle23();
 
     boolean isPointBase();
 

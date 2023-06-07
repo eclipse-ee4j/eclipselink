@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -292,6 +292,13 @@ public class DatasourcePlatform implements Platform {
     @Override
     public void setConversionManager(ConversionManager conversionManager) {
         this.conversionManager = conversionManager;
+    }
+
+    /**
+     * Return the driver version.
+     */
+    public String getDriverVersion() {
+        return "";
     }
 
     /**
@@ -673,6 +680,11 @@ public class DatasourcePlatform implements Platform {
 
     @Override
     public boolean isOracle12() {
+        return false;
+    }
+
+    @Override
+    public boolean isOracle23() {
         return false;
     }
 
