@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.tests.remote.rmi.IIOP;
+package org.eclipse.persistence.testing.tests.remotecorba.rmi.IIOP;
 
 import javax.naming.InitialContext;
 import java.lang.reflect.Method;
@@ -50,7 +50,7 @@ public void setup() throws Exception {
     session.setProperty("TransporterGenerator", generator);
     RMIServerManagerController.start(session, getNameToBind(), "org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIRemoteSessionControllerDispatcherForTestingExceptions");
     InitialContext initialNamingContext = new InitialContext();
-    RMIServerManager serverManager = (RMIServerManager) initialNamingContext.lookup(getNameToBind());
+    org.eclipse.persistence.testing.tests.remotecorba.rmi.IIOP.RMIServerManager serverManager = (RMIServerManager) initialNamingContext.lookup(getNameToBind());
     RMIConnection rmiConnection = new RMIConnection(serverManager.createRemoteSessionController());
     setRemoteConnection(rmiConnection);
 }
