@@ -112,6 +112,10 @@
                         </goals>
                         <configuration>
                             <useModulePath>true</useModulePath>
+                            <!--Without forkCount=0 throws:  Caused by: java.lang.ExceptionInInitializerError:
+                                                             Exception org.eclipse.persistence.exceptions.ValidationException: No any ASM service available.
+                                                             [in thread "main"]-->
+                            <forkCount>0</forkCount>
                             <skipTests>${test-skip-jpa-modelgen}</skipTests>
                             <reportNameSuffix>test-jpa-modelgen-jpms</reportNameSuffix>
                             <includes>
