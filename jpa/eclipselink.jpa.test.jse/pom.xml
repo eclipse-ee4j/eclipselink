@@ -52,12 +52,6 @@
             <scope>test</scope>
         </dependency>
         <!--ASM Implementations-->
-        <!--EclipseLink ASM Implementation-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--Origin OW2-->
         <dependency>
             <groupId>org.ow2.asm</groupId>

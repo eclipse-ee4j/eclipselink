@@ -50,12 +50,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--EclipseLink ASM Implementation-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -112,7 +106,6 @@
                         </goals>
                         <configuration>
                             <useModulePath>true</useModulePath>
-                            <argLine>--add-modules org.eclipse.persistence.asm</argLine>
                             <skipTests>${test-skip-jpa-modelgen}</skipTests>
                             <reportNameSuffix>test-jpa-modelgen-jpms</reportNameSuffix>
                             <includes>
