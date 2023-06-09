@@ -85,12 +85,6 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <!--EclipseLink ASM Implementation-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
