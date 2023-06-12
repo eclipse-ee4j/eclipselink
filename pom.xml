@@ -121,6 +121,7 @@
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
         <build.qualifier>v${maven.build.timestamp}</build.qualifier>
         <bundle.version>${project.version}.${build.qualifier}</bundle.version>
+        <project.build.testReports.settings>test-report-settings/surefire-report.properties</project.build.testReports.settings>
         <project.build.testReports.subdirectory>test-reports</project.build.testReports.subdirectory>
         <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
         <project.build.licenceResourceDirectory>${project.build.directory}/license</project.build.licenceResourceDirectory>
@@ -151,6 +152,7 @@
         <test.properties.file>${user.home}/${test.derby.properties.file}</test.properties.file>
         <test.properties.fileName>${test.derby.properties.file}</test.properties.fileName>
         <test.properties.default.directory>${project.build.directory}/test-default-properties</test.properties.default.directory>
+        <test.report.properties.default.directory>${project.build.directory}/test-report-properties</test.report.properties.default.directory>
         <test.database>derby</test.database>
         <!--false: to start In-Memory database, true: not start (MySQL, Oracle)-->
         <test.skip.in-memory.db>false</test.skip.in-memory.db>
@@ -1436,6 +1438,7 @@
                             <descriptors>
                                 <descriptor>src/main/assembly/common-license.xml</descriptor>
                                 <descriptor>src/main/assembly/test-defaults.xml</descriptor>
+                                <descriptor>src/main/assembly/test-report.xml</descriptor>
                                 <descriptor>src/main/assembly/spotbugs-filter.xml</descriptor>
                             </descriptors>
                         </configuration>
@@ -1480,6 +1483,25 @@
                                     <classifier>test-defaults</classifier>
                                     <type>zip</type>
                                     <outputDirectory>${test.properties.default.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-test-report-properties</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>test-report</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${test.report.properties.default.directory}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -1759,7 +1781,7 @@
                             </reportsDirectories>
                             <outputDirectory>${project.build.directory}/${project.build.testReports.subdirectory}</outputDirectory>
                             <outputName>${project.build.testReports.summaryFile}</outputName>
-                            <title>${project.name} - Test Summary (more details on ${env.BUILD_URL} )</title>
+                            <customBundle>${test.report.properties.default.directory}/surefire-report.properties</customBundle>
                         </configuration>
                     </execution>
                 </executions>

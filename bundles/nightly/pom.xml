@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,7 +72,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>process-resources</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -113,7 +113,7 @@
                 <executions>
                     <execution>
                         <id>generate-test-summary-html-report</id>
-                        <phase>package</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>failsafe-report-only</goal>
                         </goals>
@@ -123,7 +123,30 @@
                             </reportsDirectories>
                             <outputDirectory>${project.build.directory}/jpa-test-reports/${project.build.testReports.subdirectory}</outputDirectory>
                             <outputName>${project.build.testReports.summaryFile}</outputName>
-                            <title>EclipseLink JPA Test - Test Summary (more details on ${env.BUILD_URL} )</title>
+                            <customBundle>${project.basedir}/src/site/custom/surefire-report.properties</customBundle>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prepare-nightly-build-dir-test-reports-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy todir="${project.build.directory}${nightlyDir}/Eclipse/css/">
+                                    <fileset dir="../../foundation/eclipselink.core.test/target/${project.build.testReports.subdirectory}/css/"/>
+                                </copy>
+                                <copy todir="${project.build.directory}${nightlyDir}/Eclipse/images/">
+                                    <fileset dir="../../foundation/eclipselink.core.test/target/${project.build.testReports.subdirectory}/images/"/>
+                                </copy>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
@@ -134,7 +157,7 @@
                 <executions>
                     <execution>
                         <id>prepare-nightly-build-dir-test-reports</id>
-                        <phase>package</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>copy</goal>
                         </goals>
@@ -217,7 +240,7 @@
                     </execution>
                     <execution>
                         <id>prepare-nightly-build-dir-binaries</id>
-                        <phase>package</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>copy</goal>
                         </goals>
@@ -274,6 +297,31 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>fix-test-reports</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- Fix some non-XML valid sequence in test reports -->
+                                <replace dir="${project.build.directory}${nightlyDir}/Eclipse/">
+                                    <include name="**/*.html"/>
+                                    <replacefilter>
+                                        <replacetoken><![CDATA[&&]]></replacetoken>
+                                        <replacevalue><![CDATA[&amp;&amp;]]></replacevalue>
+                                    </replacefilter>
+                                </replace>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>groovy-maven-plugin</artifactId>
                 <executions>
@@ -289,9 +337,10 @@
                                 import javax.xml.xpath.XPathFactory
                                 import javax.xml.parsers.DocumentBuilderFactory
 
-                                final NO_OF_TESTS_XPATH = "/html/body/div[@id='bodyColumn']/div/section[2]/table/tr[2]/td[1]/text()"
-                                final NO_OF_ERRORS_XPATH = "/html/body/div[@id='bodyColumn']/div/section[2]/table/tr[2]/td[2]/text()"
-                                final NO_OF_FAILURES_XPATH = "/html/body/div[@id='bodyColumn']/div/section[2]/table/tr[2]/td[3]/text()"
+                                final NO_OF_TESTS_XPATH = "/html/body/div[@id='bodyColumn']/div[@id='contentBox']/section[2]/table/tr[2]/td[1]/text()"
+                                final NO_OF_ERRORS_XPATH = "/html/body/div[@id='bodyColumn']/div[@id='contentBox']/section[2]/table/tr[2]/td[2]/text()"
+                                final NO_OF_FAILURES_XPATH = "/html/body/div[@id='bodyColumn']/div[@id='contentBox']/section[2]/table/tr[2]/td[3]/text()"
+
                                 final OUTPUT_FILE = "ResultSummary.dat"
 
                                 def resultSummaryFile = new File(properties["nightlyTestReportsDir"] + "/" + OUTPUT_FILE)
@@ -318,18 +367,21 @@
                                 }
                                 File[] files = reportDir.listFiles()
                                 for (File file : files) {
-                                    try {
-                                        noOfTests = processXml(file.text, NO_OF_TESTS_XPATH)
-                                        noOfNewTests = noOfTests
-                                        noOfErrors = processXml(file.text, NO_OF_ERRORS_XPATH) +
-                                                processXml(file.text, NO_OF_FAILURES_XPATH)
-                                    } catch (Exception e) {
-                                        log.warn "File: " + file.getName() + " can't be parsed. Result will be marked as a failed test!"
-                                        noOfTests = 1
-                                        noOfNewTests = 1
-                                        noOfErrors = 1
+                                    if (file.isFile()) {
+                                        try {
+                                            noOfTests = processXml(file.text, NO_OF_TESTS_XPATH)
+                                            noOfNewTests = noOfTests
+                                            noOfErrors = processXml(file.text, NO_OF_ERRORS_XPATH) + processXml(file.text, NO_OF_FAILURES_XPATH)
+                                        } catch (Exception e) {
+                                            log.warn "Error cause: ${e}"
+                                            log.warn "File: " + file.getName() + " can't be parsed. Result will be marked as a failed test!"
+                                            noOfTests = 1
+                                            noOfNewTests = 1
+                                            noOfErrors = 1
+                                        }
+                                        resultSummaryFile.append file.
+                                                getName() + ":" + noOfTests + ":" + noOfNewTests + ":" + noOfErrors + "\n"
                                     }
-                                    resultSummaryFile.append file.getName() + ":" + noOfTests + ":" + noOfNewTests + ":" + noOfErrors + "\n"
                                 }
                                 println resultSummaryFile.text
                                 ]]>
