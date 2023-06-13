@@ -316,6 +316,9 @@
                                         <replacevalue><![CDATA[&amp;&amp;]]></replacevalue>
                                     </replacefilter>
                                 </replace>
+                                <chmod dir="${project.build.directory}${nightlyDir}/Eclipse/" perm="644">
+                                    <include name="**/*.html"/>
+                                </chmod>
                             </target>
                         </configuration>
                     </execution>
