@@ -324,6 +324,7 @@
         <module>jpa.test.partitioned</module>
         <module>jpa.test.performance</module>
         <module>jpa.test.performance2</module>
+        <module>jpa.test.persistence32</module>
         <module>jpa.test.privateowned</module>
         <module>jpa.test.pu with spaces</module>
         <module>jpa.test.relationships</module>
