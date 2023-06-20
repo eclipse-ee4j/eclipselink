@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql;
 
 /**
@@ -61,7 +62,12 @@ public enum JPAVersion {
     /**
      * The constant for the Jakarta Persistence specification 3.1.
      */
-    VERSION_3_1(3.1);
+    VERSION_3_1(3.1),
+
+    /**
+     * The constant for the Jakarta Persistence specification 3.2.
+     */
+    VERSION_3_2(3.2);
 
     /**
      * The real version number.
@@ -106,6 +112,7 @@ public enum JPAVersion {
         values[3] = VERSION_2_2;
         values[4] = VERSION_3_0;
         values[5] = VERSION_3_1;
+        values[6] = VERSION_3_2;
         return values;
     }
 

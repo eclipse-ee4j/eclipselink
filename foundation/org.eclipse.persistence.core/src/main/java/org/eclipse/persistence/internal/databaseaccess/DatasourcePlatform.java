@@ -21,6 +21,8 @@
 //       - 529602: Added support for CLOBs in DELETE statements for Oracle
 //     02/01/2022: Tomas Kraus
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.IOException;
@@ -452,6 +454,7 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.toLowerCase());
         addOperator(ExpressionOperator.chr());
         addOperator(ExpressionOperator.concat());
+        addOperator(ExpressionOperator.concatPipes());
         addOperator(ExpressionOperator.hexToRaw());
         addOperator(ExpressionOperator.initcap());
         addOperator(ExpressionOperator.instring());

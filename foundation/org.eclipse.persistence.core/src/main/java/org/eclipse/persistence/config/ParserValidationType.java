@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.config;
 
 /**
@@ -34,6 +36,7 @@ public class ParserValidationType {
     public static final String JPA22 = "JPA 2.2";
     public static final String JPA30 = "JPA 3.0";
     public static final String JPA31 = "JPA 3.1";
+    public static final String JPA32 = "JPA 3.2";
     public static final String None = "None";
 
     public static final String DEFAULT = EclipseLink;

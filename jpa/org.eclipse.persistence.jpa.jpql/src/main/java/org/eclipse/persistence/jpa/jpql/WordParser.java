@@ -178,7 +178,6 @@ public final class WordParser {
      */
     public boolean isArithmeticSymbol(char character) {
         return character == '>' ||
-               character == '!' ||
                character == '<' ||
                character == '/' ||
                character == '*' ||
@@ -1121,6 +1120,22 @@ public final class WordParser {
 
             if (character == '>') {
                 return endIndex;
+            }
+        }
+
+        // ||
+        else if (character == '|') {
+
+            // End of the text
+            if (endIndex == length) {
+                return endIndex;
+            }
+
+            // Scan the next character
+            char nextCharacter = text.charAt(endIndex);
+
+            if (nextCharacter == '|') {
+                return ++endIndex;
             }
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.StringExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ArrayIterable;
 
@@ -293,6 +295,11 @@ public class JPQLQueryBNFAccessor {
 
     private Iterable<String> stringExpressionIdentifiers() {
         return getIdentifiers(StringExpressionBNF.ID);
+    }
+
+    public Iterable<String> strings() {
+        ExpressionFactory factory = getExpressionFactory(StringExpressionFactory.ID);
+        return new ArrayIterable<>(factory.identifiers());
     }
 
     public Iterable<String> subSelectFunctions() {

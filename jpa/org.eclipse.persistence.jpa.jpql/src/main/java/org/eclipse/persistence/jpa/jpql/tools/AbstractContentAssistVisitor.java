@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,6 +18,8 @@
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 //       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import java.util.ArrayList;
@@ -74,6 +76,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
@@ -105,6 +108,7 @@ import org.eclipse.persistence.jpa.jpql.parser.InternalBetweenExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalJoinBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_2;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
@@ -148,6 +152,8 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.StringPrimaryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
@@ -334,6 +340,18 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     protected void addArithmeticIdentifiers() {
         if (word.length() == 0) {
             addExpressionFactoryIdentifiers(ArithmeticExpressionFactory.ID);
+        }
+    }
+
+    /**
+     * Adds the JPQL identifiers which correspond to the String operators as valid proposals. The
+     * word has to be an empty string.
+     */
+    protected void addStringIdentifiers() {
+        if (this.queryContext.getGrammar() instanceof JPQLGrammar3_2) {
+            if (word.length() == 0) {
+                addExpressionFactoryIdentifiers(StringExpressionFactory.ID);
+            }
         }
     }
 
@@ -844,6 +862,17 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      */
     protected boolean areLogicalSymbolsAppendable(Expression expression) {
         return isAppendable(expression, AppendableType.LOGICAL);
+    }
+
+    /**
+     * Determines whether the given {@link Expression} can be followed by an String operator.
+     *
+     * @param expression The {@link Expression} that found left of the cursor, which determines if
+     * the String operators are appendable or not
+     * @return <code>true</code> if the operators are appendable; <code>false</code> otherwise
+     */
+    protected boolean areStringSymbolsAppendable(Expression expression) {
+        return isAppendable(expression, AppendableType.STRING);
     }
 
     protected abstract AcceptableTypeVisitor buildAcceptableTypeVisitor();
@@ -2803,6 +2832,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     @Override
+    public void visit(ConcatPipesExpression expression) {
+        super.visit(expression);
+        visitStringExpression(expression);
+    }
+
+    @Override
     public void visit(ConstructorExpression expression) {
         super.visit(expression);
         int position = queryPosition.getPosition(expression) - corrections.peek();
@@ -4700,6 +4735,36 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     /**
+     * Visits the given {@link StringExpression} and attempts to find valid proposals.
+     *
+     * @param expression The {@link StringExpression} to inspect
+     */
+    protected void visitStringExpression(StringExpression expression) {
+
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        int length = 0;
+
+        if (expression.hasLeftExpression()) {
+            length += expression.getLeftExpression().getLength() + SPACE_LENGTH;
+        }
+
+        // Within the string operator
+        if (isPositionWithin(position, length, CONCAT_PIPES)) {
+            addAggregateIdentifiers(expression.getQueryBNF());
+        }
+        // After the string operator, with or without the space
+        else if (expression.hasSpaceAfterIdentifier()) {
+            length += 2;
+
+            // Right after the space
+            if (position == length) {
+                addIdentificationVariables();
+                addFunctionIdentifiers(expression.getRightExpressionQueryBNFId());
+            }
+        }
+    }
+
+    /**
      * Visits the given {@link AbstractPathExpression} and attempts to find valid proposals that is
      * not provided by the default implementation. Subclasses can add additional proposals that is
      * outside of the scope of generic JPA metadata.
@@ -4778,7 +4843,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                 index = (-index / 10) - 1;
             }
 
-            // The only thing that is appendable is an arithmetic operator
+            // The only thing that is appendable is an arithmetic or String operator
             // Example: "SELECT e FROM Employee e WHERE e.name|"
             // Example: "SELECT e FROM Employee e WHERE I|"
             if ((index == 0) && !virtualSpace) {
@@ -4787,6 +4852,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
                 if (visitor.areArithmeticSymbolsAppendable(child)) {
                     visitor.addArithmeticIdentifiers();
+                }
+
+                if (visitor.areStringSymbolsAppendable(child)) {
+                    visitor.addStringIdentifiers();
                 }
             }
             else {
@@ -4810,6 +4879,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
+                    }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
                     }
 
                     if (visitor.areComparisonSymbolsAppendable(child)) {
@@ -5099,7 +5172,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                                        boolean hasComma,
                                        boolean virtualSpace) {
 
-            // The only thing that is appendable is an arithmetic operator
+            // The only thing that is appendable is arithmetic or String operator
             // Example: "SELECT e.name|"
             // Example: "SELECT e|"
             if (queryBNF(expression, index).handleAggregate()) {
@@ -5108,6 +5181,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
                 if (visitor.areArithmeticSymbolsAppendable(child)) {
                     visitor.addArithmeticIdentifiers();
+                }
+
+                if (visitor.areStringSymbolsAppendable(child)) {
+                    visitor.addStringIdentifiers();
                 }
             }
         }
@@ -5534,6 +5611,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         public void visit(ConcatExpression expression) {
             appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
+        }
+
+        @Override
+        public void visit(ConcatPipesExpression expression) {
+            if (expression.hasRightExpression()) {
+                expression.getRightExpression().accept(this);
+            }
         }
 
         @Override
@@ -6124,6 +6208,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                             appendable = visitor.queryContext.getTypeHelper().isBooleanType(type);
                             break;
                         }
+                        case STRING: {
+                            // e.name (String) can be followed by ||
+                            appendable = visitor.queryContext.getTypeHelper().isStringType(type);
+                            break;
+                        }
                     }
                 }
             }
@@ -6289,6 +6378,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
          * can be appended as valid proposals.
          */
         LOGICAL,
+
+        /**
+         * Determines whether the String operators (||) can be appended as valid proposals.
+         */
+        STRING,
 
         /**
          * Determines whether the JPQL identifiers identifying a subquery (eg: <code><b>SELECT</b></code>)
@@ -6458,7 +6552,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                                        boolean hasComma,
                                        boolean virtualSpace) {
 
-            // The only thing that is appendable is an arithmetic operator
+            // The only thing that is appendable is arithmetic or String operator
             // Example: "SELECT e.name|"
             // Example: "SELECT e|"
             if (queryBNF(expression, index).handleAggregate()) {
@@ -6470,11 +6564,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
                     }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
+                    }
                 }
                 else {
 
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
+                    }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
                     }
 
                     if (visitor.areComparisonSymbolsAppendable(child)) {
@@ -6593,11 +6695,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
                     }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
+                    }
                 }
                 else {
 
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
+                    }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
                     }
 
                     if (visitor.areComparisonSymbolsAppendable(child)) {
@@ -6890,11 +7000,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
                     }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
+                    }
                 }
                 else {
 
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
+                    }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
                     }
 
                     if (visitor.areComparisonSymbolsAppendable(child)) {
@@ -7370,6 +7488,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         @Override
         public void visit(ConcatExpression expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(ConcatPipesExpression expression) {
+            visitCompoundExpression(expression);
         }
 
         @Override
@@ -10482,11 +10605,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
                     }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
+                    }
                 }
                 else {
 
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
+                    }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
                     }
 
                     if (visitor.areComparisonSymbolsAppendable(child)) {

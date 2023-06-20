@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2006, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -24,6 +24,8 @@
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 //       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.sql.Date;
@@ -78,6 +80,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
@@ -795,6 +798,31 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
         // Set the expression type
        type[0] = String.class;
+    }
+
+    @Override
+    public void visit(ConcatPipesExpression expression) {
+        //Convert || string operator into function CONCAT() as not every DB supports it
+        //but DB platform should translate it into platform valid SQL
+        List<org.eclipse.persistence.jpa.jpql.parser.Expression> expressions = new ArrayList<>(2);
+        expressions.add(expression.getLeftExpression());
+        expressions.add(expression.getRightExpression());
+        Expression newExpression = null;
+
+        for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expressions) {
+            child.accept(this);
+            if (newExpression == null) {
+                newExpression = queryExpression;
+            }
+            else {
+                newExpression = newExpression.concat(queryExpression);
+            }
+        }
+
+        queryExpression = newExpression;
+
+        // Set the expression type
+        type[0] = String.class;
     }
 
     @Override
