@@ -56,11 +56,14 @@
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
 -->
-<project name="eclipselink.core.test" default="build" basedir=".">
+<project name="eclipselink.core.test" default="build" basedir="." xmlns:if="ant:if">
 
     <echo message="CORETEST_BEGINS..."/>
     <available file="../${ant.project.name}" type="dir" property="core_test.is.local"/>
     <fail message="Not running from '${ant.project.name}' directory" unless="core_test.is.local"/>
+    <condition property="is.less.21.jdk" value="true" else="false">
+        <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*|9.*|1(?:[0-7]).*"/>
+    </condition>
 
     <!-- Default ant target, compiles and translates resources, does not run tests. -->
     <target name="build" depends="clean, compile, package" description="build EclipseLink core tests"/>
@@ -562,9 +565,10 @@
 
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
     <target name="test" depends="init-testing">
+        <echo message="is.less.21.jdk: ${is.less.21.jdk}"/>
         <test include="**/junit/**/*Test.java"/>
         <test include="${test.class}"/>
-        <test include="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
+        <test include="org.eclipse.persistence.testing.tests.security.SecurityTestModel" if:true="${is.less.21.jdk}"/>
         <generate-report/>
     </target>
 

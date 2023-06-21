@@ -19,6 +19,11 @@ on:
     branches: [ '2.7' ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   maven_version: 3.8.8
 jobs:
@@ -28,14 +33,9 @@ jobs:
 
     strategy:
       matrix:
-        java_version: [ 11 ]
+        java_version: [ 17, 21-ea ]
 
     steps:
-      - name: Cancel previous runs of this workflow
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
       - name: Start MySQL Database
         run: |
           sudo systemctl start mysql.service
