@@ -564,12 +564,19 @@
     </target>
 
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
-    <target name="test" depends="init-testing">
+    <target name="test" depends="init-testing, test-all-jdks, test-less-jdk21">
         <echo message="is.less.21.jdk: ${is.less.21.jdk}"/>
+        <generate-report/>
+    </target>
+
+    <target name="test-all-jdks">
         <test include="**/junit/**/*Test.java"/>
         <test include="${test.class}"/>
-        <test include="org.eclipse.persistence.testing.tests.security.SecurityTestModel" if:true="${is.less.21.jdk}"/>
         <generate-report/>
+    </target>
+
+    <target name="test-less-jdk21" if="${is.less.21.jdk}">
+        <test include="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
     </target>
 
     <!-- Test target to run/debug single ${test.class}. -->

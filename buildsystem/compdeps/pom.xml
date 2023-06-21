@@ -121,9 +121,9 @@
         <!-- CQ #22995 -->
         <jboss.logging.version>3.4.1.Final</jboss.logging.version>
         <!-- CQ #22996 API, #22997 SPI-->
-        <jboss.weld.api.version>3.1.SP3</jboss.weld.api.version>
+        <jboss.weld.api.version>3.1.SP4</jboss.weld.api.version>
         <!-- CQ #22998 weld-environment-common, #22999 weld-se-core,  #23000 weld-core-impl -->
-        <jboss.weld.version>3.1.6.Final</jboss.weld.version>
+        <jboss.weld.version>3.1.9.Final</jboss.weld.version>
     </properties>
 
     <build>
