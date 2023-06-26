@@ -178,6 +178,7 @@ public final class WordParser {
      */
     public boolean isArithmeticSymbol(char character) {
         return character == '>' ||
+               character == '!' ||
                character == '<' ||
                character == '/' ||
                character == '*' ||
