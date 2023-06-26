@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,6 +61,9 @@
     <echo message="CORETEST_BEGINS..."/>
     <available file="../${ant.project.name}" type="dir" property="core_test.is.local"/>
     <fail message="Not running from '${ant.project.name}' directory" unless="core_test.is.local"/>
+    <condition property="is.less.21.jdk" value="true" else="false">
+        <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*|9.*|1(?:[0-7]).*"/>
+    </condition>
 
     <!-- Default ant target, compiles and translates resources, does not run tests. -->
     <target name="build" depends="clean, compile, package" description="build EclipseLink core tests"/>
@@ -561,11 +564,19 @@
     </target>
 
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
-    <target name="test" depends="init-testing">
+    <target name="test" depends="init-testing, test-all-jdks, test-less-jdk21">
+        <echo message="is.less.21.jdk: ${is.less.21.jdk}"/>
+        <generate-report/>
+    </target>
+
+    <target name="test-all-jdks">
         <test include="**/junit/**/*Test.java"/>
         <test include="${test.class}"/>
-        <test include="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
         <generate-report/>
+    </target>
+
+    <target name="test-less-jdk21" if="${is.less.21.jdk}">
+        <test include="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
     </target>
 
     <!-- Test target to run/debug single ${test.class}. -->

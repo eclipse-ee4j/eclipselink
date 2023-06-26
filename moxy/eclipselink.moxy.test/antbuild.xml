@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -541,7 +541,7 @@
             <mkdir dir="${report.dir}/jaxb"/>
             <mkdir dir="${build.dir}/${test.dir}/${tmp.dir}"/>
             <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
-            <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
+            <property name="additional.jvmargs" value="-Ddummy2=dummy --add-opens java.base/java.math=ALL-UNNAMED"/>
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.jaxb" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="1024m">
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
