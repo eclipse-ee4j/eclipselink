@@ -60,6 +60,7 @@ import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p>
@@ -337,6 +338,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** Allow the reserved pound char used to delimit bind parameters to be overridden */
     protected String parameterDelimiter;
+
+    /** Flag to control the sql log */
+    protected boolean occurException = false;
 
     /**
      * PUBLIC: Initialize the state of the query
@@ -2696,6 +2700,20 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         setShouldStoreBypassCache(true);
     }
 
+    /**
+     * Return true if exception has occured.
+     */
+    public boolean isOccurException() {
+        return occurException;
+    }
+
+    /**
+     * Set if exception has occurd.
+     */
+    public void setOccurException(boolean occurException) {
+        this.occurException = occurException;
+    }
+
     @Override
     public String toString() {
         String referenceClassString = "";
@@ -2706,6 +2724,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         }
         if ((getName() != null) && (!getName().equals(""))) {
             nameString = "name=\"" + getName() + "\" ";
+        }
+        if (isOccurException() && !session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
+            return getClass().getSimpleName() + "(" + nameString + referenceClassString + ")";
         }
         if (isSQLCallQuery()) {
             queryString = "sql=\"" + getSQLString() + "\"";

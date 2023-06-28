@@ -1856,6 +1856,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 if (queryException.getSession() == null) {
                     queryException.setSession(this);
                 }
+                if (queryException.getQuery().getSession() == null) {
+                    queryException.getQuery().setSession(this);
+                }
+                queryException.getQuery().setOccurException(true);
             } else if (exception instanceof DatabaseException) {
                 DatabaseException databaseException = (DatabaseException)exception;
                 if (databaseException.getQuery() == null) {
@@ -1867,6 +1871,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 if (databaseException.getSession() == null) {
                     databaseException.setSession(this);
                 }
+                if (databaseException.getQuery().getSession() == null) {
+                    databaseException.getQuery().setSession(this);
+                }
+                databaseException.getQuery().setOccurException(true);
                 //if this query is a read query outside of a transaction then we may be able to retry the query
                 if (!isInTransaction() && query.isReadQuery() && getDatasourceLogin() instanceof DatabaseLogin) {
                     final int count = getLogin().getQueryRetryAttemptCount();
