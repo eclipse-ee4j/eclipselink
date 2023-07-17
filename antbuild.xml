@@ -415,7 +415,7 @@
 <!-- ================================================================================= -->
 
     <!-- "top-level" target for creating the distribution archives. -->
-    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-tst-src-zip, package-tst-jar-zip, package-javadoc-zip, package-installer-zip, package-eclipselink-nosql-install"/>
+    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-tst-src-zip, package-tst-jar-zip, package-javadoc-zip, package-installer-zip, package-eclipselink-nosql-install, package-eclipselink-toplink"/>
 
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
@@ -1718,6 +1718,35 @@
                 <include name="javax.resource*.jar"/>
             </zipfileset>
         </zip>
+    </target>
+
+    <target name="package-eclipselink-toplink">
+        <!-- Prepare eclipselink-toplink.zip file content -->
+        <delete dir="${build.dir}/${eclipselink.toplink.install.prefix}" failonerror="false"/>
+        <copy file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" tofile="${build.dir}/${eclipselink.toplink.install.prefix}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+        <copy file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${build.dir}/${eclipselink.toplink.install.prefix}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+        <copy file="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}" tofile="${build.dir}/${eclipselink.toplink.install.prefix}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+        <copy file="${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}" tofile="${build.dir}/${eclipselink.toplink.install.prefix}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+        <copy file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" tofile="${build.dir}/${eclipselink.toplink.install.prefix}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+
+        <delete failonerror="false" dir="target/promote_artifacts"/>
+        <zip destfile="target/promote_artifacts/com/oracle/toplink/${eclipselink.toplink.install.prefix}/${release.version}-${build.date}.${build.time}/${eclipselink.toplink.install.prefix}-${release.version}-${build.date}.${build.time}${eclipselink.zip.suffix}">
+            <zipfileset dir="${build.dir}/${eclipselink.toplink.install.prefix}">
+                <include name="${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+                <include name="${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+                <include name="${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+                <include name="${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+                <include name="${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+            </zipfileset>
+        </zip>
+        <echo file="target/promote_artifacts/com/oracle/toplink/${eclipselink.toplink.install.prefix}/${release.version}-${build.date}.${build.time}/${eclipselink.toplink.install.prefix}-${release.version}-${build.date}.${build.time}.pom">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+            &lt;project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+            &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+            &lt;groupId&gt;com.oracle.toplink&lt;/groupId&gt;
+            &lt;artifactId&gt;eclipselink-toplink&lt;/artifactId&gt;
+            &lt;version&gt;${release.version}-${build.date}.${build.time}&lt;/version&gt;
+            &lt;packaging&gt;zip&lt;/packaging&gt;
+            &lt;/project&gt;</echo>
     </target>
 
     <!-- Build Infrastructure targets -->
