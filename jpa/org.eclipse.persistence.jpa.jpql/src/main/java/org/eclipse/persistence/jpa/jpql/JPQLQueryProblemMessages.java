@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql;
 
 /**
@@ -333,6 +334,12 @@ public interface JPQLQueryProblemMessages {
     String StringLiteral_MissingClosingQuote = "STRING_LITERAL_MISSING_CLOSING_QUOTE";
     String SubExpression_MissingExpression = "SUB_EXPRESSION_MISSING_EXPRESSION";
     String SubExpression_MissingRightParenthesis = "SUB_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+    String StringExpression_InvalidLeftExpression = "STRING_EXPRESSION_INVALID_LEFT_EXPRESSION";
+    String StringExpression_InvalidRightExpression = "STRING_EXPRESSION_INVALID_RIGHT_EXPRESSION";
+    String StringExpression_MissingLeftExpression = "STRING_EXPRESSION_MISSING_LEFT_EXPRESSION";
+    String StringExpression_MissingRightExpression = "STRING_EXPRESSION_MISSING_RIGHT_EXPRESSION";
+    String StringFactor_InvalidExpression = "STRING_FACTOR_INVALID_EXPRESSION";
+    String StringFactor_MissingExpression = "STRING_FACTOR_MISSING_EXPRESSION";
     String SubstringExpression_FirstExpression_WrongType = "SUBSTRING_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE";
     String SubstringExpression_InvalidFirstExpression = "SUBSTRING_EXPRESSION_INVALID_FIRST_EXPRESSION";
     String SubstringExpression_InvalidSecondExpression = "SUBSTRING_EXPRESSION_INVALID_SECOND_EXPRESSION";

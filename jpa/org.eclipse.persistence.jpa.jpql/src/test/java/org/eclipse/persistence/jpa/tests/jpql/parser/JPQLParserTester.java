@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionMe
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionValuedPathExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ComparisonExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConcatExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConcatPipesExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConnectByClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConstructorExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CountFunctionTester;
@@ -438,6 +439,11 @@ public final class JPQLParserTester {
             return new ConcatExpressionTester(collection(expressions));
         }
         return new ConcatExpressionTester(expressions[0]);
+    }
+
+    public static ConcatPipesExpressionTester concatPipes(ExpressionTester leftExpression,
+                                                                 ExpressionTester rightExpression) {
+        return new ConcatPipesExpressionTester(leftExpression, rightExpression);
     }
 
     public static ConnectByClauseTester connectBy(ExpressionTester expression) {

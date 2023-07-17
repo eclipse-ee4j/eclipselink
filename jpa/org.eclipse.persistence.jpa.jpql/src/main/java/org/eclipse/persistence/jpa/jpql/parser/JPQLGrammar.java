@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
@@ -28,6 +29,10 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
  * <li>{@link JPQLGrammar1_0} defines the JPQL grammar based on JPA 1.0;</li>
  * <li>{@link JPQLGrammar2_0} defines the JPQL grammar based on JPA 2.0;</li>
  * <li>{@link JPQLGrammar2_1} defines the JPQL grammar based on JPA 2.1;</li>
+ * <li>{@link JPQLGrammar2_2} defines the JPQL grammar based on JPA 2.2;</li>
+ * <li>{@link JPQLGrammar3_0} defines the JPQL grammar based on JPA 3.0;</li>
+ * <li>{@link JPQLGrammar3_1} defines the JPQL grammar based on JPA 3.1;</li>
+ * <li>{@link JPQLGrammar3_2} defines the JPQL grammar based on JPA 3.2;</li>
  * <li>{@link EclipseLinkJPQLGrammar1} defines the JPQL grammar based on JPA 1.0 and EclipseLink 1.x;</li>
  * <li>{@link EclipseLinkJPQLGrammar2_0} defines the JPQL grammar based on JPA 2.0 and the additional EclipseLink 2.0 support;</li>
  * <li>{@link EclipseLinkJPQLGrammar2_1} defines the JPQL grammar based on JPA 2.0 and the additional EclipseLink 2.1 support.</li>
@@ -35,6 +40,9 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
  * <li>{@link EclipseLinkJPQLGrammar2_3} defines the JPQL grammar based on JPA 2.0 and the additional EclipseLink 2.3 support.</li>
  * <li>{@link EclipseLinkJPQLGrammar2_4} defines the JPQL grammar based on JPA 2.1 and the additional EclipseLink 2.4 support.</li>
  * <li>{@link EclipseLinkJPQLGrammar2_5} defines the JPQL grammar based on JPA 2.1 and the additional EclipseLink 2.5 support.</li>
+ * <li>{@link EclipseLinkJPQLGrammar2_6} defines the JPQL grammar based on JPA 2.1 and the additional EclipseLink 2.6 support.</li>
+ * <li>{@link EclipseLinkJPQLGrammar4_0} defines the JPQL grammar based on JPA 2.1 and the additional EclipseLink 4.0 support.</li>
+ * <li>{@link EclipseLinkJPQLGrammar4_1} defines the JPQL grammar based on JPA 2.1 and the additional EclipseLink 4.1 support.</li>
  * <li>{@link DefaultJPQLGrammar} defines the JPQL grammar based on the latest JPA version;</li>
  * <li>{@link DefaultEclipseLinkJPQLGrammar} defines the JPQL grammar based on the latest JPA and
  * the latest EclipseLink;</li>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.tools.model;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.AND;
@@ -21,6 +22,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.BETWEEN;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CASE;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.COALESCE;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CONCAT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.CONCAT_PIPES;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.DELETE;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.DISTINCT;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.DIVISION;
@@ -128,6 +130,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.CollectionValuedPathEx
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ComparisonExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.CompoundExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ConcatExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.ConcatPipesExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ConstructorExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.CountFunctionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.DateTimeStateObject;
@@ -1039,6 +1042,11 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
                 writer.append(RIGHT_PARENTHESIS);
             }
         }
+    }
+
+    @Override
+    public void visit(ConcatPipesExpressionStateObject stateObject) {
+            toStringCompound(stateObject, CONCAT_PIPES);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -48,6 +50,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
@@ -2126,6 +2129,25 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         @Override
         protected String identifier() {
             return CONCAT;
+        }
+    }
+
+    public static final class ConcatPipesExpressionTester extends CompoundExpressionTester {
+
+        protected ConcatPipesExpressionTester(ExpressionTester leftExpression,
+                                              ExpressionTester rightExpression) {
+
+            super(leftExpression, rightExpression);
+        }
+
+        @Override
+        protected Class<? extends CompoundExpression> expressionType() {
+            return ConcatPipesExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return CONCAT_PIPES;
         }
     }
 

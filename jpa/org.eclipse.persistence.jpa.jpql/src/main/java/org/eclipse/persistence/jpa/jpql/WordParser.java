@@ -1124,6 +1124,22 @@ public final class WordParser {
             }
         }
 
+        // ||
+        else if (character == '|') {
+
+            // End of the text
+            if (endIndex == length) {
+                return endIndex;
+            }
+
+            // Scan the next character
+            char nextCharacter = text.charAt(endIndex);
+
+            if (nextCharacter == '|') {
+                return ++endIndex;
+            }
+        }
+
         // Done scanning
         else if (isWordSeparator(character)) {
             return --endIndex;

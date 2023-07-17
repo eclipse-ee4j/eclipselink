@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.tools.model;
 
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
@@ -132,6 +134,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.CollectionMemberExpres
 import org.eclipse.persistence.jpa.jpql.tools.model.query.CollectionValuedPathExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ComparisonExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ConcatExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.ConcatPipesExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ConstructorExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.CountFunctionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.DateTimeStateObject;
@@ -768,6 +771,25 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         ConcatExpressionStateObject stateObject = new ConcatExpressionStateObject(
             parent,
             buildChildren(expression.getExpression())
+        );
+
+        stateObject.setExpression(expression);
+        this.stateObject = stateObject;
+    }
+
+    @Override
+    public void visit(ConcatPipesExpression expression) {
+
+        expression.getLeftExpression().accept(this);
+        StateObject leftStateObject = stateObject;
+
+        expression.getRightExpression().accept(this);
+        StateObject rightStateObject = stateObject;
+
+        ConcatPipesExpressionStateObject stateObject = new ConcatPipesExpressionStateObject(
+                parent,
+                leftStateObject,
+                rightStateObject
         );
 
         stateObject.setExpression(expression);

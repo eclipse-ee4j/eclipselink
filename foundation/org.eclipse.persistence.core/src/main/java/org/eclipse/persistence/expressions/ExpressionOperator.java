@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,6 +20,8 @@
 //       - 530214: trim operation should not bind parameters
 //     02/01/2022: Tomas Kraus
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.expressions;
 
 import java.io.Serializable;
@@ -259,6 +261,9 @@ public class ExpressionOperator implements Serializable {
     public static final int Atan2 = 91;
     public static final int Cot = 95;
     public static final int Negate = 135;
+
+    // String
+    public static final int ConcatPipes = 152;
 
     // Object-relational
     public static final int Deref = 82;
@@ -732,6 +737,16 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator concat() {
         ExpressionOperator operator = simpleMath(Concat, "+");
+        operator.setIsBindingSupported(false);
+        return operator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator concatPipes() {
+        ExpressionOperator operator = simpleMath(ConcatPipes, "||");
         operator.setIsBindingSupported(false);
         return operator;
     }

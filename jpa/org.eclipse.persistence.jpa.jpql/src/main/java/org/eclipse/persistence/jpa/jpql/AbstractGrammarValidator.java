@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,6 +15,8 @@
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql;
 
 import java.util.ArrayList;
@@ -57,6 +59,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
@@ -118,7 +121,10 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.StringTermBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
@@ -136,6 +142,7 @@ import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.StringExpression_InvalidLeftExpression;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -2171,6 +2178,19 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         );
     }
 
+    protected void validateStringExpression(StringExpression expression) {
+        validateCompoundExpression(
+                expression,
+                expression.getStringSign(),
+                StringExpression_MissingLeftExpression,
+                StringExpression_InvalidLeftExpression,
+                StringExpression_MissingRightExpression,
+                StringExpression_InvalidRightExpression,
+                StringExpressionBNF.ID,
+                StringTermBNF.ID
+        );
+    }
+
     /**
      * Validates the given {@link Expression} by making sure each child is separated by a comma.
      *
@@ -2945,6 +2965,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 }
             }
         }
+    }
+
+    @Override
+    public void visit(ConcatPipesExpression expression) {
+        validateStringExpression(expression);
     }
 
     @Override

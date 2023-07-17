@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.tests.jpql.tools;
 
 import java.util.ArrayList;
@@ -1081,6 +1082,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         proposals.remove(OR);
         proposals.remove(IS_EMPTY);
         proposals.remove(IS_NOT_EMPTY);
+        proposals.remove(CONCAT_PIPES);
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
@@ -5224,7 +5226,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         proposals.add(FROM);
-        CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
+        CollectionTools.addAll(proposals, bnfAccessor.arithmetics());
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
@@ -5238,7 +5240,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         proposals.add(FROM);
-        CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
+        CollectionTools.addAll(proposals, bnfAccessor.arithmetics());
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
@@ -5266,7 +5268,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         List<String> proposals = new ArrayList<>();
         proposals.add(AS);
         proposals.add(FROM);
-        CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
+        CollectionTools.addAll(proposals, bnfAccessor.arithmetics());
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
@@ -5341,6 +5343,9 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         proposals.add(AS);
         proposals.add(FROM);
         CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
+
+        // These are filtered out
+        proposals.remove(CONCAT_PIPES);
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
@@ -5587,6 +5592,9 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         List<String> proposals = new ArrayList<>();
         proposals.add(FROM);
         CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
+
+        // These are filtered out
+        proposals.remove(CONCAT_PIPES);
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
@@ -6426,6 +6434,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         proposals.remove(IS_NOT_EMPTY);
         proposals.remove(AND);
         proposals.remove(OR);
+        proposals.remove(CONCAT_PIPES);
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
@@ -6463,6 +6472,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         // Filtered out
         proposals.remove(IS_EMPTY);
         proposals.remove(IS_NOT_EMPTY);
+        proposals.remove(CONCAT_PIPES);
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
@@ -6480,6 +6490,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
         // Filtered out
         proposals.remove(IS_EMPTY);
         proposals.remove(IS_NOT_EMPTY);
+        proposals.remove(CONCAT_PIPES);
 
         testHasOnlyTheseProposals(jpqlQuery, position, proposals);
     }
