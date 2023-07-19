@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,7 +87,7 @@ public class JpaHelper {
             return (ReportQuery)dbQuery;
         }
 
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_report_query" + query.getClass()));
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_report_query",  new Object[]{query.getClass()}));
     }
 
     /**
@@ -98,7 +98,7 @@ public class JpaHelper {
             return ((JpaQuery)query).getDatabaseQuery();
         }
 
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_query" + query.getClass()));
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_query",  new Object[]{query.getClass()}));
     }
 
     /**
@@ -115,7 +115,7 @@ public class JpaHelper {
             return (ReadAllQuery)dbQuery;
         }
 
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_read_all_query" + query.getClass()));
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_read_all_query", new Object[]{query.getClass()}));
     }
 
     /**
