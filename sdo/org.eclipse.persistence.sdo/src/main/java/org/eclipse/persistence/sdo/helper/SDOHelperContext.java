@@ -20,7 +20,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.security.AccessController;
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1509,14 +1509,14 @@ public class SDOHelperContext implements HelperContext {
      * @param expirationTime defines age of helper context records. Older one will be removed. It's compared against creation time.
      * @return number of removed helper context records
      */
-    public static int removeExpiredHelperContexts(Object key, Date expirationTime) {
+    public static int removeExpiredHelperContexts(Object key, Instant expirationTime) {
         int removedCounter = 0;
         CacheIdentityMap contextMap = helperContexts.get(key);
         if (contextMap != null) {
             Map<Object, CacheKey> cacheKeys = contextMap.getCacheKeys();
             for (Object key0: cacheKeys.keySet()) {
                 CacheKey cacheKey = cacheKeys.get(key0);
-                if (cacheKey.getConcurrencyManagerCreationDate().compareTo(expirationTime) < 0) {
+                if (cacheKey.getConcurrencyManagerCreationDate().getTime() < expirationTime.getEpochSecond() * 1000) {
                     cacheKeys.remove(key0);
                     removedCounter++;
                 }
@@ -1534,7 +1534,7 @@ public class SDOHelperContext implements HelperContext {
      * @param expirationTime defines age of helper context records. Older one will be removed. It's compared against creation time.
      * @return number of removed helper context records
      */
-    public static int removeAllExpiredHelperContexts(Date expirationTime) {
+    public static int removeAllExpiredHelperContexts(Instant expirationTime) {
         int removedCounter = 0;
         for (Object key: helperContexts.keySet()) {
             removedCounter += removeExpiredHelperContexts(key, expirationTime);
