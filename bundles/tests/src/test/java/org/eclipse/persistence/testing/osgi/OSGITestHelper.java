@@ -69,23 +69,23 @@ public class OSGITestHelper {
     public static Option[] getOptionsWithBeanValidation() {
         return options(
                 // JAXB API
-                bundle("file:" + PLUGINS_DIR + ACTIVATION_JAR),
-                bundle("file:" + PLUGINS_DIR + JAXB_API_JAR),
+                bundle(pathToUrl(PLUGINS_DIR + ACTIVATION_JAR)),
+                bundle(pathToUrl(PLUGINS_DIR + JAXB_API_JAR)),
 
                 // JAX-RS API
-                bundle("file:" + PLUGINS_DIR + JAXRS_JAR),
+                bundle(pathToUrl(PLUGINS_DIR + JAXRS_JAR)),
 
                 // EclipseLink bundles
-                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.moxy.jar"),
-                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.core.jar"),
-                bundle("file:" + PLUGINS_DIR + ASM_JAR),
+                bundle(pathToUrl(PLUGINS_DIR + "org.eclipse.persistence.moxy.jar")),
+                bundle(pathToUrl(PLUGINS_DIR + "org.eclipse.persistence.core.jar")),
+                bundle(pathToUrl(PLUGINS_DIR + ASM_JAR)),
 
-                bundle("file:" + PLUGINS_DIR + "jakarta.validation-api.jar"),
-                bundle("file:" + PLUGINS_DIR + "hibernate-validator.jar"),
-                bundle("file:" + PLUGINS_DIR + "classmate.jar"),
-                bundle("file:" + PLUGINS_DIR + "jakarta.el-api.jar"),
-                bundle("file:" + PLUGINS_DIR + "jakarta.el.jar"),
-                bundle("file:" + PLUGINS_DIR + "jboss-logging.jar"),
+                bundle(pathToUrl(PLUGINS_DIR + "jakarta.validation-api.jar")),
+                bundle(pathToUrl(PLUGINS_DIR + "hibernate-validator.jar")),
+                bundle(pathToUrl(PLUGINS_DIR + "classmate.jar")),
+                bundle(pathToUrl(PLUGINS_DIR + "jakarta.el-api.jar")),
+                bundle(pathToUrl(PLUGINS_DIR + "jakarta.el.jar")),
+                bundle(pathToUrl(PLUGINS_DIR + "jboss-logging.jar")),
                 cleanCaches(),
                 junitBundles()
         );
