@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -3765,7 +3765,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     }
                     hasRelationships = true;
                 }
-                if ((mapping instanceof AggregateObjectMapping)){
+                if ((mapping.isAggregateObjectMapping())){
                     if (mapping.getReferenceDescriptor().shouldAcquireCascadedLocks()) {
                         setShouldAcquireCascadedLocks(true);
                     }
@@ -3904,7 +3904,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     private void browseReturningPolicies(List<ReturningPolicy> returningPolicies, Vector<DatabaseMapping> mappings) {
         for (DatabaseMapping databaseMapping :mappings) {
-            if (databaseMapping instanceof AggregateObjectMapping) {
+            if (databaseMapping.isAggregateObjectMapping()) {
                 ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
                 if (referenceDescriptor != null) {
                     browseReturningPolicies(returningPolicies, referenceDescriptor.getMappings());

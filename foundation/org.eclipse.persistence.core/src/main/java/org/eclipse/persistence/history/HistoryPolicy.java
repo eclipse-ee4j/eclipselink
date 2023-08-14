@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.queries.DataModifyQuery;
-import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -847,7 +846,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
             SQLUpdateStatement updateStatement = new SQLUpdateStatement();
             updateStatement.setTable(table);
             Expression whereClause = null;
-            if (writeQuery instanceof DeleteAllQuery) {
+            if (writeQuery.isDeleteAllQuery()) {
                 if (writeQuery.getSelectionCriteria() != null) {
                     whereClause = (Expression)writeQuery.getSelectionCriteria().clone();
                 }

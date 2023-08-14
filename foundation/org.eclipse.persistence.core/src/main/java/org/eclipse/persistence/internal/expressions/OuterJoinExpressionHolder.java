@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,30 +91,32 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
 
     protected void process(boolean usesHistory, boolean isMapKeyHolder) {
         this.isMapKeyHolder = isMapKeyHolder;
-        if (this.joinExpression instanceof QueryKeyExpression) {
-            QueryKeyExpression expression = (QueryKeyExpression)this.joinExpression;
-            if (isMapKeyHolder) {
-                descriptor = expression.getMapKeyDescriptor();
-                this.targetTable = descriptor.getTables().get(0);
-                this.targetAlias = outerJoinedMappingCriteria.aliasForTable(this.targetTable);
-            } else {
-                // this is a map - create a holder for the key
-                if(expression.isMapKeyObjectRelationship()) {
-                    this.mapKeyHolder = new OuterJoinExpressionHolder(this);
-                    this.mapKeyHolder.process(usesHistory, true);
+        if (this.joinExpression != null) {
+            if (this.joinExpression.isQueryKeyExpression()) {
+                QueryKeyExpression expression = (QueryKeyExpression)this.joinExpression;
+                if (isMapKeyHolder) {
+                    descriptor = expression.getMapKeyDescriptor();
+                    this.targetTable = descriptor.getTables().get(0);
+                    this.targetAlias = outerJoinedMappingCriteria.aliasForTable(this.targetTable);
+                } else {
+                    // this is a map - create a holder for the key
+                    if(expression.isMapKeyObjectRelationship()) {
+                        this.mapKeyHolder = new OuterJoinExpressionHolder(this);
+                        this.mapKeyHolder.process(usesHistory, true);
+                    }
+                    // in DirectCollection case descriptor is null
+                    descriptor = expression.getDescriptor();
+                    this.targetTable = expression.getReferenceTable();
+                    this.targetAlias = expression.aliasForTable(this.targetTable);
                 }
-                // in DirectCollection case descriptor is null
-                descriptor = expression.getDescriptor();
-                this.targetTable = expression.getReferenceTable();
-                this.targetAlias = expression.aliasForTable(this.targetTable);
+                this.sourceTable = expression.getSourceTable();
+                this.sourceAlias = expression.getBaseExpression().aliasForTable(this.sourceTable);
+            } else {
+                this.sourceTable = ((ObjectExpression) this.joinExpression.getJoinSource()).getDescriptor().getTables().get(0);
+                this.sourceAlias = this.joinExpression.getJoinSource().aliasForTable(this.sourceTable);
+                this.targetTable = this.joinExpression.getDescriptor().getTables().get(0);
+                this.targetAlias = this.joinExpression.aliasForTable(this.targetTable);
             }
-            this.sourceTable = expression.getSourceTable();
-            this.sourceAlias = expression.getBaseExpression().aliasForTable(this.sourceTable);
-        } else if (this.joinExpression != null) {
-            this.sourceTable = ((ObjectExpression)this.joinExpression.getJoinSource()).getDescriptor().getTables().get(0);
-            this.sourceAlias = this.joinExpression.getJoinSource().aliasForTable(this.sourceTable);
-            this.targetTable = this.joinExpression.getDescriptor().getTables().get(0);
-            this.targetAlias = this.joinExpression.aliasForTable(this.targetTable);
         } else {
             // absence of join expression means that this holder used for multitable inheritance:
             //   ReadAllQuery query = new ReadAllQuery(Project.class);

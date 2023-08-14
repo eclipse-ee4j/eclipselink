@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,12 +18,14 @@ import java.io.*;
 import java.util.*;
 import jakarta.resource.*;
 import jakarta.resource.cci.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.eis.*;
+import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * Defines the specification for a call to a JCA interaction.
@@ -200,8 +202,10 @@ public abstract class EISInteraction extends DatasourceCall {
     @Override
     public void prepare(AbstractSession session) {
         if (getInputRecordName().length() == 0) {
-            if ((getQuery() != null) && (getQuery().getDescriptor() instanceof EISDescriptor)) {
-                EISDescriptor descriptor = (EISDescriptor)getQuery().getDescriptor();
+            DatabaseQuery q = getQuery();
+            ClassDescriptor classDescriptor = q != null ? q.getDescriptor() : null;
+            if (classDescriptor != null && classDescriptor.isEISDescriptor()) {
+                EISDescriptor descriptor = (EISDescriptor) classDescriptor;
                 setInputRecordName(descriptor.getDataTypeName());
             } else {
                 setInputRecordName("input");

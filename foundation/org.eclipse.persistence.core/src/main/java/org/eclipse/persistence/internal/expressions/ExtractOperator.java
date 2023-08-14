@@ -204,7 +204,7 @@ public class ExtractOperator extends ExpressionOperator {
 
     @Override
     public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-        if (second instanceof LiteralExpression) {
+        if (second.isLiteralExpression()) {
             switch (((LiteralExpression) second).getValue().toUpperCase()) {
                 case "YEAR":
                     printYearSQL(first, second, printer);
@@ -242,7 +242,7 @@ public class ExtractOperator extends ExpressionOperator {
     public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
         if (items.size() == 2) {
             final Expression second = items.get(1);
-            if (second instanceof LiteralExpression) {
+            if (second.isLiteralExpression()) {
                 switch (((LiteralExpression) second).getValue().toUpperCase()) {
                     case "YEAR":
                         printYearSQL(items.get(0), second, printer);
@@ -417,7 +417,7 @@ public class ExtractOperator extends ExpressionOperator {
 
     @Override
     public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
-        if (second instanceof LiteralExpression) {
+        if (second.isLiteralExpression()) {
             switch (((LiteralExpression) second).getValue().toUpperCase()) {
                 case "YEAR":
                     printYearJava(first, second, printer);
@@ -455,7 +455,7 @@ public class ExtractOperator extends ExpressionOperator {
     public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
         if (items.size() == 2) {
             final Expression second = items.get(1);
-            if (second instanceof LiteralExpression) {
+            if (second.isLiteralExpression()) {
                 switch (((LiteralExpression) second).getValue().toUpperCase()) {
                     case "YEAR":
                         printYearJava(items.get(0), second, printer);

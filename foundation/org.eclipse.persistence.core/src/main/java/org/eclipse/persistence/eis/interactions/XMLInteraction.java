@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,10 +17,12 @@ package org.eclipse.persistence.eis.interactions;
 import java.io.*;
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.w3c.dom.Element;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -89,17 +91,19 @@ public class XMLInteraction extends MappedInteraction {
      */
     @Override
     public void prepare(AbstractSession session) {
+        DatabaseQuery q = getQuery();
+        ClassDescriptor desc = q != null ? q.getDescriptor() : null;
         if (getInputRootElementName().length() == 0) {
-            if ((getQuery() != null) && (getQuery().getDescriptor() instanceof EISDescriptor)) {
-                EISDescriptor descriptor = (EISDescriptor)getQuery().getDescriptor();
+            if (desc != null && desc.isEISDescriptor()) {
+                EISDescriptor descriptor = (EISDescriptor) desc;
                 setInputRootElementName(descriptor.getDataTypeName());
             } else {
                 setInputRootElementName("input");
             }
         }
         if (getOutputRootElementName().length() == 0) {
-            if ((getQuery() != null) && (getQuery().getDescriptor() instanceof EISDescriptor)) {
-                EISDescriptor descriptor = (EISDescriptor)getQuery().getDescriptor();
+            if (desc != null && desc.isEISDescriptor()) {
+                EISDescriptor descriptor = (EISDescriptor) desc;
                 setOutputRootElementName(descriptor.getDataTypeName());
             } else {
                 setInputRootElementName("output");
@@ -259,8 +263,9 @@ public class XMLInteraction extends MappedInteraction {
      */
     protected XMLRecord createXMLRecord(String rootName) {
         XMLRecord xmlRec;
-        if (getQuery().getDescriptor() != null && getQuery().getDescriptor() instanceof EISDescriptor && this.getQuery().getDescriptor().getObjectBuilder() instanceof XMLObjectBuilder) {
-            xmlRec = (XMLRecord)((XMLObjectBuilder)this.getQuery().getDescriptor().getObjectBuilder()).createRecord(getInputRootElementName(), getQuery().getSession());
+        ClassDescriptor descriptor = getQuery().getDescriptor();
+        if (descriptor != null && descriptor.isEISDescriptor() && descriptor.getObjectBuilder().isXMLObjectBuilder()) {
+            xmlRec = (XMLRecord)((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecord(getInputRootElementName(), getQuery().getSession());
         } else {
             xmlRec = new org.eclipse.persistence.oxm.record.DOMRecord(getInputRootElementName());
             xmlRec.setSession(getQuery().getSession());

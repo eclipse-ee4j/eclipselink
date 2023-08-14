@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,8 +41,6 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sequencing.TableSequence;
-import org.eclipse.persistence.sequencing.UnaryTableSequence;
 
 /**
  * <p>
@@ -484,16 +482,14 @@ public class SchemaManager {
         if (sequence.shouldAcquireValueAfterInsert()) {
             return null;
         }
-        if (sequence instanceof TableSequence ||
-            (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof TableSequence)) {
+        Sequence defaultSequence = getDefaultSequnceOrNull(sequence);
+        if (sequence.isTable() || (defaultSequence != null && defaultSequence.isTable())) {
             return new TableSequenceDefinition(sequence, createDatabaseSchemas);
-        } else if (sequence instanceof UnaryTableSequence ||
-                   (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof UnaryTableSequence)) {
+        } else if (sequence.isUnaryTable() || (defaultSequence != null && defaultSequence.isUnaryTable())) {
             return new UnaryTableSequenceDefinition(sequence, createDatabaseSchemas);
-        } else if (sequence instanceof NativeSequence ||
-                   (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof NativeSequence)) {
+        } else if (sequence.isNative() || (defaultSequence != null && defaultSequence.isNative())) {
             NativeSequence nativeSequence = null;
-            if (sequence instanceof NativeSequence) {
+            if (sequence.isNative()) {
                 nativeSequence = (NativeSequence)sequence;
             } else {
                 nativeSequence = (NativeSequence)((DefaultSequence)sequence).getDefaultSequence();
@@ -1201,4 +1197,7 @@ public class SchemaManager {
         }
     }
 
+    private Sequence getDefaultSequnceOrNull(Sequence s) {
+        return s instanceof DefaultSequence ? ((DefaultSequence)s).getDefaultSequence() : null;
+    }
 }
