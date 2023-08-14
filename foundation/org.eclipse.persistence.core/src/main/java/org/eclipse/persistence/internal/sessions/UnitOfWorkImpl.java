@@ -57,7 +57,6 @@ import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
-import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -975,7 +974,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Object cloneAndRegisterNewObject(Object original, boolean isShallowClone) {
         ClassDescriptor descriptor = getDescriptor(original);
         //Nested unit of work is not supported for attribute change tracking
-        if (this.isNestedUnitOfWork && (descriptor.getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy)) {
+        if (this.isNestedUnitOfWork && (descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
             throw ValidationException.nestedUOWNotSupportedForAttributeTracking();
         }
         ObjectBuilder builder = descriptor.getObjectBuilder();

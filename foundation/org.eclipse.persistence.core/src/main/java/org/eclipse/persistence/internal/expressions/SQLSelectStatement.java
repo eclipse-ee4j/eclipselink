@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -61,7 +61,6 @@ import org.eclipse.persistence.internal.history.DecoratedDatabaseTable;
 import org.eclipse.persistence.internal.history.UniversalAsOfClause;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
@@ -166,7 +165,7 @@ public class SQLSelectStatement extends SQLStatement {
      * is for and aggregate function.
      */
     public void addField(Expression expression) {
-        if (expression instanceof FunctionExpression) {
+        if (expression.isFunctionExpression()) {
             if (expression.getOperator().isAggregateOperator()) {
                 setIsAggregateSelect(true);
             }
@@ -1048,8 +1047,10 @@ public class SQLSelectStatement extends SQLStatement {
 
                 if (field.equals(orderByField)) {
                     // Ignore aggregates
-                    while (((DataExpression)exp.getBaseExpression()).getMapping() instanceof AggregateObjectMapping) {
+                    DatabaseMapping mapping = ((DataExpression) exp.getBaseExpression()).getMapping();
+                    while (mapping != null && mapping.isAggregateObjectMapping()) {
                         exp = (DataExpression)exp.getBaseExpression();
+                        mapping = exp.getMapping();
                     }
                     if (exp.getBaseExpression() == getBuilder()) {
                         // found a match
@@ -2243,7 +2244,7 @@ public class SQLSelectStatement extends SQLStatement {
         // - Removed the block handling ParameterExpressions, because it is
         // not possible to get into that method with a ParameterExpression.
         TreeSet tables = new TreeSet();
-        if(expression instanceof DataExpression) {
+        if(expression.isDataExpression()) {
             DataExpression de = (DataExpression)expression;
             if(de.getAliasedField() != null) {
                 tables.add(tablesInOrder.indexOf(de.getAliasedField().getTable()));
@@ -2257,11 +2258,11 @@ public class SQLSelectStatement extends SQLStatement {
         // Never adding (always overriding) cached expression (the code before the fix) resulted in the first child (employee.emp_id1 = proj_emp.emp_id1) being overridden and lost.
         // Always adding to the cached in the map expression would result in (proj_emp.proj_id1 = project.proj_id1).and(proj_emp.proj_id2 = project.proj_id2)) added twice.
         TreeMap originalMap = (TreeMap)map.clone();
-        if(expression instanceof CompoundExpression) {
+        if(expression.isCompoundExpression()) {
             CompoundExpression ce = (CompoundExpression)expression;
             tables.addAll(mapTableIndexToExpression(ce.getFirstChild(), map, tablesInOrder));
             tables.addAll(mapTableIndexToExpression(ce.getSecondChild(), map, tablesInOrder));
-        } else if(expression instanceof FunctionExpression) {
+        } else if(expression.isFunctionExpression()) {
             FunctionExpression fe = (FunctionExpression)expression;
             Iterator<Expression> it = fe.getChildren().iterator();
             while(it.hasNext()) {

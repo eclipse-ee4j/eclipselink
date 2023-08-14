@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,6 @@ import java.util.Set;
 import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -600,7 +599,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     protected Object cloneAndRegisterNewObject(Object original, boolean isShallowClone) {
         ClassDescriptor descriptor = getDescriptor(original);
         //Nested unit of work is not supported for attribute change tracking
-        if (isNestedUnitOfWork() && (descriptor.getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy)) {
+        if (isNestedUnitOfWork() && (descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
             throw ValidationException.nestedUOWNotSupportedForAttributeTracking();
         }
         ObjectBuilder builder = descriptor.getObjectBuilder();

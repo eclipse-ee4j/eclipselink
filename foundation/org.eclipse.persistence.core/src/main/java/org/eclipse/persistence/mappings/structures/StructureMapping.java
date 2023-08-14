@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,7 @@ public class StructureMapping extends AbstractCompositeObjectMapping {
      * This is the name of the user-defined data type as defined on the database.
      */
     public String getStructureName() {
-        if (getReferenceDescriptor() instanceof ObjectRelationalDataTypeDescriptor) {
+        if (getReferenceDescriptor().isObjectRelationalDataTypeDescriptor()) {
             return ((ObjectRelationalDataTypeDescriptor)getReferenceDescriptor()).getStructureName();
         } else {
             return "";

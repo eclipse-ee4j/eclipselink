@@ -36,7 +36,7 @@ public class Util {
             if (className == null) {
                 throw ValidationException.incorrectASMServiceProvided();
             }
-            Class<?> clazz = lookup.findClass(className);
+            Class<?> clazz = Class.forName(className);
             VarHandle field = lookup.findStaticVarHandle(clazz, name, type);
             result = field.get();
         } catch (ClassNotFoundException | IllegalAccessException | NoSuchFieldException e) {

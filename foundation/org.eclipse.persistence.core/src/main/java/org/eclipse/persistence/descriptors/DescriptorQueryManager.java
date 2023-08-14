@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -183,7 +183,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * it will be replaced.
      */
     public synchronized void addQuery(DatabaseQuery query) {
-        if (query instanceof ObjectLevelReadQuery && (query.getReferenceClassName() == null)) {
+        if (query.isObjectLevelReadQuery() && (query.getReferenceClassName() == null)) {
             ((ObjectLevelReadQuery)query).setReferenceClassName(getDescriptor().getJavaClassName());
 
             // try to set the reference ClassNotFoundException since it should only happen on the MW in which

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1194,7 +1194,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
             }
         }
-        if (query instanceof ObjectLevelReadQuery) {
+        if (query.isObjectLevelReadQuery()) {
             LoadGroup group = query.getLoadGroup();
             if (group != null) {
                 session.load(domainObject, group, query.getDescriptor(), false);
@@ -3050,8 +3050,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             for (int index = 0; index < primaryKeyFields.size(); index++) {
                 DatabaseField primaryKeyField = primaryKeyFields.get(index);
                 String fieldClassificationClassName = null;
-                if (this.getBaseMappingForField(primaryKeyField) instanceof AbstractDirectMapping) {
-                    fieldClassificationClassName = ((AbstractDirectMapping)this.getBaseMappingForField(primaryKeyField)).getFieldClassificationClassName();
+                DatabaseMapping mapping = this.getBaseMappingForField(primaryKeyField);
+                if (mapping != null && mapping.isAbstractDirectMapping()) {
+                    fieldClassificationClassName = ((AbstractDirectMapping) mapping).getFieldClassificationClassName();
                 }
                 subExpression = ((DatasourcePlatform)session.getDatasourcePlatform()).createExpressionFor(primaryKeyField, builder, fieldClassificationClassName);
 

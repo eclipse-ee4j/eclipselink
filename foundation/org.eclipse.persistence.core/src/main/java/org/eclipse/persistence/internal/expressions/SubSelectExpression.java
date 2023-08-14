@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -187,12 +187,12 @@ public class SubSelectExpression extends BaseExpression {
             // The criteria should be of form builder.equal(exp), where exp belongs
             // to the parent statement and has already been normalized, hence it
             // knows its reference class.
-            if (criteria instanceof LogicalExpression) {
+            if (criteria.isLogicalExpression()) {
                 criteria = ((LogicalExpression)criteria).getFirstChild();
             }
-            if (criteria instanceof RelationExpression) {
+            if (criteria.isRelationExpression()) {
                 Expression rightChild = ((RelationExpression)criteria).getSecondChild();
-                if (rightChild instanceof QueryKeyExpression) {
+                if (rightChild.isQueryKeyExpression()) {
                     ClassDescriptor descriptor = ((QueryKeyExpression)rightChild).getDescriptor();
                     // descriptor will be null here for query key expressions
                     if (descriptor ==null){

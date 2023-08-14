@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2015 Sei Syvalta. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Sei Syvalta. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -74,8 +73,6 @@ import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -174,7 +171,7 @@ public class DefaultTableGenerator {
         //go through each descriptor and build the table/field definitions out of mappings
         for (ClassDescriptor descriptor : this.project.getOrderedDescriptors()) {
 
-            if ((descriptor instanceof XMLDescriptor) || (descriptor instanceof EISDescriptor) || (descriptor instanceof ObjectRelationalDataTypeDescriptor)) {
+            if ((descriptor.isXMLDescriptor()) || (descriptor.isEISDescriptor()) || (descriptor.isObjectRelationalDataTypeDescriptor())) {
                 //default table generator does not support ox, eis and object-relational descriptor
                 AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.DDL, "relational_descriptor_support_only", null, true);
 

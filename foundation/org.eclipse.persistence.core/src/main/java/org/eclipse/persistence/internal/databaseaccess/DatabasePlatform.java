@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1304,7 +1304,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     public String getQualifiedSequenceTableName() {
-        if (getDefaultSequence() instanceof TableSequence) {
+        if (getDefaultSequence().isTable()) {
             return getQualifiedName(((TableSequence)getDefaultSequence()).getTableName());
         } else {
             throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getTableName");
@@ -1362,7 +1362,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     public String getSequenceCounterFieldName() {
-        if (getDefaultSequence() instanceof TableSequence) {
+        if (getDefaultSequence().isTable()) {
             return ((TableSequence)getDefaultSequence()).getCounterFieldName();
         } else {
             throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getCounterFieldName");
@@ -1370,7 +1370,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     public String getSequenceNameFieldName() {
-        if (getDefaultSequence() instanceof TableSequence) {
+        if (getDefaultSequence().isTable()) {
             return ((TableSequence)getDefaultSequence()).getNameFieldName();
         } else {
             throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getNameFieldName");
@@ -1383,7 +1383,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     public String getSequenceTableName() {
-        if (getDefaultSequence() instanceof TableSequence) {
+        if (getDefaultSequence().isTable()) {
             String tableName = ((TableSequence)getDefaultSequence()).getTableName();
             if(tableName.length() == 0) {
                 tableName = this.getDefaultSequenceTableName();
@@ -1743,7 +1743,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     public void setSequenceCounterFieldName(String name) {
-        if (getDefaultSequence() instanceof TableSequence) {
+        if (getDefaultSequence().isTable()) {
             ((TableSequence)getDefaultSequence()).setCounterFieldName(name);
         } else {
             if (!name.equals((new TableSequence()).getCounterFieldName())) {
@@ -1753,7 +1753,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     public void setSequenceNameFieldName(String name) {
-        if (getDefaultSequence() instanceof TableSequence) {
+        if (getDefaultSequence().isTable()) {
             ((TableSequence)getDefaultSequence()).setNameFieldName(name);
         } else {
             if (!name.equals((new TableSequence()).getNameFieldName())) {
@@ -1763,7 +1763,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     public void setSequenceTableName(String name) {
-        if (getDefaultSequence() instanceof TableSequence) {
+        if (getDefaultSequence().isTable()) {
             ((TableSequence)getDefaultSequence()).setTableName(name);
         } else {
             if (!name.equals((new TableSequence()).getTableName())) {
@@ -2575,7 +2575,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         // Cannot bind null through set object, so we must compute the type, this is not good.
         // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the
         // user defined type to setNull as well.
-        if (databaseField instanceof ObjectRelationalDatabaseField) {
+        if (databaseField.isObjectRelationalDatabaseField()) {
             ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
             statement.setNull(index, field.getSqlType(), field.getSqlTypeName());
         } else {
@@ -2589,7 +2589,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         // Cannot bind null through set object, so we must compute the type, this is not good.
         // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the
         // user defined type to setNull as well.
-        if (databaseField instanceof ObjectRelationalDatabaseField) {
+        if (databaseField.isObjectRelationalDatabaseField()) {
             ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
             statement.setNull(name, field.getSqlType(), field.getSqlTypeName());
         } else {
@@ -2840,7 +2840,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     public boolean usesSequenceTable() {
-        return getDefaultSequence() instanceof TableSequence;
+        return getDefaultSequence().isTable();
     }
 
     /**

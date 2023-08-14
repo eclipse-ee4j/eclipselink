@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import java.beans.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.mappings.foundation.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -130,7 +129,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
         if (mapping == null) {
             throw ValidationException.wrongPropertyNameInChangeEvent(owner.getClass(), evt.getPropertyName());
         }
-        if (mapping instanceof AbstractDirectMapping || mapping instanceof AbstractTransformationMapping) {
+        if (mapping.isAbstractDirectMapping() || mapping.isTransformationMapping()) {
             //If both newValue and oldValue are null, or newValue is not null and newValue equals oldValue, don't build ChangeRecord
             if (((evt.getNewValue() == null) && (evt.getOldValue() == null)) || ((evt.getNewValue() != null) && (evt.getNewValue()).equals(evt.getOldValue()))) {
                 return;
